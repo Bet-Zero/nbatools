@@ -1285,6 +1285,22 @@ def _finalize_route(parsed: dict) -> dict:
             "longest": team_streak_request.get("longest", False),
             "limit": 25,
         }
+    elif split_type and player and not player_a and not player_b:
+        route = "player_split_summary"
+        route_kwargs = {
+            "split": split_type,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "player": player,
+            "team": team,
+            "opponent": opponent,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "last_n": last_n,
+        }
     elif split_type and team and not team_a and not team_b:
         route = "team_split_summary"
         route_kwargs = {
@@ -1362,38 +1378,6 @@ def _finalize_route(parsed: dict) -> dict:
             "special_condition": streak_request.get("special_condition"),
             "min_streak_length": streak_request.get("min_streak_length"),
             "longest": streak_request.get("longest", False),
-            "limit": 25,
-        }
-    elif (
-        team
-        and team_streak_request
-        and not team_a
-        and not team_b
-        and not player
-        and not player_a
-        and not player_b
-    ):
-        route = "team_streak_finder"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "start_date": start_date,
-            "end_date": end_date,
-            "last_n": last_n,
-            "stat": team_streak_request.get("stat"),
-            "min_value": team_streak_request.get("min_value"),
-            "max_value": team_streak_request.get("max_value"),
-            "special_condition": team_streak_request.get("special_condition"),
-            "min_streak_length": team_streak_request.get("min_streak_length"),
-            "longest": team_streak_request.get("longest", False),
             "limit": 25,
         }
     elif "top" in q and "games" in q and player is None and ("scoring" in q or stat is not None):
@@ -1578,57 +1562,9 @@ def _finalize_route(parsed: dict) -> dict:
     out["route_kwargs"] = route_kwargs
     return out
 
-    out = dict(parsed)
-    out["route"] = route
-    out["route_kwargs"] = route_kwargs
-    return out
-
 
 def parse_query(query: str) -> dict:
-    parsed = _finalize_route(_build_parse_state(query))
-
-    split_type = parsed.get("split_type")
-    player = parsed.get("player")
-    team = parsed.get("team")
-    player_a = parsed.get("player_a")
-    player_b = parsed.get("player_b")
-    team_a = parsed.get("team_a")
-    team_b = parsed.get("team_b")
-
-    if split_type and player and not player_a and not player_b:
-        parsed["route"] = "player_split_summary"
-        parsed["route_kwargs"] = {
-            "split": split_type,
-            "season": parsed.get("season"),
-            "start_season": parsed.get("start_season"),
-            "end_season": parsed.get("end_season"),
-            "season_type": parsed.get("season_type"),
-            "player": player,
-            "team": parsed.get("team"),
-            "opponent": parsed.get("opponent"),
-            "stat": parsed.get("stat"),
-            "min_value": parsed.get("min_value"),
-            "max_value": parsed.get("max_value"),
-            "last_n": parsed.get("last_n"),
-        }
-
-    elif split_type and team and not team_a and not team_b:
-        parsed["route"] = "team_split_summary"
-        parsed["route_kwargs"] = {
-            "split": split_type,
-            "season": parsed.get("season"),
-            "start_season": parsed.get("start_season"),
-            "end_season": parsed.get("end_season"),
-            "season_type": parsed.get("season_type"),
-            "team": team,
-            "opponent": parsed.get("opponent"),
-            "stat": parsed.get("stat"),
-            "min_value": parsed.get("min_value"),
-            "max_value": parsed.get("max_value"),
-            "last_n": parsed.get("last_n"),
-        }
-
-    return parsed
+    return _finalize_route(_build_parse_state(query))
 
 
 def _merge_inherited_context(base: dict, clause: dict) -> dict:
@@ -1992,8 +1928,6 @@ def _execute_grouped_boolean_query_capture_raw(query: str) -> str:
 
     func_map = {
         "player_game_finder": player_game_finder_run,
-        "player_streak_finder": player_streak_finder_run,
-        "team_streak_finder": team_streak_finder_run,
         "game_finder": game_finder_run,
     }
     func = func_map[route]
