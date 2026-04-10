@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / Editors
+.vscode/.history/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data & outputs (large, local-only)
+data/
+outputs/
+scripts/
+
+# Secrets & config
+.env
+tokens.txt
+*.secret
+
+# Testing & linting caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Backup files
+*.bak
+*.bak_*
+*.backup
+*.broken_backup
+*.bad_backup
+*.pre_cleanup
+
+# Rich Text Format notes (local reference)
+*.rtf

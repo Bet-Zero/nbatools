@@ -1,0 +1,343 @@
+from __future__ import annotations
+
+import pandas as pd
+
+from nbatools.commands.data_utils import load_team_games_for_seasons
+
+
+def season_to_int(season: str) -> int:
+    return int(season.split("-")[0])
+
+
+def int_to_season(year: int) -> str:
+    return f"{year}-{str(year + 1)[-2:]}"
+
+
+def resolve_seasons(
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+) -> list[str]:
+    if season and (start_season or end_season):
+        raise ValueError("Use either --season or --start-season/--end-season, not both")
+
+    if season:
+        return [season]
+
+    if start_season and end_season:
+        start = season_to_int(start_season)
+        end = season_to_int(end_season)
+        if end < start:
+            raise ValueError("end_season must be greater than or equal to start_season")
+        return [int_to_season(y) for y in range(start, end + 1)]
+
+    raise ValueError("Provide either --season or both --start-season and --end-season")
+
+
+def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
+    if value is None:
+        return None
+    ts = pd.to_datetime(value, errors="coerce")
+    if pd.isna(ts):
+        raise ValueError(f"Invalid date value: {value}")
+    return pd.Timestamp(ts).normalize()
+
+
+def filter_team_games(
+    df: pd.DataFrame,
+    team: str,
+    opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    last_n: int | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> pd.DataFrame:
+    out = df.copy()
+    out["game_date"] = pd.to_datetime(out["game_date"]).dt.normalize()
+
+    start_ts = _normalize_date_value(start_date)
+    end_ts = _normalize_date_value(end_date)
+    if start_ts is not None and end_ts is not None and start_ts > end_ts:
+        raise ValueError("start_date must be less than or equal to end_date")
+
+    if start_ts is not None:
+        out = out[out["game_date"] >= start_ts].copy()
+
+    if end_ts is not None:
+        out = out[out["game_date"] <= end_ts].copy()
+
+    team_upper = team.upper()
+    out = out[
+        out["team_abbr"].astype(str).str.upper().eq(team_upper)
+        | out["team_name"].astype(str).str.upper().eq(team_upper)
+    ].copy()
+
+    if opponent:
+        opp_upper = opponent.upper()
+        out = out[
+            out["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
+            | out["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
+        ].copy()
+
+    if home_only:
+        out = out[out["is_home"] == 1].copy()
+
+    if away_only:
+        out = out[out["is_away"] == 1].copy()
+
+    if wins_only:
+        out = out[out["wl"] == "W"].copy()
+
+    if losses_only:
+        out = out[out["wl"] == "L"].copy()
+
+    out = out.sort_values(["game_date", "game_id"], ascending=[False, False]).copy()
+
+    if last_n is not None:
+        if last_n <= 0:
+            raise ValueError("last_n must be greater than 0")
+        out = out.head(last_n).copy()
+
+    return out
+
+
+def summarize_team(df: pd.DataFrame, team_name: str) -> dict:
+    if df.empty:
+        return {
+            "team_name": team_name,
+            "games": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_pct": None,
+            "pts_avg": None,
+            "reb_avg": None,
+            "ast_avg": None,
+            "stl_avg": None,
+            "blk_avg": None,
+            "fg3m_avg": None,
+            "tov_avg": None,
+            "plus_minus_avg": None,
+            "efg_pct_avg": None,
+            "ts_pct_avg": None,
+            "pts_sum": 0,
+            "reb_sum": 0,
+            "ast_sum": 0,
+        }
+
+    wins = int((df["wl"] == "W").sum())
+    losses = int((df["wl"] == "L").sum())
+    games = int(len(df))
+
+    return {
+        "team_name": team_name,
+        "games": games,
+        "wins": wins,
+        "losses": losses,
+        "win_pct": round(wins / games, 3) if games else None,
+        "pts_avg": round(df["pts"].mean(), 3) if "pts" in df.columns else None,
+        "reb_avg": round(df["reb"].mean(), 3) if "reb" in df.columns else None,
+        "ast_avg": round(df["ast"].mean(), 3) if "ast" in df.columns else None,
+        "stl_avg": round(df["stl"].mean(), 3) if "stl" in df.columns else None,
+        "blk_avg": round(df["blk"].mean(), 3) if "blk" in df.columns else None,
+        "fg3m_avg": round(df["fg3m"].mean(), 3) if "fg3m" in df.columns else None,
+        "tov_avg": round(df["tov"].mean(), 3) if "tov" in df.columns else None,
+        "plus_minus_avg": round(df["plus_minus"].mean(), 3) if "plus_minus" in df.columns else None,
+        "efg_pct_avg": round(df["efg_pct"].mean(), 3) if "efg_pct" in df.columns else None,
+        "ts_pct_avg": round(df["ts_pct"].mean(), 3) if "ts_pct" in df.columns else None,
+        "pts_sum": round(df["pts"].sum(), 3) if "pts" in df.columns else 0,
+        "reb_sum": round(df["reb"].sum(), 3) if "reb" in df.columns else 0,
+        "ast_sum": round(df["ast"].sum(), 3) if "ast" in df.columns else 0,
+    }
+
+
+def _build_team_head_to_head_frames(
+    df: pd.DataFrame,
+    team_a: str,
+    team_b: str,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    last_n: int | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    a_df = filter_team_games(
+        df,
+        team=team_a,
+        opponent=team_b,
+        home_only=home_only,
+        away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
+        last_n=None,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    b_df = filter_team_games(
+        df,
+        team=team_b,
+        opponent=team_a,
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        last_n=None,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    if a_df.empty or b_df.empty:
+        return a_df.head(0).copy(), b_df.head(0).copy()
+
+    a_pref = a_df.add_prefix("a__")
+    b_pref = b_df.add_prefix("b__")
+
+    merged = a_pref.merge(
+        b_pref,
+        left_on=["a__season", "a__season_type", "a__game_id"],
+        right_on=["b__season", "b__season_type", "b__game_id"],
+        how="inner",
+    )
+
+    if {"a__team_id", "b__team_id"}.issubset(merged.columns):
+        merged = merged[merged["a__team_id"] != merged["b__team_id"]]
+
+    if {"a__opponent_team_id", "b__team_id"}.issubset(merged.columns):
+        merged = merged[merged["a__opponent_team_id"] == merged["b__team_id"]]
+
+    if {"b__opponent_team_id", "a__team_id"}.issubset(merged.columns):
+        merged = merged[merged["b__opponent_team_id"] == merged["a__team_id"]]
+
+    if merged.empty:
+        return a_df.head(0).copy(), b_df.head(0).copy()
+
+    merged["a__game_date"] = pd.to_datetime(merged["a__game_date"], errors="coerce")
+    merged = merged.sort_values(["a__game_date", "a__game_id"], ascending=[False, False])
+
+    dedupe_keys = [c for c in ["a__season", "a__season_type", "a__game_id"] if c in merged.columns]
+    if dedupe_keys:
+        merged = merged.drop_duplicates(subset=dedupe_keys, keep="first")
+
+    if last_n is not None:
+        if last_n <= 0:
+            raise ValueError("last_n must be greater than 0")
+        merged = merged.head(last_n).copy()
+
+    a_out = merged[[c for c in merged.columns if c.startswith("a__")]].copy()
+    a_out.columns = [c.replace("a__", "", 1) for c in a_out.columns]
+
+    b_out = merged[[c for c in merged.columns if c.startswith("b__")]].copy()
+    b_out.columns = [c.replace("b__", "", 1) for c in b_out.columns]
+
+    return a_out.reset_index(drop=True), b_out.reset_index(drop=True)
+
+
+def run(
+    team_a: str,
+    team_b: str,
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    season_type: str = "Regular Season",
+    opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    last_n: int | None = None,
+    head_to_head: bool = False,
+) -> None:
+    if home_only and away_only:
+        raise ValueError("Cannot use both home_only and away_only")
+
+    if wins_only and losses_only:
+        raise ValueError("Cannot use both wins_only and losses_only")
+
+    seasons = resolve_seasons(season, start_season, end_season)
+    df = load_team_games_for_seasons(seasons, season_type)
+
+    required = ["team_name", "season", "season_type", "wl", "game_date", "game_id"]
+    missing = [c for c in required if c not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
+
+    if head_to_head:
+        a_df, b_df = _build_team_head_to_head_frames(
+            df,
+            team_a=team_a,
+            team_b=team_b,
+            home_only=home_only,
+            away_only=away_only,
+            wins_only=wins_only,
+            losses_only=losses_only,
+            last_n=last_n,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    else:
+        a_df = filter_team_games(
+            df,
+            team=team_a,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            wins_only=wins_only,
+            losses_only=losses_only,
+            last_n=last_n,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        b_df = filter_team_games(
+            df,
+            team=team_b,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            wins_only=wins_only,
+            losses_only=losses_only,
+            last_n=last_n,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+    summary_a = summarize_team(a_df, team_a)
+    summary_b = summarize_team(b_df, team_b)
+
+    summary = pd.DataFrame([summary_a, summary_b])
+
+    print("SUMMARY")
+    print(summary.to_csv(index=False))
+
+    comparison_rows = [
+        ("games", summary_a["games"], summary_b["games"]),
+        ("wins", summary_a["wins"], summary_b["wins"]),
+        ("losses", summary_a["losses"], summary_b["losses"]),
+        ("win_pct", summary_a["win_pct"], summary_b["win_pct"]),
+        ("pts_avg", summary_a["pts_avg"], summary_b["pts_avg"]),
+        ("reb_avg", summary_a["reb_avg"], summary_b["reb_avg"]),
+        ("ast_avg", summary_a["ast_avg"], summary_b["ast_avg"]),
+        ("stl_avg", summary_a["stl_avg"], summary_b["stl_avg"]),
+        ("blk_avg", summary_a["blk_avg"], summary_b["blk_avg"]),
+        ("fg3m_avg", summary_a["fg3m_avg"], summary_b["fg3m_avg"]),
+        ("tov_avg", summary_a["tov_avg"], summary_b["tov_avg"]),
+        ("plus_minus_avg", summary_a["plus_minus_avg"], summary_b["plus_minus_avg"]),
+        ("efg_pct_avg", summary_a["efg_pct_avg"], summary_b["efg_pct_avg"]),
+        ("ts_pct_avg", summary_a["ts_pct_avg"], summary_b["ts_pct_avg"]),
+        ("pts_sum", summary_a["pts_sum"], summary_b["pts_sum"]),
+        ("reb_sum", summary_a["reb_sum"], summary_b["reb_sum"]),
+        ("ast_sum", summary_a["ast_sum"], summary_b["ast_sum"]),
+    ]
+
+    comp = pd.DataFrame(
+        comparison_rows,
+        columns=["metric", team_a, team_b],
+    )
+
+    print("COMPARISON")
+    print(comp.to_csv(index=False))
