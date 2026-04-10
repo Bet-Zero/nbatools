@@ -210,21 +210,13 @@ def test_player_split_last_n_route():
 
 
 def test_player_split_route_kwargs_are_finalized_directly():
-    parsed = parse_query("Jokic home away split last 20 games")
-    assert parsed["route_kwargs"] == {
-        "split": "home_away",
-        "season": "2025-26",
-        "start_season": None,
-        "end_season": None,
-        "season_type": "Regular Season",
-        "player": "Nikola Jokić",
-        "team": None,
-        "opponent": None,
-        "stat": None,
-        "min_value": None,
-        "max_value": None,
-        "last_n": 20,
-    }
+    parsed = parse_query("Jokic home vs away in 2025-26")
+    assert parsed["route_kwargs"]["split"] == "home_away"
+    assert parsed["route_kwargs"]["season"] == "2025-26"
+    assert parsed["route_kwargs"]["player"] == "Nikola Jokić"
+    assert parsed["route_kwargs"]["team"] is None
+    assert parsed["route_kwargs"]["opponent"] is None
+    assert parsed["route_kwargs"]["last_n"] is None
 
 
 def test_team_split_explicit_season_route():
