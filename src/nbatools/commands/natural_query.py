@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
 from nbatools.commands.format_output import format_pretty_output
 from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import (
@@ -51,41 +52,6 @@ from nbatools.commands.team_split_summary import run as team_split_summary_run
 from nbatools.commands.team_streak_finder import run as team_streak_finder_run
 from nbatools.commands.top_player_games import run as top_player_games_run
 from nbatools.commands.top_team_games import run as top_team_games_run
-
-STAT_ALIASES = {
-    "points": "pts",
-    "point": "pts",
-    "pts": "pts",
-    "rebounds": "reb",
-    "rebound": "reb",
-    "reb": "reb",
-    "assists": "ast",
-    "assist": "ast",
-    "ast": "ast",
-    "steals": "stl",
-    "steal": "stl",
-    "stl": "stl",
-    "blocks": "blk",
-    "block": "blk",
-    "blk": "blk",
-    "threes made": "fg3m",
-    "three pointers made": "fg3m",
-    "three-point makes": "fg3m",
-    "threes": "fg3m",
-    "3pm": "fg3m",
-    "3s": "fg3m",
-    "fg3m": "fg3m",
-    "turnovers": "tov",
-    "turnover": "tov",
-    "tov": "tov",
-}
-
-STAT_PATTERN = (
-    r"(points|point|pts|rebounds|rebound|reb|assists|assist|ast|"
-    r"steals|steal|stl|blocks|block|blk|"
-    r"threes made|three pointers made|three-point makes|threes|3pm|3s|fg3m|"
-    r"turnovers|turnover|tov)"
-)
 
 TEAM_ALIASES = {
     "atlanta": "ATL",

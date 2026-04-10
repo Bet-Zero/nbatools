@@ -7,13 +7,16 @@ from pathlib import Path
 import pandas as pd
 
 
-def safe_divide(
-    numer: pd.Series, denom: pd.Series, fill: float = 0.0
-) -> pd.Series:
-    """Element-wise division that returns *fill* where *denom* is zero."""
+def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
+    """Element-wise division that returns *fill* where *denom* is zero.
+
+    Pass ``fill=None`` to leave divide-by-zero cells as NaN instead of filling.
+    """
     numer = pd.Series(numer)
     denom = pd.Series(denom)
     out = numer / denom.replace(0, pd.NA)
+    if fill is None:
+        return out
     return out.fillna(fill)
 
 
@@ -25,9 +28,7 @@ def add_advanced_pct_columns(df: pd.DataFrame) -> pd.DataFrame:
         out["efg_pct"] = safe_divide(out["fgm"] + 0.5 * out["fg3m"], out["fga"])
 
     if {"pts", "fga", "fta"}.issubset(out.columns):
-        out["ts_pct"] = safe_divide(
-            out["pts"], 2 * (out["fga"] + 0.44 * out["fta"])
-        )
+        out["ts_pct"] = safe_divide(out["pts"], 2 * (out["fga"] + 0.44 * out["fta"]))
 
     return out
 
@@ -37,9 +38,7 @@ def normalize_season_type(season_type: str) -> str:
     return season_type.lower().replace(" ", "_")
 
 
-def load_team_games_for_seasons(
-    seasons: list[str], season_type: str
-) -> pd.DataFrame:
+def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load and concatenate team_game_stats CSVs for the given seasons."""
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
@@ -54,16 +53,12 @@ def load_team_games_for_seasons(
 
     if not frames:
         joined = ", ".join(seasons)
-        raise FileNotFoundError(
-            f"No team_game_stats files found for seasons: {joined}"
-        )
+        raise FileNotFoundError(f"No team_game_stats files found for seasons: {joined}")
 
     return pd.concat(frames, ignore_index=True)
 
 
-def load_player_games_for_seasons(
-    seasons: list[str], season_type: str
-) -> pd.DataFrame:
+def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
@@ -79,12 +74,8 @@ def load_player_games_for_seasons(
         if not team_stats_path.exists():
             raise FileNotFoundError(f"Missing team stats file: {team_stats_path}")
 
-        team_stats = pd.read_csv(team_stats_path)[
-            ["game_id", "team_id", "wl"]
-        ].drop_duplicates()
-        df = df.merge(
-            team_stats, on=["game_id", "team_id"], how="left", suffixes=("", "_team")
-        )
+        team_stats = pd.read_csv(team_stats_path)[["game_id", "team_id", "wl"]].drop_duplicates()
+        df = df.merge(team_stats, on=["game_id", "team_id"], how="left", suffixes=("", "_team"))
 
         if "wl_team" in df.columns:
             if "wl" in df.columns:
@@ -98,9 +89,7 @@ def load_player_games_for_seasons(
 
     if not frames:
         joined = ", ".join(seasons)
-        raise FileNotFoundError(
-            f"No player_game_stats files found for seasons: {joined}"
-        )
+        raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")
 
     out = pd.concat(frames, ignore_index=True)
     out = add_usage_ast_reb_rate_columns(out, seasons=seasons, season_type=season_type)
@@ -138,9 +127,7 @@ def add_usage_ast_reb_rate_columns(
             continue
 
         keep_cols = [
-            c
-            for c in ["season", "player_id", "team_id", *rename_map.keys()]
-            if c in adv.columns
+            c for c in ["season", "player_id", "team_id", *rename_map.keys()] if c in adv.columns
         ]
         adv = adv[keep_cols].rename(columns=rename_map).drop_duplicates()
 

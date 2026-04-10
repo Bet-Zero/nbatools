@@ -1,12 +1,5 @@
+from nbatools.commands._seasons import int_to_season, season_to_int
 from nbatools.commands.backfill_season import run as backfill_season_run
-
-
-def season_to_int(season: str) -> int:
-    return int(season.split("-")[0])
-
-
-def int_to_season(year: int) -> str:
-    return f"{year}-{str(year + 1)[-2:]}"
 
 
 def run(start_season: str, end_season: str, include_playoffs: bool, skip_existing: bool = False):

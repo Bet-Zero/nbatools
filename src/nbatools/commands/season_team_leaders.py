@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands.data_utils import safe_divide
+
 ALLOWED_STATS = {
     "games_played": "games_played",
     "games": "games_played",
@@ -72,11 +74,6 @@ PERCENTAGE_STATS = {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"}
 DATE_WINDOW_UNSUPPORTED_ADVANCED = {"off_rating", "def_rating", "net_rating", "pace"}
 
 
-def _safe_divide(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
-    denom = denominator.where(denominator != 0)
-    return numerator / denom
-
-
 def _normalize_stat(stat: str) -> str:
     key = stat.lower().strip()
     if key not in ALLOWED_STATS:
@@ -123,14 +120,16 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
     grouped["ast_per_game"] = grouped["ast_total"] / grouped["games_played"]
     grouped["fg3m_per_game"] = grouped["fg3m_total"] / grouped["games_played"]
 
-    grouped["fg_pct"] = _safe_divide(grouped["fgm_total"], grouped["fga_total"])
-    grouped["fg3_pct"] = _safe_divide(grouped["fg3m_total"], grouped["fg3a_total"])
-    grouped["ft_pct"] = _safe_divide(grouped["ftm_total"], grouped["fta_total"])
-    grouped["efg_pct"] = _safe_divide(
-        grouped["fgm_total"] + 0.5 * grouped["fg3m_total"], grouped["fga_total"]
+    grouped["fg_pct"] = safe_divide(grouped["fgm_total"], grouped["fga_total"], fill=None)
+    grouped["fg3_pct"] = safe_divide(grouped["fg3m_total"], grouped["fg3a_total"], fill=None)
+    grouped["ft_pct"] = safe_divide(grouped["ftm_total"], grouped["fta_total"], fill=None)
+    grouped["efg_pct"] = safe_divide(
+        grouped["fgm_total"] + 0.5 * grouped["fg3m_total"], grouped["fga_total"], fill=None
     )
-    grouped["ts_pct"] = _safe_divide(
-        grouped["pts_total"], 2 * (grouped["fga_total"] + 0.44 * grouped["fta_total"])
+    grouped["ts_pct"] = safe_divide(
+        grouped["pts_total"],
+        2 * (grouped["fga_total"] + 0.44 * grouped["fta_total"]),
+        fill=None,
     )
 
     return grouped
