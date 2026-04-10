@@ -227,7 +227,7 @@ def test_team_split_explicit_season_route():
     assert parsed["route"] == "team_split_summary"
 
 
-def test_team_streak_route_not_overridden_during_parse_finalization():
+def test_team_streak_route_preserved():
     parsed = parse_query("longest Lakers winning streak")
     assert parsed["route"] == "team_streak_finder"
     assert parsed["route_kwargs"]["team"] == "LAL"
