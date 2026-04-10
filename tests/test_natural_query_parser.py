@@ -209,12 +209,37 @@ def test_player_split_last_n_route():
     assert parsed["route"] == "player_split_summary"
 
 
+def test_player_split_route_kwargs_are_finalized_directly():
+    parsed = parse_query("Jokic home away split last 20 games")
+    assert parsed["route_kwargs"] == {
+        "split": "home_away",
+        "season": "2025-26",
+        "start_season": None,
+        "end_season": None,
+        "season_type": "Regular Season",
+        "player": "Nikola Jokić",
+        "team": None,
+        "opponent": None,
+        "stat": None,
+        "min_value": None,
+        "max_value": None,
+        "last_n": 20,
+    }
+
+
 def test_team_split_explicit_season_route():
     parsed = parse_query("Boston wins losses split in 2025-26")
     assert parsed["team"] == "BOS"
     assert parsed["split_type"] == "wins_losses"
     assert parsed["season"] == "2025-26"
     assert parsed["route"] == "team_split_summary"
+
+
+def test_team_streak_route_not_overridden_during_parse_finalization():
+    parsed = parse_query("longest Lakers winning streak")
+    assert parsed["route"] == "team_streak_finder"
+    assert parsed["route_kwargs"]["team"] == "LAL"
+    assert parsed["route_kwargs"]["special_condition"] == "wins"
 
 
 def test_single_threshold_defaults_season_for_player_finder():

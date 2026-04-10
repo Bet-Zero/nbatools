@@ -1217,6 +1217,92 @@ def _build_parse_state(query: str) -> dict:
     }
 
 
+def _build_player_split_route_kwargs(parsed: dict) -> dict:
+    return {
+        "split": parsed["split_type"],
+        "season": parsed["season"],
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "season_type": parsed["season_type"],
+        "player": parsed["player"],
+        "team": parsed["team"],
+        "opponent": parsed["opponent"],
+        "stat": parsed["stat"],
+        "min_value": parsed["min_value"],
+        "max_value": parsed["max_value"],
+        "last_n": parsed["last_n"],
+    }
+
+
+def _build_team_split_route_kwargs(parsed: dict) -> dict:
+    return {
+        "split": parsed["split_type"],
+        "season": parsed["season"],
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "season_type": parsed["season_type"],
+        "team": parsed["team"],
+        "opponent": parsed["opponent"],
+        "stat": parsed["stat"],
+        "min_value": parsed["min_value"],
+        "max_value": parsed["max_value"],
+        "last_n": parsed["last_n"],
+    }
+
+
+def _build_player_streak_route_kwargs(parsed: dict) -> dict:
+    streak_request = parsed["streak_request"]
+    return {
+        "season": parsed["season"],
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "season_type": parsed["season_type"],
+        "player": parsed["player"],
+        "team": parsed["team"],
+        "opponent": parsed["opponent"],
+        "home_only": parsed["home_only"],
+        "away_only": parsed["away_only"],
+        "wins_only": parsed["wins_only"],
+        "losses_only": parsed["losses_only"],
+        "start_date": parsed["start_date"],
+        "end_date": parsed["end_date"],
+        "last_n": parsed["last_n"],
+        "stat": streak_request.get("stat"),
+        "min_value": streak_request.get("min_value"),
+        "max_value": streak_request.get("max_value"),
+        "special_condition": streak_request.get("special_condition"),
+        "min_streak_length": streak_request.get("min_streak_length"),
+        "longest": streak_request.get("longest", False),
+        "limit": 25,
+    }
+
+
+def _build_team_streak_route_kwargs(parsed: dict) -> dict:
+    team_streak_request = parsed["team_streak_request"]
+    return {
+        "season": parsed["season"],
+        "start_season": parsed["start_season"],
+        "end_season": parsed["end_season"],
+        "season_type": parsed["season_type"],
+        "team": parsed["team"],
+        "opponent": parsed["opponent"],
+        "home_only": parsed["home_only"],
+        "away_only": parsed["away_only"],
+        "wins_only": parsed["wins_only"],
+        "losses_only": parsed["losses_only"],
+        "start_date": parsed["start_date"],
+        "end_date": parsed["end_date"],
+        "last_n": parsed["last_n"],
+        "stat": team_streak_request.get("stat"),
+        "min_value": team_streak_request.get("min_value"),
+        "max_value": team_streak_request.get("max_value"),
+        "special_condition": team_streak_request.get("special_condition"),
+        "min_streak_length": team_streak_request.get("min_streak_length"),
+        "longest": team_streak_request.get("longest", False),
+        "limit": 25,
+    }
+
+
 def _finalize_route(parsed: dict) -> dict:
     q = parsed["normalized_query"]
     season = parsed["season"]
@@ -1253,54 +1339,7 @@ def _finalize_route(parsed: dict) -> dict:
     route = None
     route_kwargs = None
 
-    if (
-        team
-        and team_streak_request
-        and not team_a
-        and not team_b
-        and not player
-        and not player_a
-        and not player_b
-    ):
-        route = "team_streak_finder"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "start_date": start_date,
-            "end_date": end_date,
-            "last_n": last_n,
-            "stat": team_streak_request.get("stat"),
-            "min_value": team_streak_request.get("min_value"),
-            "max_value": team_streak_request.get("max_value"),
-            "special_condition": team_streak_request.get("special_condition"),
-            "min_streak_length": team_streak_request.get("min_streak_length"),
-            "longest": team_streak_request.get("longest", False),
-            "limit": 25,
-        }
-    elif split_type and team and not team_a and not team_b:
-        route = "team_split_summary"
-        route_kwargs = {
-            "split": split_type,
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "stat": stat,
-            "min_value": min_value,
-            "max_value": max_value,
-            "last_n": last_n,
-        }
-    elif player_a and player_b:
+    if player_a and player_b:
         route = "player_compare"
         route_kwargs = {
             "player_a": player_a,
@@ -1339,31 +1378,15 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "head_to_head": head_to_head,
         }
+    elif split_type and player and not player_a and not player_b:
+        route = "player_split_summary"
+        route_kwargs = _build_player_split_route_kwargs(parsed)
+    elif split_type and team and not team_a and not team_b:
+        route = "team_split_summary"
+        route_kwargs = _build_team_split_route_kwargs(parsed)
     elif player and streak_request and not player_a and not player_b:
         route = "player_streak_finder"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "player": player,
-            "team": team,
-            "opponent": opponent,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "start_date": start_date,
-            "end_date": end_date,
-            "last_n": last_n,
-            "stat": streak_request.get("stat"),
-            "min_value": streak_request.get("min_value"),
-            "max_value": streak_request.get("max_value"),
-            "special_condition": streak_request.get("special_condition"),
-            "min_streak_length": streak_request.get("min_streak_length"),
-            "longest": streak_request.get("longest", False),
-            "limit": 25,
-        }
+        route_kwargs = _build_player_streak_route_kwargs(parsed)
     elif (
         team
         and team_streak_request
@@ -1374,28 +1397,7 @@ def _finalize_route(parsed: dict) -> dict:
         and not player_b
     ):
         route = "team_streak_finder"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "start_date": start_date,
-            "end_date": end_date,
-            "last_n": last_n,
-            "stat": team_streak_request.get("stat"),
-            "min_value": team_streak_request.get("min_value"),
-            "max_value": team_streak_request.get("max_value"),
-            "special_condition": team_streak_request.get("special_condition"),
-            "min_streak_length": team_streak_request.get("min_streak_length"),
-            "longest": team_streak_request.get("longest", False),
-            "limit": 25,
-        }
+        route_kwargs = _build_team_streak_route_kwargs(parsed)
     elif "top" in q and "games" in q and player is None and ("scoring" in q or stat is not None):
         route = "top_player_games"
         route_kwargs = {
@@ -1578,57 +1580,9 @@ def _finalize_route(parsed: dict) -> dict:
     out["route_kwargs"] = route_kwargs
     return out
 
-    out = dict(parsed)
-    out["route"] = route
-    out["route_kwargs"] = route_kwargs
-    return out
-
 
 def parse_query(query: str) -> dict:
-    parsed = _finalize_route(_build_parse_state(query))
-
-    split_type = parsed.get("split_type")
-    player = parsed.get("player")
-    team = parsed.get("team")
-    player_a = parsed.get("player_a")
-    player_b = parsed.get("player_b")
-    team_a = parsed.get("team_a")
-    team_b = parsed.get("team_b")
-
-    if split_type and player and not player_a and not player_b:
-        parsed["route"] = "player_split_summary"
-        parsed["route_kwargs"] = {
-            "split": split_type,
-            "season": parsed.get("season"),
-            "start_season": parsed.get("start_season"),
-            "end_season": parsed.get("end_season"),
-            "season_type": parsed.get("season_type"),
-            "player": player,
-            "team": parsed.get("team"),
-            "opponent": parsed.get("opponent"),
-            "stat": parsed.get("stat"),
-            "min_value": parsed.get("min_value"),
-            "max_value": parsed.get("max_value"),
-            "last_n": parsed.get("last_n"),
-        }
-
-    elif split_type and team and not team_a and not team_b:
-        parsed["route"] = "team_split_summary"
-        parsed["route_kwargs"] = {
-            "split": split_type,
-            "season": parsed.get("season"),
-            "start_season": parsed.get("start_season"),
-            "end_season": parsed.get("end_season"),
-            "season_type": parsed.get("season_type"),
-            "team": team,
-            "opponent": parsed.get("opponent"),
-            "stat": parsed.get("stat"),
-            "min_value": parsed.get("min_value"),
-            "max_value": parsed.get("max_value"),
-            "last_n": parsed.get("last_n"),
-        }
-
-    return parsed
+    return _finalize_route(_build_parse_state(query))
 
 
 def _merge_inherited_context(base: dict, clause: dict) -> dict:
@@ -1702,6 +1656,32 @@ def _execute_capture_raw(
         raw_text = _apply_extra_conditions_to_raw_output(raw_text, extra_conditions)
 
     return raw_text
+
+
+ROUTE_FUNCS = {
+    "top_player_games": top_player_games_run,
+    "top_team_games": top_team_games_run,
+    "season_leaders": season_leaders_run,
+    "season_team_leaders": season_team_leaders_run,
+    "player_game_summary": player_game_summary_run,
+    "game_summary": game_summary_run,
+    "player_game_finder": player_game_finder_run,
+    "player_streak_finder": player_streak_finder_run,
+    "team_streak_finder": team_streak_finder_run,
+    "game_finder": game_finder_run,
+    "player_compare": player_compare_run,
+    "team_compare": team_compare_run,
+    "player_split_summary": player_split_summary_run,
+    "team_split_summary": team_split_summary_run,
+}
+
+
+def _execute_parsed_query_capture_raw(parsed: dict) -> str:
+    return _execute_capture_raw(
+        ROUTE_FUNCS[parsed["route"]],
+        parsed["route_kwargs"],
+        parsed.get("extra_conditions", []),
+    )
 
 
 def _combine_or_raw_outputs(raw_outputs: list[str]) -> str:
@@ -2037,27 +2017,7 @@ def _execute_grouped_boolean_query_capture_raw(query: str) -> str:
 def _execute_or_query_capture_raw(query: str) -> str:
     clauses = _split_or_clauses(query)
     if len(clauses) <= 1:
-        parsed = parse_query(query)
-        func_map = {
-            "top_player_games": top_player_games_run,
-            "top_team_games": top_team_games_run,
-            "season_leaders": season_leaders_run,
-            "season_team_leaders": season_team_leaders_run,
-            "player_game_summary": player_game_summary_run,
-            "game_summary": game_summary_run,
-            "player_game_finder": player_game_finder_run,
-            "player_streak_finder": player_streak_finder_run,
-            "team_streak_finder": team_streak_finder_run,
-            "game_finder": game_finder_run,
-            "player_compare": player_compare_run,
-            "team_compare": team_compare_run,
-            "player_split_summary": player_split_summary_run,
-            "team_split_summary": team_split_summary_run,
-        }
-        func = func_map[parsed["route"]]
-        return _execute_capture_raw(
-            func, parsed["route_kwargs"], parsed.get("extra_conditions", [])
-        )
+        return _execute_parsed_query_capture_raw(parse_query(query))
 
     base = _build_parse_state(query)
     clause_parsed = [
@@ -2099,10 +2059,25 @@ def _execute(
     export_txt_path: str | None = None,
     export_json_path: str | None = None,
 ) -> None:
-    if extra_conditions is None:
-        extra_conditions = []
+    raw_text = _execute_capture_raw(func, kwargs, extra_conditions or [])
+    _emit_query_output(
+        raw_text,
+        query,
+        pretty,
+        export_csv_path=export_csv_path,
+        export_txt_path=export_txt_path,
+        export_json_path=export_json_path,
+    )
 
-    raw_text = _execute_capture_raw(func, kwargs, extra_conditions)
+
+def _emit_query_output(
+    raw_text: str,
+    query: str,
+    pretty: bool,
+    export_csv_path: str | None = None,
+    export_txt_path: str | None = None,
+    export_json_path: str | None = None,
+) -> None:
     pretty_text = format_pretty_output(raw_text, query)
 
     if export_csv_path:
@@ -2134,74 +2109,32 @@ def run(
     normalized = normalize_text(query)
 
     if expression_contains_boolean_ops(normalized) and ("(" in normalized or ")" in normalized):
-        raw_text = _execute_grouped_boolean_query_capture_raw(query)
-        pretty_text = format_pretty_output(raw_text, query)
-
-        if export_csv_path:
-            _write_csv_from_raw_output(raw_text, export_csv_path)
-
-        if export_json_path:
-            _write_json_from_raw_output(raw_text, export_json_path)
-
-        if export_txt_path:
-            text_to_save = raw_text if not pretty else pretty_text
-            _write_text_file(
-                export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
-            )
-
-        if not pretty:
-            print(raw_text, end="" if raw_text.endswith("\n") else "\n")
-            return
-
-        print(pretty_text)
+        _emit_query_output(
+            _execute_grouped_boolean_query_capture_raw(query),
+            query,
+            pretty,
+            export_csv_path=export_csv_path,
+            export_txt_path=export_txt_path,
+            export_json_path=export_json_path,
+        )
         return
 
     if " or " in normalized:
-        raw_text = _execute_or_query_capture_raw(query)
-        pretty_text = format_pretty_output(raw_text, query)
-
-        if export_csv_path:
-            _write_csv_from_raw_output(raw_text, export_csv_path)
-
-        if export_json_path:
-            _write_json_from_raw_output(raw_text, export_json_path)
-
-        if export_txt_path:
-            text_to_save = raw_text if not pretty else pretty_text
-            _write_text_file(
-                export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
-            )
-
-        if not pretty:
-            print(raw_text, end="" if raw_text.endswith("\n") else "\n")
-            return
-
-        print(pretty_text)
+        _emit_query_output(
+            _execute_or_query_capture_raw(query),
+            query,
+            pretty,
+            export_csv_path=export_csv_path,
+            export_txt_path=export_txt_path,
+            export_json_path=export_json_path,
+        )
         return
 
     parsed = parse_query(query)
     route = parsed["route"]
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
-
-    func_map = {
-        "top_player_games": top_player_games_run,
-        "top_team_games": top_team_games_run,
-        "season_leaders": season_leaders_run,
-        "season_team_leaders": season_team_leaders_run,
-        "player_game_summary": player_game_summary_run,
-        "game_summary": game_summary_run,
-        "player_game_finder": player_game_finder_run,
-        "player_streak_finder": player_streak_finder_run,
-        "team_streak_finder": team_streak_finder_run,
-        "game_finder": game_finder_run,
-        "player_compare": player_compare_run,
-        "team_compare": team_compare_run,
-        "player_split_summary": player_split_summary_run,
-        "team_split_summary": team_split_summary_run,
-    }
-
-    func = func_map[route]
+    func = ROUTE_FUNCS[route]
     _execute(
         func,
         kwargs,
