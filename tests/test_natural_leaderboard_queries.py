@@ -36,6 +36,13 @@ def test_parse_highest_ts_pct_this_season():
     assert parsed["route_kwargs"]["stat"] == "ts_pct"
 
 
+def test_parse_highest_ts_pct_among_players():
+    parsed = parse_query("highest ts% among players")
+    assert parsed["season"] == "2025-26"
+    assert parsed["route"] == "season_leaders"
+    assert parsed["route_kwargs"]["stat"] == "ts_pct"
+
+
 def test_parse_highest_efg_pct_this_season():
     parsed = parse_query("highest efg% this season")
     assert parsed["season"] == "2025-26"

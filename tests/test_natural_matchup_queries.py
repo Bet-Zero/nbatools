@@ -74,6 +74,17 @@ def test_natural_player_matchup_raw_smoke():
     assert "LAL" in out
 
 
+def test_natural_player_summary_vs_team_matchup_raw_smoke():
+    out = _capture_output(
+        natural_query_run,
+        query="Jokic summary vs Lakers",
+        pretty=False,
+    )
+    assert "SUMMARY" in out
+    assert "Nikola Jokić" in out
+    assert "2025-26" in out
+
+
 def test_natural_player_h2h_raw_smoke():
     out = _capture_output(
         natural_query_run,

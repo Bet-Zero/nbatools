@@ -35,12 +35,28 @@ def test_parse_top_scorers_since_january():
     assert parsed["route_kwargs"]["end_date"] is None
 
 
+def test_parse_top_scorers_in_march():
+    parsed = parse_query("top scorers in March")
+    assert parsed["route"] == "season_leaders"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert parsed["route_kwargs"]["start_date"] == "2026-03-01"
+    assert parsed["route_kwargs"]["end_date"] == "2026-03-31"
+
+
 def test_parse_teams_with_best_efg_in_march():
     parsed = parse_query("teams with best efg% in March")
     assert parsed["route"] == "season_team_leaders"
     assert parsed["route_kwargs"]["stat"] == "efg_pct"
     assert parsed["route_kwargs"]["start_date"] == "2026-03-01"
     assert parsed["route_kwargs"]["end_date"] == "2026-03-31"
+
+
+def test_parse_best_offensive_teams_since_january_uses_points_per_game():
+    parsed = parse_query("best offensive teams since January")
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert parsed["route_kwargs"]["start_date"] == "2026-01-01"
+    assert parsed["route_kwargs"]["end_date"] is None
 
 
 def test_parse_best_offensive_teams_in_march_uses_points_per_game():
@@ -67,6 +83,17 @@ def test_natural_top_scorers_since_january_raw_smoke():
     out = _capture_output(
         natural_query_run,
         query="top scorers since January",
+        pretty=False,
+    )
+    assert "player_name" in out
+    assert "pts_per_game" in out
+    assert "2025-26" in out
+
+
+def test_natural_top_scorers_in_march_raw_smoke():
+    out = _capture_output(
+        natural_query_run,
+        query="top scorers in March",
         pretty=False,
     )
     assert "player_name" in out
