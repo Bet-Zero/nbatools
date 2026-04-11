@@ -46,7 +46,7 @@ nbatools-api = "nbatools.api_cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-nbatools = ["ui/*.html"]
+nbatools = ["ui/dist/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

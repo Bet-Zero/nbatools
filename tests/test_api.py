@@ -311,13 +311,11 @@ class TestUI:
         assert "text/html" in resp.headers["content-type"]
         assert "<title>nbatools</title>" in resp.text
 
-    def test_ui_contains_query_form(self):
+    def test_ui_contains_react_root(self):
         resp = client.get("/")
-        assert 'id="query-form"' in resp.text
-        assert 'id="query-input"' in resp.text
+        assert 'id="root"' in resp.text
 
-    def test_ui_contains_api_calls(self):
+    def test_ui_loads_js_bundle(self):
         resp = client.get("/")
-        assert "/query" in resp.text
-        assert "/health" in resp.text
-        assert "/routes" in resp.text
+        assert "/assets/index-" in resp.text
+        assert 'type="module"' in resp.text

@@ -17,6 +17,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from nbatools import __version__
@@ -45,8 +46,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Path to the bundled single-page UI.
-_UI_DIR = Path(__file__).resolve().parent / "ui"
+# Path to the bundled single-page UI (Vite build output).
+_UI_DIR = Path(__file__).resolve().parent / "ui" / "dist"
 
 # ---------------------------------------------------------------------------
 # Request / response models
@@ -128,9 +129,17 @@ def _query_result_to_response(qr: QueryResult) -> QueryResponse:
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def ui() -> HTMLResponse:
-    """Serve the single-page query UI."""
+    """Serve the single-page query UI (Vite build)."""
     html = (_UI_DIR / "index.html").read_text()
     return HTMLResponse(content=html)
+
+
+# Mount Vite static assets (JS/CSS bundles) *after* explicit routes so
+# they take priority over the catch-all static mount.
+if _UI_DIR.is_dir():
+    _assets = _UI_DIR / "assets"
+    if _assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(_assets)), name="ui-assets")
 
 
 @app.get("/health", response_model=HealthResponse)
