@@ -955,3 +955,361 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+/* ---- Save Query Button ---- */
+
+.save-query-btn {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.save-query-btn:hover {
+  background: var(--ok);
+  color: var(--bg);
+}
+
+/* ---- Save Query Dialog ---- */
+
+.save-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.save-dialog {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 440px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.save-dialog-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.save-dialog-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.save-dialog-hint {
+  font-size: 0.7rem;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+.save-dialog-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.15s;
+}
+
+.save-dialog-input:focus {
+  border-color: var(--accent);
+}
+
+.save-dialog-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text);
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.save-dialog-checkbox input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.save-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.save-dialog-cancel {
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+
+.save-dialog-cancel:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.save-dialog-submit {
+  padding: 6px 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.15s;
+}
+
+.save-dialog-submit:hover {
+  background: var(--accent-hover);
+}
+
+.save-dialog-submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---- Saved Queries Panel ---- */
+
+.saved-queries {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.saved-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.saved-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.saved-header-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.saved-action-sm {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: var(--font);
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  transition: color 0.15s;
+}
+
+.saved-action-sm:hover {
+  color: var(--accent);
+}
+
+.saved-action-danger:hover {
+  color: var(--err);
+}
+
+/* Tag filter bar */
+
+.saved-tags-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.saved-tag-filter {
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+
+.saved-tag-filter:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.saved-tag-filter.active {
+  background: rgba(74, 144, 217, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Empty state */
+
+.saved-empty {
+  text-align: center;
+  padding: 20px 16px;
+  color: var(--muted);
+}
+
+.saved-empty-icon {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.saved-empty-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.saved-empty-hint {
+  font-size: 0.78rem;
+}
+
+/* Saved query list */
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.saved-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition: all 0.15s;
+}
+
+.saved-item:hover {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.saved-item-pinned {
+  background: rgba(74, 144, 217, 0.03);
+}
+
+.saved-pin-icon {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.saved-item-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.saved-item-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.saved-item-label:hover {
+  color: var(--accent);
+}
+
+.saved-item-query {
+  font-size: 0.72rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+
+.saved-item-meta {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.saved-tag {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  border-radius: 6px;
+  text-transform: lowercase;
+}
+
+.saved-route {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  background: rgba(74, 144, 217, 0.1);
+  color: var(--accent);
+  border-radius: 6px;
+}
+
+.saved-date {
+  font-size: 0.68rem;
+  color: var(--muted);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.saved-item-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.saved-item:hover .saved-item-actions {
+  opacity: 1;
+}
+
+.saved-delete-btn:hover {
+  color: var(--err) !important;
+  border-color: var(--err) !important;
+}

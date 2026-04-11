@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
+import type { SavedQueryInput } from "./api/savedQueryTypes";
 import type { QueryResponse } from "./api/types";
 import CopyButton from "./components/CopyButton";
 import DevTools from "./components/DevTools";
@@ -12,7 +13,10 @@ import RawJsonToggle from "./components/RawJsonToggle";
 import ResultEnvelope from "./components/ResultEnvelope";
 import ResultSections from "./components/ResultSections";
 import SampleQueries from "./components/SampleQueries";
+import SavedQueries from "./components/SavedQueries";
+import SaveQueryDialog from "./components/SaveQueryDialog";
 import useQueryHistory from "./hooks/useQueryHistory";
+import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
 import "./App.css";
 
@@ -25,6 +29,8 @@ export default function App() {
   const [queryText, setQueryText] = useState("");
 
   const { history, addEntry, clearHistory } = useQueryHistory();
+  const saved = useSavedQueries();
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const initialUrlHandled = useRef(false);
 
@@ -169,6 +175,28 @@ export default function App() {
     pushStructured(route, kwargs);
   }
 
+  /* ---- saved queries ---- */
+
+  function handleSaveQuery(input: SavedQueryInput) {
+    saved.add(input);
+    setShowSaveDialog(false);
+  }
+
+  function handleSavedQueryRun(query: string) {
+    setQueryText(query);
+    pushQuery(query);
+    runQuery(query);
+  }
+
+  function handleSavedQueryEdit(query: string) {
+    setQueryText(query);
+    inputRef.current?.focus();
+  }
+
+  function handleSaveFromHistory(query: string) {
+    saved.add({ label: query.slice(0, 60), query });
+  }
+
   const hasResult = result !== null;
   const hasError = error !== null;
   const showEmpty = !loading && !hasResult && !hasError;
@@ -234,6 +262,13 @@ export default function App() {
               label="Copy JSON"
               className="copy-json-btn"
             />
+            <button
+              type="button"
+              className="copy-btn save-query-btn"
+              onClick={() => setShowSaveDialog(true)}
+            >
+              Save Query
+            </button>
           </div>
 
           <div className="result-content">
@@ -244,12 +279,27 @@ export default function App() {
         </section>
       )}
 
+      {/* Saved queries */}
+      <SavedQueries
+        queries={saved.queries}
+        onRun={handleSavedQueryRun}
+        onEdit={handleSavedQueryEdit}
+        onSave={handleSaveQuery}
+        onUpdate={saved.update}
+        onDelete={saved.remove}
+        onPin={saved.pin}
+        onClearAll={saved.clearAll}
+        onExport={saved.exportJSON}
+        onImport={saved.importJSON}
+      />
+
       {/* Query history */}
       <QueryHistory
         entries={history}
         onSelect={handleHistorySelect}
         onEdit={handleHistoryEdit}
         onClear={clearHistory}
+        onSave={handleSaveFromHistory}
       />
 
       {/* Developer tools */}
@@ -259,6 +309,16 @@ export default function App() {
         onLoading={setLoading}
         onQueryStart={handleStructuredQueryStart}
       />
+
+      {/* Save dialog */}
+      {showSaveDialog && (
+        <SaveQueryDialog
+          defaultQuery={queryText || result?.query || ""}
+          defaultRoute={result?.route}
+          onSave={handleSaveQuery}
+          onCancel={() => setShowSaveDialog(false)}
+        />
+      )}
     </div>
   );
 }

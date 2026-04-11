@@ -5,6 +5,7 @@ interface Props {
   onSelect: (query: string) => void;
   onEdit: (query: string) => void;
   onClear: () => void;
+  onSave?: (query: string) => void;
 }
 
 function statusDot(status: string): string {
@@ -27,6 +28,7 @@ export default function QueryHistory({
   onSelect,
   onEdit,
   onClear,
+  onSave,
 }: Props) {
   if (entries.length === 0) return null;
 
@@ -85,6 +87,16 @@ export default function QueryHistory({
               >
                 Rerun
               </button>
+              {onSave && (
+                <button
+                  type="button"
+                  className="history-action-btn"
+                  onClick={() => onSave(entry.query)}
+                  title="Save query"
+                >
+                  Save
+                </button>
+              )}
             </span>
           </div>
         ))}
