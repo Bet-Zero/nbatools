@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands.data_utils import safe_divide
+from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 
 ALLOWED_STATS = {
@@ -323,7 +324,7 @@ def build_result(
     basic_path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
 
     if not basic_path.exists():
-        raise FileNotFoundError(f"Missing file: {basic_path}")
+        return NoResult(query_class="leaderboard", reason="no_data")
 
     if limit <= 0:
         raise ValueError("limit must be greater than 0")
@@ -411,7 +412,16 @@ def build_result(
     result["season"] = season
     result["season_type"] = season_type
 
-    return LeaderboardResult(leaders=result)
+    current_through = compute_current_through(season, season_type)
+    caveats: list[str] = []
+    if date_window_active:
+        caveats.append("leaderboard computed from game-log window; season-advanced stats excluded")
+
+    return LeaderboardResult(
+        leaders=result,
+        current_through=current_through,
+        caveats=caveats,
+    )
 
 
 def run(

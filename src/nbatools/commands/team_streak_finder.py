@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_finder import (
     ALLOWED_STATS,
     _apply_filters,
@@ -199,7 +200,10 @@ def build_result(
         raise ValueError("min_streak_length must be greater than 0")
 
     seasons = resolve_seasons(season, start_season, end_season)
-    df = load_team_games_for_seasons(seasons, season_type)
+    try:
+        df = load_team_games_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return NoResult(query_class="streak", reason="no_data")
 
     required = [
         "game_id",
@@ -302,7 +306,12 @@ def build_result(
     ]
     output_cols = [c for c in output_cols if c in out.columns]
 
-    return StreakResult(streaks=out[output_cols].copy())
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
+    return StreakResult(
+        streaks=out[output_cols].copy(),
+        current_through=current_through,
+    )
 
 
 def run(

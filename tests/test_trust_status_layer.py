@@ -709,3 +709,604 @@ class TestPrettyOutputPreserved:
         pretty = format_pretty_output(text, "compare")
         assert "A" in pretty
         assert "B" in pretty
+
+
+# ---------------------------------------------------------------------------
+# Integration: current_through on finder command results
+# ---------------------------------------------------------------------------
+
+
+class TestCurrentThroughOnFinderCommands:
+    def test_player_game_finder_has_current_through(self):
+        from nbatools.commands.player_game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            limit=5,
+        )
+        assert isinstance(result, FinderResult)
+        assert result.current_through is not None
+        assert len(result.current_through) == 10
+
+    def test_game_finder_has_current_through(self):
+        from nbatools.commands.game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            team="BOS",
+            season_type="Regular Season",
+            limit=5,
+        )
+        assert isinstance(result, FinderResult)
+        assert result.current_through is not None
+        assert len(result.current_through) == 10
+
+    def test_player_game_finder_to_dict_has_current_through(self):
+        from nbatools.commands.player_game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            limit=3,
+        )
+        d = result.to_dict()
+        assert d["result_status"] == "ok"
+        assert "current_through" in d
+        assert d["current_through"] is not None
+
+    def test_game_finder_to_dict_has_current_through(self):
+        from nbatools.commands.game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            team="DEN",
+            season_type="Regular Season",
+            limit=3,
+        )
+        d = result.to_dict()
+        assert d["result_status"] == "ok"
+        assert "current_through" in d
+
+
+# ---------------------------------------------------------------------------
+# Integration: current_through on leaderboard command results
+# ---------------------------------------------------------------------------
+
+
+class TestCurrentThroughOnLeaderboardCommands:
+    def test_season_leaders_has_current_through(self):
+        from nbatools.commands.season_leaders import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert result.current_through is not None
+        assert len(result.current_through) == 10
+
+    def test_season_team_leaders_has_current_through(self):
+        from nbatools.commands.season_team_leaders import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert result.current_through is not None
+
+    def test_top_player_games_has_current_through(self):
+        from nbatools.commands.top_player_games import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert result.current_through is not None
+
+    def test_top_team_games_has_current_through(self):
+        from nbatools.commands.top_team_games import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert result.current_through is not None
+
+    def test_season_leaders_to_dict_has_current_through(self):
+        from nbatools.commands.season_leaders import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        d = result.to_dict()
+        assert d["result_status"] == "ok"
+        assert "current_through" in d
+        assert isinstance(d["notes"], list)
+        assert isinstance(d["caveats"], list)
+
+    def test_season_leaders_date_window_has_caveat(self):
+        from nbatools.commands.season_leaders import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+            start_date="2025-01-01",
+            end_date="2025-02-01",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert len(result.caveats) >= 1
+        assert any("game-log window" in c for c in result.caveats)
+
+    def test_season_team_leaders_date_window_has_caveat(self):
+        from nbatools.commands.season_team_leaders import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+            start_date="2025-01-01",
+            end_date="2025-02-01",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert any("game-log window" in c for c in result.caveats)
+
+
+# ---------------------------------------------------------------------------
+# Integration: current_through on streak command results
+# ---------------------------------------------------------------------------
+
+
+class TestCurrentThroughOnStreakCommands:
+    def test_player_streak_finder_has_current_through(self):
+        from nbatools.commands.player_streak_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            stat="pts",
+            min_value=20,
+        )
+        assert isinstance(result, StreakResult)
+        assert result.current_through is not None
+        assert len(result.current_through) == 10
+
+    def test_team_streak_finder_has_current_through(self):
+        from nbatools.commands.team_streak_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            team="BOS",
+            season_type="Regular Season",
+            special_condition="wins",
+        )
+        assert isinstance(result, StreakResult)
+        assert result.current_through is not None
+
+    def test_player_streak_to_dict_has_current_through(self):
+        from nbatools.commands.player_streak_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            stat="pts",
+            min_value=15,
+        )
+        d = result.to_dict()
+        assert d["result_status"] == "ok"
+        assert "current_through" in d
+
+    def test_team_streak_to_dict_has_current_through(self):
+        from nbatools.commands.team_streak_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            team="BOS",
+            season_type="Regular Season",
+            special_condition="wins",
+        )
+        d = result.to_dict()
+        assert d["result_status"] == "ok"
+        assert "current_through" in d
+
+
+# ---------------------------------------------------------------------------
+# Integration: no_data detection on finder / leaderboard / streak
+# ---------------------------------------------------------------------------
+
+
+class TestNoDataDetectionFinderLeaderboardStreak:
+    def test_player_game_finder_no_data(self):
+        from nbatools.commands.player_game_finder import build_result
+
+        result = build_result(
+            season="2099-00",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+        d = result.to_dict()
+        assert d["result_status"] == "no_result"
+        assert d["result_reason"] == "no_data"
+
+    def test_game_finder_no_data(self):
+        from nbatools.commands.game_finder import build_result
+
+        result = build_result(
+            season="2099-00",
+            team="BOS",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_player_game_finder_no_match(self):
+        from nbatools.commands.player_game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nonexistent Player XYZ",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_match"
+
+    def test_game_finder_no_match(self):
+        from nbatools.commands.game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            team="ZZZZZ",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_match"
+
+    def test_season_leaders_no_data(self):
+        from nbatools.commands.season_leaders import build_result
+
+        result = build_result(
+            season="2099-00",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_season_team_leaders_no_data(self):
+        from nbatools.commands.season_team_leaders import build_result
+
+        result = build_result(
+            season="2099-00",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_top_player_games_no_data(self):
+        from nbatools.commands.top_player_games import build_result
+
+        result = build_result(
+            season="2099-00",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_top_team_games_no_data(self):
+        from nbatools.commands.top_team_games import build_result
+
+        result = build_result(
+            season="2099-00",
+            stat="pts",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_player_streak_no_data(self):
+        from nbatools.commands.player_streak_finder import build_result
+
+        result = build_result(
+            season="2099-00",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            stat="pts",
+            min_value=20,
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_team_streak_no_data(self):
+        from nbatools.commands.team_streak_finder import build_result
+
+        result = build_result(
+            season="2099-00",
+            team="BOS",
+            season_type="Regular Season",
+            special_condition="wins",
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_data"
+
+    def test_player_streak_no_match(self):
+        from nbatools.commands.player_streak_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nonexistent Player XYZ",
+            season_type="Regular Season",
+            stat="pts",
+            min_value=20,
+        )
+        assert isinstance(result, NoResult)
+        assert result.reason == "no_match"
+
+    def test_no_data_vs_no_match_finder(self):
+        """Verify no_match and no_data are distinguished for finders."""
+        from nbatools.commands.player_game_finder import build_result
+
+        no_match = build_result(
+            season="2024-25",
+            player="Nonexistent Player XYZ",
+            season_type="Regular Season",
+        )
+        assert isinstance(no_match, NoResult)
+        assert no_match.reason == "no_match"
+
+        no_data = build_result(
+            season="2099-00",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+        )
+        assert isinstance(no_data, NoResult)
+        assert no_data.reason == "no_data"
+
+
+# ---------------------------------------------------------------------------
+# Integration: metadata in raw output for finder / leaderboard / streak
+# ---------------------------------------------------------------------------
+
+
+class TestMetadataInRawOutputFinderLeaderboardStreak:
+    def test_finder_natural_query_has_metadata(self):
+        from nbatools.commands.natural_query import run
+
+        buf = StringIO()
+        with redirect_stdout(buf):
+            run("Jokic 2024-25", pretty=False)
+        output = buf.getvalue()
+
+        sections = parse_labeled_sections(output)
+        assert "METADATA" in sections
+        meta = parse_metadata_block(sections["METADATA"])
+        assert "current_through" in meta
+        assert meta.get("query_class") == "finder"
+
+    def test_leaderboard_natural_query_has_metadata(self):
+        from nbatools.commands.natural_query import run
+
+        buf = StringIO()
+        with redirect_stdout(buf):
+            run("top 5 scorers 2024-25", pretty=False)
+        output = buf.getvalue()
+
+        sections = parse_labeled_sections(output)
+        assert "METADATA" in sections
+        meta = parse_metadata_block(sections["METADATA"])
+        assert "current_through" in meta
+
+    def test_streak_natural_query_has_metadata(self):
+        from nbatools.commands.natural_query import run
+
+        buf = StringIO()
+        with redirect_stdout(buf):
+            run("Jokic longest streak of 20+ points 2024-25", pretty=False)
+        output = buf.getvalue()
+
+        sections = parse_labeled_sections(output)
+        assert "METADATA" in sections
+        meta = parse_metadata_block(sections["METADATA"])
+        assert "current_through" in meta
+
+
+# ---------------------------------------------------------------------------
+# Integration: JSON export with trust/status for finder / leaderboard / streak
+# ---------------------------------------------------------------------------
+
+
+class TestJsonExportFinderLeaderboardStreak:
+    def test_finder_json_export_has_metadata(self):
+        from nbatools.commands.natural_query import run
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            json_path = f.name
+
+        try:
+            buf = StringIO()
+            with redirect_stdout(buf):
+                run("Jokic 2024-25", pretty=False, export_json_path=json_path)
+
+            with open(json_path) as f:
+                data = json.load(f)
+
+            assert "metadata" in data
+            assert "current_through" in data["metadata"]
+        finally:
+            os.unlink(json_path)
+
+    def test_leaderboard_json_export_has_metadata(self):
+        from nbatools.commands.natural_query import run
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            json_path = f.name
+
+        try:
+            buf = StringIO()
+            with redirect_stdout(buf):
+                run("top 5 scorers 2024-25", pretty=False, export_json_path=json_path)
+
+            with open(json_path) as f:
+                data = json.load(f)
+
+            assert "metadata" in data
+            assert "current_through" in data["metadata"]
+        finally:
+            os.unlink(json_path)
+
+
+# ---------------------------------------------------------------------------
+# Integration: pretty output still works for finder / leaderboard / streak
+# ---------------------------------------------------------------------------
+
+
+class TestPrettyOutputFinderLeaderboardStreak:
+    def test_finder_pretty_output(self):
+        games = pd.DataFrame(
+            [{"rank": 1, "player_name": "Test", "pts": 50, "game_date": "2025-01-01"}]
+        )
+        r = FinderResult(games=games, current_through="2025-04-10")
+        text = r.to_labeled_text()
+        pretty = format_pretty_output(text, "test query")
+        assert "Test" in pretty
+        assert 'Query: "test query"' in pretty
+
+    def test_leaderboard_pretty_output(self):
+        leaders = pd.DataFrame(
+            [{"rank": 1, "player_name": "Test", "pts_per_game": 30.0, "games_played": 50}]
+        )
+        r = LeaderboardResult(leaders=leaders, current_through="2025-04-10")
+        text = r.to_labeled_text()
+        pretty = format_pretty_output(text, "leaders query")
+        assert "Test" in pretty
+
+    def test_streak_pretty_output(self):
+        streaks = pd.DataFrame(
+            [
+                {
+                    "rank": 1,
+                    "player_name": "Test",
+                    "streak_length": 5,
+                    "start_date": "2025-01-01",
+                    "end_date": "2025-01-10",
+                }
+            ]
+        )
+        r = StreakResult(streaks=streaks, current_through="2025-04-10")
+        text = r.to_labeled_text()
+        pretty = format_pretty_output(text, "streak query")
+        assert "Test" in pretty
+
+
+# ---------------------------------------------------------------------------
+# Integration: labeled raw output preserved for finder / leaderboard / streak
+# ---------------------------------------------------------------------------
+
+
+class TestLabeledRawOutputFinderLeaderboardStreak:
+    def test_finder_labeled_text_unchanged(self):
+        from nbatools.commands.player_game_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            limit=3,
+        )
+        text = result.to_labeled_text()
+        sections = parse_labeled_sections(text)
+        assert "FINDER" in sections
+
+        df = pd.read_csv(StringIO(sections["FINDER"]))
+        assert len(df) <= 3
+        assert "rank" in df.columns
+
+    def test_leaderboard_labeled_text_unchanged(self):
+        from nbatools.commands.season_leaders import build_result
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+            limit=5,
+        )
+        text = result.to_labeled_text()
+        sections = parse_labeled_sections(text)
+        assert "LEADERBOARD" in sections
+
+        df = pd.read_csv(StringIO(sections["LEADERBOARD"]))
+        assert len(df) <= 5
+        assert "rank" in df.columns
+
+    def test_streak_labeled_text_unchanged(self):
+        from nbatools.commands.player_streak_finder import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            stat="pts",
+            min_value=15,
+        )
+        text = result.to_labeled_text()
+        sections = parse_labeled_sections(text)
+        assert "STREAK" in sections
+
+    def test_run_output_matches_build_result_finder(self):
+        from nbatools.commands.player_game_finder import build_result, run
+
+        buf = StringIO()
+        with redirect_stdout(buf):
+            run(
+                season="2024-25",
+                player="Nikola Jokić",
+                season_type="Regular Season",
+                limit=3,
+            )
+        run_output = buf.getvalue()
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            limit=3,
+        )
+        assert result.to_labeled_text() == run_output
+
+    def test_run_output_matches_build_result_leaderboard(self):
+        from nbatools.commands.season_leaders import build_result, run
+
+        buf = StringIO()
+        with redirect_stdout(buf):
+            run(
+                season="2024-25",
+                stat="pts",
+                season_type="Regular Season",
+                limit=5,
+            )
+        run_output = buf.getvalue()
+
+        result = build_result(
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+            limit=5,
+        )
+        assert result.to_labeled_text() == run_output

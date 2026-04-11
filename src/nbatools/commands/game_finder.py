@@ -2,6 +2,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import FinderResult, NoResult
 
 ALLOWED_STATS = {
@@ -148,7 +149,10 @@ def build_result(
     if sort_by not in {"game_date", "stat"}:
         raise ValueError("sort_by must be either 'game_date' or 'stat'")
 
-    df = load_team_games_for_seasons(seasons, season_type)
+    try:
+        df = load_team_games_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return NoResult(query_class="finder", reason="no_data")
 
     required = [
         "game_id",
@@ -230,7 +234,12 @@ def build_result(
     ]
     output_cols = [c for c in output_cols if c in df.columns]
 
-    return FinderResult(games=df[output_cols].copy())
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
+    return FinderResult(
+        games=df[output_cols].copy(),
+        current_through=current_through,
+    )
 
 
 def run(

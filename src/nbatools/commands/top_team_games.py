@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.commands.structured_results import LeaderboardResult
+from nbatools.commands.freshness import compute_current_through
+from nbatools.commands.structured_results import LeaderboardResult, NoResult
 
 ALLOWED_STATS = {
     "pts": "pts",
@@ -31,12 +32,12 @@ def build_result(
     limit: int = 10,
     season_type: str = "Regular Season",
     ascending: bool = False,
-) -> LeaderboardResult:
+) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
     path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
 
     if not path.exists():
-        raise FileNotFoundError(f"Missing file: {path}")
+        return NoResult(query_class="leaderboard", reason="no_data")
 
     stat = stat.lower().strip()
     if stat not in ALLOWED_STATS:
@@ -83,7 +84,12 @@ def build_result(
 
     result.insert(0, "rank", range(1, len(result) + 1))
 
-    return LeaderboardResult(leaders=result)
+    current_through = compute_current_through(season, season_type)
+
+    return LeaderboardResult(
+        leaders=result,
+        current_through=current_through,
+    )
 
 
 def run(
@@ -100,4 +106,7 @@ def run(
         season_type=season_type,
         ascending=ascending,
     )
+    if isinstance(result, NoResult):
+        print("no matching games")
+        return
     print(result.to_labeled_text(), end="")
