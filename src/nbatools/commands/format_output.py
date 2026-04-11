@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import re
 from io import StringIO
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -858,3 +860,253 @@ def format_pretty_output(raw_text: str, query: str) -> str:
 
     lines.append(table_df.round(3).to_string(index=False))
     return "\n".join(lines).strip()
+
+
+# ---------------------------------------------------------------------------
+# Structured-result render / export helpers
+# ---------------------------------------------------------------------------
+# These allow orchestration layers to render and export directly from
+# typed result objects without round-tripping through text.
+
+from nbatools.commands.structured_results import (  # noqa: E402
+    ComparisonResult,
+    FinderResult,
+    LeaderboardResult,
+    NoResult,
+    SplitSummaryResult,
+    StreakResult,
+    SummaryResult,
+)
+
+StructuredResult = (
+    SummaryResult
+    | ComparisonResult
+    | SplitSummaryResult
+    | FinderResult
+    | LeaderboardResult
+    | StreakResult
+    | NoResult
+)
+
+
+def _ensure_parent_dir(path_str: str) -> None:
+    path = Path(path_str)
+    if path.parent != Path("."):
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def format_pretty_from_result(result: StructuredResult, query: str) -> str:
+    """Render pretty CLI output directly from a structured result object.
+
+    Uses ``to_sections_dict()`` to get section data then delegates to the
+    same formatting logic as ``format_pretty_output`` — without reparsing
+    labeled text.
+    """
+    if isinstance(result, NoResult):
+        reason = result.result_reason or result.reason
+        return _format_pretty_no_result(query, reason)
+
+    sections = result.to_sections_dict()
+
+    # Remap single-table labels to TABLE for the pretty formatter
+    if len(sections) == 1:
+        label = next(iter(sections))
+        if label in ("FINDER", "LEADERBOARD", "STREAK"):
+            sections = {"TABLE": sections[label]}
+
+    return _format_pretty_from_sections(sections, query)
+
+
+def _format_pretty_from_sections(sections: dict[str, str], query: str) -> str:
+    """Internal: format pretty output from a pre-built sections dict."""
+    if NO_RESULT_LABEL in sections:
+        block = sections[NO_RESULT_LABEL]
+        reason = _parse_reason_from_block(block)
+        return _format_pretty_no_result(query, reason)
+
+    if ERROR_LABEL in sections:
+        block = sections[ERROR_LABEL]
+        reason, message = _parse_reason_message_from_block(block)
+        return _format_pretty_error(query, reason, message)
+
+    if "SUMMARY" in sections:
+        summary_df = _read_csv_block(sections["SUMMARY"])
+        _read_csv_block(sections.get("BY_SEASON", ""))
+        comparison_df = _read_csv_block(sections.get("COMPARISON", ""))
+        split_df = _read_csv_block(sections.get("SPLIT_COMPARISON", ""))
+
+        if summary_df is None:
+            return query
+
+        if comparison_df is not None:
+            return _format_comparison(summary_df, comparison_df, query)
+
+        if split_df is not None:
+            return _format_split_summary(summary_df, split_df, query)
+
+        # Recompose labeled text for summary rendering
+        recomposed_parts: list[str] = []
+        for label in ("SUMMARY", "BY_SEASON"):
+            if label in sections:
+                recomposed_parts.append(f"{label}\n{sections[label]}")
+        recomposed = "\n".join(recomposed_parts)
+        return format_pretty_output(recomposed, query)
+
+    table_df = _read_csv_block(sections.get("TABLE", ""))
+    if table_df is None:
+        return query
+
+    lines: list[str] = [f'Query: "{query}"', ""]
+
+    if "rank" in table_df.columns:
+        lines.append(f"Rows returned: {len(table_df)}")
+        lines.append(SECTION_RULE)
+        preview = table_df.copy().round(3)
+
+        value_col = _detect_value_column(preview)
+
+        preferred_cols = [
+            "rank",
+            "season",
+            "season_type",
+            "game_date",
+            "player_name",
+            "team_name",
+            "team_abbr",
+            "opponent_team_abbr",
+        ]
+
+        if value_col and value_col not in preferred_cols:
+            preferred_cols.append(value_col)
+
+        for extra in ["pts", "reb", "ast", "fg3m", "wl"]:
+            if extra != value_col and extra in preview.columns:
+                preferred_cols.append(extra)
+
+        cols = [c for c in preferred_cols if c in preview.columns]
+        if not cols:
+            cols = list(preview.columns[:10])
+
+        lines.append(preview[cols].to_string(index=False))
+        return "\n".join(lines).strip()
+
+    lines.append(table_df.round(3).to_string(index=False))
+    return "\n".join(lines).strip()
+
+
+def write_csv_from_result(result: StructuredResult, path_str: str) -> None:
+    """Write CSV export directly from a structured result object."""
+    _ensure_parent_dir(path_str)
+
+    if isinstance(result, NoResult):
+        Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
+        return
+
+    sections = result.to_sections_dict()
+
+    # Single-table results: write flat CSV
+    single_table_labels = {"FINDER", "LEADERBOARD", "STREAK"}
+    if len(sections) == 1 and next(iter(sections)) in single_table_labels:
+        csv_text = next(iter(sections.values())).strip()
+        Path(path_str).write_text(csv_text + "\n", encoding="utf-8")
+        return
+
+    # Multi-section results: write labeled sections
+    parts: list[str] = []
+    for label in (
+        "SUMMARY",
+        "BY_SEASON",
+        "COMPARISON",
+        "SPLIT_COMPARISON",
+    ):
+        if label in sections:
+            parts.append(f"{label}\n{sections[label]}")
+
+    rebuilt = "\n\n".join(parts).strip()
+    Path(path_str).write_text(rebuilt + "\n", encoding="utf-8")
+
+
+def write_json_from_result(
+    result: StructuredResult,
+    path_str: str,
+    metadata: dict[str, Any] | None = None,
+) -> None:
+    """Write JSON export directly from a structured result object."""
+    _ensure_parent_dir(path_str)
+
+    if isinstance(result, NoResult):
+        reason = result.result_reason or result.reason or "no_match"
+        payload: dict[str, object] = {}
+        if metadata:
+            meta_for_json = _prepare_metadata_for_json(metadata)
+            # Ensure no-result status is in metadata
+            meta_for_json.setdefault("result_status", "no_result")
+            meta_for_json.setdefault("result_reason", reason)
+            payload["metadata"] = meta_for_json
+        payload["no_result"] = [{"reason": reason}]
+        Path(path_str).write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False, default=_json_default) + "\n",
+            encoding="utf-8",
+        )
+        return
+
+    result_dict = result.to_dict()
+
+    payload = {}
+
+    if metadata:
+        meta_for_json = _prepare_metadata_for_json(metadata)
+        payload["metadata"] = meta_for_json
+
+    # Flatten sections to top-level keys
+    for key, value in result_dict.get("sections", {}).items():
+        payload[key] = value
+
+    Path(path_str).write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False, default=_json_default) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _json_default(obj: Any) -> Any:
+    """JSON serialization fallback for pandas/numpy types."""
+    if isinstance(obj, pd.Timestamp):
+        return str(obj)
+    if hasattr(obj, "item"):
+        # numpy scalar → Python scalar
+        return obj.item()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+
+def _prepare_metadata_for_json(metadata: dict[str, Any]) -> dict[str, Any]:
+    """Convert metadata dict to JSON-friendly format matching text-based output."""
+    out: dict[str, Any] = {}
+    for key in METADATA_FIELD_ORDER:
+        if key not in metadata:
+            continue
+        value = metadata[key]
+        if value is None or value == "":
+            continue
+        if isinstance(value, list):
+            out[key] = [str(v) for v in value if v]
+            if not out[key]:
+                del out[key]
+        elif isinstance(value, bool):
+            out[key] = value
+        else:
+            out[key] = str(value)
+    return out
+
+
+def wrap_result_with_metadata(
+    result: StructuredResult,
+    metadata: dict[str, Any] | None,
+    query_class: str | None = None,
+) -> str:
+    """Produce labeled text with METADATA from a structured result.
+
+    Equivalent to ``wrap_raw_output(result.to_labeled_text(), metadata, query_class)``
+    but avoids the caller needing to know about text internals.
+    """
+    labeled_text = result.to_labeled_text()
+    return wrap_raw_output(labeled_text, metadata, query_class)

@@ -14,16 +14,24 @@ from nbatools.commands.format_output import (
     METADATA_LABEL,
     build_error_output,
     build_no_result_output,
+    format_pretty_from_result,
     format_pretty_output,
     parse_labeled_sections,
     parse_metadata_block,
     route_to_query_class,
     wrap_raw_output,
+    wrap_result_with_metadata,
+    write_csv_from_result,
+    write_json_from_result,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.game_finder import build_result as game_finder_build_result
 from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import (
     _apply_filters as apply_team_summary_filters,
+)
+from nbatools.commands.game_summary import (
+    build_result as game_summary_build_result,
 )
 from nbatools.commands.game_summary import (
     load_team_games_for_seasons as load_team_summary_games,
@@ -34,10 +42,19 @@ from nbatools.commands.game_summary import (
 from nbatools.commands.game_summary import (
     run as game_summary_run,
 )
+from nbatools.commands.player_compare import (
+    build_result as player_compare_build_result,
+)
 from nbatools.commands.player_compare import run as player_compare_run
+from nbatools.commands.player_game_finder import (
+    build_result as player_game_finder_build_result,
+)
 from nbatools.commands.player_game_finder import run as player_game_finder_run
 from nbatools.commands.player_game_summary import (
     _apply_filters as apply_player_summary_filters,
+)
+from nbatools.commands.player_game_summary import (
+    build_result as player_game_summary_build_result,
 )
 from nbatools.commands.player_game_summary import (
     load_player_games_for_seasons as load_player_summary_games,
@@ -48,19 +65,52 @@ from nbatools.commands.player_game_summary import (
 from nbatools.commands.player_game_summary import (
     run as player_game_summary_run,
 )
+from nbatools.commands.player_split_summary import (
+    build_result as player_split_summary_build_result,
+)
 from nbatools.commands.player_split_summary import run as player_split_summary_run
+from nbatools.commands.player_streak_finder import (
+    build_result as player_streak_finder_build_result,
+)
 from nbatools.commands.player_streak_finder import run as player_streak_finder_run
 from nbatools.commands.query_boolean_parser import (
     evaluate_condition_tree,
     expression_contains_boolean_ops,
     parse_condition_text,
 )
+from nbatools.commands.season_leaders import (
+    build_result as season_leaders_build_result,
+)
 from nbatools.commands.season_leaders import run as season_leaders_run
+from nbatools.commands.season_team_leaders import (
+    build_result as season_team_leaders_build_result,
+)
 from nbatools.commands.season_team_leaders import run as season_team_leaders_run
+from nbatools.commands.structured_results import (
+    FinderResult,
+    LeaderboardResult,
+    NoResult,
+    StreakResult,
+)
+from nbatools.commands.team_compare import (
+    build_result as team_compare_build_result,
+)
 from nbatools.commands.team_compare import run as team_compare_run
+from nbatools.commands.team_split_summary import (
+    build_result as team_split_summary_build_result,
+)
 from nbatools.commands.team_split_summary import run as team_split_summary_run
+from nbatools.commands.team_streak_finder import (
+    build_result as team_streak_finder_build_result,
+)
 from nbatools.commands.team_streak_finder import run as team_streak_finder_run
+from nbatools.commands.top_player_games import (
+    build_result as top_player_games_build_result,
+)
 from nbatools.commands.top_player_games import run as top_player_games_run
+from nbatools.commands.top_team_games import (
+    build_result as top_team_games_build_result,
+)
 from nbatools.commands.top_team_games import run as top_team_games_run
 
 TEAM_ALIASES = {
@@ -922,6 +972,435 @@ def _write_text_file(path_str: str, text: str) -> None:
 
 
 _SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE", "NO_RESULT", "ERROR")
+
+
+# ---------------------------------------------------------------------------
+# Structured-first build_result map
+# ---------------------------------------------------------------------------
+# Maps route name → build_result callable, used by the structured-first
+# orchestration path so we never need to capture stdout from run().
+
+_BUILD_RESULT_MAP: dict[str, Callable] = {}
+
+
+def _get_build_result_map() -> dict[str, Callable]:
+    if not _BUILD_RESULT_MAP:
+        _BUILD_RESULT_MAP.update(
+            {
+                "top_player_games": top_player_games_build_result,
+                "top_team_games": top_team_games_build_result,
+                "season_leaders": season_leaders_build_result,
+                "season_team_leaders": season_team_leaders_build_result,
+                "player_game_summary": player_game_summary_build_result,
+                "game_summary": game_summary_build_result,
+                "player_game_finder": player_game_finder_build_result,
+                "game_finder": game_finder_build_result,
+                "player_compare": player_compare_build_result,
+                "team_compare": team_compare_build_result,
+                "player_split_summary": player_split_summary_build_result,
+                "team_split_summary": team_split_summary_build_result,
+                "player_streak_finder": player_streak_finder_build_result,
+                "team_streak_finder": team_streak_finder_build_result,
+            }
+        )
+    return _BUILD_RESULT_MAP
+
+
+# ---------------------------------------------------------------------------
+# Structured-first helpers: work on result objects, not text
+# ---------------------------------------------------------------------------
+
+
+def _get_result_primary_df(result):
+    """Extract the primary DataFrame from a structured result object."""
+    if isinstance(result, FinderResult):
+        return result.games
+    if isinstance(result, LeaderboardResult):
+        return result.leaders
+    if isinstance(result, StreakResult):
+        return result.streaks
+    if isinstance(result, NoResult):
+        return None
+    # For summary/comparison/split: not applicable for tabular post-processing
+    return None
+
+
+def _set_result_primary_df(result, df):
+    """Return a modified copy of a single-table result with a new DataFrame.
+
+    Only applicable to FinderResult / LeaderboardResult / StreakResult.
+    """
+    import copy
+
+    new_result = copy.copy(result)
+    if isinstance(result, FinderResult):
+        new_result.games = df
+    elif isinstance(result, LeaderboardResult):
+        new_result.leaders = df
+    elif isinstance(result, StreakResult):
+        new_result.streaks = df
+    return new_result
+
+
+def _apply_extra_conditions_to_result(result, extra_conditions: list[dict]):
+    """Apply stat-threshold extra conditions directly to the result's DataFrame.
+
+    Returns a modified result (or NoResult if the filtered DataFrame is empty).
+    This replaces _apply_extra_conditions_to_raw_output for structured-first paths.
+    """
+    if not extra_conditions:
+        return result
+
+    if isinstance(result, NoResult):
+        return result
+
+    df = _get_result_primary_df(result)
+    if df is None:
+        # Summary/comparison/split types don't support tabular post-filtering
+        return result
+
+    for cond in extra_conditions:
+        stat = cond["stat"]
+        if stat not in df.columns:
+            return NoResult(query_class=getattr(result, "query_class", "finder"))
+        if cond.get("min_value") is not None:
+            df = df[df[stat] >= cond["min_value"]]
+        if cond.get("max_value") is not None:
+            df = df[df[stat] <= cond["max_value"]]
+
+    if df.empty:
+        return NoResult(query_class=getattr(result, "query_class", "finder"))
+
+    return _set_result_primary_df(result, df)
+
+
+def _execute_build_result(
+    route: str,
+    kwargs: dict,
+    extra_conditions: list[dict] | None = None,
+):
+    """Build a structured result directly from a command's build_result().
+
+    Replaces _execute_capture_raw: no stdout capture, no text stripping.
+    """
+    if extra_conditions is None:
+        extra_conditions = []
+
+    build_fn = _get_build_result_map()[route]
+    result = build_fn(**kwargs)
+
+    if extra_conditions:
+        result = _apply_extra_conditions_to_result(result, extra_conditions)
+
+    return result
+
+
+def _combine_or_results(results: list):
+    """Combine multiple finder-style results (for OR queries) into one FinderResult.
+
+    Replaces _combine_or_raw_outputs: works with DataFrames directly.
+    """
+    frames = []
+    first_columns: list[str] | None = None
+    query_class = "finder"
+
+    for result in results:
+        if isinstance(result, NoResult):
+            continue
+        df = _get_result_primary_df(result)
+        if df is None or df.empty:
+            continue
+        query_class = getattr(result, "query_class", "finder")
+        if first_columns is None:
+            first_columns = list(df.columns)
+        frames.append(df)
+
+    if not frames:
+        return NoResult(query_class=query_class)
+
+    combined = pd.concat(frames, ignore_index=True)
+
+    dedupe_keys = [c for c in ["game_id", "player_id", "team_id"] if c in combined.columns]
+    if dedupe_keys:
+        combined = combined.drop_duplicates(subset=dedupe_keys)
+    else:
+        combined = combined.drop_duplicates()
+
+    if "game_date" in combined.columns:
+        try:
+            combined["_game_date_sort"] = pd.to_datetime(combined["game_date"], errors="coerce")
+            sort_cols = ["_game_date_sort"]
+            ascending = [False]
+            if "game_id" in combined.columns:
+                sort_cols.append("game_id")
+                ascending.append(False)
+            combined = combined.sort_values(sort_cols, ascending=ascending)
+            combined = combined.drop(columns="_game_date_sort")
+        except Exception:
+            pass
+
+    if "rank" in combined.columns:
+        combined = combined.drop(columns="rank")
+        combined.insert(0, "rank", range(1, len(combined) + 1))
+
+    if first_columns:
+        ordered = [c for c in first_columns if c in combined.columns]
+        extras = [c for c in combined.columns if c not in ordered]
+        combined = combined[ordered + extras]
+
+    return FinderResult(games=combined)
+
+
+def _execute_or_query_build_result(query: str):
+    """Build a structured result for OR queries.
+
+    Replaces _execute_or_query_capture_raw: uses build_result directly.
+    """
+    clauses = _split_or_clauses(query)
+    if len(clauses) <= 1:
+        parsed = parse_query(query)
+        return _execute_build_result(
+            parsed["route"], parsed["route_kwargs"], parsed.get("extra_conditions", [])
+        )
+
+    base = _build_parse_state(query)
+    clause_parsed = [
+        _merge_inherited_context(base, _build_parse_state(clause)) for clause in clauses
+    ]
+
+    allowed_routes = {"player_game_finder", "game_finder"}
+    routes = {item["route"] for item in clause_parsed}
+    if len(routes) != 1 or list(routes)[0] not in allowed_routes:
+        raise ValueError(
+            "Top-level OR is currently supported for finder-style queries, for example: "
+            "'Jokic over 25 points or over 10 rebounds' or "
+            "'Celtics over 120 points or over 15 threes'."
+        )
+
+    results = []
+    for item in clause_parsed:
+        results.append(
+            _execute_build_result(
+                item["route"], item["route_kwargs"], item.get("extra_conditions", [])
+            )
+        )
+
+    return _combine_or_results(results)
+
+
+def _execute_grouped_boolean_build_result(query: str):
+    """Build a structured result for grouped boolean queries.
+
+    Replaces _execute_grouped_boolean_query_capture_raw: passes pre-filtered
+    DataFrames to build_result(df=...) instead of calling run() via stdout.
+    """
+    parsed = parse_query(query)
+    route = parsed["route"]
+
+    if route in {"player_game_summary", "player_split_summary"}:
+        condition_text = _extract_grouped_condition_text(query)
+        if not expression_contains_boolean_ops(condition_text):
+            raise ValueError("No grouped boolean expression detected.")
+
+        tree = parse_condition_text(condition_text)
+        base_df = _load_grouped_player_base_df(parsed)
+
+        if base_df.empty:
+            qc = "summary" if route == "player_game_summary" else "split_summary"
+            return NoResult(query_class=qc)
+
+        filtered_df = evaluate_condition_tree(tree, base_df)
+
+        if filtered_df.empty:
+            qc = "summary" if route == "player_game_summary" else "split_summary"
+            return NoResult(query_class=qc)
+
+        build_fn = _get_build_result_map()[route]
+        if route == "player_game_summary":
+            return build_fn(
+                season=parsed["season"],
+                start_season=parsed["start_season"],
+                end_season=parsed["end_season"],
+                season_type=parsed["season_type"],
+                player=parsed["player"],
+                team=parsed["team"],
+                opponent=parsed["opponent"],
+                home_only=parsed["home_only"],
+                away_only=parsed["away_only"],
+                wins_only=parsed["wins_only"],
+                losses_only=parsed["losses_only"],
+                stat=None,
+                min_value=None,
+                max_value=None,
+                last_n=None,
+                df=filtered_df,
+            )
+        else:
+            return build_fn(
+                split=parsed["split_type"],
+                season=parsed["season"],
+                start_season=parsed["start_season"],
+                end_season=parsed["end_season"],
+                season_type=parsed["season_type"],
+                player=parsed["player"],
+                team=parsed["team"],
+                opponent=parsed["opponent"],
+                stat=None,
+                min_value=None,
+                max_value=None,
+                last_n=None,
+                df=filtered_df,
+            )
+
+    if route in {"game_summary", "team_split_summary"}:
+        condition_text = _extract_grouped_condition_text(query)
+        if not expression_contains_boolean_ops(condition_text):
+            raise ValueError("No grouped boolean expression detected.")
+
+        tree = parse_condition_text(condition_text)
+        base_df = _load_grouped_team_base_df(parsed)
+
+        if base_df.empty:
+            return NoResult(query_class="summary" if route == "game_summary" else "split_summary")
+
+        filtered_df = evaluate_condition_tree(tree, base_df)
+
+        if filtered_df.empty:
+            return NoResult(query_class="summary" if route == "game_summary" else "split_summary")
+
+        build_fn = _get_build_result_map()[route]
+        if route == "game_summary":
+            return build_fn(
+                season=parsed["season"],
+                start_season=parsed["start_season"],
+                end_season=parsed["end_season"],
+                season_type=parsed["season_type"],
+                team=parsed["team"],
+                opponent=parsed["opponent"],
+                home_only=parsed["home_only"],
+                away_only=parsed["away_only"],
+                wins_only=parsed["wins_only"],
+                losses_only=parsed["losses_only"],
+                stat=None,
+                min_value=None,
+                max_value=None,
+                last_n=None,
+                df=filtered_df,
+            )
+        else:
+            return build_fn(
+                split=parsed["split_type"],
+                season=parsed["season"],
+                start_season=parsed["start_season"],
+                end_season=parsed["end_season"],
+                season_type=parsed["season_type"],
+                team=parsed["team"],
+                opponent=parsed["opponent"],
+                stat=None,
+                min_value=None,
+                max_value=None,
+                last_n=None,
+                df=filtered_df,
+            )
+
+    if route not in {"player_game_finder", "game_finder"}:
+        raise ValueError(
+            "Grouped boolean logic is currently supported for finder, player summary/split, "
+            "and team summary/split natural queries."
+        )
+
+    condition_text = _extract_grouped_condition_text(query)
+    if not expression_contains_boolean_ops(condition_text):
+        raise ValueError("No grouped boolean expression detected.")
+
+    tree = parse_condition_text(condition_text)
+
+    # Build a base result without stat filters to get all matching games
+    base_kwargs = dict(parsed["route_kwargs"])
+    base_kwargs["stat"] = None
+    base_kwargs["min_value"] = None
+    base_kwargs["max_value"] = None
+    base_kwargs["sort_by"] = "game_date"
+    base_kwargs["ascending"] = False
+
+    base_result = _execute_build_result(route, base_kwargs)
+
+    df = _get_result_primary_df(base_result)
+    if df is None or df.empty:
+        return NoResult(query_class="finder")
+
+    df = evaluate_condition_tree(tree, df)
+
+    if df.empty:
+        return NoResult(query_class="finder")
+
+    if "game_date" in df.columns:
+        try:
+            df["_game_date_sort"] = pd.to_datetime(df["game_date"], errors="coerce")
+            sort_cols = ["_game_date_sort"]
+            ascending_list = [False]
+            if "game_id" in df.columns:
+                sort_cols.append("game_id")
+                ascending_list.append(False)
+            df = df.sort_values(sort_cols, ascending=ascending_list)
+            df = df.drop(columns="_game_date_sort")
+        except Exception:
+            pass
+
+    if "rank" in df.columns:
+        df = df.drop(columns="rank")
+        df.insert(0, "rank", range(1, len(df) + 1))
+
+    return FinderResult(games=df)
+
+
+def _emit_result(
+    result,
+    parsed: dict,
+    query: str,
+    grouped_boolean_used: bool,
+    pretty: bool,
+    export_csv_path: str | None,
+    export_txt_path: str | None,
+    export_json_path: str | None,
+) -> None:
+    """Emit output from a structured result — no text round-tripping.
+
+    Replaces _emit: renders, exports, and prints from the result object.
+    """
+    metadata = _build_metadata_dict(parsed, query, grouped_boolean_used)
+    query_class = route_to_query_class(parsed.get("route") if parsed else None)
+
+    # NoResult: use the canonical no-result output format
+    if isinstance(result, NoResult):
+        reason = result.result_reason or result.reason or "no_match"
+        wrapped = build_no_result_output(metadata, reason=reason)
+    else:
+        wrapped = wrap_result_with_metadata(result, metadata, query_class)
+
+    # Export directly from structured result (no text reparsing)
+    if export_csv_path:
+        write_csv_from_result(result, export_csv_path)
+
+    if export_json_path:
+        write_json_from_result(result, export_json_path, metadata)
+
+    if export_txt_path:
+        if pretty:
+            text_to_save = format_pretty_from_result(result, query)
+        else:
+            text_to_save = wrapped
+        _write_text_file(
+            export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
+        )
+
+    # Console output
+    if not pretty:
+        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
+        return
+
+    pretty_text = format_pretty_from_result(result, query)
+    print(pretty_text)
 
 
 def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -> dict:
@@ -2225,14 +2704,35 @@ def run(
         "(" in normalized or ")" in normalized
     )
 
+    # -- Grouped boolean path (structured-first) --
     if grouped_boolean_used:
-        raw_text = _execute_grouped_boolean_query_capture_raw(query)
+        try:
+            result = _execute_grouped_boolean_build_result(query)
+        except Exception:
+            # Fall back to text-based path for edge cases
+            raw_text = _execute_grouped_boolean_query_capture_raw(query)
+            try:
+                parsed = parse_query(query)
+            except Exception:
+                parsed = _build_parse_state(query)
+            _emit(
+                raw_text,
+                parsed,
+                query,
+                grouped_boolean_used=True,
+                pretty=pretty,
+                export_csv_path=export_csv_path,
+                export_txt_path=export_txt_path,
+                export_json_path=export_json_path,
+            )
+            return
+
         try:
             parsed = parse_query(query)
         except Exception:
             parsed = _build_parse_state(query)
-        _emit(
-            raw_text,
+        _emit_result(
+            result,
             parsed,
             query,
             grouped_boolean_used=True,
@@ -2243,14 +2743,35 @@ def run(
         )
         return
 
+    # -- OR query path (structured-first) --
     if " or " in normalized:
-        raw_text = _execute_or_query_capture_raw(query)
+        try:
+            result = _execute_or_query_build_result(query)
+        except Exception:
+            # Fall back to text-based path for edge cases
+            raw_text = _execute_or_query_capture_raw(query)
+            try:
+                parsed = parse_query(query)
+            except Exception:
+                parsed = _build_parse_state(query)
+            _emit(
+                raw_text,
+                parsed,
+                query,
+                grouped_boolean_used=False,
+                pretty=pretty,
+                export_csv_path=export_csv_path,
+                export_txt_path=export_txt_path,
+                export_json_path=export_json_path,
+            )
+            return
+
         try:
             parsed = parse_query(query)
         except Exception:
             parsed = _build_parse_state(query)
-        _emit(
-            raw_text,
+        _emit_result(
+            result,
             parsed,
             query,
             grouped_boolean_used=False,
@@ -2261,6 +2782,7 @@ def run(
         )
         return
 
+    # -- Standard query path (structured-first) --
     try:
         parsed = parse_query(query)
     except ValueError as exc:
@@ -2294,9 +2816,8 @@ def run(
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
 
-    func = _get_route_func_map()[route]
     try:
-        raw_text = _execute_capture_raw(func, kwargs, extra_conditions)
+        result = _execute_build_result(route, kwargs, extra_conditions)
     except FileNotFoundError:
         metadata = _build_metadata_dict(parsed, query, grouped_boolean_used=False)
         no_data_output = build_no_result_output(metadata, reason="no_data")
@@ -2319,8 +2840,8 @@ def run(
             print(pretty_text)
         return
 
-    _emit(
-        raw_text,
+    _emit_result(
+        result,
         parsed,
         query,
         grouped_boolean_used=False,

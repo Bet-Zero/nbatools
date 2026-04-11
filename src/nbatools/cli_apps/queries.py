@@ -12,24 +12,59 @@ import typer
 
 from nbatools.commands.format_output import (
     METADATA_LABEL,
+    build_no_result_output,
     parse_labeled_sections,
     parse_metadata_block,
     route_to_query_class,
     wrap_raw_output,
+    wrap_result_with_metadata,
+    write_csv_from_result,
+    write_json_from_result,
 )
+from nbatools.commands.game_finder import build_result as game_finder_build_result
 from nbatools.commands.game_finder import run as game_finder_run
+from nbatools.commands.game_summary import build_result as game_summary_build_result
 from nbatools.commands.game_summary import run as game_summary_run
+from nbatools.commands.player_compare import build_result as player_compare_build_result
 from nbatools.commands.player_compare import run as player_compare_run
+from nbatools.commands.player_game_finder import (
+    build_result as player_game_finder_build_result,
+)
 from nbatools.commands.player_game_finder import run as player_game_finder_run
+from nbatools.commands.player_game_summary import (
+    build_result as player_game_summary_build_result,
+)
 from nbatools.commands.player_game_summary import run as player_game_summary_run
+from nbatools.commands.player_split_summary import (
+    build_result as player_split_summary_build_result,
+)
 from nbatools.commands.player_split_summary import run as player_split_summary_run
+from nbatools.commands.player_streak_finder import (
+    build_result as player_streak_finder_build_result,
+)
 from nbatools.commands.player_streak_finder import run as player_streak_finder_run
+from nbatools.commands.season_leaders import build_result as season_leaders_build_result
 from nbatools.commands.season_leaders import run as season_leaders_run
+from nbatools.commands.season_team_leaders import (
+    build_result as season_team_leaders_build_result,
+)
 from nbatools.commands.season_team_leaders import run as season_team_leaders_run
+from nbatools.commands.structured_results import NoResult
+from nbatools.commands.team_compare import build_result as team_compare_build_result
 from nbatools.commands.team_compare import run as team_compare_run
+from nbatools.commands.team_split_summary import (
+    build_result as team_split_summary_build_result,
+)
 from nbatools.commands.team_split_summary import run as team_split_summary_run
+from nbatools.commands.team_streak_finder import (
+    build_result as team_streak_finder_build_result,
+)
 from nbatools.commands.team_streak_finder import run as team_streak_finder_run
+from nbatools.commands.top_player_games import (
+    build_result as top_player_games_build_result,
+)
 from nbatools.commands.top_player_games import run as top_player_games_run
+from nbatools.commands.top_team_games import build_result as top_team_games_build_result
 from nbatools.commands.top_team_games import run as top_team_games_run
 
 app = typer.Typer(
@@ -63,6 +98,23 @@ _FUNC_TO_ROUTE: dict[Callable, str] = {
     team_split_summary_run: "team_split_summary",
     player_streak_finder_run: "player_streak_finder",
     team_streak_finder_run: "team_streak_finder",
+}
+
+_RUN_TO_BUILD_RESULT: dict[Callable, Callable] = {
+    top_player_games_run: top_player_games_build_result,
+    top_team_games_run: top_team_games_build_result,
+    season_leaders_run: season_leaders_build_result,
+    season_team_leaders_run: season_team_leaders_build_result,
+    game_finder_run: game_finder_build_result,
+    player_game_finder_run: player_game_finder_build_result,
+    player_game_summary_run: player_game_summary_build_result,
+    game_summary_run: game_summary_build_result,
+    player_compare_run: player_compare_build_result,
+    team_compare_run: team_compare_build_result,
+    player_split_summary_run: player_split_summary_build_result,
+    team_split_summary_run: team_split_summary_build_result,
+    player_streak_finder_run: player_streak_finder_build_result,
+    team_streak_finder_run: team_streak_finder_build_result,
 }
 
 _SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE", "NO_RESULT", "ERROR")
@@ -233,6 +285,33 @@ def _run_and_handle_exports(
     json_path: str | None = None,
     **kwargs,
 ) -> None:
+    # -- Structured-first path: call build_result() directly --
+    build_fn = _RUN_TO_BUILD_RESULT.get(func)
+    if build_fn is not None:
+        result = build_fn(*args, **kwargs)
+
+        metadata = _build_cli_metadata(func, kwargs)
+        query_class = route_to_query_class(_FUNC_TO_ROUTE.get(func))
+
+        # NoResult: use canonical no-result output format
+        if isinstance(result, NoResult):
+            reason = result.result_reason or result.reason or "no_match"
+            wrapped = build_no_result_output(metadata, reason=reason)
+        else:
+            wrapped = wrap_result_with_metadata(result, metadata, query_class)
+
+        # Export directly from structured result (no text reparsing)
+        if csv:
+            write_csv_from_result(result, csv)
+        if txt:
+            _write_text_file(txt, wrapped if wrapped.endswith("\n") else wrapped + "\n")
+        if json_path:
+            write_json_from_result(result, json_path, metadata)
+
+        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
+        return
+
+    # -- Fallback for any future non-structured commands --
     buffer = StringIO()
     with redirect_stdout(buffer):
         func(*args, **kwargs)
