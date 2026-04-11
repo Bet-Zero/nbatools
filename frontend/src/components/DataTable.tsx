@@ -1,5 +1,8 @@
+import type { SectionRow } from "../api/types";
+
 interface Props {
-  rows: Record<string, unknown>[];
+  rows: SectionRow[];
+  highlight?: boolean;
 }
 
 /** Format a column header: short uppercase stat names stay as-is, others get title-cased. */
@@ -25,7 +28,7 @@ function formatValue(val: unknown, col: string): string {
 }
 
 /** Check whether a column contains numeric values (sample first 5 rows). */
-function isNumericCol(col: string, rows: Record<string, unknown>[]): boolean {
+function isNumericCol(col: string, rows: SectionRow[]): boolean {
   for (let i = 0; i < Math.min(rows.length, 5); i++) {
     const v = rows[i][col];
     if (v !== null && v !== undefined) return typeof v === "number";
@@ -33,13 +36,15 @@ function isNumericCol(col: string, rows: Record<string, unknown>[]): boolean {
   return false;
 }
 
-export default function DataTable({ rows }: Props) {
+export default function DataTable({ rows, highlight = false }: Props) {
   if (!rows.length) return null;
   const cols = Object.keys(rows[0]);
 
   return (
     <div className="table-scroll">
-      <table className="data-table">
+      <table
+        className={`data-table${highlight ? " data-table-highlight" : ""}`}
+      >
         <thead>
           <tr>
             {cols.map((col) => (

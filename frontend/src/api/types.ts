@@ -11,13 +11,88 @@ export interface RoutesResponse {
   routes: string[];
 }
 
+// --- Result status / reason ---
+
+export type ResultStatus = "ok" | "no_result" | "error";
+export type ResultReason = "no_match" | "no_data" | "unrouted" | "error" | null;
+
+// --- Query classes ---
+
+export type QueryClass =
+  | "summary"
+  | "comparison"
+  | "split_summary"
+  | "finder"
+  | "leaderboard"
+  | "streak";
+
+// --- Route names ---
+
+export type RouteName =
+  | "player_game_finder"
+  | "game_finder"
+  | "player_game_summary"
+  | "game_summary"
+  | "player_compare"
+  | "team_compare"
+  | "player_split_summary"
+  | "team_split_summary"
+  | "season_leaders"
+  | "season_team_leaders"
+  | "top_player_games"
+  | "top_team_games"
+  | "player_streak_finder"
+  | "team_streak_finder";
+
+// --- Result metadata ---
+
+export interface ResultMetadata {
+  query_text?: string;
+  route?: string | null;
+  query_class?: string;
+  season?: string | null;
+  start_season?: string | null;
+  end_season?: string | null;
+  season_type?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  player?: string | null;
+  players?: string[];
+  team?: string | null;
+  teams?: string[];
+  opponent?: string | null;
+  split_type?: string | null;
+  grouped_boolean_used?: boolean;
+  head_to_head_used?: boolean;
+  current_through?: string | null;
+  notes?: string[];
+  [key: string]: unknown;
+}
+
+// --- Section row types ---
+
+export type SectionRow = Record<string, unknown>;
+
+// --- Result payload ---
+
+export interface ResultPayload {
+  query_class: QueryClass | string;
+  result_status: ResultStatus | string;
+  result_reason?: string | null;
+  current_through?: string | null;
+  metadata: ResultMetadata;
+  notes: string[];
+  caveats: string[];
+  sections: Record<string, SectionRow[]>;
+}
+
 // --- Query response envelope ---
 
 export interface QueryResponse {
   ok: boolean;
   query: string;
-  route: string | null;
-  result_status: "ok" | "no_result" | "error";
+  route: RouteName | string | null;
+  result_status: ResultStatus;
   result_reason: string | null;
   current_through: string | null;
   notes: string[];
@@ -31,27 +106,6 @@ export interface ErrorResponse {
   detail: string | null;
 }
 
-// --- Result payload ---
-
-export type QueryClass =
-  | "summary"
-  | "comparison"
-  | "split_summary"
-  | "finder"
-  | "leaderboard"
-  | "streak";
-
-export interface ResultPayload {
-  query_class: QueryClass | string;
-  result_status: string;
-  result_reason?: string;
-  current_through?: string;
-  metadata: Record<string, unknown>;
-  notes: string[];
-  caveats: string[];
-  sections: Record<string, Record<string, unknown>[]>;
-}
-
 // --- Request bodies ---
 
 export interface NaturalQueryRequest {
@@ -61,4 +115,15 @@ export interface NaturalQueryRequest {
 export interface StructuredQueryRequest {
   route: string;
   kwargs: Record<string, unknown>;
+}
+
+// --- Query history ---
+
+export interface QueryHistoryEntry {
+  id: number;
+  query: string;
+  route: string | null;
+  result_status: ResultStatus;
+  query_class: string | null;
+  timestamp: number;
 }

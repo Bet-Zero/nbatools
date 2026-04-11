@@ -218,17 +218,35 @@ frontend/
     components/
       QueryBar.tsx       # Text input + submit
       SampleQueries.tsx  # Pre-filled example query buttons
+      EmptyState.tsx     # Welcome state shown before first query
+      QueryHistory.tsx   # In-session query history list
       ResultEnvelope.tsx # Envelope metadata (status, route, notes, caveats)
-      ResultSections.tsx # Dispatches sections by query_class
-      DataTable.tsx      # Generic table renderer
+      ResultSections.tsx # Dispatcher — routes to per-query-class renderers
+      SummarySection.tsx     # Summary + By Season tables
+      ComparisonSection.tsx  # Players + Comparison tables
+      SplitSummarySection.tsx # Summary + Split Comparison tables
+      FinderSection.tsx      # Matching Games table with count
+      LeaderboardSection.tsx # Leaderboard table with count
+      StreakSection.tsx       # Streaks table with count
+      DataTable.tsx      # Generic table renderer with highlight mode
+      NoResultDisplay.tsx # No-result and error state display
       RawJsonToggle.tsx  # Raw JSON toggle
+      CopyButton.tsx     # Copy-to-clipboard button
       DevTools.tsx       # Structured query panel (route selector + kwargs)
       Loading.tsx        # Loading spinner
       ErrorBox.tsx       # Error display
+    hooks/
+      useQueryHistory.ts # In-session query history state hook
+    test/
+      setup.ts           # Vitest + jest-dom setup
+      client.test.ts     # API client tests
+      DataTable.test.tsx  # DataTable component tests
+      ResultSections.test.tsx # Result rendering tests for all query classes
+      UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
     App.tsx              # Main app component — wires state + components
     App.css              # All styles (dark theme, CSS custom properties)
     main.tsx             # React entry point
-  vite.config.ts         # Dev proxy + build output path
+  vite.config.ts         # Dev proxy + build output path + vitest config
 ```
 
 Build output lands in `src/nbatools/ui/dist/` and is served by FastAPI.
