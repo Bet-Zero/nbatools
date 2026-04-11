@@ -11,10 +11,12 @@ Run locally with::
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from nbatools import __version__
@@ -34,6 +36,17 @@ app = FastAPI(
     version=__version__,
     description="Local-first NBA analytics API — thin layer over the nbatools query service.",
 )
+
+# Allow local dev clients (file://, localhost variants) to call the API.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # local-only; no auth, no deployment
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Path to the bundled single-page UI.
+_UI_DIR = Path(__file__).resolve().parent / "ui"
 
 # ---------------------------------------------------------------------------
 # Request / response models
@@ -111,6 +124,13 @@ def _query_result_to_response(qr: QueryResult) -> QueryResponse:
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def ui() -> HTMLResponse:
+    """Serve the single-page query UI."""
+    html = (_UI_DIR / "index.html").read_text()
+    return HTMLResponse(content=html)
 
 
 @app.get("/health", response_model=HealthResponse)

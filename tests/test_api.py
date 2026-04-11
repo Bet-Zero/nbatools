@@ -297,3 +297,27 @@ class TestResponseShape:
         body = resp.json()
         assert self.REQUIRED_KEYS.issubset(body.keys())
         assert body["ok"] is False
+
+
+# ---------------------------------------------------------------------------
+# UI endpoint
+# ---------------------------------------------------------------------------
+
+
+class TestUI:
+    def test_ui_serves_html(self):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "text/html" in resp.headers["content-type"]
+        assert "<title>nbatools</title>" in resp.text
+
+    def test_ui_contains_query_form(self):
+        resp = client.get("/")
+        assert 'id="query-form"' in resp.text
+        assert 'id="query-input"' in resp.text
+
+    def test_ui_contains_api_calls(self):
+        resp = client.get("/")
+        assert "/query" in resp.text
+        assert "/health" in resp.text
+        assert "/routes" in resp.text

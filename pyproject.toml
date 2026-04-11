@@ -45,6 +45,9 @@ nbatools-api = "nbatools.api_cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+nbatools = ["ui/*.html"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-n auto"
