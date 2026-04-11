@@ -1714,6 +1714,21 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
     return _finalize_route(out)
 
 
+def _strip_new_section_label(text: str) -> str:
+    """Strip FINDER/LEADERBOARD/STREAK label prefix from structured run() output.
+
+    These labels are emitted by the new structured-first run() functions.
+    The natural query layer needs raw CSV for post-processing (extra conditions,
+    OR combining, grouped boolean evaluation).  SUMMARY/COMPARISON/SPLIT labels
+    are left intact because existing bail-out checks depend on them.
+    """
+    for label in ("FINDER", "LEADERBOARD", "STREAK"):
+        prefix = f"{label}\n"
+        if text.startswith(prefix):
+            return text[len(prefix) :]
+    return text
+
+
 def _execute_capture_raw(
     func: Callable,
     kwargs: dict,
@@ -1725,7 +1740,7 @@ def _execute_capture_raw(
     buffer = StringIO()
     with redirect_stdout(buffer):
         func(**kwargs)
-    raw_text = buffer.getvalue()
+    raw_text = _strip_new_section_label(buffer.getvalue())
 
     if extra_conditions:
         raw_text = _apply_extra_conditions_to_raw_output(raw_text, extra_conditions)

@@ -1,16 +1,6 @@
-from contextlib import redirect_stdout
-from io import StringIO
-
 import pandas as pd
 
-from nbatools.commands.team_streak_finder import run as team_streak_finder_run
-
-
-def _capture_output(func, *args, **kwargs) -> str:
-    buffer = StringIO()
-    with redirect_stdout(buffer):
-        func(*args, **kwargs)
-    return buffer.getvalue()
+from nbatools.commands.team_streak_finder import build_result as team_streak_finder_build_result
 
 
 def _write_csv(path, rows):
@@ -54,8 +44,7 @@ def test_team_streak_finder_returns_at_least_threshold_streaks(tmp_path, monkeyp
 
     _write_csv(tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv", rows)
 
-    out = _capture_output(
-        team_streak_finder_run,
+    result = team_streak_finder_build_result(
         season="2099-00",
         season_type="Regular Season",
         team="AAA",
@@ -64,7 +53,7 @@ def test_team_streak_finder_returns_at_least_threshold_streaks(tmp_path, monkeyp
         min_streak_length=5,
         longest=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.streaks
 
     assert len(df) == 1
     assert int(df.iloc[0]["streak_length"]) == 5
@@ -107,15 +96,14 @@ def test_team_streak_finder_returns_longest_winning_streak(tmp_path, monkeypatch
 
     _write_csv(tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv", rows)
 
-    out = _capture_output(
-        team_streak_finder_run,
+    result = team_streak_finder_build_result(
         season="2099-00",
         season_type="Regular Season",
         team="AAA",
         special_condition="wins",
         longest=True,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.streaks
 
     assert len(df) == 1
     assert int(df.iloc[0]["streak_length"]) == 4

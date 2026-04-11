@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands.structured_results import LeaderboardResult
+
 ALLOWED_STATS = {
     "pts": "pts",
     "reb": "reb",
@@ -21,13 +23,13 @@ ALLOWED_STATS = {
 }
 
 
-def run(
+def build_result(
     season: str,
     stat: str,
     limit: int = 10,
     season_type: str = "Regular Season",
     ascending: bool = False,
-) -> None:
+) -> LeaderboardResult:
     safe = season_type.lower().replace(" ", "_")
     path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
 
@@ -78,4 +80,21 @@ def run(
 
     result.insert(0, "rank", range(1, len(result) + 1))
 
-    print(result.to_csv(index=False))
+    return LeaderboardResult(leaders=result)
+
+
+def run(
+    season: str,
+    stat: str,
+    limit: int = 10,
+    season_type: str = "Regular Season",
+    ascending: bool = False,
+) -> None:
+    result = build_result(
+        season=season,
+        stat=stat,
+        limit=limit,
+        season_type=season_type,
+        ascending=ascending,
+    )
+    print(result.to_labeled_text(), end="")

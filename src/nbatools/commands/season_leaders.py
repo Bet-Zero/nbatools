@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands.data_utils import safe_divide
+from nbatools.commands.structured_results import LeaderboardResult, NoResult
 
 ALLOWED_STATS = {
     "pts": "pts_per_game",
@@ -307,7 +308,7 @@ def _apply_default_guardrails(
     return df
 
 
-def run(
+def build_result(
     season: str,
     stat: str,
     limit: int = 10,
@@ -316,7 +317,7 @@ def run(
     ascending: bool = False,
     start_date: str | None = None,
     end_date: str | None = None,
-) -> None:
+) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
     adv_path = Path(f"data/raw/player_season_advanced/{season}_{safe}.csv")
     basic_path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
@@ -388,6 +389,9 @@ def run(
 
     df = _apply_default_guardrails(df, target_col, min_games, date_window_active=date_window_active)
 
+    if df.empty:
+        return NoResult(query_class="leaderboard")
+
     out_cols = ["player_name", "player_id"]
     if "team_abbr" in df.columns:
         out_cols.append("team_abbr")
@@ -407,4 +411,30 @@ def run(
     result["season"] = season
     result["season_type"] = season_type
 
-    print(result.to_csv(index=False))
+    return LeaderboardResult(leaders=result)
+
+
+def run(
+    season: str,
+    stat: str,
+    limit: int = 10,
+    season_type: str = "Regular Season",
+    min_games: int = DEFAULT_MIN_GAMES,
+    ascending: bool = False,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> None:
+    result = build_result(
+        season=season,
+        stat=stat,
+        limit=limit,
+        season_type=season_type,
+        min_games=min_games,
+        ascending=ascending,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    if isinstance(result, NoResult):
+        print("no matching games")
+        return
+    print(result.to_labeled_text(), end="")

@@ -201,3 +201,124 @@ def _df_to_records(df: pd.DataFrame) -> list[dict[str, Any]]:
     if df is None or df.empty:
         return []
     return [{k: (None if pd.isna(v) else v) for k, v in row.items()} for _, row in df.iterrows()]
+
+
+# ---------------------------------------------------------------------------
+# Finder result  (player_game_finder, game_finder)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class FinderResult:
+    """Structured result for game-finder queries.
+
+    Holds a multi-row DataFrame of matching games, each with rank and stats.
+    """
+
+    query_class: str = "finder"
+    games: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    metadata: dict[str, Any] = field(default_factory=dict)
+    notes: list[str] = field(default_factory=list)
+
+    def to_labeled_text(self) -> str:
+        parts: list[str] = []
+        parts.append("FINDER\n")
+        parts.append(self.games.to_csv(index=False))
+        return "".join(parts)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "query_class": self.query_class,
+            "result_status": "ok",
+            "metadata": dict(self.metadata),
+            "notes": list(self.notes),
+            "sections": {
+                "finder": _df_to_records(self.games),
+            },
+        }
+
+    def to_sections_dict(self) -> dict[str, str]:
+        return {
+            "FINDER": self.games.to_csv(index=False).strip(),
+        }
+
+
+# ---------------------------------------------------------------------------
+# Leaderboard result  (season_leaders, season_team_leaders,
+#                       top_player_games, top_team_games)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class LeaderboardResult:
+    """Structured result for leaderboard queries.
+
+    Holds a multi-row ranked DataFrame of leaders by some metric.
+    """
+
+    query_class: str = "leaderboard"
+    leaders: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    metadata: dict[str, Any] = field(default_factory=dict)
+    notes: list[str] = field(default_factory=list)
+
+    def to_labeled_text(self) -> str:
+        parts: list[str] = []
+        parts.append("LEADERBOARD\n")
+        parts.append(self.leaders.to_csv(index=False))
+        return "".join(parts)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "query_class": self.query_class,
+            "result_status": "ok",
+            "metadata": dict(self.metadata),
+            "notes": list(self.notes),
+            "sections": {
+                "leaderboard": _df_to_records(self.leaders),
+            },
+        }
+
+    def to_sections_dict(self) -> dict[str, str]:
+        return {
+            "LEADERBOARD": self.leaders.to_csv(index=False).strip(),
+        }
+
+
+# ---------------------------------------------------------------------------
+# Streak result  (player_streak_finder, team_streak_finder)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class StreakResult:
+    """Structured result for streak queries.
+
+    Holds a multi-row DataFrame of streaks matching a condition.
+    """
+
+    query_class: str = "streak"
+    streaks: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    metadata: dict[str, Any] = field(default_factory=dict)
+    notes: list[str] = field(default_factory=list)
+
+    def to_labeled_text(self) -> str:
+        parts: list[str] = []
+        parts.append("STREAK\n")
+        parts.append(self.streaks.to_csv(index=False))
+        return "".join(parts)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "query_class": self.query_class,
+            "result_status": "ok",
+            "metadata": dict(self.metadata),
+            "notes": list(self.notes),
+            "sections": {
+                "streak": _df_to_records(self.streaks),
+            },
+        }
+
+    def to_sections_dict(self) -> dict[str, str]:
+        return {
+            "STREAK": self.streaks.to_csv(index=False).strip(),
+        }

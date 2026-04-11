@@ -3,7 +3,9 @@ from io import StringIO
 
 import pandas as pd
 
-from nbatools.commands.player_streak_finder import run as player_streak_finder_run
+from nbatools.commands.player_streak_finder import (
+    build_result as player_streak_finder_build_result,
+)
 
 
 def _capture_output(func, *args, **kwargs) -> str:
@@ -61,8 +63,7 @@ def test_player_streak_finder_returns_at_least_threshold_streaks(tmp_path, monke
         [{"game_id": row["game_id"], "team_id": row["team_id"], "wl": row["wl"]} for row in rows],
     )
 
-    out = _capture_output(
-        player_streak_finder_run,
+    result = player_streak_finder_build_result(
         season="2099-00",
         season_type="Regular Season",
         player="Streak Guy",
@@ -71,7 +72,7 @@ def test_player_streak_finder_returns_at_least_threshold_streaks(tmp_path, monke
         min_streak_length=5,
         longest=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.streaks
 
     assert len(df) == 1
     assert int(df.iloc[0]["streak_length"]) == 5
@@ -128,15 +129,14 @@ def test_player_streak_finder_returns_longest_triple_double_streak(tmp_path, mon
         [{"game_id": row["game_id"], "team_id": row["team_id"], "wl": row["wl"]} for row in rows],
     )
 
-    out = _capture_output(
-        player_streak_finder_run,
+    result = player_streak_finder_build_result(
         season="2099-00",
         season_type="Regular Season",
         player="Triple Double Guy",
         special_condition="triple_double",
         longest=True,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.streaks
 
     assert len(df) == 1
     assert int(df.iloc[0]["streak_length"]) == 3

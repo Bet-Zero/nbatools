@@ -4,6 +4,7 @@ from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
 )
+from nbatools.commands.structured_results import FinderResult, NoResult
 
 ALLOWED_STATS = {
     "pts": "pts",
@@ -127,7 +128,7 @@ def _apply_filters(
     return out
 
 
-def run(
+def build_result(
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -148,7 +149,7 @@ def run(
     sort_by: str = "game_date",
     ascending: bool = False,
     last_n: int | None = None,
-) -> None:
+) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
 
     if home_only and away_only:
@@ -201,8 +202,7 @@ def run(
     )
 
     if df.empty:
-        print("no matching games")
-        return
+        return NoResult(query_class="finder")
 
     stat_col = None
     if stat:
@@ -254,5 +254,54 @@ def run(
     ]
     output_cols = [c for c in output_cols if c in df.columns]
 
-    out = df[output_cols].copy()
-    print(out.to_csv(index=False))
+    return FinderResult(games=df[output_cols].copy())
+
+
+def run(
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    season_type: str = "Regular Season",
+    player: str | None = None,
+    team: str | None = None,
+    opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    limit: int = 25,
+    sort_by: str = "game_date",
+    ascending: bool = False,
+    last_n: int | None = None,
+) -> None:
+    result = build_result(
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        season_type=season_type,
+        player=player,
+        team=team,
+        opponent=opponent,
+        home_only=home_only,
+        away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        start_date=start_date,
+        end_date=end_date,
+        limit=limit,
+        sort_by=sort_by,
+        ascending=ascending,
+        last_n=last_n,
+    )
+    if isinstance(result, NoResult):
+        print("no matching games")
+        return
+    print(result.to_labeled_text(), end="")

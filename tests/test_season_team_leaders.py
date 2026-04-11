@@ -3,7 +3,9 @@ from io import StringIO
 
 import pandas as pd
 
-from nbatools.commands.season_team_leaders import run as season_team_leaders_run
+from nbatools.commands.season_team_leaders import (
+    build_result as season_team_leaders_build_result,
+)
 
 
 def _capture_output(func, *args, **kwargs) -> str:
@@ -62,8 +64,7 @@ def test_team_leaders_computes_fg3m_per_game_from_logs(tmp_path, monkeypatch):
 
     _write_csv(tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv", rows)
 
-    out = _capture_output(
-        season_team_leaders_run,
+    result = season_team_leaders_build_result(
         season="2099-00",
         stat="fg3m",
         limit=10,
@@ -71,7 +72,7 @@ def test_team_leaders_computes_fg3m_per_game_from_logs(tmp_path, monkeypatch):
         min_games=1,
         ascending=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.leaders
 
     assert df.iloc[0]["team_name"] == "Alpha"
     assert df.iloc[0]["fg3m_per_game"] == 15
@@ -146,8 +147,7 @@ def test_team_leaders_uses_latest_advanced_row(tmp_path, monkeypatch):
         ],
     )
 
-    out = _capture_output(
-        season_team_leaders_run,
+    result = season_team_leaders_build_result(
         season="2099-00",
         stat="off_rating",
         limit=10,
@@ -155,7 +155,7 @@ def test_team_leaders_uses_latest_advanced_row(tmp_path, monkeypatch):
         min_games=1,
         ascending=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.leaders
 
     assert df.iloc[0]["team_name"] == "Alpha"
     assert df.iloc[0]["off_rating"] == 120.0
@@ -204,8 +204,7 @@ def test_team_leaders_computes_efg_pct_from_logs(tmp_path, monkeypatch):
 
     _write_csv(tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv", rows)
 
-    out = _capture_output(
-        season_team_leaders_run,
+    result = season_team_leaders_build_result(
         season="2099-00",
         stat="efg_pct",
         limit=10,
@@ -213,6 +212,6 @@ def test_team_leaders_computes_efg_pct_from_logs(tmp_path, monkeypatch):
         min_games=1,
         ascending=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.leaders
 
     assert df.iloc[0]["team_name"] == "Alpha"

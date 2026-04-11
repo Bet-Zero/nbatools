@@ -3,7 +3,7 @@ from io import StringIO
 
 import pandas as pd
 
-from nbatools.commands.season_leaders import run as season_leaders_run
+from nbatools.commands.season_leaders import build_result as season_leaders_build_result
 
 
 def _capture_output(func, *args, **kwargs) -> str:
@@ -96,8 +96,7 @@ def test_season_leaders_dedupes_traded_player_and_keeps_latest_team(tmp_path, mo
         rows,
     )
 
-    out = _capture_output(
-        season_leaders_run,
+    result = season_leaders_build_result(
         season="2099-00",
         stat="pts",
         limit=10,
@@ -105,7 +104,7 @@ def test_season_leaders_dedupes_traded_player_and_keeps_latest_team(tmp_path, mo
         min_games=1,
         ascending=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.leaders
 
     trade_rows = df[df["player_id"] == 1]
     assert len(trade_rows) == 1
@@ -161,8 +160,7 @@ def test_season_leaders_default_min_games_filters_small_sample_per_game_leader(
 
     _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv", rows)
 
-    out = _capture_output(
-        season_leaders_run,
+    result = season_leaders_build_result(
         season="2099-00",
         stat="ast",
         limit=10,
@@ -170,7 +168,7 @@ def test_season_leaders_default_min_games_filters_small_sample_per_game_leader(
         min_games=1,
         ascending=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.leaders
 
     assert "Small Sample Star" not in df["player_name"].tolist()
     assert df.iloc[0]["player_name"] == "Real Leader"
@@ -223,8 +221,7 @@ def test_season_leaders_percentage_guardrail_filters_low_attempt_outlier(tmp_pat
 
     _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv", rows)
 
-    out = _capture_output(
-        season_leaders_run,
+    result = season_leaders_build_result(
         season="2099-00",
         stat="ts_pct",
         limit=10,
@@ -232,7 +229,7 @@ def test_season_leaders_percentage_guardrail_filters_low_attempt_outlier(tmp_pat
         min_games=1,
         ascending=False,
     )
-    df = pd.read_csv(StringIO(out))
+    df = result.leaders
 
     assert "Tiny Volume Guy" not in df["player_name"].tolist()
     assert df.iloc[0]["player_name"] == "Real Volume Guy"

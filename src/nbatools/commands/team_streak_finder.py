@@ -8,6 +8,7 @@ from nbatools.commands.game_finder import (
     load_team_games_for_seasons,
     resolve_seasons,
 )
+from nbatools.commands.structured_results import NoResult, StreakResult
 
 
 def _format_value(value: float | None) -> str:
@@ -169,7 +170,7 @@ def _extract_streak_rows(
     return rows
 
 
-def run(
+def build_result(
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -190,7 +191,7 @@ def run(
     end_date: str | None = None,
     last_n: int | None = None,
     limit: int = 25,
-) -> None:
+) -> StreakResult | NoResult:
     if team is None:
         raise ValueError("team is required for team streak queries")
 
@@ -236,8 +237,7 @@ def run(
     )
 
     if filtered.empty:
-        print("no matching games")
-        return
+        return NoResult(query_class="streak")
 
     mask = _build_condition_mask(
         filtered,
@@ -263,8 +263,7 @@ def run(
         rows = [row for row in rows if row["streak_length"] == max_len]
 
     if not rows:
-        print("no matching games")
-        return
+        return NoResult(query_class="streak")
 
     out = pd.DataFrame(rows)
     out["end_date"] = pd.to_datetime(out["end_date"])
@@ -303,4 +302,54 @@ def run(
     ]
     output_cols = [c for c in output_cols if c in out.columns]
 
-    print(out[output_cols].to_csv(index=False))
+    return StreakResult(streaks=out[output_cols].copy())
+
+
+def run(
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    season_type: str = "Regular Season",
+    team: str | None = None,
+    opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    special_condition: str | None = None,
+    min_streak_length: int | None = None,
+    longest: bool = False,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    last_n: int | None = None,
+    limit: int = 25,
+) -> None:
+    result = build_result(
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        season_type=season_type,
+        team=team,
+        opponent=opponent,
+        home_only=home_only,
+        away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        special_condition=special_condition,
+        min_streak_length=min_streak_length,
+        longest=longest,
+        start_date=start_date,
+        end_date=end_date,
+        last_n=last_n,
+        limit=limit,
+    )
+    if isinstance(result, NoResult):
+        print("no matching games")
+        return
+    print(result.to_labeled_text(), end="")
