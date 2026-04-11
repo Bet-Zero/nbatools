@@ -285,13 +285,20 @@ def _run_and_handle_exports(
     json_path: str | None = None,
     **kwargs,
 ) -> None:
-    # -- Structured-first path: call build_result() directly --
-    build_fn = _RUN_TO_BUILD_RESULT.get(func)
-    if build_fn is not None:
-        result = build_fn(*args, **kwargs)
+    route = _FUNC_TO_ROUTE.get(func)
 
-        metadata = _build_cli_metadata(func, kwargs)
-        query_class = route_to_query_class(_FUNC_TO_ROUTE.get(func))
+    # -- Structured-first path via query service --
+    # Use the query service when all arguments are keyword-based (the normal
+    # CLI path).  When positional *args are present (legacy / test callers),
+    # call build_result directly because the service API is kwargs-only.
+    if route is not None and not args:
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(route, **kwargs)
+        result = qr.result
+        metadata = qr.metadata
+
+        query_class = route_to_query_class(route)
 
         # NoResult: use canonical no-result output format
         if isinstance(result, NoResult):
@@ -301,6 +308,30 @@ def _run_and_handle_exports(
             wrapped = wrap_result_with_metadata(result, metadata, query_class)
 
         # Export directly from structured result (no text reparsing)
+        if csv:
+            write_csv_from_result(result, csv)
+        if txt:
+            _write_text_file(txt, wrapped if wrapped.endswith("\n") else wrapped + "\n")
+        if json_path:
+            write_json_from_result(result, json_path, metadata)
+
+        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
+        return
+
+    # -- Direct build_result path (positional args or non-structured) --
+    build_fn = _RUN_TO_BUILD_RESULT.get(func) if route is not None else None
+    if build_fn is not None:
+        result = build_fn(*args, **kwargs)
+
+        metadata = _build_cli_metadata(func, kwargs)
+        query_class = route_to_query_class(route)
+
+        if isinstance(result, NoResult):
+            reason = result.result_reason or result.reason or "no_match"
+            wrapped = build_no_result_output(metadata, reason=reason)
+        else:
+            wrapped = wrap_result_with_metadata(result, metadata, query_class)
+
         if csv:
             write_csv_from_result(result, csv)
         if txt:

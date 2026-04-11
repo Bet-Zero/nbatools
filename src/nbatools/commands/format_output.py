@@ -999,7 +999,11 @@ def write_csv_from_result(result: StructuredResult, path_str: str) -> None:
     _ensure_parent_dir(path_str)
 
     if isinstance(result, NoResult):
-        Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
+        reason = result.result_reason or result.reason or "no_match"
+        if result.result_status == "error":
+            Path(path_str).write_text(f"reason\n{reason}\n", encoding="utf-8")
+        else:
+            Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
         return
 
     sections = result.to_sections_dict()
@@ -1036,14 +1040,16 @@ def write_json_from_result(
 
     if isinstance(result, NoResult):
         reason = result.result_reason or result.reason or "no_match"
+        is_error = result.result_status == "error"
         payload: dict[str, object] = {}
         if metadata:
             meta_for_json = _prepare_metadata_for_json(metadata)
-            # Ensure no-result status is in metadata
-            meta_for_json.setdefault("result_status", "no_result")
+            # Ensure status is in metadata
+            meta_for_json.setdefault("result_status", "error" if is_error else "no_result")
             meta_for_json.setdefault("result_reason", reason)
             payload["metadata"] = meta_for_json
-        payload["no_result"] = [{"reason": reason}]
+        section_key = "error" if is_error else "no_result"
+        payload[section_key] = [{"reason": reason}]
         Path(path_str).write_text(
             json.dumps(payload, indent=2, ensure_ascii=False, default=_json_default) + "\n",
             encoding="utf-8",

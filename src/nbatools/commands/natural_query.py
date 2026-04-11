@@ -2691,6 +2691,59 @@ def _emit(
     print(pretty_text)
 
 
+def render_query_result(
+    query_result,
+    query: str,
+    pretty: bool = True,
+    export_csv_path: str | None = None,
+    export_txt_path: str | None = None,
+    export_json_path: str | None = None,
+) -> None:
+    """Render a QueryResult to console and/or export files.
+
+    This is the CLI rendering layer.  It takes a ``QueryResult`` from the
+    query service and handles pretty/raw display and CSV/TXT/JSON exports.
+    """
+    result = query_result.result
+    metadata = dict(query_result.metadata)
+    grouped_boolean_used = metadata.get("grouped_boolean_used", False)
+    query_class = route_to_query_class(query_result.route)
+
+    # Build the wrapped raw output text
+    if isinstance(result, NoResult):
+        reason = result.result_reason or result.reason or "no_match"
+        if result.result_status == "error":
+            wrapped = build_error_output(metadata, reason=reason)
+        else:
+            wrapped = build_no_result_output(metadata, reason=reason)
+    else:
+        wrapped = wrap_result_with_metadata(result, metadata, query_class)
+
+    # Export directly from structured result
+    if export_csv_path:
+        write_csv_from_result(result, export_csv_path)
+
+    if export_json_path:
+        write_json_from_result(result, export_json_path, metadata)
+
+    if export_txt_path:
+        if pretty:
+            text_to_save = format_pretty_from_result(result, query)
+        else:
+            text_to_save = wrapped
+        _write_text_file(
+            export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
+        )
+
+    # Console output
+    if not pretty:
+        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
+        return
+
+    pretty_text = format_pretty_from_result(result, query)
+    print(pretty_text)
+
+
 def run(
     query: str,
     pretty: bool = True,
@@ -2698,153 +2751,66 @@ def run(
     export_txt_path: str | None = None,
     export_json_path: str | None = None,
 ) -> None:
+    from nbatools.query_service import execute_natural_query
+
     normalized = normalize_text(query)
 
     grouped_boolean_used = expression_contains_boolean_ops(normalized) and (
         "(" in normalized or ")" in normalized
     )
 
-    # -- Grouped boolean path (structured-first) --
-    if grouped_boolean_used:
-        try:
-            result = _execute_grouped_boolean_build_result(query)
-        except Exception:
-            # Fall back to text-based path for edge cases
-            raw_text = _execute_grouped_boolean_query_capture_raw(query)
+    qr = execute_natural_query(query)
+
+    # For grouped boolean / OR edge cases where the service returned an
+    # error, fall back to the legacy text-based capture path for backward
+    # compatibility.
+    if not qr.is_ok and getattr(qr.result, "reason", None) == "error":
+        if grouped_boolean_used:
             try:
-                parsed = parse_query(query)
+                raw_text = _execute_grouped_boolean_query_capture_raw(query)
+                try:
+                    parsed = parse_query(query)
+                except Exception:
+                    parsed = _build_parse_state(query)
+                _emit(
+                    raw_text,
+                    parsed,
+                    query,
+                    grouped_boolean_used=True,
+                    pretty=pretty,
+                    export_csv_path=export_csv_path,
+                    export_txt_path=export_txt_path,
+                    export_json_path=export_json_path,
+                )
+                return
             except Exception:
-                parsed = _build_parse_state(query)
-            _emit(
-                raw_text,
-                parsed,
-                query,
-                grouped_boolean_used=True,
-                pretty=pretty,
-                export_csv_path=export_csv_path,
-                export_txt_path=export_txt_path,
-                export_json_path=export_json_path,
-            )
-            return
+                pass  # fall through to render the NoResult from service
 
-        try:
-            parsed = parse_query(query)
-        except Exception:
-            parsed = _build_parse_state(query)
-        _emit_result(
-            result,
-            parsed,
-            query,
-            grouped_boolean_used=True,
-            pretty=pretty,
-            export_csv_path=export_csv_path,
-            export_txt_path=export_txt_path,
-            export_json_path=export_json_path,
-        )
-        return
-
-    # -- OR query path (structured-first) --
-    if " or " in normalized:
-        try:
-            result = _execute_or_query_build_result(query)
-        except Exception:
-            # Fall back to text-based path for edge cases
-            raw_text = _execute_or_query_capture_raw(query)
+        elif " or " in normalized:
             try:
-                parsed = parse_query(query)
+                raw_text = _execute_or_query_capture_raw(query)
+                try:
+                    parsed = parse_query(query)
+                except Exception:
+                    parsed = _build_parse_state(query)
+                _emit(
+                    raw_text,
+                    parsed,
+                    query,
+                    grouped_boolean_used=False,
+                    pretty=pretty,
+                    export_csv_path=export_csv_path,
+                    export_txt_path=export_txt_path,
+                    export_json_path=export_json_path,
+                )
+                return
             except Exception:
-                parsed = _build_parse_state(query)
-            _emit(
-                raw_text,
-                parsed,
-                query,
-                grouped_boolean_used=False,
-                pretty=pretty,
-                export_csv_path=export_csv_path,
-                export_txt_path=export_txt_path,
-                export_json_path=export_json_path,
-            )
-            return
+                pass  # fall through to render the NoResult from service
 
-        try:
-            parsed = parse_query(query)
-        except Exception:
-            parsed = _build_parse_state(query)
-        _emit_result(
-            result,
-            parsed,
-            query,
-            grouped_boolean_used=False,
-            pretty=pretty,
-            export_csv_path=export_csv_path,
-            export_txt_path=export_txt_path,
-            export_json_path=export_json_path,
-        )
-        return
-
-    # -- Standard query path (structured-first) --
-    try:
-        parsed = parse_query(query)
-    except ValueError as exc:
-        parsed = _build_parse_state(query)
-        metadata = _build_metadata_dict(parsed, query, grouped_boolean_used=False)
-        error_output = build_error_output(
-            metadata,
-            reason="unrouted",
-            message=str(exc),
-        )
-        pretty_text = format_pretty_output(error_output, query)
-
-        if export_csv_path:
-            _write_csv_from_raw_output(error_output, export_csv_path)
-        if export_json_path:
-            _write_json_from_raw_output(error_output, export_json_path)
-        if export_txt_path:
-            text_to_save = error_output if not pretty else pretty_text
-            _write_text_file(
-                export_txt_path,
-                text_to_save + ("" if text_to_save.endswith("\n") else "\n"),
-            )
-
-        if not pretty:
-            print(error_output, end="" if error_output.endswith("\n") else "\n")
-        else:
-            print(pretty_text)
-        return
-
-    route = parsed["route"]
-    kwargs = parsed["route_kwargs"]
-    extra_conditions = parsed.get("extra_conditions", [])
-
-    try:
-        result = _execute_build_result(route, kwargs, extra_conditions)
-    except FileNotFoundError:
-        metadata = _build_metadata_dict(parsed, query, grouped_boolean_used=False)
-        no_data_output = build_no_result_output(metadata, reason="no_data")
-        pretty_text = format_pretty_output(no_data_output, query)
-
-        if export_csv_path:
-            _write_csv_from_raw_output(no_data_output, export_csv_path)
-        if export_json_path:
-            _write_json_from_raw_output(no_data_output, export_json_path)
-        if export_txt_path:
-            text_to_save = no_data_output if not pretty else pretty_text
-            _write_text_file(
-                export_txt_path,
-                text_to_save + ("" if text_to_save.endswith("\n") else "\n"),
-            )
-
-        if not pretty:
-            print(no_data_output, end="" if no_data_output.endswith("\n") else "\n")
-        else:
-            print(pretty_text)
-        return
-
-    _emit_result(
-        result,
-        parsed,
+    # Render from the service result
+    render_query_result(
+        qr,
         query,
-        grouped_boolean_used=False,
         pretty=pretty,
         export_csv_path=export_csv_path,
         export_txt_path=export_txt_path,
