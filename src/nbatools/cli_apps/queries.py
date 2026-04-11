@@ -65,7 +65,7 @@ _FUNC_TO_ROUTE: dict[Callable, str] = {
     team_streak_finder_run: "team_streak_finder",
 }
 
-_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE")
+_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE", "NO_RESULT", "ERROR")
 
 
 def _ensure_parent_dir(path_str: str) -> None:
@@ -160,6 +160,8 @@ def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
         "FINDER",
         "LEADERBOARD",
         "STREAK",
+        "NO_RESULT",
+        "ERROR",
     ):
         if label in sections_no_meta:
             parts.append(f"{label}\n{sections_no_meta[label]}")

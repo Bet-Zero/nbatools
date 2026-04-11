@@ -1,7 +1,8 @@
-"""Tests for the first result-contract scaffolding pass.
+"""Tests for the result-contract scaffolding.
 
 Covers:
 - FINDER / LEADERBOARD / STREAK section labels in raw output
+- NO_RESULT / ERROR section labels in raw output
 - METADATA block presence and field correctness
 - Pretty output still works with labeled structure
 - JSON / CSV / TXT exports work with labeled structure
@@ -14,8 +15,12 @@ from io import StringIO
 
 import pandas as pd
 from nbatools.commands.format_output import (
+    ERROR_LABEL,
     METADATA_LABEL,
+    NO_RESULT_LABEL,
+    build_error_output,
     build_metadata_block,
+    build_no_result_output,
     format_pretty_output,
     parse_labeled_sections,
     parse_metadata_block,
@@ -187,7 +192,8 @@ class TestWrapRawOutput:
         metadata = {"query_text": "test"}
         result = wrap_raw_output("no matching games", metadata, "finder")
         assert "METADATA" in result
-        assert "no matching games" in result
+        assert "NO_RESULT" in result
+        assert "no_match" in result
         assert "FINDER" not in result
 
     def test_no_double_wrap(self):
@@ -717,3 +723,245 @@ class TestStructuredCLIExportsWithMetadata:
         assert "SUMMARY" in text
         assert "SPLIT_COMPARISON" in text
         assert "home_away" in text or "split_type" in text
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: build_no_result_output / build_error_output helpers
+# ---------------------------------------------------------------------------
+
+
+class TestBuildNoResultOutput:
+    def test_basic_no_match(self):
+        metadata = {"query_text": "test query", "route": "player_game_finder"}
+        result = build_no_result_output(metadata, reason="no_match")
+        assert result.startswith("METADATA\n")
+        assert "\nNO_RESULT\n" in result
+        assert "no_match" in result
+        sections = parse_labeled_sections(result)
+        assert NO_RESULT_LABEL in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["result_status"] == "no_result"
+        assert meta["result_reason"] == "no_match"
+
+    def test_no_data_reason(self):
+        metadata = {"query_text": "test"}
+        result = build_no_result_output(metadata, reason="no_data")
+        sections = parse_labeled_sections(result)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["result_reason"] == "no_data"
+
+    def test_no_metadata(self):
+        result = build_no_result_output(None, reason="no_match")
+        assert "NO_RESULT\n" in result
+        assert "no_match" in result
+
+
+class TestBuildErrorOutput:
+    def test_basic_error(self):
+        metadata = {"query_text": "nonsense query"}
+        result = build_error_output(metadata, reason="unrouted", message="Could not map query")
+        assert result.startswith("METADATA\n")
+        assert "\nERROR\n" in result
+        sections = parse_labeled_sections(result)
+        assert ERROR_LABEL in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["result_status"] == "error"
+        assert meta["result_reason"] == "unrouted"
+
+    def test_error_without_message(self):
+        metadata = {"query_text": "test"}
+        result = build_error_output(metadata, reason="error")
+        assert "\nERROR\n" in result
+        sections = parse_labeled_sections(result)
+        assert ERROR_LABEL in sections
+
+    def test_error_block_is_parseable_csv(self):
+        metadata = {"query_text": "test"}
+        result = build_error_output(metadata, reason="unrouted", message="Not supported")
+        sections = parse_labeled_sections(result)
+        df = pd.read_csv(StringIO(sections[ERROR_LABEL]))
+        assert len(df) == 1
+        assert df["reason"].iloc[0] == "unrouted"
+        assert df["message"].iloc[0] == "Not supported"
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: wrap_raw_output with no-match detection
+# ---------------------------------------------------------------------------
+
+
+class TestWrapRawOutputNoMatch:
+    def test_no_matching_games_becomes_no_result(self):
+        metadata = {"query_text": "test", "route": "player_game_finder"}
+        result = wrap_raw_output("no matching games", metadata, "finder")
+        assert "METADATA" in result
+        assert "NO_RESULT" in result
+        assert "FINDER" not in result
+        sections = parse_labeled_sections(result)
+        assert NO_RESULT_LABEL in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["result_status"] == "no_result"
+        assert meta["result_reason"] == "no_match"
+
+    def test_no_matching_games_reason_block_is_csv(self):
+        metadata = {"query_text": "test"}
+        result = wrap_raw_output("no matching games", metadata, "finder")
+        sections = parse_labeled_sections(result)
+        df = pd.read_csv(StringIO(sections[NO_RESULT_LABEL]))
+        assert df["reason"].iloc[0] == "no_match"
+
+    def test_normal_data_not_affected(self):
+        csv = "rank,player\n1,Jokic\n"
+        metadata = {"query_text": "test"}
+        result = wrap_raw_output(csv, metadata, "finder")
+        assert "FINDER" in result
+        assert "NO_RESULT" not in result
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: parse_labeled_sections with NO_RESULT / ERROR
+# ---------------------------------------------------------------------------
+
+
+class TestParseLabeledSectionsNoResultError:
+    def test_parse_no_result_section(self):
+        text = "METADATA\nkey,value\nroute,finder\n\nNO_RESULT\nreason\nno_match\n"
+        sections = parse_labeled_sections(text)
+        assert METADATA_LABEL in sections
+        assert NO_RESULT_LABEL in sections
+        assert "no_match" in sections[NO_RESULT_LABEL]
+
+    def test_parse_error_section(self):
+        text = (
+            "METADATA\nkey,value\nroute,unknown\n\nERROR\nreason,message\nunrouted,Not supported\n"
+        )
+        sections = parse_labeled_sections(text)
+        assert METADATA_LABEL in sections
+        assert ERROR_LABEL in sections
+        assert "unrouted" in sections[ERROR_LABEL]
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: pretty output for no-result / error
+# ---------------------------------------------------------------------------
+
+
+class TestPrettyNoResultError:
+    def test_no_result_pretty(self):
+        raw = build_no_result_output({"query_text": "test"}, reason="no_match")
+        pretty = format_pretty_output(raw, "Jokic 100 point games")
+        assert 'Query: "Jokic 100 point games"' in pretty
+        assert "No matching games found" in pretty
+
+    def test_no_data_pretty(self):
+        raw = build_no_result_output({"query_text": "test"}, reason="no_data")
+        pretty = format_pretty_output(raw, "test query")
+        assert "No data available" in pretty
+
+    def test_error_unrouted_pretty(self):
+        raw = build_error_output(
+            {"query_text": "xyzzy"}, reason="unrouted", message="Could not map"
+        )
+        pretty = format_pretty_output(raw, "xyzzy")
+        assert 'Query: "xyzzy"' in pretty
+        assert "Could not map" in pretty
+
+    def test_error_generic_pretty(self):
+        raw = build_error_output({"query_text": "test"}, reason="error")
+        pretty = format_pretty_output(raw, "test")
+        assert "error occurred" in pretty
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: unrouted natural query
+# ---------------------------------------------------------------------------
+
+
+class TestUnroutedNaturalQuery:
+    def test_unrouted_raw_has_error_label_and_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="xyzzy flurble garbanzo",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert ERROR_LABEL in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["result_status"] == "error"
+        assert meta["result_reason"] == "unrouted"
+
+    def test_unrouted_pretty_shows_message(self):
+        out = _capture_output(
+            natural_query_run,
+            query="xyzzy flurble garbanzo",
+            pretty=True,
+        )
+        assert "Could not map" in out
+
+    def test_unrouted_json_export(self, tmp_path):
+        out_path = tmp_path / "unrouted.json"
+        _capture_output(
+            natural_query_run,
+            query="xyzzy flurble garbanzo",
+            pretty=False,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert "metadata" in payload
+        assert "error" in payload
+        assert payload["metadata"]["result_status"] == "error"
+        assert payload["metadata"]["result_reason"] == "unrouted"
+
+    def test_unrouted_csv_export(self, tmp_path):
+        out_path = tmp_path / "unrouted.csv"
+        _capture_output(
+            natural_query_run,
+            query="xyzzy flurble garbanzo",
+            pretty=False,
+            export_csv_path=str(out_path),
+        )
+        text = out_path.read_text(encoding="utf-8")
+        assert "reason" in text
+        assert "unrouted" in text
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: no-match natural query (finder with impossible filter)
+# ---------------------------------------------------------------------------
+
+
+class TestNoMatchNaturalQuery:
+    def test_no_match_finder_raw_has_no_result_label(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Kobe Bryant over 200 points in 2005-06",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert NO_RESULT_LABEL in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["result_status"] == "no_result"
+        assert meta["result_reason"] == "no_match"
+
+    def test_no_match_finder_pretty_shows_message(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Kobe Bryant over 200 points in 2005-06",
+            pretty=True,
+        )
+        assert "No matching games found" in out
+
+    def test_no_match_json_export(self, tmp_path):
+        out_path = tmp_path / "no_match.json"
+        _capture_output(
+            natural_query_run,
+            query="Kobe Bryant over 200 points in 2005-06",
+            pretty=False,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert "metadata" in payload
+        assert "no_result" in payload
+        assert payload["metadata"]["result_status"] == "no_result"

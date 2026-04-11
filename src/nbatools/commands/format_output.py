@@ -18,14 +18,21 @@ RESULT_SECTION_LABELS = (
     "FINDER",
     "LEADERBOARD",
     "STREAK",
+    "NO_RESULT",
+    "ERROR",
 )
 
 ALL_SECTION_LABELS = (METADATA_LABEL, *RESULT_SECTION_LABELS)
+
+NO_RESULT_LABEL = "NO_RESULT"
+ERROR_LABEL = "ERROR"
 
 METADATA_FIELD_ORDER = (
     "query_text",
     "route",
     "query_class",
+    "result_status",
+    "result_reason",
     "season",
     "start_season",
     "end_season",
@@ -157,7 +164,13 @@ def wrap_raw_output(
     already_labeled = any(text.startswith(f"{label}\n") for label in RESULT_SECTION_LABELS)
     is_no_match = text.lower() == "no matching games"
 
-    if already_labeled or is_no_match:
+    if is_no_match and not already_labeled:
+        body = f"{NO_RESULT_LABEL}\nreason\nno_match"
+        if metadata:
+            metadata.setdefault("result_status", "no_result")
+            metadata.setdefault("result_reason", "no_match")
+            metadata_block = build_metadata_block(metadata)
+    elif already_labeled:
         body = text
     else:
         label = QUERY_CLASS_TO_LABEL.get((query_class or "").lower())
@@ -174,6 +187,34 @@ def wrap_raw_output(
     if not combined.endswith("\n"):
         combined += "\n"
     return combined
+
+
+def build_no_result_output(
+    metadata: dict[str, Any] | None,
+    reason: str = "no_match",
+) -> str:
+    meta = dict(metadata) if metadata else {}
+    meta["result_status"] = "no_result"
+    meta["result_reason"] = reason
+    metadata_block = build_metadata_block(meta)
+    body = f"{NO_RESULT_LABEL}\nreason\n{reason}"
+    return metadata_block + "\n\n" + body + "\n"
+
+
+def build_error_output(
+    metadata: dict[str, Any] | None,
+    reason: str = "error",
+    message: str | None = None,
+) -> str:
+    meta = dict(metadata) if metadata else {}
+    meta["result_status"] = "error"
+    meta["result_reason"] = reason
+    metadata_block = build_metadata_block(meta)
+    if message:
+        body = f'{ERROR_LABEL}\nreason,message\n{reason},"{message}"'
+    else:
+        body = f"{ERROR_LABEL}\nreason\n{reason}"
+    return metadata_block + "\n\n" + body + "\n"
 
 
 def strip_metadata_section(text: str) -> str:
@@ -211,6 +252,12 @@ def _extract_sections(text: str) -> dict[str, str]:
     parsed = parse_labeled_sections(text)
 
     parsed.pop(METADATA_LABEL, None)
+
+    if NO_RESULT_LABEL in parsed:
+        return {NO_RESULT_LABEL: parsed[NO_RESULT_LABEL]}
+
+    if ERROR_LABEL in parsed:
+        return {ERROR_LABEL: parsed[ERROR_LABEL]}
 
     if "SUMMARY" in parsed:
         sections = {"SUMMARY": parsed["SUMMARY"]}
@@ -578,8 +625,66 @@ def _format_split_summary(summary_df: pd.DataFrame, split_df: pd.DataFrame, quer
     return "\n".join(lines).strip()
 
 
+_REASON_DISPLAY = {
+    "no_match": "No matching games found for this query.",
+    "no_data": "No data available for this query.",
+    "unrouted": "Could not map this query to a supported pattern.",
+    "error": "An error occurred while processing this query.",
+}
+
+
+def _parse_reason_from_block(block: str) -> str:
+    block = (block or "").strip()
+    try:
+        df = pd.read_csv(StringIO(block))
+        if "reason" in df.columns and len(df) > 0:
+            return str(df["reason"].iloc[0])
+    except Exception:
+        pass
+    return block if block else "no_match"
+
+
+def _parse_reason_message_from_block(block: str) -> tuple[str, str | None]:
+    block = (block or "").strip()
+    try:
+        df = pd.read_csv(StringIO(block))
+        reason = str(df["reason"].iloc[0]) if "reason" in df.columns and len(df) > 0 else "error"
+        message = (
+            str(df["message"].iloc[0])
+            if "message" in df.columns and len(df) > 0 and pd.notna(df["message"].iloc[0])
+            else None
+        )
+        return reason, message
+    except Exception:
+        return block if block else "error", None
+
+
+def _format_pretty_no_result(query: str, reason: str) -> str:
+    display = _REASON_DISPLAY.get(reason, reason)
+    lines = [f'Query: "{query}"', "", display]
+    return "\n".join(lines).strip()
+
+
+def _format_pretty_error(query: str, reason: str, message: str | None) -> str:
+    display = _REASON_DISPLAY.get(reason, reason)
+    lines = [f'Query: "{query}"', "", display]
+    if message and message != reason:
+        lines.append(f"Detail: {message}")
+    return "\n".join(lines).strip()
+
+
 def format_pretty_output(raw_text: str, query: str) -> str:
     sections = _extract_sections(raw_text)
+
+    if NO_RESULT_LABEL in sections:
+        block = sections[NO_RESULT_LABEL]
+        reason = _parse_reason_from_block(block)
+        return _format_pretty_no_result(query, reason)
+
+    if ERROR_LABEL in sections:
+        block = sections[ERROR_LABEL]
+        reason, message = _parse_reason_message_from_block(block)
+        return _format_pretty_error(query, reason, message)
 
     if "SUMMARY" in sections:
         summary_df = _read_csv_block(sections["SUMMARY"])

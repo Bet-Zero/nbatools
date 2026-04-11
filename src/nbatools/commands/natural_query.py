@@ -12,6 +12,7 @@ import pandas as pd
 from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
 from nbatools.commands.format_output import (
     METADATA_LABEL,
+    build_error_output,
     format_pretty_output,
     parse_labeled_sections,
     parse_metadata_block,
@@ -918,7 +919,7 @@ def _write_text_file(path_str: str, text: str) -> None:
     Path(path_str).write_text(text, encoding="utf-8")
 
 
-_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE")
+_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE", "NO_RESULT", "ERROR")
 
 
 def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -> dict:
@@ -1018,6 +1019,8 @@ def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
         "FINDER",
         "LEADERBOARD",
         "STREAK",
+        "NO_RESULT",
+        "ERROR",
     ):
         if label in sections_no_meta:
             parts.append(f"{label}\n{sections_no_meta[label]}")
@@ -2192,7 +2195,35 @@ def run(
         )
         return
 
-    parsed = parse_query(query)
+    try:
+        parsed = parse_query(query)
+    except ValueError as exc:
+        parsed = _build_parse_state(query)
+        metadata = _build_metadata_dict(parsed, query, grouped_boolean_used=False)
+        error_output = build_error_output(
+            metadata,
+            reason="unrouted",
+            message=str(exc),
+        )
+        pretty_text = format_pretty_output(error_output, query)
+
+        if export_csv_path:
+            _write_csv_from_raw_output(error_output, export_csv_path)
+        if export_json_path:
+            _write_json_from_raw_output(error_output, export_json_path)
+        if export_txt_path:
+            text_to_save = error_output if not pretty else pretty_text
+            _write_text_file(
+                export_txt_path,
+                text_to_save + ("" if text_to_save.endswith("\n") else "\n"),
+            )
+
+        if not pretty:
+            print(error_output, end="" if error_output.endswith("\n") else "\n")
+        else:
+            print(pretty_text)
+        return
+
     route = parsed["route"]
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
