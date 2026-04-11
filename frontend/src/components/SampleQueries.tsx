@@ -14,12 +14,15 @@ interface Props {
 
 export default function SampleQueries({ onSelect }: Props) {
   return (
-    <div className="samples">
-      {SAMPLES.map((q) => (
-        <button key={q} type="button" onClick={() => onSelect(q)}>
-          {q}
-        </button>
-      ))}
+    <div>
+      <div className="samples-label">Try a sample query</div>
+      <div className="samples">
+        {SAMPLES.map((q) => (
+          <button key={q} type="button" onClick={() => onSelect(q)}>
+            {q}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

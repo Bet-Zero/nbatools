@@ -21,11 +21,13 @@ describe("NoResultDisplay", () => {
   it("shows no results for no_result status", () => {
     render(<NoResultDisplay reason="no_match" status="no_result" />);
     expect(screen.getByText("No Results")).toBeInTheDocument();
-    expect(screen.getByText("no_match")).toBeInTheDocument();
+    expect(
+      screen.getByText("No games or records matched your query filters."),
+    ).toBeInTheDocument();
   });
 
   it("shows error variant for error status", () => {
-    render(<NoResultDisplay reason="Something went wrong" status="error" />);
+    render(<NoResultDisplay reason="error" status="error" />);
     expect(screen.getByText("Query Error")).toBeInTheDocument();
   });
 
@@ -38,7 +40,7 @@ describe("NoResultDisplay", () => {
 describe("Loading", () => {
   it("renders loading text", () => {
     render(<Loading />);
-    expect(screen.getByText("Running query…")).toBeInTheDocument();
+    expect(screen.getByText("Searching NBA data\u2026")).toBeInTheDocument();
   });
 });
 

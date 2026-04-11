@@ -3,6 +3,7 @@ import type { QueryHistoryEntry } from "../api/types";
 interface Props {
   entries: QueryHistoryEntry[];
   onSelect: (query: string) => void;
+  onEdit: (query: string) => void;
   onClear: () => void;
 }
 
@@ -21,35 +22,71 @@ function timeAgo(ts: number): string {
   return `${hours}h ago`;
 }
 
-export default function QueryHistory({ entries, onSelect, onClear }: Props) {
+export default function QueryHistory({
+  entries,
+  onSelect,
+  onEdit,
+  onClear,
+}: Props) {
   if (entries.length === 0) return null;
 
   return (
     <div className="query-history">
       <div className="history-header">
-        <span className="history-label">History</span>
+        <span className="history-label">
+          History
+          <span className="section-count" style={{ marginLeft: 6 }}>
+            {entries.length} {entries.length === 1 ? "query" : "queries"}
+          </span>
+        </span>
         <button type="button" className="history-clear" onClick={onClear}>
           Clear
         </button>
       </div>
       <div className="history-list">
         {entries.map((entry) => (
-          <button
-            key={entry.id}
-            type="button"
-            className="history-item"
-            onClick={() => onSelect(entry.query)}
-            title={`${entry.route ?? "unrouted"} · ${entry.result_status}`}
-          >
+          <div key={entry.id} className="history-item">
             <span className={`history-dot ${statusDot(entry.result_status)}`} />
-            <span className="history-query">{entry.query}</span>
+            <span
+              className="history-query"
+              onClick={() => onSelect(entry.query)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onSelect(entry.query);
+              }}
+              title="Click to rerun"
+            >
+              {entry.query}
+            </span>
             <span className="history-meta">
+              {entry.query_class && (
+                <span className="history-class">{entry.query_class}</span>
+              )}
               {entry.route && (
                 <span className="history-route">{entry.route}</span>
               )}
               <span className="history-time">{timeAgo(entry.timestamp)}</span>
             </span>
-          </button>
+            <span className="history-item-actions">
+              <button
+                type="button"
+                className="history-action-btn"
+                onClick={() => onEdit(entry.query)}
+                title="Edit query"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className="history-action-btn"
+                onClick={() => onSelect(entry.query)}
+                title="Rerun query"
+              >
+                Rerun
+              </button>
+            </span>
+          </div>
         ))}
       </div>
     </div>

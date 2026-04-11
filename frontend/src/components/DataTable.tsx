@@ -5,6 +5,18 @@ interface Props {
   highlight?: boolean;
 }
 
+/** Column names that indicate a rank column. */
+const RANK_COLS = new Set(["rank", "#"]);
+
+/** Column names that indicate an entity (player/team) column. */
+const ENTITY_COLS = new Set([
+  "player_name",
+  "player",
+  "team",
+  "team_name",
+  "opponent",
+]);
+
 /** Format a column header: short uppercase stat names stay as-is, others get title-cased. */
 function formatColHeader(col: string): string {
   if (col.length <= 5 && col === col.toUpperCase()) return col;
@@ -36,6 +48,15 @@ function isNumericCol(col: string, rows: SectionRow[]): boolean {
   return false;
 }
 
+/** Determine the CSS class for a cell based on column name. */
+function cellClass(col: string, rows: SectionRow[]): string {
+  const lc = col.toLowerCase();
+  if (RANK_COLS.has(lc)) return "rank-cell";
+  if (ENTITY_COLS.has(lc)) return "entity-cell";
+  if (isNumericCol(col, rows)) return "num";
+  return "";
+}
+
 export default function DataTable({ rows, highlight = false }: Props) {
   if (!rows.length) return null;
   const cols = Object.keys(rows[0]);
@@ -48,7 +69,7 @@ export default function DataTable({ rows, highlight = false }: Props) {
         <thead>
           <tr>
             {cols.map((col) => (
-              <th key={col} className={isNumericCol(col, rows) ? "num" : ""}>
+              <th key={col} className={cellClass(col, rows)}>
                 {formatColHeader(col)}
               </th>
             ))}
@@ -58,7 +79,7 @@ export default function DataTable({ rows, highlight = false }: Props) {
           {rows.map((row, ri) => (
             <tr key={ri}>
               {cols.map((col) => (
-                <td key={col} className={isNumericCol(col, rows) ? "num" : ""}>
+                <td key={col} className={cellClass(col, rows)}>
                   {formatValue(row[col], col)}
                 </td>
               ))}

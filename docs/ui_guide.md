@@ -41,15 +41,28 @@ module replacement during frontend development.
 
 ## What the UI does
 
-- **Query bar** — type a natural-language NBA query and press Enter or click Query.
-- **Sample buttons** — pre-filled example queries you can click to try immediately.
+- **Query bar** — type a natural-language NBA query and press Enter or click Query. Includes a clear (✕) button and shows "Running…" state during queries.
+- **Sample buttons** — pre-filled example queries with a label, click to run immediately.
 - **Empty state** — welcome screen with tips shown before the first query.
-- **Result envelope** — shows query metadata: status, route, data freshness, notes, caveats.
-- **Data tables** — renders the result payload as readable tables. Layout adapts to the result type (summary, comparison, leaderboard, finder, streak, split).
+- **Result envelope** — shows query metadata with clear visual hierarchy:
+  - **Status badge** — color-coded pill (Success/No Result/Error)
+  - **Route + query class** — displayed as pills
+  - **Data freshness** — "Data through" date prominently shown
+  - **Context chips** — player, team, season, opponent, split type
+  - **Notes** — blue-bordered info block
+  - **Caveats** — orange/yellow-bordered warning block
+- **Data tables** — renders the result payload as readable tables. Layout adapts to the result type (summary, comparison, leaderboard, finder, streak, split). Entity columns (player names, teams) are bolded; rank columns are highlighted.
 - **Copy buttons** — copy the query text or full JSON response to clipboard.
 - **Raw JSON** — toggle to inspect the full API response.
-- **Query history** — in-session history of past queries with status dots, route pills, and re-run on click. Not persisted.
-- **No-result / error display** — dedicated display for empty results and errors, distinct from generic error messages.
+- **Query history** — in-session history with:
+  - Status dots (green/yellow/red)
+  - Query class and route labels
+  - Query count
+  - **Edit** button — populates the input bar for modification without running
+  - **Rerun** button — immediately re-executes the query
+  - Time-ago display
+  - Not persisted across sessions
+- **No-result / error display** — friendly messages for empty results (with suggestions) and errors.
 - **Dev Tools panel** — collapsible structured-query interface for calling `POST /structured-query` with a route selector and kwargs JSON input.
 - **Health indicator** — live green/red dot showing API connectivity and version.
 

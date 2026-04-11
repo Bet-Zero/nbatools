@@ -1,16 +1,16 @@
-import { forwardRef, useState, type FormEvent } from "react";
+import { forwardRef, type FormEvent } from "react";
 
 interface Props {
+  value: string;
+  onChange: (value: string) => void;
   onSubmit: (query: string) => void;
   disabled: boolean;
 }
 
 const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
-  { onSubmit, disabled },
+  { value, onChange, onSubmit, disabled },
   ref,
 ) {
-  const [value, setValue] = useState("");
-
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const q = value.trim();
@@ -19,19 +19,30 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
 
   return (
     <form className="query-bar" onSubmit={handleSubmit}>
-      <input
-        ref={ref}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onInput={(e) => setValue((e.target as HTMLInputElement).value)}
-        placeholder="Type an NBA query…"
-        autoComplete="off"
-        autoFocus
-        disabled={disabled}
-      />
+      <div className="query-input-wrapper">
+        <input
+          ref={ref}
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Type an NBA query…"
+          autoComplete="off"
+          autoFocus
+          disabled={disabled}
+        />
+        {value && !disabled && (
+          <button
+            type="button"
+            className="query-clear"
+            onClick={() => onChange("")}
+            aria-label="Clear query"
+          >
+            ✕
+          </button>
+        )}
+      </div>
       <button type="submit" disabled={disabled || !value.trim()}>
-        Query
+        {disabled ? "Running…" : "Query"}
       </button>
     </form>
   );

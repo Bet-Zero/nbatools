@@ -41,6 +41,15 @@ describe("DataTable", () => {
     expect(screen.getByText("52.3%")).toBeInTheDocument();
   });
 
+  it("applies rank-cell class for rank column", () => {
+    const rows = [{ rank: 1, player_name: "Jokic", PTS: 25 }];
+    const { container } = render(<DataTable rows={rows} />);
+    const rankTh = container.querySelector("th.rank-cell");
+    expect(rankTh).not.toBeNull();
+    const entityTh = container.querySelector("th.entity-cell");
+    expect(entityTh).not.toBeNull();
+  });
+
   it("applies highlight class when highlight prop is true", () => {
     const rows = [{ a: 1 }];
     const { container } = render(<DataTable rows={rows} highlight />);

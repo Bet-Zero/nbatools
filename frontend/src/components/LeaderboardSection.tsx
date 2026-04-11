@@ -15,7 +15,7 @@ export default function LeaderboardSection({ sections }: Props) {
         Leaderboard
         <span className="section-count">{leaderboard.length} entries</span>
       </div>
-      <DataTable rows={leaderboard} />
+      <DataTable rows={leaderboard} highlight />
     </div>
   );
 }

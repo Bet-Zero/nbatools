@@ -15,7 +15,7 @@ export default function StreakSection({ sections }: Props) {
         Streaks
         <span className="section-count">{streak.length} found</span>
       </div>
-      <DataTable rows={streak} />
+      <DataTable rows={streak} highlight />
     </div>
   );
 }

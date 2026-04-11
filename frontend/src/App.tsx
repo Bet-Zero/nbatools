@@ -21,6 +21,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<QueryResponse | null>(null);
+  const [queryText, setQueryText] = useState("");
 
   const { history, addEntry, clearHistory } = useQueryHistory();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -55,20 +56,24 @@ export default function App() {
     [addEntry],
   );
 
+  function handleSubmit(query: string) {
+    setQueryText(query);
+    runQuery(query);
+  }
+
   function handleSampleSelect(query: string) {
-    if (inputRef.current) {
-      const setter = Object.getOwnPropertyDescriptor(
-        window.HTMLInputElement.prototype,
-        "value",
-      );
-      setter?.set?.call(inputRef.current, query);
-      inputRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
+    setQueryText(query);
     runQuery(query);
   }
 
   function handleHistorySelect(query: string) {
-    handleSampleSelect(query);
+    setQueryText(query);
+    runQuery(query);
+  }
+
+  function handleHistoryEdit(query: string) {
+    setQueryText(query);
+    inputRef.current?.focus();
   }
 
   function handleStructuredResult(data: QueryResponse) {
@@ -107,7 +112,13 @@ export default function App() {
 
       {/* Query area */}
       <section className="query-area">
-        <QueryBar onSubmit={runQuery} disabled={loading} ref={inputRef} />
+        <QueryBar
+          value={queryText}
+          onChange={setQueryText}
+          onSubmit={handleSubmit}
+          disabled={loading}
+          ref={inputRef}
+        />
         <SampleQueries onSelect={handleSampleSelect} />
       </section>
 
@@ -123,20 +134,19 @@ export default function App() {
       {/* Result area */}
       {result && (
         <section className="result-area">
-          <div className="result-header">
-            <ResultEnvelope data={result} />
-            <div className="result-actions">
-              <CopyButton
-                text={result.query}
-                label="Copy Query"
-                className="copy-query-btn"
-              />
-              <CopyButton
-                text={JSON.stringify(result, null, 2)}
-                label="Copy JSON"
-                className="copy-json-btn"
-              />
-            </div>
+          <ResultEnvelope data={result} />
+
+          <div className="result-actions">
+            <CopyButton
+              text={result.query}
+              label="Copy Query"
+              className="copy-query-btn"
+            />
+            <CopyButton
+              text={JSON.stringify(result, null, 2)}
+              label="Copy JSON"
+              className="copy-json-btn"
+            />
           </div>
 
           <div className="result-content">
@@ -151,6 +161,7 @@ export default function App() {
       <QueryHistory
         entries={history}
         onSelect={handleHistorySelect}
+        onEdit={handleHistoryEdit}
         onClear={clearHistory}
       />
 
