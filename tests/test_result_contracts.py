@@ -14,6 +14,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+
 from nbatools.commands.format_output import (
     ERROR_LABEL,
     METADATA_LABEL,

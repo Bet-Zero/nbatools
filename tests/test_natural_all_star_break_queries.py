@@ -2,6 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+
 from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run

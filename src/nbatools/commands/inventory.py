@@ -167,8 +167,7 @@ def run() -> None:
         raw_aligned = len(raw_vs_manifest_missing) == 0 and len(manifest_vs_raw_missing) == 0
         print(f"raw vs manifest aligned: {raw_aligned}")
         proc_aligned = (
-            len(processed_vs_manifest_missing) == 0
-            and len(manifest_vs_processed_missing) == 0
+            len(processed_vs_manifest_missing) == 0 and len(manifest_vs_processed_missing) == 0
         )
         print(f"processed vs manifest aligned: {proc_aligned}")
 
