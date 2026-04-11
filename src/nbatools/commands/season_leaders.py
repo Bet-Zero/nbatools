@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import safe_divide
-from nbatools.commands.freshness import compute_current_through
+from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 
 ALLOWED_STATS = {
@@ -290,45 +291,58 @@ def _merge_advanced_if_available(grouped: pd.DataFrame, adv_path: Path) -> pd.Da
 
 
 def _apply_default_guardrails(
-    df: pd.DataFrame, target_col: str, min_games: int, date_window_active: bool = False
+    df: pd.DataFrame,
+    target_col: str,
+    min_games: int,
+    date_window_active: bool = False,
+    num_seasons: int = 1,
 ) -> pd.DataFrame:
     effective_min_games = max(
         min_games, _recommended_min_games(target_col, date_window_active=date_window_active)
     )
     df = df[df["games_played"] >= effective_min_games].copy()
 
+    fga_floor = 200 * num_seasons
+    fg3a_floor = 100 * num_seasons
+    fta_floor = 50 * num_seasons
+
     if target_col in {"fg_pct", "efg_pct", "ts_pct"} and "fga_total" in df.columns:
-        df = df[df["fga_total"] >= 200].copy()
+        df = df[df["fga_total"] >= fga_floor].copy()
 
     if target_col == "fg3_pct" and "fg3a_total" in df.columns:
-        df = df[df["fg3a_total"] >= 100].copy()
+        df = df[df["fg3a_total"] >= fg3a_floor].copy()
 
     if target_col == "ft_pct" and "fta_total" in df.columns:
-        df = df[df["fta_total"] >= 50].copy()
+        df = df[df["fta_total"] >= fta_floor].copy()
 
     return df
 
 
 def build_result(
-    season: str,
-    stat: str,
+    season: str | None = None,
+    stat: str = "pts",
     limit: int = 10,
     season_type: str = "Regular Season",
     min_games: int = DEFAULT_MIN_GAMES,
     ascending: bool = False,
     start_date: str | None = None,
     end_date: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
-    adv_path = Path(f"data/raw/player_season_advanced/{season}_{safe}.csv")
-    basic_path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
 
-    if not basic_path.exists():
+    # Resolve the list of seasons to load
+    try:
+        seasons = resolve_seasons(season, start_season, end_season)
+    except ValueError:
         return NoResult(query_class="leaderboard", reason="no_data")
 
+    multi_season = len(seasons) > 1
+
+    # Validate params
     if limit <= 0:
         raise ValueError("limit must be greater than 0")
-
     if min_games < 1:
         raise ValueError("min_games must be at least 1")
 
@@ -339,13 +353,32 @@ def build_result(
         raise ValueError("start_date must be less than or equal to end_date")
 
     date_window_active = start_ts is not None or end_ts is not None
+
+    # For multi-season, advanced stats (usage_rate, net_rating, etc.) are not
+    # reliable across season boundaries — disable them.
+    if multi_season and target_col in DATE_WINDOW_UNSUPPORTED_ADVANCED:
+        raise ValueError(
+            f"Multi-season leaderboard not supported for '{target_col}'. "
+            "Use scoring, rebounds, assists, threes, eFG%, TS%, or threshold game counts."
+        )
     if date_window_active and target_col in DATE_WINDOW_UNSUPPORTED_ADVANCED:
         raise ValueError(
             f"Date-window leaderboard not supported for '{target_col}'. "
             "Use scoring, rebounds, assists, threes, eFG%, TS%, or threshold game counts."
         )
 
-    basic = pd.read_csv(basic_path)
+    # Load and concatenate game logs across all seasons
+    frames: list[pd.DataFrame] = []
+    for s in seasons:
+        basic_path = Path(f"data/raw/player_game_stats/{s}_{safe}.csv")
+        if basic_path.exists():
+            frames.append(pd.read_csv(basic_path))
+
+    if not frames:
+        return NoResult(query_class="leaderboard", reason="no_data")
+
+    basic = pd.concat(frames, ignore_index=True)
+
     if "game_date" in basic.columns:
         basic["game_date"] = pd.to_datetime(basic["game_date"], errors="coerce").dt.normalize()
 
@@ -355,32 +388,49 @@ def build_result(
     if end_ts is not None and "game_date" in basic.columns:
         basic = basic[basic["game_date"] <= end_ts].copy()
 
+    if basic.empty:
+        return NoResult(query_class="leaderboard", reason="no_data")
+
     df = _build_from_game_logs(basic)
 
     latest_team_lookup = _latest_team_lookup_from_games(basic)
     if not latest_team_lookup.empty:
         df = df.merge(latest_team_lookup, on="player_id", how="left")
 
-    roster_lookup = _load_roster_lookup(season)
-    if roster_lookup is not None and "team_abbr" not in df.columns:
-        df = df.merge(
-            roster_lookup[["player_id", "team_abbr"]].drop_duplicates("player_id"),
-            on="player_id",
-            how="left",
-        )
+    # For single season, try roster lookup and advanced stats merge
+    if not multi_season:
+        the_season = seasons[0]
+        roster_lookup = _load_roster_lookup(the_season)
+        if roster_lookup is not None and "team_abbr" not in df.columns:
+            df = df.merge(
+                roster_lookup[["player_id", "team_abbr"]].drop_duplicates("player_id"),
+                on="player_id",
+                how="left",
+            )
 
-    if not date_window_active:
-        df = _merge_advanced_if_available(df, adv_path)
+        adv_path = Path(f"data/raw/player_season_advanced/{the_season}_{safe}.csv")
+        if not date_window_active:
+            df = _merge_advanced_if_available(df, adv_path)
 
-    if roster_lookup is not None and "team_abbr" in df.columns:
-        roster_fill = (
-            roster_lookup[["player_id", "team_abbr"]]
-            .drop_duplicates("player_id")
-            .rename(columns={"team_abbr": "team_abbr_roster"})
-        )
-        df = df.merge(roster_fill, on="player_id", how="left")
-        df["team_abbr"] = df["team_abbr"].fillna(df["team_abbr_roster"])
-        df = df.drop(columns=["team_abbr_roster"])
+        if roster_lookup is not None and "team_abbr" in df.columns:
+            roster_fill = (
+                roster_lookup[["player_id", "team_abbr"]]
+                .drop_duplicates("player_id")
+                .rename(columns={"team_abbr": "team_abbr_roster"})
+            )
+            df = df.merge(roster_fill, on="player_id", how="left")
+            df["team_abbr"] = df["team_abbr"].fillna(df["team_abbr_roster"])
+            df = df.drop(columns=["team_abbr_roster"])
+    else:
+        # Multi-season: use latest season roster for team_abbr backfill
+        latest_season = seasons[-1]
+        roster_lookup = _load_roster_lookup(latest_season)
+        if roster_lookup is not None and "team_abbr" not in df.columns:
+            df = df.merge(
+                roster_lookup[["player_id", "team_abbr"]].drop_duplicates("player_id"),
+                on="player_id",
+                how="left",
+            )
 
     if "games_played" not in df.columns:
         raise ValueError("games_played column required")
@@ -388,7 +438,13 @@ def build_result(
     if target_col not in df.columns:
         raise ValueError(f"Column '{target_col}' not available for season leaders output")
 
-    df = _apply_default_guardrails(df, target_col, min_games, date_window_active=date_window_active)
+    df = _apply_default_guardrails(
+        df,
+        target_col,
+        min_games,
+        date_window_active=date_window_active,
+        num_seasons=len(seasons),
+    )
 
     if df.empty:
         return NoResult(query_class="leaderboard")
@@ -409,13 +465,26 @@ def build_result(
     )
 
     result.insert(0, "rank", range(1, len(result) + 1))
-    result["season"] = season
+
+    if multi_season:
+        result["seasons"] = f"{seasons[0]} to {seasons[-1]}"
+    else:
+        result["season"] = seasons[0]
     result["season_type"] = season_type
 
-    current_through = compute_current_through(season, season_type)
+    # Freshness
+    if multi_season:
+        current_through = compute_current_through_for_seasons(seasons, season_type)
+    else:
+        current_through = compute_current_through(seasons[0], season_type)
+
     caveats: list[str] = []
     if date_window_active:
         caveats.append("leaderboard computed from game-log window; season-advanced stats excluded")
+    if multi_season:
+        caveats.append(
+            "multi-season leaderboard aggregated from game logs; season-advanced stats excluded"
+        )
 
     return LeaderboardResult(
         leaders=result,

@@ -276,7 +276,12 @@ def detect_player_leaderboard_stat(text: str) -> str | None:
 
 
 def wants_leaderboard(text: str) -> bool:
-    if re.search(r"\bseason leaders?\b|\bled the league\b|\bleaders?\s+in\b", text):
+    if re.search(
+        r"\bseason leaders?\b|\bled the league\b|\bleaders?\s+in\b"
+        r"|\b(?:career|playoff|all[- ]?time)\s+(?:\w+\s+)*leaders?\b"
+        r"|\bleaders?\s+(?:since|last|past)\b",
+        text,
+    ):
         return True
 
     if re.search(r"\bin a game\b|\bsingle game\b|\bgame high\b|\bgame-high\b", text):
@@ -344,14 +349,59 @@ def extract_season_range(text: str) -> tuple[str | None, str | None]:
     return None, None
 
 
+# ---------------------------------------------------------------------------
+# Historical span detection
+# ---------------------------------------------------------------------------
+
+
+def detect_career_intent(text: str) -> bool:
+    """Detect career / all-time intent in a query."""
+    return bool(re.search(r"\b(career|all[- ]?time|lifetime)\b", text))
+
+
+def extract_since_season(text: str) -> str | None:
+    """Extract a 'since SEASON' or 'since YEAR' pattern.
+
+    Returns the season string (e.g. '2020-21') or None.
+    'since 2020-21' -> '2020-21'
+    'since 2020'    -> '2020-21'  (the season starting in that year)
+    """
+    # Explicit season format first
+    m = re.search(r"\bsince\s+((?:19|20)\d{2}-\d{2})\b", text)
+    if m:
+        return m.group(1)
+    # Bare year
+    m = re.search(r"\bsince\s+((?:19|20)\d{2})\b", text)
+    if m:
+        from nbatools.commands._seasons import int_to_season
+
+        return int_to_season(int(m.group(1)))
+    return None
+
+
+def extract_last_n_seasons(text: str) -> int | None:
+    """Extract 'last N seasons' / 'over the last N seasons' / 'past N seasons'.
+
+    Returns N or None.
+    """
+    m = re.search(
+        r"\b(?:(?:over|in)\s+the\s+)?(?:last|past)\s+(\d+)\s+seasons?\b",
+        text,
+    )
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
+    return None
+
+
 def extract_last_n(text: str) -> int | None:
     patterns = [
         r"\blast\s+(\d+)\s+games?\b",
         r"\bpast\s+(\d+)\s+games?\b",
         r"\brecent\s+(\d+)\s+games?\b",
-        r"\blast\s+(\d+)\b",
-        r"\bpast\s+(\d+)\b",
-        r"\brecent\s+(\d+)\b",
+        r"\blast\s+(\d+)(?!\s+seasons?)\b",
+        r"\bpast\s+(\d+)(?!\s+seasons?)\b",
+        r"\brecent\s+(\d+)(?!\s+seasons?)\b",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)
@@ -1637,7 +1687,38 @@ def _split_or_clauses(text: str) -> list[str]:
 def _build_parse_state(query: str) -> dict:
     q = normalize_text(query)
 
+    # -- Historical span detection (must run before single-season extraction) --
     start_season, end_season = extract_season_range(q)
+    career_intent = False
+
+    if not (start_season and end_season):
+        # Try "since SEASON/YEAR"
+        since_season = extract_since_season(q)
+        if since_season:
+            from nbatools.commands._seasons import default_end_season
+
+            season_type_early = detect_season_type(q)
+            start_season = since_season
+            end_season = default_end_season(season_type_early)
+
+    if not (start_season and end_season):
+        # Try "last N seasons"
+        last_n_seasons = extract_last_n_seasons(q)
+        if last_n_seasons:
+            from nbatools.commands._seasons import resolve_last_n_seasons
+
+            season_type_early = detect_season_type(q)
+            start_season, end_season = resolve_last_n_seasons(last_n_seasons, season_type_early)
+
+    if not (start_season and end_season):
+        # Try "career" / "all-time"
+        if detect_career_intent(q):
+            from nbatools.commands._seasons import resolve_career
+
+            career_intent = True
+            season_type_early = detect_season_type(q)
+            start_season, end_season = resolve_career(season_type_early)
+
     season = None if (start_season and end_season) else extract_season(q)
 
     season_type = detect_season_type(q)
@@ -1767,6 +1848,7 @@ def _build_parse_state(query: str) -> dict:
         "losses_only": losses_only,
         "summary_intent": summary_intent,
         "range_intent": range_intent,
+        "career_intent": career_intent,
         "split_intent": split_intent,
         "leaderboard_intent": leaderboard_intent,
         "team_leaderboard_intent": team_leaderboard_intent,
@@ -1821,6 +1903,7 @@ def _finalize_route(parsed: dict) -> dict:
     losses_only = parsed["losses_only"]
     summary_intent = parsed["summary_intent"]
     range_intent = parsed["range_intent"]
+    career_intent = parsed.get("career_intent", False)
     leaderboard_intent = parsed.get("leaderboard_intent", False)
     team_leaderboard_intent = parsed.get("team_leaderboard_intent", False)
     head_to_head = parsed.get("head_to_head", False)
@@ -1985,14 +2068,31 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_b
         and (leaderboard_intent or team_leaderboard_intent)
     ):
+        # For leaderboards, prefer multi-season params if available
+        lb_season = season
+        lb_start_season = start_season
+        lb_end_season = end_season
+        if not lb_season and not lb_start_season and not lb_end_season:
+            lb_season = default_season_for_context(season_type)
+
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
             if (start_date or end_date) and leaderboard_stat == "off_rating":
                 notes.append("stat_fallback: off_rating not available with date window, using pts")
                 leaderboard_stat = "pts"
+            if (lb_start_season and lb_end_season) and leaderboard_stat in (
+                "off_rating",
+                "def_rating",
+                "net_rating",
+                "pace",
+            ):
+                notes.append(
+                    f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
+                )
+                leaderboard_stat = "pts"
             route = "season_team_leaders"
             route_kwargs = {
-                "season": season or default_season_for_context(season_type),
+                "season": lb_season,
                 "stat": leaderboard_stat,
                 "limit": top_n or 10,
                 "season_type": season_type,
@@ -2000,15 +2100,27 @@ def _finalize_route(parsed: dict) -> dict:
                 "ascending": False,
                 "start_date": start_date,
                 "end_date": end_date,
+                "start_season": lb_start_season,
+                "end_season": lb_end_season,
             }
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
             if (start_date or end_date) and leaderboard_stat == "off_rating":
                 notes.append("stat_fallback: off_rating not available with date window, using pts")
                 leaderboard_stat = "pts"
+            if (lb_start_season and lb_end_season) and leaderboard_stat in (
+                "off_rating",
+                "def_rating",
+                "net_rating",
+                "pace",
+            ):
+                notes.append(
+                    f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
+                )
+                leaderboard_stat = "pts"
             route = "season_team_leaders"
             route_kwargs = {
-                "season": season or default_season_for_context(season_type),
+                "season": lb_season,
                 "stat": leaderboard_stat,
                 "limit": top_n or 10,
                 "season_type": season_type,
@@ -2016,12 +2128,24 @@ def _finalize_route(parsed: dict) -> dict:
                 "ascending": False,
                 "start_date": start_date,
                 "end_date": end_date,
+                "start_season": lb_start_season,
+                "end_season": lb_end_season,
             }
         else:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
+            if (lb_start_season and lb_end_season) and leaderboard_stat in (
+                "usage_rate",
+                "net_rating",
+                "off_rating",
+                "def_rating",
+            ):
+                notes.append(
+                    f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
+                )
+                leaderboard_stat = "pts"
             route = "season_leaders"
             route_kwargs = {
-                "season": season or default_season_for_context(season_type),
+                "season": lb_season,
                 "stat": leaderboard_stat,
                 "limit": top_n or 10,
                 "season_type": season_type,
@@ -2029,8 +2153,12 @@ def _finalize_route(parsed: dict) -> dict:
                 "ascending": False,
                 "start_date": start_date,
                 "end_date": end_date,
+                "start_season": lb_start_season,
+                "end_season": lb_end_season,
             }
-    elif player and (summary_intent or ("record" in q) or ("averages" in q) or ("average" in q)):
+    elif player and (
+        summary_intent or career_intent or ("record" in q) or ("averages" in q) or ("average" in q)
+    ):
         route = "player_game_summary"
         route_kwargs = {
             "season": season,
@@ -2053,6 +2181,7 @@ def _finalize_route(parsed: dict) -> dict:
         }
     elif team and (
         summary_intent
+        or career_intent
         or (range_intent and (wins_only or losses_only))
         or ("record" in q)
         or ("averages" in q)
