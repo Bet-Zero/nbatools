@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchHealth, postQuery } from "./api/client";
+import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
 import type { QueryResponse } from "./api/types";
 import CopyButton from "./components/CopyButton";
 import DevTools from "./components/DevTools";
@@ -13,6 +13,7 @@ import ResultEnvelope from "./components/ResultEnvelope";
 import ResultSections from "./components/ResultSections";
 import SampleQueries from "./components/SampleQueries";
 import useQueryHistory from "./hooks/useQueryHistory";
+import useUrlState, { type UrlParams } from "./hooks/useUrlState";
 import "./App.css";
 
 export default function App() {
@@ -25,18 +26,9 @@ export default function App() {
 
   const { history, addEntry, clearHistory } = useQueryHistory();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const initialUrlHandled = useRef(false);
 
-  useEffect(() => {
-    fetchHealth()
-      .then((h) => {
-        setVersion(h.version);
-        setApiOnline(true);
-      })
-      .catch(() => {
-        setVersion(null);
-        setApiOnline(false);
-      });
-  }, []);
+  /* ---- query execution ---- */
 
   const runQuery = useCallback(
     async (query: string) => {
@@ -56,18 +48,104 @@ export default function App() {
     [addEntry],
   );
 
+  const runStructuredQuery = useCallback(
+    async (route: string, kwargsStr: string | null) => {
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(kwargsStr || "{}");
+      } catch {
+        setError("Invalid kwargs in URL");
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      setResult(null);
+      try {
+        const data = await postStructuredQuery(route, parsed);
+        setResult(data);
+        addEntry(data.query ?? route, data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [addEntry],
+  );
+
+  /* ---- URL state ---- */
+
+  // Keep refs to the latest run functions so the popstate handler never
+  // captures a stale closure.
+  const runQueryRef = useRef(runQuery);
+  runQueryRef.current = runQuery;
+  const runStructuredRef = useRef(runStructuredQuery);
+  runStructuredRef.current = runStructuredQuery;
+
+  const handleNavigate = useCallback((nav: UrlParams) => {
+    if (nav.q) {
+      setQueryText(nav.q);
+      runQueryRef.current(nav.q);
+    } else if (nav.route) {
+      runStructuredRef.current(nav.route, nav.kwargs);
+    } else {
+      setQueryText("");
+      setResult(null);
+      setError(null);
+    }
+  }, []);
+
+  const {
+    params: urlParams,
+    pushQuery,
+    pushStructured,
+    shareUrl,
+  } = useUrlState(handleNavigate);
+
+  /* ---- lifecycle ---- */
+
+  useEffect(() => {
+    fetchHealth()
+      .then((h) => {
+        setVersion(h.version);
+        setApiOnline(true);
+      })
+      .catch(() => {
+        setVersion(null);
+        setApiOnline(false);
+      });
+  }, []);
+
+  // Auto-run query from URL on first load.
+  useEffect(() => {
+    if (initialUrlHandled.current) return;
+    initialUrlHandled.current = true;
+    if (urlParams.q) {
+      setQueryText(urlParams.q);
+      runQuery(urlParams.q);
+    } else if (urlParams.route) {
+      runStructuredQuery(urlParams.route, urlParams.kwargs);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once on mount
+  }, []);
+
+  /* ---- handlers ---- */
+
   function handleSubmit(query: string) {
     setQueryText(query);
+    pushQuery(query);
     runQuery(query);
   }
 
   function handleSampleSelect(query: string) {
     setQueryText(query);
+    pushQuery(query);
     runQuery(query);
   }
 
   function handleHistorySelect(query: string) {
     setQueryText(query);
+    pushQuery(query);
     runQuery(query);
   }
 
@@ -85,6 +163,10 @@ export default function App() {
   function handleStructuredError(msg: string) {
     setResult(null);
     setError(msg);
+  }
+
+  function handleStructuredQueryStart(route: string, kwargs: string) {
+    pushStructured(route, kwargs);
   }
 
   const hasResult = result !== null;
@@ -138,6 +220,11 @@ export default function App() {
 
           <div className="result-actions">
             <CopyButton
+              text={shareUrl}
+              label="Copy Link"
+              className="share-link-btn"
+            />
+            <CopyButton
               text={result.query}
               label="Copy Query"
               className="copy-query-btn"
@@ -170,6 +257,7 @@ export default function App() {
         onResult={handleStructuredResult}
         onError={handleStructuredError}
         onLoading={setLoading}
+        onQueryStart={handleStructuredQueryStart}
       />
     </div>
   );

@@ -52,8 +52,10 @@ module replacement during frontend development.
   - **Notes** — blue-bordered info block
   - **Caveats** — orange/yellow-bordered warning block
 - **Data tables** — renders the result payload as readable tables. Layout adapts to the result type (summary, comparison, leaderboard, finder, streak, split). Entity columns (player names, teams) are bolded; rank columns are highlighted.
-- **Copy buttons** — copy the query text or full JSON response to clipboard.
+- **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard.
+- **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
 - **Raw JSON** — toggle to inspect the full API response.
+- **URL-driven state** — the active query is stored in the URL (`?q=...` for natural queries, `?route=...&kwargs=...` for structured queries). Refreshing the page re-runs the query. Browser back/forward navigates across prior query states.
 - **Query history** — in-session history with:
   - Status dots (green/yellow/red)
   - Query class and route labels
@@ -138,12 +140,14 @@ frontend/src/
     ErrorBox.tsx          # Error display
   hooks/
     useQueryHistory.ts    # In-session query history state hook
+    useUrlState.ts        # URL search-param sync for shareable deep links
   test/
     setup.ts             # Vitest + jest-dom setup
     client.test.ts       # API client tests
     DataTable.test.tsx   # DataTable component tests
     ResultSections.test.tsx # Result rendering tests for all query classes
     UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
+    useUrlState.test.ts  # URL state parsing, building, and hook behavior tests
   App.tsx                # Main app component — wires state + components
   App.css                # All styles (dark theme, CSS custom properties)
   main.tsx               # React entry point
@@ -157,10 +161,29 @@ npm test          # run once
 npm run test:watch  # watch mode
 ```
 
+## URL state model
+
+The app stores query state in URL search params so every result is linkable:
+
+| Param    | Purpose                            | Example                                |
+| -------- | ---------------------------------- | -------------------------------------- |
+| `q`      | Natural-language query text        | `?q=Jokic+last+10+games`               |
+| `route`  | Structured route name (dev tools)  | `?route=season_leaders`                |
+| `kwargs` | Structured kwargs JSON (dev tools) | `&kwargs=%7B%22stat%22%3A%22pts%22%7D` |
+
+**Behavior:**
+
+- On submit: a new browser history entry is pushed with the query in the URL.
+- On page load: if the URL contains query params, the query auto-runs.
+- Browser back/forward: navigates across prior queries, re-running each.
+- Copy Link button: copies the shareable URL to clipboard.
+- Natural and structured params are mutually exclusive in the URL.
+
 ## Out of scope (intentional)
 
 - Authentication / user accounts
 - Database or persistence
 - Production deployment / hosting
-- Client-side routing
+- Client-side routing library (URL state is managed with native History API)
 - State management libraries
+- Raw JSON toggle persistence in URL

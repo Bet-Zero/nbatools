@@ -6,9 +6,15 @@ interface Props {
   onResult: (data: QueryResponse) => void;
   onError: (msg: string) => void;
   onLoading: (loading: boolean) => void;
+  onQueryStart?: (route: string, kwargs: string) => void;
 }
 
-export default function DevTools({ onResult, onError, onLoading }: Props) {
+export default function DevTools({
+  onResult,
+  onError,
+  onLoading,
+  onQueryStart,
+}: Props) {
   const [routes, setRoutes] = useState<string[]>([]);
   const [selectedRoute, setSelectedRoute] = useState("");
   const [kwargs, setKwargs] = useState("{}");
@@ -28,6 +34,7 @@ export default function DevTools({ onResult, onError, onLoading }: Props) {
       onError("Invalid JSON in kwargs: " + (err as Error).message);
       return;
     }
+    onQueryStart?.(selectedRoute, kwargs);
     onLoading(true);
     try {
       const data = await postStructuredQuery(selectedRoute, parsed);

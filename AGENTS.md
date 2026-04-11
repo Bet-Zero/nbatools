@@ -237,12 +237,14 @@ frontend/
       ErrorBox.tsx       # Error display
     hooks/
       useQueryHistory.ts # In-session query history state hook
+      useUrlState.ts     # URL search-param sync for shareable deep links
     test/
       setup.ts           # Vitest + jest-dom setup
       client.test.ts     # API client tests
       DataTable.test.tsx  # DataTable component tests
       ResultSections.test.tsx # Result rendering tests for all query classes
       UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
+      useUrlState.test.ts  # URL state parsing, building, and hook behavior tests
     App.tsx              # Main app component — wires state + components
     App.css              # All styles (dark theme, CSS custom properties)
     main.tsx             # React entry point
