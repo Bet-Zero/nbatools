@@ -750,9 +750,12 @@ def test_export_json_tabular_creates_valid_json(tmp_path):
     )
     assert out_path.exists()
     payload = json.loads(out_path.read_text(encoding="utf-8"))
-    assert isinstance(payload, list)
-    assert len(payload) >= 1
-    assert payload[0]["player_name"] == "Nikola Jokić"
+    assert isinstance(payload, dict)
+    assert "metadata" in payload
+    assert "finder" in payload
+    assert isinstance(payload["finder"], list)
+    assert len(payload["finder"]) >= 1
+    assert payload["finder"][0]["player_name"] == "Nikola Jokić"
 
 
 def test_export_json_summary_creates_structured_json(tmp_path):

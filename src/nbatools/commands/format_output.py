@@ -1,10 +1,200 @@
 from __future__ import annotations
 
+import re
 from io import StringIO
+from typing import Any
 
 import pandas as pd
 
 SECTION_RULE = "────────────────────────"
+
+METADATA_LABEL = "METADATA"
+
+RESULT_SECTION_LABELS = (
+    "SUMMARY",
+    "BY_SEASON",
+    "COMPARISON",
+    "SPLIT_COMPARISON",
+    "FINDER",
+    "LEADERBOARD",
+    "STREAK",
+)
+
+ALL_SECTION_LABELS = (METADATA_LABEL, *RESULT_SECTION_LABELS)
+
+METADATA_FIELD_ORDER = (
+    "query_text",
+    "route",
+    "query_class",
+    "season",
+    "start_season",
+    "end_season",
+    "season_type",
+    "start_date",
+    "end_date",
+    "player",
+    "team",
+    "opponent",
+    "split_type",
+    "grouped_boolean_used",
+    "head_to_head_used",
+)
+
+ROUTE_TO_QUERY_CLASS = {
+    "player_game_finder": "finder",
+    "game_finder": "finder",
+    "player_game_summary": "summary",
+    "game_summary": "summary",
+    "player_compare": "comparison",
+    "team_compare": "comparison",
+    "player_split_summary": "split_summary",
+    "team_split_summary": "split_summary",
+    "season_leaders": "leaderboard",
+    "season_team_leaders": "leaderboard",
+    "top_player_games": "leaderboard",
+    "top_team_games": "leaderboard",
+    "player_streak_finder": "streak",
+    "team_streak_finder": "streak",
+}
+
+QUERY_CLASS_TO_LABEL = {
+    "finder": "FINDER",
+    "leaderboard": "LEADERBOARD",
+    "streak": "STREAK",
+}
+
+
+def route_to_query_class(route: str | None) -> str | None:
+    if not route:
+        return None
+    return ROUTE_TO_QUERY_CLASS.get(route)
+
+
+def build_metadata_block(metadata: dict[str, Any]) -> str:
+    rows: list[dict[str, str]] = []
+    for key in METADATA_FIELD_ORDER:
+        if key not in metadata:
+            continue
+        value = metadata[key]
+        if value is None or value == "":
+            continue
+        if isinstance(value, bool):
+            rows.append({"key": key, "value": "true" if value else "false"})
+        else:
+            rows.append({"key": key, "value": str(value)})
+
+    df = pd.DataFrame(rows, columns=["key", "value"])
+    csv_text = df.to_csv(index=False).rstrip("\n")
+    return f"{METADATA_LABEL}\n{csv_text}"
+
+
+def parse_labeled_sections(text: str) -> dict[str, str]:
+    text = (text or "").replace("\r\n", "\n").strip()
+    if not text:
+        return {}
+
+    label_alternatives = "|".join(ALL_SECTION_LABELS)
+    pattern = re.compile(rf"(?:\A|\n)(?P<label>{label_alternatives})\n")
+
+    matches = list(pattern.finditer(text))
+    if not matches:
+        return {"TABLE": text}
+
+    sections: dict[str, str] = {}
+
+    if matches[0].start() > 0:
+        preamble = text[: matches[0].start()].strip()
+        if preamble:
+            sections["TABLE"] = preamble
+
+    for idx, match in enumerate(matches):
+        label = match.group("label")
+        start = match.end()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        block = text[start:end].strip()
+        sections[label] = block
+
+    return sections
+
+
+def parse_metadata_block(block: str) -> dict[str, str]:
+    block = (block or "").strip()
+    if not block:
+        return {}
+    try:
+        df = pd.read_csv(StringIO(block))
+    except Exception:
+        return {}
+    if not {"key", "value"}.issubset(df.columns):
+        return {}
+    result: dict[str, str] = {}
+    for _, row in df.iterrows():
+        key = str(row["key"])
+        value = row["value"]
+        if pd.isna(value):
+            continue
+        result[key] = str(value)
+    return result
+
+
+def wrap_raw_output(
+    raw_text: str,
+    metadata: dict[str, Any] | None,
+    query_class: str | None,
+) -> str:
+    text = (raw_text or "").strip().replace("\r\n", "\n")
+
+    metadata_block: str | None = None
+    if metadata:
+        metadata_block = build_metadata_block(metadata)
+
+    if not text:
+        return (metadata_block + "\n") if metadata_block else ""
+
+    if text.startswith(f"{METADATA_LABEL}\n"):
+        return text + ("\n" if not text.endswith("\n") else "")
+
+    already_labeled = any(text.startswith(f"{label}\n") for label in RESULT_SECTION_LABELS)
+    is_no_match = text.lower() == "no matching games"
+
+    if already_labeled or is_no_match:
+        body = text
+    else:
+        label = QUERY_CLASS_TO_LABEL.get((query_class or "").lower())
+        if label is not None:
+            body = f"{label}\n{text}"
+        else:
+            body = text
+
+    if metadata_block:
+        combined = metadata_block + "\n\n" + body
+    else:
+        combined = body
+
+    if not combined.endswith("\n"):
+        combined += "\n"
+    return combined
+
+
+def strip_metadata_section(text: str) -> str:
+    sections = parse_labeled_sections(text)
+    if METADATA_LABEL not in sections:
+        return (text or "").strip() + ("\n" if text and not text.endswith("\n") else "")
+
+    other_labels = [lbl for lbl in sections if lbl != METADATA_LABEL]
+    if not other_labels:
+        return ""
+
+    parts: list[str] = []
+    for label in other_labels:
+        block = sections[label]
+        if label == "TABLE":
+            parts.append(block)
+        else:
+            parts.append(f"{label}\n{block}")
+
+    rebuilt = "\n\n".join(parts).strip()
+    return rebuilt + ("\n" if rebuilt else "")
 
 
 def _read_csv_block(block: str) -> pd.DataFrame | None:
@@ -18,35 +208,30 @@ def _read_csv_block(block: str) -> pd.DataFrame | None:
 
 
 def _extract_sections(text: str) -> dict[str, str]:
-    text = text.strip().replace("\r\n", "\n")
-    sections: dict[str, str] = {}
+    parsed = parse_labeled_sections(text)
 
-    if text.startswith("SUMMARY\n"):
-        remaining = text[len("SUMMARY\n") :]
+    parsed.pop(METADATA_LABEL, None)
 
-        if "\nCOMPARISON\n" in remaining:
-            summary_part, comparison_part = remaining.split("\nCOMPARISON\n", 1)
-            sections["SUMMARY"] = summary_part.strip()
-            sections["COMPARISON"] = comparison_part.strip()
-            return sections
-
-        if "\nSPLIT_COMPARISON\n" in remaining:
-            summary_part, split_part = remaining.split("\nSPLIT_COMPARISON\n", 1)
-            sections["SUMMARY"] = summary_part.strip()
-            sections["SPLIT_COMPARISON"] = split_part.strip()
-            return sections
-
-        if "\nBY_SEASON\n" in remaining:
-            summary_part, by_season_part = remaining.split("\nBY_SEASON\n", 1)
-            sections["SUMMARY"] = summary_part.strip()
-            sections["BY_SEASON"] = by_season_part.strip()
-            return sections
-
-        sections["SUMMARY"] = remaining.strip()
+    if "SUMMARY" in parsed:
+        sections = {"SUMMARY": parsed["SUMMARY"]}
+        for label in ("BY_SEASON", "COMPARISON", "SPLIT_COMPARISON"):
+            if label in parsed:
+                sections[label] = parsed[label]
         return sections
 
-    sections["TABLE"] = text
-    return sections
+    for label in ("FINDER", "LEADERBOARD", "STREAK"):
+        if label in parsed:
+            return {"TABLE": parsed[label]}
+
+    if "TABLE" in parsed:
+        return {"TABLE": parsed["TABLE"]}
+
+    if not parsed:
+        cleaned = (text or "").strip()
+        return {"TABLE": cleaned} if cleaned else {}
+
+    first_label = next(iter(parsed))
+    return {"TABLE": parsed[first_label]}
 
 
 def _format_number(value) -> str:

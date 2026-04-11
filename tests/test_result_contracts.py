@@ -1,0 +1,554 @@
+"""Tests for the first result-contract scaffolding pass.
+
+Covers:
+- FINDER / LEADERBOARD / STREAK section labels in raw output
+- METADATA block presence and field correctness
+- Pretty output still works with labeled structure
+- JSON / CSV / TXT exports work with labeled structure
+- format_output parse/wrap helpers
+"""
+
+import json
+from contextlib import redirect_stdout
+from io import StringIO
+
+import pandas as pd
+from nbatools.commands.format_output import (
+    METADATA_LABEL,
+    build_metadata_block,
+    format_pretty_output,
+    parse_labeled_sections,
+    parse_metadata_block,
+    route_to_query_class,
+    strip_metadata_section,
+    wrap_raw_output,
+)
+from nbatools.commands.natural_query import run as natural_query_run
+
+
+def _capture_output(func, *args, **kwargs) -> str:
+    buffer = StringIO()
+    with redirect_stdout(buffer):
+        func(*args, **kwargs)
+    return buffer.getvalue()
+
+
+# ---------------------------------------------------------------------------
+# Unit tests for format_output helpers
+# ---------------------------------------------------------------------------
+
+
+class TestRouteToQueryClass:
+    def test_finder_routes(self):
+        assert route_to_query_class("player_game_finder") == "finder"
+        assert route_to_query_class("game_finder") == "finder"
+
+    def test_summary_routes(self):
+        assert route_to_query_class("player_game_summary") == "summary"
+        assert route_to_query_class("game_summary") == "summary"
+
+    def test_comparison_routes(self):
+        assert route_to_query_class("player_compare") == "comparison"
+        assert route_to_query_class("team_compare") == "comparison"
+
+    def test_leaderboard_routes(self):
+        assert route_to_query_class("season_leaders") == "leaderboard"
+        assert route_to_query_class("season_team_leaders") == "leaderboard"
+        assert route_to_query_class("top_player_games") == "leaderboard"
+
+    def test_streak_routes(self):
+        assert route_to_query_class("player_streak_finder") == "streak"
+        assert route_to_query_class("team_streak_finder") == "streak"
+
+    def test_none_route(self):
+        assert route_to_query_class(None) is None
+        assert route_to_query_class("unknown_route") is None
+
+
+class TestBuildMetadataBlock:
+    def test_basic_metadata(self):
+        metadata = {
+            "query_text": "Jokic recent form",
+            "route": "player_game_summary",
+            "query_class": "summary",
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "player": "Nikola Jokić",
+        }
+        block = build_metadata_block(metadata)
+        assert block.startswith("METADATA\n")
+        assert "query_text" in block
+        assert "Jokic recent form" in block
+        assert "player_game_summary" in block
+        assert "Nikola Jokić" in block
+
+    def test_none_values_omitted(self):
+        metadata = {
+            "query_text": "test",
+            "route": "game_finder",
+            "query_class": "finder",
+            "season": None,
+            "opponent": None,
+        }
+        block = build_metadata_block(metadata)
+        assert "season" not in block.split("\n", 2)[-1]
+
+    def test_boolean_values(self):
+        metadata = {
+            "query_text": "test",
+            "grouped_boolean_used": True,
+            "head_to_head_used": False,
+        }
+        block = build_metadata_block(metadata)
+        assert "true" in block
+        assert "false" in block
+
+
+class TestParseLabeledSections:
+    def test_bare_csv(self):
+        text = "rank,player_name\n1,Jokic\n2,Embiid\n"
+        sections = parse_labeled_sections(text)
+        assert "TABLE" in sections
+        assert "rank,player_name" in sections["TABLE"]
+
+    def test_metadata_plus_finder(self):
+        text = "METADATA\nkey,value\nroute,finder\n\nFINDER\nrank,name\n1,Jokic\n"
+        sections = parse_labeled_sections(text)
+        assert METADATA_LABEL in sections
+        assert "FINDER" in sections
+        assert "rank,name" in sections["FINDER"]
+
+    def test_metadata_plus_summary(self):
+        text = "METADATA\nkey,value\nroute,summary\n\nSUMMARY\nplayer,pts\nJokic,30\n\nBY_SEASON\nseason,pts\n2025-26,30\n"
+        sections = parse_labeled_sections(text)
+        assert METADATA_LABEL in sections
+        assert "SUMMARY" in sections
+        assert "BY_SEASON" in sections
+
+    def test_summary_without_metadata(self):
+        text = "SUMMARY\nplayer,pts\nJokic,30\n\nCOMPARISON\nmetric,A,B\npts,30,25\n"
+        sections = parse_labeled_sections(text)
+        assert "SUMMARY" in sections
+        assert "COMPARISON" in sections
+
+    def test_leaderboard_label(self):
+        text = "LEADERBOARD\nrank,player,pts\n1,Jokic,30\n"
+        sections = parse_labeled_sections(text)
+        assert "LEADERBOARD" in sections
+
+    def test_streak_label(self):
+        text = "STREAK\nstreak_start,streak_end,length\n2026-01-01,2026-01-05,5\n"
+        sections = parse_labeled_sections(text)
+        assert "STREAK" in sections
+
+
+class TestParseMetadataBlock:
+    def test_parse_basic(self):
+        block = "key,value\nquery_text,test query\nroute,game_finder"
+        result = parse_metadata_block(block)
+        assert result["query_text"] == "test query"
+        assert result["route"] == "game_finder"
+
+    def test_parse_empty(self):
+        assert parse_metadata_block("") == {}
+        assert parse_metadata_block(None) == {}
+
+
+class TestWrapRawOutput:
+    def test_wrap_finder(self):
+        csv = "rank,player\n1,Jokic\n"
+        metadata = {"query_text": "test", "route": "player_game_finder"}
+        result = wrap_raw_output(csv, metadata, "finder")
+        assert result.startswith("METADATA\n")
+        assert "\nFINDER\n" in result
+        assert "rank,player" in result
+
+    def test_wrap_leaderboard(self):
+        csv = "rank,player,pts\n1,Jokic,30\n"
+        metadata = {"query_text": "test", "route": "season_leaders"}
+        result = wrap_raw_output(csv, metadata, "leaderboard")
+        assert "\nLEADERBOARD\n" in result
+
+    def test_wrap_streak(self):
+        csv = "streak,length\n1,5\n"
+        metadata = {"query_text": "test", "route": "player_streak_finder"}
+        result = wrap_raw_output(csv, metadata, "streak")
+        assert "\nSTREAK\n" in result
+
+    def test_wrap_summary_not_double_labeled(self):
+        raw = "SUMMARY\nplayer,pts\nJokic,30\n"
+        metadata = {"query_text": "test", "route": "player_game_summary"}
+        result = wrap_raw_output(raw, metadata, "summary")
+        assert result.startswith("METADATA\n")
+        assert "\nSUMMARY\n" in result
+        assert result.count("SUMMARY") == 1
+
+    def test_no_matching_games(self):
+        metadata = {"query_text": "test"}
+        result = wrap_raw_output("no matching games", metadata, "finder")
+        assert "METADATA" in result
+        assert "no matching games" in result
+        assert "FINDER" not in result
+
+    def test_no_double_wrap(self):
+        first = wrap_raw_output("rank,a\n1,x\n", {"query_text": "t"}, "finder")
+        second = wrap_raw_output(first, {"query_text": "t"}, "finder")
+        assert second.count("METADATA") == 1
+
+
+class TestStripMetadataSection:
+    def test_strip_metadata(self):
+        full = "METADATA\nkey,value\nroute,finder\n\nFINDER\nrank,a\n1,x\n"
+        stripped = strip_metadata_section(full)
+        assert "METADATA" not in stripped
+        assert "FINDER\n" in stripped
+        assert "rank,a" in stripped
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: labeled FINDER output via natural query
+# ---------------------------------------------------------------------------
+
+
+class TestLabeledFinderOutput:
+    def test_finder_raw_has_label_and_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "FINDER" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["route"] == "player_game_finder"
+        assert meta["query_class"] == "finder"
+        assert "Nikola Jokić" in meta.get("player", "")
+
+    def test_finder_csv_is_parseable(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        df = pd.read_csv(StringIO(sections["FINDER"]))
+        assert not df.empty
+        assert "player_name" in df.columns
+
+    def test_finder_pretty_still_works(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points",
+            pretty=True,
+        )
+        assert 'Query: "Jokic last 10 games over 25 points"' in out
+        assert "Rows returned:" in out
+        assert "Nikola Jokić" in out
+
+    def test_team_finder_raw_has_label(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Celtics wins vs Bucks over 120 points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert "FINDER" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["query_class"] == "finder"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: labeled LEADERBOARD output via natural query
+# ---------------------------------------------------------------------------
+
+
+class TestLabeledLeaderboardOutput:
+    def test_leaderboard_raw_has_label_and_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="season leaders in assists for 2023-24 playoffs",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "LEADERBOARD" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["route"] == "season_leaders"
+        assert meta["query_class"] == "leaderboard"
+        assert meta["season_type"] == "Playoffs"
+
+    def test_leaderboard_csv_is_parseable(self):
+        out = _capture_output(
+            natural_query_run,
+            query="season leaders in assists for 2023-24 playoffs",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        df = pd.read_csv(StringIO(sections["LEADERBOARD"]))
+        assert not df.empty
+        assert "player_name" in df.columns
+
+    def test_leaderboard_pretty_still_works(self):
+        out = _capture_output(
+            natural_query_run,
+            query="season leaders in assists for 2023-24 playoffs",
+            pretty=True,
+        )
+        assert 'Query: "season leaders in assists for 2023-24 playoffs"' in out
+        assert "Rows returned:" in out
+
+    def test_team_leaderboard_raw_has_label(self):
+        out = _capture_output(
+            natural_query_run,
+            query="best offensive teams this season",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert "LEADERBOARD" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["query_class"] == "leaderboard"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: labeled STREAK output via natural query
+# ---------------------------------------------------------------------------
+
+
+class TestLabeledStreakOutput:
+    def test_streak_raw_has_label_and_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic 5 straight games with 20+ points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "STREAK" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["route"] == "player_streak_finder"
+        assert meta["query_class"] == "streak"
+        assert "Nikola Jokić" in meta.get("player", "")
+
+    def test_streak_csv_is_parseable(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic 5 straight games with 20+ points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        df = pd.read_csv(StringIO(sections["STREAK"]))
+        assert not df.empty
+
+    def test_streak_pretty_still_works(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic 5 straight games with 20+ points",
+            pretty=True,
+        )
+        assert "Jokic" in out or "Nikola" in out
+        assert "Rows returned:" in out
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: METADATA on summary/comparison/split outputs
+# ---------------------------------------------------------------------------
+
+
+class TestMetadataOnExistingLabels:
+    def test_summary_has_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic recent form",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "SUMMARY" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["query_class"] == "summary"
+
+    def test_comparison_has_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Kobe vs LeBron playoffs in 2008-09",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "SUMMARY" in sections
+        assert "COMPARISON" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["query_class"] == "comparison"
+
+    def test_split_has_metadata(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic home vs away in 2025-26",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "SUMMARY" in sections
+        assert "SPLIT_COMPARISON" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["query_class"] == "split_summary"
+        assert meta["split_type"] == "home_away"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: metadata fields
+# ---------------------------------------------------------------------------
+
+
+class TestMetadataFields:
+    def test_metadata_has_core_fields(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic recent form",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "query_text" in meta
+        assert "route" in meta
+        assert "query_class" in meta
+        assert "season_type" in meta
+
+    def test_metadata_grouped_boolean(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic summary (over 25 points and over 10 rebounds) or over 15 assists",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta.get("grouped_boolean_used") == "true"
+
+    def test_metadata_head_to_head(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Kobe vs LeBron head to head in 2008-09",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta.get("head_to_head_used") == "true"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: exports with labeled structure
+# ---------------------------------------------------------------------------
+
+
+class TestExportsWithLabels:
+    def test_csv_export_is_bare_csv(self, tmp_path):
+        out_path = tmp_path / "finder.csv"
+        _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points and over 10 rebounds",
+            pretty=True,
+            export_csv_path=str(out_path),
+        )
+        assert out_path.exists()
+        text = out_path.read_text(encoding="utf-8")
+        assert "METADATA" not in text
+        assert "FINDER" not in text
+        assert "player_name" in text
+        df = pd.read_csv(StringIO(text))
+        assert not df.empty
+
+    def test_json_export_has_metadata_and_finder(self, tmp_path):
+        out_path = tmp_path / "finder.json"
+        _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points and over 10 rebounds",
+            pretty=True,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert isinstance(payload, dict)
+        assert "metadata" in payload
+        assert "finder" in payload
+        assert payload["metadata"]["query_class"] == "finder"
+
+    def test_json_export_summary_has_metadata(self, tmp_path):
+        out_path = tmp_path / "summary.json"
+        _capture_output(
+            natural_query_run,
+            query="Jokic vs Embiid recent form",
+            pretty=True,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert "metadata" in payload
+        assert "summary" in payload
+        assert "comparison" in payload
+        assert payload["metadata"]["query_class"] == "comparison"
+
+    def test_json_export_leaderboard_has_metadata(self, tmp_path):
+        out_path = tmp_path / "leaders.json"
+        _capture_output(
+            natural_query_run,
+            query="season leaders in assists for 2023-24 playoffs",
+            pretty=True,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert "metadata" in payload
+        assert "leaderboard" in payload
+        assert payload["metadata"]["query_class"] == "leaderboard"
+
+    def test_txt_export_has_metadata(self, tmp_path):
+        out_path = tmp_path / "finder.txt"
+        _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points",
+            pretty=False,
+            export_txt_path=str(out_path),
+        )
+        text = out_path.read_text(encoding="utf-8")
+        assert "METADATA" in text
+        assert "FINDER" in text
+
+    def test_csv_export_summary_preserves_labels(self, tmp_path):
+        out_path = tmp_path / "summary.csv"
+        _capture_output(
+            natural_query_run,
+            query="Jokic recent form",
+            pretty=True,
+            export_csv_path=str(out_path),
+        )
+        text = out_path.read_text(encoding="utf-8")
+        assert "SUMMARY" in text
+        assert "BY_SEASON" in text
+        assert "METADATA" not in text
+
+
+# ---------------------------------------------------------------------------
+# Pretty output with new labels via format_pretty_output
+# ---------------------------------------------------------------------------
+
+
+class TestPrettyOutputWithLabels:
+    def test_finder_raw_renders_pretty(self):
+        raw = "METADATA\nkey,value\nroute,player_game_finder\n\nFINDER\nrank,player_name,pts\n1,Jokic,30\n2,Embiid,28\n"
+        pretty = format_pretty_output(raw, "test query")
+        assert 'Query: "test query"' in pretty
+        assert "Rows returned: 2" in pretty
+
+    def test_leaderboard_raw_renders_pretty(self):
+        raw = "METADATA\nkey,value\nroute,season_leaders\n\nLEADERBOARD\nrank,player_name,pts\n1,Jokic,30\n"
+        pretty = format_pretty_output(raw, "top scorers")
+        assert 'Query: "top scorers"' in pretty
+        assert "Rows returned: 1" in pretty
+
+    def test_summary_raw_with_metadata_renders_pretty(self):
+        raw = (
+            "METADATA\nkey,value\nroute,player_game_summary\n\n"
+            "SUMMARY\nplayer_name,season_start,season_end,season_type,games,wins,losses,win_pct,pts_avg\n"
+            "Nikola Jokić,2025-26,2025-26,Regular Season,10,9,1,0.9,24\n"
+        )
+        pretty = format_pretty_output(raw, "Jokic recent form")
+        assert "Nikola Jokić" in pretty
+        assert "Games: 10" in pretty

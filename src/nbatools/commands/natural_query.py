@@ -10,7 +10,14 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
-from nbatools.commands.format_output import format_pretty_output
+from nbatools.commands.format_output import (
+    METADATA_LABEL,
+    format_pretty_output,
+    parse_labeled_sections,
+    parse_metadata_block,
+    route_to_query_class,
+    wrap_raw_output,
+)
 from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import (
     _apply_filters as apply_team_summary_filters,
@@ -911,40 +918,64 @@ def _write_text_file(path_str: str, text: str) -> None:
     Path(path_str).write_text(text, encoding="utf-8")
 
 
-def _split_summary_sections(text: str) -> dict[str, str]:
-    text = text.strip()
-    if not text.startswith("SUMMARY\n"):
-        return {"RAW": text}
+_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE")
 
-    remaining = text[len("SUMMARY\n") :]
 
-    if "\nCOMPARISON\n" in remaining:
-        summary_part, comparison_part = remaining.split("\nCOMPARISON\n", 1)
-        return {
-            "SUMMARY": summary_part.strip(),
-            "COMPARISON": comparison_part.strip(),
-        }
+def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -> dict:
+    if not parsed:
+        return {"query_text": query}
 
-    if "\nSPLIT_COMPARISON\n" in remaining:
-        summary_part, split_part = remaining.split("\nSPLIT_COMPARISON\n", 1)
-        return {
-            "SUMMARY": summary_part.strip(),
-            "SPLIT_COMPARISON": split_part.strip(),
-        }
+    route = parsed.get("route")
+    query_class = route_to_query_class(route)
 
-    if "\nBY_SEASON\n" in remaining:
-        summary_part, by_season_part = remaining.split("\nBY_SEASON\n", 1)
-        return {
-            "SUMMARY": summary_part.strip(),
-            "BY_SEASON": by_season_part.strip(),
-        }
+    player = parsed.get("player")
+    if not player:
+        player_a = parsed.get("player_a")
+        player_b = parsed.get("player_b")
+        if player_a and player_b:
+            player = f"{player_a}, {player_b}"
+        else:
+            player = player_a or player_b
 
-    return {"SUMMARY": remaining.strip()}
+    team = parsed.get("team")
+    if not team:
+        team_a = parsed.get("team_a")
+        team_b = parsed.get("team_b")
+        if team_a and team_b:
+            team = f"{team_a}, {team_b}"
+        else:
+            team = team_a or team_b
+
+    return {
+        "query_text": query,
+        "route": route,
+        "query_class": query_class,
+        "season": parsed.get("season"),
+        "start_season": parsed.get("start_season"),
+        "end_season": parsed.get("end_season"),
+        "season_type": parsed.get("season_type"),
+        "start_date": parsed.get("start_date"),
+        "end_date": parsed.get("end_date"),
+        "player": player,
+        "team": team,
+        "opponent": parsed.get("opponent"),
+        "split_type": parsed.get("split_type"),
+        "grouped_boolean_used": grouped_boolean_used,
+        "head_to_head_used": bool(parsed.get("head_to_head")),
+    }
+
+
+def _wrap_natural_query_raw(
+    raw_text: str, parsed: dict, query: str, grouped_boolean_used: bool
+) -> str:
+    metadata = _build_metadata_dict(parsed, query, grouped_boolean_used)
+    query_class = route_to_query_class(parsed.get("route") if parsed else None)
+    return wrap_raw_output(raw_text, metadata, query_class)
 
 
 def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
     _ensure_parent_dir(path_str)
-    text = raw_text.strip()
+    text = (raw_text or "").strip()
 
     if not text:
         Path(path_str).write_text("", encoding="utf-8")
@@ -954,24 +985,52 @@ def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
         Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
         return
 
-    if text.startswith("SUMMARY\n"):
-        Path(path_str).write_text(
-            text + ("\n" if not text.endswith("\n") else ""), encoding="utf-8"
-        )
+    sections = parse_labeled_sections(text)
+    sections_no_meta = {k: v for k, v in sections.items() if k != METADATA_LABEL}
+
+    if not sections_no_meta:
+        Path(path_str).write_text("", encoding="utf-8")
         return
 
-    try:
-        df = pd.read_csv(StringIO(text))
-        df.to_csv(path_str, index=False)
-    except Exception:
-        Path(path_str).write_text(
-            text + ("\n" if not text.endswith("\n") else ""), encoding="utf-8"
-        )
+    if len(sections_no_meta) == 1:
+        only_label, only_block = next(iter(sections_no_meta.items()))
+        if only_label in _SINGLE_TABLE_LABELS:
+            if only_block.lower() == "no matching games":
+                Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
+                return
+            try:
+                df = pd.read_csv(StringIO(only_block))
+                df.to_csv(path_str, index=False)
+                return
+            except Exception:
+                Path(path_str).write_text(
+                    only_block + ("\n" if not only_block.endswith("\n") else ""),
+                    encoding="utf-8",
+                )
+                return
+
+    parts: list[str] = []
+    for label in (
+        "SUMMARY",
+        "BY_SEASON",
+        "COMPARISON",
+        "SPLIT_COMPARISON",
+        "FINDER",
+        "LEADERBOARD",
+        "STREAK",
+    ):
+        if label in sections_no_meta:
+            parts.append(f"{label}\n{sections_no_meta[label]}")
+    if not parts and "TABLE" in sections_no_meta:
+        parts.append(sections_no_meta["TABLE"])
+
+    rebuilt = "\n\n".join(parts).strip()
+    Path(path_str).write_text(rebuilt + "\n", encoding="utf-8")
 
 
 def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
     _ensure_parent_dir(path_str)
-    text = raw_text.strip()
+    text = (raw_text or "").strip()
 
     if not text:
         Path(path_str).write_text("[]\n", encoding="utf-8")
@@ -984,35 +1043,38 @@ def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
         )
         return
 
-    if not text.startswith("SUMMARY\n"):
+    sections = parse_labeled_sections(text)
+    metadata_block = sections.pop(METADATA_LABEL, None)
+
+    payload: dict[str, object] = {}
+
+    if metadata_block is not None:
+        payload["metadata"] = parse_metadata_block(metadata_block)
+
+    for label, block in sections.items():
+        if not block:
+            continue
+        key = label.lower() if label != "TABLE" else "table"
+        if block.lower() == "no matching games":
+            payload[key] = []
+            continue
+        try:
+            df = pd.read_csv(StringIO(block))
+            payload[key] = df.to_dict(orient="records")
+        except Exception:
+            payload[key] = block
+
+    if not payload:
         try:
             df = pd.read_csv(StringIO(text))
-            payload = df.to_dict(orient="records")
+            payload_list = df.to_dict(orient="records")
             Path(path_str).write_text(
-                json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+                json.dumps(payload_list, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
             )
             return
         except Exception:
             payload = {"raw_text": text}
-            Path(path_str).write_text(
-                json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-            )
-            return
-
-    sections = _split_summary_sections(text)
-    payload: dict[str, object] = {}
-
-    for key, block in sections.items():
-        if key == "RAW":
-            payload["raw_text"] = block
-            continue
-        if not block:
-            continue
-        try:
-            df = pd.read_csv(StringIO(block))
-            payload[key.lower()] = df.to_dict(orient="records")
-        except Exception:
-            payload[key.lower()] = block
 
     Path(path_str).write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -2023,36 +2085,59 @@ def _execute_or_query_capture_raw(query: str) -> str:
     return _combine_or_raw_outputs(raw_outputs)
 
 
-def _execute(
-    func: Callable,
-    kwargs: dict,
-    query: str,
-    pretty: bool,
-    extra_conditions: list[dict] | None = None,
-    export_csv_path: str | None = None,
-    export_txt_path: str | None = None,
-    export_json_path: str | None = None,
-) -> None:
-    if extra_conditions is None:
-        extra_conditions = []
+_ROUTE_FUNC_MAP: dict[str, Callable] = {}
 
-    raw_text = _execute_capture_raw(func, kwargs, extra_conditions)
-    pretty_text = format_pretty_output(raw_text, query)
+
+def _get_route_func_map() -> dict[str, Callable]:
+    if not _ROUTE_FUNC_MAP:
+        _ROUTE_FUNC_MAP.update(
+            {
+                "top_player_games": top_player_games_run,
+                "top_team_games": top_team_games_run,
+                "season_leaders": season_leaders_run,
+                "season_team_leaders": season_team_leaders_run,
+                "player_game_summary": player_game_summary_run,
+                "game_summary": game_summary_run,
+                "player_game_finder": player_game_finder_run,
+                "player_streak_finder": player_streak_finder_run,
+                "team_streak_finder": team_streak_finder_run,
+                "game_finder": game_finder_run,
+                "player_compare": player_compare_run,
+                "team_compare": team_compare_run,
+                "player_split_summary": player_split_summary_run,
+                "team_split_summary": team_split_summary_run,
+            }
+        )
+    return _ROUTE_FUNC_MAP
+
+
+def _emit(
+    raw_text: str,
+    parsed: dict,
+    query: str,
+    grouped_boolean_used: bool,
+    pretty: bool,
+    export_csv_path: str | None,
+    export_txt_path: str | None,
+    export_json_path: str | None,
+) -> None:
+    wrapped = _wrap_natural_query_raw(raw_text, parsed, query, grouped_boolean_used)
+    pretty_text = format_pretty_output(wrapped, query)
 
     if export_csv_path:
-        _write_csv_from_raw_output(raw_text, export_csv_path)
+        _write_csv_from_raw_output(wrapped, export_csv_path)
 
     if export_json_path:
-        _write_json_from_raw_output(raw_text, export_json_path)
+        _write_json_from_raw_output(wrapped, export_json_path)
 
     if export_txt_path:
-        text_to_save = raw_text if not pretty else pretty_text
+        text_to_save = wrapped if not pretty else pretty_text
         _write_text_file(
             export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
         )
 
     if not pretty:
-        print(raw_text, end="" if raw_text.endswith("\n") else "\n")
+        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
         return
 
     print(pretty_text)
@@ -2067,50 +2152,44 @@ def run(
 ) -> None:
     normalized = normalize_text(query)
 
-    if expression_contains_boolean_ops(normalized) and ("(" in normalized or ")" in normalized):
+    grouped_boolean_used = expression_contains_boolean_ops(normalized) and (
+        "(" in normalized or ")" in normalized
+    )
+
+    if grouped_boolean_used:
         raw_text = _execute_grouped_boolean_query_capture_raw(query)
-        pretty_text = format_pretty_output(raw_text, query)
-
-        if export_csv_path:
-            _write_csv_from_raw_output(raw_text, export_csv_path)
-
-        if export_json_path:
-            _write_json_from_raw_output(raw_text, export_json_path)
-
-        if export_txt_path:
-            text_to_save = raw_text if not pretty else pretty_text
-            _write_text_file(
-                export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
-            )
-
-        if not pretty:
-            print(raw_text, end="" if raw_text.endswith("\n") else "\n")
-            return
-
-        print(pretty_text)
+        try:
+            parsed = parse_query(query)
+        except Exception:
+            parsed = _build_parse_state(query)
+        _emit(
+            raw_text,
+            parsed,
+            query,
+            grouped_boolean_used=True,
+            pretty=pretty,
+            export_csv_path=export_csv_path,
+            export_txt_path=export_txt_path,
+            export_json_path=export_json_path,
+        )
         return
 
     if " or " in normalized:
         raw_text = _execute_or_query_capture_raw(query)
-        pretty_text = format_pretty_output(raw_text, query)
-
-        if export_csv_path:
-            _write_csv_from_raw_output(raw_text, export_csv_path)
-
-        if export_json_path:
-            _write_json_from_raw_output(raw_text, export_json_path)
-
-        if export_txt_path:
-            text_to_save = raw_text if not pretty else pretty_text
-            _write_text_file(
-                export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
-            )
-
-        if not pretty:
-            print(raw_text, end="" if raw_text.endswith("\n") else "\n")
-            return
-
-        print(pretty_text)
+        try:
+            parsed = parse_query(query)
+        except Exception:
+            parsed = _build_parse_state(query)
+        _emit(
+            raw_text,
+            parsed,
+            query,
+            grouped_boolean_used=False,
+            pretty=pretty,
+            export_csv_path=export_csv_path,
+            export_txt_path=export_txt_path,
+            export_json_path=export_json_path,
+        )
         return
 
     parsed = parse_query(query)
@@ -2118,30 +2197,15 @@ def run(
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
 
-    func_map = {
-        "top_player_games": top_player_games_run,
-        "top_team_games": top_team_games_run,
-        "season_leaders": season_leaders_run,
-        "season_team_leaders": season_team_leaders_run,
-        "player_game_summary": player_game_summary_run,
-        "game_summary": game_summary_run,
-        "player_game_finder": player_game_finder_run,
-        "player_streak_finder": player_streak_finder_run,
-        "team_streak_finder": team_streak_finder_run,
-        "game_finder": game_finder_run,
-        "player_compare": player_compare_run,
-        "team_compare": team_compare_run,
-        "player_split_summary": player_split_summary_run,
-        "team_split_summary": team_split_summary_run,
-    }
+    func = _get_route_func_map()[route]
+    raw_text = _execute_capture_raw(func, kwargs, extra_conditions)
 
-    func = func_map[route]
-    _execute(
-        func,
-        kwargs,
+    _emit(
+        raw_text,
+        parsed,
         query,
-        pretty,
-        extra_conditions=extra_conditions,
+        grouped_boolean_used=False,
+        pretty=pretty,
         export_csv_path=export_csv_path,
         export_txt_path=export_txt_path,
         export_json_path=export_json_path,

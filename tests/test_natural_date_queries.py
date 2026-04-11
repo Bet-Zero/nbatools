@@ -2,7 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
-
+from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
 from nbatools.commands.natural_query import (
     CURRENT_QUERY_DATE,
     parse_query,
@@ -17,6 +17,15 @@ def _capture_output(func, *args, **kwargs) -> str:
     with redirect_stdout(buffer):
         func(*args, **kwargs)
     return buffer.getvalue()
+
+
+def _extract_data_csv(raw_text: str) -> str:
+    sections = parse_labeled_sections(raw_text)
+    sections.pop(METADATA_LABEL, None)
+    for label in ("FINDER", "LEADERBOARD", "STREAK", "TABLE"):
+        if label in sections:
+            return sections[label]
+    return raw_text.strip()
 
 
 def test_parse_player_since_january():
@@ -52,7 +61,8 @@ def test_natural_player_since_january_raw_smoke():
         query="Jokic since January",
         pretty=False,
     )
-    df = pd.read_csv(StringIO(out))
+    csv_block = _extract_data_csv(out)
+    df = pd.read_csv(StringIO(csv_block))
     dates = pd.to_datetime(df["game_date"])
     assert not df.empty
     assert dates.min() >= pd.Timestamp("2026-01-01")
@@ -64,7 +74,8 @@ def test_natural_team_in_march_raw_smoke():
         query="Celtics in March",
         pretty=False,
     )
-    df = pd.read_csv(StringIO(out))
+    csv_block = _extract_data_csv(out)
+    df = pd.read_csv(StringIO(csv_block))
     dates = pd.to_datetime(df["game_date"])
     assert not df.empty
     assert set(dates.dt.month.unique()) == {3}

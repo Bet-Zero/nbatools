@@ -2,7 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
-
+from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -74,13 +74,23 @@ def test_parse_explicit_2024_25_all_star_break():
     assert parsed["route_kwargs"]["start_date"] == "2025-02-17"
 
 
+def _extract_data_csv(raw_text: str) -> str:
+    sections = parse_labeled_sections(raw_text)
+    sections.pop(METADATA_LABEL, None)
+    for label in ("FINDER", "LEADERBOARD", "STREAK", "TABLE"):
+        if label in sections:
+            return sections[label]
+    return raw_text.strip()
+
+
 def test_natural_player_since_all_star_break_raw_smoke():
     out = _capture_output(
         natural_query_run,
         query="Jokic since All-Star break",
         pretty=False,
     )
-    df = pd.read_csv(StringIO(out))
+    csv_block = _extract_data_csv(out)
+    df = pd.read_csv(StringIO(csv_block))
     dates = pd.to_datetime(df["game_date"])
     assert not df.empty
     assert dates.min() >= pd.Timestamp("2026-02-16")
