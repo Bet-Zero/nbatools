@@ -966,11 +966,11 @@ def test_structured_cli_top_player_games_has_metadata_and_leaderboard():
     out = _capture_output(
         _run_and_handle_exports,
         top_player_games_run,
-        "2005-06",
-        "pts",
-        5,
-        "Regular Season",
-        False,
+        season="2005-06",
+        stat="pts",
+        limit=5,
+        season_type="Regular Season",
+        ascending=False,
     )
     sections = parse_labeled_sections(out)
     assert METADATA_LABEL in sections
@@ -978,6 +978,8 @@ def test_structured_cli_top_player_games_has_metadata_and_leaderboard():
     meta = parse_metadata_block(sections[METADATA_LABEL])
     assert meta["route"] == "top_player_games"
     assert meta["query_class"] == "leaderboard"
+    assert meta["season"] == "2005-06"
+    assert meta["season_type"] == "Regular Season"
 
 
 def test_structured_cli_season_leaders_has_metadata_and_leaderboard():
@@ -1222,11 +1224,11 @@ def test_structured_cli_csv_export_strips_metadata(tmp_path):
     _capture_output(
         _run_and_handle_exports,
         top_player_games_run,
-        "2005-06",
-        "pts",
-        5,
-        "Regular Season",
-        False,
+        season="2005-06",
+        stat="pts",
+        limit=5,
+        season_type="Regular Season",
+        ascending=False,
         csv=str(out_path),
     )
     text = out_path.read_text(encoding="utf-8")

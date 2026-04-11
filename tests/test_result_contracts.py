@@ -552,3 +552,168 @@ class TestPrettyOutputWithLabels:
         pretty = format_pretty_output(raw, "Jokic recent form")
         assert "Nikola Jokić" in pretty
         assert "Games: 10" in pretty
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: structured CLI query path with result-contract wrapping
+# ---------------------------------------------------------------------------
+
+
+class TestStructuredCLILeaderboardMetadata:
+    """Verify leaderboard commands (formerly positional-only) emit metadata fields."""
+
+    def test_top_player_games_metadata_has_season(self):
+        from nbatools.cli_apps.queries import _run_and_handle_exports
+        from nbatools.commands.top_player_games import run as top_player_games_run
+
+        out = _capture_output(
+            _run_and_handle_exports,
+            top_player_games_run,
+            season="2005-06",
+            stat="pts",
+            limit=5,
+            season_type="Regular Season",
+            ascending=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "LEADERBOARD" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["season"] == "2005-06"
+        assert meta["season_type"] == "Regular Season"
+
+    def test_top_team_games_metadata_has_season(self):
+        from nbatools.cli_apps.queries import _run_and_handle_exports
+        from nbatools.commands.top_team_games import run as top_team_games_run
+
+        out = _capture_output(
+            _run_and_handle_exports,
+            top_team_games_run,
+            season="2005-06",
+            stat="pts",
+            limit=5,
+            season_type="Regular Season",
+            ascending=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "LEADERBOARD" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["route"] == "top_team_games"
+        assert meta["query_class"] == "leaderboard"
+        assert meta["season"] == "2005-06"
+        assert meta["season_type"] == "Regular Season"
+
+    def test_season_team_leaders_metadata_has_season(self):
+        from nbatools.cli_apps.queries import _run_and_handle_exports
+        from nbatools.commands.season_team_leaders import run as season_team_leaders_run
+
+        out = _capture_output(
+            _run_and_handle_exports,
+            season_team_leaders_run,
+            season="2023-24",
+            stat="pts",
+            limit=5,
+            season_type="Regular Season",
+            min_games=20,
+            ascending=False,
+        )
+        sections = parse_labeled_sections(out)
+        assert METADATA_LABEL in sections
+        assert "LEADERBOARD" in sections
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert meta["route"] == "season_team_leaders"
+        assert meta["query_class"] == "leaderboard"
+        assert meta["season"] == "2023-24"
+        assert meta["season_type"] == "Regular Season"
+
+
+class TestStructuredCLIExportsWithMetadata:
+    """Verify export behavior from the structured CLI path."""
+
+    def test_json_export_leaderboard_has_metadata(self, tmp_path):
+        from nbatools.cli_apps.queries import _run_and_handle_exports
+        from nbatools.commands.season_leaders import run as season_leaders_run
+
+        out_path = tmp_path / "leaders.json"
+        _capture_output(
+            _run_and_handle_exports,
+            season_leaders_run,
+            season="2023-24",
+            stat="ast",
+            limit=5,
+            season_type="Regular Season",
+            min_games=20,
+            ascending=False,
+            json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert isinstance(payload, dict)
+        assert "metadata" in payload
+        assert "leaderboard" in payload
+        assert payload["metadata"]["route"] == "season_leaders"
+        assert payload["metadata"]["query_class"] == "leaderboard"
+        assert payload["metadata"]["season"] == "2023-24"
+
+    def test_csv_export_finder_strips_metadata(self, tmp_path):
+        from nbatools.cli_apps.queries import _run_and_handle_exports
+        from nbatools.commands.player_game_finder import run as player_game_finder_run
+
+        out_path = tmp_path / "finder.csv"
+        _capture_output(
+            _run_and_handle_exports,
+            player_game_finder_run,
+            season="2005-06",
+            start_season=None,
+            end_season=None,
+            season_type="Regular Season",
+            player="Kobe Bryant",
+            team=None,
+            opponent="DAL",
+            home_only=False,
+            away_only=False,
+            wins_only=False,
+            losses_only=False,
+            stat="pts",
+            min_value=40,
+            max_value=None,
+            limit=25,
+            sort_by="stat",
+            ascending=False,
+            last_n=None,
+            csv=str(out_path),
+        )
+        text = out_path.read_text(encoding="utf-8")
+        assert "METADATA" not in text
+        assert "FINDER" not in text
+        assert "player_name" in text
+        df = pd.read_csv(StringIO(text))
+        assert not df.empty
+
+    def test_txt_export_split_has_metadata(self, tmp_path):
+        from nbatools.cli_apps.queries import _run_and_handle_exports
+        from nbatools.commands.player_split_summary import run as player_split_summary_run
+
+        out_path = tmp_path / "split.txt"
+        _capture_output(
+            _run_and_handle_exports,
+            player_split_summary_run,
+            split="home_away",
+            season="2025-26",
+            start_season=None,
+            end_season=None,
+            season_type="Regular Season",
+            player="Nikola Jokić",
+            team=None,
+            opponent=None,
+            stat=None,
+            min_value=None,
+            max_value=None,
+            last_n=None,
+            txt=str(out_path),
+        )
+        text = out_path.read_text(encoding="utf-8")
+        assert "METADATA" in text
+        assert "SUMMARY" in text
+        assert "SPLIT_COMPARISON" in text
+        assert "home_away" in text or "split_type" in text
