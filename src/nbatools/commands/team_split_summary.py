@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.structured_results import NoResult, SplitSummaryResult
 
 ALLOWED_STATS = {
     "pts": "pts",
@@ -119,7 +122,7 @@ def _summarize_bucket(df: pd.DataFrame, bucket_name: str) -> dict:
     }
 
 
-def run(
+def build_result(
     split: str,
     season: str | None = None,
     start_season: str | None = None,
@@ -132,7 +135,7 @@ def run(
     max_value: float | None = None,
     last_n: int | None = None,
     df: pd.DataFrame | None = None,
-) -> None:
+) -> SplitSummaryResult | NoResult:
     split = split.lower()
     if split not in ALLOWED_SPLITS:
         raise ValueError(f"Unsupported split: {split}. Allowed: {sorted(ALLOWED_SPLITS)}")
@@ -176,9 +179,7 @@ def run(
             df["game_date"] = pd.to_datetime(df["game_date"])
 
     if df.empty:
-        print("SUMMARY")
-        print("no matching games")
-        return
+        return NoResult(query_class="split_summary")
 
     team_name = df["team_name"].mode().iloc[0] if "team_name" in df.columns else team
     season_min = df["season"].min()
@@ -215,8 +216,38 @@ def run(
         ]
     )
 
-    print("SUMMARY")
-    print(summary.to_csv(index=False))
+    return SplitSummaryResult(
+        summary=summary,
+        split_comparison=split_comparison,
+    )
 
-    print("SPLIT_COMPARISON")
-    print(split_comparison.to_csv(index=False))
+
+def run(
+    split: str,
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    season_type: str = "Regular Season",
+    team: str | None = None,
+    opponent: str | None = None,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    last_n: int | None = None,
+    df: pd.DataFrame | None = None,
+) -> None:
+    result = build_result(
+        split=split,
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        season_type=season_type,
+        team=team,
+        opponent=opponent,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        last_n=last_n,
+        df=df,
+    )
+    print(result.to_labeled_text(), end="")

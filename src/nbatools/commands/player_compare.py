@@ -11,6 +11,7 @@ from nbatools.commands.player_advanced_metrics import (
     build_player_team_context,
     load_team_games_for_seasons,
 )
+from nbatools.commands.structured_results import ComparisonResult
 
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
@@ -232,7 +233,7 @@ def _build_player_head_to_head_frames(
     return a_out.reset_index(drop=True), b_out.reset_index(drop=True)
 
 
-def run(
+def build_result(
     player_a: str,
     player_b: str,
     season: str | None = None,
@@ -249,7 +250,7 @@ def run(
     losses_only: bool = False,
     last_n: int | None = None,
     head_to_head: bool = False,
-) -> None:
+) -> ComparisonResult:
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
 
@@ -316,9 +317,6 @@ def run(
 
     summary = pd.DataFrame([summary_a, summary_b])
 
-    print("SUMMARY")
-    print(summary.to_csv(index=False))
-
     comparison_rows = [
         ("games", summary_a["games"], summary_b["games"]),
         ("wins", summary_a["wins"], summary_b["wins"]),
@@ -347,5 +345,46 @@ def run(
         columns=["metric", player_a, player_b],
     )
 
-    print("COMPARISON")
-    print(comp.to_csv(index=False))
+    return ComparisonResult(
+        summary=summary,
+        comparison=comp,
+    )
+
+
+def run(
+    player_a: str,
+    player_b: str,
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    season_type: str = "Regular Season",
+    team: str | None = None,
+    opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    last_n: int | None = None,
+    head_to_head: bool = False,
+) -> None:
+    result = build_result(
+        player_a=player_a,
+        player_b=player_b,
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        start_date=start_date,
+        end_date=end_date,
+        season_type=season_type,
+        team=team,
+        opponent=opponent,
+        home_only=home_only,
+        away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
+        last_n=last_n,
+        head_to_head=head_to_head,
+    )
+    print(result.to_labeled_text(), end="")

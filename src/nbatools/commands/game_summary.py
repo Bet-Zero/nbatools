@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.structured_results import NoResult, SummaryResult
 
 ALLOWED_STATS = {
     "pts": "pts",
@@ -115,7 +118,7 @@ def _apply_filters(
     return out
 
 
-def run(
+def build_result(
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -133,7 +136,7 @@ def run(
     start_date: str | None = None,
     end_date: str | None = None,
     df: pd.DataFrame | None = None,
-) -> None:
+) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
 
     if home_only and away_only:
@@ -185,9 +188,7 @@ def run(
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
 
     if df.empty:
-        print("SUMMARY")
-        print("no matching games")
-        return
+        return NoResult(query_class="summary")
 
     numeric_cols = [
         "minutes",
@@ -238,9 +239,6 @@ def run(
 
     summary = pd.DataFrame([summary_row])
 
-    print("SUMMARY")
-    print(summary.to_csv(index=False))
-
     agg_map = {
         "games": ("game_id", "count"),
         "wins": ("wl", lambda s: int((s == "W").sum())),
@@ -258,5 +256,48 @@ def run(
         .reset_index(drop=True)
     )
 
-    print("BY_SEASON")
-    print(by_season.to_csv(index=False))
+    return SummaryResult(
+        summary=summary,
+        by_season=by_season,
+    )
+
+
+def run(
+    season: str | None = None,
+    start_season: str | None = None,
+    end_season: str | None = None,
+    season_type: str = "Regular Season",
+    team: str | None = None,
+    opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    last_n: int | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    df: pd.DataFrame | None = None,
+) -> None:
+    result = build_result(
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        season_type=season_type,
+        team=team,
+        opponent=opponent,
+        home_only=home_only,
+        away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        last_n=last_n,
+        start_date=start_date,
+        end_date=end_date,
+        df=df,
+    )
+    print(result.to_labeled_text(), end="")
