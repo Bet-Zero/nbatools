@@ -121,7 +121,7 @@ Unrouted natural queries return a normal envelope with `ok: false` and `result_s
 ## Architecture
 
 ```
- HTTP Client / Future UI
+ HTTP Client / React UI
          │
     ┌────▼─────┐
     │  FastAPI  │   src/nbatools/api.py

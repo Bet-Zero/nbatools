@@ -2,7 +2,7 @@
 
 This roadmap describes how `nbatools` should evolve from its current CLI-first engine into a UI-based NBA search app with text input.
 
-It is intentionally phased. The goal is not to add random commands. The goal is to expand **answerable NBA questions**, improve trustworthiness and maintainability, and prepare the engine for a future UI.
+It is intentionally phased. The goal is not to add random commands. The goal is to expand **answerable NBA questions**, improve trustworthiness and maintainability, and strengthen the engine that powers both the CLI and the web UI.
 
 ---
 
@@ -27,7 +27,7 @@ What is still missing is mostly:
 - broader question coverage
 - stronger product shape
 - data freshness discipline
-- cleaner engine contracts for future UI/API reuse
+- cleaner engine contracts for CLI and UI consumers
 
 ---
 
@@ -45,7 +45,7 @@ That means current work should focus on:
 2. cleaning up routing/engine boundaries where needed
 3. expanding coverage for common NBA questions
 4. improving data/update trustworthiness
-5. preparing reusable result shapes for a future UI
+5. preparing reusable result shapes for the web UI
 
 ---
 
@@ -92,6 +92,7 @@ The biggest risk now is not lack of capability. It is feature growth without eno
 ### Work in this phase
 
 #### 1. Conventions and operating docs
+
 Establish and maintain:
 
 - `AGENTS.md`
@@ -100,6 +101,7 @@ Establish and maintain:
 - `docs/roadmap.md`
 
 #### 2. Capability reality audit
+
 Audit the currently advertised surface and classify features as:
 
 - verified and protected by tests
@@ -114,6 +116,7 @@ Priority audit targets:
 - matchup / head-to-head queries
 
 #### 3. Parser/router cleanup
+
 `src/nbatools/commands/natural_query.py` is now a major complexity hotspot.
 
 Short-term goals:
@@ -124,6 +127,7 @@ Short-term goals:
 - push reusable business logic into dedicated helpers/modules
 
 #### 4. Docs alignment
+
 Ensure:
 
 - README reflects user-facing verified capability
@@ -152,6 +156,7 @@ This is the phase where `nbatools` moves from a strong analytics CLI toward a st
 ### Major work areas
 
 #### 1. League-wide player search
+
 Add or harden support for queries like:
 
 - top scorers this season
@@ -170,6 +175,7 @@ Why first:
 This is one of the largest “type an NBA question and get an answer” gaps.
 
 #### 2. League-wide team search
+
 Add or harden support for queries like:
 
 - best offense this season
@@ -183,6 +189,7 @@ Build/harden:
 - sortable/rankable outputs
 
 #### 3. First-class game finder output
+
 The engine can already find games, but game-list output should become a first-class product surface.
 
 Target queries include:
@@ -198,6 +205,7 @@ Needs:
 - clearer distinction between list-vs-summary intent
 
 #### 4. Opponent and matchup coverage
+
 Add or harden support for:
 
 - `vs Lakers`
@@ -209,6 +217,7 @@ Add or harden support for:
 This is a major part of real NBA search behavior.
 
 #### 5. Expand queryable stats
+
 You already compute a lot. More of it should become queryable.
 
 Priority stats:
@@ -239,6 +248,7 @@ Make searches feel more natural and historically flexible.
 ### Work in this phase
 
 #### 1. Date ranges
+
 Add or harden support for:
 
 - since January
@@ -247,6 +257,7 @@ Add or harden support for:
 - last 30 days
 
 #### 2. Streak queries
+
 Add or harden support for:
 
 - 5 straight games with 20+
@@ -258,6 +269,7 @@ Add or harden support for:
 This is a major user-facing win.
 
 #### 3. Career and multi-season aggregation
+
 Add support for:
 
 - career leaderboards
@@ -284,6 +296,7 @@ A strong search surface is not enough if users cannot trust how current the data
 ### Work in this phase
 
 #### 1. Update pipeline
+
 Establish a clear answer to:
 
 - where data comes from
@@ -299,6 +312,7 @@ Minimum viable target:
 - one command/workflow to refresh raw + derived datasets
 
 #### 2. Data contract enforcement
+
 Keep explicit contracts for the datasets that power:
 
 - player game finder
@@ -312,6 +326,7 @@ Keep explicit contracts for the datasets that power:
 This prevents future spaghetti.
 
 #### 3. Visibility into freshness
+
 Longer-term, the product should make it clear:
 
 - what season/data window is loaded
@@ -330,9 +345,14 @@ This phase is in good shape when the update story is explicit, repeatable, and t
 
 Make the engine easy to expose through a UI.
 
+### Status
+
+Partially shipped. The React UI already consumes the `QueryResponse` envelope and renders all current result types. Remaining work is about formalizing result classes and stabilizing contracts.
+
 ### Work in this phase
 
 #### 1. Query classes
+
 Formalize the major supported question types:
 
 - finder
@@ -348,9 +368,10 @@ These classes should guide:
 - parser routing
 - command structure
 - docs
-- future UI result layouts
+- React UI result layouts
 
 #### 2. Better output modes
+
 Make result intent more explicit.
 
 Examples:
@@ -364,6 +385,7 @@ Examples:
 Right now some of this is implicit in routing. That should become more deliberate over time.
 
 #### 3. UI-ready result shapes
+
 Stabilize result structures so a UI can map them into:
 
 - summary cards
@@ -381,20 +403,24 @@ This phase is in good shape when the core engine behaves like a reusable applica
 
 ## Phase 6 — First UI
 
-### Goal
+### Status: shipped
 
-Ship the first usable interface for non-CLI users.
+The first web UI has been built and is live:
 
-### Best first UI
+- React + TypeScript + Vite frontend in `frontend/`
+- Typed API client (`types.ts` + `client.ts`)
+- Components: QueryBar, SampleQueries, ResultEnvelope, ResultSections, DataTable, RawJsonToggle, DevTools, Loading, ErrorBox
+- Build output served by FastAPI from `src/nbatools/ui/dist/`
+- Vite dev server with API proxy for hot reload during development
 
-A simple web UI with:
+### What the first UI provides
 
-- text input
-- query result view
-- summary / games / splits display areas as needed
-- export buttons
-
-The first UI should be intentionally simple. It should prove the engine can power a usable experience before more ambitious interface work begins.
+- text input for natural-language NBA queries
+- pre-filled sample query buttons
+- result rendering for all query classes (summary, comparison, split, finder, leaderboard, streak)
+- envelope metadata display (status, route, freshness, notes, caveats)
+- raw JSON toggle
+- Dev Tools panel for structured (route-based) queries
 
 ### Important constraint
 
@@ -420,6 +446,7 @@ These are the highest-value next areas of work.
 This was the original recommended order and it still mostly holds, with one adjustment: some of these areas now exist in partial or early form and should be hardened instead of treated as brand-new.
 
 ### Build 1 — League-wide player leaderboard queries
+
 Examples:
 
 - top scorers this season
@@ -427,6 +454,7 @@ Examples:
 - most 30 point games
 
 ### Build 2 — League-wide team leaderboard queries
+
 Examples:
 
 - best offensive teams
@@ -434,6 +462,7 @@ Examples:
 - best eFG%
 
 ### Build 3 — Opponent and matchup filters
+
 Examples:
 
 - Jokic vs Lakers
@@ -441,6 +470,7 @@ Examples:
 - Embiid head-to-head vs Jokic
 
 ### Build 4 — Date ranges
+
 Examples:
 
 - since January
@@ -448,6 +478,7 @@ Examples:
 - last 30 days
 
 ### Build 5 — Streak queries
+
 Examples:
 
 - 5 straight 20 point games
@@ -476,6 +507,7 @@ The real missing thing is not prettier output. It is **more answerable questions
 These versions are directional, not promises. They help sequence the work.
 
 ### v0.8.x
+
 League-wide player leaderboards and player ranking hardening
 
 - top N player queries
@@ -483,12 +515,14 @@ League-wide player leaderboards and player ranking hardening
 - broader player season/league summary coverage
 
 ### v0.9.x
+
 League-wide team leaderboards and team ranking hardening
 
 - team ranking queries
 - better team season summary coverage
 
 ### v1.0.x
+
 Matchup + date-range hardening
 
 - vs filters
@@ -497,6 +531,7 @@ Matchup + date-range hardening
 - broader natural search coverage
 
 ### v1.1.x
+
 Streak engine hardening
 
 - consecutive games
@@ -504,11 +539,12 @@ Streak engine hardening
 - threshold streak queries
 
 ### v1.2.x
-Freshness pipeline + first UI-ready engine layer
+
+Freshness pipeline + frontend iteration
 
 - reliable update story
-- clearer reusable result shapes
-- simple first frontend path
+- cleaner reusable result shapes
+- UI polish and expanded component coverage
 
 ---
 
@@ -516,4 +552,4 @@ Freshness pipeline + first UI-ready engine layer
 
 The roadmap is succeeding if `nbatools` becomes progressively better at this core promise:
 
-> A user can type a real NBA question into a text input and get a trustworthy answer from a reusable engine that can power both a CLI now and a UI later.
+> A user can type a real NBA question into a text input and get a trustworthy answer from a reusable engine that powers both a CLI and a web UI.

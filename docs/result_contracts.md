@@ -2,7 +2,7 @@
 
 This document defines the **target result contracts** for `nbatools`.
 
-It is a design/contracts doc, not a description of what the engine currently produces. Today, result shapes vary across command modules. This doc describes what they should evolve toward so that the current CLI, exports, and a future UI can all consume the same engine.
+It is a design/contracts doc, not a description of what the engine currently produces. Today, result shapes vary across command modules. This doc describes what they should evolve toward so that the CLI, exports, and the React web UI can all consume the same engine.
 
 Related docs:
 
@@ -15,11 +15,11 @@ Related docs:
 
 ## 1. Why result contracts matter
 
-### 1.1 CLI now, UI later
+### 1.1 CLI and UI share the same engine
 
-The current user surface is a CLI that prints pretty text. The long-term product direction is a UI-based NBA search app with text input. Both should call the same engine and consume the same results.
+The repo has two user surfaces — a CLI that prints pretty text and a React web UI that renders structured results. Both call the same engine and consume the same `QueryResponse` envelope.
 
-Pretty terminal formatting is **not** the core contract. It is one of several presentation layers over a shared structured result. If the engine's source of truth is a formatted string, the future UI cannot reuse it without re-parsing terminal output — which is exactly the wrong direction.
+Pretty terminal formatting is **not** the core contract. It is one of several presentation layers over a shared structured result. If the engine's source of truth is a formatted string, the UI cannot reuse it without re-parsing terminal output — which is exactly the wrong direction.
 
 ### 1.2 Stable engine outputs vs presentation
 
@@ -27,8 +27,8 @@ The engine should produce stable, structured results. Presentation layers then r
 
 - CLI pretty text
 - CLI exports (CSV / TXT / JSON)
-- future UI components
-- future API responses
+- React web UI components
+- API responses
 
 A result contract is the shape the engine guarantees. A presentation layer is a renderer over that shape. The contract must be stable even when renderers change.
 
@@ -61,7 +61,7 @@ Every query the engine answers should map to one of these. A query that does not
 
 ## 3. Expected conceptual shape per class
 
-Each class below is defined by its conceptual shape. Field names are illustrative — this doc defines the *shape the engine should guarantee*, not a Python class diagram.
+Each class below is defined by its conceptual shape. Field names are illustrative — this doc defines the _shape the engine should guarantee_, not a Python class diagram.
 
 Every result class also carries the shared metadata block defined in [section 4](#4-shared-metadata-contract).
 
@@ -153,7 +153,7 @@ Conceptual shape:
   - `season_team_leaders`
   - natural-query leaderboard phrasing (`top scorers this season`, `best offensive teams`, `teams with most threes`)
 
-**Note:** leaderboard breadth and phrasing coverage should still be treated as something to verify by tests before broadening claims, per [docs/current_state_guide.md](current_state_guide.md#5-leaderboard-queries). The result *contract* here is target shape, not a claim that every phrasing works today.
+**Note:** leaderboard breadth and phrasing coverage should still be treated as something to verify by tests before broadening claims, per [docs/current_state_guide.md](current_state_guide.md#5-leaderboard-queries). The result _contract_ here is target shape, not a claim that every phrasing works today.
 
 ### 3.6 streak
 
@@ -196,7 +196,7 @@ Conceptual shape:
 
 ## 4. Shared metadata contract
 
-Every result class should eventually carry a consistent metadata block. These fields are the bridge between "we got an answer" and "here is what that answer is an answer *to*."
+Every result class should eventually carry a consistent metadata block. These fields are the bridge between "we got an answer" and "here is what that answer is an answer _to_."
 
 Future result objects should carry:
 
@@ -228,7 +228,7 @@ These four layers should relate as renderers over the same underlying result.
 - **Raw structured output** is the canonical form. Everything else is derived from it.
 - **Pretty CLI output** is a terminal renderer. It may add section headers, column alignment, and color. It must not invent new fields and must not be the place where a value is computed for the first time.
 - **Exports (CSV / TXT / JSON)** are additional renderers. JSON export should be the closest to the raw structured output. CSV and TXT are projections suitable for spreadsheet and plain-text consumption.
-- **Future UI rendering** is one more renderer. It consumes the same raw structured result that JSON export consumes. If the UI ever needs a value that only exists in pretty CLI output, that is a signal the value belongs in the raw structured result.
+- **React web UI rendering** is one more renderer. It consumes the same raw structured result that JSON export consumes. If the UI needs a value that only exists in pretty CLI output, that is a signal the value belongs in the raw structured result.
 
 The rule:
 
@@ -262,7 +262,7 @@ Rules:
 
 ## 7. What should not happen
 
-- **UI depending on terminal formatting.** A future UI must not parse pretty CLI output to recover values. If it ever needs to, the engine is producing the wrong shape.
+- **UI depending on terminal formatting.** The React UI must not parse pretty CLI output to recover values. If it ever needs to, the engine is producing the wrong shape.
 - **Route-specific ad hoc output shapes multiplying without documentation.** New routes should slot into an existing result class. A new shape is a deliberate, documented event, not an accident of implementation.
 - **Docs claims outrunning actual result consistency.** This doc describes target contracts. It should not be cited as evidence that the engine already produces fully consistent results across routes. When a route is brought into alignment with a contract, update the current-state guide — not this doc — to reflect the new verified behavior.
 - **Silent semantic fallbacks.** If the engine substitutes a different dataset, recomputes a metric from a different sample, or widens a date window to find data, that must surface via the `notes / caveats` metadata, not be hidden inside pretty output.
@@ -272,7 +272,7 @@ Rules:
 
 ## 8. Near-term guidance
 
-This doc is meant to be useful *before* any UI work begins.
+This doc is meant to be useful _before_ any UI work begins.
 
 ### 8.1 How to use this doc now
 
@@ -289,4 +289,4 @@ This doc is meant to be useful *before* any UI work begins.
 - **Protect migrations with tests.** When a result shape is tightened, back it with export or structured-output tests, per the testing conventions in [docs/project_conventions.md](project_conventions.md#7-testing-conventions).
 - **Update the current-state guide only after verification.** This doc describes the target. [docs/current_state_guide.md](current_state_guide.md) describes what is actually shipped and tested. Keep that distinction strict.
 
-The target is gradual convergence: every route ends up producing a result that fits one of the seven result classes, carries the shared metadata block, and can be rendered by the CLI, exports, and a future UI without any of them needing to know about the others.
+The target is gradual convergence: every route ends up producing a result that fits one of the seven result classes, carries the shared metadata block, and can be rendered by the CLI, exports, and the React UI without any of them needing to know about the others.

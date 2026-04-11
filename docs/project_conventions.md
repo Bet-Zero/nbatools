@@ -8,16 +8,16 @@ It is the source of truth for how new work should be structured as the repo evol
 
 ## 1. Long-term direction
 
-The long-term product goal is a **UI-based NBA search app with text input**.
+The product goal is a **UI-based NBA search app with text input**.
 
-The current CLI is the development interface and a power-user surface used to build, verify, and operate the engine.
+The repo now has three consumer surfaces: a CLI (development/power-user), a FastAPI HTTP layer, and a React + TypeScript + Vite web UI. The CLI and web UI are both thin presentation layers over a shared query engine.
 
 That means the repo should be built so that:
 
-- the core query/analytics logic is reusable outside the CLI
+- the core query/analytics logic is reusable outside any single interface
 - natural language parsing is reusable outside the CLI
-- output contracts can be consumed by a future UI/API
-- terminal presentation is treated as a layer, not the product core
+- output contracts are consumed by the CLI, the React UI, and any API client
+- terminal presentation and browser presentation are treated as layers, not the product core
 
 ---
 
@@ -44,7 +44,7 @@ The repo should optimize for:
 3. test-backed iteration
 4. reusable command/query internals
 5. CLI presentation
-6. future UI/API integration
+6. frontend iteration
 
 ### 2.3 Explicit over magical
 
@@ -117,9 +117,29 @@ Guidelines:
 
 - raw outputs should remain usable by machines
 - pretty output should not define core semantics
-- future UI should be able to reuse underlying raw/structured results
+- the React UI consumes the same `QueryResponse` envelope as JSON export
+- if the UI needs a value that only exists in pretty CLI output, add it to the structured result
 
-## 3.6 Raw / processing / ops / analysis groups
+## 3.6 Frontend (`frontend/`)
+
+Responsibilities:
+
+- typed API client (fetch wrappers + TypeScript interfaces)
+- React components for rendering query results
+- UI state management (loading, error, result display)
+- styling
+
+Should not contain:
+
+- business logic, filtering, or analytics
+- data transformations that belong in the engine
+- query parsing or routing decisions
+
+The frontend calls the API and renders what it gets back.
+
+After any frontend source change, rebuild with `cd frontend && npm run build` so the FastAPI-served build stays current.
+
+## 3.7 Raw / processing / ops / analysis groups
 
 These are data-lifecycle and operational surfaces.
 
@@ -341,36 +361,41 @@ Potential split boundaries include:
 
 ---
 
-## 9. UI-readiness conventions
+## 9. UI conventions
 
 ## 9.1 Core behavior must remain interface-agnostic
 
 The same underlying logic should be callable from:
 
 - CLI
-- future web UI
-- future API layer
+- React web UI
+- FastAPI / any HTTP client
 
 ## 9.2 Prefer structured outputs beneath pretty outputs
 
 Even if the CLI presents pretty text, the underlying behavior should still produce stable structured/raw outputs.
 
-## 9.3 Avoid terminal-only assumptions in core logic
+## 9.3 Avoid terminal-only or browser-only assumptions in core logic
 
-Core commands should not depend on terminal formatting, color, width, or print-only semantics.
+Core commands should not depend on terminal formatting, color, width, or print-only semantics. Equally, they should not depend on browser APIs or React rendering.
 
-## 9.4 Design with future UI sections in mind
+## 9.4 UI components map to result sections
 
-Current outputs should be easy to map into future UI components such as:
+The React frontend already renders these result types:
 
-- summary cards
+- summary tables
 - comparison tables
 - split tables
 - streak results
 - leaderboard tables
-- export/download actions
+- finder / matching-games tables
+- no-result status messages
 
-The CLI may render text, but the engine should think in reusable result structures.
+New result types should produce structured data that the existing component set can render. If a new layout is needed, add a component — do not change the engine to match a rendering assumption.
+
+## 9.5 Frontend rebuild after changes
+
+After any change to files under `frontend/`, run `cd frontend && npm run build` to rebuild the production assets that FastAPI serves. Forgetting this leaves the served UI out of sync with the source.
 
 ---
 
@@ -414,7 +439,15 @@ Use for:
 - required columns
 - producers and consumers
 
-## 10.5 `AGENTS.md`
+## 10.5 `docs/ui_guide.md`
+
+Use for:
+
+- web UI setup and dev workflow
+- frontend file layout and component reference
+- how the React UI communicates with the API
+
+## 10.6 `AGENTS.md`
 
 Use for:
 
@@ -435,5 +468,7 @@ Before calling a feature shipped, confirm:
 - formula/export tests were added if relevant
 - docs were updated only after verification
 - the change improves the reusable engine, not just the CLI surface
+- if the API response shape changed, the React frontend was updated
+- if the frontend changed, `npm run build` was run
 
 If that chain is incomplete, the feature is not done yet.

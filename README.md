@@ -1,6 +1,6 @@
 # NBA Tools
 
-NBA Tools is a query-first NBA stats CLI with both structured commands and a natural-language interface.
+NBA Tools is a query-first NBA stats engine with a natural-language interface, a CLI, an HTTP API, and a React web UI.
 
 It supports:
 
@@ -13,6 +13,7 @@ It supports:
 - date-aware natural queries
 - player and team streak queries
 - CSV / TXT / JSON exports
+- web UI for browser-based querying
 
 ---
 
@@ -25,6 +26,10 @@ Natural-language query:
 Structured query:
 
     nbatools-cli query player-game-summary --player "Nikola Jokić" --season 2025-26 --last-n 10
+
+Web UI:
+
+    nbatools-api              # starts the API + serves the UI at http://127.0.0.1:8000
 
 Run tests:
 
@@ -210,8 +215,22 @@ Beyond `ask` and `query`, the CLI provides pipeline and analysis commands:
 # Install in editable mode with dev dependencies
 pip install -e ".[dev]"
 
+# Install frontend dependencies
+cd frontend && npm install && cd ..
+
 # Run tests
 pytest
+
+# Frontend dev (hot reload) — two terminals:
+# Terminal 1: API server
+uvicorn nbatools.api:app --reload
+# Terminal 2: Vite dev server
+cd frontend && npm run dev
+# Open http://localhost:5173
+
+# Build frontend for production
+cd frontend && npm run build
+# Output lands in src/nbatools/ui/dist/ and is served by the API
 
 # Lint and format
 ruff check src/ tests/
@@ -235,6 +254,7 @@ across Python 3.11, 3.12, and 3.13. See `.github/workflows/ci.yml`.
 - `docs/index.md`
 - `docs/quick_query_guide.md`
 - `docs/current_state_guide.md`
+- `docs/ui_guide.md`
 - `QUERY_GUIDE.md`
 
 ---

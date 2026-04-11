@@ -24,13 +24,27 @@ For future direction, see [docs/roadmap.md](roadmap.md).
 
 ## Entry points
 
-### Natural language
+### Natural language (CLI)
 
     nbatools-cli ask "Jokic recent form"
 
 ### Structured CLI
 
     nbatools-cli query player-game-summary --player "Nikola Jokić" --season 2025-26 --last-n 10
+
+### Web UI
+
+    # Start the API (serves the built React UI at /)
+    nbatools-api
+    # Open http://127.0.0.1:8000
+
+The web UI provides a query bar, sample query buttons, result tables, a raw JSON toggle, and a Dev Tools panel for structured queries. It is a React + TypeScript + Vite app that consumes the same API endpoints as any other client.
+
+### HTTP API
+
+    # POST /query with {"query": "Jokic recent form"}
+    # POST /structured-query with {"route": "player_game_summary", "kwargs": {...}}
+    # GET /health, GET /routes
 
 ---
 

@@ -68,7 +68,7 @@ Returns a JSON-serializable dict combining the result's sections and metadata.
 | CLI `ask` command        | `execute_natural_query` via `natural_query.run()`          | Renders to pretty/raw/exports                                        |
 | CLI `query` sub-commands | `execute_structured_query` via `_run_and_handle_exports()` | Kwargs path only; positional-arg callers use direct `build_result()` |
 | Tests                    | Both                                                       | 45 dedicated tests in `test_query_service.py`                        |
-| Future UI/API            | Both                                                       | Primary intended consumer                                            |
+| React UI / API clients   | Both                                                       | Primary intended consumer                                            |
 
 ## What still bypasses the service
 
@@ -101,5 +101,5 @@ All result types are re-exported from `nbatools.query_service` for convenience:
 `render_query_result()` in `natural_query.py` takes a `QueryResult` and handles
 CLI output (pretty or raw) and file exports (CSV, TXT, JSON). This is the
 function that the CLI's `run()` calls after getting a result from the service.
-A future UI would skip this entirely and consume `QueryResult.to_dict()` or
+The React UI skips this entirely and consumes `QueryResult.to_dict()` or
 the result object directly.

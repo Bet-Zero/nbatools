@@ -4,16 +4,17 @@ This file tells coding agents how to work in the `nbatools` repo.
 
 ## Project goal
 
-`nbatools` is being built toward a **UI-based NBA search app with text input**.
+`nbatools` is a **UI-based NBA search app with text input**.
 
-The current CLI is the development interface and a power-user surface. It is **not** the final product. Work in this repo should strengthen the reusable search and analytics engine that a future UI and API can call.
+The repo has three consumer surfaces: a CLI (development/power-user), a FastAPI HTTP layer, and a React + TypeScript + Vite web UI. The CLI and web UI are both thin presentation layers over a shared query engine.
 
 That means:
 
-- core logic should remain **UI-agnostic**
-- natural query behavior should remain **transport-agnostic**
+- core logic must remain **UI-agnostic**
+- natural query behavior must remain **transport-agnostic**
 - CLI wrappers should stay thin
-- machine-readable outputs should stay stable enough for future UI/API reuse
+- the React frontend should stay thin — fetch, render, no business logic
+- machine-readable outputs must stay stable for all consumers (CLI, API, UI)
 
 ## Working style
 
@@ -30,7 +31,7 @@ Do not introduce architecture churn without a concrete reason tied to maintainab
 
 ## What this repo is optimizing for
 
-The current phase is about building a durable NBA search engine, not just a CLI.
+The current phase is about building a durable NBA search engine that powers both the CLI and the web UI.
 
 Priority order:
 
@@ -38,8 +39,8 @@ Priority order:
 2. stable command/query semantics
 3. test coverage
 4. reusable output contracts
-5. CLI presentation
-6. future UI readiness
+5. CLI and UI presentation
+6. frontend iteration
 
 ## Change rules
 
@@ -76,6 +77,27 @@ It may contain:
 It should **not** become an unmanaged dumping ground for unrelated business logic.
 
 If a feature requires substantial new computation, reusable filtering logic, or domain-specific analysis, move that logic into a dedicated command/helper module.
+
+### Frontend-layer rule
+
+The React frontend in `frontend/` is a presentation layer.
+
+It may contain:
+
+- typed API client code (`frontend/src/api/`)
+- React components for rendering results (`frontend/src/components/`)
+- UI state management (loading, error, result)
+- styling (`App.css`)
+
+It must **not** contain:
+
+- business logic, filtering, or analytics
+- data transformations that belong in the engine
+- query parsing or routing decisions
+
+The frontend calls the API and renders what it gets back. If a UI feature requires new data, add it to the engine/API response — do not compute it client-side.
+
+After any frontend source change, rebuild with `cd frontend && npm run build` so the FastAPI-served build stays current.
 
 ### Duplication rule
 
@@ -115,6 +137,7 @@ Each doc has a specific role.
 - `docs/roadmap.md` -> planned or next capabilities
 - `docs/project_conventions.md` -> architecture and engineering rules
 - `docs/data_contracts.md` -> dataset definitions and expectations
+- `docs/ui_guide.md` -> web UI setup, dev workflow, and component reference
 
 Agents should keep these boundaries clean.
 
@@ -129,28 +152,32 @@ In particular:
 Outputs in this repo serve multiple consumers:
 
 - CLI pretty output
-- raw/export output
-- future UI/API layers
+- raw/export output (CSV, TXT, JSON)
+- web UI (React frontend consuming the API)
+- any future API clients
 
 Agents should treat raw command output as part of the engine contract.
 
 Guidelines:
 
 - pretty formatting is presentation only
-- structured/raw outputs should remain machine-readable
-- future UI should be able to reuse the same underlying command/query results
-- avoid coupling core logic to terminal-only assumptions
+- structured/raw outputs must remain machine-readable
+- the React UI already consumes the same `QueryResponse` envelope the API returns
+- avoid coupling core logic to terminal-only or browser-only assumptions
+- if the UI needs a value that only exists in pretty CLI output, add it to the structured result
 
 ## Assumptions agents must not make
 
 Agents must **not** assume:
 
-- the CLI is the final product
+- the CLI is the only consumer of engine output
 - current docs are automatically correct
 - one passing example means broad support
 - all logic belongs in `natural_query.py`
 - all data will remain CSV forever
 - a refactor is justified just because it feels cleaner
+- frontend changes don't need a rebuild (`npm run build`)
+- the React UI should contain business logic
 
 CSV + pandas is the current local-first implementation model. That is acceptable for now. Any storage-layer change should be justified by a real need, not novelty.
 
@@ -174,6 +201,34 @@ Use this checklist:
 - Are parser tests updated if parsing changed?
 - Are smoke tests added if output/behavior changed?
 - Are docs updated only after verification?
-- Does this move the repo toward a reusable UI-ready engine?
+- Does this move the repo toward a reusable engine?
+- If changing the API response shape, is the React frontend updated to handle it?
+- If changing the frontend, was `npm run build` run to update the served assets?
 
-If the answer to the last question is no, rethink the implementation.
+If a feature does not improve the reusable engine or its consumers, rethink the implementation.
+
+## Frontend file layout
+
+```
+frontend/
+  src/
+    api/
+      types.ts          # TypeScript interfaces matching the API response envelope
+      client.ts         # Typed fetch wrappers (fetchHealth, postQuery, etc.)
+    components/
+      QueryBar.tsx       # Text input + submit
+      SampleQueries.tsx  # Pre-filled example query buttons
+      ResultEnvelope.tsx # Envelope metadata (status, route, notes, caveats)
+      ResultSections.tsx # Dispatches sections by query_class
+      DataTable.tsx      # Generic table renderer
+      RawJsonToggle.tsx  # Raw JSON toggle
+      DevTools.tsx       # Structured query panel (route selector + kwargs)
+      Loading.tsx        # Loading spinner
+      ErrorBox.tsx       # Error display
+    App.tsx              # Main app component — wires state + components
+    App.css              # All styles (dark theme, CSS custom properties)
+    main.tsx             # React entry point
+  vite.config.ts         # Dev proxy + build output path
+```
+
+Build output lands in `src/nbatools/ui/dist/` and is served by FastAPI.
