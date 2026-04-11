@@ -10,6 +10,8 @@ from nbatools.cli_apps.raw import app as raw_app
 from nbatools.commands.natural_query import run as natural_query_run
 
 APP_NAME = "nbatools-cli"
+DEFAULT_API_HOST = "127.0.0.1"
+DEFAULT_API_PORT = 8000
 APP_VERSION = "0.7.0"
 
 app = typer.Typer(
@@ -111,3 +113,18 @@ app.add_typer(
     name="analysis",
     help="Analysis and battle summary commands.",
 )
+
+
+@app.command("serve")
+def serve(
+    host: str = typer.Option(DEFAULT_API_HOST, "--host", help="Bind host."),
+    port: int = typer.Option(DEFAULT_API_PORT, "--port", help="Bind port."),
+    reload: bool = typer.Option(False, "--reload", help="Enable auto-reload for development."),
+):
+    """Start the local nbatools API server."""
+    try:
+        import uvicorn
+    except ImportError:
+        print("uvicorn is required. Install with: pip install 'nbatools[api]'")
+        raise typer.Exit(code=1)
+    uvicorn.run("nbatools.api:app", host=host, port=port, reload=reload)

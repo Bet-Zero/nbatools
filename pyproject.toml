@@ -26,14 +26,20 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+api = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.5",
     "pre-commit>=3.7",
+    "httpx>=0.28",
 ]
 
 [project.scripts]
 nbatools-cli = "nbatools.cli:app"
+nbatools-api = "nbatools.api_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
