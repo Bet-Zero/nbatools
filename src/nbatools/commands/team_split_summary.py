@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import NoResult, SplitSummaryResult
 
 ALLOWED_STATS = {
@@ -143,7 +144,10 @@ def build_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     if df is None:
-        df = load_team_games_for_seasons(seasons, season_type)
+        try:
+            df = load_team_games_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            return NoResult(query_class="split_summary", reason="no_data")
 
         required = [
             "game_id",
@@ -216,9 +220,12 @@ def build_result(
         ]
     )
 
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
     return SplitSummaryResult(
         summary=summary,
         split_comparison=split_comparison,
+        current_through=current_through,
     )
 
 

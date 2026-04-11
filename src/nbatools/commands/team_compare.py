@@ -4,7 +4,8 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_team_games_for_seasons
-from nbatools.commands.structured_results import ComparisonResult
+from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.structured_results import ComparisonResult, NoResult
 
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
@@ -225,7 +226,7 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     head_to_head: bool = False,
-) -> ComparisonResult:
+) -> ComparisonResult | NoResult:
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
 
@@ -233,7 +234,10 @@ def build_result(
         raise ValueError("Cannot use both wins_only and losses_only")
 
     seasons = resolve_seasons(season, start_season, end_season)
-    df = load_team_games_for_seasons(seasons, season_type)
+    try:
+        df = load_team_games_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return NoResult(query_class="comparison", reason="no_data")
 
     required = ["team_name", "season", "season_type", "wl", "game_date", "game_id"]
     missing = [c for c in required if c not in df.columns]
@@ -309,9 +313,12 @@ def build_result(
         columns=["metric", team_a, team_b],
     )
 
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
     return ComparisonResult(
         summary=summary,
         comparison=comp,
+        current_through=current_through,
     )
 
 

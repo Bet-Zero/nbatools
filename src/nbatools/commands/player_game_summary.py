@@ -6,6 +6,7 @@ from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
 )
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
     add_sample_advanced_metrics_to_summary_row,
     build_player_team_context,
@@ -165,7 +166,10 @@ def build_result(
         raise ValueError("Cannot use both wins_only and losses_only")
 
     if df is None:
-        df = load_player_games_for_seasons(seasons, season_type)
+        try:
+            df = load_player_games_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            return NoResult(query_class="summary", reason="no_data")
 
         required = [
             "game_id",
@@ -293,9 +297,12 @@ def build_result(
     season_adv = compute_season_grouped_sample_advanced_metrics(context_df)
     by_season = by_season.merge(season_adv, on="season", how="left")
 
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
     return SummaryResult(
         summary=summary,
         by_season=by_season,
+        current_through=current_through,
     )
 
 

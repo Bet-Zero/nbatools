@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import NoResult, SummaryResult
 
 ALLOWED_STATS = {
@@ -146,7 +147,10 @@ def build_result(
         raise ValueError("Cannot use both wins_only and losses_only")
 
     if df is None:
-        df = load_team_games_for_seasons(seasons, season_type)
+        try:
+            df = load_team_games_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            return NoResult(query_class="summary", reason="no_data")
 
         required = [
             "game_id",
@@ -256,9 +260,12 @@ def build_result(
         .reset_index(drop=True)
     )
 
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
     return SummaryResult(
         summary=summary,
         by_season=by_season,
+        current_through=current_through,
     )
 
 

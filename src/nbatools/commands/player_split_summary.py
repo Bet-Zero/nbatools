@@ -6,6 +6,7 @@ from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
 )
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_advanced_metrics import (
     build_player_team_context,
     compute_grouped_sample_advanced_metrics,
@@ -164,7 +165,10 @@ def build_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     if df is None:
-        df = load_player_games_for_seasons(seasons, season_type)
+        try:
+            df = load_player_games_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            return NoResult(query_class="split_summary", reason="no_data")
 
         required = [
             "game_id",
@@ -257,9 +261,12 @@ def build_result(
         .reset_index(drop=True)
     )
 
+    current_through = compute_current_through_for_seasons(seasons, season_type)
+
     return SplitSummaryResult(
         summary=summary,
         split_comparison=split_comparison,
+        current_through=current_through,
     )
 
 

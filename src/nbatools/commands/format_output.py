@@ -33,6 +33,7 @@ METADATA_FIELD_ORDER = (
     "query_class",
     "result_status",
     "result_reason",
+    "current_through",
     "season",
     "start_season",
     "end_season",
@@ -46,6 +47,7 @@ METADATA_FIELD_ORDER = (
     "grouped_boolean_used",
     "head_to_head_used",
     "notes",
+    "caveats",
 )
 
 ROUTE_TO_QUERY_CLASS = {

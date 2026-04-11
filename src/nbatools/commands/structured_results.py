@@ -9,14 +9,46 @@ and can render itself into:
 Commands build these via ``build_result()`` helpers.  The existing ``run()``
 functions call ``build_result().to_labeled_text()`` so stdout behaviour is
 unchanged.
+
+Trust/status metadata
+---------------------
+Every result carries first-class trust fields:
+
+- ``result_status``   — "ok" | "no_result" | "error"
+- ``result_reason``   — finer detail  ("no_match" | "no_data" | "unrouted" | free text)
+- ``current_through`` — latest final game_date the data covers (when determinable)
+- ``notes`` / ``caveats`` — semantic annotations
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import StrEnum
 from typing import Any
 
 import pandas as pd
+
+# ---------------------------------------------------------------------------
+# Result status vocabulary
+# ---------------------------------------------------------------------------
+
+
+class ResultStatus(StrEnum):
+    """Canonical result statuses."""
+
+    OK = "ok"
+    NO_RESULT = "no_result"
+    ERROR = "error"
+
+
+class ResultReason(StrEnum):
+    """Canonical reason codes attached to non-OK results."""
+
+    NO_MATCH = "no_match"
+    NO_DATA = "no_data"
+    UNROUTED = "unrouted"
+    ERROR = "error"
+
 
 # ---------------------------------------------------------------------------
 # No-result sentinel
@@ -25,25 +57,44 @@ import pandas as pd
 
 @dataclass
 class NoResult:
-    """Represents a query that matched no data."""
+    """Represents a query that matched no data.
+
+    ``reason`` distinguishes *why* the result is empty:
+    - ``no_match``  — data files exist but filters produced nothing
+    - ``no_data``   — the underlying season/type data is unavailable
+    - ``unrouted``  — the query could not be routed to a command
+    - ``error``     — an unexpected error occurred
+    """
 
     query_class: str
     reason: str = "no_match"
+    result_status: str = "no_result"
+    result_reason: str | None = None  # populated from *reason* if not set
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if self.result_reason is None:
+            self.result_reason = self.reason
 
     def to_labeled_text(self) -> str:
         return "SUMMARY\nno matching games\n"
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "no_result",
-            "result_reason": self.reason,
+            "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {},
         }
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        return d
 
 
 # ---------------------------------------------------------------------------
@@ -61,8 +112,12 @@ class SummaryResult:
     query_class: str = "summary"
     summary: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
     by_season: pd.DataFrame | None = None
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
 
     # -- rendering ----------------------------------------------------------
 
@@ -78,13 +133,18 @@ class SummaryResult:
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "ok",
+            "result_status": self.result_status,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {
                 "summary": _df_to_records(self.summary),
             },
         }
+        if self.result_reason is not None:
+            out["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            out["current_through"] = self.current_through
         if self.by_season is not None and not self.by_season.empty:
             out["sections"]["by_season"] = _df_to_records(self.by_season)
         return out
@@ -115,8 +175,12 @@ class ComparisonResult:
     query_class: str = "comparison"
     summary: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
     comparison: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
 
     def to_labeled_text(self) -> str:
         parts: list[str] = []
@@ -127,16 +191,22 @@ class ComparisonResult:
         return "".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "ok",
+            "result_status": self.result_status,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {
                 "summary": _df_to_records(self.summary),
                 "comparison": _df_to_records(self.comparison),
             },
         }
+        if self.result_reason is not None:
+            d["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        return d
 
     def to_sections_dict(self) -> dict[str, str]:
         return {
@@ -161,8 +231,12 @@ class SplitSummaryResult:
     query_class: str = "split_summary"
     summary: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
     split_comparison: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
 
     def to_labeled_text(self) -> str:
         parts: list[str] = []
@@ -173,16 +247,22 @@ class SplitSummaryResult:
         return "".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "ok",
+            "result_status": self.result_status,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {
                 "summary": _df_to_records(self.summary),
                 "split_comparison": _df_to_records(self.split_comparison),
             },
         }
+        if self.result_reason is not None:
+            d["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        return d
 
     def to_sections_dict(self) -> dict[str, str]:
         return {
@@ -217,8 +297,12 @@ class FinderResult:
 
     query_class: str = "finder"
     games: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
 
     def to_labeled_text(self) -> str:
         parts: list[str] = []
@@ -227,15 +311,21 @@ class FinderResult:
         return "".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "ok",
+            "result_status": self.result_status,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {
                 "finder": _df_to_records(self.games),
             },
         }
+        if self.result_reason is not None:
+            d["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        return d
 
     def to_sections_dict(self) -> dict[str, str]:
         return {
@@ -258,8 +348,12 @@ class LeaderboardResult:
 
     query_class: str = "leaderboard"
     leaders: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
 
     def to_labeled_text(self) -> str:
         parts: list[str] = []
@@ -268,15 +362,21 @@ class LeaderboardResult:
         return "".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "ok",
+            "result_status": self.result_status,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {
                 "leaderboard": _df_to_records(self.leaders),
             },
         }
+        if self.result_reason is not None:
+            d["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        return d
 
     def to_sections_dict(self) -> dict[str, str]:
         return {
@@ -298,8 +398,12 @@ class StreakResult:
 
     query_class: str = "streak"
     streaks: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
 
     def to_labeled_text(self) -> str:
         parts: list[str] = []
@@ -308,15 +412,21 @@ class StreakResult:
         return "".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "query_class": self.query_class,
-            "result_status": "ok",
+            "result_status": self.result_status,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
+            "caveats": list(self.caveats),
             "sections": {
                 "streak": _df_to_records(self.streaks),
             },
         }
+        if self.result_reason is not None:
+            d["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        return d
 
     def to_sections_dict(self) -> dict[str, str]:
         return {

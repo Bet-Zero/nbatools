@@ -13,12 +13,14 @@ from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
 from nbatools.commands.format_output import (
     METADATA_LABEL,
     build_error_output,
+    build_no_result_output,
     format_pretty_output,
     parse_labeled_sections,
     parse_metadata_block,
     route_to_query_class,
     wrap_raw_output,
 )
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import (
     _apply_filters as apply_team_summary_filters,
@@ -949,13 +951,31 @@ def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -
 
     notes = parsed.get("notes") or []
 
+    # -- compute current_through from available season info --
+    current_through: str | None = None
+    season = parsed.get("season")
+    start_season = parsed.get("start_season")
+    end_season = parsed.get("end_season")
+    season_type = parsed.get("season_type") or "Regular Season"
+
+    if season:
+        current_through = compute_current_through_for_seasons([season], season_type)
+    elif start_season and end_season:
+        from nbatools.commands._seasons import int_to_season, season_to_int
+
+        seasons = [
+            int_to_season(y)
+            for y in range(season_to_int(start_season), season_to_int(end_season) + 1)
+        ]
+        current_through = compute_current_through_for_seasons(seasons, season_type)
+
     meta: dict = {
         "query_text": query,
         "route": route,
         "query_class": query_class,
-        "season": parsed.get("season"),
-        "start_season": parsed.get("start_season"),
-        "end_season": parsed.get("end_season"),
+        "season": season,
+        "start_season": start_season,
+        "end_season": end_season,
         "season_type": parsed.get("season_type"),
         "start_date": parsed.get("start_date"),
         "end_date": parsed.get("end_date"),
@@ -966,6 +986,9 @@ def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -
         "grouped_boolean_used": grouped_boolean_used,
         "head_to_head_used": bool(parsed.get("head_to_head")),
     }
+
+    if current_through is not None:
+        meta["current_through"] = current_through
 
     if notes:
         meta["notes"] = notes
@@ -2272,7 +2295,29 @@ def run(
     extra_conditions = parsed.get("extra_conditions", [])
 
     func = _get_route_func_map()[route]
-    raw_text = _execute_capture_raw(func, kwargs, extra_conditions)
+    try:
+        raw_text = _execute_capture_raw(func, kwargs, extra_conditions)
+    except FileNotFoundError:
+        metadata = _build_metadata_dict(parsed, query, grouped_boolean_used=False)
+        no_data_output = build_no_result_output(metadata, reason="no_data")
+        pretty_text = format_pretty_output(no_data_output, query)
+
+        if export_csv_path:
+            _write_csv_from_raw_output(no_data_output, export_csv_path)
+        if export_json_path:
+            _write_json_from_raw_output(no_data_output, export_json_path)
+        if export_txt_path:
+            text_to_save = no_data_output if not pretty else pretty_text
+            _write_text_file(
+                export_txt_path,
+                text_to_save + ("" if text_to_save.endswith("\n") else "\n"),
+            )
+
+        if not pretty:
+            print(no_data_output, end="" if no_data_output.endswith("\n") else "\n")
+        else:
+            print(pretty_text)
+        return
 
     _emit(
         raw_text,
