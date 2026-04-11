@@ -45,6 +45,7 @@ METADATA_FIELD_ORDER = (
     "split_type",
     "grouped_boolean_used",
     "head_to_head_used",
+    "notes",
 )
 
 ROUTE_TO_QUERY_CLASS = {
@@ -85,7 +86,12 @@ def build_metadata_block(metadata: dict[str, Any]) -> str:
         value = metadata[key]
         if value is None or value == "":
             continue
-        if isinstance(value, bool):
+        if isinstance(value, list):
+            joined = "|".join(str(v) for v in value if v)
+            if not joined:
+                continue
+            rows.append({"key": key, "value": joined})
+        elif isinstance(value, bool):
             rows.append({"key": key, "value": "true" if value else "false"})
         else:
             rows.append({"key": key, "value": str(value)})

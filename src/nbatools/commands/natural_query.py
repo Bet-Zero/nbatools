@@ -947,7 +947,9 @@ def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -
         else:
             team = team_a or team_b
 
-    return {
+    notes = parsed.get("notes") or []
+
+    meta: dict = {
         "query_text": query,
         "route": route,
         "query_class": query_class,
@@ -964,6 +966,11 @@ def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -
         "grouped_boolean_used": grouped_boolean_used,
         "head_to_head_used": bool(parsed.get("head_to_head")),
     }
+
+    if notes:
+        meta["notes"] = notes
+
+    return meta
 
 
 def _wrap_natural_query_raw(
@@ -1052,7 +1059,10 @@ def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
     payload: dict[str, object] = {}
 
     if metadata_block is not None:
-        payload["metadata"] = parse_metadata_block(metadata_block)
+        meta = parse_metadata_block(metadata_block)
+        if "notes" in meta and isinstance(meta["notes"], str):
+            meta["notes"] = [n for n in meta["notes"].split("|") if n]
+        payload["metadata"] = meta
 
     for label, block in sections.items():
         if not block:
@@ -1315,6 +1325,7 @@ def _finalize_route(parsed: dict) -> dict:
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
 
+    notes: list[str] = []
     route = None
     route_kwargs = None
 
@@ -1475,6 +1486,7 @@ def _finalize_route(parsed: dict) -> dict:
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
             if (start_date or end_date) and leaderboard_stat == "off_rating":
+                notes.append("stat_fallback: off_rating not available with date window, using pts")
                 leaderboard_stat = "pts"
             route = "season_team_leaders"
             route_kwargs = {
@@ -1490,6 +1502,7 @@ def _finalize_route(parsed: dict) -> dict:
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
             if (start_date or end_date) and leaderboard_stat == "off_rating":
+                notes.append("stat_fallback: off_rating not available with date window, using pts")
                 leaderboard_stat = "pts"
             route = "season_team_leaders"
             route_kwargs = {
@@ -1625,6 +1638,21 @@ def _finalize_route(parsed: dict) -> dict:
     out = dict(parsed)
     out["route"] = route
     out["route_kwargs"] = route_kwargs
+
+    date_window_active = start_date is not None or end_date is not None
+    if date_window_active and route in ("season_leaders", "season_team_leaders"):
+        notes.append(
+            "leaderboard_source: game-log derived (season-advanced stats excluded in date window)"
+        )
+
+    if route in ("player_game_summary", "player_compare", "player_split_summary"):
+        notes.append(
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct recomputed from filtered sample"
+        )
+
+    if notes:
+        out["notes"] = notes
+
     return out
 
 

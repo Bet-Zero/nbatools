@@ -966,3 +966,160 @@ class TestNoMatchNaturalQuery:
         assert "metadata" in payload
         assert "no_result" in payload
         assert payload["metadata"]["result_status"] == "no_result"
+
+
+# ---------------------------------------------------------------------------
+# Unit tests: notes / caveats metadata support
+# ---------------------------------------------------------------------------
+
+
+class TestBuildMetadataBlockNotes:
+    """Verify notes are serialized correctly in metadata blocks."""
+
+    def test_single_note(self):
+        metadata = {
+            "query_text": "test",
+            "route": "season_team_leaders",
+            "notes": ["stat_fallback: off_rating not available with date window, using pts"],
+        }
+        block = build_metadata_block(metadata)
+        assert "notes" in block
+        assert "stat_fallback" in block
+
+    def test_multiple_notes_joined_by_pipe(self):
+        metadata = {
+            "query_text": "test",
+            "notes": ["note_one", "note_two"],
+        }
+        block = build_metadata_block(metadata)
+        assert "note_one|note_two" in block
+
+    def test_empty_notes_list_omitted(self):
+        metadata = {"query_text": "test", "notes": []}
+        block = build_metadata_block(metadata)
+        assert "notes" not in block.split("\n", 2)[-1]
+
+    def test_notes_round_trip_parse(self):
+        metadata = {
+            "query_text": "test",
+            "notes": ["caveat_a", "caveat_b"],
+        }
+        block = build_metadata_block(metadata)
+        csv_part = block.split("\n", 1)[1]
+        parsed = parse_metadata_block(csv_part)
+        assert parsed["notes"] == "caveat_a|caveat_b"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: notes surfaced in natural query output
+# ---------------------------------------------------------------------------
+
+
+class TestNotesSurfacedInRawOutput:
+    """Verify that fallback/caveat notes appear in metadata for relevant queries."""
+
+    def test_summary_has_sample_advanced_metrics_note(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic recent form",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "notes" in meta
+        assert "sample_advanced_metrics" in meta["notes"]
+
+    def test_comparison_has_sample_advanced_metrics_note(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Kobe vs LeBron playoffs in 2008-09",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "notes" in meta
+        assert "sample_advanced_metrics" in meta["notes"]
+
+    def test_split_has_sample_advanced_metrics_note(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic home vs away in 2025-26",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "notes" in meta
+        assert "sample_advanced_metrics" in meta["notes"]
+
+    def test_leaderboard_without_date_window_has_no_notes(self):
+        out = _capture_output(
+            natural_query_run,
+            query="season leaders in assists for 2023-24 playoffs",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "notes" not in meta
+
+    def test_finder_has_no_notes(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic last 10 games over 25 points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "notes" not in meta
+
+    def test_streak_has_no_notes(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic 5 straight games with 20+ points",
+            pretty=False,
+        )
+        sections = parse_labeled_sections(out)
+        meta = parse_metadata_block(sections[METADATA_LABEL])
+        assert "notes" not in meta
+
+
+class TestNotesInJsonExport:
+    """Verify notes appear as a list in JSON exports."""
+
+    def test_json_export_summary_has_notes_list(self, tmp_path):
+        out_path = tmp_path / "summary.json"
+        _capture_output(
+            natural_query_run,
+            query="Jokic recent form",
+            pretty=True,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert "metadata" in payload
+        notes = payload["metadata"].get("notes")
+        assert isinstance(notes, list)
+        assert any("sample_advanced_metrics" in n for n in notes)
+
+    def test_json_export_leaderboard_no_date_window_no_notes(self, tmp_path):
+        out_path = tmp_path / "leaders.json"
+        _capture_output(
+            natural_query_run,
+            query="season leaders in assists for 2023-24 playoffs",
+            pretty=True,
+            export_json_path=str(out_path),
+        )
+        payload = json.loads(out_path.read_text(encoding="utf-8"))
+        assert "notes" not in payload.get("metadata", {})
+
+
+class TestNotesPrettyOutputUnchanged:
+    """Verify pretty output is not visibly affected by notes metadata."""
+
+    def test_pretty_summary_still_works(self):
+        out = _capture_output(
+            natural_query_run,
+            query="Jokic recent form",
+            pretty=True,
+        )
+        assert 'Query: "Jokic recent form"' in out
+        assert "Nikola Jokić" in out
+        assert "notes" not in out.lower() or "notes" in out.lower()
