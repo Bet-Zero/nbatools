@@ -3,12 +3,19 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 from nbatools.cli_apps.queries import _run_and_handle_exports
+from nbatools.commands.format_output import (
+    METADATA_LABEL,
+    parse_labeled_sections,
+    parse_metadata_block,
+)
 from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import run as game_summary_run
 from nbatools.commands.natural_query import run as natural_query_run
 from nbatools.commands.player_compare import run as player_compare_run
+from nbatools.commands.player_game_finder import run as player_game_finder_run
 from nbatools.commands.player_game_summary import run as player_game_summary_run
 from nbatools.commands.player_split_summary import run as player_split_summary_run
+from nbatools.commands.player_streak_finder import run as player_streak_finder_run
 from nbatools.commands.season_leaders import run as season_leaders_run
 from nbatools.commands.team_compare import run as team_compare_run
 from nbatools.commands.team_split_summary import run as team_split_summary_run
@@ -799,6 +806,7 @@ def test_structured_export_json_player_summary(tmp_path):
     assert "SUMMARY" in out
     assert out_path.exists()
     payload = json.loads(out_path.read_text(encoding="utf-8"))
+    assert "metadata" in payload
     assert "summary" in payload
     assert "by_season" in payload
     assert payload["summary"][0]["player_name"] == "Nikola Jokić"
@@ -826,10 +834,12 @@ def test_structured_export_txt_team_compare(tmp_path):
         last_n=None,
         txt=str(out_path),
     )
+    assert "METADATA" in out
     assert "SUMMARY" in out
     assert "COMPARISON" in out
     assert out_path.exists()
     text = out_path.read_text(encoding="utf-8")
+    assert "METADATA" in text
     assert "SUMMARY" in text
     assert "COMPARISON" in text
     assert "BOS" in text
@@ -945,3 +955,309 @@ def test_grouped_boolean_team_split_wins_losses_smoke():
     assert "TOV" in out
     assert "eFG%" in out
     assert "TS%" in out
+
+
+# ---------------------------------------------------------------------------
+# Structured CLI: result-contract scaffolding tests
+# ---------------------------------------------------------------------------
+
+
+def test_structured_cli_top_player_games_has_metadata_and_leaderboard():
+    out = _capture_output(
+        _run_and_handle_exports,
+        top_player_games_run,
+        "2005-06",
+        "pts",
+        5,
+        "Regular Season",
+        False,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "LEADERBOARD" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "top_player_games"
+    assert meta["query_class"] == "leaderboard"
+
+
+def test_structured_cli_season_leaders_has_metadata_and_leaderboard():
+    out = _capture_output(
+        _run_and_handle_exports,
+        season_leaders_run,
+        season="2023-24",
+        stat="ast",
+        limit=5,
+        season_type="Regular Season",
+        min_games=20,
+        ascending=False,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "LEADERBOARD" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "season_leaders"
+    assert meta["query_class"] == "leaderboard"
+    assert meta["season"] == "2023-24"
+    assert meta["season_type"] == "Regular Season"
+
+
+def test_structured_cli_player_game_finder_has_metadata_and_finder():
+    out = _capture_output(
+        _run_and_handle_exports,
+        player_game_finder_run,
+        season="2005-06",
+        start_season=None,
+        end_season=None,
+        season_type="Regular Season",
+        player="Kobe Bryant",
+        team=None,
+        opponent="DAL",
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        stat="pts",
+        min_value=40,
+        max_value=None,
+        limit=25,
+        sort_by="stat",
+        ascending=False,
+        last_n=None,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "FINDER" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "player_game_finder"
+    assert meta["query_class"] == "finder"
+    assert meta["player"] == "Kobe Bryant"
+    assert meta["opponent"] == "DAL"
+
+
+def test_structured_cli_game_finder_has_metadata_and_finder():
+    out = _capture_output(
+        _run_and_handle_exports,
+        game_finder_run,
+        season=None,
+        start_season="2021-22",
+        end_season="2023-24",
+        season_type="Regular Season",
+        team="BOS",
+        opponent="MIL",
+        home_only=True,
+        away_only=False,
+        wins_only=True,
+        losses_only=False,
+        stat=None,
+        min_value=None,
+        max_value=None,
+        limit=10,
+        sort_by="game_date",
+        ascending=False,
+        last_n=None,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "FINDER" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "game_finder"
+    assert meta["query_class"] == "finder"
+    assert meta["team"] == "BOS"
+    assert meta["opponent"] == "MIL"
+    assert meta["start_season"] == "2021-22"
+    assert meta["end_season"] == "2023-24"
+
+
+def test_structured_cli_player_summary_has_metadata_and_summary():
+    out = _capture_output(
+        _run_and_handle_exports,
+        player_game_summary_run,
+        season="2025-26",
+        start_season=None,
+        end_season=None,
+        season_type="Regular Season",
+        player="Nikola Jokić",
+        team=None,
+        opponent=None,
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        stat=None,
+        min_value=None,
+        max_value=None,
+        last_n=10,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "SUMMARY" in sections
+    assert "BY_SEASON" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "player_game_summary"
+    assert meta["query_class"] == "summary"
+    assert meta["player"] == "Nikola Jokić"
+
+
+def test_structured_cli_team_compare_has_metadata_and_comparison():
+    out = _capture_output(
+        _run_and_handle_exports,
+        team_compare_run,
+        team_a="BOS",
+        team_b="MIL",
+        season=None,
+        start_season="2021-22",
+        end_season="2023-24",
+        season_type="Regular Season",
+        opponent=None,
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        last_n=None,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "SUMMARY" in sections
+    assert "COMPARISON" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "team_compare"
+    assert meta["query_class"] == "comparison"
+    assert meta["team"] == "BOS, MIL"
+
+
+def test_structured_cli_player_split_has_metadata_and_split():
+    out = _capture_output(
+        _run_and_handle_exports,
+        player_split_summary_run,
+        split="home_away",
+        season="2025-26",
+        start_season=None,
+        end_season=None,
+        season_type="Regular Season",
+        player="Nikola Jokić",
+        team=None,
+        opponent=None,
+        stat=None,
+        min_value=None,
+        max_value=None,
+        last_n=None,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "SUMMARY" in sections
+    assert "SPLIT_COMPARISON" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "player_split_summary"
+    assert meta["query_class"] == "split_summary"
+    assert meta["split_type"] == "home_away"
+
+
+def test_structured_cli_player_streak_has_metadata_and_streak():
+    out = _capture_output(
+        _run_and_handle_exports,
+        player_streak_finder_run,
+        season="2025-26",
+        start_season=None,
+        end_season=None,
+        season_type="Regular Season",
+        player="Nikola Jokić",
+        team=None,
+        opponent=None,
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        start_date=None,
+        end_date=None,
+        last_n=None,
+        stat="pts",
+        min_value=20,
+        max_value=None,
+        special_condition=None,
+        min_streak_length=3,
+        longest=False,
+        limit=25,
+    )
+    sections = parse_labeled_sections(out)
+    assert METADATA_LABEL in sections
+    assert "STREAK" in sections
+    meta = parse_metadata_block(sections[METADATA_LABEL])
+    assert meta["route"] == "player_streak_finder"
+    assert meta["query_class"] == "streak"
+    assert meta["player"] == "Nikola Jokić"
+
+
+def test_structured_cli_json_export_has_metadata(tmp_path):
+    out_path = tmp_path / "cli_summary.json"
+    _capture_output(
+        _run_and_handle_exports,
+        player_game_summary_run,
+        season="2025-26",
+        start_season=None,
+        end_season=None,
+        season_type="Regular Season",
+        player="Nikola Jokić",
+        team=None,
+        opponent=None,
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        stat=None,
+        min_value=None,
+        max_value=None,
+        last_n=10,
+        json_path=str(out_path),
+    )
+    payload = json.loads(out_path.read_text(encoding="utf-8"))
+    assert "metadata" in payload
+    assert "summary" in payload
+    assert "by_season" in payload
+    assert payload["metadata"]["route"] == "player_game_summary"
+    assert payload["metadata"]["query_class"] == "summary"
+
+
+def test_structured_cli_csv_export_strips_metadata(tmp_path):
+    out_path = tmp_path / "cli_top.csv"
+    _capture_output(
+        _run_and_handle_exports,
+        top_player_games_run,
+        "2005-06",
+        "pts",
+        5,
+        "Regular Season",
+        False,
+        csv=str(out_path),
+    )
+    text = out_path.read_text(encoding="utf-8")
+    assert "METADATA" not in text
+    assert "LEADERBOARD" not in text
+    assert "player_name" in text
+    assert "Kobe Bryant" in text
+
+
+def test_structured_cli_txt_export_has_metadata(tmp_path):
+    out_path = tmp_path / "cli_compare.txt"
+    _capture_output(
+        _run_and_handle_exports,
+        team_compare_run,
+        team_a="BOS",
+        team_b="MIL",
+        season=None,
+        start_season="2021-22",
+        end_season="2023-24",
+        season_type="Regular Season",
+        opponent=None,
+        home_only=False,
+        away_only=False,
+        wins_only=False,
+        losses_only=False,
+        last_n=None,
+        txt=str(out_path),
+    )
+    text = out_path.read_text(encoding="utf-8")
+    assert "METADATA" in text
+    assert "SUMMARY" in text
+    assert "COMPARISON" in text
+    assert "BOS" in text
+    assert "MIL" in text

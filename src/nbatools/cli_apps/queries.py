@@ -5,20 +5,30 @@ from collections.abc import Callable
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import typer
 
+from nbatools.commands.format_output import (
+    METADATA_LABEL,
+    parse_labeled_sections,
+    parse_metadata_block,
+    route_to_query_class,
+    wrap_raw_output,
+)
 from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import run as game_summary_run
 from nbatools.commands.player_compare import run as player_compare_run
 from nbatools.commands.player_game_finder import run as player_game_finder_run
 from nbatools.commands.player_game_summary import run as player_game_summary_run
 from nbatools.commands.player_split_summary import run as player_split_summary_run
+from nbatools.commands.player_streak_finder import run as player_streak_finder_run
 from nbatools.commands.season_leaders import run as season_leaders_run
 from nbatools.commands.season_team_leaders import run as season_team_leaders_run
 from nbatools.commands.team_compare import run as team_compare_run
 from nbatools.commands.team_split_summary import run as team_split_summary_run
+from nbatools.commands.team_streak_finder import run as team_streak_finder_run
 from nbatools.commands.top_player_games import run as top_player_games_run
 from nbatools.commands.top_team_games import run as top_team_games_run
 
@@ -27,16 +37,35 @@ app = typer.Typer(
         "Structured NBA query commands.\n\n"
         "Use these when you want explicit control instead of natural language.\n\n"
         "Examples:\n"
-        '  nbatools-cli query player-game-summary'
+        "  nbatools-cli query player-game-summary"
         ' --player "Nikola Joki\u0107" --season 2025-26 --last-n 10\n'
         "  nbatools-cli query team-compare"
         " --team-a BOS --team-b MIL --start-season 2021-22 --end-season 2023-24\n"
-        '  nbatools-cli query player-split-summary'
+        "  nbatools-cli query player-split-summary"
         ' --player "Nikola Joki\u0107" --season 2025-26 --split home_away\n'
     ),
     no_args_is_help=True,
     rich_markup_mode="markdown",
 )
+
+_FUNC_TO_ROUTE: dict[Callable, str] = {
+    top_player_games_run: "top_player_games",
+    top_team_games_run: "top_team_games",
+    season_leaders_run: "season_leaders",
+    season_team_leaders_run: "season_team_leaders",
+    game_finder_run: "game_finder",
+    player_game_finder_run: "player_game_finder",
+    player_game_summary_run: "player_game_summary",
+    game_summary_run: "game_summary",
+    player_compare_run: "player_compare",
+    team_compare_run: "team_compare",
+    player_split_summary_run: "player_split_summary",
+    team_split_summary_run: "team_split_summary",
+    player_streak_finder_run: "player_streak_finder",
+    team_streak_finder_run: "team_streak_finder",
+}
+
+_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE")
 
 
 def _ensure_parent_dir(path_str: str) -> None:
@@ -50,40 +79,45 @@ def _write_text_file(path_str: str, text: str) -> None:
     Path(path_str).write_text(text, encoding="utf-8")
 
 
-def _split_summary_sections(text: str) -> dict[str, str]:
-    text = text.strip()
-    if not text.startswith("SUMMARY\n"):
-        return {"raw": text}
+def _build_cli_metadata(func: Callable, kwargs: dict[str, Any]) -> dict[str, Any]:
+    route = _FUNC_TO_ROUTE.get(func)
+    query_class = route_to_query_class(route)
 
-    remaining = text[len("SUMMARY\n") :]
+    player = kwargs.get("player")
+    player_a = kwargs.get("player_a")
+    player_b = kwargs.get("player_b")
+    if not player and player_a and player_b:
+        player = f"{player_a}, {player_b}"
+    elif not player:
+        player = player_a or player_b
 
-    if "\nCOMPARISON\n" in remaining:
-        summary_part, comparison_part = remaining.split("\nCOMPARISON\n", 1)
-        return {
-            "summary": summary_part.strip(),
-            "comparison": comparison_part.strip(),
-        }
+    team = kwargs.get("team")
+    team_a = kwargs.get("team_a")
+    team_b = kwargs.get("team_b")
+    if not team and team_a and team_b:
+        team = f"{team_a}, {team_b}"
+    elif not team:
+        team = team_a or team_b
 
-    if "\nSPLIT_COMPARISON\n" in remaining:
-        summary_part, split_part = remaining.split("\nSPLIT_COMPARISON\n", 1)
-        return {
-            "summary": summary_part.strip(),
-            "split_comparison": split_part.strip(),
-        }
-
-    if "\nBY_SEASON\n" in remaining:
-        summary_part, by_season_part = remaining.split("\nBY_SEASON\n", 1)
-        return {
-            "summary": summary_part.strip(),
-            "by_season": by_season_part.strip(),
-        }
-
-    return {"summary": remaining.strip()}
+    return {
+        "route": route,
+        "query_class": query_class,
+        "season": kwargs.get("season"),
+        "start_season": kwargs.get("start_season"),
+        "end_season": kwargs.get("end_season"),
+        "season_type": kwargs.get("season_type"),
+        "start_date": kwargs.get("start_date"),
+        "end_date": kwargs.get("end_date"),
+        "player": player,
+        "team": team,
+        "opponent": kwargs.get("opponent"),
+        "split_type": kwargs.get("split"),
+    }
 
 
 def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
     _ensure_parent_dir(path_str)
-    text = raw_text.strip()
+    text = (raw_text or "").strip()
 
     if not text:
         Path(path_str).write_text("", encoding="utf-8")
@@ -93,24 +127,52 @@ def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
         Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
         return
 
-    if text.startswith("SUMMARY\n"):
-        Path(path_str).write_text(
-            text + ("\n" if not text.endswith("\n") else ""), encoding="utf-8"
-        )
+    sections = parse_labeled_sections(text)
+    sections_no_meta = {k: v for k, v in sections.items() if k != METADATA_LABEL}
+
+    if not sections_no_meta:
+        Path(path_str).write_text("", encoding="utf-8")
         return
 
-    try:
-        df = pd.read_csv(StringIO(text))
-        df.to_csv(path_str, index=False)
-    except Exception:
-        Path(path_str).write_text(
-            text + ("\n" if not text.endswith("\n") else ""), encoding="utf-8"
-        )
+    if len(sections_no_meta) == 1:
+        only_label, only_block = next(iter(sections_no_meta.items()))
+        if only_label in _SINGLE_TABLE_LABELS:
+            if only_block.lower() == "no matching games":
+                Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
+                return
+            try:
+                df = pd.read_csv(StringIO(only_block))
+                df.to_csv(path_str, index=False)
+                return
+            except Exception:
+                Path(path_str).write_text(
+                    only_block + ("\n" if not only_block.endswith("\n") else ""),
+                    encoding="utf-8",
+                )
+                return
+
+    parts: list[str] = []
+    for label in (
+        "SUMMARY",
+        "BY_SEASON",
+        "COMPARISON",
+        "SPLIT_COMPARISON",
+        "FINDER",
+        "LEADERBOARD",
+        "STREAK",
+    ):
+        if label in sections_no_meta:
+            parts.append(f"{label}\n{sections_no_meta[label]}")
+    if not parts and "TABLE" in sections_no_meta:
+        parts.append(sections_no_meta["TABLE"])
+
+    rebuilt = "\n\n".join(parts).strip()
+    Path(path_str).write_text(rebuilt + "\n", encoding="utf-8")
 
 
 def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
     _ensure_parent_dir(path_str)
-    text = raw_text.strip()
+    text = (raw_text or "").strip()
 
     if not text:
         Path(path_str).write_text("[]\n", encoding="utf-8")
@@ -123,32 +185,38 @@ def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
         )
         return
 
-    if not text.startswith("SUMMARY\n"):
-        try:
-            df = pd.read_csv(StringIO(text))
-            payload = df.to_dict(orient="records")
-            Path(path_str).write_text(
-                json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-            )
-            return
-        except Exception:
-            payload = {"raw_text": text}
-            Path(path_str).write_text(
-                json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-            )
-            return
+    sections = parse_labeled_sections(text)
+    metadata_block = sections.pop(METADATA_LABEL, None)
 
-    sections = _split_summary_sections(text)
     payload: dict[str, object] = {}
 
-    for key, block in sections.items():
+    if metadata_block is not None:
+        payload["metadata"] = parse_metadata_block(metadata_block)
+
+    for label, block in sections.items():
         if not block:
+            continue
+        key = label.lower() if label != "TABLE" else "table"
+        if block.lower() == "no matching games":
+            payload[key] = []
             continue
         try:
             df = pd.read_csv(StringIO(block))
             payload[key] = df.to_dict(orient="records")
         except Exception:
             payload[key] = block
+
+    if not payload:
+        try:
+            df = pd.read_csv(StringIO(text))
+            payload_list = df.to_dict(orient="records")
+            Path(path_str).write_text(
+                json.dumps(payload_list, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            return
+        except Exception:
+            payload = {"raw_text": text}
 
     Path(path_str).write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -168,14 +236,18 @@ def _run_and_handle_exports(
         func(*args, **kwargs)
     raw_text = buffer.getvalue()
 
-    if csv:
-        _write_csv_from_raw_output(raw_text, csv)
-    if txt:
-        _write_text_file(txt, raw_text if raw_text.endswith("\n") else raw_text + "\n")
-    if json_path:
-        _write_json_from_raw_output(raw_text, json_path)
+    metadata = _build_cli_metadata(func, kwargs)
+    query_class = route_to_query_class(_FUNC_TO_ROUTE.get(func))
+    wrapped = wrap_raw_output(raw_text, metadata, query_class)
 
-    print(raw_text, end="" if raw_text.endswith("\n") else "\n")
+    if csv:
+        _write_csv_from_raw_output(wrapped, csv)
+    if txt:
+        _write_text_file(txt, wrapped if wrapped.endswith("\n") else wrapped + "\n")
+    if json_path:
+        _write_json_from_raw_output(wrapped, json_path)
+
+    print(wrapped, end="" if wrapped.endswith("\n") else "\n")
 
 
 def _export_options():
