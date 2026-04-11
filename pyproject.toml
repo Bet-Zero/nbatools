@@ -32,6 +32,7 @@ api = [
 ]
 dev = [
     "pytest>=8.0",
+    "pytest-xdist>=3.5",
     "ruff>=0.5",
     "pre-commit>=3.7",
     "httpx>=0.28",
@@ -46,6 +47,8 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-n auto"
+markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 
 [tool.ruff]
 line-length = 100

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+from functools import cache
 from pathlib import Path
 
 import pandas as pd
@@ -38,13 +40,15 @@ def normalize_season_type(season_type: str) -> str:
     return season_type.lower().replace(" ", "_")
 
 
-def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    """Load and concatenate team_game_stats CSVs for the given seasons."""
+@cache
+def _load_team_games_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
 
     for season in seasons:
-        path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
+        path = Path(data_root) / f"data/raw/team_game_stats/{season}_{safe}.csv"
         if not path.exists():
             continue
         df = pd.read_csv(path)
@@ -58,19 +62,27 @@ def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.Data
     return pd.concat(frames, ignore_index=True)
 
 
-def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
+def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    """Load and concatenate team_game_stats CSVs for the given seasons."""
+    return _load_team_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+@cache
+def _load_player_games_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
+    root = Path(data_root)
 
     for season in seasons:
-        path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
+        path = root / f"data/raw/player_game_stats/{season}_{safe}.csv"
         if not path.exists():
             continue
 
         df = pd.read_csv(path)
 
-        team_stats_path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
+        team_stats_path = root / f"data/raw/team_game_stats/{season}_{safe}.csv"
         if not team_stats_path.exists():
             raise FileNotFoundError(f"Missing team stats file: {team_stats_path}")
 
@@ -92,20 +104,28 @@ def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.Da
         raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")
 
     out = pd.concat(frames, ignore_index=True)
-    out = add_usage_ast_reb_rate_columns(out, seasons=seasons, season_type=season_type)
+    out = add_usage_ast_reb_rate_columns(
+        out, seasons=seasons, season_type=season_type, data_root=data_root
+    )
     return out
 
 
+def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
+    return _load_player_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
 def add_usage_ast_reb_rate_columns(
-    df: pd.DataFrame, seasons: list[str], season_type: str
+    df: pd.DataFrame, seasons: list[str] | tuple[str, ...], season_type: str, data_root: str = ""
 ) -> pd.DataFrame:
     """Merge usage/ast/reb rate columns from player_season_advanced files."""
     out = df.copy()
     safe = normalize_season_type(season_type)
+    root = Path(data_root) if data_root else Path()
     frames: list[pd.DataFrame] = []
 
     for season in seasons:
-        adv_path = Path(f"data/raw/player_season_advanced/{season}_{safe}.csv")
+        adv_path = root / f"data/raw/player_season_advanced/{season}_{safe}.csv"
         if not adv_path.exists():
             continue
 

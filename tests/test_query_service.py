@@ -47,6 +47,7 @@ def _capture(fn, *args, **kwargs) -> str:
 # ===================================================================
 
 
+@pytest.mark.slow
 class TestNaturalQueryExecution:
     """execute_natural_query should parse, route, and return typed results."""
 
@@ -345,6 +346,7 @@ class TestCLIRenderingThroughService:
 # ===================================================================
 
 
+@pytest.mark.slow
 class TestExportParity:
     """Exports should produce the same semantics after refactoring."""
 

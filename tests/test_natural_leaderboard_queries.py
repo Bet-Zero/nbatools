@@ -1,6 +1,8 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -64,6 +66,7 @@ def test_parse_highest_assists_per_game():
     assert parsed["route_kwargs"]["stat"] == "ast"
 
 
+@pytest.mark.slow
 def test_natural_top_scorers_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -75,6 +78,7 @@ def test_natural_top_scorers_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.slow
 def test_natural_highest_ts_pct_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -86,6 +90,7 @@ def test_natural_highest_ts_pct_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.slow
 def test_natural_most_30_point_games_raw_smoke():
     out = _capture_output(
         natural_query_run,

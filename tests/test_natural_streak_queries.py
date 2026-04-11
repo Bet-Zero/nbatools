@@ -1,6 +1,8 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -45,6 +47,7 @@ def test_parse_player_triple_double_streak():
     assert parsed["route_kwargs"]["longest"] is True
 
 
+@pytest.mark.slow
 def test_natural_player_points_streak_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -56,6 +59,7 @@ def test_natural_player_points_streak_raw_smoke():
     assert "Nikola Jokić" in out
 
 
+@pytest.mark.slow
 def test_natural_player_triple_double_streak_raw_smoke():
     out = _capture_output(
         natural_query_run,
