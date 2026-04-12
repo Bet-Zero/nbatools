@@ -5,6 +5,9 @@ Covers:
 - Natural query parsing for career, since, last-N-seasons
 - Multi-season leaderboard aggregation
 - Multi-season summary / comparison routing
+- Multi-season caveats on all result classes
+- Range-intent routing to summary for player/team queries
+- Playoff historical spans
 - Structured query support for historical spans
 - Service/API compatibility
 """
@@ -37,7 +40,13 @@ from nbatools.commands.natural_query import (
 )
 from nbatools.commands.season_leaders import build_result as season_leaders_build_result
 from nbatools.commands.season_team_leaders import build_result as season_team_leaders_build_result
-from nbatools.commands.structured_results import LeaderboardResult, NoResult
+from nbatools.commands.structured_results import (
+    ComparisonResult,
+    LeaderboardResult,
+    NoResult,
+    SplitSummaryResult,
+    SummaryResult,
+)
 
 # ===================================================================
 # _seasons.py — Historical span model
@@ -655,3 +664,1141 @@ class TestLiveSmokeHistorical:
         qr = execute_natural_query("best scoring teams last 5 seasons")
         assert qr.is_ok
         assert isinstance(qr.result, LeaderboardResult)
+
+
+# ===================================================================
+# Helper: fake data generators for isolated tests
+# ===================================================================
+
+
+def _make_player_game_rows_full(
+    player_name,
+    player_id,
+    team_abbr,
+    team_id,
+    season,
+    n_games,
+    avg_pts,
+    season_type="regular_season",
+):
+    """Generate fake player game log rows with all required columns."""
+    rows = []
+    team_name = f"Team {team_abbr}"
+    for i in range(n_games):
+        wl = "W" if i % 2 == 0 else "L"
+        rows.append(
+            {
+                "game_id": f"{season}_{player_id}_{i}",
+                "game_date": f"2099-{(i % 12) + 1:02d}-{(i % 28) + 1:02d}",
+                "season": season,
+                "season_type": "Playoffs" if season_type == "playoffs" else "Regular Season",
+                "player_id": player_id,
+                "player_name": player_name,
+                "team_id": team_id,
+                "team_abbr": team_abbr,
+                "team_name": team_name,
+                "opponent_team_id": 999,
+                "opponent_team_abbr": "OPP",
+                "opponent_team_name": "Opponents",
+                "is_home": 1 if i % 2 == 0 else 0,
+                "is_away": 0 if i % 2 == 0 else 1,
+                "wl": wl,
+                "pts": avg_pts + (i % 5),
+                "reb": 8 + (i % 3),
+                "ast": 6 + (i % 4),
+                "stl": 1,
+                "blk": 1,
+                "fgm": 10 + (i % 3),
+                "fga": 20,
+                "fg3m": 2 + (i % 2),
+                "fg3a": 5,
+                "ftm": 3,
+                "fta": 4,
+                "tov": 3,
+                "pf": 2,
+                "minutes": 35,
+                "plus_minus": 5 if wl == "W" else -3,
+                "oreb": 2,
+                "dreb": 6,
+                "fg_pct": 0.5,
+                "fg3_pct": 0.4,
+                "ft_pct": 0.75,
+                "efg_pct": 0.55,
+                "ts_pct": 0.60,
+            }
+        )
+    return rows
+
+
+def _make_team_game_rows_full(
+    team_name,
+    team_abbr,
+    team_id,
+    season,
+    n_games,
+    avg_pts,
+    season_type="regular_season",
+):
+    """Generate fake team game log rows with all required columns."""
+    rows = []
+    for i in range(n_games):
+        wl = "W" if i % 2 == 0 else "L"
+        rows.append(
+            {
+                "game_id": f"{season}_{team_id}_{i}",
+                "game_date": f"2099-{(i % 12) + 1:02d}-{(i % 28) + 1:02d}",
+                "season": season,
+                "season_type": "Playoffs" if season_type == "playoffs" else "Regular Season",
+                "team_id": team_id,
+                "team_name": team_name,
+                "team_abbr": team_abbr,
+                "opponent_team_id": 999,
+                "opponent_team_abbr": "OPP",
+                "opponent_team_name": "Opponents",
+                "is_home": 1 if i % 2 == 0 else 0,
+                "is_away": 0 if i % 2 == 0 else 1,
+                "wl": wl,
+                "pts": avg_pts + (i % 5),
+                "reb": 40 + (i % 5),
+                "ast": 25 + (i % 3),
+                "stl": 7,
+                "blk": 5,
+                "fgm": 35 + (i % 3),
+                "fga": 80,
+                "fg3m": 10 + (i % 3),
+                "fg3a": 30,
+                "ftm": 15,
+                "fta": 20,
+                "tov": 12,
+                "pf": 18,
+                "minutes": 240,
+                "plus_minus": 8 if wl == "W" else -6,
+                "oreb": 10,
+                "dreb": 30,
+                "fg_pct": 0.44,
+                "fg3_pct": 0.35,
+                "ft_pct": 0.75,
+                "efg_pct": 0.52,
+                "ts_pct": 0.57,
+            }
+        )
+    return rows
+
+
+def _setup_multi_season_player_data(tmp_path, monkeypatch, season_type="regular_season"):
+    """Set up two seasons of player game data for testing.
+
+    Also creates matching team_game_stats CSVs since the player data loader
+    requires them for the wl merge.
+    """
+    monkeypatch.chdir(tmp_path)
+    safe_type = season_type.lower().replace(" ", "_")
+
+    rows1 = _make_player_game_rows_full(
+        "Star Player",
+        1,
+        "AAA",
+        100,
+        "2098-99",
+        25,
+        30,
+        season_type=safe_type,
+    )
+    rows1 += _make_player_game_rows_full(
+        "Other Player",
+        2,
+        "BBB",
+        200,
+        "2098-99",
+        25,
+        22,
+        season_type=safe_type,
+    )
+    _write_csv(
+        tmp_path / f"data/raw/player_game_stats/2098-99_{safe_type}.csv",
+        rows1,
+    )
+
+    rows2 = _make_player_game_rows_full(
+        "Star Player",
+        1,
+        "AAA",
+        100,
+        "2099-00",
+        25,
+        28,
+        season_type=safe_type,
+    )
+    rows2 += _make_player_game_rows_full(
+        "Other Player",
+        2,
+        "BBB",
+        200,
+        "2099-00",
+        25,
+        20,
+        season_type=safe_type,
+    )
+    _write_csv(
+        tmp_path / f"data/raw/player_game_stats/2099-00_{safe_type}.csv",
+        rows2,
+    )
+
+    # Player data loader requires team_game_stats for wl merge
+    team_rows1 = _make_team_game_rows_full(
+        "Team AAA",
+        "AAA",
+        100,
+        "2098-99",
+        25,
+        110,
+        season_type=safe_type,
+    )
+    team_rows1 += _make_team_game_rows_full(
+        "Team BBB",
+        "BBB",
+        200,
+        "2098-99",
+        25,
+        100,
+        season_type=safe_type,
+    )
+    _write_csv(
+        tmp_path / f"data/raw/team_game_stats/2098-99_{safe_type}.csv",
+        team_rows1,
+    )
+
+    team_rows2 = _make_team_game_rows_full(
+        "Team AAA",
+        "AAA",
+        100,
+        "2099-00",
+        25,
+        115,
+        season_type=safe_type,
+    )
+    team_rows2 += _make_team_game_rows_full(
+        "Team BBB",
+        "BBB",
+        200,
+        "2099-00",
+        25,
+        105,
+        season_type=safe_type,
+    )
+    _write_csv(
+        tmp_path / f"data/raw/team_game_stats/2099-00_{safe_type}.csv",
+        team_rows2,
+    )
+
+
+def _setup_multi_season_team_data(tmp_path, monkeypatch, season_type="regular_season"):
+    """Set up two seasons of team game data for testing."""
+    monkeypatch.chdir(tmp_path)
+    safe_type = season_type.lower().replace(" ", "_")
+
+    rows1 = _make_team_game_rows_full(
+        "Team Alpha",
+        "ALP",
+        1,
+        "2098-99",
+        25,
+        110,
+        season_type=safe_type,
+    )
+    rows1 += _make_team_game_rows_full(
+        "Team Beta",
+        "BET",
+        2,
+        "2098-99",
+        25,
+        100,
+        season_type=safe_type,
+    )
+    _write_csv(
+        tmp_path / f"data/raw/team_game_stats/2098-99_{safe_type}.csv",
+        rows1,
+    )
+
+    rows2 = _make_team_game_rows_full(
+        "Team Alpha",
+        "ALP",
+        1,
+        "2099-00",
+        25,
+        115,
+        season_type=safe_type,
+    )
+    rows2 += _make_team_game_rows_full(
+        "Team Beta",
+        "BET",
+        2,
+        "2099-00",
+        25,
+        105,
+        season_type=safe_type,
+    )
+    _write_csv(
+        tmp_path / f"data/raw/team_game_stats/2099-00_{safe_type}.csv",
+        rows2,
+    )
+
+
+# ===================================================================
+# Multi-season SUMMARY caveats
+# ===================================================================
+
+
+class TestMultiSeasonPlayerSummaryCaveats:
+    """Player summaries include multi-season caveat when spanning seasons."""
+
+    def test_multi_season_player_summary_has_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        assert isinstance(result, SummaryResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+        assert result.by_season is not None
+        assert len(result.by_season) == 2
+
+    def test_single_season_player_summary_no_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(season="2098-99", player="Star Player")
+        assert isinstance(result, SummaryResult)
+        assert len(result.caveats) == 0
+
+    def test_multi_season_summary_aggregates_games(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        assert isinstance(result, SummaryResult)
+        # Should have ~50 games (25 per season)
+        games = result.summary["games"].iloc[0]
+        assert games >= 40
+
+    def test_multi_season_summary_to_dict(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        d = result.to_dict()
+        assert d["query_class"] == "summary"
+        assert d["result_status"] == "ok"
+        assert len(d["caveats"]) > 0
+        assert "sections" in d
+        assert "summary" in d["sections"]
+        assert "by_season" in d["sections"]
+
+
+class TestMultiSeasonTeamSummaryCaveats:
+    """Team summaries include multi-season caveat when spanning seasons."""
+
+    def test_multi_season_team_summary_has_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.game_summary import build_result
+
+        result = build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            team="ALP",
+        )
+        assert isinstance(result, SummaryResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+    def test_single_season_team_summary_no_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.game_summary import build_result
+
+        result = build_result(season="2098-99", team="ALP")
+        assert isinstance(result, SummaryResult)
+        assert len(result.caveats) == 0
+
+    def test_multi_season_team_summary_aggregates_games(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.game_summary import build_result
+
+        result = build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            team="ALP",
+        )
+        assert isinstance(result, SummaryResult)
+        games = result.summary["games"].iloc[0]
+        assert games >= 40
+
+
+# ===================================================================
+# Multi-season COMPARISON caveats
+# ===================================================================
+
+
+class TestMultiSeasonPlayerComparisonCaveats:
+    """Player comparisons include multi-season caveat."""
+
+    def test_multi_season_player_compare_has_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        # Also need team data for advanced metrics
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_compare import build_result
+
+        result = build_result(
+            player_a="Star Player",
+            player_b="Other Player",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        assert isinstance(result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+    def test_single_season_player_compare_no_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_compare import build_result
+
+        result = build_result(
+            player_a="Star Player",
+            player_b="Other Player",
+            season="2098-99",
+        )
+        assert isinstance(result, ComparisonResult)
+        assert len(result.caveats) == 0
+
+    def test_multi_season_comparison_both_players_present(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_compare import build_result
+
+        result = build_result(
+            player_a="Star Player",
+            player_b="Other Player",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        assert isinstance(result, ComparisonResult)
+        assert len(result.summary) == 2
+        player_names = list(result.summary["player_name"])
+        assert "Star Player" in player_names
+        assert "Other Player" in player_names
+
+    def test_multi_season_comparison_to_dict(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_compare import build_result
+
+        result = build_result(
+            player_a="Star Player",
+            player_b="Other Player",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        d = result.to_dict()
+        assert d["query_class"] == "comparison"
+        assert d["result_status"] == "ok"
+        assert len(d["caveats"]) > 0
+        assert "summary" in d["sections"]
+        assert "comparison" in d["sections"]
+
+
+class TestMultiSeasonTeamComparisonCaveats:
+    """Team comparisons include multi-season caveat."""
+
+    def test_multi_season_team_compare_has_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.team_compare import build_result
+
+        result = build_result(
+            team_a="ALP",
+            team_b="BET",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        assert isinstance(result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+    def test_single_season_team_compare_no_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.team_compare import build_result
+
+        result = build_result(
+            team_a="ALP",
+            team_b="BET",
+            season="2098-99",
+        )
+        assert isinstance(result, ComparisonResult)
+        assert len(result.caveats) == 0
+
+
+# ===================================================================
+# Multi-season SPLIT SUMMARY caveats
+# ===================================================================
+
+
+class TestMultiSeasonPlayerSplitCaveats:
+    """Player split summaries include multi-season caveat."""
+
+    def test_multi_season_player_split_has_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_split_summary import build_result
+
+        result = build_result(
+            split="home_away",
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        assert isinstance(result, SplitSummaryResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+    def test_single_season_player_split_no_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.player_split_summary import build_result
+
+        result = build_result(
+            split="home_away",
+            season="2098-99",
+            player="Star Player",
+        )
+        assert isinstance(result, SplitSummaryResult)
+        assert len(result.caveats) == 0
+
+
+class TestMultiSeasonTeamSplitCaveats:
+    """Team split summaries include multi-season caveat."""
+
+    def test_multi_season_team_split_has_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.commands.team_split_summary import build_result
+
+        result = build_result(
+            split="home_away",
+            start_season="2098-99",
+            end_season="2099-00",
+            team="ALP",
+        )
+        assert isinstance(result, SplitSummaryResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+
+# ===================================================================
+# Range-intent routing (new behavior)
+# ===================================================================
+
+
+class TestRangeIntentRouting:
+    """Historical span queries route to summary, not finder."""
+
+    def test_player_since_routes_to_summary(self):
+        """'Jokic since 2021' should route to summary, not finder."""
+        parsed = parse_query("Jokic since 2021")
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["route_kwargs"]["start_season"] == "2021-22"
+
+    def test_player_last_n_seasons_routes_to_summary(self):
+        """'LeBron last 3 seasons' should route to summary."""
+        parsed = parse_query("LeBron last 3 seasons")
+        assert parsed["route"] == "player_game_summary"
+        start, end = resolve_last_n_seasons(3, "Regular Season")
+        assert parsed["route_kwargs"]["start_season"] == start
+
+    def test_team_since_routes_to_summary(self):
+        """'Celtics since 2021' should route to summary, not finder."""
+        parsed = parse_query("Celtics since 2021")
+        assert parsed["route"] == "game_summary"
+        assert parsed["route_kwargs"]["start_season"] == "2021-22"
+
+    def test_team_last_n_seasons_routes_to_summary(self):
+        """'Lakers last 5 seasons' should route to summary."""
+        parsed = parse_query("Lakers last 5 seasons")
+        assert parsed["route"] == "game_summary"
+        start, end = resolve_last_n_seasons(5, "Regular Season")
+        assert parsed["route_kwargs"]["start_season"] == start
+
+    def test_team_since_with_record_routes_to_summary(self):
+        """'Celtics record since 2021' still routes to summary."""
+        parsed = parse_query("Celtics record since 2021")
+        assert parsed["route"] == "game_summary"
+
+    def test_player_career_still_routes_to_summary(self):
+        """'Jokic career' routes to summary (career_intent)."""
+        parsed = parse_query("Jokic career")
+        assert parsed["route"] == "player_game_summary"
+
+    def test_player_comparison_since_routes_to_compare(self):
+        """'Jokic vs Embiid since 2021' should route to compare, not summary."""
+        parsed = parse_query("Jokic vs Embiid since 2021")
+        assert parsed["route"] == "player_compare"
+        assert parsed["route_kwargs"]["start_season"] == "2021-22"
+
+    def test_team_comparison_since_routes_to_compare(self):
+        """'Celtics vs Bucks since 2021' should route to compare."""
+        parsed = parse_query("Celtics vs Bucks since 2021")
+        assert parsed["route"] == "team_compare"
+        assert parsed["route_kwargs"]["start_season"] == "2021-22"
+
+    def test_leaderboard_career_still_routes_to_leaders(self):
+        """'career leaders in assists' should still route to leaderboard."""
+        parsed = parse_query("career leaders in assists")
+        assert parsed["route"] == "season_leaders"
+
+    def test_leaderboard_since_still_routes_to_leaders(self):
+        """'top scorers since 2020' should still route to leaderboard."""
+        parsed = parse_query("top scorers since 2020")
+        assert parsed["route"] == "season_leaders"
+
+
+# ===================================================================
+# Playoff historical spans
+# ===================================================================
+
+
+class TestPlayoffHistoricalParsing:
+    """Playoff historical spans are correctly parsed and routed."""
+
+    def test_player_career_playoff_summary(self):
+        parsed = parse_query("LeBron career playoff averages")
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+        assert parsed["route_kwargs"]["start_season"] == EARLIEST_SEASON
+        assert parsed["route_kwargs"]["end_season"] == LATEST_PLAYOFF_SEASON
+
+    def test_player_playoff_since(self):
+        parsed = parse_query("Jokic playoff averages since 2020")
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+        assert parsed["route_kwargs"]["start_season"] == "2020-21"
+        assert parsed["route_kwargs"]["end_season"] == LATEST_PLAYOFF_SEASON
+
+    def test_playoff_leaderboard_career(self):
+        parsed = parse_query("career playoff leaders in scoring")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+        assert parsed["route_kwargs"]["start_season"] == EARLIEST_SEASON
+        assert parsed["route_kwargs"]["end_season"] == LATEST_PLAYOFF_SEASON
+
+    def test_playoff_leaderboard_since(self):
+        parsed = parse_query("playoff leaders since 2015")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+        assert parsed["route_kwargs"]["start_season"] == "2015-16"
+
+    def test_player_compare_playoff_since(self):
+        parsed = parse_query("Jokic vs Embiid playoff since 2021")
+        assert parsed["route"] == "player_compare"
+        assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+        assert parsed["route_kwargs"]["start_season"] == "2021-22"
+
+
+class TestPlayoffHistoricalExecution:
+    """Playoff historical spans execute correctly with fake data."""
+
+    def test_playoff_player_summary_with_caveat(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch, season_type="playoffs")
+
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            season_type="Playoffs",
+            player="Star Player",
+        )
+        assert isinstance(result, SummaryResult)
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+    def test_playoff_multi_season_leaderboard(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        rows1 = _make_player_game_rows("Star Player", 1, "AAA", 100, "2098-99", 15, 30)
+        rows1 += _make_player_game_rows("Other Player", 2, "BBB", 200, "2098-99", 15, 22)
+        _write_csv(tmp_path / "data/raw/player_game_stats/2098-99_playoffs.csv", rows1)
+
+        rows2 = _make_player_game_rows("Star Player", 1, "AAA", 100, "2099-00", 15, 28)
+        rows2 += _make_player_game_rows("Other Player", 2, "BBB", 200, "2099-00", 15, 20)
+        _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_playoffs.csv", rows2)
+
+        result = season_leaders_build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            stat="pts",
+            season_type="Playoffs",
+        )
+        assert isinstance(result, LeaderboardResult)
+        assert "seasons" in result.leaders.columns
+        assert any("multi-season" in c.lower() for c in result.caveats)
+
+
+# ===================================================================
+# Count stat leaderboards across seasons
+# ===================================================================
+
+
+class TestMultiSeasonCountStatLeaderboards:
+    """Count stats (20p games, 30p games, etc.) aggregate correctly across seasons."""
+
+    def test_multi_season_30_point_games(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        # Star Player has many 30+ point games
+        rows1 = _make_player_game_rows("Star Player", 1, "AAA", 100, "2098-99", 25, 30)
+        rows1 += _make_player_game_rows("Other Player", 2, "BBB", 200, "2098-99", 25, 22)
+        _write_csv(tmp_path / "data/raw/player_game_stats/2098-99_regular_season.csv", rows1)
+
+        rows2 = _make_player_game_rows("Star Player", 1, "AAA", 100, "2099-00", 25, 30)
+        rows2 += _make_player_game_rows("Other Player", 2, "BBB", 200, "2099-00", 25, 22)
+        _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv", rows2)
+
+        result = season_leaders_build_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            stat="games_30p",
+        )
+        assert isinstance(result, LeaderboardResult)
+        # Star Player should be first with 30+ pt games aggregated across seasons
+        first_row = result.leaders.iloc[0]
+        assert first_row["player_name"] == "Star Player"
+        assert first_row["games_30p"] > 0
+
+    def test_multi_season_40_point_games_parsing(self):
+        """'most 40 point games since 2015' parses and routes correctly."""
+        parsed = parse_query("most 40 point games since 2015")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "games_40p"
+        assert parsed["route_kwargs"]["start_season"] == "2015-16"
+
+
+# ===================================================================
+# Structured query support for historical spans
+# ===================================================================
+
+
+class TestStructuredHistoricalSummary:
+    """Structured queries support historical spans for all result classes."""
+
+    def test_structured_multi_season_player_summary(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_game_summary",
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, SummaryResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+        assert qr.metadata.get("start_season") == "2098-99"
+        assert qr.metadata.get("end_season") == "2099-00"
+
+    def test_structured_multi_season_team_summary(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "game_summary",
+            start_season="2098-99",
+            end_season="2099-00",
+            team="ALP",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, SummaryResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_structured_multi_season_player_compare(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_compare",
+            player_a="Star Player",
+            player_b="Other Player",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_structured_multi_season_team_compare(self, tmp_path, monkeypatch):
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "team_compare",
+            team_a="ALP",
+            team_b="BET",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+
+class TestStructuredQueryMetadata:
+    """Structured queries include proper historical metadata."""
+
+    def test_metadata_includes_season_span(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_game_summary",
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        assert qr.metadata["start_season"] == "2098-99"
+        assert qr.metadata["end_season"] == "2099-00"
+        assert qr.metadata.get("season") is None
+
+    def test_metadata_includes_current_through(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_game_summary",
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        # Result is well-formed; current_through is None for fake future seasons
+        # (compute_current_through_for_seasons checks real schedule data)
+        assert qr.is_ok
+        assert isinstance(qr.result, SummaryResult)
+
+
+# ===================================================================
+# Service/API response compatibility
+# ===================================================================
+
+
+class TestServiceResponseHistorical:
+    """Service responses are well-formed for historical queries."""
+
+    def test_natural_query_multi_season_summary_response(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        # We need to monkeypatch aliases since fake data uses "Star Player"
+        # Instead, test via structured query which doesn't need alias matching
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_game_summary",
+            start_season="2098-99",
+            end_season="2099-00",
+            player="Star Player",
+        )
+        d = qr.to_dict()
+        assert "sections" in d
+        assert "metadata" in d
+        assert d["metadata"]["start_season"] == "2098-99"
+        assert d["metadata"]["end_season"] == "2099-00"
+        # Caveats should be present in result
+        result_dict = qr.result.to_dict()
+        assert len(result_dict["caveats"]) > 0
+
+    def test_to_dict_shape_multi_season_comparison(self, tmp_path, monkeypatch):
+        _setup_multi_season_player_data(tmp_path, monkeypatch)
+        _setup_multi_season_team_data(tmp_path, monkeypatch)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_compare",
+            player_a="Star Player",
+            player_b="Other Player",
+            start_season="2098-99",
+            end_season="2099-00",
+        )
+        d = qr.to_dict()
+        assert "sections" in d
+        assert "summary" in d["sections"]
+        assert "comparison" in d["sections"]
+        # Each section is a list of dicts
+        assert isinstance(d["sections"]["summary"], list)
+        assert isinstance(d["sections"]["comparison"], list)
+
+    def test_to_dict_shape_multi_season_leaderboard(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        rows = _make_player_game_rows("Star Player", 1, "AAA", 100, "2098-99", 25, 30)
+        _write_csv(tmp_path / "data/raw/player_game_stats/2098-99_regular_season.csv", rows)
+        rows2 = _make_player_game_rows("Star Player", 1, "AAA", 100, "2099-00", 25, 28)
+        _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv", rows2)
+
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "season_leaders",
+            start_season="2098-99",
+            end_season="2099-00",
+            stat="pts",
+        )
+        d = qr.to_dict()
+        assert "leaderboard" in d["sections"]
+        assert isinstance(d["sections"]["leaderboard"], list)
+
+
+# ===================================================================
+# Live data smoke tests — Extended
+# ===================================================================
+
+
+class TestLiveSmokeHistoricalExtended:
+    """Extended smoke tests for new historical capabilities."""
+
+    @pytest.fixture(autouse=True)
+    def _check_data(self):
+        from pathlib import Path
+
+        if not Path("data/raw/player_game_stats/2024-25_regular_season.csv").exists():
+            pytest.skip("Live data not available")
+
+    # -- Player summaries --
+
+    def test_jokic_since_2021_routes_to_summary(self):
+        """'Jokic since 2021' routes to summary (range_intent routing)."""
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Jokic since 2021")
+        assert qr.is_ok
+        assert qr.route == "player_game_summary"
+        assert isinstance(qr.result, SummaryResult)
+
+    def test_jokic_since_2021_has_caveat(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Jokic since 2021")
+        assert qr.is_ok
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_lebron_career_summary_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("LeBron career summary")
+        assert qr.is_ok
+        assert qr.route == "player_game_summary"
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_lebron_last_3_seasons_summary_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("LeBron last 3 seasons")
+        assert qr.is_ok
+        assert qr.route == "player_game_summary"
+
+    # -- Team summaries --
+
+    def test_celtics_since_2021_live(self):
+        """'Celtics since 2021' routes to team summary."""
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Celtics since 2021")
+        assert qr.is_ok
+        assert qr.route == "game_summary"
+        assert isinstance(qr.result, SummaryResult)
+
+    def test_lakers_last_5_seasons_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Lakers last 5 seasons")
+        assert qr.is_ok
+        assert qr.route == "game_summary"
+
+    # -- Player comparisons --
+
+    def test_jokic_vs_embiid_since_2021_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Jokic vs Embiid since 2021")
+        assert qr.is_ok
+        assert qr.route == "player_compare"
+        assert isinstance(qr.result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    # -- Team comparisons --
+
+    def test_lakers_vs_celtics_since_2010_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Lakers vs Celtics since 2010")
+        assert qr.is_ok
+        assert qr.route == "team_compare"
+        assert isinstance(qr.result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    # -- Playoff historical --
+
+    def test_jokic_career_playoff_summary_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Jokic career playoff averages")
+        assert qr.is_ok
+        assert qr.route == "player_game_summary"
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_lakers_playoff_summary_since_2020_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Lakers playoff summary since 2020")
+        assert qr.is_ok
+        assert qr.route == "game_summary"
+
+    # -- Leaderboard hardening --
+
+    def test_career_assists_leaders_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("career assists leaders")
+        assert qr.is_ok
+        assert isinstance(qr.result, LeaderboardResult)
+
+    def test_alltime_scoring_leaders_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("all-time scoring leaders")
+        assert qr.is_ok
+        assert isinstance(qr.result, LeaderboardResult)
+
+    def test_most_40_point_games_since_2015_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("most 40 point games since 2015")
+        assert qr.is_ok
+        assert isinstance(qr.result, LeaderboardResult)
+        assert "seasons" in qr.result.leaders.columns
+
+    def test_best_ts_last_5_seasons_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("best TS% over the last 5 seasons")
+        assert qr.is_ok
+        assert isinstance(qr.result, LeaderboardResult)
+
+    # -- Structured query parity --
+
+    def test_structured_player_summary_career_live(self):
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_game_summary",
+            start_season="2020-21",
+            end_season=LATEST_REGULAR_SEASON,
+            player="Nikola Jokić",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, SummaryResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_structured_team_summary_since_live(self):
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "game_summary",
+            start_season="2020-21",
+            end_season=LATEST_REGULAR_SEASON,
+            team="BOS",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, SummaryResult)
+
+    def test_structured_player_compare_live(self):
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "player_compare",
+            player_a="Nikola Jokić",
+            player_b="Joel Embiid",
+            start_season="2021-22",
+            end_season="2024-25",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, ComparisonResult)
+        assert any("multi-season" in c.lower() for c in qr.result.caveats)
+
+    def test_structured_team_compare_live(self):
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "team_compare",
+            team_a="BOS",
+            team_b="MIL",
+            start_season="2021-22",
+            end_season="2024-25",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, ComparisonResult)
+
+    def test_structured_playoff_leaders_live(self):
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "season_leaders",
+            start_season="2020-21",
+            end_season=LATEST_PLAYOFF_SEASON,
+            stat="pts",
+            season_type="Playoffs",
+        )
+        assert qr.is_ok
+        assert isinstance(qr.result, LeaderboardResult)
+
+    # -- API response shape --
+
+    def test_api_response_shape_multi_season_summary(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Jokic since 2021")
+        d = qr.to_dict()
+        assert "sections" in d
+        assert "metadata" in d
+        # Caveats propagate to result dict
+        result_d = qr.result.to_dict()
+        assert len(result_d["caveats"]) > 0
+
+    def test_api_response_shape_multi_season_comparison(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Jokic vs Embiid since 2021")
+        d = qr.to_dict()
+        assert "sections" in d
+        assert "metadata" in d

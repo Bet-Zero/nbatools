@@ -262,10 +262,17 @@ def build_result(
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
+    caveats: list[str] = []
+    if len(seasons) > 1:
+        caveats.append(
+            f"multi-season summary aggregated from game logs across {seasons[0]} to {seasons[-1]}"
+        )
+
     return SummaryResult(
         summary=summary,
         by_season=by_season,
         current_through=current_through,
+        caveats=caveats,
     )
 
 

@@ -2157,7 +2157,12 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_season": lb_end_season,
             }
     elif player and (
-        summary_intent or career_intent or ("record" in q) or ("averages" in q) or ("average" in q)
+        summary_intent
+        or career_intent
+        or range_intent
+        or ("record" in q)
+        or ("averages" in q)
+        or ("average" in q)
     ):
         route = "player_game_summary"
         route_kwargs = {
@@ -2182,7 +2187,7 @@ def _finalize_route(parsed: dict) -> dict:
     elif team and (
         summary_intent
         or career_intent
-        or (range_intent and (wins_only or losses_only))
+        or range_intent
         or ("record" in q)
         or ("averages" in q)
         or ("average" in q)
