@@ -1,6 +1,8 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -67,6 +69,7 @@ def test_parse_best_offensive_teams_in_march_uses_points_per_game():
     assert parsed["route_kwargs"]["end_date"] == "2026-03-31"
 
 
+@pytest.mark.needs_data
 def test_natural_player_compare_since_january_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -79,6 +82,7 @@ def test_natural_player_compare_since_january_raw_smoke():
     assert "Joel Embiid" in out
 
 
+@pytest.mark.needs_data
 def test_natural_top_scorers_since_january_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -90,6 +94,7 @@ def test_natural_top_scorers_since_january_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_top_scorers_in_march_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -101,6 +106,7 @@ def test_natural_top_scorers_in_march_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_best_team_efg_in_march_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -112,6 +118,7 @@ def test_natural_best_team_efg_in_march_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_best_offensive_teams_in_march_raw_smoke():
     out = _capture_output(
         natural_query_run,

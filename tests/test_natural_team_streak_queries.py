@@ -1,6 +1,8 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -48,6 +50,7 @@ def test_parse_team_consecutive_points_streak():
     assert parsed["route_kwargs"]["longest"] is True
 
 
+@pytest.mark.needs_data
 def test_natural_team_winning_streak_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -59,6 +62,7 @@ def test_natural_team_winning_streak_raw_smoke():
     assert "LAL" in out or "Los Angeles Lakers" in out
 
 
+@pytest.mark.needs_data
 def test_natural_team_points_streak_raw_smoke():
     out = _capture_output(
         natural_query_run,

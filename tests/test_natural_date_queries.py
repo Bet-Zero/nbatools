@@ -2,6 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
 from nbatools.commands.natural_query import (
@@ -56,6 +57,7 @@ def test_parse_matchup_last_30_days():
     assert parsed["route_kwargs"]["end_date"] == expected_end
 
 
+@pytest.mark.needs_data
 def test_natural_player_since_january_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -69,6 +71,7 @@ def test_natural_player_since_january_raw_smoke():
     assert dates.min() >= pd.Timestamp("2026-01-01")
 
 
+@pytest.mark.needs_data
 def test_natural_team_in_march_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -82,6 +85,7 @@ def test_natural_team_in_march_raw_smoke():
     assert set(dates.dt.month.unique()) == {3}
 
 
+@pytest.mark.needs_data
 def test_natural_player_summary_since_january_raw_smoke():
     out = _capture_output(
         natural_query_run,

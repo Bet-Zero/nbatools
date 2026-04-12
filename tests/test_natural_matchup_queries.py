@@ -1,6 +1,8 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -63,6 +65,7 @@ def test_parse_team_h2h_with_home_filter():
     assert parsed["route"] == "team_compare"
 
 
+@pytest.mark.needs_data
 def test_natural_player_matchup_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -74,6 +77,7 @@ def test_natural_player_matchup_raw_smoke():
     assert "LAL" in out
 
 
+@pytest.mark.needs_data
 def test_natural_player_summary_vs_team_matchup_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -85,6 +89,7 @@ def test_natural_player_summary_vs_team_matchup_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_player_h2h_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -97,6 +102,7 @@ def test_natural_player_h2h_raw_smoke():
     assert "Nikola Jokić" in out
 
 
+@pytest.mark.needs_data
 def test_natural_team_h2h_raw_smoke():
     out = _capture_output(
         natural_query_run,
