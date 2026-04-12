@@ -114,3 +114,65 @@ def season_data_available(
     safe = normalize_season_type(season_type)
     path = data_root / "raw" / dataset / f"{season}_{safe}.csv"
     return path.exists()
+
+
+def manifest_entry(
+    season: str,
+    season_type: str,
+    data_root: Path = _DATA_ROOT,
+) -> dict | None:
+    """Return the manifest row for a season/type as a dict, or None."""
+    manifest_path = data_root / "metadata" / "backfill_manifest.csv"
+    if not manifest_path.exists():
+        return None
+    try:
+        df = pd.read_csv(manifest_path)
+    except Exception:
+        return None
+    mask = (df["season"] == season) & (df["season_type"] == season_type)
+    rows = df.loc[mask]
+    if rows.empty:
+        return None
+    row = rows.iloc[0]
+    return {
+        "season": season,
+        "season_type": season_type,
+        "raw_complete": bool(row.get("raw_complete") == 1),
+        "processed_complete": bool(row.get("processed_complete") == 1),
+        "loaded_at": str(row.get("loaded_at", "")),
+    }
+
+
+def freshness_report(
+    seasons: list[str],
+    season_type: str = "Regular Season",
+    data_root: Path = _DATA_ROOT,
+) -> dict:
+    """Build a freshness report across seasons.
+
+    Returns a dict with per-season current_through, manifest status,
+    and an overall current_through (the latest across all confirmed seasons).
+    """
+    entries = []
+    overall_ct: str | None = None
+
+    for season in seasons:
+        ct = compute_current_through(season, season_type, data_root)
+        entry = manifest_entry(season, season_type, data_root)
+        entries.append(
+            {
+                "season": season,
+                "season_type": season_type,
+                "current_through": ct,
+                "manifest": entry,
+            }
+        )
+        if ct is not None:
+            if overall_ct is None or ct > overall_ct:
+                overall_ct = ct
+
+    return {
+        "overall_current_through": overall_ct,
+        "season_type": season_type,
+        "seasons": entries,
+    }

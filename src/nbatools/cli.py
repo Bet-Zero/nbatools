@@ -4,6 +4,7 @@ import typer
 
 from nbatools.cli_apps.analysis import app as analysis_app
 from nbatools.cli_apps.ops import app as ops_app
+from nbatools.cli_apps.pipeline import app as pipeline_app
 from nbatools.cli_apps.processing import app as processing_app
 from nbatools.cli_apps.queries import app as queries_app
 from nbatools.cli_apps.raw import app as raw_app
@@ -106,6 +107,12 @@ app.add_typer(
     ops_app,
     name="ops",
     help="Pipeline operations: backfill, manifest, inventory.",
+)
+
+app.add_typer(
+    pipeline_app,
+    name="pipeline",
+    help="Refresh, rebuild, backfill, and status workflows.",
 )
 
 app.add_typer(
