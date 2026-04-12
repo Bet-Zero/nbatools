@@ -607,6 +607,12 @@ _NICKNAME_LP: list[tuple[re.Pattern, str]] = _compile_loose_lookup(PLAYER_NICKNA
 _FULL_NAME_LP: list[tuple[re.Pattern, str]] = _compile_loose_lookup(PLAYER_FULL_NAME_ALIASES)
 _TEAM_EXPANDED_LP: list[tuple[re.Pattern, str]] = _compile_loose_lookup(TEAM_ALIASES_EXPANDED)
 
+_H2H_NOISE_RE = re.compile(r"(?<!\w)(?:head\s*-?\s*to\s*-?\s*head|h2h|matchup|matchups)(?!\w)")
+_VS_CONTEXT_RE = re.compile(
+    r"(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s+(?:from|to|in|on|since|last|past|playoff|playoffs|postseason|home|away|career|summary|split)\b|$)"
+)
+_VS_SIMPLE_RE = re.compile(r"(.+?)\s+(?:vs\.?|versus)\s+(.+)")
+
 
 # ---------------------------------------------------------------------------
 # Core resolution functions
@@ -863,13 +869,6 @@ def resolve_team_in_query(text: str) -> ResolutionResult:
 # ---------------------------------------------------------------------------
 # Comparison extraction with entity resolution
 # ---------------------------------------------------------------------------
-
-
-_H2H_NOISE_RE = re.compile(r"(?<!\w)(?:head\s*-?\s*to\s*-?\s*head|h2h|matchup|matchups)(?!\w)")
-_VS_CONTEXT_RE = re.compile(
-    r"(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s+(?:from|to|in|on|since|last|past|playoff|playoffs|postseason|home|away|career|summary|split)\b|$)"
-)
-_VS_SIMPLE_RE = re.compile(r"(.+?)\s+(?:vs\.?|versus)\s+(.+)")
 
 
 def extract_player_comparison_resolved(

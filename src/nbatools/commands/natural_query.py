@@ -242,9 +242,9 @@ MATCHUP_NOISE_PATTERN = r"\b(?:head\s*[- ]\s*to\s*[- ]\s*head|h2h|matchup|matchu
 def _compile_word_boundary_lookup(
     alias_dict: dict[str, str],
 ) -> list[tuple[re.Pattern, str, str]]:
-    """Return ``[(compiled_pattern, key, value), …]`` sorted longest-key-first.
+    r"""Return ``[(compiled_pattern, key, value), …]`` sorted longest-key-first.
 
-    Pattern uses ``\\b`` word boundaries around the escaped key.
+    Pattern uses ``\b`` word boundaries around the escaped key.
     """
     return [
         (re.compile(rf"\b{re.escape(key)}\b"), key, value)
