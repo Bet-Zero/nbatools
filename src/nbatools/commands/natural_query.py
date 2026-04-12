@@ -332,11 +332,22 @@ LEADERBOARD_STAT_ALIASES = {
 
 
 def extract_top_n(text: str) -> int | None:
+    # "top N" pattern
     m = re.search(r"\btop\s+(\d+)\b", text)
-    if not m:
-        return None
-    value = int(m.group(1))
-    return value if value > 0 else None
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
+    # "bottom N" pattern
+    m = re.search(r"\bbottom\s+(\d+)\b", text)
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
+    # "rank N" / "best N" / "worst N" pattern (e.g. "best 10 scorers")
+    m = re.search(r"\b(?:best|worst)\s+(\d+)\b", text)
+    if m:
+        value = int(m.group(1))
+        return value if value > 0 else None
+    return None
 
 
 def _matches_loose_phrase(text: str, phrase: str) -> bool:
@@ -355,7 +366,8 @@ def wants_leaderboard(text: str) -> bool:
         r"\bseason leaders?\b|\bled the league\b|\bleaders?\s+in\b"
         r"|\b(?:career|playoff|all[- ]?time)\s+(?:\w+\s+)*leaders?\b"
         r"|\bleaders?\s+(?:since|last|past)\b"
-        r"|\brank\b|\branked\b|\branking\b|\bwho\s+(?:has|had|leads?|led)\s+the\s+most\b",
+        r"|\brank\b|\branked\b|\branking\b|\bwho\s+(?:has|had|leads?|led)\s+the\s+most\b"
+        r"|\brank\s+(?:players?|teams?)\s+by\b",
         text,
     ):
         return True
@@ -368,15 +380,60 @@ def wants_leaderboard(text: str) -> bool:
 
     return bool(
         re.search(
-            r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b|\blowest\b|\bfewest\b|\bleast\b|\bworst\b",
+            r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b|\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom(?:\s+\d+)?\b",
             text,
         )
     )
 
 
 def wants_ascending_leaderboard(text: str) -> bool:
-    """Detect if the leaderboard should sort ascending (lowest/fewest/least)."""
-    return bool(re.search(r"\blowest\b|\bfewest\b|\bleast\b|\bworst\b", text))
+    """Detect if the leaderboard should sort ascending (lowest/fewest/least/bottom)."""
+    return bool(re.search(r"\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom\b", text))
+
+
+# ---------------------------------------------------------------------------
+# Position / subset filtering for leaderboard queries
+# ---------------------------------------------------------------------------
+
+_POSITION_GROUP_PATTERNS: dict[str, str] = {
+    "guards": "guards",
+    "guard": "guards",
+    "point guards": "guards",
+    "shooting guards": "guards",
+    "forwards": "forwards",
+    "forward": "forwards",
+    "small forwards": "forwards",
+    "power forwards": "forwards",
+    "centers": "centers",
+    "center": "centers",
+    "bigs": "bigs",
+    "big men": "bigs",
+    "big man": "bigs",
+    "wings": "wings",
+    "wing": "wings",
+}
+
+
+def extract_position_filter(text: str) -> str | None:
+    """Extract a position-group filter from the query text.
+
+    Returns the canonical position group name or None.
+    """
+    # "among guards", "among centers", "among big men", etc.
+    m = re.search(r"\bamong\s+([\w\s]+?)(?:\s+(?:since|this|last|over|in|from|during|$))", text)
+    if m:
+        candidate = m.group(1).strip().lower()
+        if candidate in _POSITION_GROUP_PATTERNS:
+            return _POSITION_GROUP_PATTERNS[candidate]
+
+    # "by guards", "for centers", etc.
+    m = re.search(r"\b(?:by|for)\s+(guards?|forwards?|centers?|bigs?|big\s+men|wings?)\b", text)
+    if m:
+        candidate = m.group(1).strip().lower()
+        if candidate in _POSITION_GROUP_PATTERNS:
+            return _POSITION_GROUP_PATTERNS[candidate]
+
+    return None
 
 
 TEAM_LEADERBOARD_STAT_ALIASES = {
@@ -444,8 +501,15 @@ def wants_team_leaderboard(text: str) -> bool:
         return True
 
     if re.search(r"\bteams?\b", text):
-        if re.search(r"\b(best|highest|most|top(?:\s+\d+)?|rank|ranked|ranking)\b", text):
+        if re.search(
+            r"\b(best|highest|most|top(?:\s+\d+)?|rank|ranked|ranking|lowest|fewest|least|worst|bottom(?:\s+\d+)?)\b",
+            text,
+        ):
             return True
+
+    # "rank teams by ..."
+    if re.search(r"\brank\s+teams?\s+by\b", text):
+        return True
 
     return False
 
@@ -1976,6 +2040,7 @@ def _build_parse_state(query: str) -> dict:
     split_type = detect_split_type(q)
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
+    position_filter = extract_position_filter(q)
     head_to_head = detect_head_to_head(q)
     streak_request = extract_streak_request(q)
     team_streak_request = extract_team_streak_request(q)
@@ -2114,6 +2179,7 @@ def _build_parse_state(query: str) -> dict:
         "split_intent": split_intent,
         "leaderboard_intent": leaderboard_intent,
         "team_leaderboard_intent": team_leaderboard_intent,
+        "position_filter": position_filter,
         "head_to_head": head_to_head,
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
@@ -2171,6 +2237,7 @@ def _finalize_route(parsed: dict) -> dict:
     career_intent = parsed.get("career_intent", False)
     leaderboard_intent = parsed.get("leaderboard_intent", False)
     team_leaderboard_intent = parsed.get("team_leaderboard_intent", False)
+    position_filter = parsed.get("position_filter")
     head_to_head = parsed.get("head_to_head", False)
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
@@ -2356,8 +2423,22 @@ def _finalize_route(parsed: dict) -> dict:
 
         lb_ascending = wants_ascending_leaderboard(q)
 
+        # Smart ascending for stats where lower = better:
+        # "best defensive teams" → def_rating ascending (lower is better)
+        # "best/lowest turnover teams" → turnovers ascending
+        # But "worst defensive teams" → def_rating descending (higher = worse)
+        _lower_is_better_stats = {"def_rating", "tov", "tov_pct"}
+
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
+
+            # Semantic ascending for lower-is-better stats
+            if leaderboard_stat in _lower_is_better_stats:
+                if re.search(r"\b(best|top|lowest|fewest|least)\b", q):
+                    lb_ascending = True
+                elif re.search(r"\b(worst|most|highest)\b", q):
+                    lb_ascending = False
+
             # Season-advanced-only team stats blocked in date-window/multi-season
             _team_season_only = {"off_rating", "def_rating", "net_rating", "pace"}
             if (start_date or end_date) and leaderboard_stat in _team_season_only:
@@ -2413,6 +2494,14 @@ def _finalize_route(parsed: dict) -> dict:
             }
         else:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
+
+            # Semantic ascending for lower-is-better stats
+            if leaderboard_stat in _lower_is_better_stats:
+                if re.search(r"\b(best|top|lowest|fewest|least)\b", q):
+                    lb_ascending = True
+                elif re.search(r"\b(worst|most|highest)\b", q):
+                    lb_ascending = False
+
             # Season-advanced-only player stats blocked in multi-season/opponent contexts
             _player_season_only = {"off_rating", "def_rating", "net_rating"}
             if (lb_start_season and lb_end_season) and leaderboard_stat in _player_season_only:
@@ -2438,6 +2527,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "start_season": lb_start_season,
                 "end_season": lb_end_season,
                 "opponent": opponent,
+                "position": position_filter,
             }
     elif (finder_intent or count_intent) and player and not player_a and not player_b:
         # Explicit list/count intent overrides summary/range routing

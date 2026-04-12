@@ -128,6 +128,7 @@ def _build_query_metadata(
         "team": team,
         "opponent": parsed.get("opponent"),
         "split_type": parsed.get("split_type"),
+        "position_filter": parsed.get("position_filter"),
         "grouped_boolean_used": grouped_boolean_used,
         "head_to_head_used": bool(parsed.get("head_to_head")),
     }
@@ -461,6 +462,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "team": team,
         "opponent": kwargs.get("opponent"),
         "split_type": kwargs.get("split"),
+        "position_filter": kwargs.get("position"),
         "head_to_head_used": bool(kwargs.get("head_to_head")),
     }
     if current_through is not None:

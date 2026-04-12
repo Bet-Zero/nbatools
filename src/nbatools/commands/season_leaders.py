@@ -557,6 +557,51 @@ def _apply_default_guardrails(
     return df
 
 
+# ---------------------------------------------------------------------------
+# Position group mappings
+# ---------------------------------------------------------------------------
+
+POSITION_GROUPS: dict[str, set[str]] = {
+    "guard": {"G", "G-F"},
+    "guards": {"G", "G-F"},
+    "forward": {"F", "F-G", "F-C"},
+    "forwards": {"F", "F-G", "F-C"},
+    "center": {"C", "C-F"},
+    "centers": {"C", "C-F"},
+    "big": {"C", "C-F", "F-C"},
+    "bigs": {"C", "C-F", "F-C"},
+    "big men": {"C", "C-F", "F-C"},
+    "big man": {"C", "C-F", "F-C"},
+    "wings": {"F", "F-G", "G-F"},
+    "wing": {"F", "F-G", "G-F"},
+}
+
+
+def _resolve_position_filter(position: str | None) -> set[str] | None:
+    """Resolve a position group name to a set of NBA position codes."""
+    if position is None:
+        return None
+    key = position.lower().strip()
+    return POSITION_GROUPS.get(key)
+
+
+def _load_roster_positions(seasons: list[str]) -> pd.DataFrame:
+    """Load roster data and return player_id -> position mapping."""
+    frames: list[pd.DataFrame] = []
+    for s in seasons:
+        rpath = Path(f"data/raw/rosters/{s}.csv")
+        if rpath.exists():
+            frames.append(pd.read_csv(rpath))
+    if not frames:
+        return pd.DataFrame(columns=["player_id", "position"])
+    rosters = pd.concat(frames, ignore_index=True)
+    if "player_id" not in rosters.columns or "position" not in rosters.columns:
+        return pd.DataFrame(columns=["player_id", "position"])
+    # Keep the most recent roster entry per player
+    rosters = rosters.drop_duplicates(subset=["player_id"], keep="last")
+    return rosters[["player_id", "position"]].copy()
+
+
 def build_result(
     season: str | None = None,
     stat: str = "pts",
@@ -569,6 +614,7 @@ def build_result(
     start_season: str | None = None,
     end_season: str | None = None,
     opponent: str | None = None,
+    position: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -644,6 +690,20 @@ def build_result(
 
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_data")
+
+    # Position-group filtering: restrict to players matching a position group
+    position_codes = _resolve_position_filter(position)
+    position_filtered = False
+    if position_codes is not None:
+        roster_pos = _load_roster_positions(seasons)
+        if not roster_pos.empty and "player_id" in basic.columns:
+            eligible_ids = roster_pos[roster_pos["position"].isin(position_codes)][
+                "player_id"
+            ].unique()
+            basic = basic[basic["player_id"].isin(eligible_ids)].copy()
+            position_filtered = True
+        if basic.empty:
+            return NoResult(query_class="leaderboard", reason="no_match")
 
     df = _build_from_game_logs(basic)
 
@@ -750,6 +810,8 @@ def build_result(
     if target_col in GAME_LOG_DERIVED_ADVANCED:
         if date_window_active or multi_season or opponent:
             caveats.append(f"{target_col} recomputed from filtered game-log sample")
+    if position_filtered:
+        caveats.append(f"filtered to position group: {position}")
 
     return LeaderboardResult(
         leaders=result,
