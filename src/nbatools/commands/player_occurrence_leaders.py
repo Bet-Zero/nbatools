@@ -5,13 +5,26 @@ This module answers questions like:
 - "most triple doubles since 2020"
 - "leaders in 5+ three games last 3 seasons"
 - "most 10+ assist games vs Celtics since 2021"
+- "most games with 30+ points and 10+ rebounds since 2020" (compound occurrence)
+- "games with 40+ points and 5+ threes since 2022" (compound occurrence)
 
 It loads game logs, applies all standard filters (season range, opponent,
 playoffs, home/away, W/L), counts qualifying games per player, and returns
 a LeaderboardResult ranked by occurrence count.
+
+Compound Occurrences
+--------------------
+Compound occurrence queries allow multiple threshold conditions combined with AND.
+Each condition specifies a stat and minimum value that must all be met in the same game.
+
+For example: "games with 30+ points and 10+ rebounds" requires BOTH conditions
+to be true in a single game for it to count as a qualifying occurrence.
 """
 
 from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
 
 import pandas as pd
 
@@ -19,6 +32,53 @@ from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import load_player_games_for_seasons
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
+
+# ---------------------------------------------------------------------------
+# Condition dataclass for compound occurrence queries
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class OccurrenceCondition:
+    """A single threshold condition for occurrence queries.
+
+    Attributes
+    ----------
+    stat : str
+        The stat column name (e.g., "pts", "reb", "ast").
+    min_value : float or None
+        Minimum threshold (inclusive). If set, games must have stat >= min_value.
+    max_value : float or None
+        Maximum threshold (inclusive). If set, games must have stat <= max_value.
+        Typically used for "under X" conditions.
+    """
+
+    stat: str
+    min_value: float | None = None
+    max_value: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dict for serialization."""
+        d: dict[str, Any] = {"stat": self.stat}
+        if self.min_value is not None:
+            d["min_value"] = self.min_value
+        if self.max_value is not None:
+            d["max_value"] = self.max_value
+        return d
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> OccurrenceCondition:
+        """Create from dict."""
+        return cls(
+            stat=d["stat"],
+            min_value=d.get("min_value"),
+            max_value=d.get("max_value"),
+        )
+
+
+# ---------------------------------------------------------------------------
+# Module constants
+# ---------------------------------------------------------------------------
 
 # Stats available for occurrence thresholds (must exist in game log data).
 ALLOWED_STATS = {
@@ -136,10 +196,105 @@ def _flag_special_event(df: pd.DataFrame, event_type: str) -> pd.Series:
     return qualifying.sum(axis=1) >= min_cats
 
 
-def build_result(
+def _flag_compound_conditions(df: pd.DataFrame, conditions: list[OccurrenceCondition]) -> pd.Series:
+    """Return a boolean Series marking rows that satisfy ALL conditions (AND logic).
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Game log data with stat columns.
+    conditions : list[OccurrenceCondition]
+        List of threshold conditions that must ALL be satisfied.
+
+    Returns
+    -------
+    pd.Series
+        Boolean mask where True = row satisfies all conditions.
+    """
+    if not conditions:
+        return pd.Series(True, index=df.index)
+
+    combined_mask = pd.Series(True, index=df.index)
+
+    for cond in conditions:
+        stat_col = cond.stat.lower()
+        if stat_col not in df.columns:
+            # If stat doesn't exist, no rows can qualify for this condition
+            return pd.Series(False, index=df.index)
+
+        values = pd.to_numeric(df[stat_col], errors="coerce").fillna(0)
+
+        cond_mask = pd.Series(True, index=df.index)
+        if cond.min_value is not None:
+            cond_mask &= values >= cond.min_value
+        if cond.max_value is not None:
+            cond_mask &= values <= cond.max_value
+
+        combined_mask &= cond_mask
+
+    return combined_mask
+
+
+def _build_event_label(
+    conditions: list[OccurrenceCondition] | None = None,
     stat: str | None = None,
     min_value: float | None = None,
     special_event: str | None = None,
+) -> str:
+    """Build a descriptive event label for the occurrence column.
+
+    Examples:
+    - Single: "games_pts_30+"
+    - Compound: "games_pts_30+_reb_10+"
+    - Special: "triple doubles"
+    """
+    if special_event:
+        return special_event.replace("_", " ") + "s"
+
+    if conditions and len(conditions) > 0:
+        # Compound: build label from all conditions
+        parts = []
+        for cond in conditions:
+            stat_name = cond.stat.lower()
+            if cond.min_value is not None and cond.max_value is not None:
+                # Range: "pts_20-30"
+                parts.append(f"{stat_name}_{int(cond.min_value)}-{int(cond.max_value)}")
+            elif cond.min_value is not None:
+                parts.append(f"{stat_name}_{int(cond.min_value)}+")
+            elif cond.max_value is not None:
+                parts.append(f"{stat_name}_under_{int(cond.max_value)}")
+        return "games_" + "_".join(parts)
+
+    if stat and min_value is not None:
+        return f"games_{stat.lower()}_{int(min_value)}+"
+
+    return "qualifying_games"
+
+
+def _validate_conditions(conditions: list[OccurrenceCondition]) -> None:
+    """Validate a list of occurrence conditions.
+
+    Raises
+    ------
+    ValueError
+        If any condition has an unsupported stat or invalid values.
+    """
+    if not conditions:
+        raise ValueError("At least one condition must be provided")
+
+    for cond in conditions:
+        if cond.stat.lower() not in ALLOWED_STATS:
+            raise ValueError(f"Unsupported stat: {cond.stat}. Allowed: {sorted(ALLOWED_STATS)}")
+        if cond.min_value is None and cond.max_value is None:
+            raise ValueError(f"Condition for {cond.stat} must have min_value or max_value")
+
+
+def build_result(
+    stat: str | None = None,
+    min_value: float | None = None,
+    max_value: float | None = None,
+    special_event: str | None = None,
+    conditions: list[OccurrenceCondition | dict] | None = None,
     season: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
@@ -153,20 +308,32 @@ def build_result(
     end_date: str | None = None,
     limit: int = 10,
     min_games: int = DEFAULT_MIN_GAMES,
+    player: str | None = None,
 ) -> LeaderboardResult | NoResult:
     """Build a player occurrence leaderboard.
+
+    Supports three modes:
+    1. Single stat threshold: stat + min_value (legacy, still supported)
+    2. Special events: special_event (triple_double, double_double)
+    3. Compound conditions: conditions list with multiple thresholds (AND logic)
 
     Parameters
     ----------
     stat : str or None
         The stat column to threshold on (e.g. "pts", "fg3m").
-        Mutually exclusive with *special_event*.
+        Mutually exclusive with *special_event* and *conditions*.
     min_value : float or None
         The minimum value for *stat* to count as a qualifying game.
         Required when *stat* is provided.
+    max_value : float or None
+        The maximum value for *stat* (for "under X" queries).
     special_event : str or None
         A special multi-stat event type: "triple_double" or "double_double".
-        Mutually exclusive with *stat*.
+        Mutually exclusive with *stat* and *conditions*.
+    conditions : list[OccurrenceCondition | dict] or None
+        List of threshold conditions that must ALL be met (AND logic).
+        Each can be an OccurrenceCondition or a dict with {stat, min_value, max_value}.
+        Mutually exclusive with *stat* and *special_event*.
     season, start_season, end_season : str or None
         Season parameters forwarded to ``resolve_seasons()``.
     season_type : str
@@ -181,20 +348,46 @@ def build_result(
         Number of leaders to return.
     min_games : int
         Minimum total games played for a player to be eligible.
+    player : str or None
+        If provided, filter to only this player (for single-player occurrence counts).
 
     Returns
     -------
     LeaderboardResult or NoResult
     """
-    # Validate parameters
-    if stat is None and special_event is None:
-        raise ValueError("Either stat+min_value or special_event must be provided")
-    if stat is not None and special_event is not None:
-        raise ValueError("Cannot specify both stat and special_event")
-    if stat is not None and min_value is None:
-        raise ValueError("min_value is required when stat is provided")
-    if stat is not None and stat.lower() not in ALLOWED_STATS:
-        raise ValueError(f"Unsupported stat: {stat}. Allowed: {sorted(ALLOWED_STATS)}")
+    # Normalize conditions from dicts to OccurrenceCondition objects
+    normalized_conditions: list[OccurrenceCondition] | None = None
+    if conditions:
+        normalized_conditions = []
+        for c in conditions:
+            if isinstance(c, dict):
+                normalized_conditions.append(OccurrenceCondition.from_dict(c))
+            else:
+                normalized_conditions.append(c)
+
+    # Convert single stat/min_value to a conditions list for unified processing
+    if stat is not None and normalized_conditions is None:
+        normalized_conditions = [
+            OccurrenceCondition(stat=stat, min_value=min_value, max_value=max_value)
+        ]
+
+    # Validate parameters - exactly one mode must be active
+    modes_active = sum(
+        [
+            normalized_conditions is not None and len(normalized_conditions) > 0,
+            special_event is not None,
+        ]
+    )
+
+    if modes_active == 0:
+        raise ValueError("Either stat+min_value, special_event, or conditions must be provided")
+    if modes_active > 1:
+        raise ValueError("Cannot combine stat, special_event, and conditions - use only one mode")
+
+    # Validate conditions
+    if normalized_conditions:
+        _validate_conditions(normalized_conditions)
+
     if special_event is not None and special_event not in SPECIAL_EVENT_STATS:
         raise ValueError(
             f"Unsupported special_event: {special_event}. Allowed: {sorted(SPECIAL_EVENT_STATS)}"
@@ -232,21 +425,27 @@ def build_result(
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_match")
 
+    # Filter to specific player if requested
+    if player:
+        player_upper = player.upper()
+        player_mask = basic["player_name"].str.upper() == player_upper
+        if not player_mask.any():
+            return NoResult(query_class="leaderboard", reason="no_match")
+        basic = basic[player_mask].copy()
+
     # Determine which games qualify
     if special_event:
         qualifying_mask = _flag_special_event(basic, special_event)
     else:
-        stat_col = stat.lower()
-        if stat_col not in basic.columns:
-            return NoResult(query_class="leaderboard", reason="no_data")
-        basic[stat_col] = pd.to_numeric(basic[stat_col], errors="coerce").fillna(0)
-        qualifying_mask = basic[stat_col] >= min_value
+        qualifying_mask = _flag_compound_conditions(basic, normalized_conditions or [])
 
     # Build event label for output column
-    if special_event:
-        event_label = special_event.replace("_", " ") + "s"
-    else:
-        event_label = f"games_{stat.lower()}_{int(min_value)}+"
+    event_label = _build_event_label(
+        conditions=normalized_conditions,
+        stat=stat,
+        min_value=min_value,
+        special_event=special_event,
+    )
 
     # Count qualifying games and total games per player
     basic["_qualifies"] = qualifying_mask.astype(int)
@@ -320,6 +519,17 @@ def build_result(
             f"{special_event.replace('_', ' ')}: {spec['min_categories']}+ categories "
             f"of {stat_list} reaching {spec['threshold']}+"
         )
+    if normalized_conditions and len(normalized_conditions) > 1:
+        # Add caveat explaining compound conditions
+        parts = []
+        for cond in normalized_conditions:
+            if cond.min_value is not None and cond.max_value is not None:
+                parts.append(f"{cond.stat} between {cond.min_value} and {cond.max_value}")
+            elif cond.min_value is not None:
+                parts.append(f"{cond.stat} >= {cond.min_value}")
+            elif cond.max_value is not None:
+                parts.append(f"{cond.stat} <= {cond.max_value}")
+        caveats.append(f"compound occurrence: {' AND '.join(parts)}")
     if home_only:
         caveats.append("home games only")
     if away_only:

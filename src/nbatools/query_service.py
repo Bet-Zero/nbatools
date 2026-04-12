@@ -338,18 +338,20 @@ def execute_natural_query(query: str) -> QueryResult:
             caveats=result.caveats,
         )
     elif count_intent and isinstance(result, LeaderboardResult):
-        # Occurrence count for a specific player routed through
-        # player_occurrence_leaders — extract the player's row.
+        # Occurrence count for a specific player or team routed through
+        # player_occurrence_leaders or team_occurrence_leaders.
+        # Extract the entity's row and return the occurrence count.
         player_name = parsed.get("player")
-        player_count = 0
-        if player_name and not result.leaders.empty:
-            # Find this player in the leaderboard
-            if "player_name" in result.leaders.columns:
+        team_name = kwargs.get("team")  # Team filter passed to occurrence_leaders
+        entity_count = 0
+
+        if not result.leaders.empty:
+            # Try player first
+            if player_name and "player_name" in result.leaders.columns:
                 match = result.leaders[
                     result.leaders["player_name"].str.upper() == player_name.upper()
                 ]
                 if not match.empty:
-                    # The event-count column is the one that's not rank/player_name/team_abbr/etc.
                     skip_cols = {
                         "rank",
                         "player_name",
@@ -362,9 +364,50 @@ def execute_natural_query(query: str) -> QueryResult:
                     }
                     event_cols = [c for c in match.columns if c not in skip_cols]
                     if event_cols:
-                        player_count = int(match.iloc[0][event_cols[0]])
+                        entity_count = int(match.iloc[0][event_cols[0]])
+            # Try team (for team occurrence counts)
+            elif team_name:
+                team_upper = team_name.upper()
+                team_match = None
+                for col in ["team_abbr", "team_name"]:
+                    if col in result.leaders.columns:
+                        team_match = result.leaders[
+                            result.leaders[col].astype(str).str.upper() == team_upper
+                        ]
+                        if not team_match.empty:
+                            break
+                if team_match is not None and not team_match.empty:
+                    skip_cols = {
+                        "rank",
+                        "team_abbr",
+                        "team_name",
+                        "games_played",
+                        "season",
+                        "seasons",
+                        "season_type",
+                    }
+                    event_cols = [c for c in team_match.columns if c not in skip_cols]
+                    if event_cols:
+                        entity_count = int(team_match.iloc[0][event_cols[0]])
+            # Fallback: if there's exactly one row, use it (single entity filter worked)
+            elif len(result.leaders) == 1:
+                skip_cols = {
+                    "rank",
+                    "player_name",
+                    "player_id",
+                    "team_abbr",
+                    "team_name",
+                    "games_played",
+                    "season",
+                    "seasons",
+                    "season_type",
+                }
+                event_cols = [c for c in result.leaders.columns if c not in skip_cols]
+                if event_cols:
+                    entity_count = int(result.leaders.iloc[0][event_cols[0]])
+
         result = CountResult(
-            count=player_count,
+            count=entity_count,
             result_status=result.result_status,
             result_reason=result.result_reason,
             current_through=result.current_through,

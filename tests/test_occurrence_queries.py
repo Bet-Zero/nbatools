@@ -414,14 +414,14 @@ class TestPlayerOccurrenceLeadersBuild:
 
     def test_validation_both_stat_and_event(self):
         """Should raise if both stat and special_event are provided."""
-        with pytest.raises(ValueError, match="Cannot specify both"):
+        with pytest.raises(ValueError, match="Cannot combine"):
             player_occurrence_build_result(
                 stat="pts", min_value=30, special_event="triple_double", season="2024-25"
             )
 
     def test_validation_stat_without_min(self):
         """Should raise if stat provided without min_value."""
-        with pytest.raises(ValueError, match="min_value is required"):
+        with pytest.raises(ValueError, match="must have min_value or max_value"):
             player_occurrence_build_result(stat="pts", season="2024-25")
 
     def test_validation_unsupported_stat(self):

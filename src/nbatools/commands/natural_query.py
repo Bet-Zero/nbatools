@@ -1316,6 +1316,166 @@ def extract_occurrence_event(text: str) -> dict | None:
     return None
 
 
+# ---------------------------------------------------------------------------
+# Compound occurrence event extraction
+# ---------------------------------------------------------------------------
+
+# Stat aliases for compound occurrence parsing
+_COMPOUND_STAT_MAP = {
+    "points": "pts",
+    "point": "pts",
+    "pts": "pts",
+    "rebounds": "reb",
+    "rebound": "reb",
+    "reb": "reb",
+    "assists": "ast",
+    "assist": "ast",
+    "ast": "ast",
+    "steals": "stl",
+    "steal": "stl",
+    "stl": "stl",
+    "blocks": "blk",
+    "block": "blk",
+    "blk": "blk",
+    "threes": "fg3m",
+    "three": "fg3m",
+    "3pm": "fg3m",
+    "3s": "fg3m",
+    "fg3m": "fg3m",
+    "three-pointers": "fg3m",
+    "three-pointer": "fg3m",
+    "turnovers": "tov",
+    "turnover": "tov",
+    "tov": "tov",
+}
+
+
+def _parse_single_threshold(text: str) -> dict | None:
+    """Parse a single threshold phrase like '30+ points' or '10 rebounds'.
+
+    Returns {"stat": str, "min_value": float} or None if no match.
+    """
+    # Pattern: "NUMBER+ STAT" or "NUMBER STAT" or "under NUMBER STAT"
+    # Examples: "30+ points", "10 rebounds", "5+ threes", "under 10 turnovers"
+
+    # "under X stat" → max_value
+    under_match = re.search(
+        r"\bunder\s+(\d+)\+?\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b",
+        text,
+    )
+    if under_match:
+        value = float(under_match.group(1))
+        stat_text = under_match.group(2).lower()
+        stat = _COMPOUND_STAT_MAP.get(stat_text)
+        if stat:
+            return {"stat": stat, "max_value": value - 0.0001}  # "under 10" means < 10
+
+    # Standard patterns: "30+ points", "10 rebounds"
+    standard_match = re.search(
+        r"\b(\d+)\+?\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b",
+        text,
+    )
+    if standard_match:
+        value = float(standard_match.group(1))
+        stat_text = standard_match.group(2).lower()
+        stat = _COMPOUND_STAT_MAP.get(stat_text)
+        if stat:
+            return {"stat": stat, "min_value": value}
+
+    return None
+
+
+def extract_compound_occurrence_event(text: str) -> list[dict] | None:
+    """Extract compound occurrence conditions from natural language.
+
+    Parses queries like:
+    - "games with 30+ points and 10+ rebounds"
+    - "40+ points and 5+ threes"
+    - "25+ points and 10+ assists"
+    - "120+ points and 15+ threes" (team)
+    - "130+ points and under 10 turnovers"
+
+    Returns a list of condition dicts:
+    [{"stat": "pts", "min_value": 30}, {"stat": "reb", "min_value": 10}]
+
+    Returns None if no compound pattern is detected or only single condition found.
+    Only returns for queries that explicitly have AND between conditions.
+    """
+    # Check for compound pattern with " and " between thresholds
+    # We need to detect patterns like "X+ stat and Y+ stat"
+    text_lower = text.lower()
+
+    # Must have "and" in the text for compound detection
+    if " and " not in text_lower:
+        return None
+
+    # Split on " and " and try to parse each part
+    # But be careful: "and" can appear in other contexts
+    # We look for patterns like "NUMBER+ STAT and NUMBER+ STAT"
+
+    # Pattern to detect compound occurrence: two or more threshold expressions connected by "and"
+    # First, try to find all threshold patterns in the text
+    threshold_pattern = (
+        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
+    )
+
+    # Also detect "under X stat" patterns
+    under_pattern = (
+        r"under\s+(\d+)\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
+    )
+
+    # Find all threshold matches
+    found_conditions: list[dict] = []
+    seen_stats: set[str] = set()
+
+    # Check for pattern like "NUMBER+ STAT and NUMBER+ STAT"
+    compound_pattern = (
+        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\s+"
+        r"(?:and|&)\s+"
+        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
+        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
+    )
+
+    compound_match = re.search(compound_pattern, text_lower)
+    if compound_match:
+        # Extract both conditions
+        val1 = float(compound_match.group(1))
+        stat1 = _COMPOUND_STAT_MAP.get(compound_match.group(2).lower())
+        val2 = float(compound_match.group(3))
+        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4).lower())
+
+        if stat1 and stat2 and stat1 != stat2:
+            return [
+                {"stat": stat1, "min_value": val1},
+                {"stat": stat2, "min_value": val2},
+            ]
+
+    # Try more flexible parsing: look at " and " separated parts
+    # Split on " and " and parse each segment
+    parts = re.split(r"\s+and\s+", text_lower)
+
+    if len(parts) >= 2:
+        # Check if multiple parts contain threshold patterns
+        for part in parts:
+            cond = _parse_single_threshold(part)
+            if cond:
+                stat = cond.get("stat")
+                if stat and stat not in seen_stats:
+                    found_conditions.append(cond)
+                    seen_stats.add(stat)
+
+    # Only return if we found 2+ distinct conditions
+    if len(found_conditions) >= 2:
+        return found_conditions
+
+    return None
+
+
 def wants_occurrence_leaderboard(text: str) -> bool:
     """Detect if the query is asking for an occurrence leaderboard.
 
@@ -2133,6 +2293,7 @@ def _build_parse_state(query: str) -> dict:
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
     occurrence_event = extract_occurrence_event(q)
+    compound_occurrence_conditions = extract_compound_occurrence_event(q)
     occurrence_leaderboard_intent = wants_occurrence_leaderboard(q)
     position_filter = extract_position_filter(q)
     head_to_head = detect_head_to_head(q)
@@ -2274,6 +2435,7 @@ def _build_parse_state(query: str) -> dict:
         "leaderboard_intent": leaderboard_intent,
         "team_leaderboard_intent": team_leaderboard_intent,
         "occurrence_event": occurrence_event,
+        "compound_occurrence_conditions": compound_occurrence_conditions,
         "occurrence_leaderboard_intent": occurrence_leaderboard_intent,
         "position_filter": position_filter,
         "head_to_head": head_to_head,
@@ -2339,6 +2501,7 @@ def _finalize_route(parsed: dict) -> dict:
     head_to_head = parsed.get("head_to_head", False)
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
+    compound_occurrence_conditions = parsed.get("compound_occurrence_conditions")
 
     notes: list[str] = []
     route = None
@@ -2515,6 +2678,107 @@ def _finalize_route(parsed: dict) -> dict:
             "season_type": season_type,
             "ascending": False,
         }
+    # ---------------------------------------------------------------------------
+    # Compound occurrence routing: multiple threshold conditions with AND
+    # ONLY route here for leaderboard/count queries, NOT for finder-style
+    # queries like "last N games" or specific entity + opponent + conditions.
+    # ---------------------------------------------------------------------------
+    elif (
+        compound_occurrence_conditions
+        and len(compound_occurrence_conditions) >= 2
+        and not re.search(r"\b(last|past|recent)\s+\d+\s+games?\b", q)
+        and (occurrence_leaderboard_intent or count_intent or team_leaderboard_intent)
+    ):
+        # Compound occurrence query detected (e.g., "30+ points and 10+ rebounds")
+        occ_season = season
+        occ_start = start_season
+        occ_end = end_season
+        if not occ_season and not occ_start and not occ_end:
+            occ_season = default_season_for_context(season_type)
+
+        is_team_occurrence = (
+            bool(
+                re.search(r"\bteam\b|\bteams?\b", q)
+                and not re.search(r"\bplayer\b|\bplayers?\b", q)
+            )
+            or team_leaderboard_intent
+            or (team and not player)
+        )
+
+        # Single player compound occurrence count
+        if player and not player_a and not player_b and count_intent:
+            route = "player_occurrence_leaders"
+            route_kwargs = {
+                "conditions": compound_occurrence_conditions,
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": 500,  # Large limit to ensure player is included
+                "player": player,  # Filter to this player
+            }
+        # Single team compound occurrence count
+        elif team and not team_a and not team_b and (count_intent or is_team_occurrence):
+            route = "team_occurrence_leaders"
+            route_kwargs = {
+                "conditions": compound_occurrence_conditions,
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": 500 if count_intent else (top_n or 10),
+                "team": team,  # Filter to this team
+            }
+        # Team compound occurrence leaderboard (no specific team)
+        elif is_team_occurrence and not player and not player_a and not player_b:
+            route = "team_occurrence_leaders"
+            route_kwargs = {
+                "conditions": compound_occurrence_conditions,
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": top_n or 10,
+            }
+        # Player compound occurrence leaderboard (no specific player)
+        else:
+            route = "player_occurrence_leaders"
+            route_kwargs = {
+                "conditions": compound_occurrence_conditions,
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": top_n or 10,
+            }
     elif (
         occurrence_leaderboard_intent
         and occurrence_event
@@ -2752,6 +3016,7 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "limit": 500,  # large limit to ensure player is included
+            "player": player,  # Filter to this player
         }
     elif (finder_intent or count_intent) and player and not player_a and not player_b:
         # Explicit list/count intent overrides summary/range routing
