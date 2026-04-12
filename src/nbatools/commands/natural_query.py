@@ -2702,7 +2702,8 @@ def _finalize_route(parsed: dict) -> dict:
                 leaderboard_stat = "pts"
             if opponent and leaderboard_stat in _player_season_only:
                 notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available with opponent filter, using pts"
+                    f"stat_fallback: {leaderboard_stat} not available"
+                    " with opponent filter, using pts"
                 )
                 leaderboard_stat = "pts"
             route = "season_leaders"
@@ -2930,7 +2931,8 @@ def _finalize_route(parsed: dict) -> dict:
 
     if route in ("player_game_summary", "player_compare", "player_split_summary"):
         notes.append(
-            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct"
+            " recomputed from filtered sample"
         )
 
     if notes:
@@ -3492,7 +3494,6 @@ def render_query_result(
     """
     result = query_result.result
     metadata = dict(query_result.metadata)
-    grouped_boolean_used = metadata.get("grouped_boolean_used", False)
     query_class = route_to_query_class(query_result.route)
 
     # Build the wrapped raw output text

@@ -195,11 +195,9 @@ def build_result(
 
     # Determine groupby columns — prefer team_abbr, fall back to team_name
     group_col = None
-    name_col = None
     for candidate in ["team_abbr", "team_name"]:
         if candidate in basic.columns:
             group_col = candidate
-            name_col = candidate
             break
 
     if group_col is None:
