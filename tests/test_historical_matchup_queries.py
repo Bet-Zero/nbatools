@@ -602,7 +602,7 @@ class TestOpponentFilteredPlayerLeaderboard:
         with pytest.raises(ValueError, match="Opponent-filtered"):
             build_result(
                 season="2098-99",
-                stat="usage_rate",
+                stat="net_rating",
                 opponent="TGT",
             )
 

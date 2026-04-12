@@ -33,6 +33,7 @@ ALLOWED_STATS = {
     "usg_pct": "usg_pct",
     "ast_pct": "ast_pct",
     "reb_pct": "reb_pct",
+    "tov_pct": "tov_pct",
 }
 
 
@@ -255,6 +256,7 @@ def build_result(
         "usg_pct",
         "ast_pct",
         "reb_pct",
+        "tov_pct",
     ]
     output_cols = [c for c in output_cols if c in df.columns]
 

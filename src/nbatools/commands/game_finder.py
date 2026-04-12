@@ -23,6 +23,9 @@ ALLOWED_STATS = {
     "plus_minus": "plus_minus",
     "oreb": "oreb",
     "dreb": "dreb",
+    "fg_pct": "fg_pct",
+    "fg3_pct": "fg3_pct",
+    "ft_pct": "ft_pct",
     "efg_pct": "efg_pct",
     "ts_pct": "ts_pct",
 }
@@ -229,6 +232,9 @@ def build_result(
         "fg3a",
         "tov",
         "plus_minus",
+        "fg_pct",
+        "fg3_pct",
+        "ft_pct",
         "efg_pct",
         "ts_pct",
     ]

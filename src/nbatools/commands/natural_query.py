@@ -270,6 +270,39 @@ LEADERBOARD_STAT_ALIASES = {
     "ts%": "ts_pct",
     "efg pct": "efg_pct",
     "efg%": "efg_pct",
+    # Advanced player metrics
+    "usage rate": "usg_pct",
+    "usage percentage": "usg_pct",
+    "usage %": "usg_pct",
+    "usage": "usg_pct",
+    "usg%": "usg_pct",
+    "usg pct": "usg_pct",
+    "usg_pct": "usg_pct",
+    "assist percentage": "ast_pct",
+    "assist %": "ast_pct",
+    "ast%": "ast_pct",
+    "ast pct": "ast_pct",
+    "ast_pct": "ast_pct",
+    "rebound percentage": "reb_pct",
+    "rebound %": "reb_pct",
+    "reb%": "reb_pct",
+    "reb pct": "reb_pct",
+    "reb_pct": "reb_pct",
+    "turnover percentage": "tov_pct",
+    "turnover %": "tov_pct",
+    "turnover rate": "tov_pct",
+    "tov%": "tov_pct",
+    "tov pct": "tov_pct",
+    "tov_pct": "tov_pct",
+    # Ratings (leaderboard only — season-advanced, single-season)
+    "offensive rating": "off_rating",
+    "off rating": "off_rating",
+    "off_rating": "off_rating",
+    "defensive rating": "def_rating",
+    "def rating": "def_rating",
+    "def_rating": "def_rating",
+    "net rating": "net_rating",
+    "net_rating": "net_rating",
 }
 
 
@@ -326,6 +359,15 @@ TEAM_LEADERBOARD_STAT_ALIASES = {
     "best offense": "off_rating",
     "offensive rating": "off_rating",
     "off rating": "off_rating",
+    "off_rating": "off_rating",
+    "worst offensive teams": "off_rating",
+    "best defensive teams": "def_rating",
+    "defensive teams": "def_rating",
+    "best defense": "def_rating",
+    "defensive rating": "def_rating",
+    "def rating": "def_rating",
+    "def_rating": "def_rating",
+    "worst defensive teams": "def_rating",
     "teams with most threes": "fg3m",
     "most threes per game teams": "fg3m",
     "most threes per game": "fg3m",
@@ -338,7 +380,17 @@ TEAM_LEADERBOARD_STAT_ALIASES = {
     "best team ts%": "ts_pct",
     "best ts% teams": "ts_pct",
     "best net rating teams": "net_rating",
+    "best net rating": "net_rating",
+    "net rating": "net_rating",
+    "net_rating": "net_rating",
+    "worst net rating teams": "net_rating",
     "fastest teams": "pace",
+    "fastest pace teams": "pace",
+    "highest pace teams": "pace",
+    "slowest teams": "pace",
+    "slowest pace teams": "pace",
+    "lowest pace teams": "pace",
+    "pace": "pace",
     "most steals teams": "stl",
     "team steals": "stl",
     "most blocks teams": "blk",
@@ -2196,15 +2248,14 @@ def _finalize_route(parsed: dict) -> dict:
 
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
-            if (start_date or end_date) and leaderboard_stat == "off_rating":
-                notes.append("stat_fallback: off_rating not available with date window, using pts")
+            # Season-advanced-only team stats blocked in date-window/multi-season
+            _team_season_only = {"off_rating", "def_rating", "net_rating", "pace"}
+            if (start_date or end_date) and leaderboard_stat in _team_season_only:
+                notes.append(
+                    f"stat_fallback: {leaderboard_stat} not available with date window, using pts"
+                )
                 leaderboard_stat = "pts"
-            if (lb_start_season and lb_end_season) and leaderboard_stat in (
-                "off_rating",
-                "def_rating",
-                "net_rating",
-                "pace",
-            ):
+            if (lb_start_season and lb_end_season) and leaderboard_stat in _team_season_only:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
                 )
@@ -2225,15 +2276,13 @@ def _finalize_route(parsed: dict) -> dict:
             }
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
-            if (start_date or end_date) and leaderboard_stat == "off_rating":
-                notes.append("stat_fallback: off_rating not available with date window, using pts")
+            _team_season_only = {"off_rating", "def_rating", "net_rating", "pace"}
+            if (start_date or end_date) and leaderboard_stat in _team_season_only:
+                notes.append(
+                    f"stat_fallback: {leaderboard_stat} not available with date window, using pts"
+                )
                 leaderboard_stat = "pts"
-            if (lb_start_season and lb_end_season) and leaderboard_stat in (
-                "off_rating",
-                "def_rating",
-                "net_rating",
-                "pace",
-            ):
+            if (lb_start_season and lb_end_season) and leaderboard_stat in _team_season_only:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
                 )
@@ -2254,22 +2303,14 @@ def _finalize_route(parsed: dict) -> dict:
             }
         else:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
-            if (lb_start_season and lb_end_season) and leaderboard_stat in (
-                "usage_rate",
-                "net_rating",
-                "off_rating",
-                "def_rating",
-            ):
+            # Season-advanced-only player stats blocked in multi-season/opponent contexts
+            _player_season_only = {"off_rating", "def_rating", "net_rating"}
+            if (lb_start_season and lb_end_season) and leaderboard_stat in _player_season_only:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
                 )
                 leaderboard_stat = "pts"
-            if opponent and leaderboard_stat in (
-                "usage_rate",
-                "net_rating",
-                "off_rating",
-                "def_rating",
-            ):
+            if opponent and leaderboard_stat in _player_season_only:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available with opponent filter, using pts"
                 )
@@ -2415,7 +2456,7 @@ def _finalize_route(parsed: dict) -> dict:
 
     if route in ("player_game_summary", "player_compare", "player_split_summary"):
         notes.append(
-            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct recomputed from filtered sample"
+            "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample"
         )
 
     if notes:

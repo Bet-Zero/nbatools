@@ -231,10 +231,11 @@ def test_compute_sample_advanced_metrics_returns_all_three():
     )
 
     metrics = compute_sample_advanced_metrics(df)
-    assert set(metrics.keys()) == {"usg_pct_avg", "ast_pct_avg", "reb_pct_avg"}
+    assert set(metrics.keys()) == {"usg_pct_avg", "ast_pct_avg", "reb_pct_avg", "tov_pct_avg"}
     assert metrics["usg_pct_avg"] is not None
     assert metrics["ast_pct_avg"] is not None
     assert metrics["reb_pct_avg"] is not None
+    assert metrics["tov_pct_avg"] is not None
 
 
 def test_compute_sample_metrics_returns_none_safely_on_zero_denominators():
@@ -348,6 +349,7 @@ def test_compute_grouped_sample_advanced_metrics_returns_different_bucket_values
     assert out.loc[0, "usg_pct_avg"] != out.loc[1, "usg_pct_avg"]
     assert out.loc[0, "ast_pct_avg"] != out.loc[1, "ast_pct_avg"]
     assert out.loc[0, "reb_pct_avg"] != out.loc[1, "reb_pct_avg"]
+    assert "tov_pct_avg" in out.columns
 
 
 def test_compute_season_grouped_sample_advanced_metrics_returns_per_season_values():

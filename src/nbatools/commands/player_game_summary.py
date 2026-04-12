@@ -41,6 +41,7 @@ ALLOWED_STATS = {
     "usg_pct": "usg_pct",
     "ast_pct": "ast_pct",
     "reb_pct": "reb_pct",
+    "tov_pct": "tov_pct",
 }
 
 

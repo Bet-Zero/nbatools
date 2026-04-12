@@ -238,11 +238,29 @@ def compute_sample_reb_pct(df: pd.DataFrame) -> float | None:
     return None if value is None else round(100.0 * value, 3)
 
 
+def compute_sample_tov_pct(df: pd.DataFrame) -> float | None:
+    """Compute turnover percentage over a filtered sample.
+
+    TOV% = 100 * TOV / (FGA + 0.44 * FTA + TOV)
+    """
+    if df.empty:
+        return None
+
+    player_fga = _sum_col(df, "fga")
+    player_fta = _sum_col(df, "fta")
+    player_tov = _sum_col(df, "tov")
+
+    denom = player_fga + 0.44 * player_fta + player_tov
+    value = _safe_divide(player_tov, denom)
+    return None if value is None else round(100.0 * value, 3)
+
+
 def compute_sample_advanced_metrics(df: pd.DataFrame) -> dict[str, float | None]:
     return {
         "usg_pct_avg": compute_sample_usg_pct(df),
         "ast_pct_avg": compute_sample_ast_pct(df),
         "reb_pct_avg": compute_sample_reb_pct(df),
+        "tov_pct_avg": compute_sample_tov_pct(df),
     }
 
 
@@ -279,11 +297,14 @@ def compute_grouped_sample_advanced_metrics(
                 "usg_pct_avg": metrics["usg_pct_avg"],
                 "ast_pct_avg": metrics["ast_pct_avg"],
                 "reb_pct_avg": metrics["reb_pct_avg"],
+                "tov_pct_avg": metrics["tov_pct_avg"],
             }
         )
 
     if not rows:
-        return pd.DataFrame(columns=[group_col, "usg_pct_avg", "ast_pct_avg", "reb_pct_avg"])
+        return pd.DataFrame(
+            columns=[group_col, "usg_pct_avg", "ast_pct_avg", "reb_pct_avg", "tov_pct_avg"]
+        )
 
     return pd.DataFrame(rows)
 
@@ -301,10 +322,13 @@ def compute_season_grouped_sample_advanced_metrics(df: pd.DataFrame) -> pd.DataF
                 "usg_pct_avg": metrics["usg_pct_avg"],
                 "ast_pct_avg": metrics["ast_pct_avg"],
                 "reb_pct_avg": metrics["reb_pct_avg"],
+                "tov_pct_avg": metrics["tov_pct_avg"],
             }
         )
 
     if not rows:
-        return pd.DataFrame(columns=["season", "usg_pct_avg", "ast_pct_avg", "reb_pct_avg"])
+        return pd.DataFrame(
+            columns=["season", "usg_pct_avg", "ast_pct_avg", "reb_pct_avg", "tov_pct_avg"]
+        )
 
     return pd.DataFrame(rows).sort_values("season").reset_index(drop=True)

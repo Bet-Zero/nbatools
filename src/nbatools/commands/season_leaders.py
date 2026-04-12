@@ -83,10 +83,6 @@ ALLOWED_STATS = {
     "true shooting": "ts_pct",
     "true shooting percentage": "ts_pct",
     "true shooting %": "ts_pct",
-    "usage": "usage_rate",
-    "usage_rate": "usage_rate",
-    "usg": "usage_rate",
-    "usg_pct": "usage_rate",
     "net_rating": "net_rating",
     "off_rating": "off_rating",
     "def_rating": "def_rating",
@@ -109,12 +105,38 @@ ALLOWED_STATS = {
     "10 assist games": "games_10a",
     "10-assist games": "games_10a",
     "double digit assist games": "games_10a",
+    # Game-log-derived advanced metrics
+    "usage": "usg_pct",
+    "usage_rate": "usg_pct",
+    "usage rate": "usg_pct",
+    "usage %": "usg_pct",
+    "usage percentage": "usg_pct",
+    "usg": "usg_pct",
+    "usg_pct": "usg_pct",
+    "usg%": "usg_pct",
+    "assist percentage": "ast_pct",
+    "assist %": "ast_pct",
+    "ast%": "ast_pct",
+    "ast_pct": "ast_pct",
+    "rebound percentage": "reb_pct",
+    "rebound %": "reb_pct",
+    "reb%": "reb_pct",
+    "reb_pct": "reb_pct",
+    "turnover percentage": "tov_pct",
+    "turnover %": "tov_pct",
+    "turnover rate": "tov_pct",
+    "tov%": "tov_pct",
+    "tov_pct": "tov_pct",
 }
 
 DEFAULT_MIN_GAMES = 1
 PERCENTAGE_STATS = {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"}
+ADVANCED_RATE_STATS = {"usg_pct", "ast_pct", "reb_pct", "tov_pct"}
 COUNT_LEADERBOARD_STATS = {"games_20p", "games_30p", "games_40p", "games_10r", "games_10a"}
-DATE_WINDOW_UNSUPPORTED_ADVANCED = {"usage_rate", "net_rating", "off_rating", "def_rating"}
+# Season-advanced-only metrics that cannot be computed from game logs.
+DATE_WINDOW_UNSUPPORTED_ADVANCED = {"net_rating", "off_rating", "def_rating"}
+# Game-log-derived advanced metrics require team context merge.
+GAME_LOG_DERIVED_ADVANCED = {"usg_pct", "ast_pct", "reb_pct", "tov_pct"}
 
 
 def _normalize_stat(stat: str) -> str:
@@ -148,6 +170,8 @@ def _recommended_min_games(
     if target_col in COUNT_LEADERBOARD_STATS:
         return 10
     if target_col in PERCENTAGE_STATS:
+        return 20
+    if target_col in ADVANCED_RATE_STATS:
         return 20
     return 20
 
@@ -245,6 +269,169 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
     return grouped
 
 
+def _merge_game_log_derived_advanced(
+    grouped: pd.DataFrame,
+    basic: pd.DataFrame,
+    seasons: list[str],
+    season_type: str,
+) -> pd.DataFrame:
+    """Compute USG%, AST%, REB%, TOV% from game-log aggregates with team context.
+
+    These metrics are computed by aggregating raw box-score totals per player
+    and matching them with the corresponding team totals for the games the
+    player appeared in.  The formulas match those in player_advanced_metrics.py.
+    """
+    safe = season_type.lower().replace(" ", "_")
+
+    # Load team game logs for the same seasons
+    team_frames: list[pd.DataFrame] = []
+    for s in seasons:
+        tpath = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
+        if tpath.exists():
+            team_frames.append(pd.read_csv(tpath))
+    if not team_frames:
+        return grouped
+
+    team_df = pd.concat(team_frames, ignore_index=True)
+
+    # Coerce numeric columns in team_df
+    for col in ("minutes", "fgm", "fga", "fta", "tov", "reb"):
+        if col in team_df.columns:
+            team_df[col] = pd.to_numeric(team_df[col], errors="coerce").fillna(0)
+
+    player_context_cols = ["game_id", "player_id", "team_id"]
+    if not all(c in basic.columns for c in player_context_cols):
+        return grouped
+
+    # Build team context at (game_id, team_id) level — one row per team per game
+    team_ctx = team_df[["game_id", "team_id", "minutes", "fgm", "fga", "fta", "tov", "reb"]].copy()
+    team_ctx = team_ctx.rename(
+        columns={
+            "minutes": "team_minutes",
+            "fgm": "team_fgm",
+            "fga": "team_fga",
+            "fta": "team_fta",
+            "tov": "team_tov",
+            "reb": "team_reb",
+        }
+    ).drop_duplicates(subset=["game_id", "team_id"])
+
+    # Build opponent reb lookup at (game_id, team_id) level
+    if "opponent_team_id" in basic.columns:
+        opp_map = basic[["game_id", "team_id", "opponent_team_id"]].drop_duplicates(
+            subset=["game_id", "team_id"]
+        )
+        opp_reb = (
+            team_df[["game_id", "team_id", "reb"]]
+            .rename(columns={"team_id": "opponent_team_id", "reb": "opp_reb"})
+            .drop_duplicates(subset=["game_id", "opponent_team_id"])
+        )
+        opp_map = opp_map.merge(opp_reb, on=["game_id", "opponent_team_id"], how="left")
+        team_ctx = team_ctx.merge(
+            opp_map[["game_id", "team_id", "opp_reb"]].drop_duplicates(
+                subset=["game_id", "team_id"]
+            ),
+            on=["game_id", "team_id"],
+            how="left",
+        )
+
+    # Gather per-player-game stats
+    player_stat_cols = ["game_id", "player_id", "team_id"]
+    for col in ("fga", "fta", "tov", "minutes", "ast", "fgm", "reb"):
+        if col in basic.columns:
+            player_stat_cols.append(col)
+    player_stats = basic[player_stat_cols].drop_duplicates()
+
+    # Many-to-one merge: each player row finds its team context row
+    merged = player_stats.merge(team_ctx, on=["game_id", "team_id"], how="left")
+
+    # Coerce numerics
+    for col in (
+        "fga",
+        "fta",
+        "tov",
+        "minutes",
+        "ast",
+        "fgm",
+        "reb",
+        "team_minutes",
+        "team_fgm",
+        "team_fga",
+        "team_fta",
+        "team_tov",
+        "team_reb",
+    ):
+        if col in merged.columns:
+            merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
+    if "opp_reb" in merged.columns:
+        merged["opp_reb"] = pd.to_numeric(merged["opp_reb"], errors="coerce").fillna(0)
+
+    # Aggregate per player
+    player_agg = merged.groupby("player_id", as_index=False).agg(
+        p_fga=("fga", "sum"),
+        p_fta=("fta", "sum"),
+        p_tov=("tov", "sum"),
+        p_minutes=("minutes", "sum"),
+        p_ast=("ast", "sum"),
+        p_fgm=("fgm", "sum"),
+        p_reb=("reb", "sum"),
+        t_minutes=("team_minutes", "sum"),
+        t_fgm=("team_fgm", "sum"),
+        t_fga=("team_fga", "sum"),
+        t_fta=("team_fta", "sum"),
+        t_tov=("team_tov", "sum"),
+        t_reb=("team_reb", "sum"),
+        **(
+            {
+                "o_reb": ("opp_reb", "sum"),
+            }
+            if "opp_reb" in merged.columns
+            else {}
+        ),
+    )
+
+    # USG%: 100 * ((FGA + 0.44*FTA + TOV) * (TeamMin/5)) / (Min * (TeamFGA + 0.44*TeamFTA + TeamTOV))
+    player_actions = player_agg["p_fga"] + 0.44 * player_agg["p_fta"] + player_agg["p_tov"]
+    team_actions = player_agg["t_fga"] + 0.44 * player_agg["t_fta"] + player_agg["t_tov"]
+    usg_numer = player_actions * (player_agg["t_minutes"] / 5.0)
+    usg_denom = player_agg["p_minutes"] * team_actions
+    player_agg["usg_pct"] = (100.0 * usg_numer / usg_denom).where(usg_denom > 0)
+
+    # AST%: 100 * AST / (((MIN / (TeamMIN/5)) * TeamFGM) - FGM)
+    min_share = player_agg["p_minutes"] / (player_agg["t_minutes"] / 5.0)
+    ast_denom = (min_share * player_agg["t_fgm"]) - player_agg["p_fgm"]
+    player_agg["ast_pct"] = (100.0 * player_agg["p_ast"] / ast_denom).where(ast_denom > 0)
+
+    # REB%: 100 * (REB * (TeamMIN/5)) / (MIN * (TeamREB + OppREB))
+    if "o_reb" in player_agg.columns:
+        reb_numer = player_agg["p_reb"] * (player_agg["t_minutes"] / 5.0)
+        reb_denom = player_agg["p_minutes"] * (player_agg["t_reb"] + player_agg["o_reb"])
+        player_agg["reb_pct"] = (100.0 * reb_numer / reb_denom).where(reb_denom > 0)
+
+    # TOV%: 100 * TOV / (FGA + 0.44*FTA + TOV)
+    tov_denom = player_agg["p_fga"] + 0.44 * player_agg["p_fta"] + player_agg["p_tov"]
+    player_agg["tov_pct"] = (100.0 * player_agg["p_tov"] / tov_denom).where(tov_denom > 0)
+
+    # Merge back into grouped
+    adv_cols = ["player_id"]
+    for col in ("usg_pct", "ast_pct", "reb_pct", "tov_pct"):
+        if col in player_agg.columns:
+            adv_cols.append(col)
+
+    result = grouped.merge(player_agg[adv_cols], on="player_id", how="left", suffixes=("", "_gldr"))
+    # If season-advanced already had usage_rate, keep it; game-log-derived is fallback
+    for col in ("usg_pct", "ast_pct", "reb_pct", "tov_pct"):
+        gldr_col = f"{col}_gldr"
+        if gldr_col in result.columns:
+            if col in result.columns:
+                result[col] = result[col].combine_first(result[gldr_col])
+            else:
+                result[col] = result[gldr_col]
+            result = result.drop(columns=[gldr_col])
+
+    return result
+
+
 def _prepare_advanced_rows(adv: pd.DataFrame) -> pd.DataFrame:
     if "player_id" not in adv.columns:
         return pd.DataFrame(columns=["player_id"])
@@ -323,6 +510,12 @@ def _merge_advanced_if_available(grouped: pd.DataFrame, adv_path: Path) -> pd.Da
                 merged[col] = merged[adv_col]
             merged = merged.drop(columns=[adv_col])
 
+    # Map usage_rate (season-advanced column name) -> usg_pct (canonical name)
+    if "usage_rate" in merged.columns and "usg_pct" not in merged.columns:
+        merged["usg_pct"] = merged["usage_rate"]
+    elif "usage_rate" in merged.columns and "usg_pct" in merged.columns:
+        merged["usg_pct"] = merged["usg_pct"].combine_first(merged["usage_rate"])
+
     return merged
 
 
@@ -356,6 +549,10 @@ def _apply_default_guardrails(
 
     if target_col == "ft_pct" and "fta_total" in df.columns:
         df = df[df["fta_total"] >= fta_floor].copy()
+
+    # Advanced rate stats also need sufficient volume
+    if target_col in ADVANCED_RATE_STATS and "fga_total" in df.columns:
+        df = df[df["fga_total"] >= fga_floor].copy()
 
     return df
 
@@ -449,6 +646,11 @@ def build_result(
         return NoResult(query_class="leaderboard", reason="no_data")
 
     df = _build_from_game_logs(basic)
+
+    # Compute game-log-derived advanced metrics (USG%, AST%, REB%, TOV%)
+    # These work in any context (multi-season, date-window, opponent-filtered).
+    if target_col in GAME_LOG_DERIVED_ADVANCED:
+        df = _merge_game_log_derived_advanced(df, basic, seasons, season_type)
 
     latest_team_lookup = _latest_team_lookup_from_games(basic)
     if not latest_team_lookup.empty:
@@ -545,6 +747,9 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {opponent.upper()}")
+    if target_col in GAME_LOG_DERIVED_ADVANCED:
+        if date_window_active or multi_season or opponent:
+            caveats.append(f"{target_col} recomputed from filtered game-log sample")
 
     return LeaderboardResult(
         leaders=result,

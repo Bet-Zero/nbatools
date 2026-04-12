@@ -23,14 +23,28 @@ def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) ->
 
 
 def add_advanced_pct_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Add efg_pct and ts_pct columns computed from box-score totals."""
+    """Add shooting pct and efficiency columns computed from box-score totals."""
     out = df.copy()
+
+    if {"fgm", "fga"}.issubset(out.columns) and "fg_pct" not in out.columns:
+        out["fg_pct"] = safe_divide(out["fgm"], out["fga"])
+
+    if {"fg3m", "fg3a"}.issubset(out.columns) and "fg3_pct" not in out.columns:
+        out["fg3_pct"] = safe_divide(out["fg3m"], out["fg3a"])
+
+    if {"ftm", "fta"}.issubset(out.columns) and "ft_pct" not in out.columns:
+        out["ft_pct"] = safe_divide(out["ftm"], out["fta"])
 
     if {"fgm", "fg3m", "fga"}.issubset(out.columns):
         out["efg_pct"] = safe_divide(out["fgm"] + 0.5 * out["fg3m"], out["fga"])
 
     if {"pts", "fga", "fta"}.issubset(out.columns):
         out["ts_pct"] = safe_divide(out["pts"], 2 * (out["fga"] + 0.44 * out["fta"]))
+
+    if {"tov", "fga", "fta"}.issubset(out.columns):
+        out["tov_pct"] = (
+            safe_divide(out["tov"], out["fga"] + 0.44 * out["fta"] + out["tov"]) * 100.0
+        )
 
     return out
 
