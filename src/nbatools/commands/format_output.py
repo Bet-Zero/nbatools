@@ -67,6 +67,8 @@ ROUTE_TO_QUERY_CLASS = {
     "top_team_games": "leaderboard",
     "player_streak_finder": "streak",
     "team_streak_finder": "streak",
+    "player_occurrence_leaders": "leaderboard",
+    "team_occurrence_leaders": "leaderboard",
 }
 
 QUERY_CLASS_TO_LABEL = {

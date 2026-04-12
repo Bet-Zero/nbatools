@@ -337,6 +337,41 @@ def execute_natural_query(query: str) -> QueryResult:
             notes=result.notes,
             caveats=result.caveats,
         )
+    elif count_intent and isinstance(result, LeaderboardResult):
+        # Occurrence count for a specific player routed through
+        # player_occurrence_leaders — extract the player's row.
+        player_name = parsed.get("player")
+        player_count = 0
+        if player_name and not result.leaders.empty:
+            # Find this player in the leaderboard
+            if "player_name" in result.leaders.columns:
+                match = result.leaders[
+                    result.leaders["player_name"].str.upper() == player_name.upper()
+                ]
+                if not match.empty:
+                    # The event-count column is the one that's not rank/player_name/team_abbr/etc.
+                    skip_cols = {
+                        "rank",
+                        "player_name",
+                        "player_id",
+                        "team_abbr",
+                        "games_played",
+                        "season",
+                        "seasons",
+                        "season_type",
+                    }
+                    event_cols = [c for c in match.columns if c not in skip_cols]
+                    if event_cols:
+                        player_count = int(match.iloc[0][event_cols[0]])
+        result = CountResult(
+            count=player_count,
+            result_status=result.result_status,
+            result_reason=result.result_reason,
+            current_through=result.current_through,
+            metadata=result.metadata,
+            notes=result.notes,
+            caveats=result.caveats,
+        )
     elif count_intent and isinstance(result, NoResult):
         result = CountResult(
             count=0,
@@ -378,6 +413,8 @@ VALID_ROUTES = frozenset(
         "team_split_summary",
         "player_streak_finder",
         "team_streak_finder",
+        "player_occurrence_leaders",
+        "team_occurrence_leaders",
     ]
 )
 

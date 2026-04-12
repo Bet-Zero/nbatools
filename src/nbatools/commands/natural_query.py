@@ -65,6 +65,9 @@ from nbatools.commands.player_game_summary import (
 from nbatools.commands.player_game_summary import (
     run as player_game_summary_run,
 )
+from nbatools.commands.player_occurrence_leaders import (
+    build_result as player_occurrence_leaders_build_result,
+)
 from nbatools.commands.player_split_summary import (
     build_result as player_split_summary_build_result,
 )
@@ -96,6 +99,9 @@ from nbatools.commands.team_compare import (
     build_result as team_compare_build_result,
 )
 from nbatools.commands.team_compare import run as team_compare_run
+from nbatools.commands.team_occurrence_leaders import (
+    build_result as team_occurrence_leaders_build_result,
+)
 from nbatools.commands.team_split_summary import (
     build_result as team_split_summary_build_result,
 )
@@ -1246,6 +1252,90 @@ def wants_count(text: str) -> bool:
     )
 
 
+def extract_occurrence_event(text: str) -> dict | None:
+    """Detect and extract an occurrence-event definition from natural language.
+
+    Returns a dict with either:
+    - {"stat": str, "min_value": float}  for single-stat thresholds
+    - {"special_event": str}  for multi-stat events (triple_double, double_double)
+
+    Returns None if no occurrence event is detected.
+
+    Examples:
+        "40 point games"       → {"stat": "pts", "min_value": 40}
+        "40-point games"       → {"stat": "pts", "min_value": 40}
+        "5+ three games"       → {"stat": "fg3m", "min_value": 5}
+        "triple doubles"       → {"special_event": "triple_double"}
+        "double doubles"       → {"special_event": "double_double"}
+        "15 rebound games"     → {"stat": "reb", "min_value": 15}
+        "120 point games"      → {"stat": "pts", "min_value": 120}
+        "games with 5+ threes" → {"stat": "fg3m", "min_value": 5}
+    """
+    # Special events: triple double / double double
+    if re.search(r"\btriple[- ]?doubles?\b", text):
+        return {"special_event": "triple_double"}
+    if re.search(r"\bdouble[- ]?doubles?\b", text):
+        return {"special_event": "double_double"}
+
+    # Pattern: "NUMBER+ STAT games" or "NUMBER STAT games" or "NUMBER-STAT games"
+    stat_event_patterns = [
+        # "40+ point games", "5+ three games", "15+ rebound games"
+        (r"\b(\d+)\+?\s*[- ]?(point|pts|scoring)\s+games?\b", "pts"),
+        (r"\b(\d+)\+?\s*[- ]?(rebound|reb|rebounds)\s+games?\b", "reb"),
+        (r"\b(\d+)\+?\s*[- ]?(assist|ast|assists)\s+games?\b", "ast"),
+        (r"\b(\d+)\+?\s*[- ]?(steal|stl|steals)\s+games?\b", "stl"),
+        (r"\b(\d+)\+?\s*[- ]?(block|blk|blocks)\s+games?\b", "blk"),
+        (r"\b(\d+)\+?\s*[- ]?(three|3pm|threes|3s|three-pointer|fg3m)\s+games?\b", "fg3m"),
+        (r"\b(\d+)\+?\s*[- ]?(turnover|tov|turnovers)\s+games?\b", "tov"),
+    ]
+
+    for pattern, stat in stat_event_patterns:
+        m = re.search(pattern, text)
+        if m:
+            return {"stat": stat, "min_value": float(m.group(1))}
+
+    # Pattern: "games with NUMBER+ STAT" or "games scoring NUMBER+"
+    games_with_patterns = [
+        (r"\bgames?\s+(?:with|scoring|of)\s+(\d+)\+?\s+(?:or\s+more\s+)?(points?|pts)\b", "pts"),
+        (r"\bgames?\s+(?:with|grabbing)\s+(\d+)\+?\s+(?:or\s+more\s+)?(rebounds?|reb)\b", "reb"),
+        (r"\bgames?\s+(?:with|dishing)\s+(\d+)\+?\s+(?:or\s+more\s+)?(assists?|ast)\b", "ast"),
+        (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(steals?|stl)\b", "stl"),
+        (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(blocks?|blk)\b", "blk"),
+        (
+            r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(threes?|3pm|3s|fg3m|three-pointers?)\b",
+            "fg3m",
+        ),
+        (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(turnovers?|tov)\b", "tov"),
+    ]
+
+    for pattern, stat in games_with_patterns:
+        m = re.search(pattern, text)
+        if m:
+            return {"stat": stat, "min_value": float(m.group(1))}
+
+    return None
+
+
+def wants_occurrence_leaderboard(text: str) -> bool:
+    """Detect if the query is asking for an occurrence leaderboard.
+
+    Triggers on patterns like:
+    - "most 40 point games since 2015"
+    - "leaders in triple doubles since 2020"
+    - "who has the most 5+ three games"
+    """
+    event = extract_occurrence_event(text)
+    if event is None:
+        return False
+
+    return bool(
+        re.search(
+            r"\b(most|leaders?|top(?:\s+\d+)?|rank|ranked|ranking|who\s+has\s+the\s+most|who\s+leads?)\b",
+            text,
+        )
+    )
+
+
 def wants_recent_form(text: str) -> bool:
     return bool(re.search(r"\b(recent form|form)\b", text))
 
@@ -1363,6 +1453,8 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "team_split_summary": team_split_summary_build_result,
                 "player_streak_finder": player_streak_finder_build_result,
                 "team_streak_finder": team_streak_finder_build_result,
+                "player_occurrence_leaders": player_occurrence_leaders_build_result,
+                "team_occurrence_leaders": team_occurrence_leaders_build_result,
             }
         )
     return _BUILD_RESULT_MAP
@@ -2040,6 +2132,8 @@ def _build_parse_state(query: str) -> dict:
     split_type = detect_split_type(q)
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
+    occurrence_event = extract_occurrence_event(q)
+    occurrence_leaderboard_intent = wants_occurrence_leaderboard(q)
     position_filter = extract_position_filter(q)
     head_to_head = detect_head_to_head(q)
     streak_request = extract_streak_request(q)
@@ -2179,6 +2273,8 @@ def _build_parse_state(query: str) -> dict:
         "split_intent": split_intent,
         "leaderboard_intent": leaderboard_intent,
         "team_leaderboard_intent": team_leaderboard_intent,
+        "occurrence_event": occurrence_event,
+        "occurrence_leaderboard_intent": occurrence_leaderboard_intent,
         "position_filter": position_filter,
         "head_to_head": head_to_head,
         "streak_request": streak_request,
@@ -2237,6 +2333,8 @@ def _finalize_route(parsed: dict) -> dict:
     career_intent = parsed.get("career_intent", False)
     leaderboard_intent = parsed.get("leaderboard_intent", False)
     team_leaderboard_intent = parsed.get("team_leaderboard_intent", False)
+    occurrence_event = parsed.get("occurrence_event")
+    occurrence_leaderboard_intent = parsed.get("occurrence_leaderboard_intent", False)
     position_filter = parsed.get("position_filter")
     head_to_head = parsed.get("head_to_head", False)
     streak_request = parsed.get("streak_request")
@@ -2245,6 +2343,18 @@ def _finalize_route(parsed: dict) -> dict:
     notes: list[str] = []
     route = None
     route_kwargs = None
+
+    # -- Occurrence event: propagate stat/min_value when occurrence event is
+    #    detected and no explicit threshold conditions were parsed.  This lets
+    #    "how many 40 point games" correctly set stat=pts, min_value=40 even
+    #    when the threshold-condition parser didn't fire (no operator word).
+    if occurrence_event and "special_event" not in occurrence_event:
+        occ_stat = occurrence_event.get("stat")
+        occ_min = occurrence_event.get("min_value")
+        if stat is None and occ_stat:
+            stat = occ_stat
+        if min_value is None and occ_min is not None:
+            min_value = occ_min
 
     # -- Entity ambiguity: short-circuit if we can't resolve a required entity --
     entity_ambiguity = parsed.get("entity_ambiguity")
@@ -2406,6 +2516,87 @@ def _finalize_route(parsed: dict) -> dict:
             "ascending": False,
         }
     elif (
+        occurrence_leaderboard_intent
+        and occurrence_event
+        and not player
+        and not player_a
+        and not player_b
+        and not (detect_player_leaderboard_stat(q) or "").startswith("games_")
+    ):
+        # Occurrence leaderboard: "most triple doubles since 2020",
+        # "most 5+ three games vs Celtics", "most 15+ rebound games since 2018"
+        # Queries with known count-leaderboard stats (games_30p, games_40p, etc.)
+        # are handled by the existing season_leaders route.
+        occ_season = season
+        occ_start = start_season
+        occ_end = end_season
+        if not occ_season and not occ_start and not occ_end:
+            occ_season = default_season_for_context(season_type)
+
+        is_team_occurrence = (
+            bool(
+                re.search(r"\bteam\b|\bteams?\b", q)
+                and not re.search(r"\bplayer\b|\bplayers?\b", q)
+            )
+            or team_leaderboard_intent
+        )
+
+        if is_team_occurrence:
+            occ_stat = occurrence_event.get("stat", "pts")
+            occ_min = occurrence_event.get("min_value", 100)
+            route = "team_occurrence_leaders"
+            route_kwargs = {
+                "stat": occ_stat,
+                "min_value": occ_min,
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": top_n or 10,
+            }
+        elif "special_event" in occurrence_event:
+            route = "player_occurrence_leaders"
+            route_kwargs = {
+                "special_event": occurrence_event["special_event"],
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": top_n or 10,
+            }
+        else:
+            route = "player_occurrence_leaders"
+            route_kwargs = {
+                "stat": occurrence_event.get("stat"),
+                "min_value": occurrence_event.get("min_value"),
+                "season": occ_season,
+                "start_season": occ_start,
+                "end_season": occ_end,
+                "season_type": season_type,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "start_date": start_date,
+                "end_date": end_date,
+                "limit": top_n or 10,
+            }
+    elif (
         player is None
         and team is None
         and not player_a
@@ -2529,6 +2720,38 @@ def _finalize_route(parsed: dict) -> dict:
                 "opponent": opponent,
                 "position": position_filter,
             }
+    elif (
+        count_intent
+        and occurrence_event
+        and "special_event" in occurrence_event
+        and player
+        and not player_a
+        and not player_b
+    ):
+        # Special event count for a player: "count Jokic triple doubles since 2021"
+        # Use player_occurrence_leaders with limit=1 to get just this player's count.
+        # The service layer will convert to CountResult.
+        occ_season = season
+        occ_start = start_season
+        occ_end = end_season
+        if not occ_season and not occ_start and not occ_end:
+            occ_season = default_season_for_context(season_type)
+        route = "player_occurrence_leaders"
+        route_kwargs = {
+            "special_event": occurrence_event["special_event"],
+            "season": occ_season,
+            "start_season": occ_start,
+            "end_season": occ_end,
+            "season_type": season_type,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "start_date": start_date,
+            "end_date": end_date,
+            "limit": 500,  # large limit to ensure player is included
+        }
     elif (finder_intent or count_intent) and player and not player_a and not player_b:
         # Explicit list/count intent overrides summary/range routing
         finder_limit = None if count_intent else 25

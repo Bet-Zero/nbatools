@@ -73,6 +73,8 @@ class TestBuildResultMap:
             "team_split_summary",
             "player_streak_finder",
             "team_streak_finder",
+            "player_occurrence_leaders",
+            "team_occurrence_leaders",
         }
         assert expected_routes == set(brmap.keys())
 
