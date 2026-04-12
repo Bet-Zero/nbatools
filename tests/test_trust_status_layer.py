@@ -61,7 +61,7 @@ class TestResultStatusEnum:
         assert ResultStatus.ERROR == "error"
 
     def test_str_serialization(self):
-        assert str(ResultStatus.OK) == "ResultStatus.OK"
+        assert str(ResultStatus.OK) == "ok"
         assert f"{ResultStatus.OK.value}" == "ok"
 
     def test_json_serializable(self):
