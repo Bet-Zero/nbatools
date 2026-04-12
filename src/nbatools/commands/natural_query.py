@@ -229,71 +229,6 @@ STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary
 MATCHUP_NOISE_PATTERN = r"\b(?:head\s*[- ]\s*to\s*[- ]\s*head|h2h|matchup|matchups)\b"
 
 
-# ---------------------------------------------------------------------------
-# Pre-compiled regex helpers
-#
-# Building regex patterns from alias dictionaries (re.search / re.escape loops)
-# is the single largest CPU cost in parse_query (~886 re.compile calls per
-# invocation, ~125 ms each).  Pre-compiling these patterns at import time
-# removes that cost entirely.
-# ---------------------------------------------------------------------------
-
-
-def _compile_word_boundary_lookup(
-    alias_dict: dict[str, str],
-) -> list[tuple[re.Pattern, str, str]]:
-    r"""Return ``[(compiled_pattern, key, value), …]`` sorted longest-key-first.
-
-    Pattern uses ``\b`` word boundaries around the escaped key.
-    """
-    return [
-        (re.compile(rf"\b{re.escape(key)}\b"), key, value)
-        for key, value in sorted(alias_dict.items(), key=lambda x: len(x[0]), reverse=True)
-    ]
-
-
-def _compile_loose_phrase_lookup(
-    alias_dict: dict[str, str],
-) -> list[tuple[re.Pattern, str, str]]:
-    r"""Return ``[(compiled_pattern, key, value), …]`` sorted longest-key-first.
-
-    Pattern uses ``(?<!\w)…(?!\w)`` lookarounds (like ``_matches_loose_phrase``).
-    """
-    return [
-        (re.compile(rf"(?<!\w){re.escape(key)}(?!\w)"), key, value)
-        for key, value in sorted(alias_dict.items(), key=lambda x: len(x[0]), reverse=True)
-    ]
-
-
-def _compile_comparison_patterns(
-    alias_dict: dict[str, str],
-) -> list[tuple[re.Pattern, str, str]]:
-    """Pre-compile ``alias vs …`` patterns for comparison extraction."""
-    stop = STOP_WORDS
-    return [
-        (
-            re.compile(
-                rf"\b{re.escape(alias)}\b\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
-                rf"(?=\s+(?:{stop})\b|$)"
-            ),
-            alias,
-            canonical,
-        )
-        for alias, canonical in sorted(alias_dict.items(), key=lambda x: len(x[0]), reverse=True)
-    ]
-
-
-# Pre-compiled lookups — built once at import time.
-_PLAYER_ALIAS_WB: list[tuple[re.Pattern, str, str]] = _compile_word_boundary_lookup(PLAYER_ALIASES)
-_TEAM_ALIAS_WB: list[tuple[re.Pattern, str, str]] = _compile_word_boundary_lookup(TEAM_ALIASES)
-_PLAYER_COMPARISON_PATS: list[tuple[re.Pattern, str, str]] = _compile_comparison_patterns(
-    PLAYER_ALIASES
-)
-_TEAM_COMPARISON_PATS: list[tuple[re.Pattern, str, str]] = _compile_comparison_patterns(
-    TEAM_ALIASES
-)
-
-
 def strip_matchup_noise(text: str) -> str:
     return normalize_text(re.sub(MATCHUP_NOISE_PATTERN, " ", text))
 
@@ -395,10 +330,6 @@ LEADERBOARD_STAT_ALIASES = {
     "net_rating": "net_rating",
 }
 
-_LEADERBOARD_STAT_LP: list[tuple[re.Pattern, str, str]] = _compile_loose_phrase_lookup(
-    LEADERBOARD_STAT_ALIASES
-)
-
 
 def extract_top_n(text: str) -> int | None:
     # "top N" pattern
@@ -424,9 +355,9 @@ def _matches_loose_phrase(text: str, phrase: str) -> bool:
 
 
 def detect_player_leaderboard_stat(text: str) -> str | None:
-    for pat, _key, value in _LEADERBOARD_STAT_LP:
-        if pat.search(text):
-            return value
+    for key in sorted(LEADERBOARD_STAT_ALIASES.keys(), key=len, reverse=True):
+        if _matches_loose_phrase(text, key):
+            return LEADERBOARD_STAT_ALIASES[key]
     return None
 
 
@@ -557,15 +488,11 @@ TEAM_LEADERBOARD_STAT_ALIASES = {
     "team plus minus": "plus_minus",
 }
 
-_TEAM_LEADERBOARD_STAT_LP: list[tuple[re.Pattern, str, str]] = _compile_loose_phrase_lookup(
-    TEAM_LEADERBOARD_STAT_ALIASES
-)
-
 
 def detect_team_leaderboard_stat(text: str) -> str | None:
-    for pat, _key, value in _TEAM_LEADERBOARD_STAT_LP:
-        if pat.search(text):
-            return value
+    for key in sorted(TEAM_LEADERBOARD_STAT_ALIASES.keys(), key=len, reverse=True):
+        if _matches_loose_phrase(text, key):
+            return TEAM_LEADERBOARD_STAT_ALIASES[key]
     return None
 
 
@@ -970,9 +897,9 @@ def detect_stat(text: str) -> str | None:
 
 def detect_player(text: str) -> str | None:
     # First try the original curated alias dict (preserves exact existing behavior)
-    for pat, _key, value in _PLAYER_ALIAS_WB:
-        if pat.search(text):
-            return value
+    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"\b{re.escape(key)}\b", text):
+            return PLAYER_ALIASES[key]
     # Fall back to entity resolution (data-driven last-name lookup)
     result = resolve_player_in_query(text)
     if result.is_confident:
@@ -983,11 +910,11 @@ def detect_player(text: str) -> str | None:
 def detect_player_resolved(text: str) -> ResolutionResult:
     """Like detect_player but returns full resolution result including ambiguity."""
     # First try the original curated alias dict
-    for pat, _key, value in _PLAYER_ALIAS_WB:
-        if pat.search(text):
+    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"\b{re.escape(key)}\b", text):
             return ResolutionResult(
-                resolved=value,
-                candidates=[value],
+                resolved=PLAYER_ALIASES[key],
+                candidates=[PLAYER_ALIASES[key]],
                 confidence="confident",
                 source="alias",
             )
@@ -996,9 +923,9 @@ def detect_player_resolved(text: str) -> ResolutionResult:
 
 
 def detect_team_in_text(text: str) -> str | None:
-    for pat, _key, value in _TEAM_ALIAS_WB:
-        if pat.search(text):
-            return value
+    for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"\b{re.escape(key)}\b", text):
+            return TEAM_ALIASES[key]
     # Fall back to entity resolution for abbreviations etc.
     result = resolve_team_in_query(text)
     if result.is_confident:
@@ -1038,31 +965,75 @@ def _parse_threshold_match(
     return stat, None, value - epsilon
 
 
-# Pre-compiled threshold condition patterns (standard + reverse).
-_NUM = r"(\d+(?:\.\d+)?|\.\d+)"
-
-_THRESHOLD_PATS: list[tuple[re.Pattern, str, float]] = [
-    (re.compile(rf"\bbetween\s+{_NUM}\s+and\s+{_NUM}\s+{STAT_PATTERN}\b"), "between", 0.0),
-    (re.compile(rf"\bover\s+{_NUM}\s+{STAT_PATTERN}\b"), "min", 0.0001),
-    (re.compile(rf"\bat least\s+{_NUM}\s+{STAT_PATTERN}\b"), "min", 0.0),
-    (re.compile(rf"\bunder\s+{_NUM}\s+{STAT_PATTERN}\b"), "max", 0.0001),
-    (re.compile(rf"\bless than\s+{_NUM}\s+{STAT_PATTERN}\b"), "max", 0.0001),
-]
-
-_THRESHOLD_REVERSE_PATS: list[tuple[re.Pattern, str, float]] = [
-    (re.compile(rf"{STAT_PATTERN}\s+over\s+{_NUM}"), "min", 0.0001),
-    (re.compile(rf"{STAT_PATTERN}\s+above\s+{_NUM}"), "min", 0.0001),
-    (re.compile(rf"{STAT_PATTERN}\s+at least\s+{_NUM}"), "min", 0.0),
-    (re.compile(rf"{STAT_PATTERN}\s+under\s+{_NUM}"), "max", 0.0001),
-    (re.compile(rf"{STAT_PATTERN}\s+below\s+{_NUM}"), "max", 0.0001),
-    (re.compile(rf"{STAT_PATTERN}\s+between\s+{_NUM}\s+and\s+{_NUM}"), "between", 0.0),
-]
-
-
 def extract_threshold_conditions(text: str) -> list[dict]:
+    _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
+
+    # Standard patterns: operator NUMBER STAT
+    patterns = [
+        (
+            rf"\bbetween\s+{_NUM}\s+and\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "between",
+            0.0,
+        ),
+        (
+            rf"\bover\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "min",
+            0.0001,
+        ),
+        (
+            rf"\bat least\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "min",
+            0.0,
+        ),
+        (
+            rf"\bunder\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "max",
+            0.0001,
+        ),
+        (
+            rf"\bless than\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "max",
+            0.0001,
+        ),
+    ]
+
+    # Reverse patterns: STAT operator NUMBER (for advanced stats like "TS% over .700")
+    reverse_patterns = [
+        (
+            rf"{STAT_PATTERN}\s+over\s+{_NUM}",
+            "min",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+above\s+{_NUM}",
+            "min",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+at least\s+{_NUM}",
+            "min",
+            0.0,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+under\s+{_NUM}",
+            "max",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+below\s+{_NUM}",
+            "max",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+between\s+{_NUM}\s+and\s+{_NUM}",
+            "between",
+            0.0,
+        ),
+    ]
+
     matches = []
-    for pat, mode, epsilon in _THRESHOLD_PATS:
-        for m in pat.finditer(text):
+    for pattern, mode, epsilon in patterns:
+        for m in re.finditer(pattern, text):
             if mode == "between":
                 low = float(m.group(1))
                 high = float(m.group(2))
@@ -1097,8 +1068,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 )
 
     # Reverse patterns: STAT comes first, then operator, then number
-    for pat, mode, epsilon in _THRESHOLD_REVERSE_PATS:
-        for m in pat.finditer(text):
+    for pattern, mode, epsilon in reverse_patterns:
+        for m in re.finditer(pattern, text):
             stat_text = m.group(1)
             stat = detect_stat(stat_text)
             if stat is None:
@@ -1283,18 +1254,17 @@ def wants_split_summary(text: str) -> bool:
     return "split" in text or detect_split_type(text) is not None
 
 
-_OPPONENT_PATS: list[re.Pattern] = [
-    re.compile(rf"\bvs\.?\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)"),
-    re.compile(rf"\bversus\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)"),
-    re.compile(rf"\bagainst\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)"),
-]
-
-
 def detect_opponent(text: str) -> tuple[str | None, str]:
     cleaned_text = strip_matchup_noise(text)
 
-    for pat in _OPPONENT_PATS:
-        m = pat.search(cleaned_text)
+    patterns = [
+        rf"\bvs\.?\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
+        rf"\bversus\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
+        rf"\bagainst\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
+    ]
+
+    for pattern in patterns:
+        m = re.search(pattern, cleaned_text)
         if not m:
             continue
 
@@ -1311,8 +1281,13 @@ def detect_opponent(text: str) -> tuple[str | None, str]:
 def extract_player_comparison(text: str) -> tuple[str | None, str | None]:
     cleaned_text = strip_matchup_noise(text)
 
-    for pat, _alias, player_a in _PLAYER_COMPARISON_PATS:
-        m = pat.search(cleaned_text)
+    for alias_a, player_a in sorted(PLAYER_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+        stop = STOP_WORDS
+        pattern = (  # noqa: E501
+            rf"\b{re.escape(alias_a)}\b\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
+            rf"(?=\s+(?:{stop})\b|$)"
+        )
+        m = re.search(pattern, cleaned_text)
         if not m:
             continue
 
@@ -1327,11 +1302,18 @@ def extract_player_comparison(text: str) -> tuple[str | None, str | None]:
 def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
     cleaned_text = strip_matchup_noise(text)
 
-    for pat, _alias, team_a in _TEAM_COMPARISON_PATS:
-        m = pat.search(cleaned_text)
+    team_keys = sorted(TEAM_ALIASES.keys(), key=len, reverse=True)
+    for alias_a in team_keys:
+        stop = STOP_WORDS
+        pattern = (
+            rf"\b{re.escape(alias_a)}\b\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
+            rf"(?=\s+(?:{stop})\b|$)"
+        )
+        m = re.search(pattern, cleaned_text)
         if not m:
             continue
 
+        team_a = TEAM_ALIASES[alias_a]
         phrase_b = m.group(1).strip()
         team_b = detect_team_in_text(phrase_b)
         if team_b and team_b != team_a:

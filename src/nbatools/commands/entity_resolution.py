@@ -582,39 +582,6 @@ for _ta_key in TEAM_ALIASES_EXPANDED:
 
 
 # ---------------------------------------------------------------------------
-# Pre-compiled regex lookups for alias dictionaries.
-#
-# These replace per-call ``sorted(…) + re.search(rf"…{re.escape(key)}…")``
-# loops, which dominated CPU time due to hundreds of regex compilations
-# on every resolution call.
-# ---------------------------------------------------------------------------
-
-
-def _compile_loose_lookup(
-    alias_dict: dict[str, str],
-) -> list[tuple[re.Pattern, str]]:
-    r"""Return ``[(compiled_pattern, value), …]`` sorted longest-key-first.
-
-    Pattern uses ``(?<!\w)…(?!\w)`` lookarounds for word-boundary matching.
-    """
-    return [
-        (re.compile(rf"(?<!\w){re.escape(key)}(?!\w)"), value)
-        for key, value in sorted(alias_dict.items(), key=lambda x: len(x[0]), reverse=True)
-    ]
-
-
-_NICKNAME_LP: list[tuple[re.Pattern, str]] = _compile_loose_lookup(PLAYER_NICKNAME_ALIASES)
-_FULL_NAME_LP: list[tuple[re.Pattern, str]] = _compile_loose_lookup(PLAYER_FULL_NAME_ALIASES)
-_TEAM_EXPANDED_LP: list[tuple[re.Pattern, str]] = _compile_loose_lookup(TEAM_ALIASES_EXPANDED)
-
-_H2H_NOISE_RE = re.compile(r"(?<!\w)(?:head\s*-?\s*to\s*-?\s*head|h2h|matchup|matchups)(?!\w)")
-_VS_CONTEXT_RE = re.compile(
-    r"(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s+(?:from|to|in|on|since|last|past|playoff|playoffs|postseason|home|away|career|summary|split)\b|$)"
-)
-_VS_SIMPLE_RE = re.compile(r"(.+?)\s+(?:vs\.?|versus)\s+(.+)")
-
-
-# ---------------------------------------------------------------------------
 # Core resolution functions
 # ---------------------------------------------------------------------------
 
@@ -649,9 +616,9 @@ def resolve_player(text: str) -> ResolutionResult:
         return _confident(PLAYER_FULL_NAME_ALIASES[q], source="full_name_alias")
 
     # 2. Curated nickname / acronym aliases (longest match first)
-    for pat, canonical in _NICKNAME_LP:
-        if pat.search(q):
-            return _confident(canonical, source="nickname")
+    for key in sorted(PLAYER_NICKNAME_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return _confident(PLAYER_NICKNAME_ALIASES[key], source="nickname")
 
     # 3. Data-driven last-name lookup
     # Only attempt for single words or clear last-name patterns
@@ -682,14 +649,14 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
         return _no_match()
 
     # 1. Try curated full-name aliases (longest first)
-    for pat, canonical in _FULL_NAME_LP:
-        if pat.search(q):
-            return _confident(canonical, source="full_name_alias")
+    for key in sorted(PLAYER_FULL_NAME_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return _confident(PLAYER_FULL_NAME_ALIASES[key], source="full_name_alias")
 
     # 2. Try curated nickname/acronym aliases (longest first)
-    for pat, canonical in _NICKNAME_LP:
-        if pat.search(q):
-            return _confident(canonical, source="nickname")
+    for key in sorted(PLAYER_NICKNAME_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return _confident(PLAYER_NICKNAME_ALIASES[key], source="nickname")
 
     # 3. Try data-driven last-name on each word (skip common stopwords)
     _stop = {
@@ -843,9 +810,9 @@ def resolve_team(text: str) -> ResolutionResult:
         return _confident(upper, source="abbreviation")
 
     # Longest-key-first matching in expanded aliases
-    for pat, canonical in _TEAM_EXPANDED_LP:
-        if pat.search(q):
-            return _confident(canonical, source="team_alias")
+    for key in sorted(TEAM_ALIASES_EXPANDED.keys(), key=len, reverse=True):
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return _confident(TEAM_ALIASES_EXPANDED[key], source="team_alias")
 
     return _no_match()
 
@@ -859,9 +826,9 @@ def resolve_team_in_query(text: str) -> ResolutionResult:
     if not q:
         return _no_match()
 
-    for pat, canonical in _TEAM_EXPANDED_LP:
-        if pat.search(q):
-            return _confident(canonical, source="team_alias")
+    for key in sorted(TEAM_ALIASES_EXPANDED.keys(), key=len, reverse=True):
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return _confident(TEAM_ALIASES_EXPANDED[key], source="team_alias")
 
     return _no_match()
 
@@ -882,14 +849,17 @@ def extract_player_comparison_resolved(
     q = _normalize_for_matching(text)
 
     # Remove head-to-head noise
-    q = _H2H_NOISE_RE.sub(" ", q)
+    q = re.sub(r"(?<!\w)(?:head\s*-?\s*to\s*-?\s*head|h2h|matchup|matchups)(?!\w)", " ", q)
     q = " ".join(q.split())
 
     # Try to split on vs/versus
-    m = _VS_CONTEXT_RE.search(q)
+    m = re.search(
+        r"(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s+(?:from|to|in|on|since|last|past|playoff|playoffs|postseason|home|away|career|summary|split)\b|$)",
+        q,
+    )
     if not m:
         # Simpler pattern without trailing context
-        m = _VS_SIMPLE_RE.search(q)
+        m = re.search(r"(.+?)\s+(?:vs\.?|versus)\s+(.+)", q)
     if not m:
         return _no_match(), _no_match()
 
@@ -918,12 +888,15 @@ def extract_team_comparison_resolved(
     """Extract two teams from a 'team_a vs team_b' pattern."""
     q = " ".join(text.lower().strip().split())
 
-    q = _H2H_NOISE_RE.sub(" ", q)
+    q = re.sub(r"(?<!\w)(?:head\s*-?\s*to\s*-?\s*head|h2h|matchup|matchups)(?!\w)", " ", q)
     q = " ".join(q.split())
 
-    m = _VS_CONTEXT_RE.search(q)
+    m = re.search(
+        r"(.+?)\s+(?:vs\.?|versus)\s+(.+?)(?:\s+(?:from|to|in|on|since|last|past|playoff|playoffs|postseason|home|away|career|summary|split)\b|$)",
+        q,
+    )
     if not m:
-        m = _VS_SIMPLE_RE.search(q)
+        m = re.search(r"(.+?)\s+(?:vs\.?|versus)\s+(.+)", q)
     if not m:
         return _no_match(), _no_match()
 
