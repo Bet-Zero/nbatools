@@ -28,6 +28,22 @@ STAT_ALIASES: dict[str, str] = {
     "turnovers": "tov",
     "turnover": "tov",
     "tov": "tov",
+    "effective field goal percentage": "efg_pct",
+    "effective field goal %": "efg_pct",
+    "effective field goal": "efg_pct",
+    "effective fg %": "efg_pct",
+    "effective fg": "efg_pct",
+    "efg%": "efg_pct",
+    "efg_pct": "efg_pct",
+    "true shooting percentage": "ts_pct",
+    "true shooting %": "ts_pct",
+    "true shooting": "ts_pct",
+    "ts%": "ts_pct",
+    "ts_pct": "ts_pct",
+    "plus minus": "plus_minus",
+    "plus/minus": "plus_minus",
+    "plus_minus": "plus_minus",
+    "+/-": "plus_minus",
 }
 
 
@@ -35,5 +51,9 @@ STAT_PATTERN = (
     r"(points|point|pts|rebounds|rebound|reb|assists|assist|ast|"
     r"steals|steal|stl|blocks|block|blk|"
     r"threes made|three pointers made|three-point makes|threes|3pm|3s|fg3m|"
-    r"turnovers|turnover|tov)"
+    r"turnovers|turnover|tov|"
+    r"effective field goal percentage|effective field goal %|effective field goal|"
+    r"effective fg %|effective fg|efg%|efg_pct|"
+    r"true shooting percentage|true shooting %|true shooting|ts%|ts_pct|"
+    r"plus minus|plus/minus|plus_minus|\+/-)"
 )

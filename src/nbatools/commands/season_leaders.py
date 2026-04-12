@@ -28,6 +28,28 @@ ALLOWED_STATS = {
     "apg": "ast_per_game",
     "assists per game": "ast_per_game",
     "ast_per_game": "ast_per_game",
+    "stl": "stl_per_game",
+    "steal": "stl_per_game",
+    "steals": "stl_per_game",
+    "spg": "stl_per_game",
+    "steals per game": "stl_per_game",
+    "stl_per_game": "stl_per_game",
+    "blk": "blk_per_game",
+    "block": "blk_per_game",
+    "blocks": "blk_per_game",
+    "bpg": "blk_per_game",
+    "blocks per game": "blk_per_game",
+    "blk_per_game": "blk_per_game",
+    "tov": "tov_per_game",
+    "turnover": "tov_per_game",
+    "turnovers": "tov_per_game",
+    "turnovers per game": "tov_per_game",
+    "tov_per_game": "tov_per_game",
+    "plus_minus": "plus_minus_per_game",
+    "plus minus": "plus_minus_per_game",
+    "plus/minus": "plus_minus_per_game",
+    "+/-": "plus_minus_per_game",
+    "plus_minus_per_game": "plus_minus_per_game",
     "fg3m": "fg3m_per_game",
     "3pm": "fg3m_per_game",
     "threes": "fg3m_per_game",
@@ -175,27 +197,37 @@ def _load_roster_lookup(season: str) -> pd.DataFrame | None:
 
 
 def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
-    grouped = basic.groupby(["player_id", "player_name"], as_index=False).agg(
-        games_played=("game_id", "nunique"),
-        pts_total=("pts", "sum"),
-        reb_total=("reb", "sum"),
-        ast_total=("ast", "sum"),
-        fg3m_total=("fg3m", "sum"),
-        fgm_total=("fgm", "sum"),
-        fga_total=("fga", "sum"),
-        fg3a_total=("fg3a", "sum"),
-        ftm_total=("ftm", "sum"),
-        fta_total=("fta", "sum"),
-        games_20p=("pts", lambda s: int((s >= 20).sum())),
-        games_30p=("pts", lambda s: int((s >= 30).sum())),
-        games_40p=("pts", lambda s: int((s >= 40).sum())),
-        games_10r=("reb", lambda s: int((s >= 10).sum())),
-        games_10a=("ast", lambda s: int((s >= 10).sum())),
-    )
+    agg_spec: dict = {
+        "games_played": ("game_id", "nunique"),
+        "pts_total": ("pts", "sum"),
+        "reb_total": ("reb", "sum"),
+        "ast_total": ("ast", "sum"),
+        "fg3m_total": ("fg3m", "sum"),
+        "fgm_total": ("fgm", "sum"),
+        "fga_total": ("fga", "sum"),
+        "fg3a_total": ("fg3a", "sum"),
+        "ftm_total": ("ftm", "sum"),
+        "fta_total": ("fta", "sum"),
+        "games_20p": ("pts", lambda s: int((s >= 20).sum())),
+        "games_30p": ("pts", lambda s: int((s >= 30).sum())),
+        "games_40p": ("pts", lambda s: int((s >= 40).sum())),
+        "games_10r": ("reb", lambda s: int((s >= 10).sum())),
+        "games_10a": ("ast", lambda s: int((s >= 10).sum())),
+    }
+    # Only aggregate optional columns when they exist in the data
+    for col in ("stl", "blk", "tov", "plus_minus"):
+        if col in basic.columns:
+            agg_spec[f"{col}_total"] = (col, "sum")
+
+    grouped = basic.groupby(["player_id", "player_name"], as_index=False).agg(**agg_spec)
 
     grouped["pts_per_game"] = grouped["pts_total"] / grouped["games_played"]
     grouped["reb_per_game"] = grouped["reb_total"] / grouped["games_played"]
     grouped["ast_per_game"] = grouped["ast_total"] / grouped["games_played"]
+    for col in ("stl", "blk", "tov", "plus_minus"):
+        total_col = f"{col}_total"
+        if total_col in grouped.columns:
+            grouped[f"{col}_per_game"] = grouped[total_col] / grouped["games_played"]
     grouped["fg3m_per_game"] = grouped["fg3m_total"] / grouped["games_played"]
 
     grouped["fg_pct"] = safe_divide(grouped["fgm_total"], grouped["fga_total"], fill=None)

@@ -224,6 +224,9 @@ LEADERBOARD_STAT_ALIASES = {
     "assists per game": "ast",
     "rebounds per game": "reb",
     "points per game": "pts",
+    "steals per game": "stl",
+    "blocks per game": "blk",
+    "turnovers per game": "tov",
     "three pointers made": "fg3m",
     "three-point makes": "fg3m",
     "threes made": "fg3m",
@@ -244,9 +247,23 @@ LEADERBOARD_STAT_ALIASES = {
     "rebounders": "reb",
     "rebounds": "reb",
     "assists": "ast",
+    "steals": "stl",
+    "steal": "stl",
+    "blocks": "blk",
+    "block": "blk",
+    "shot blockers": "blk",
+    "shot-blockers": "blk",
+    "turnovers": "tov",
+    "turnover": "tov",
+    "plus minus": "plus_minus",
+    "plus/minus": "plus_minus",
+    "plus_minus": "plus_minus",
+    "+/-": "plus_minus",
     "apg": "ast",
     "rpg": "reb",
     "ppg": "pts",
+    "spg": "stl",
+    "bpg": "blk",
     "3pm": "fg3m",
     "threes": "fg3m",
     "ts pct": "ts_pct",
@@ -290,7 +307,17 @@ def wants_leaderboard(text: str) -> bool:
     if detect_player_leaderboard_stat(text) is None:
         return False
 
-    return bool(re.search(r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b", text))
+    return bool(
+        re.search(
+            r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b|\blowest\b|\bfewest\b|\bleast\b|\bworst\b",
+            text,
+        )
+    )
+
+
+def wants_ascending_leaderboard(text: str) -> bool:
+    """Detect if the leaderboard should sort ascending (lowest/fewest/least)."""
+    return bool(re.search(r"\blowest\b|\bfewest\b|\bleast\b|\bworst\b", text))
 
 
 TEAM_LEADERBOARD_STAT_ALIASES = {
@@ -312,6 +339,18 @@ TEAM_LEADERBOARD_STAT_ALIASES = {
     "best ts% teams": "ts_pct",
     "best net rating teams": "net_rating",
     "fastest teams": "pace",
+    "most steals teams": "stl",
+    "team steals": "stl",
+    "most blocks teams": "blk",
+    "team blocks": "blk",
+    "most turnovers teams": "tov",
+    "team turnovers": "tov",
+    "lowest turnover teams": "tov",
+    "fewest turnovers teams": "tov",
+    "fewest turnover teams": "tov",
+    "best plus minus teams": "plus_minus",
+    "best plus/minus teams": "plus_minus",
+    "team plus minus": "plus_minus",
 }
 
 
@@ -761,31 +800,68 @@ def _parse_threshold_match(
 
 
 def extract_threshold_conditions(text: str) -> list[dict]:
+    _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
+
+    # Standard patterns: operator NUMBER STAT
     patterns = [
         (
-            rf"\bbetween\s+(\d+(?:\.\d+)?)\s+and\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
+            rf"\bbetween\s+{_NUM}\s+and\s+{_NUM}\s+{STAT_PATTERN}\b",
             "between",
             0.0,
         ),
         (
-            rf"\bover\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
+            rf"\bover\s+{_NUM}\s+{STAT_PATTERN}\b",
             "min",
             0.0001,
         ),
         (
-            rf"\bat least\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
+            rf"\bat least\s+{_NUM}\s+{STAT_PATTERN}\b",
             "min",
             0.0,
         ),
         (
-            rf"\bunder\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
+            rf"\bunder\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0001,
         ),
         (
-            rf"\bless than\s+(\d+(?:\.\d+)?)\s+{STAT_PATTERN}\b",
+            rf"\bless than\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0001,
+        ),
+    ]
+
+    # Reverse patterns: STAT operator NUMBER (for advanced stats like "TS% over .700")
+    reverse_patterns = [
+        (
+            rf"{STAT_PATTERN}\s+over\s+{_NUM}",
+            "min",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+above\s+{_NUM}",
+            "min",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+at least\s+{_NUM}",
+            "min",
+            0.0,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+under\s+{_NUM}",
+            "max",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+below\s+{_NUM}",
+            "max",
+            0.0001,
+        ),
+        (
+            rf"{STAT_PATTERN}\s+between\s+{_NUM}\s+and\s+{_NUM}",
+            "between",
+            0.0,
         ),
     ]
 
@@ -814,6 +890,47 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                 stat, min_value, max_value = _parse_threshold_match(
                     m.group(1), m.group(2), mode, epsilon
                 )
+                matches.append(
+                    {
+                        "start": m.start(),
+                        "end": m.end(),
+                        "stat": stat,
+                        "min_value": min_value,
+                        "max_value": max_value,
+                        "text": m.group(0),
+                    }
+                )
+
+    # Reverse patterns: STAT comes first, then operator, then number
+    for pattern, mode, epsilon in reverse_patterns:
+        for m in re.finditer(pattern, text):
+            stat_text = m.group(1)
+            stat = detect_stat(stat_text)
+            if stat is None:
+                continue
+            if mode == "between":
+                low = float(m.group(2))
+                high = float(m.group(3))
+                if low > high:
+                    low, high = high, low
+                matches.append(
+                    {
+                        "start": m.start(),
+                        "end": m.end(),
+                        "stat": stat,
+                        "min_value": low,
+                        "max_value": high,
+                        "text": m.group(0),
+                    }
+                )
+            else:
+                value = float(m.group(2))
+                if mode == "min":
+                    min_value = value + epsilon
+                    max_value = None
+                else:
+                    min_value = None
+                    max_value = value - epsilon
                 matches.append(
                     {
                         "start": m.start(),
@@ -2075,6 +2192,8 @@ def _finalize_route(parsed: dict) -> dict:
         if not lb_season and not lb_start_season and not lb_end_season:
             lb_season = default_season_for_context(season_type)
 
+        lb_ascending = wants_ascending_leaderboard(q)
+
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
             if (start_date or end_date) and leaderboard_stat == "off_rating":
@@ -2097,7 +2216,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "limit": top_n or 10,
                 "season_type": season_type,
                 "min_games": 1,
-                "ascending": False,
+                "ascending": lb_ascending,
                 "start_date": start_date,
                 "end_date": end_date,
                 "start_season": lb_start_season,
@@ -2126,7 +2245,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "limit": top_n or 10,
                 "season_type": season_type,
                 "min_games": 1,
-                "ascending": False,
+                "ascending": lb_ascending,
                 "start_date": start_date,
                 "end_date": end_date,
                 "start_season": lb_start_season,
@@ -2162,7 +2281,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "limit": top_n or 10,
                 "season_type": season_type,
                 "min_games": 1,
-                "ascending": False,
+                "ascending": lb_ascending,
                 "start_date": start_date,
                 "end_date": end_date,
                 "start_season": lb_start_season,
