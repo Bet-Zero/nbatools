@@ -410,6 +410,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "team": team,
         "opponent": kwargs.get("opponent"),
         "split_type": kwargs.get("split"),
+        "head_to_head_used": bool(kwargs.get("head_to_head")),
     }
     if current_through is not None:
         metadata["current_through"] = current_through

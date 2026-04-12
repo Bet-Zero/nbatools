@@ -2102,6 +2102,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_date": end_date,
                 "start_season": lb_start_season,
                 "end_season": lb_end_season,
+                "opponent": opponent,
             }
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
@@ -2130,6 +2131,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_date": end_date,
                 "start_season": lb_start_season,
                 "end_season": lb_end_season,
+                "opponent": opponent,
             }
         else:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
@@ -2141,6 +2143,16 @@ def _finalize_route(parsed: dict) -> dict:
             ):
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
+                )
+                leaderboard_stat = "pts"
+            if opponent and leaderboard_stat in (
+                "usage_rate",
+                "net_rating",
+                "off_rating",
+                "def_rating",
+            ):
+                notes.append(
+                    f"stat_fallback: {leaderboard_stat} not available with opponent filter, using pts"
                 )
                 leaderboard_stat = "pts"
             route = "season_leaders"
@@ -2155,6 +2167,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_date": end_date,
                 "start_season": lb_start_season,
                 "end_season": lb_end_season,
+                "opponent": opponent,
             }
     elif player and (
         summary_intent

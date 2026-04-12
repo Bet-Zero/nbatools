@@ -321,6 +321,10 @@ def build_result(
             "multi-season comparison aggregated from game logs across "
             f"{seasons[0]} to {seasons[-1]}"
         )
+    if head_to_head:
+        caveats.append("head-to-head: only games where both teams faced each other")
+    if opponent:
+        caveats.append(f"filtered to games vs {opponent.upper()}")
 
     return ComparisonResult(
         summary=summary,

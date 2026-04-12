@@ -94,11 +94,15 @@ def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     return pd.Timestamp(ts).normalize()
 
 
-def _recommended_min_games(target_col: str, date_window_active: bool = False) -> int:
+def _recommended_min_games(
+    target_col: str,
+    date_window_active: bool = False,
+    opponent_active: bool = False,
+) -> int:
     if target_col == "games_played":
         return 1
-    if date_window_active:
-        return 5
+    if date_window_active or opponent_active:
+        return 3
     if target_col in PERCENTAGE_STATS:
         return 20
     return 20
@@ -206,10 +210,16 @@ def _apply_default_guardrails(
     target_col: str,
     min_games: int,
     date_window_active: bool = False,
+    opponent_active: bool = False,
     num_seasons: int = 1,
 ) -> pd.DataFrame:
     effective_min_games = max(
-        min_games, _recommended_min_games(target_col, date_window_active=date_window_active)
+        min_games,
+        _recommended_min_games(
+            target_col,
+            date_window_active=date_window_active,
+            opponent_active=opponent_active,
+        ),
     )
     df = df[df["games_played"] >= effective_min_games].copy()
 
@@ -240,6 +250,7 @@ def build_result(
     end_date: str | None = None,
     start_season: str | None = None,
     end_season: str | None = None,
+    opponent: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -273,6 +284,11 @@ def build_result(
             f"Date-window leaderboard not supported for '{target_col}'. "
             "Use points, threes, eFG%, TS%, rebounds, or assists in a date window."
         )
+    if opponent and target_col in DATE_WINDOW_UNSUPPORTED_ADVANCED:
+        raise ValueError(
+            f"Opponent-filtered leaderboard not supported for '{target_col}'. "
+            "Use points, threes, eFG%, TS%, rebounds, or assists."
+        )
 
     # Load and concatenate game logs across all seasons
     frames: list[pd.DataFrame] = []
@@ -295,12 +311,21 @@ def build_result(
     if end_ts is not None and "game_date" in basic.columns:
         basic = basic[basic["game_date"] <= end_ts].copy()
 
+    if opponent:
+        opp_upper = opponent.upper()
+        opp_mask = pd.Series(False, index=basic.index)
+        if "opponent_team_abbr" in basic.columns:
+            opp_mask = opp_mask | basic["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
+        if "opponent_team_name" in basic.columns:
+            opp_mask = opp_mask | basic["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
+        basic = basic[opp_mask].copy()
+
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_data")
 
     df = _build_from_game_logs(basic)
 
-    if not multi_season and not date_window_active:
+    if not multi_season and not date_window_active and not opponent:
         adv_path = Path(f"data/raw/team_season_advanced/{seasons[0]}_{safe}.csv")
         df = _merge_advanced_if_available(df, adv_path)
 
@@ -315,6 +340,7 @@ def build_result(
         target_col,
         min_games,
         date_window_active=date_window_active,
+        opponent_active=bool(opponent),
         num_seasons=len(seasons),
     )
 
@@ -355,6 +381,8 @@ def build_result(
         caveats.append(
             "multi-season leaderboard aggregated from game logs; season-advanced stats excluded"
         )
+    if opponent:
+        caveats.append(f"filtered to games vs {opponent.upper()}")
 
     return LeaderboardResult(
         leaders=result,

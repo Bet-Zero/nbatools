@@ -267,6 +267,8 @@ def build_result(
         caveats.append(
             f"multi-season summary aggregated from game logs across {seasons[0]} to {seasons[-1]}"
         )
+    if opponent:
+        caveats.append(f"filtered to games vs {opponent.upper()}")
 
     return SummaryResult(
         summary=summary,
