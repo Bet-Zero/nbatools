@@ -44,6 +44,7 @@ from nbatools.commands.query_boolean_parser import expression_contains_boolean_o
 # Re-export result types so callers can import everything from one place.
 from nbatools.commands.structured_results import (  # noqa: F401
     ComparisonResult,
+    CountResult,
     FinderResult,
     LeaderboardResult,
     NoResult,
@@ -283,6 +284,7 @@ def execute_natural_query(query: str) -> QueryResult:
     route = parsed["route"]
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
+    count_intent = parsed.get("count_intent", False)
 
     try:
         result = _execute_build_result(route, kwargs, extra_conditions)
@@ -296,7 +298,30 @@ def execute_natural_query(query: str) -> QueryResult:
             route=route,
         )
 
+    # Post-process: convert FinderResult → CountResult when count intent detected
+    if count_intent and isinstance(result, FinderResult):
+        result = CountResult(
+            count=len(result.games),
+            games=result.games,
+            result_status=result.result_status,
+            result_reason=result.result_reason,
+            current_through=result.current_through,
+            metadata=result.metadata,
+            notes=result.notes,
+            caveats=result.caveats,
+        )
+    elif count_intent and isinstance(result, NoResult):
+        result = CountResult(
+            count=0,
+            result_status="ok",
+            notes=result.notes,
+            caveats=result.caveats,
+        )
+
     metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
+    # Override query_class in metadata when count intent is active
+    if count_intent:
+        metadata["query_class"] = "count"
     return QueryResult(
         result=result,
         metadata=metadata,

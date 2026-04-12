@@ -329,7 +329,8 @@ def wants_leaderboard(text: str) -> bool:
     if re.search(
         r"\bseason leaders?\b|\bled the league\b|\bleaders?\s+in\b"
         r"|\b(?:career|playoff|all[- ]?time)\s+(?:\w+\s+)*leaders?\b"
-        r"|\bleaders?\s+(?:since|last|past)\b",
+        r"|\bleaders?\s+(?:since|last|past)\b"
+        r"|\brank\b|\branked\b|\branking\b|\bwho\s+(?:has|had|leads?|led)\s+the\s+most\b",
         text,
     ):
         return True
@@ -418,7 +419,7 @@ def wants_team_leaderboard(text: str) -> bool:
         return True
 
     if re.search(r"\bteams?\b", text):
-        if re.search(r"\b(best|highest|most|top(?:\s+\d+)?)\b", text):
+        if re.search(r"\b(best|highest|most|top(?:\s+\d+)?|rank|ranked|ranking)\b", text):
             return True
 
     return False
@@ -1101,6 +1102,35 @@ def wants_summary(text: str) -> bool:
     if "form" in text or "recent form" in text:
         return True
     return False
+
+
+def wants_finder(text: str) -> bool:
+    """Detect explicit list/finder intent.
+
+    Triggers on phrases like 'show me', 'list', 'find', 'give me',
+    'what games', 'which games', 'show all', 'show every', 'show games'.
+    """
+    return bool(
+        re.search(
+            r"\b(show\s+me|list|find|give\s+me|what\s+games|which\s+games"
+            r"|show\s+all|show\s+every|show\s+games)\b",
+            text,
+        )
+    )
+
+
+def wants_count(text: str) -> bool:
+    """Detect explicit count intent.
+
+    Triggers on phrases like 'how many', 'count', 'number of',
+    'total number', 'total count', 'total games'.
+    """
+    return bool(
+        re.search(
+            r"\b(how\s+many|count|number\s+of|total\s+(?:number|count|games))\b",
+            text,
+        )
+    )
 
 
 def wants_recent_form(text: str) -> bool:
@@ -1918,6 +1948,8 @@ def _build_parse_state(query: str) -> dict:
         last_n = 10
 
     summary_intent = wants_summary(q)
+    finder_intent = wants_finder(q)
+    count_intent = wants_count(q)
     range_intent = bool(start_season and end_season)
     split_intent = wants_split_summary(q)
 
@@ -2016,6 +2048,8 @@ def _build_parse_state(query: str) -> dict:
         "wins_only": wins_only,
         "losses_only": losses_only,
         "summary_intent": summary_intent,
+        "finder_intent": finder_intent,
+        "count_intent": count_intent,
         "range_intent": range_intent,
         "career_intent": career_intent,
         "split_intent": split_intent,
@@ -2071,6 +2105,8 @@ def _finalize_route(parsed: dict) -> dict:
     wins_only = parsed["wins_only"]
     losses_only = parsed["losses_only"]
     summary_intent = parsed["summary_intent"]
+    finder_intent = parsed.get("finder_intent", False)
+    count_intent = parsed.get("count_intent", False)
     range_intent = parsed["range_intent"]
     career_intent = parsed.get("career_intent", False)
     leaderboard_intent = parsed.get("leaderboard_intent", False)
@@ -2329,6 +2365,57 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_season": lb_end_season,
                 "opponent": opponent,
             }
+    elif (finder_intent or count_intent) and player and not player_a and not player_b:
+        # Explicit list/count intent overrides summary/range routing
+        finder_limit = None if count_intent else 25
+        route = "player_game_finder"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "player": player,
+            "team": team,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "limit": finder_limit,
+            "sort_by": "stat" if stat else "game_date",
+            "ascending": False,
+            "last_n": last_n,
+        }
+    elif (finder_intent or count_intent) and team and not team_a and not team_b:
+        # Explicit list/count intent overrides summary/range routing
+        finder_limit = None if count_intent else 25
+        route = "game_finder"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "limit": finder_limit,
+            "sort_by": "stat" if stat else "game_date",
+            "ascending": False,
+            "last_n": last_n,
+        }
     elif player and (
         summary_intent
         or career_intent
@@ -2506,6 +2593,10 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         out["losses_only"] = True
     if not out.get("summary_intent") and base.get("summary_intent"):
         out["summary_intent"] = True
+    if not out.get("finder_intent") and base.get("finder_intent"):
+        out["finder_intent"] = True
+    if not out.get("count_intent") and base.get("count_intent"):
+        out["count_intent"] = True
     if not out.get("split_intent") and base.get("split_intent"):
         out["split_intent"] = True
 
@@ -2630,7 +2721,8 @@ def _extract_grouped_condition_text(query: str) -> str:
     condition_text = re.sub(r"\bhome\s+vs\.?\s+away\b", "", condition_text)
     condition_text = re.sub(r"\bwins?\s+vs\.?\s+loss(?:es)?\b", "", condition_text)
     condition_text = re.sub(
-        r"\b(summary|summarize|average|averages|avg|record|split|form|where|games|game)\b",
+        r"\b(summary|summarize|average|averages|avg|record|split|form|where|games|game"
+        r"|show\s+me|list|find|give\s+me|how\s+many|count|number\s+of)\b",
         "",
         condition_text,
     )

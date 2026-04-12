@@ -432,3 +432,63 @@ class StreakResult:
         return {
             "STREAK": self.streaks.to_csv(index=False).strip(),
         }
+
+
+# ---------------------------------------------------------------------------
+# Count result  (derived from finder queries with count intent)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class CountResult:
+    """Structured result for count queries.
+
+    Wraps a count value with the underlying matching games for detail.
+    Built by post-processing a FinderResult when count intent is detected.
+    """
+
+    query_class: str = "count"
+    count: int = 0
+    games: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
+    result_status: str = "ok"
+    result_reason: str | None = None
+    current_through: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    notes: list[str] = field(default_factory=list)
+    caveats: list[str] = field(default_factory=list)
+
+    def to_labeled_text(self) -> str:
+        parts: list[str] = []
+        parts.append("COUNT\n")
+        parts.append(f"count\n{self.count}\n")
+        if not self.games.empty:
+            parts.append("FINDER\n")
+            parts.append(self.games.to_csv(index=False))
+        return "".join(parts)
+
+    def to_dict(self) -> dict[str, Any]:
+        d: dict[str, Any] = {
+            "query_class": self.query_class,
+            "result_status": self.result_status,
+            "metadata": dict(self.metadata),
+            "notes": list(self.notes),
+            "caveats": list(self.caveats),
+            "sections": {
+                "count": [{"count": self.count}],
+            },
+        }
+        if self.result_reason is not None:
+            d["result_reason"] = self.result_reason
+        if self.current_through is not None:
+            d["current_through"] = self.current_through
+        if not self.games.empty:
+            d["sections"]["finder"] = _df_to_records(self.games)
+        return d
+
+    def to_sections_dict(self) -> dict[str, str]:
+        sections: dict[str, str] = {
+            "COUNT": f"count\n{self.count}",
+        }
+        if not self.games.empty:
+            sections["FINDER"] = self.games.to_csv(index=False).strip()
+        return sections

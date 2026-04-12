@@ -71,6 +71,7 @@ ROUTE_TO_QUERY_CLASS = {
 
 QUERY_CLASS_TO_LABEL = {
     "finder": "FINDER",
+    "count": "COUNT",
     "leaderboard": "LEADERBOARD",
     "streak": "STREAK",
 }
@@ -870,6 +871,7 @@ def format_pretty_output(raw_text: str, query: str) -> str:
 
 from nbatools.commands.structured_results import (  # noqa: E402
     ComparisonResult,
+    CountResult,
     FinderResult,
     LeaderboardResult,
     NoResult,
@@ -885,6 +887,7 @@ StructuredResult = (
     | FinderResult
     | LeaderboardResult
     | StreakResult
+    | CountResult
     | NoResult
 )
 
@@ -906,6 +909,9 @@ def format_pretty_from_result(result: StructuredResult, query: str) -> str:
         reason = result.result_reason or result.reason
         return _format_pretty_no_result(query, reason)
 
+    if isinstance(result, CountResult):
+        return _format_count_pretty(result, query)
+
     sections = result.to_sections_dict()
 
     # Remap single-table labels to TABLE for the pretty formatter
@@ -915,6 +921,25 @@ def format_pretty_from_result(result: StructuredResult, query: str) -> str:
             sections = {"TABLE": sections[label]}
 
     return _format_pretty_from_sections(sections, query)
+
+
+def _format_count_pretty(result: CountResult, query: str) -> str:
+    """Pretty-format a CountResult with prominent count display."""
+    lines: list[str] = [f'Query: "{query}"', ""]
+    lines.append(f"Count: {result.count}")
+
+    if not result.games.empty:
+        lines.append(SECTION_RULE)
+        preview = result.games.copy().round(3)
+        # Show up to 10 sample games for context
+        if len(preview) > 10:
+            preview = preview.head(10)
+            lines.append(f"Showing 10 of {result.count} matching games:")
+        else:
+            lines.append(f"All {result.count} matching games:")
+        lines.append(preview.to_string(index=False))
+
+    return "\n".join(lines)
 
 
 def _format_pretty_from_sections(sections: dict[str, str], query: str) -> str:
@@ -1007,6 +1032,15 @@ def write_csv_from_result(result: StructuredResult, path_str: str) -> None:
         return
 
     sections = result.to_sections_dict()
+
+    # Count results: write the games as flat CSV (count is in metadata/headers)
+    if isinstance(result, CountResult):
+        if "FINDER" in sections:
+            csv_text = sections["FINDER"].strip()
+            Path(path_str).write_text(csv_text + "\n", encoding="utf-8")
+        else:
+            Path(path_str).write_text(f"count\n{result.count}\n", encoding="utf-8")
+        return
 
     # Single-table results: write flat CSV
     single_table_labels = {"FINDER", "LEADERBOARD", "STREAK"}
