@@ -48,6 +48,7 @@ def test_parse_player_triple_double_streak():
 
 
 @pytest.mark.slow
+@pytest.mark.needs_data
 def test_natural_player_points_streak_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -60,6 +61,7 @@ def test_natural_player_points_streak_raw_smoke():
 
 
 @pytest.mark.slow
+@pytest.mark.needs_data
 def test_natural_player_triple_double_streak_raw_smoke():
     out = _capture_output(
         natural_query_run,

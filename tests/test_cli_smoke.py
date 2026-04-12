@@ -2,6 +2,8 @@ import json
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.cli_apps.queries import _run_and_handle_exports
 from nbatools.commands.format_output import (
     METADATA_LABEL,
@@ -20,6 +22,9 @@ from nbatools.commands.season_leaders import run as season_leaders_run
 from nbatools.commands.team_compare import run as team_compare_run
 from nbatools.commands.team_split_summary import run as team_split_summary_run
 from nbatools.commands.top_player_games import run as top_player_games_run
+
+# Every test in this module runs real queries against local CSV data.
+pytestmark = pytest.mark.needs_data
 
 
 def _capture_output(func, *args, **kwargs) -> str:

@@ -11,6 +11,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.cli_apps.queries import _run_and_handle_exports
 from nbatools.commands.format_output import (
@@ -91,6 +92,7 @@ class TestBuildResultMap:
 class TestExecuteBuildResult:
     """Verify _execute_build_result returns typed result objects."""
 
+    @pytest.mark.needs_data
     def test_finder_result(self):
         result = _execute_build_result(
             "player_game_finder",
@@ -121,6 +123,7 @@ class TestExecuteBuildResult:
         assert not result.games.empty
         assert "Kobe Bryant" in result.games["player_name"].values
 
+    @pytest.mark.needs_data
     def test_leaderboard_result(self):
         result = _execute_build_result(
             "top_player_games",
@@ -136,6 +139,7 @@ class TestExecuteBuildResult:
         assert not result.leaders.empty
         assert len(result.leaders) == 5
 
+    @pytest.mark.needs_data
     def test_summary_result(self):
         result = _execute_build_result(
             "player_game_summary",
@@ -489,6 +493,7 @@ class TestWriteJsonFromResult:
 class TestNaturalQueryStructuredFirst:
     """Verify natural query routes use structured-first execution."""
 
+    @pytest.mark.needs_data
     def test_finder_pretty_output_parity(self):
         out = _capture_output(
             natural_query_run,
@@ -498,6 +503,7 @@ class TestNaturalQueryStructuredFirst:
         assert "Kobe Bryant" in out
         assert "81" in out  # Kobe's 81-point game
 
+    @pytest.mark.needs_data
     def test_finder_raw_output_has_metadata(self):
         out = _capture_output(
             natural_query_run,
@@ -508,6 +514,7 @@ class TestNaturalQueryStructuredFirst:
         assert METADATA_LABEL in sections
         assert "FINDER" in sections
 
+    @pytest.mark.needs_data
     def test_summary_pretty_output(self):
         out = _capture_output(
             natural_query_run,
@@ -517,6 +524,7 @@ class TestNaturalQueryStructuredFirst:
         assert "Kobe Bryant" in out
         assert "Games:" in out
 
+    @pytest.mark.needs_data
     def test_summary_raw_output_has_metadata(self):
         out = _capture_output(
             natural_query_run,
@@ -527,6 +535,7 @@ class TestNaturalQueryStructuredFirst:
         assert METADATA_LABEL in sections
         assert "SUMMARY" in sections
 
+    @pytest.mark.needs_data
     def test_leaderboard_pretty_output(self):
         out = _capture_output(
             natural_query_run,
@@ -535,6 +544,7 @@ class TestNaturalQueryStructuredFirst:
         )
         assert "Kobe Bryant" in out
 
+    @pytest.mark.needs_data
     def test_leaderboard_raw_output_has_label(self):
         out = _capture_output(
             natural_query_run,
@@ -544,6 +554,7 @@ class TestNaturalQueryStructuredFirst:
         sections = parse_labeled_sections(out)
         assert "LEADERBOARD" in sections
 
+    @pytest.mark.needs_data
     def test_no_result_pretty_output(self):
         out = _capture_output(
             natural_query_run,
@@ -570,6 +581,7 @@ class TestNaturalQueryStructuredFirst:
 class TestNaturalQueryExports:
     """Verify exports work directly from structured results."""
 
+    @pytest.mark.needs_data
     def test_csv_export_finder(self, tmp_path):
         csv_path = tmp_path / "export.csv"
         _capture_output(
@@ -583,6 +595,7 @@ class TestNaturalQueryExports:
         assert "player_name" in text
         assert "Kobe Bryant" in text
 
+    @pytest.mark.needs_data
     def test_json_export_finder(self, tmp_path):
         json_path = tmp_path / "export.json"
         _capture_output(
@@ -638,6 +651,7 @@ class TestNaturalQueryExports:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestCLIQueryStructuredExports:
     """Verify CLI query commands export directly from structured results."""
 
@@ -697,6 +711,7 @@ class TestCLIQueryStructuredExports:
 class TestGroupedBooleanStructuredFirst:
     """Verify grouped boolean queries use structured-first execution."""
 
+    @pytest.mark.needs_data
     def test_grouped_boolean_player_summary(self):
         out = _capture_output(
             natural_query_run,
@@ -715,6 +730,7 @@ class TestGroupedBooleanStructuredFirst:
         sections = parse_labeled_sections(out)
         assert METADATA_LABEL in sections
 
+    @pytest.mark.needs_data
     def test_grouped_boolean_player_split(self):
         out = _capture_output(
             natural_query_run,

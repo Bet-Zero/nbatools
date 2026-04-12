@@ -67,6 +67,7 @@ def test_parse_highest_assists_per_game():
 
 
 @pytest.mark.slow
+@pytest.mark.needs_data
 def test_natural_top_scorers_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -79,6 +80,7 @@ def test_natural_top_scorers_raw_smoke():
 
 
 @pytest.mark.slow
+@pytest.mark.needs_data
 def test_natural_highest_ts_pct_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -91,6 +93,7 @@ def test_natural_highest_ts_pct_raw_smoke():
 
 
 @pytest.mark.slow
+@pytest.mark.needs_data
 def test_natural_most_30_point_games_raw_smoke():
     out = _capture_output(
         natural_query_run,

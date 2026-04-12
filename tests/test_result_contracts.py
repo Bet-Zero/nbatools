@@ -14,6 +14,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.format_output import (
     ERROR_LABEL,
@@ -217,6 +218,7 @@ class TestStripMetadataSection:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestLabeledFinderOutput:
     def test_finder_raw_has_label_and_metadata(self):
         out = _capture_output(
@@ -270,6 +272,7 @@ class TestLabeledFinderOutput:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestLabeledLeaderboardOutput:
     def test_leaderboard_raw_has_label_and_metadata(self):
         out = _capture_output(
@@ -322,6 +325,7 @@ class TestLabeledLeaderboardOutput:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestLabeledStreakOutput:
     def test_streak_raw_has_label_and_metadata(self):
         out = _capture_output(
@@ -362,6 +366,7 @@ class TestLabeledStreakOutput:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestMetadataOnExistingLabels:
     def test_summary_has_metadata(self):
         out = _capture_output(
@@ -448,6 +453,7 @@ class TestMetadataFields:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestExportsWithLabels:
     def test_csv_export_is_bare_csv(self, tmp_path):
         out_path = tmp_path / "finder.csv"
@@ -566,6 +572,7 @@ class TestPrettyOutputWithLabels:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestStructuredCLILeaderboardMetadata:
     """Verify leaderboard commands (formerly positional-only) emit metadata fields."""
 
@@ -635,6 +642,7 @@ class TestStructuredCLILeaderboardMetadata:
         assert meta["season_type"] == "Regular Season"
 
 
+@pytest.mark.needs_data
 class TestStructuredCLIExportsWithMetadata:
     """Verify export behavior from the structured CLI path."""
 
@@ -933,6 +941,7 @@ class TestUnroutedNaturalQuery:
 
 
 class TestNoMatchNaturalQuery:
+    @pytest.mark.needs_data
     def test_no_match_finder_raw_has_no_result_label(self):
         out = _capture_output(
             natural_query_run,
@@ -946,6 +955,7 @@ class TestNoMatchNaturalQuery:
         assert meta["result_status"] == "no_result"
         assert meta["result_reason"] == "no_match"
 
+    @pytest.mark.needs_data
     def test_no_match_finder_pretty_shows_message(self):
         out = _capture_output(
             natural_query_run,
@@ -1111,6 +1121,7 @@ class TestNotesInJsonExport:
         assert "notes" not in payload.get("metadata", {})
 
 
+@pytest.mark.needs_data
 class TestNotesPrettyOutputUnchanged:
     """Verify pretty output is not visibly affected by notes metadata."""
 

@@ -314,6 +314,7 @@ class TestSplitSummaryResult:
 
 
 class TestBuildResultPlayerGameSummary:
+    @pytest.mark.needs_data
     def test_returns_summary_result(self):
         from nbatools.commands.player_game_summary import build_result
 
@@ -336,6 +337,7 @@ class TestBuildResultPlayerGameSummary:
         )
         assert isinstance(result, NoResult)
 
+    @pytest.mark.needs_data
     def test_labeled_text_matches_run_output(self):
         from nbatools.commands.player_game_summary import build_result, run
 
@@ -358,6 +360,7 @@ class TestBuildResultPlayerGameSummary:
         assert isinstance(result, SummaryResult)
         assert result.to_labeled_text() == run_output
 
+    @pytest.mark.needs_data
     def test_to_dict_has_summary_data(self):
         from nbatools.commands.player_game_summary import build_result
 
@@ -377,6 +380,7 @@ class TestBuildResultPlayerGameSummary:
 
 
 class TestBuildResultGameSummary:
+    @pytest.mark.needs_data
     def test_returns_summary_result(self):
         from nbatools.commands.game_summary import build_result
 
@@ -401,6 +405,7 @@ class TestBuildResultGameSummary:
 
 
 class TestBuildResultPlayerCompare:
+    @pytest.mark.needs_data
     def test_returns_comparison_result(self):
         from nbatools.commands.player_compare import build_result
 
@@ -437,6 +442,7 @@ class TestBuildResultPlayerCompare:
 
 
 class TestBuildResultTeamCompare:
+    @pytest.mark.needs_data
     def test_returns_comparison_result(self):
         from nbatools.commands.team_compare import build_result
 
@@ -473,6 +479,7 @@ class TestBuildResultTeamCompare:
 
 
 class TestBuildResultPlayerSplitSummary:
+    @pytest.mark.needs_data
     def test_returns_split_summary_result(self):
         from nbatools.commands.player_split_summary import build_result
 
@@ -521,6 +528,7 @@ class TestBuildResultPlayerSplitSummary:
 
 
 class TestBuildResultTeamSplitSummary:
+    @pytest.mark.needs_data
     def test_returns_split_summary_result(self):
         from nbatools.commands.team_split_summary import build_result
 
@@ -562,6 +570,7 @@ class TestBuildResultTeamSplitSummary:
 
 
 class TestToDictIntegration:
+    @pytest.mark.needs_data
     def test_player_summary_dict_has_by_season(self):
         from nbatools.commands.player_game_summary import build_result
 
@@ -574,6 +583,7 @@ class TestToDictIntegration:
         assert "by_season" in d["sections"]
         assert len(d["sections"]["by_season"]) >= 1
 
+    @pytest.mark.needs_data
     def test_comparison_dict_has_metric_rows(self):
         from nbatools.commands.player_compare import build_result
 
@@ -588,6 +598,7 @@ class TestToDictIntegration:
         assert "pts_avg" in metrics
         assert "win_pct" in metrics
 
+    @pytest.mark.needs_data
     def test_split_dict_has_bucket_data(self):
         from nbatools.commands.player_split_summary import build_result
 

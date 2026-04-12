@@ -2,6 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
 from nbatools.commands.natural_query import parse_query
@@ -84,6 +85,7 @@ def _extract_data_csv(raw_text: str) -> str:
     return raw_text.strip()
 
 
+@pytest.mark.needs_data
 def test_natural_player_since_all_star_break_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -97,6 +99,7 @@ def test_natural_player_since_all_star_break_raw_smoke():
     assert dates.min() >= pd.Timestamp("2026-02-16")
 
 
+@pytest.mark.needs_data
 def test_natural_top_scorers_since_all_star_break_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -108,6 +111,7 @@ def test_natural_top_scorers_since_all_star_break_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_best_offensive_teams_since_all_star_break_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -119,6 +123,7 @@ def test_natural_best_offensive_teams_since_all_star_break_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_player_compare_since_all_star_break_raw_smoke():
     out = _capture_output(
         natural_query_run,

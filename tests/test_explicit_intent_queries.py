@@ -434,6 +434,7 @@ class TestCountResult:
 class TestExplicitIntentExecution:
     """Execute explicit intent queries through the service layer."""
 
+    @pytest.mark.needs_data
     def test_finder_intent_returns_finder_result(self):
         qr = execute_natural_query("show me Jokic games with 25 points 2024-25")
         assert isinstance(qr, QueryResult)
@@ -483,6 +484,7 @@ class TestExplicitIntentExecution:
         assert isinstance(qr.result, (FinderResult, NoResult))
         assert qr.route == "player_game_finder"
 
+    @pytest.mark.needs_data
     def test_summary_intent_returns_summary(self):
         qr = execute_natural_query("summarize Jokic 2024-25")
         assert isinstance(qr.result, SummaryResult)
@@ -492,6 +494,7 @@ class TestExplicitIntentExecution:
         qr = execute_natural_query("summarize Jokic vs Lakers 2024-25")
         assert isinstance(qr.result, (SummaryResult, NoResult))
 
+    @pytest.mark.needs_data
     def test_leaderboard_rank(self):
         qr = execute_natural_query("top 5 scorers 2024-25")
         assert isinstance(qr.result, LeaderboardResult)

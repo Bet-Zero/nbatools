@@ -51,6 +51,7 @@ def _capture(fn, *args, **kwargs) -> str:
 class TestNaturalQueryExecution:
     """execute_natural_query should parse, route, and return typed results."""
 
+    @pytest.mark.needs_data
     def test_player_summary_returns_summary_result(self):
         qr = execute_natural_query("Jokic summary 2024-25")
         assert isinstance(qr, QueryResult)
@@ -59,48 +60,56 @@ class TestNaturalQueryExecution:
         assert qr.route == "player_game_summary"
         assert qr.result_status == "ok"
 
+    @pytest.mark.needs_data
     def test_team_summary_returns_summary_result(self):
         qr = execute_natural_query("Celtics summary 2024-25")
         assert isinstance(qr.result, SummaryResult)
         assert qr.is_ok
         assert qr.route == "game_summary"
 
+    @pytest.mark.needs_data
     def test_player_compare_returns_comparison_result(self):
         qr = execute_natural_query("Jokic vs Embiid 2024-25")
         assert isinstance(qr.result, ComparisonResult)
         assert qr.is_ok
         assert qr.route == "player_compare"
 
+    @pytest.mark.needs_data
     def test_team_compare_returns_comparison_result(self):
         qr = execute_natural_query("Celtics vs Lakers 2024-25")
         assert isinstance(qr.result, ComparisonResult)
         assert qr.is_ok
         assert qr.route == "team_compare"
 
+    @pytest.mark.needs_data
     def test_player_finder_returns_finder_result(self):
         qr = execute_natural_query("Jokic over 25 points 2024-25")
         assert isinstance(qr.result, FinderResult)
         assert qr.is_ok
         assert qr.route == "player_game_finder"
 
+    @pytest.mark.needs_data
     def test_team_finder_returns_finder_result(self):
         qr = execute_natural_query("Celtics over 120 points 2024-25")
         assert isinstance(qr.result, FinderResult)
         assert qr.is_ok
         assert qr.route == "game_finder"
 
+    @pytest.mark.needs_data
     def test_player_split_returns_split_summary_result(self):
         qr = execute_natural_query("Jokic home vs away 2024-25")
         assert isinstance(qr.result, SplitSummaryResult)
         assert qr.is_ok
         assert qr.route == "player_split_summary"
 
+    @pytest.mark.needs_data
     def test_team_split_returns_split_summary_result(self):
         qr = execute_natural_query("Celtics wins vs losses 2024-25")
         assert isinstance(qr.result, SplitSummaryResult)
         assert qr.is_ok
         assert qr.route == "team_split_summary"
 
+    @pytest.mark.needs_data
     def test_season_leaders_returns_leaderboard_result(self):
         qr = execute_natural_query("top 5 scorers 2024-25")
         assert isinstance(qr.result, LeaderboardResult)
@@ -112,6 +121,7 @@ class TestNaturalQueryExecution:
         assert isinstance(qr.result, (StreakResult, NoResult))
         assert qr.route == "player_streak_finder"
 
+    @pytest.mark.needs_data
     def test_or_query_returns_finder_result(self):
         qr = execute_natural_query("Jokic over 30 points or over 10 assists 2024-25")
         assert isinstance(qr.result, FinderResult)
@@ -132,6 +142,7 @@ class TestNaturalQueryExecution:
 class TestStructuredQueryExecution:
     """execute_structured_query should call build_result and return results."""
 
+    @pytest.mark.needs_data
     def test_player_game_summary(self):
         qr = execute_structured_query(
             "player_game_summary",
@@ -144,6 +155,7 @@ class TestStructuredQueryExecution:
         assert qr.metadata["route"] == "player_game_summary"
         assert qr.metadata["query_class"] == "summary"
 
+    @pytest.mark.needs_data
     def test_game_summary(self):
         qr = execute_structured_query(
             "game_summary",
@@ -153,6 +165,7 @@ class TestStructuredQueryExecution:
         assert isinstance(qr.result, SummaryResult)
         assert qr.route == "game_summary"
 
+    @pytest.mark.needs_data
     def test_season_leaders(self):
         qr = execute_structured_query(
             "season_leaders",
@@ -163,6 +176,7 @@ class TestStructuredQueryExecution:
         assert isinstance(qr.result, LeaderboardResult)
         assert qr.route == "season_leaders"
 
+    @pytest.mark.needs_data
     def test_player_compare(self):
         qr = execute_structured_query(
             "player_compare",
@@ -187,6 +201,7 @@ class TestStructuredQueryExecution:
         assert isinstance(qr.result, (FinderResult, NoResult))
         assert qr.route == "player_game_finder"
 
+    @pytest.mark.needs_data
     def test_top_player_games(self):
         qr = execute_structured_query(
             "top_player_games",
@@ -242,6 +257,7 @@ class TestMetadataPreservation:
         assert qr.metadata["season"] == "2024-25"
         assert qr.metadata["player"] == "Nikola Jokić"
 
+    @pytest.mark.needs_data
     def test_current_through_present(self):
         qr = execute_natural_query("Jokic summary 2024-25")
         # current_through should be on the result or in metadata
@@ -301,6 +317,7 @@ class TestQueryResultEnvelope:
             assert "sections" in d
             assert "summary" in d["sections"]
 
+    @pytest.mark.needs_data
     def test_is_ok_true_for_valid_result(self):
         qr = execute_natural_query("Jokic summary 2024-25")
         assert qr.is_ok is True
@@ -318,6 +335,7 @@ class TestQueryResultEnvelope:
 class TestCLIRenderingThroughService:
     """The run() function should call the service and still produce correct output."""
 
+    @pytest.mark.needs_data
     def test_natural_query_pretty_output(self):
         from nbatools.commands.natural_query import run as natural_query_run
 
@@ -325,6 +343,7 @@ class TestCLIRenderingThroughService:
         assert "Nikola Jokić" in out
         assert "Games:" in out
 
+    @pytest.mark.needs_data
     def test_natural_query_raw_output(self):
         from nbatools.commands.natural_query import run as natural_query_run
 
@@ -347,6 +366,7 @@ class TestCLIRenderingThroughService:
 
 
 @pytest.mark.slow
+@pytest.mark.needs_data
 class TestExportParity:
     """Exports should produce the same semantics after refactoring."""
 
@@ -468,6 +488,7 @@ class TestPublicAPI:
 class TestRenderQueryResult:
     """render_query_result should produce correct console and export output."""
 
+    @pytest.mark.needs_data
     def test_render_pretty(self):
         from nbatools.commands.natural_query import render_query_result
 
@@ -476,6 +497,7 @@ class TestRenderQueryResult:
         assert "Nikola Jokić" in out
         assert "Games:" in out
 
+    @pytest.mark.needs_data
     def test_render_raw(self):
         from nbatools.commands.natural_query import render_query_result
 

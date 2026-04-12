@@ -1,6 +1,8 @@
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
@@ -40,6 +42,7 @@ def test_parse_teams_with_best_ts():
     assert parsed["route_kwargs"]["stat"] == "ts_pct"
 
 
+@pytest.mark.needs_data
 def test_natural_best_offensive_teams_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -51,6 +54,7 @@ def test_natural_best_offensive_teams_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_teams_with_most_threes_raw_smoke():
     out = _capture_output(
         natural_query_run,
@@ -62,6 +66,7 @@ def test_natural_teams_with_most_threes_raw_smoke():
     assert "2025-26" in out
 
 
+@pytest.mark.needs_data
 def test_natural_teams_with_best_efg_raw_smoke():
     out = _capture_output(
         natural_query_run,

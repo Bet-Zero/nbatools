@@ -21,6 +21,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.format_output import (
     format_pretty_output,
@@ -89,6 +90,7 @@ class TestResultReasonEnum:
 
 
 class TestComputeCurrentThrough:
+    @pytest.mark.needs_data
     def test_returns_date_for_known_season(self):
         ct = compute_current_through("2024-25", "Regular Season")
         assert ct is not None
@@ -99,11 +101,13 @@ class TestComputeCurrentThrough:
         ct = compute_current_through("2099-00", "Regular Season")
         assert ct is None
 
+    @pytest.mark.needs_data
     def test_returns_date_for_current_season(self):
         ct = compute_current_through("2025-26", "Regular Season")
         assert ct is not None
         assert ct >= "2025-10-01"
 
+    @pytest.mark.needs_data
     def test_multi_season_returns_latest(self):
         ct = compute_current_through_for_seasons(["2023-24", "2024-25"], "Regular Season")
         assert ct is not None
@@ -121,17 +125,20 @@ class TestComputeCurrentThrough:
 
 
 class TestSeasonDataAvailable:
+    @pytest.mark.needs_data
     def test_known_season_available(self):
         assert season_data_available("2024-25", "Regular Season") is True
 
     def test_unknown_season_not_available(self):
         assert season_data_available("2099-00", "Regular Season") is False
 
+    @pytest.mark.needs_data
     def test_player_stats_available(self):
         assert (
             season_data_available("2024-25", "Regular Season", dataset="player_game_stats") is True
         )
 
+    @pytest.mark.needs_data
     def test_team_stats_available(self):
         assert season_data_available("2024-25", "Regular Season", dataset="team_game_stats") is True
 
@@ -268,6 +275,7 @@ class TestResultTrustFields:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestCurrentThroughOnCommands:
     def test_player_game_summary_has_current_through(self):
         from nbatools.commands.player_game_summary import build_result
@@ -433,6 +441,7 @@ class TestNoDataDetection:
         assert isinstance(result, NoResult)
         assert result.reason == "no_data"
 
+    @pytest.mark.needs_data
     def test_no_match_vs_no_data_distinction(self):
         """no_match: data exists but filters match nothing. no_data: data doesn't exist."""
         from nbatools.commands.player_game_summary import build_result
@@ -465,6 +474,7 @@ class TestNoDataDetection:
 
 
 class TestNaturalQueryMetadata:
+    @pytest.mark.needs_data
     def test_current_through_in_metadata_block(self):
         from nbatools.commands.natural_query import run
 
@@ -502,6 +512,7 @@ class TestNaturalQueryMetadata:
         assert 'Query: "Jokic summary 2024-25"' in output
         assert "Jokić" in output or "Jokic" in output
 
+    @pytest.mark.needs_data
     def test_comparison_metadata_has_current_through(self):
         from nbatools.commands.natural_query import run
 
@@ -521,6 +532,7 @@ class TestNaturalQueryMetadata:
 
 
 class TestJsonExportTrustMetadata:
+    @pytest.mark.needs_data
     def test_json_export_includes_current_through(self):
         from nbatools.commands.natural_query import run
 
@@ -565,6 +577,7 @@ class TestJsonExportTrustMetadata:
 
 
 class TestToDictTrustContract:
+    @pytest.mark.needs_data
     def test_player_summary_to_dict_contract(self):
         from nbatools.commands.player_game_summary import build_result
 
@@ -603,6 +616,7 @@ class TestToDictTrustContract:
 
 
 class TestLabeledRawOutputPreserved:
+    @pytest.mark.needs_data
     def test_summary_labeled_text_unchanged(self):
         from nbatools.commands.player_game_summary import build_result
 
@@ -621,6 +635,7 @@ class TestLabeledRawOutputPreserved:
         assert len(df) == 1
         assert df["player_name"].iloc[0] == "Nikola Jokić"
 
+    @pytest.mark.needs_data
     def test_comparison_labeled_text_unchanged(self):
         from nbatools.commands.player_compare import build_result
 
@@ -716,6 +731,7 @@ class TestPrettyOutputPreserved:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestCurrentThroughOnFinderCommands:
     def test_player_game_finder_has_current_through(self):
         from nbatools.commands.player_game_finder import build_result
@@ -776,6 +792,7 @@ class TestCurrentThroughOnFinderCommands:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestCurrentThroughOnLeaderboardCommands:
     def test_season_leaders_has_current_through(self):
         from nbatools.commands.season_leaders import build_result
@@ -869,6 +886,7 @@ class TestCurrentThroughOnLeaderboardCommands:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestCurrentThroughOnStreakCommands:
     def test_player_streak_finder_has_current_through(self):
         from nbatools.commands.player_streak_finder import build_result
@@ -955,6 +973,7 @@ class TestNoDataDetectionFinderLeaderboardStreak:
         assert isinstance(result, NoResult)
         assert result.reason == "no_data"
 
+    @pytest.mark.needs_data
     def test_player_game_finder_no_match(self):
         from nbatools.commands.player_game_finder import build_result
 
@@ -966,6 +985,7 @@ class TestNoDataDetectionFinderLeaderboardStreak:
         assert isinstance(result, NoResult)
         assert result.reason == "no_match"
 
+    @pytest.mark.needs_data
     def test_game_finder_no_match(self):
         from nbatools.commands.game_finder import build_result
 
@@ -1046,6 +1066,7 @@ class TestNoDataDetectionFinderLeaderboardStreak:
         assert isinstance(result, NoResult)
         assert result.reason == "no_data"
 
+    @pytest.mark.needs_data
     def test_player_streak_no_match(self):
         from nbatools.commands.player_streak_finder import build_result
 
@@ -1059,6 +1080,7 @@ class TestNoDataDetectionFinderLeaderboardStreak:
         assert isinstance(result, NoResult)
         assert result.reason == "no_match"
 
+    @pytest.mark.needs_data
     def test_no_data_vs_no_match_finder(self):
         """Verify no_match and no_data are distinguished for finders."""
         from nbatools.commands.player_game_finder import build_result
@@ -1085,6 +1107,7 @@ class TestNoDataDetectionFinderLeaderboardStreak:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestMetadataInRawOutputFinderLeaderboardStreak:
     def test_finder_natural_query_has_metadata(self):
         from nbatools.commands.natural_query import run
@@ -1132,6 +1155,7 @@ class TestMetadataInRawOutputFinderLeaderboardStreak:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestJsonExportFinderLeaderboardStreak:
     def test_finder_json_export_has_metadata(self):
         from nbatools.commands.natural_query import run
@@ -1220,6 +1244,7 @@ class TestPrettyOutputFinderLeaderboardStreak:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestLabeledRawOutputFinderLeaderboardStreak:
     def test_finder_labeled_text_unchanged(self):
         from nbatools.commands.player_game_finder import build_result
