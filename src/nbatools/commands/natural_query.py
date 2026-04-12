@@ -198,6 +198,31 @@ PLAYER_ALIASES = {
     "tim duncan": "Tim Duncan",
 }
 
+# Import entity resolution (used by detect_player / detect_team etc.)
+from nbatools.commands.entity_resolution import (  # noqa: E402
+    PLAYER_FULL_NAME_ALIASES,
+    PLAYER_NICKNAME_ALIASES,
+    TEAM_ALIASES_EXPANDED,
+    ResolutionResult,
+    format_ambiguity_message,
+    resolve_player_in_query,
+    resolve_team_in_query,
+)
+
+# Merge curated aliases into PLAYER_ALIASES for backwards compatibility.
+# Entity-resolution nicknames / full-name aliases supplement the original dict.
+for _k, _v in PLAYER_NICKNAME_ALIASES.items():
+    if _k not in PLAYER_ALIASES:
+        PLAYER_ALIASES[_k] = _v
+for _k, _v in PLAYER_FULL_NAME_ALIASES.items():
+    if _k not in PLAYER_ALIASES:
+        PLAYER_ALIASES[_k] = _v
+
+# Merge expanded team aliases into TEAM_ALIASES for backwards compatibility.
+for _k, _v in TEAM_ALIASES_EXPANDED.items():
+    if _k not in TEAM_ALIASES:
+        TEAM_ALIASES[_k] = _v
+
 STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary|average|averages|record|for|during|playoff|playoffs|postseason|last|past|recent|form|split|over|under|between|and|or)"  # noqa: E501
 
 
@@ -807,16 +832,40 @@ def detect_stat(text: str) -> str | None:
 
 
 def detect_player(text: str) -> str | None:
+    # First try the original curated alias dict (preserves exact existing behavior)
     for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
         if re.search(rf"\b{re.escape(key)}\b", text):
             return PLAYER_ALIASES[key]
+    # Fall back to entity resolution (data-driven last-name lookup)
+    result = resolve_player_in_query(text)
+    if result.is_confident:
+        return result.resolved
     return None
+
+
+def detect_player_resolved(text: str) -> ResolutionResult:
+    """Like detect_player but returns full resolution result including ambiguity."""
+    # First try the original curated alias dict
+    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"\b{re.escape(key)}\b", text):
+            return ResolutionResult(
+                resolved=PLAYER_ALIASES[key],
+                candidates=[PLAYER_ALIASES[key]],
+                confidence="confident",
+                source="alias",
+            )
+    # Fall back to entity resolution (data-driven last-name lookup)
+    return resolve_player_in_query(text)
 
 
 def detect_team_in_text(text: str) -> str | None:
     for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
         if re.search(rf"\b{re.escape(key)}\b", text):
             return TEAM_ALIASES[key]
+    # Fall back to entity resolution for abbreviations etc.
+    result = resolve_team_in_query(text)
+    if result.is_confident:
+        return result.resolved
     return None
 
 
@@ -1973,8 +2022,18 @@ def _build_parse_state(query: str) -> dict:
         team_a, team_b = extract_team_comparison(q)
 
     player = None
+    entity_ambiguity: dict | None = None
     if not (player_a and player_b):
-        player = detect_player(q)
+        player_result = detect_player_resolved(q)
+        if player_result.is_confident:
+            player = player_result.resolved
+        elif player_result.is_ambiguous:
+            entity_ambiguity = {
+                "type": "player",
+                "input": q,
+                "candidates": player_result.candidates,
+                "source": player_result.source,
+            }
 
     opponent = None
     q_without_opponent = q
@@ -2058,6 +2117,7 @@ def _build_parse_state(query: str) -> dict:
         "head_to_head": head_to_head,
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
+        "entity_ambiguity": entity_ambiguity,
         "threshold_conditions": [
             {
                 "stat": c["stat"],
@@ -2118,6 +2178,20 @@ def _finalize_route(parsed: dict) -> dict:
     notes: list[str] = []
     route = None
     route_kwargs = None
+
+    # -- Entity ambiguity: short-circuit if we can't resolve a required entity --
+    entity_ambiguity = parsed.get("entity_ambiguity")
+    if entity_ambiguity and not player and not player_a and not player_b and not team:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {}
+        msg = format_ambiguity_message(
+            entity_ambiguity.get("input", ""),
+            entity_ambiguity.get("candidates", []),
+            entity_ambiguity.get("type", "player"),
+        )
+        out["notes"] = [msg]
+        return out
 
     if (
         team

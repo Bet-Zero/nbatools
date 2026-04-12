@@ -47,6 +47,7 @@ class ResultReason(StrEnum):
     NO_MATCH = "no_match"
     NO_DATA = "no_data"
     UNROUTED = "unrouted"
+    AMBIGUOUS = "ambiguous"
     ERROR = "error"
 
 

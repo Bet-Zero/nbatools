@@ -286,11 +286,37 @@ def execute_natural_query(query: str) -> QueryResult:
     extra_conditions = parsed.get("extra_conditions", [])
     count_intent = parsed.get("count_intent", False)
 
+    # -- Entity ambiguity: return structured ambiguity result --
+    entity_ambiguity = parsed.get("entity_ambiguity")
+    if entity_ambiguity and route is None:
+        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
+        notes = parsed.get("notes", [])
+        result = NoResult(
+            query_class="unknown",
+            reason="ambiguous",
+            result_status="no_result",
+            result_reason="ambiguous",
+            notes=list(notes),
+            metadata={"entity_ambiguity": entity_ambiguity},
+        )
+        return QueryResult(
+            result=result,
+            metadata=metadata,
+            query=query,
+            route=None,
+        )
+
     try:
         result = _execute_build_result(route, kwargs, extra_conditions)
-    except FileNotFoundError:
+    except (FileNotFoundError, KeyError, TypeError) as exc:
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
-        result = NoResult(query_class=route_to_query_class(route), reason="no_data")
+        if isinstance(exc, FileNotFoundError):
+            reason = "no_data"
+        elif route is None:
+            reason = "unrouted"
+        else:
+            reason = "error"
+        result = NoResult(query_class=route_to_query_class(route), reason=reason)
         return QueryResult(
             result=result,
             metadata=metadata,
