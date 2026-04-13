@@ -269,6 +269,28 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {opponent.upper()}")
+    if home_only:
+        caveats.append("filtered to home games only")
+    if away_only:
+        caveats.append("filtered to away games only")
+    if wins_only:
+        caveats.append("filtered to wins only")
+    if losses_only:
+        caveats.append("filtered to losses only")
+    if start_date or end_date:
+        date_parts = []
+        if start_date:
+            date_parts.append(f"from {start_date}")
+        if end_date:
+            date_parts.append(f"to {end_date}")
+        caveats.append(f"date window: {' '.join(date_parts)}")
+    if stat and (min_value is not None or max_value is not None):
+        threshold_parts = [f"games where {stat}"]
+        if min_value is not None:
+            threshold_parts.append(f">= {min_value}")
+        if max_value is not None:
+            threshold_parts.append(f"<= {max_value}")
+        caveats.append(" ".join(threshold_parts))
 
     return SummaryResult(
         summary=summary,

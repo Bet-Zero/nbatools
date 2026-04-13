@@ -492,6 +492,24 @@ TEAM_LEADERBOARD_STAT_ALIASES = {
     "best plus minus teams": "plus_minus",
     "best plus/minus teams": "plus_minus",
     "team plus minus": "plus_minus",
+    "most wins": "wins",
+    "most wins teams": "wins",
+    "teams with most wins": "wins",
+    "best record teams": "win_pct",
+    "best record": "win_pct",
+    "best winning percentage": "win_pct",
+    "best win pct": "win_pct",
+    "highest winning percentage": "win_pct",
+    "most losses": "losses",
+    "most losses teams": "losses",
+    "teams with most losses": "losses",
+    "fewest losses": "losses",
+    "fewest losses teams": "losses",
+    "best scoring teams": "pts",
+    "highest scoring teams": "pts",
+    "most points per game teams": "pts",
+    "most rebounds teams": "reb",
+    "most assists teams": "ast",
 }
 
 
@@ -2627,7 +2645,7 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "season_type": season_type,
-            "opponent": None,
+            "opponent": opponent,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -2919,6 +2937,10 @@ def _finalize_route(parsed: dict) -> dict:
                 "start_season": lb_start_season,
                 "end_season": lb_end_season,
                 "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
             }
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
@@ -2946,6 +2968,10 @@ def _finalize_route(parsed: dict) -> dict:
                 "start_season": lb_start_season,
                 "end_season": lb_end_season,
                 "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
             }
         else:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"

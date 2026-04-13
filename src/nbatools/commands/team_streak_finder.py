@@ -308,9 +308,22 @@ def build_result(
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 
+    caveats: list[str] = []
+    if len(seasons) > 1:
+        caveats.append(
+            f"streaks computed across {len(seasons)} seasons ({seasons[0]} to {seasons[-1]})"
+        )
+    if opponent:
+        caveats.append(f"filtered to games vs {opponent.upper()}")
+    if home_only:
+        caveats.append("filtered to home games only")
+    if away_only:
+        caveats.append("filtered to away games only")
+
     return StreakResult(
         streaks=out[output_cols].copy(),
         current_through=current_through,
+        caveats=caveats,
     )
 
 

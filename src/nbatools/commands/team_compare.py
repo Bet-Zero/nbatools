@@ -325,6 +325,23 @@ def build_result(
         caveats.append("head-to-head: only games where both teams faced each other")
     if opponent:
         caveats.append(f"filtered to games vs {opponent.upper()}")
+    if home_only:
+        caveats.append("filtered to home games only")
+    if away_only:
+        caveats.append("filtered to away games only")
+    if wins_only:
+        caveats.append("filtered to wins only")
+    if losses_only:
+        caveats.append("filtered to losses only")
+    if start_date or end_date:
+        date_parts = []
+        if start_date:
+            date_parts.append(f"from {start_date}")
+        if end_date:
+            date_parts.append(f"to {end_date}")
+        caveats.append(f"date window: {' '.join(date_parts)}")
+    if last_n:
+        caveats.append(f"limited to last {last_n} games")
 
     return ComparisonResult(
         summary=summary,

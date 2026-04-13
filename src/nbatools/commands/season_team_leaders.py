@@ -89,10 +89,18 @@ ALLOWED_STATS = {
     "net": "net_rating",
     "net rating": "net_rating",
     "pace": "pace",
+    "wins": "wins",
+    "win_pct": "win_pct",
+    "win pct": "win_pct",
+    "win percentage": "win_pct",
+    "winning percentage": "win_pct",
+    "winning pct": "win_pct",
+    "losses": "losses",
 }
 
 DEFAULT_MIN_GAMES = 1
 PERCENTAGE_STATS = {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"}
+RECORD_STATS = {"wins", "losses", "win_pct"}
 DATE_WINDOW_UNSUPPORTED_ADVANCED = {"off_rating", "def_rating", "net_rating", "pace"}
 
 
@@ -118,11 +126,11 @@ def _recommended_min_games(
     date_window_active: bool = False,
     opponent_active: bool = False,
 ) -> int:
-    if target_col == "games_played":
+    if target_col in ("games_played", "wins", "losses"):
         return 1
     if date_window_active or opponent_active:
         return 3
-    if target_col in PERCENTAGE_STATS:
+    if target_col in PERCENTAGE_STATS or target_col == "win_pct":
         return 20
     return 20
 
@@ -144,7 +152,22 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         if col in basic.columns:
             agg_spec[f"{col}_total"] = (col, "sum")
 
-    grouped = basic.groupby(["team_id", "team_name", "team_abbr"], as_index=False).agg(**agg_spec)
+    # Pre-compute win flag for aggregation
+    work = basic.copy()
+    if "wl" in work.columns:
+        work["_is_win"] = (work["wl"] == "W").astype(int)
+        agg_spec["wins"] = ("_is_win", "sum")
+
+    grouped = work.groupby(["team_id", "team_name", "team_abbr"], as_index=False).agg(**agg_spec)
+
+    # Compute losses and win_pct from wins
+    if "wins" in grouped.columns:
+        grouped["losses"] = grouped["games_played"] - grouped["wins"]
+        grouped["win_pct"] = safe_divide(grouped["wins"], grouped["games_played"], fill=None)
+    else:
+        grouped["wins"] = 0
+        grouped["losses"] = grouped["games_played"]
+        grouped["win_pct"] = None
 
     grouped["pts_per_game"] = grouped["pts_total"] / grouped["games_played"]
     grouped["reb_per_game"] = grouped["reb_total"] / grouped["games_played"]
@@ -279,6 +302,10 @@ def build_result(
     start_season: str | None = None,
     end_season: str | None = None,
     opponent: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -317,6 +344,13 @@ def build_result(
             f"Opponent-filtered leaderboard not supported for '{target_col}'. "
             "Use points, threes, eFG%, TS%, rebounds, or assists."
         )
+    if (
+        home_only or away_only or wins_only or losses_only
+    ) and target_col in DATE_WINDOW_UNSUPPORTED_ADVANCED:
+        raise ValueError(
+            f"Game-filtered leaderboard not supported for '{target_col}'. "
+            "Use points, threes, eFG%, TS%, rebounds, or assists."
+        )
 
     # Load and concatenate game logs across all seasons
     frames: list[pd.DataFrame] = []
@@ -348,12 +382,25 @@ def build_result(
             opp_mask = opp_mask | basic["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
         basic = basic[opp_mask].copy()
 
+    if home_only and "is_home" in basic.columns:
+        basic = basic[basic["is_home"] == 1].copy()
+
+    if away_only and "is_away" in basic.columns:
+        basic = basic[basic["is_away"] == 1].copy()
+
+    if wins_only and "wl" in basic.columns:
+        basic = basic[basic["wl"] == "W"].copy()
+
+    if losses_only and "wl" in basic.columns:
+        basic = basic[basic["wl"] == "L"].copy()
+
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_data")
 
     df = _build_from_game_logs(basic)
 
-    if not multi_season and not date_window_active and not opponent:
+    game_filter_active = home_only or away_only or wins_only or losses_only
+    if not multi_season and not date_window_active and not opponent and not game_filter_active:
         adv_path = Path(f"data/raw/team_season_advanced/{seasons[0]}_{safe}.csv")
         df = _merge_advanced_if_available(df, adv_path)
 
@@ -411,6 +458,14 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {opponent.upper()}")
+    if home_only:
+        caveats.append("filtered to home games only")
+    if away_only:
+        caveats.append("filtered to away games only")
+    if wins_only:
+        caveats.append("filtered to wins only")
+    if losses_only:
+        caveats.append("filtered to losses only")
 
     return LeaderboardResult(
         leaders=result,

@@ -228,6 +228,8 @@ def build_result(
             "multi-season split summary aggregated from game logs across "
             f"{seasons[0]} to {seasons[-1]}"
         )
+    if opponent:
+        caveats.append(f"filtered to games vs {opponent.upper()}")
 
     return SplitSummaryResult(
         summary=summary,
