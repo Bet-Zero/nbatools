@@ -372,7 +372,12 @@ def refresh_current_season(
 
     This is the daily/in-season workflow: pull latest data for the active
     season, rebuild derived features, update manifest, compute current_through.
+
+    Also writes a refresh log so the freshness API can report last-refresh
+    outcome.
     """
+    from nbatools.commands.freshness import write_refresh_log
+
     pipeline = PipelineResult(
         mode="current_season_refresh",
         started_at=datetime.now().isoformat(timespec="seconds"),
@@ -402,6 +407,23 @@ def refresh_current_season(
         pipeline.seasons.append(sr_playoffs)
 
     pipeline.finished_at = datetime.now().isoformat(timespec="seconds")
+
+    # Write refresh log (skip during dry-run—no real work was done)
+    if not dry_run:
+        ts = pipeline.finished_at or datetime.now().isoformat(timespec="seconds")
+        if pipeline.success:
+            write_refresh_log(success=True, timestamp=ts)
+        else:
+            errors = []
+            for fsr in pipeline.failed_seasons:
+                for fst in fsr.failed_stages:
+                    errors.append(f"{fsr.season}/{fst.name}: {fst.error}")
+            write_refresh_log(
+                success=False,
+                timestamp=ts,
+                error="; ".join(errors) if errors else "unknown",
+            )
+
     return pipeline
 
 

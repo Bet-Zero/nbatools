@@ -86,6 +86,41 @@ Execute a structured (route-based) query.
 
 **Response:** Same envelope shape as `/query`.
 
+### `GET /freshness`
+
+Returns structured data freshness status — current_through, manifest state, per-season classification, and last refresh outcome.
+
+**Response:**
+
+```json
+{
+  "status": "fresh",
+  "current_through": "2026-04-13",
+  "checked_at": "2026-04-14T10:00:00",
+  "seasons": [
+    {
+      "season": "2025-26",
+      "season_type": "Regular Season",
+      "status": "fresh",
+      "current_through": "2026-04-13",
+      "raw_complete": true,
+      "processed_complete": true,
+      "loaded_at": "2026-04-14T09:00:00"
+    }
+  ],
+  "last_refresh_ok": true,
+  "last_refresh_at": "2026-04-14T09:00:00",
+  "last_refresh_error": null
+}
+```
+
+**Status values:** `fresh`, `stale`, `unknown`, `failed`.
+
+- **fresh**: manifest complete and current_through is within 3 days.
+- **stale**: manifest complete but current_through is older than 3 days.
+- **unknown**: manifest or games data missing — cannot determine freshness.
+- **failed**: last refresh attempt recorded a failure.
+
 ## Response envelope
 
 Every query response has the same top-level shape:
@@ -145,10 +180,12 @@ The API layer contains no business logic. It validates input, calls the query se
 - All 25 structured routes (summaries, comparisons, finders, streaks, leaderboards, records, playoff, occurrence, by-decade)
 - Route discovery
 - Health checks
+- **Data freshness status** (`/freshness` endpoint — status, current_through, per-season details, last refresh outcome)
 
 ## What remains outside the API
 
-- Data pipeline operations (pull, backfill, processing)
+- Data pipeline operations (pull, backfill, processing) — stays CLI-only
+- Auto-refresh runner (`pipeline auto-refresh`) — stays CLI-only
 - Analysis scripts
 - Export to file (CSV/TXT/JSON export is a CLI concern)
 - Authentication, deployment, background jobs

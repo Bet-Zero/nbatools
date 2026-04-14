@@ -6,6 +6,7 @@ import CopyButton from "./components/CopyButton";
 import DevTools from "./components/DevTools";
 import EmptyState from "./components/EmptyState";
 import ErrorBox from "./components/ErrorBox";
+import FreshnessStatus from "./components/FreshnessStatus";
 import Loading from "./components/Loading";
 import QueryBar from "./components/QueryBar";
 import QueryHistory from "./components/QueryHistory";
@@ -219,6 +220,9 @@ export default function App() {
           </span>
         </div>
       </header>
+
+      {/* Data freshness indicator */}
+      {apiOnline && <FreshnessStatus />}
 
       {/* Query area */}
       <section className="query-area">

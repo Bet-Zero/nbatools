@@ -5,6 +5,7 @@ Validates that:
 - /routes returns available structured route names
 - /query executes natural-language queries and returns structured JSON
 - /structured-query executes route-based queries and returns structured JSON
+- /freshness returns structured freshness status
 - trust/status metadata is preserved in API responses
 - no-result / error responses have correct shape
 - invalid route names are rejected with helpful errors
@@ -16,6 +17,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from nbatools.api import app
+from nbatools.commands.freshness import FreshnessInfo, FreshnessStatus, SeasonFreshness
 from nbatools.commands.structured_results import (
     LeaderboardResult,
     NoResult,
@@ -319,3 +321,118 @@ class TestUI:
         resp = client.get("/")
         assert "/assets/index-" in resp.text
         assert 'type="module"' in resp.text
+
+
+# ---------------------------------------------------------------------------
+# /freshness
+# ---------------------------------------------------------------------------
+
+
+class TestFreshness:
+    """Tests for the freshness status endpoint."""
+
+    def _mock_freshness_info(self, **overrides) -> FreshnessInfo:
+        defaults = dict(
+            status=FreshnessStatus.FRESH,
+            current_through="2026-04-13",
+            checked_at="2026-04-14T10:00:00",
+            seasons=[
+                SeasonFreshness(
+                    season="2025-26",
+                    season_type="Regular Season",
+                    status=FreshnessStatus.FRESH,
+                    current_through="2026-04-13",
+                    raw_complete=True,
+                    processed_complete=True,
+                    loaded_at="2026-04-14T09:00:00",
+                )
+            ],
+            last_refresh_ok=True,
+            last_refresh_at="2026-04-14T09:00:00",
+        )
+        defaults.update(overrides)
+        return FreshnessInfo(**defaults)
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_returns_structured_status(self, mock_build):
+        mock_build.return_value = self._mock_freshness_info()
+        resp = client.get("/freshness")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["status"] == "fresh"
+        assert body["current_through"] == "2026-04-13"
+        assert body["checked_at"] == "2026-04-14T10:00:00"
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_includes_season_details(self, mock_build):
+        mock_build.return_value = self._mock_freshness_info()
+        resp = client.get("/freshness")
+        body = resp.json()
+        assert len(body["seasons"]) == 1
+        season = body["seasons"][0]
+        assert season["season"] == "2025-26"
+        assert season["status"] == "fresh"
+        assert season["raw_complete"] is True
+        assert season["processed_complete"] is True
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_includes_last_refresh(self, mock_build):
+        mock_build.return_value = self._mock_freshness_info()
+        resp = client.get("/freshness")
+        body = resp.json()
+        assert body["last_refresh_ok"] is True
+        assert body["last_refresh_at"] == "2026-04-14T09:00:00"
+        assert body["last_refresh_error"] is None
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_stale_status(self, mock_build):
+        mock_build.return_value = self._mock_freshness_info(
+            status=FreshnessStatus.STALE,
+            current_through="2026-04-01",
+        )
+        resp = client.get("/freshness")
+        body = resp.json()
+        assert body["status"] == "stale"
+        assert body["current_through"] == "2026-04-01"
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_unknown_status(self, mock_build):
+        mock_build.return_value = self._mock_freshness_info(
+            status=FreshnessStatus.UNKNOWN,
+            current_through=None,
+            seasons=[],
+        )
+        resp = client.get("/freshness")
+        body = resp.json()
+        assert body["status"] == "unknown"
+        assert body["current_through"] is None
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_failed_status(self, mock_build):
+        mock_build.return_value = self._mock_freshness_info(
+            status=FreshnessStatus.FAILED,
+            last_refresh_ok=False,
+            last_refresh_error="API timeout",
+        )
+        resp = client.get("/freshness")
+        body = resp.json()
+        assert body["status"] == "failed"
+        assert body["last_refresh_ok"] is False
+        assert body["last_refresh_error"] == "API timeout"
+
+    @patch("nbatools.api.build_freshness_info")
+    def test_freshness_response_shape(self, mock_build):
+        """All required keys are always present."""
+        mock_build.return_value = self._mock_freshness_info()
+        resp = client.get("/freshness")
+        body = resp.json()
+        required = {
+            "status",
+            "current_through",
+            "checked_at",
+            "seasons",
+            "last_refresh_ok",
+            "last_refresh_at",
+            "last_refresh_error",
+        }
+        assert required.issubset(body.keys())

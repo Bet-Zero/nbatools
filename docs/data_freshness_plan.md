@@ -226,7 +226,7 @@ Handling:
 
 ## 9. "Current through" — what users should be able to trust
 
-For user trust (CLI now, UI later), the repo should be able to answer: *as of what point in time is the loaded data complete and correct?*
+For user trust (CLI now, UI later), the repo should be able to answer: _as of what point in time is the loaded data complete and correct?_
 
 Working definition:
 
@@ -282,22 +282,59 @@ Follow up any incomplete season with a targeted `backfill-season` rerun.
 
 ---
 
-## 11. Automate later vs. manual now
+## 11. Automation and visibility (implemented)
 
-### Stay manual in this pass
+### Local auto-refresh runner
 
-- Deciding *when* to run a refresh.
-- Running daily and post-game refreshes.
-- Deciding when a full season rebuild is warranted.
-- Deciding when to start refreshing `--season-type "Playoffs"`.
-- Investigating `validate-raw` failures.
-- Investigating `inventory` misalignment.
+A durable local automation path is now available via:
 
-Manual is fine because the current user surface is still a CLI used by the maintainer, and the cost of a missed refresh is bounded.
+```bash
+nbatools-cli pipeline auto-refresh --interval 6h
+nbatools-cli pipeline auto-refresh --interval 30m --include-playoffs
+```
 
-### Automate once the UI exists (or just before)
+This runs `pipeline refresh` on a repeating schedule. After each refresh, a `last_refresh.json` log is written to `data/metadata/`. The runner exits cleanly on Ctrl-C / SIGTERM.
 
-- Scheduled daily refresh of the current season (regular season, and playoffs when active).
+No cloud infra is required — the runner is a simple loop that sleeps between cycles.
+
+### Freshness status semantics
+
+Four explicit freshness states are now defined and enforced:
+
+- **fresh** — manifest complete, current_through is within 3 days.
+- **stale** — manifest complete, current_through is older than 3 days.
+- **unknown** — manifest or games data missing; freshness cannot be determined.
+- **failed** — last refresh attempt recorded a failure.
+
+These states are used consistently in the API (`/freshness`), the UI (freshness indicator), and the `FreshnessInfo` model.
+
+### API freshness endpoint
+
+`GET /freshness` returns a structured report including:
+
+- overall status and current_through
+- per-season status, manifest completeness, and current_through
+- last refresh outcome (success/failure, timestamp, error message)
+
+### UI freshness indicator
+
+The React frontend displays a collapsible freshness panel below the header. It shows:
+
+- status badge (fresh / stale / unknown / failed) with color coding
+- current_through date
+- expandable per-season details and last-refresh outcome
+- polls the `/freshness` endpoint every 2 minutes
+
+### Refresh log
+
+`pipeline refresh` (and the auto-refresh runner) writes `data/metadata/last_refresh.json` after each attempt. The freshness API and UI read this log to report last-refresh state honestly.
+
+### What stays manual
+
+- Deciding _when_ to start or stop auto-refresh.
+- Full season rebuilds and historical backfills.
+- Investigating validation failures or manifest misalignment.
+- Blanket full-range rebuilds on a schedule.
 - Scheduled weekly sanity sweep.
 - Surfacing "current through" as a first-class field alongside query results.
 - Automatic alert when `validate-raw` fails or when `inventory` reports misalignment.
@@ -313,19 +350,19 @@ Manual is fine because the current user surface is still a CLI used by the maint
 
 ## 12. How this evolves alongside the UI
 
-This plan is deliberately aligned with the roadmap's Phase 4 (data freshness) and Phase 6 (first UI). See [docs/roadmap.md](roadmap.md).
+This plan is now partially realized. The freshness story has moved from "documented definitions and manual checks" to a structured, observable system.
 
-Before the UI exists:
+**What is implemented:**
 
-- The manual workflow in section 10 is enough.
-- "current through" stays a documented definition and a manual check.
-- Data contracts in [docs/data_contracts.md](data_contracts.md) remain the authority on what must be present after a refresh.
+- `current_through` is a structured field returned on every query result and displayed in the UI.
+- Auto-refresh provides a local scheduler for the daily/post-game workflow.
+- `/freshness` exposes manifest and refresh state via the API.
+- The UI renders a freshness indicator with clear status semantics.
+- Refresh history (success/failure, timestamp, error) is persisted and surfaced.
 
-Once the UI is being built:
+**What remains for further iteration:**
 
-- "current through" becomes a structured field the engine returns on every query result, so the UI can render a freshness badge.
-- The daily and post-game refreshes move behind a scheduler.
-- `validate-raw` failures and manifest misalignment become visible in the UI instead of only in the CLI.
-- Refresh history (when a refresh last succeeded and through what game date) becomes a first-class piece of state, not an implicit property of the filesystem.
-
-The freshness story is what moves `nbatools` from "a strong local analytics CLI" to "a trustworthy NBA search product." Everything in this doc is sized to be doable now without blocking any of that later work.
+- Surfacing `validate-raw` failures directly in the UI (currently only visible in CLI / refresh log).
+- Automatic retry on transient API errors (currently auto-refresh continues to the next cycle).
+- Multiple season-type tracking in the freshness UI (currently defaults to the latest regular season).
+- Alerting on sustained staleness or repeated failures.

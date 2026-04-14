@@ -111,10 +111,10 @@ Examples:
 
 ### 5. Split queries
 
-Summary stats broken down by home/away or wins/loSummary stats broken  suSummary stats broken down by home/away or wiwithSummary stats bro
+Summary stats broken down by home/away or wins/loSummary stats broken suSummary stats broken down by home/away or wiwithSummary stats bro
 EEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEE-cli ask "Jokic home away split last 20 games"
-    nbatools-    nbatools-    nbatools-  ses"
-    nbato    nbato    nbato    nbato    nbato   5 points and over 10 rebounds) or over 15 assists"
+nbatools- nbatools- nbatools- ses"
+nbato nbato nbato nbato nbato 5 points and over 10 rebounds) or over 15 assists"
 
 ### 6. Leaderboard queries
 
@@ -196,11 +196,11 @@ Examples:
 
 The parser detects explicit intent markers:
 
-| Intent      | Triggers                | Intent      | Triggers                | Intent  --------------| Intent      | Triggers                | Inten "list", "show", "find", "games where"             |
-| count       | "how many", "count", "total", "number of"         |
-| summary     | "summary", "averages", "avg", "how did", "how has"|
-| leaderboard | "leaders", "who leads", "rank", "ranking"         |
-| record      | "record", "wins", "losses", "w-l"                 |
+| Intent | Triggers | Intent | Triggers | Intent --------------| Intent | Triggers | Inten "list", "show", "find", "games where" |
+| count | "how many", "count", "total", "number of" |
+| summary | "summary", "averages", "avg", "how did", "how has"|
+| leaderboard | "leaders", "who leads", "rank", "ranking" |
+| record | "record", "wins", "losses", "w-l" |
 
 ### Threshold language
 
@@ -235,32 +235,32 @@ Grouped boolean logic currently works across:
 
 ### Date and window support
 
-| Pattern               | Examples                                       |
-|-----------------------|------------------------------|-----------------------|------------------------------|----------                           |
-| season range          | `from 2020-21 t| season range          | `from 2020-21 t| season range     `since 2020-21`                                |
-| last N seasons        | `last 3 seasons`                               |
-| last N games          | `last 10 games`    | last N games            | last N games   w          | `in Ma| last N games          | `              |
-| since month           | `s| since month           | `s| since month    |
-| rolling days          | `last 30 days`                                 |
-| All-Star break        | `since All-Star break`                         |
-| career / all-time     | `career`, `all-time`                           |
-| season t| season t| seas`pl| season t| seaar| season t| season t| s    |
+| Pattern           | Examples               |
+| ----------------- | ---------------------- | ------------ | --------------- | ---------------------------- | ------------ | -------- | --- |
+| season range      | `from 2020-21 t        | season range | `from 2020-21 t | season range `since 2020-21` |
+| last N seasons    | `last 3 seasons`       |
+| last N games      | `last 10 games`        | last N games | last N games w  | `in Ma                       | last N games | `        |
+| since month       | `s                     | since month  | `s              | since month                  |
+| rolling days      | `last 30 days`         |
+| All-Star break    | `since All-Star break` |
+| career / all-time | `career`, `all-time`   |
+| season t          | season t               | seas`pl      | season t        | seaar                        | season t     | season t | s   |
 
 ### Opponent / matchup / head-to-head
 
-| Pattern               | Examples                                       |
-|-----------------------|------------------------------------------------|
-| vs opponent           | `Jokic vs Lakers`                              |
-| summary vs opponent   | `Jokic summary vs Lakers`                      |
-| head-to-head          | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics` |
-| head-to-head          | `Jokic h2h vs Embiid`, `Lakers head-to-head vs |
-| head-to-head          | `Jokic h2h vs Embiid`, `Lakers head-to-head vs |
-ltics` |
-s                                |
-|-----------------------------------|-----------------------------------------|
-| single occurrence leaderboard     | `most 30 point games`                   |
-| compound occurrence leaderboard   | `most games with 30+ points and 10+ rebounds` |
-| player occurrence count           | `how many 30 point games did Jokic have`|
+| Pattern                             | Examples                                                |
+| ----------------------------------- | ------------------------------------------------------- |
+| vs opponent                         | `Jokic vs Lakers`                                       |
+| summary vs opponent                 | `Jokic summary vs Lakers`                               |
+| head-to-head                        | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics` |
+| head-to-head                        | `Jokic h2h vs Embiid`, `Lakers head-to-head vs          |
+| head-to-head                        | `Jokic h2h vs Embiid`, `Lakers head-to-head vs          |
+| ltics`                              |
+| s                                   |
+| ----------------------------------- | -----------------------------------------               |
+| single occurrence leaderboard       | `most 30 point games`                                   |
+| compound occurrence leaderboard     | `most games with 30+ points and 10+ rebounds`           |
+| player occurrence count             | `how many 30 point games did Jokic have`                |
 
 ### Entity resolution
 
@@ -278,6 +278,7 @@ The parser includes entity resolution with:
 The query service exposes 25 structured routes:
 
 **Player routes:**
+
 - `player_game_summary`
 - `player_game_finder`
 - `player_streak_finder`
@@ -286,6 +287,7 @@ The query service exposes 25 structured routes:
 - `player_split_summary`
 
 **Team routes:**
+
 - `game_summary`
 - `game_finder`
 - `team_streak_finder`
@@ -296,18 +298,22 @@ The query service exposes 25 structured routes:
 - `team_matchup_record`
 
 **League-wide leaderboards:**
+
 - `season_leaders`
 - `season_team_leaders`
 
 **Top games:**
+
 - `top_player_games`
 - `top_team_games`
 
 **Record leaderboards:**
+
 - `team_record_leaderboard`
 - `playoff_round_record`
 
 **Playoff routes:**
+
 - `playoff_history`
 - `playoff_appearances`
 - `playoff_matchup_history`
@@ -370,6 +376,58 @@ Current UI capabilities:
 - Dev Tools panel for structured (route-based) queries
 
 Build output lands in `src/nbatools/ui/dist/` and is served by FastAPI at `/`.
+
+---
+
+## Data Freshness
+
+### Freshness status semantics
+
+The engine uses four explicit freshness states:
+
+- **fresh** — manifest complete, current_through is within 3 days.
+- **stale** — manifest complete, current_through is older than 3 days.
+- **unknown** — manifest or games data missing; freshness cannot be determined.
+- **failed** — last refresh attempt recorded a failure.
+
+### Pipeline CLI — refresh and auto-refresh
+
+```bash
+# One-shot refresh of the current season
+nbatools-cli pipeline refresh
+
+# Automated repeating refresh (durable local loop)
+nbatools-cli pipeline auto-refresh --interval 6h
+nbatools-cli pipeline auto-refresh --interval 30m --include-playoffs
+```
+
+The auto-refresh runner executes `pipeline refresh` on a repeating schedule, writes a `last_refresh.json` log after each attempt, and exits cleanly on Ctrl-C.
+
+### Freshness API
+
+`GET /freshness` returns a structured report:
+
+```json
+{
+  "status": "fresh",
+  "current_through": "2026-04-13",
+  "checked_at": "2026-04-14T10:00:00",
+  "seasons": [ ... ],
+  "last_refresh_ok": true,
+  "last_refresh_at": "2026-04-14T09:00:00",
+  "last_refresh_error": null
+}
+```
+
+### UI freshness indicator
+
+The web UI displays a collapsible freshness panel with:
+
+- status badge (fresh / stale / unknown / failed)
+- current_through date
+- expandable per-season details
+- last refresh outcome
+- auto-polls every 2 minutes
 
 ---
 

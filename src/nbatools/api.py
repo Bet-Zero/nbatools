@@ -21,6 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from nbatools import __version__
+from nbatools.commands.freshness import build_freshness_info
 from nbatools.query_service import (
     VALID_ROUTES,
     QueryResult,
@@ -97,6 +98,28 @@ class RoutesResponse(BaseModel):
     routes: list[str]
 
 
+class SeasonFreshnessResponse(BaseModel):
+    season: str
+    season_type: str
+    status: str
+    current_through: str | None = None
+    raw_complete: bool = False
+    processed_complete: bool = False
+    loaded_at: str | None = None
+
+
+class FreshnessResponse(BaseModel):
+    """Structured freshness status for the API / UI."""
+
+    status: str
+    current_through: str | None = None
+    checked_at: str | None = None
+    seasons: list[SeasonFreshnessResponse] = Field(default_factory=list)
+    last_refresh_ok: bool | None = None
+    last_refresh_at: str | None = None
+    last_refresh_error: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -146,6 +169,18 @@ if _UI_DIR.is_dir():
 def health() -> HealthResponse:
     """Lightweight health / status check."""
     return HealthResponse(status="ok", version=__version__)
+
+
+@app.get("/freshness", response_model=FreshnessResponse)
+def freshness() -> FreshnessResponse:
+    """Return structured data freshness status.
+
+    Reports current_through, manifest state, per-season freshness
+    classification (fresh / stale / unknown / failed), and last
+    refresh outcome.
+    """
+    info = build_freshness_info()
+    return FreshnessResponse(**info.to_dict())
 
 
 @app.get("/routes", response_model=RoutesResponse)

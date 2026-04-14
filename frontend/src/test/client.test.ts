@@ -5,8 +5,13 @@ const mockFetch = vi.fn();
 globalThis.fetch = mockFetch as unknown as typeof fetch;
 
 // Import after mock is set up
-const { fetchHealth, fetchRoutes, postQuery, postStructuredQuery } =
-  await import("../api/client");
+const {
+  fetchHealth,
+  fetchRoutes,
+  postQuery,
+  postStructuredQuery,
+  fetchFreshness,
+} = await import("../api/client");
 
 beforeEach(() => {
   mockFetch.mockReset();
@@ -118,5 +123,49 @@ describe("postStructuredQuery", () => {
         kwargs: { stat: "pts" },
       }),
     });
+  });
+});
+
+describe("fetchFreshness", () => {
+  it("returns freshness response", async () => {
+    const mockResponse = {
+      status: "fresh",
+      current_through: "2026-04-13",
+      checked_at: "2026-04-14T10:00:00",
+      seasons: [
+        {
+          season: "2025-26",
+          season_type: "Regular Season",
+          status: "fresh",
+          current_through: "2026-04-13",
+          raw_complete: true,
+          processed_complete: true,
+          loaded_at: "2026-04-14T09:00:00",
+        },
+      ],
+      last_refresh_ok: true,
+      last_refresh_at: "2026-04-14T09:00:00",
+      last_refresh_error: null,
+    };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const result = await fetchFreshness();
+    expect(result.status).toBe("fresh");
+    expect(result.current_through).toBe("2026-04-13");
+    expect(result.seasons).toHaveLength(1);
+    expect(mockFetch).toHaveBeenCalledWith("/freshness", undefined);
+  });
+
+  it("throws on HTTP error", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: () =>
+        Promise.resolve({ error: "internal", detail: "server error" }),
+    });
+    await expect(fetchFreshness()).rejects.toThrow("server error");
   });
 });

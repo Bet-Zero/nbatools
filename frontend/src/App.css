@@ -1313,3 +1313,118 @@ body {
   color: var(--err) !important;
   border-color: var(--err) !important;
 }
+
+/* ---- Freshness Status Panel ---- */
+
+.freshness-panel {
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.freshness-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.freshness-summary:hover {
+  background: var(--surface-hover);
+}
+
+.freshness-dot {
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.freshness-fresh .freshness-dot {
+  color: var(--ok);
+}
+.freshness-stale .freshness-dot {
+  color: var(--warn);
+}
+.freshness-unknown .freshness-dot {
+  color: var(--muted);
+}
+.freshness-failed .freshness-dot {
+  color: var(--err);
+}
+
+.freshness-label {
+  flex: 1;
+}
+
+.freshness-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.freshness-badge-fresh {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--ok);
+}
+.freshness-badge-stale {
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--warn);
+}
+.freshness-badge-unknown {
+  background: rgba(139, 143, 163, 0.15);
+  color: var(--muted);
+}
+.freshness-badge-failed {
+  background: rgba(231, 76, 60, 0.15);
+  color: var(--err);
+}
+
+.freshness-expand {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.freshness-details {
+  padding: 6px 12px 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+
+.freshness-season-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.freshness-season-label {
+  min-width: 180px;
+}
+
+.freshness-season-ct {
+  color: var(--muted);
+}
+
+.freshness-refresh-row {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.freshness-error {
+  color: var(--err);
+}

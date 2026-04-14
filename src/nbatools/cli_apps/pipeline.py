@@ -1,7 +1,7 @@
 """CLI command group for data pipeline refresh workflows.
 
-Exposes deterministic refresh, rebuild, backfill, and status commands
-that orchestrate the full pull → validate → build → manifest pipeline.
+Exposes deterministic refresh, rebuild, backfill, status, and auto-refresh
+commands that orchestrate the full pull → validate → build → manifest pipeline.
 """
 
 import typer
@@ -184,3 +184,36 @@ def status(
 
     if not missing_raw and not missing_proc:
         print("\nAll expected files present.")
+
+
+@app.command("auto-refresh")
+def auto_refresh(
+    interval: str = typer.Option(
+        "6h",
+        "--interval",
+        help="Time between refresh cycles (e.g. '6h', '30m', '90s').",
+    ),
+    include_playoffs: bool = typer.Option(
+        False,
+        "--include-playoffs",
+        help="Also refresh the latest playoff season each cycle.",
+    ),
+):
+    """Run an automated refresh loop for the current season.
+
+    Executes 'pipeline refresh' on a repeating schedule.  Writes a
+    last_refresh.json log after each attempt.  Press Ctrl-C to stop.
+    """
+    from nbatools.commands.auto_refresh import parse_interval, run_auto_refresh
+
+    try:
+        seconds = parse_interval(interval)
+    except ValueError:
+        print(f"Invalid interval: {interval!r}  (use e.g. '6h', '30m', '90s')")
+        raise typer.Exit(code=1)
+
+    if seconds < 60:
+        print("Interval must be at least 60 seconds.")
+        raise typer.Exit(code=1)
+
+    run_auto_refresh(seconds, include_playoffs=include_playoffs)

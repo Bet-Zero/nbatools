@@ -117,12 +117,13 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 frontend/src/
   api/
     types.ts             # TypeScript interfaces for API envelope, result types, query history
-    client.ts            # Typed fetch wrappers (fetchHealth, postQuery, etc.)
+    client.ts            # Typed fetch wrappers (fetchHealth, postQuery, fetchFreshness, etc.)
   components/
     QueryBar.tsx          # Text input + submit
     SampleQueries.tsx     # Pre-filled example query buttons
     EmptyState.tsx        # Welcome state shown before first query
     QueryHistory.tsx      # In-session query history list
+    FreshnessStatus.tsx   # Collapsible freshness panel (status, current_through, details)
     ResultEnvelope.tsx    # Envelope metadata (status, route, notes, caveats)
     ResultSections.tsx    # Dispatcher — routes to per-query-class renderers
     SummarySection.tsx    # Summary + By Season tables
@@ -147,6 +148,7 @@ frontend/src/
     DataTable.test.tsx   # DataTable component tests
     ResultSections.test.tsx # Result rendering tests for all query classes
     UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
+    FreshnessStatus.test.tsx # Freshness panel rendering and status display tests
     useUrlState.test.ts  # URL state parsing, building, and hook behavior tests
   App.tsx                # Main app component — wires state + components
   App.css                # All styles (dark theme, CSS custom properties)

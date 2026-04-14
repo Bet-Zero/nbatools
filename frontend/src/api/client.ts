@@ -8,6 +8,7 @@
 
 import type {
   ErrorResponse,
+  FreshnessResponse,
   HealthResponse,
   QueryResponse,
   RoutesResponse,
@@ -51,4 +52,8 @@ export async function postStructuredQuery(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ route, kwargs }),
   });
+}
+
+export async function fetchFreshness(): Promise<FreshnessResponse> {
+  return request<FreshnessResponse>("/freshness");
 }

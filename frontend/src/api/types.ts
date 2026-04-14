@@ -127,3 +127,27 @@ export interface QueryHistoryEntry {
   query_class: string | null;
   timestamp: number;
 }
+
+// --- Freshness status ---
+
+export type FreshnessStatusValue = "fresh" | "stale" | "unknown" | "failed";
+
+export interface SeasonFreshness {
+  season: string;
+  season_type: string;
+  status: FreshnessStatusValue;
+  current_through: string | null;
+  raw_complete: boolean;
+  processed_complete: boolean;
+  loaded_at: string | null;
+}
+
+export interface FreshnessResponse {
+  status: FreshnessStatusValue;
+  current_through: string | null;
+  checked_at: string | null;
+  seasons: SeasonFreshness[];
+  last_refresh_ok: boolean | null;
+  last_refresh_at: string | null;
+  last_refresh_error: string | null;
+}
