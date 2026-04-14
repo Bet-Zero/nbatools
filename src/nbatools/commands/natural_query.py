@@ -102,6 +102,11 @@ from nbatools.commands.team_compare import run as team_compare_run
 from nbatools.commands.team_occurrence_leaders import (
     build_result as team_occurrence_leaders_build_result,
 )
+from nbatools.commands.team_record import (
+    build_matchup_record_result,
+    build_record_leaderboard_result,
+    build_team_record_result,
+)
 from nbatools.commands.team_split_summary import (
     build_result as team_split_summary_build_result,
 )
@@ -1270,6 +1275,34 @@ def wants_count(text: str) -> bool:
     )
 
 
+def detect_record_intent(text: str) -> bool:
+    """Detect explicit record-oriented intent.
+
+    Triggers on phrases that strongly signal the user wants a W/L record
+    rather than stat averages.  Examples:
+    - "best record since 2015"
+    - "Lakers vs Celtics all-time record"
+    - "home record", "away record", "playoff record"
+    - "most wins since 2010", "which teams had the most wins"
+    - "win percentage", "winning percentage"
+    - "worst record"
+    """
+    return bool(
+        re.search(
+            r"\b(?:record|win(?:ning)?\s+(?:percent(?:age)?|pct)|win\s*%"
+            r"|most\s+(?:home\s+|away\s+)?wins|most\s+(?:home\s+|away\s+)?losses"
+            r"|fewest\s+(?:home\s+|away\s+)?losses"
+            r"|best\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
+            r"|worst\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
+            r"|highest\s+win|lowest\s+win"
+            r"|home\s+record|away\s+record"
+            r"|playoff\s+record|postseason\s+record"
+            r"|matchup\s+record|all[- ]?time\s+record)\b",
+            text,
+        )
+    )
+
+
 def extract_occurrence_event(text: str) -> dict | None:
     """Detect and extract an occurrence-event definition from natural language.
 
@@ -1627,6 +1660,9 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "game_finder": game_finder_build_result,
                 "player_compare": player_compare_build_result,
                 "team_compare": team_compare_build_result,
+                "team_record": build_team_record_result,
+                "team_matchup_record": build_matchup_record_result,
+                "team_record_leaderboard": build_record_leaderboard_result,
                 "player_split_summary": player_split_summary_build_result,
                 "team_split_summary": team_split_summary_build_result,
                 "player_streak_finder": player_streak_finder_build_result,
@@ -2337,6 +2373,7 @@ def _build_parse_state(query: str) -> dict:
     summary_intent = wants_summary(q)
     finder_intent = wants_finder(q)
     count_intent = wants_count(q)
+    record_intent = detect_record_intent(q)
     range_intent = bool(start_season and end_season)
     split_intent = wants_split_summary(q)
 
@@ -2350,6 +2387,7 @@ def _build_parse_state(query: str) -> dict:
             or max_value is not None
             or leaderboard_intent
             or team_leaderboard_intent
+            or record_intent
         ):
             season = default_season_for_context(season_type)
 
@@ -2447,6 +2485,7 @@ def _build_parse_state(query: str) -> dict:
         "summary_intent": summary_intent,
         "finder_intent": finder_intent,
         "count_intent": count_intent,
+        "record_intent": record_intent,
         "range_intent": range_intent,
         "career_intent": career_intent,
         "split_intent": split_intent,
@@ -2509,6 +2548,7 @@ def _finalize_route(parsed: dict) -> dict:
     summary_intent = parsed["summary_intent"]
     finder_intent = parsed.get("finder_intent", False)
     count_intent = parsed.get("count_intent", False)
+    record_intent = parsed.get("record_intent", False)
     range_intent = parsed["range_intent"]
     career_intent = parsed.get("career_intent", False)
     leaderboard_intent = parsed.get("leaderboard_intent", False)
@@ -2633,6 +2673,26 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "head_to_head": head_to_head,
+        }
+    # ---------------------------------------------------------------------------
+    # Record-oriented routing: team-vs-team matchup record
+    # ---------------------------------------------------------------------------
+    elif team_a and team_b and record_intent:
+        route = "team_matchup_record"
+        route_kwargs = {
+            "team_a": team_a,
+            "team_b": team_b,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "home_only": home_only,
+            "away_only": away_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
         }
     elif team_a and team_b:
         route = "team_compare"
@@ -2878,6 +2938,59 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_date": end_date,
                 "limit": top_n or 10,
             }
+    # ---------------------------------------------------------------------------
+    # Record-leaderboard routing: "best record since 2015", "most wins since 2010",
+    # "highest win percentage", etc. — when no specific team is named
+    # ---------------------------------------------------------------------------
+    elif (
+        record_intent
+        and not player
+        and not player_a
+        and not player_b
+        and not team
+        and not team_a
+        and not team_b
+        and not occurrence_event
+    ):
+        lb_season = season
+        lb_start = start_season
+        lb_end = end_season
+        if not lb_season and not lb_start and not lb_end:
+            lb_season = default_season_for_context(season_type)
+
+        # Determine the sort stat from query phrasing
+        record_stat = "win_pct"
+        if re.search(r"\bmost\s+wins\b|\bmost\s+home\s+wins\b|\bmost\s+away\s+wins\b", q):
+            record_stat = "wins"
+        elif re.search(r"\bmost\s+loss", q):
+            record_stat = "losses"
+        elif re.search(r"\bfewest\s+loss", q):
+            record_stat = "losses"
+
+        lb_ascending = wants_ascending_leaderboard(q)
+        # Smart ascending for record stats
+        if re.search(r"\b(best|top|highest)\b", q):
+            lb_ascending = False
+        elif re.search(r"\b(worst|lowest|fewest)\b", q):
+            lb_ascending = True
+            if record_stat == "losses":
+                lb_ascending = True  # fewest losses is ascending
+
+        route = "team_record_leaderboard"
+        route_kwargs = {
+            "season": lb_season,
+            "start_season": lb_start,
+            "end_season": lb_end,
+            "season_type": season_type,
+            "stat": record_stat,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "limit": top_n or 10,
+            "ascending": lb_ascending,
+            "start_date": start_date,
+            "end_date": end_date,
+        }
     elif (
         player is None
         and team is None
@@ -3123,6 +3236,26 @@ def _finalize_route(parsed: dict) -> dict:
             "max_value": max_value,
             "last_n": last_n,
         }
+    # ---------------------------------------------------------------------------
+    # Record-oriented routing: single team record
+    # ---------------------------------------------------------------------------
+    elif team and record_intent and not team_a and not team_b:
+        route = "team_record"
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
+        }
     elif team and (
         summary_intent
         or career_intent
@@ -3277,6 +3410,8 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         out["finder_intent"] = True
     if not out.get("count_intent") and base.get("count_intent"):
         out["count_intent"] = True
+    if not out.get("record_intent") and base.get("record_intent"):
+        out["record_intent"] = True
     if not out.get("split_intent") and base.get("split_intent"):
         out["split_intent"] = True
 

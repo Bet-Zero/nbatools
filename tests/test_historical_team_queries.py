@@ -204,7 +204,7 @@ class TestParseHistoricalTeamSummary:
 
     def test_team_career_intent(self):
         parsed = parse_query("Celtics all-time record")
-        assert parsed["route"] == "game_summary"
+        assert parsed["route"] == "team_record"
         assert parsed["team"] == "BOS"
         assert parsed["route_kwargs"]["start_season"] == EARLIEST_SEASON
         assert parsed["route_kwargs"]["end_season"] == LATEST_REGULAR_SEASON
@@ -276,7 +276,7 @@ class TestParseHistoricalTeamLeaderboard:
 
     def test_most_wins_since(self):
         parsed = parse_query("most wins since 2000")
-        assert parsed["route"] == "season_team_leaders"
+        assert parsed["route"] == "team_record_leaderboard"
         assert parsed["route_kwargs"]["stat"] == "wins"
         assert parsed["route_kwargs"]["start_season"] == "2000-01"
 
@@ -297,7 +297,7 @@ class TestParseHistoricalTeamLeaderboard:
 
     def test_best_record_teams(self):
         parsed = parse_query("best record teams last 3 seasons")
-        assert parsed["route"] == "season_team_leaders"
+        assert parsed["route"] == "team_record_leaderboard"
         assert parsed["route_kwargs"]["stat"] == "win_pct"
 
 

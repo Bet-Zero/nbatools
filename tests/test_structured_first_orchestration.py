@@ -69,6 +69,9 @@ class TestBuildResultMap:
             "game_finder",
             "player_compare",
             "team_compare",
+            "team_record",
+            "team_matchup_record",
+            "team_record_leaderboard",
             "player_split_summary",
             "team_split_summary",
             "player_streak_finder",
@@ -80,9 +83,15 @@ class TestBuildResultMap:
 
     def test_build_result_callables_are_not_run(self):
         brmap = _get_build_result_map()
+        # Record routes use named functions rather than the build_result alias
+        record_names = {
+            "build_team_record_result",
+            "build_matchup_record_result",
+            "build_record_leaderboard_result",
+        }
         for route, fn in brmap.items():
-            assert fn.__name__ == "build_result", (
-                f"{route} maps to {fn.__name__}, expected build_result"
+            assert fn.__name__ in ("build_result", *record_names), (
+                f"{route} maps to {fn.__name__}, expected build_result or a record builder"
             )
 
 

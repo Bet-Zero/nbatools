@@ -1247,10 +1247,10 @@ class TestRangeIntentRouting:
         start, end = resolve_last_n_seasons(5, "Regular Season")
         assert parsed["route_kwargs"]["start_season"] == start
 
-    def test_team_since_with_record_routes_to_summary(self):
-        """'Celtics record since 2021' still routes to summary."""
+    def test_team_since_with_record_routes_to_team_record(self):
+        """'Celtics record since 2021' routes to team_record."""
         parsed = parse_query("Celtics record since 2021")
-        assert parsed["route"] == "game_summary"
+        assert parsed["route"] == "team_record"
 
     def test_player_career_still_routes_to_summary(self):
         """'Jokic career' routes to summary (career_intent)."""
