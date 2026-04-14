@@ -32,36 +32,34 @@ For future direction, see [docs/roadmap.md](roadmap.md).
 
     nbatools-cli query player-game-summary --player "Nikola Jokić" --season 2025-26 --last-n 10
 
-### Web UI
-
-    # Start the API (serves the built React UI at /)
-    nbatools-api
-    # Open http://127.0.0.1:8000
-
-The web UI provides a query bar, sample query buttons, result tables, a raw JSON toggle, and a Dev Tools panel for structured queries. It is a React + TypeScript + Vite app that consumes the same API endpoints as any other client.
-
 ### HTTP API
 
     # POST /query with {"query": "Jokic recent form"}
     # POST /structured-query with {"route": "player_game_summary", "kwargs": {...}}
     # GET /health, GET /routes
 
+### Web UI
+
+    # Start the API (serves the built React UI at /)
+    nbatools-api
+    # Open http    # Open http    # Open httpis a React + TypeScript + Vite app that consumes the same API endpoints as any other client. It provides a query bar, sample query buttons, result tables for all query classes, a raw JSON toggle, query history, saved queries, and a Dev Tools panel for structured queries.
+
 ---
 
 ## Verified shipped query classes
 
-The repo currently supports these major query classes.
+The engine currently supports these major query classes.
 
 ### 1. Finder queries
 
-Current behavior includes:
+Find games matching conditions. Returns a list of matching games with box-score columns.
 
 - player game finder
 - team game finder
-- threshold-based matching games
-- recent filtered windows
-- multi-condition filtering
-- grouped boolean filtering for finder-style queries
+- threshold-based matching (over / under / between)
+- recent filtered windows (last N games)
+- multi-condition filtering with boolean logic
+- grouped boolean filtering (AND / OR / parentheses)
 
 Examples:
 
@@ -69,84 +67,83 @@ Examples:
     nbatools-cli ask "Jokic between 20 and 30 points"
     nbatools-cli ask "Jokic last 10 games over 25 points and under 15 rebounds"
     nbatools-cli ask "Jokic over 25 points or over 10 rebounds"
+    nbatools-cli ask "Jokic (over 25 points and over 10 rebounds) or over 15 assists"
 
-### 2. Summary queries
+### 2. Count queries
 
-Current behavior includes:
+Count of games or occurrences matching conditions. Generated from finder results when count intent is detected.
+
+- explicit count intent triggers: "how many", "count", "total", "number of"
+- returns a single count value over the matched set
+
+Examples:
+
+    nbatools-cli ask "how many games did Jokic score over 30 points"
+    nbatools-cli ask "how many Celtics wins this season"
+
+### 3. Summary queries
+
+Aggregated stats for one entity over a sample.
 
 - player summaries
 - team summaries
-- filtered summaries
+- filtered summaries (season, opponent, date range, last-N)
 - recent form summaries
-- last-N summaries
-- matchup summaries when supported by route/filter behavior
+- matchup summaries (vs opponent)
+- career / all-time summaries
 
 Examples:
 
     nbatools-cli ask "Jokic recent form"
     nbatools-cli ask "Celtics last 15 games summary"
-    nbatools-cli ask "Jokic summary vs Lakers"
+    nbatools-cli ask "Jokic s    nbatools-cli ask "Jokic s    nbatools-cli ask "Jokic s    nbatools-cli askon queries
 
-### 3. Comparison queries
+Side-by-side stats for two entities.
 
-Current behavior includes:
-
-- player vs player comparison
-- team vs team comparison
-- recent-form comparison
-- comparison pretty output and raw structured output
-- head-to-head phrasing support at the parser/routing layer
+- player vs play- player vs play- player vs play- player vs play- player vs play- player vshead phrasin- player vs play- pand multi-season comparisons
 
 Examples:
 
     nbatools-cli ask "Jokic vs Embiid recent form"
     nbatools-cli ask "Kobe vs LeBron playoffs in 2008-09"
-    nbatools-cli ask "Celtics vs Bucks from 2021-22 to 2023-24"
-    nbatools-cli ask "Jokic h2h vs Embiid"
+    nbatools-cli ask "Celtics vs Bucks fro    nbatools-cli ask "Celtics vs Bucks fro    nbath2h    nbatid"
     nbatools-cli ask "Lakers head-to-head vs Celtics"
 
-### 4. Split queries
+### 5. Split queries
 
-Current behavior includes:
+Summary stats broken down by home/away or wins/loSummary stats broken  suSummary stats broken down by home/away or wiwithSummary stats bro
+EEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEE-cli ask "Jokic home away split last 20 games"
+    nbatools-    nbatools-    nbatools-  ses"
+    nbato    nbato    nbato    nbato    nbato   5 points and over 10 rebounds) or over 15 assists"
 
-- home vs away splits
-- wins vs losses splits
-- player split summaries
-- team split summaries
+### 6. Leaderboard queries
+
+Ranked lists of entities by a statistic.
+
+- player season leaders (averages)
+- team season leaders (averages)
+- top single-game play- top single-game play- top single-game play- top single-game play- top single-game play- top single-game play- top single-game play- top single-gamegames with multiple thresholds)
 
 Examples:
 
-    nbatools-cli ask "Jokic home vs away in 2025-26"
-    nbatools-cli ask "Jokic home away split last 20 games"
-    nbatools-cli ask "Celtics wins vs losses"
-
-### 5. Leaderboard queries
-
-Current shipped leaderboard behavior includes:
-
-- player season leaders
-- team season leaders
-- top single-game player performances
-- top single-game team performances
-
-Examples currently documented in the repo:
-
-    nbatools-cli ask "top scorers this season"
-    nbatools-cli ask "highest ts% among players"
+    nbatools-cli ask     nbatools-cli ask     nbatools-cli ask     nbatools-cts% among players"
     nbatools-cli ask "most 30 point games"
-    nbatools-cli ask "best offensive teams"
-    nbatools-cli ask "teams with best efg%"
+    nbatools-cli ask "most games with 30+ points and 10+ rebounds"
+    nbatools-cli ask "best offensiv    nbatools-cli asls-cli ask "teams with best efg%"
     nbatools-cli ask "teams with most threes"
 
-Note:
+### 7. Streak queries
 
-Leaderboard support exists in the current repo. Breadth and exact phrasing coverage should still be treated as something to verify by tests/examples before broadening docs claims further.
+Consecutive games meeting a condition.
 
-### 6. Streak queries
+- player threshold streaks
+- player longest-streak queries
+- made-three streaks
+- triple-double streaks
+- team winning / losing streaks
+- team threshold streaks (scoring, threes, etc.)
 
-Current shipped streak behavior in the repo includes support for player and team streak routing.
-
-Examples currently documented in the repo:
+Examples:
 
     nbatools-cli ask "Jokic 5 straight games with 20+ points"
     nbatools-cli ask "Jokic longest streak of 30 point games"
@@ -156,21 +153,58 @@ Examples currently documented in the repo:
     nbatools-cli ask "Celtics 5 straight games scoring 120+"
     nbatools-cli ask "longest Bucks streak with 15+ threes"
 
-Note:
+### 8. Record / matchup-record queries
 
-Streak support is part of the current repo surface. Exact breadth should continue to be verified and tightened through focused tests and examples.
+Win-loss record queries for teams.
+
+- single team record over a time span
+- team vs team head-to-head record
+- team record leaderboard (best/worst records league-wide)
+- record with opponent, home/away, and date filters
+
+Examples:
+
+    nbatools-cli ask "Lakers record this season"
+    nbatools-cli ask "Lakers record vs Celtics"
+    nbatools-cli ask "best record this season"
+    nbatools-cli ask "worst record since 2022-23"
+
+### 9. Playoff queries
+
+Playoff history, appearances, round records, and decade buckets.
+
+- single team playoff history/summary
+- team playoff appearance counts
+- team vs team playoff matchup history
+- round-specific records (first round, conference finals, finals)
+- record by decade for a team
+- record by decade leaderboard (league-wide)
+- matchup by decade
+
+Examples:
+
+    nbatools-cli ask "Lakers playoff history"
+    nbatools-cli ask "most finals appearances"
+    nbatools-cli ask "Lakers vs Celtics playoff history"
+    nbatools-cli ask "best first r    nbatools-cli ask "best first  "Lakers record by decade"
 
 ---
 
 ## Query language support
 
+### Explicit intent keywords
+
+The parser detects explicit intent markers:
+
+| Intent      | Triggers                | Intent      | Triggers                | Intent  --------------| Intent      | Triggers                | Inten "list", "show", "find", "games where"             |
+| count       | "how many", "count", "total", "number of"         |
+| summary     | "summary", "averages", "avg", "how did", "how has"|
+| leaderboard | "leaders", "who leads", "rank", "ranking"         |
+| record      | "record", "wins", "losses", "w-l"                 |
+
 ### Threshold language
 
-Supported:
-
-- `over`
-- `under`
-- `between`
+- `over` / `under` / `between`
 
 Examples:
 
@@ -180,19 +214,13 @@ Examples:
 
 ### Multi-condition chaining
 
-Supported:
-
-- `and`
-- `or`
-- parentheses
+- `and` / `or` / parentheses
 
 Examples:
 
-    Jokic last 10 games over 25 points and over 10 rebounds
-    Celtics wins vs Bucks over 120 points and over 15 threes
+    Jokic over 25 points and over 10 rebounds
     Jokic over 25 points or over 10 rebounds
     Jokic (over 25 points and over 10 rebounds) or over 15 assists
-    Jokic over 25 points and (over 10 rebounds or over 15 assists)
 
 ### Grouped boolean coverage
 
@@ -205,45 +233,87 @@ Grouped boolean logic currently works across:
 - player split summaries
 - team split summaries
 
-Examples:
+### Date and window support
 
-    Jokic (over 25 points and over 10 rebounds) or over 15 assists
-    Celtics (over 120 points and over 15 threes) or under 10 turnovers
-    Jokic home vs away (over 25 points and over 10 rebounds) or over 15 assists
+| Pattern               | Examples                                       |
+|-----------------------|------------------------------|-----------------------|------------------------------|----------                           |
+| season range          | `from 2020-21 t| season range          | `from 2020-21 t| season range     `since 2020-21`                                |
+| last N seasons        | `last 3 seasons`                               |
+| last N games          | `last 10 games`    | last N games            | last N games   w          | `in Ma| last N games          | `              |
+| since month           | `s| since month           | `s| since month    |
+| rolling days          | `last 30 days`                                 |
+| All-Star break        | `since All-Star break`                         |
+| career / all-time     | `career`, `all-time`                           |
+| season t| season t| seas`pl| season t| seaar| season t| season t| s    |
 
-Not currently documented as supported for:
+### Opponent / matchup / head-to-head
 
-- player comparisons
-- team comparisons
+| Pattern               | Examples                                       |
+|-----------------------|------------------------------------------------|
+| vs opponent           | `Jokic vs Lakers`                              |
+| summary vs opponent   | `Jokic summary vs Lakers`                      |
+| head-to-head          | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics` |
+| head-to-head          | `Jokic h2h vs Embiid`, `Lakers head-to-head vs |
+| head-to-head          | `Jokic h2h vs Embiid`, `Lakers head-to-head vs |
+ltics` |
+s                                |
+|-----------------------------------|-----------------------------------------|
+| single occurrence leaderboard     | `most 30 point games`                   |
+| compound occurrence leaderboard   | `most games with 30+ points and 10+ rebounds` |
+| player occurrence count           | `how many 30 point games did Jokic have`|
+
+### Entity resolution
+
+The parser includes entity resolution with:
+
+- **Player aliases**: 90+ curated nicknames and shorthand (bron → LeBron James, joker → Nikola Jokić, sga → Shai Gilgeous-Alexander, wemby → Victor Wembanyama)
+- **Accent normalization**: nikola jokic → Nikola Jokić, luka doncic → Luka Dončić
+- **Team aliases**: full team name/abbreviation/nickname mapping (hawks → ATL, lakers → LAL)
+- **Ambiguity detection**: returns confidence levels (confident / ambiguous / none) with candidates; ambiguous results short-circuit to a no-result with metadata
 
 ---
 
-## Date and window support
+## Structured routes
 
-The current repo includes support for date-aware natural query context.
+The query service exposes 25 structured routes:
 
-Supported patterns currently present in the repo include:
+**Player routes:**
+- `player_game_summary`
+- `player_game_finder`
+- `player_streak_finder`
+- `player_compare`
+- `player_occurrence_leaders`
+- `player_split_summary`
 
-- explicit season
-- season range
-- `last N games`
-- `in <month>`
-- `since <month>`
-- `last <N> days`
-- `since All-Star break`
+**Team routes:**
+- `game_summary`
+- `game_finder`
+- `team_streak_finder`
+- `team_compare`
+- `team_occurrence_leaders`
+- `team_split_summary`
+- `team_record`
+- `team_matchup_record`
 
-Examples:
+**League-wide leaderboards:**
+- `season_leaders`
+- `season_team_leaders`
 
-    nbatools-cli ask "top scorers in March"
-    nbatools-cli ask "best offensive teams in March"
-    nbatools-cli ask "teams with best efg% in March"
-    nbatools-cli ask "best offensive teams since January"
-    nbatools-cli ask "Jokic since All-Star break"
-    nbatools-cli ask "best offensive teams since All-Star break"
+**Top games:**
+- `top_player_games`
+- `top_team_games`
 
-Note:
+**Record leaderboards:**
+- `team_record_leaderboard`
+- `playoff_round_record`
 
-These patterns are part of the current code surface. They should continue to be verified with focused tests/examples as the date-aware surface is hardened.
+**Playoff routes:**
+- `playoff_history`
+- `playoff_appearances`
+- `playoff_matchup_history`
+- `record_by_decade`
+- `record_by_decade_leaderboard`
+- `matchup_by_decade`
 
 ---
 
@@ -251,43 +321,19 @@ These patterns are part of the current code surface. They should continue to be 
 
 ### Core box-score metrics
 
-Current query/display support includes common box-score fields such as:
-
-- points
-- rebounds
-- assists
-- steals
-- blocks
-- threes made
-- turnovers
-- plus/minus
-- minutes
+- points, rebounds, assists, steals, blocks
+- threes made, turnovers, plus/minus, minutes
 - shooting splits
 
 ### Advanced shooting metrics
 
-Current support includes:
-
-- eFG%
-- TS%
+- eFG%, TS%
 
 ### Advanced player metrics
 
-Current support includes:
+- USG%, AST%, REB%
 
-- USG%
-- AST%
-- REB%
-
-These appear in:
-
-- player summaries
-- player comparisons
-- player split summaries
-- pretty output
-- raw structured output
-
-These player rate metrics are recomputed from the filtered sample.
+These are recomputed from the filtered sample and appear in player summaries, comparisons, and split summaries.
 
 ---
 
@@ -303,36 +349,34 @@ Examples:
 
     nbatools-cli ask "Jokic recent form" --txt outputs/jokic_recent.txt
     nbatools-cli ask "top scorers in March" --csv outputs/top_scorers_march.csv
-    nbatools-cli ask "Jokic vs Embiid recent form" --json outputs/jokic_embiid_recent.json
+    nbatools-cli ask "Jokic vs Embiid recent form    nbatools-uts/jo    nbatoolrecent.json
 
 ---
 
-## Pretty output
+## Web UI
 
-Current pretty output supports:
+The React frontend (`frontend/`) is a thin presentation layer over the API.
 
-- summary headers
-- comparison formatting
-- split formatting
-- section rules
-- clearer metric labels
-- advanced metric display:
-  - eFG%
-  - TS%
-  - USG%
-  - AST%
-  - REB%
+Current UI capabilities:
+
+- text input for natural-language queries
+- pre-filled sample query buttons
+- result rendering for all query classes (summary, comparison, split, finder, leaderboard, streak)
+- envelope metadata display (status, route, freshness, notes, caveats)
+- raw JSON toggle
+- in-session query history
+- saved queries (localStorage persistence with load/save/export)
+- shareable deep links via URL state
+- Dev Tools panel for structured (route-based) queries
+
+Build output lands in `src/nbatools/ui/dist/` and is served by FastAPI at `/`.
 
 ---
 
 ## Current tested-state snapshot
 
-The repo currently documents:
+- full suite: **1650 passing tests**
+- 41 test files covering parser, routing, result contracts, CLI smoke, API, query service, and specialized query coverage
+- test areas include: natural query parsing, explicit intent detection, leaderboard queries, streak queries, matchup queries, boolean parsing, occurrence/compound occurrence queries, playoff his- test areas include: natural query parsing, explicit intent detection, leuti- test areas include: nage- test areas include: natural query parres- test areas include: natural qud more
 
-- full suite: **206 passing tests**
-
-Important distinction:
-
-This document describes the current shipped surface and examples present in the repo.
-
-Not every category above is necessarily described here as having the exact same level of test depth. When tightening or expanding a surface area, prefer to add targeted parser/smoke/unit coverage before broadening documentation claims.
+This count reflects the current repo state. It should be updated whenever the test surface changes materially.

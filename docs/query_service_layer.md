@@ -36,11 +36,15 @@ qr = execute_structured_query(
 print(qr.result.leaders)  # pandas DataFrame
 ```
 
-Valid routes: `top_player_games`, `top_team_games`, `season_leaders`,
-`season_team_leaders`, `player_game_summary`, `game_summary`,
-`player_game_finder`, `game_finder`, `player_compare`, `team_compare`,
-`player_split_summary`, `team_split_summary`, `player_streak_finder`,
-`team_streak_finder`.
+Valid routes (25 total): `top_player_games`, `top_team_games`,
+`season_leaders`, `season_team_leaders`, `player_game_summary`,
+`game_summary`, `player_game_finder`, `game_finder`, `player_compare`,
+`team_compare`, `player_split_summary`, `team_split_summary`,
+`player_streak_finder`, `team_streak_finder`, `player_occurrence_leaders`,
+`team_occurrence_leaders`, `team_record`, `team_matchup_record`,
+`team_record_leaderboard`, `playoff_round_record`, `playoff_history`,
+`playoff_appearances`, `playoff_matchup_history`, `record_by_decade`,
+`record_by_decade_leaderboard`, `matchup_by_decade`.
 
 ## QueryResult envelope
 
@@ -67,7 +71,7 @@ Returns a JSON-serializable dict combining the result's sections and metadata.
 | ------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------- |
 | CLI `ask` command        | `execute_natural_query` via `natural_query.run()`          | Renders to pretty/raw/exports                                        |
 | CLI `query` sub-commands | `execute_structured_query` via `_run_and_handle_exports()` | Kwargs path only; positional-arg callers use direct `build_result()` |
-| Tests                    | Both                                                       | 45 dedicated tests in `test_query_service.py`                        |
+| Tests                    | Both                                                       | Dedicated tests in `test_query_service.py`                           |
 | React UI / API clients   | Both                                                       | Primary intended consumer                                            |
 
 ## What still bypasses the service
