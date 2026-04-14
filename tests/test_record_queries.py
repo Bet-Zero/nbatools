@@ -433,8 +433,8 @@ class TestParseRecordMatchup:
 
     def test_team_vs_team_playoff_record(self):
         parsed = parse_query("Celtics vs Heat playoff record since 2020")
-        assert parsed["route"] == "team_matchup_record"
-        assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+        # Playoff matchup queries now route to the dedicated playoff_matchup_history route
+        assert parsed["route"] == "playoff_matchup_history"
 
 
 class TestParseRecordLeaderboard:

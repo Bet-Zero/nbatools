@@ -76,6 +76,16 @@ from nbatools.commands.player_streak_finder import (
     build_result as player_streak_finder_build_result,
 )
 from nbatools.commands.player_streak_finder import run as player_streak_finder_run
+from nbatools.commands.playoff_history import (
+    ROUND_ALIASES,
+    build_matchup_by_decade_result,
+    build_playoff_appearances_result,
+    build_playoff_history_result,
+    build_playoff_matchup_history_result,
+    build_playoff_round_record_result,
+    build_record_by_decade_leaderboard_result,
+    build_record_by_decade_result,
+)
 from nbatools.commands.query_boolean_parser import (
     evaluate_condition_tree,
     expression_contains_boolean_ops,
@@ -1303,6 +1313,66 @@ def detect_record_intent(text: str) -> bool:
     )
 
 
+def detect_by_decade_intent(text: str) -> bool:
+    """Detect 'by decade' bucketing intent."""
+    return bool(re.search(r"\bby\s+decade\b", text))
+
+
+def detect_playoff_appearance_intent(text: str) -> bool:
+    """Detect intent for playoff/round appearance queries.
+
+    Triggers on phrases like:
+    - "finals appearances"
+    - "playoff appearances"
+    - "conference finals appearances"
+    - "second round appearances"
+    """
+    return bool(
+        re.search(
+            r"\b(?:playoff|postseason|finals?|conference\s+finals?|"
+            r"(?:first|1st|second|2nd)\s+round|semifinal)"
+            r"\s+appearance",
+            text,
+        )
+    )
+
+
+def detect_playoff_history_intent(text: str) -> bool:
+    """Detect explicit playoff history queries.
+
+    Triggers on:
+    - "playoff history"
+    - "playoff series"
+    - "postseason history"
+    """
+    return bool(
+        re.search(
+            r"\b(?:playoff|postseason)\s+(?:history|series)\b",
+            text,
+        )
+    )
+
+
+def detect_playoff_round_filter(text: str) -> str | None:
+    """Extract a playoff round filter from natural language.
+
+    Returns a round code ('01'-'04') or None.
+    """
+    # Check each alias against the query text
+    t = text.lower()
+    # Longest-match first to avoid "finals" matching before "conference finals"
+    sorted_aliases = sorted(ROUND_ALIASES.keys(), key=len, reverse=True)
+    for alias in sorted_aliases:
+        if alias in t:
+            return ROUND_ALIASES[alias]
+    return None
+
+
+def detect_by_round_intent(text: str) -> bool:
+    """Detect 'by round' breakdown intent for playoff matchup history."""
+    return bool(re.search(r"\bby\s+round\b", text))
+
+
 def extract_occurrence_event(text: str) -> dict | None:
     """Detect and extract an occurrence-event definition from natural language.
 
@@ -1669,6 +1739,13 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "team_streak_finder": team_streak_finder_build_result,
                 "player_occurrence_leaders": player_occurrence_leaders_build_result,
                 "team_occurrence_leaders": team_occurrence_leaders_build_result,
+                "playoff_history": build_playoff_history_result,
+                "playoff_appearances": build_playoff_appearances_result,
+                "playoff_matchup_history": build_playoff_matchup_history_result,
+                "playoff_round_record": build_playoff_round_record_result,
+                "record_by_decade": build_record_by_decade_result,
+                "record_by_decade_leaderboard": build_record_by_decade_leaderboard_result,
+                "matchup_by_decade": build_matchup_by_decade_result,
             }
         )
     return _BUILD_RESULT_MAP
@@ -2354,6 +2431,13 @@ def _build_parse_state(query: str) -> dict:
     streak_request = extract_streak_request(q)
     team_streak_request = extract_team_streak_request(q)
 
+    # -- Playoff history / era-bucket intent detection --
+    by_decade_intent = detect_by_decade_intent(q)
+    playoff_appearance_intent = detect_playoff_appearance_intent(q)
+    playoff_history_intent = detect_playoff_history_intent(q)
+    playoff_round_filter = detect_playoff_round_filter(q)
+    by_round_intent = detect_by_round_intent(q)
+
     threshold_conditions = extract_threshold_conditions(q)
 
     extra_conditions = []
@@ -2499,6 +2583,11 @@ def _build_parse_state(query: str) -> dict:
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
         "entity_ambiguity": entity_ambiguity,
+        "by_decade_intent": by_decade_intent,
+        "playoff_appearance_intent": playoff_appearance_intent,
+        "playoff_history_intent": playoff_history_intent,
+        "playoff_round_filter": playoff_round_filter,
+        "by_round_intent": by_round_intent,
         "threshold_conditions": [
             {
                 "stat": c["stat"],
@@ -2560,6 +2649,11 @@ def _finalize_route(parsed: dict) -> dict:
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
     compound_occurrence_conditions = parsed.get("compound_occurrence_conditions")
+    by_decade_intent = parsed.get("by_decade_intent", False)
+    playoff_appearance_intent = parsed.get("playoff_appearance_intent", False)
+    playoff_history_intent = parsed.get("playoff_history_intent", False)
+    playoff_round_filter = parsed.get("playoff_round_filter")
+    by_round_intent = parsed.get("by_round_intent", False)
 
     notes: list[str] = []
     route = None
@@ -2622,6 +2716,221 @@ def _finalize_route(parsed: dict) -> dict:
             "min_streak_length": team_streak_request.get("min_streak_length"),
             "longest": team_streak_request.get("longest", False),
             "limit": 25,
+        }
+    # ---------------------------------------------------------------------------
+    # Playoff appearance routing
+    # ---------------------------------------------------------------------------
+    elif playoff_appearance_intent and not player_a and not player_b:
+        # "most finals appearances since 2000", "Lakers playoff appearances since 1990"
+        pa_season = season
+        pa_start = start_season
+        pa_end = end_season
+        if not pa_season and not pa_start and not pa_end:
+            from nbatools.commands._seasons import resolve_career
+
+            pa_start, pa_end = resolve_career("Playoffs")
+
+        route = "playoff_appearances"
+        route_kwargs = {
+            "team": team,
+            "season": pa_season,
+            "start_season": pa_start,
+            "end_season": pa_end,
+            "playoff_round": playoff_round_filter,
+            "limit": top_n or 10,
+            "ascending": False,
+        }
+    # ---------------------------------------------------------------------------
+    # Playoff matchup history: team_a vs team_b playoff history
+    # ---------------------------------------------------------------------------
+    elif (
+        (playoff_history_intent or (season_type == "Playoffs" and record_intent))
+        and team_a
+        and team_b
+    ):
+        pm_season = season
+        pm_start = start_season
+        pm_end = end_season
+        if not pm_season and not pm_start and not pm_end:
+            from nbatools.commands._seasons import resolve_career
+
+            pm_start, pm_end = resolve_career("Playoffs")
+
+        route = "playoff_matchup_history"
+        route_kwargs = {
+            "team_a": team_a,
+            "team_b": team_b,
+            "season": pm_season,
+            "start_season": pm_start,
+            "end_season": pm_end,
+            "playoff_round": playoff_round_filter,
+            "by_round": by_round_intent,
+        }
+    # ---------------------------------------------------------------------------
+    # Matchup by decade: "Lakers vs Celtics by decade"
+    # ---------------------------------------------------------------------------
+    elif by_decade_intent and team_a and team_b:
+        md_season = season
+        md_start = start_season
+        md_end = end_season
+        if not md_season and not md_start and not md_end:
+            from nbatools.commands._seasons import resolve_career
+
+            md_start, md_end = resolve_career(season_type)
+
+        route = "matchup_by_decade"
+        route_kwargs = {
+            "team_a": team_a,
+            "team_b": team_b,
+            "season": md_season,
+            "start_season": md_start,
+            "end_season": md_end,
+            "season_type": season_type,
+        }
+    # ---------------------------------------------------------------------------
+    # Playoff history: single team playoff history/summary
+    # ---------------------------------------------------------------------------
+    elif playoff_history_intent and team and not team_a and not team_b:
+        ph_season = season
+        ph_start = start_season
+        ph_end = end_season
+        if not ph_season and not ph_start and not ph_end:
+            from nbatools.commands._seasons import resolve_career
+
+            ph_start, ph_end = resolve_career("Playoffs")
+
+        route = "playoff_history"
+        route_kwargs = {
+            "team": team,
+            "season": ph_season,
+            "start_season": ph_start,
+            "end_season": ph_end,
+            "playoff_round": playoff_round_filter,
+            "by_decade": by_decade_intent,
+            "opponent": opponent,
+        }
+    # ---------------------------------------------------------------------------
+    # By-decade record: single team record by decade
+    # ---------------------------------------------------------------------------
+    elif by_decade_intent and team and not team_a and not team_b:
+        bd_season = season
+        bd_start = start_season
+        bd_end = end_season
+        if not bd_season and not bd_start and not bd_end:
+            from nbatools.commands._seasons import resolve_career
+
+            bd_start, bd_end = resolve_career(season_type)
+
+        route = "record_by_decade"
+        route_kwargs = {
+            "team": team,
+            "season": bd_season,
+            "start_season": bd_start,
+            "end_season": bd_end,
+            "season_type": season_type,
+            "opponent": opponent,
+        }
+    # ---------------------------------------------------------------------------
+    # By-decade leaderboard: "most wins by decade since 1980"
+    # ---------------------------------------------------------------------------
+    elif (
+        by_decade_intent
+        and (record_intent or leaderboard_intent or team_leaderboard_intent)
+        and not team
+        and not team_a
+        and not team_b
+        and not player
+    ):
+        bdl_season = season
+        bdl_start = start_season
+        bdl_end = end_season
+        if not bdl_season and not bdl_start and not bdl_end:
+            from nbatools.commands._seasons import resolve_career
+
+            bdl_start, bdl_end = resolve_career(season_type)
+
+        record_stat = "wins"
+        if re.search(r"\bwin_pct\b|\bwin\s*%\b|\bwinning\s+pct\b", q):
+            record_stat = "win_pct"
+        elif re.search(r"\bloss", q):
+            record_stat = "losses"
+
+        route = "record_by_decade_leaderboard"
+        route_kwargs = {
+            "season": bdl_season,
+            "start_season": bdl_start,
+            "end_season": bdl_end,
+            "season_type": season_type,
+            "stat": record_stat,
+            "limit": top_n or 10,
+            "ascending": False,
+            "playoff_round": playoff_round_filter,
+        }
+    # ---------------------------------------------------------------------------
+    # Playoff round record leaderboard: "best finals record since 1980"
+    # ---------------------------------------------------------------------------
+    elif (
+        season_type == "Playoffs"
+        and playoff_round_filter
+        and record_intent
+        and not team
+        and not team_a
+        and not team_b
+        and not player
+    ):
+        prl_season = season
+        prl_start = start_season
+        prl_end = end_season
+        if not prl_season and not prl_start and not prl_end:
+            from nbatools.commands._seasons import resolve_career
+
+            prl_start, prl_end = resolve_career("Playoffs")
+
+        record_stat = "win_pct"
+        if re.search(r"\bmost\s+wins\b", q):
+            record_stat = "wins"
+        elif re.search(r"\bmost\s+loss", q):
+            record_stat = "losses"
+
+        route = "playoff_round_record"
+        route_kwargs = {
+            "season": prl_season,
+            "start_season": prl_start,
+            "end_season": prl_end,
+            "playoff_round": playoff_round_filter,
+            "stat": record_stat,
+            "limit": top_n or 10,
+            "ascending": False,
+        }
+    # ---------------------------------------------------------------------------
+    # Playoff history with round filter: team + playoff + round-specific intent
+    # e.g. "Lakers record in the Finals", "Celtics record in conference finals"
+    # ---------------------------------------------------------------------------
+    elif (
+        team
+        and not team_a
+        and not team_b
+        and season_type == "Playoffs"
+        and playoff_round_filter
+        and record_intent
+    ):
+        phrf_season = season
+        phrf_start = start_season
+        phrf_end = end_season
+        if not phrf_season and not phrf_start and not phrf_end:
+            from nbatools.commands._seasons import resolve_career
+
+            phrf_start, phrf_end = resolve_career("Playoffs")
+
+        route = "playoff_history"
+        route_kwargs = {
+            "team": team,
+            "season": phrf_season,
+            "start_season": phrf_start,
+            "end_season": phrf_end,
+            "playoff_round": playoff_round_filter,
+            "by_decade": by_decade_intent,
+            "opponent": opponent,
         }
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
@@ -2977,20 +3286,38 @@ def _finalize_route(parsed: dict) -> dict:
                 lb_ascending = True  # fewest losses is ascending
 
         route = "team_record_leaderboard"
-        route_kwargs = {
-            "season": lb_season,
-            "start_season": lb_start,
-            "end_season": lb_end,
-            "season_type": season_type,
-            "stat": record_stat,
-            "opponent": opponent,
-            "home_only": home_only,
-            "away_only": away_only,
-            "limit": top_n or 10,
-            "ascending": lb_ascending,
-            "start_date": start_date,
-            "end_date": end_date,
-        }
+        # If a playoff round filter is detected, redirect to playoff_round_record
+        if playoff_round_filter:
+            route = "playoff_round_record"
+            if not lb_season and not lb_start and not lb_end:
+                from nbatools.commands._seasons import resolve_career
+
+                lb_start, lb_end = resolve_career("Playoffs")
+                lb_season = None
+            route_kwargs = {
+                "season": lb_season,
+                "start_season": lb_start,
+                "end_season": lb_end,
+                "playoff_round": playoff_round_filter,
+                "stat": record_stat,
+                "limit": top_n or 10,
+                "ascending": lb_ascending,
+            }
+        else:
+            route_kwargs = {
+                "season": lb_season,
+                "start_season": lb_start,
+                "end_season": lb_end,
+                "season_type": season_type,
+                "stat": record_stat,
+                "opponent": opponent,
+                "home_only": home_only,
+                "away_only": away_only,
+                "limit": top_n or 10,
+                "ascending": lb_ascending,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
     elif (
         player is None
         and team is None

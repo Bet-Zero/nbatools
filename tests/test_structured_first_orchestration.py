@@ -78,6 +78,13 @@ class TestBuildResultMap:
             "team_streak_finder",
             "player_occurrence_leaders",
             "team_occurrence_leaders",
+            "playoff_history",
+            "playoff_appearances",
+            "playoff_matchup_history",
+            "playoff_round_record",
+            "record_by_decade",
+            "record_by_decade_leaderboard",
+            "matchup_by_decade",
         }
         assert expected_routes == set(brmap.keys())
 
@@ -88,6 +95,13 @@ class TestBuildResultMap:
             "build_team_record_result",
             "build_matchup_record_result",
             "build_record_leaderboard_result",
+            "build_playoff_history_result",
+            "build_playoff_appearances_result",
+            "build_playoff_matchup_history_result",
+            "build_playoff_round_record_result",
+            "build_record_by_decade_result",
+            "build_record_by_decade_leaderboard_result",
+            "build_matchup_by_decade_result",
         }
         for route, fn in brmap.items():
             assert fn.__name__ in ("build_result", *record_names), (

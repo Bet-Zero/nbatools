@@ -461,6 +461,13 @@ VALID_ROUTES = frozenset(
         "team_streak_finder",
         "player_occurrence_leaders",
         "team_occurrence_leaders",
+        "playoff_history",
+        "playoff_appearances",
+        "playoff_matchup_history",
+        "playoff_round_record",
+        "record_by_decade",
+        "record_by_decade_leaderboard",
+        "matchup_by_decade",
     ]
 )
 

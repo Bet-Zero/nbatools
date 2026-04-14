@@ -72,6 +72,13 @@ ROUTE_TO_QUERY_CLASS = {
     "team_streak_finder": "streak",
     "player_occurrence_leaders": "leaderboard",
     "team_occurrence_leaders": "leaderboard",
+    "playoff_history": "summary",
+    "playoff_appearances": "leaderboard",
+    "playoff_matchup_history": "comparison",
+    "playoff_round_record": "leaderboard",
+    "record_by_decade": "summary",
+    "record_by_decade_leaderboard": "leaderboard",
+    "matchup_by_decade": "comparison",
 }
 
 QUERY_CLASS_TO_LABEL = {
