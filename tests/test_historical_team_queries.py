@@ -286,7 +286,7 @@ class TestParseHistoricalTeamLeaderboard:
         assert parsed["route_kwargs"]["ascending"] is True
 
     def test_best_playoff_net_ratings(self):
-        parsed = parse_query("best playoff net ratings since 2010")
+        parsed = parse_query("best team playoff net ratings since 2010")
         assert parsed["route"] == "season_team_leaders"
 
     def test_best_scoring_vs_opponent(self):
@@ -655,8 +655,8 @@ class TestBuildHistoricalTeamLeaderboard:
 
     def test_leaderboard_home_only(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
-        rows = _team_game_rows("2098-99", "Team Alpha", "ALP", 1, 20, 100)
-        rows += _team_game_rows("2098-99", "Team Beta", "BET", 2, 20, 95)
+        rows = _team_game_rows("2098-99", "Team Alpha", "ALP", 1, 40, 100)
+        rows += _team_game_rows("2098-99", "Team Beta", "BET", 2, 40, 95)
         _write_csv(tmp_path / "data/raw/team_game_stats/2098-99_regular_season.csv", rows)
 
         result = season_team_leaders_build_result(
@@ -667,11 +667,11 @@ class TestBuildHistoricalTeamLeaderboard:
         assert isinstance(result, LeaderboardResult)
         assert any("home" in c for c in result.caveats)
         # Should have fewer games than full season
-        assert result.leaders.iloc[0]["games_played"] < 20
+        assert result.leaders.iloc[0]["games_played"] < 40
 
     def test_leaderboard_away_only(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
-        rows = _team_game_rows("2098-99", "Team Alpha", "ALP", 1, 20, 100)
+        rows = _team_game_rows("2098-99", "Team Alpha", "ALP", 1, 40, 100)
         _write_csv(tmp_path / "data/raw/team_game_stats/2098-99_regular_season.csv", rows)
 
         result = season_team_leaders_build_result(
@@ -999,8 +999,8 @@ class TestStructuredTeamQueryParity:
 
     def test_structured_team_leaderboard_home_only(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
-        rows = _team_game_rows("2098-99", "Team Alpha", "ALP", 1, 20, 100)
-        rows += _team_game_rows("2098-99", "Team Beta", "BET", 2, 20, 95)
+        rows = _team_game_rows("2098-99", "Team Alpha", "ALP", 1, 40, 100)
+        rows += _team_game_rows("2098-99", "Team Beta", "BET", 2, 40, 95)
         _write_csv(tmp_path / "data/raw/team_game_stats/2098-99_regular_season.csv", rows)
 
         result = season_team_leaders_build_result(
@@ -1078,7 +1078,6 @@ class TestTeamResultContracts:
         assert "sections" in d
         assert "summary" in d["sections"]
         assert "by_season" in d["sections"]
-        assert d["current_through"] is not None or True  # may be None for future dates
         assert isinstance(d["caveats"], list)
 
     def test_comparison_result_to_dict(self, tmp_path, monkeypatch):
