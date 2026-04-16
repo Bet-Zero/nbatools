@@ -1,4 +1,8 @@
+import pytest
+
 from nbatools.commands.format_output import format_pretty_output
+
+pytestmark = pytest.mark.output
 
 PLAYER_COMPARISON_RAW = """SUMMARY
 player_name,games,wins,losses,win_pct,minutes_avg,pts_avg,reb_avg,ast_avg,stl_avg,blk_avg,fg3m_avg,plus_minus_avg,efg_pct_avg,ts_pct_avg,pts_sum,reb_sum,ast_sum

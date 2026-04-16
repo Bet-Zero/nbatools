@@ -36,6 +36,8 @@ from nbatools.commands.team_record import (
     build_team_record_result,
 )
 
+pytestmark = pytest.mark.engine
+
 # ===================================================================
 # Helpers
 # ===================================================================

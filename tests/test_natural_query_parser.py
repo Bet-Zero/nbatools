@@ -1,4 +1,8 @@
+import pytest
+
 from nbatools.commands.natural_query import parse_query
+
+pytestmark = pytest.mark.parser
 
 
 def test_kobe_50_point_games_summary():

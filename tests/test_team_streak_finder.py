@@ -1,6 +1,9 @@
 import pandas as pd
+import pytest
 
 from nbatools.commands.team_streak_finder import build_result as team_streak_finder_build_result
+
+pytestmark = pytest.mark.engine
 
 
 def _write_csv(path, rows):

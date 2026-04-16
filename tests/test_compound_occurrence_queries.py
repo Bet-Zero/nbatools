@@ -40,6 +40,8 @@ from nbatools.query_service import (
     execute_structured_query,
 )
 
+pytestmark = pytest.mark.engine
+
 # ===================================================================
 # 1. Compound Occurrence Event Extraction
 # ===================================================================

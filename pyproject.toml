@@ -52,7 +52,15 @@ nbatools = ["ui/dist/**"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-n auto"
-markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "needs_data: skip when local CSV data files are not available",
+    "parser: pure parsing, entity resolution, boolean query parsing",
+    "query: natural query routing, intent detection, orchestration",
+    "engine: core command computation, metrics, records, streaks, pipeline",
+    "api: HTTP API layer tests",
+    "output: formatting, result contracts, export",
+]
 
 [tool.ruff]
 line-length = 100

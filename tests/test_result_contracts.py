@@ -32,6 +32,8 @@ from nbatools.commands.format_output import (
 )
 from nbatools.commands.natural_query import run as natural_query_run
 
+pytestmark = pytest.mark.output
+
 
 def _capture_output(func, *args, **kwargs) -> str:
     buffer = StringIO()

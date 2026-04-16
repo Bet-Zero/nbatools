@@ -43,6 +43,8 @@ from nbatools.commands.team_streak_finder import (
     build_result as team_streak_finder_build_result,
 )
 
+pytestmark = pytest.mark.query
+
 # ===================================================================
 # Helpers
 # ===================================================================

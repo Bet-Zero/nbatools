@@ -17,6 +17,8 @@ import pytest
 from nbatools.commands.auto_refresh import parse_interval, run_auto_refresh
 from nbatools.commands.pipeline import PipelineResult, SeasonResult, StageResult, StageStatus
 
+pytestmark = pytest.mark.engine
+
 # ---------------------------------------------------------------------------
 # parse_interval
 # ---------------------------------------------------------------------------

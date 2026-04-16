@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from nbatools.commands.player_advanced_metrics import (
     build_player_team_context,
@@ -9,6 +10,8 @@ from nbatools.commands.player_advanced_metrics import (
     compute_sample_usg_pct,
     compute_season_grouped_sample_advanced_metrics,
 )
+
+pytestmark = pytest.mark.engine
 
 
 def test_build_player_team_context_attaches_team_and_opponent_rows():

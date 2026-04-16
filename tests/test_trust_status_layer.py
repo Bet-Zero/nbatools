@@ -45,6 +45,8 @@ from nbatools.commands.structured_results import (
     SummaryResult,
 )
 
+pytestmark = pytest.mark.output
+
 # ---------------------------------------------------------------------------
 # Unit: ResultStatus and ResultReason enums
 # ---------------------------------------------------------------------------

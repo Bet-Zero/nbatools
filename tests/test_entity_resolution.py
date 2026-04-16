@@ -11,6 +11,8 @@ Covers:
 - historical / opponent / head-to-head queries using aliases
 """
 
+import pytest
+
 from nbatools.commands.entity_resolution import (
     ResolutionResult,
     format_ambiguity_message,
@@ -26,6 +28,8 @@ from nbatools.commands.natural_query import (
 )
 from nbatools.commands.structured_results import ResultReason
 from nbatools.query_service import execute_natural_query
+
+pytestmark = pytest.mark.parser
 
 # ---------------------------------------------------------------------------
 # Unit: resolve_player (direct resolution of a name fragment)

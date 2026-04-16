@@ -8,6 +8,8 @@ from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sectio
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
+pytestmark = pytest.mark.query
+
 
 def _capture_output(func, *args, **kwargs) -> str:
     buffer = StringIO()

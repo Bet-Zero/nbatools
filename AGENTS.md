@@ -124,11 +124,47 @@ Use the Makefile targets — do not invent ad hoc pytest invocations.
 | `make test`           | Full regression suite (parallel via xdist)                                     | Before merging, after broad changes, when full confidence is needed |
 | `make test-preflight` | Impacted tests first (fast fail), then full suite                              | Before concluding any implementation task                           |
 
+### Domain subset targets
+
+Run a specific subsystem's tests regardless of file changes:
+
+| Command            | What it runs                                                  |
+| ------------------ | ------------------------------------------------------------- |
+| `make test-unit`   | All tests except `needs_data` and `slow` — fast and data-free |
+| `make test-parser` | Parsing helpers, boolean parser, entity resolution            |
+| `make test-query`  | Natural query routing, intent detection, orchestration        |
+| `make test-engine` | Core command computation, metrics, records, streaks, pipeline |
+| `make test-api`    | HTTP API layer                                                |
+| `make test-output` | Formatting, result contracts, export                          |
+
+These targets do **not** use `--testmon`. They always run every test with the marker.
+
+### Choosing a test command based on what changed
+
+| Code area changed                      | Recommended command                           |
+| -------------------------------------- | --------------------------------------------- |
+| A single command module                | `make test-impacted` (testmon catches it)     |
+| `natural_query.py` parsing helpers     | `make test-impacted`, then `make test-parser` |
+| `natural_query.py` routing logic       | `make test-impacted`, then `make test-query`  |
+| A command module + NQ routing together | `make test-impacted`, then `make test-engine` |
+| `api.py` or API response shape         | `make test-api`                               |
+| `format_output.py` or result contracts | `make test-output`                            |
+| Broad refactor or unclear scope        | `make test-preflight`                         |
+
+### Testmon + marker interaction
+
+`pytest --testmon -m parser -n0` runs impacted tests that are also `parser`-marked.
+This is an **intersection** — fewer tests than either flag alone.
+Agents may combine them manually for narrow, fast feedback.
+The Makefile subset targets intentionally avoid `--testmon` so they always run
+the full slice.
+
 **Workflow for agents:**
 
 1. While iterating on code, run `make test-impacted` for fast feedback.
-2. Before declaring work complete, run `make test-preflight`.
-3. If `test-impacted` misses something (dynamic imports, data file changes, monkey-patching), fall back to `make test`.
+2. If you know the subsystem, run the matching `make test-<domain>` for broader confidence.
+3. Before declaring work complete, run `make test-preflight`.
+4. If `test-impacted` misses something (dynamic imports, data file changes, monkey-patching), fall back to `make test`.
 
 Testmon tracks file-level dependencies. It does **not** detect changes in data files, environment variables, or dynamically loaded modules. When in doubt, run the full suite.
 

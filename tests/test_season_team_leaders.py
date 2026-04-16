@@ -2,10 +2,13 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.season_team_leaders import (
     build_result as season_team_leaders_build_result,
 )
+
+pytestmark = pytest.mark.engine
 
 
 def _capture_output(func, *args, **kwargs) -> str:

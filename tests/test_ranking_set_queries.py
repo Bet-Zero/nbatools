@@ -16,6 +16,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.natural_query import (
     extract_position_filter,
@@ -32,6 +33,8 @@ from nbatools.commands.season_leaders import (
 from nbatools.commands.season_leaders import (
     build_result as season_leaders_build_result,
 )
+
+pytestmark = pytest.mark.query
 
 
 def _capture_output(func, *args, **kwargs) -> str:

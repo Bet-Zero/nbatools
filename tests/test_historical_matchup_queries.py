@@ -31,6 +31,8 @@ from nbatools.commands.structured_results import (
     SummaryResult,
 )
 
+pytestmark = pytest.mark.query
+
 # ===================================================================
 # Natural query parsing — historical opponent spans
 # ===================================================================

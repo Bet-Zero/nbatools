@@ -14,6 +14,7 @@ Validates that:
 
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 from nbatools.api import app
@@ -24,6 +25,8 @@ from nbatools.commands.structured_results import (
     SummaryResult,
 )
 from nbatools.query_service import QueryResult
+
+pytestmark = pytest.mark.api
 
 client = TestClient(app)
 

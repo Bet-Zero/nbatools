@@ -1,8 +1,11 @@
 import pandas as pd
+import pytest
 
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.player_compare import _build_player_head_to_head_frames
 from nbatools.commands.team_compare import _build_team_head_to_head_frames
+
+pytestmark = pytest.mark.engine
 
 
 def test_parse_compare_queries_set_head_to_head_flag():

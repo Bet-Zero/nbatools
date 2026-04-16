@@ -48,6 +48,8 @@ from nbatools.commands.structured_results import (
     SummaryResult,
 )
 
+pytestmark = pytest.mark.query
+
 # ===================================================================
 # _seasons.py — Historical span model
 # ===================================================================

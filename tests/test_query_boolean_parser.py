@@ -14,6 +14,8 @@ from nbatools.commands.query_boolean_parser import (
     tree_to_dict,
 )
 
+pytestmark = pytest.mark.parser
+
 
 def test_expression_contains_boolean_ops_detects_and_or_parens():
     assert expression_contains_boolean_ops("over 25 points and over 10 rebounds") is True

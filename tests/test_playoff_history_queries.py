@@ -14,6 +14,10 @@ from __future__ import annotations
 
 import unittest
 
+import pytest
+
+pytestmark = pytest.mark.engine
+
 # ---------------------------------------------------------------------------
 # Unit tests for playoff_history module internals
 # ---------------------------------------------------------------------------

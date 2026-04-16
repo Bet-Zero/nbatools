@@ -17,6 +17,7 @@ from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from nbatools.commands.freshness import (
     FreshnessInfo,
@@ -27,6 +28,8 @@ from nbatools.commands.freshness import (
     read_refresh_log,
     write_refresh_log,
 )
+
+pytestmark = pytest.mark.engine
 
 # ---------------------------------------------------------------------------
 # classify_freshness

@@ -33,6 +33,8 @@ from nbatools.query_service import (
     execute_structured_query,
 )
 
+pytestmark = pytest.mark.output
+
 # ===================================================================
 # ResultStatus and ResultReason enum coverage
 # ===================================================================

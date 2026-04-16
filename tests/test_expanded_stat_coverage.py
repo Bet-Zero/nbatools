@@ -39,6 +39,8 @@ from nbatools.commands.structured_results import (
     SummaryResult,
 )
 
+pytestmark = pytest.mark.engine
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

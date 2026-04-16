@@ -6,6 +6,8 @@ import pytest
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.natural_query import run as natural_query_run
 
+pytestmark = pytest.mark.query
+
 
 def _capture_output(func, *args, **kwargs) -> str:
     buffer = StringIO()

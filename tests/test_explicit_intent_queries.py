@@ -40,6 +40,8 @@ from nbatools.query_service import (
     execute_natural_query,
 )
 
+pytestmark = pytest.mark.query
+
 # ===================================================================
 # Intent Detection Functions
 # ===================================================================

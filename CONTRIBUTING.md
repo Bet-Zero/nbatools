@@ -13,7 +13,7 @@ pre-commit install
 
 ## Running Tests
 
-Three Makefile targets provide deterministic test commands:
+Makefile targets provide deterministic test commands:
 
 ```bash
 make test             # Full regression suite (parallel via xdist)
@@ -30,6 +30,42 @@ You can still invoke `pytest` directly with any flags you like.
 | `make test-impacted`  | During active development for fast feedback                                                   |
 | `make test`           | Before merging, in CI, or when you want full confidence                                       |
 | `make test-preflight` | Before concluding a feature/fix — catches impacted regressions fast, then verifies everything |
+
+### Domain / subset targets
+
+Run a specific subsystem slice when you know which area your change affects:
+
+```bash
+make test-unit        # Fast tests only — excludes slow and data-dependent tests
+make test-parser      # Parsing helpers, boolean parser, entity resolution
+make test-query       # Natural query routing, intent detection, orchestration
+make test-engine      # Core command computation, metrics, records, streaks, pipeline
+make test-api         # HTTP API layer
+make test-output      # Formatting, result contracts, export
+```
+
+These do **not** use testmon — they always run every test with the given marker.
+
+### Marker reference
+
+| Marker       | Purpose                                                        |
+| ------------ | -------------------------------------------------------------- |
+| `slow`       | Long-running tests. Deselect with `-m "not slow"`.             |
+| `needs_data` | Requires local CSV data. Auto-skipped when data is missing.    |
+| `parser`     | Pure parsing, entity resolution, boolean query parsing.        |
+| `query`      | Natural query routing, intent detection, orchestration.        |
+| `engine`     | Core command computation, metrics, records, streaks, pipeline. |
+| `api`        | HTTP API layer tests.                                          |
+| `output`     | Formatting, result contracts, export.                          |
+
+### Testmon + marker interaction
+
+`pytest --testmon -m parser -n0` runs only _impacted_ tests that are _also_ marked `parser`.
+This is an **intersection** — it gives fewer tests than either flag alone.
+Use this when you want the fastest possible feedback on a specific subsystem.
+
+The domain targets (`make test-parser`, etc.) deliberately do **not** combine with
+`--testmon`, so they always run the full subsystem slice.
 
 ### Testmon limitations
 

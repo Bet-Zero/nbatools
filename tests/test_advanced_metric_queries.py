@@ -45,6 +45,8 @@ from nbatools.commands.player_advanced_metrics import (
     compute_sample_tov_pct,
 )
 
+pytestmark = pytest.mark.engine
+
 # ── metric_registry ──────────────────────────────────────────────────
 
 

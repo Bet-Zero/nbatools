@@ -1,7 +1,10 @@
 import pandas as pd
+import pytest
 
 from nbatools.commands.player_compare import filter_player_games
 from nbatools.commands.team_compare import filter_team_games
+
+pytestmark = pytest.mark.engine
 
 
 def test_player_compare_filter_respects_date_window_before_last_n():

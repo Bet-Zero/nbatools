@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import pytest
+
 from nbatools.commands.pipeline import (
     PipelineResult,
     SeasonResult,
@@ -29,6 +31,8 @@ from nbatools.commands.pipeline import (
     refresh_current_season,
     refresh_season,
 )
+
+pytestmark = pytest.mark.engine
 
 # ---------------------------------------------------------------------------
 # Result dataclass tests
