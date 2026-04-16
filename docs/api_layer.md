@@ -125,31 +125,39 @@ Returns structured data freshness status — current_through, manifest state, pe
 
 Every query response has the same top-level shape:
 
-| Field             | Type        | Description                                   |
-| ----------------- | ----------- | --------------------------------------------- |
-| `ok`              | bool        | `true` if the query produced a real result    |
-| `query`           | string      | Original query text or synthetic description  |
-| `route`           | string/null | Resolved route name                           |
-| `result_status`   | string      | `"ok"`, `"no_result"`, or `"error"`           |
-| `result_reason`   | string/null | `"no_match"`, `"no_data"`, `"unrouted"`, etc. |
-| `current_through` | string/null | Latest game date covered by the data          |
-| `notes`           | list[str]   | Semantic annotations                          |
-| `caveats`         | list[str]   | Warnings or limitations                       |
-| `result`          | dict        | Structured result from the query service      |
+| Field             | Type        | Description                                                                                                         |
+| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `ok`              | bool        | `true` if the query produced a real result                                                                          |
+| `query`           | string      | Original query text or synthetic description                                                                        |
+| `route`           | string/null | Resolved route name                                                                                                 |
+| `result_status`   | string      | `"ok"`, `"no_result"`, or `"error"`                                                                                 |
+| `result_reason`   | string/null | `"no_match"`, `"no_data"`, `"unrouted"`, `"ambiguous"`, `"unsupported"`, `"error"`, or `null` when status is `"ok"` |
+| `current_through` | string/null | Latest game date covered by the data                                                                                |
+| `notes`           | list[str]   | Semantic annotations                                                                                                |
+| `caveats`         | list[str]   | Warnings or limitations                                                                                             |
+| `result`          | dict        | Structured result from the query service                                                                            |
 
-The `result` dict contains the output of `StructuredResult.to_dict()` — the same data the CLI renders, but as machine-readable JSON.
+The `result` dict contains the output of `StructuredResult.to_dict()` — the same data the CLI renders, but as machine-readable JSON. The `result_reason` key is **always present** in `to_dict()` output (set to `null` for successful results).
 
 ## Error responses
 
-Invalid routes return:
+Invalid routes return a normal envelope with a structured `NoResult`:
 
 ```json
 {
   "ok": false,
-  "error": "invalid_route",
-  "detail": "Unknown route 'bad'. Valid routes: [...]"
+  "result_status": "no_result",
+  "result_reason": "unsupported",
+  "notes": ["Unknown route 'bad'. Valid routes: [...]"],
+  "result": {
+    "query_class": "no_result",
+    "result_status": "no_result",
+    "result_reason": "unsupported"
+  }
 }
 ```
+
+Unsupported filter combinations (e.g. both `home_only` and `away_only`) also return a normal envelope with `result_reason: "unsupported"` and a descriptive note — they do not raise HTTP errors.
 
 Unrouted natural queries return a normal envelope with `ok: false` and `result_status: "no_result"`.
 

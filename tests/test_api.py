@@ -214,8 +214,8 @@ class TestStructuredQuery:
         assert resp.status_code == 200
         body = resp.json()
         assert body["ok"] is False
-        assert body["error"] == "invalid_route"
-        assert "nonexistent_route" in body["detail"]
+        assert body["result_status"] == "no_result"
+        assert body["result_reason"] == "unsupported"
 
     def test_structured_query_missing_route(self):
         resp = client.post("/structured-query", json={"kwargs": {}})

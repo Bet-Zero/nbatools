@@ -48,6 +48,7 @@ class ResultReason(StrEnum):
     NO_DATA = "no_data"
     UNROUTED = "unrouted"
     AMBIGUOUS = "ambiguous"
+    UNSUPPORTED = "unsupported"
     ERROR = "error"
 
 
@@ -135,6 +136,7 @@ class SummaryResult:
         out: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -142,8 +144,6 @@ class SummaryResult:
                 "summary": _df_to_records(self.summary),
             },
         }
-        if self.result_reason is not None:
-            out["result_reason"] = self.result_reason
         if self.current_through is not None:
             out["current_through"] = self.current_through
         if self.by_season is not None and not self.by_season.empty:
@@ -195,6 +195,7 @@ class ComparisonResult:
         d: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -203,8 +204,6 @@ class ComparisonResult:
                 "comparison": _df_to_records(self.comparison),
             },
         }
-        if self.result_reason is not None:
-            d["result_reason"] = self.result_reason
         if self.current_through is not None:
             d["current_through"] = self.current_through
         return d
@@ -251,6 +250,7 @@ class SplitSummaryResult:
         d: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -259,8 +259,6 @@ class SplitSummaryResult:
                 "split_comparison": _df_to_records(self.split_comparison),
             },
         }
-        if self.result_reason is not None:
-            d["result_reason"] = self.result_reason
         if self.current_through is not None:
             d["current_through"] = self.current_through
         return d
@@ -315,6 +313,7 @@ class FinderResult:
         d: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -322,8 +321,6 @@ class FinderResult:
                 "finder": _df_to_records(self.games),
             },
         }
-        if self.result_reason is not None:
-            d["result_reason"] = self.result_reason
         if self.current_through is not None:
             d["current_through"] = self.current_through
         return d
@@ -366,6 +363,7 @@ class LeaderboardResult:
         d: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -373,8 +371,6 @@ class LeaderboardResult:
                 "leaderboard": _df_to_records(self.leaders),
             },
         }
-        if self.result_reason is not None:
-            d["result_reason"] = self.result_reason
         if self.current_through is not None:
             d["current_through"] = self.current_through
         return d
@@ -416,6 +412,7 @@ class StreakResult:
         d: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -423,8 +420,6 @@ class StreakResult:
                 "streak": _df_to_records(self.streaks),
             },
         }
-        if self.result_reason is not None:
-            d["result_reason"] = self.result_reason
         if self.current_through is not None:
             d["current_through"] = self.current_through
         return d
@@ -471,6 +466,7 @@ class CountResult:
         d: dict[str, Any] = {
             "query_class": self.query_class,
             "result_status": self.result_status,
+            "result_reason": self.result_reason,
             "metadata": dict(self.metadata),
             "notes": list(self.notes),
             "caveats": list(self.caveats),
@@ -478,8 +474,6 @@ class CountResult:
                 "count": [{"count": self.count}],
             },
         }
-        if self.result_reason is not None:
-            d["result_reason"] = self.result_reason
         if self.current_through is not None:
             d["current_through"] = self.current_through
         if not self.games.empty:

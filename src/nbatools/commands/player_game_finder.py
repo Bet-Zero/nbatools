@@ -155,13 +155,28 @@ def build_result(
     seasons = resolve_seasons(season, start_season, end_season)
 
     if home_only and away_only:
-        raise ValueError("Cannot use both home_only and away_only")
+        return NoResult(
+            query_class="finder",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["Cannot use both home_only and away_only"],
+        )
 
     if wins_only and losses_only:
-        raise ValueError("Cannot use both wins_only and losses_only")
+        return NoResult(
+            query_class="finder",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["Cannot use both wins_only and losses_only"],
+        )
 
     if sort_by not in {"game_date", "stat"}:
-        raise ValueError("sort_by must be either 'game_date' or 'stat'")
+        return NoResult(
+            query_class="finder",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["sort_by must be either 'game_date' or 'stat'"],
+        )
 
     try:
         df = load_player_games_for_seasons(seasons, season_type)

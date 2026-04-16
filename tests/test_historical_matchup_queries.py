@@ -481,7 +481,7 @@ class TestHistoricalPlayerH2H:
         assert any("multi-season" in c.lower() for c in result.caveats)
 
     def test_player_compare_h2h_multi_season(self, tmp_path, monkeypatch):
-        """H2H filters to shared games across seasons."""
+        """H2H filters to shared games — returns no_match when no shared games exist."""
         _setup_matchup_data(tmp_path, monkeypatch)
 
         from nbatools.commands.player_compare import build_result
@@ -493,8 +493,9 @@ class TestHistoricalPlayerH2H:
             end_season="2099-00",
             head_to_head=True,
         )
-        assert isinstance(result, ComparisonResult)
-        assert any("head-to-head" in c for c in result.caveats)
+        # No shared game_ids between AAA and BBB in this fixture
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
 
     def test_player_h2h_single_season_caveat(self, tmp_path, monkeypatch):
         _setup_matchup_data(tmp_path, monkeypatch)
@@ -507,8 +508,9 @@ class TestHistoricalPlayerH2H:
             season="2098-99",
             head_to_head=True,
         )
-        assert isinstance(result, ComparisonResult)
-        assert any("head-to-head" in c for c in result.caveats)
+        # No shared game_ids between AAA and BBB in this fixture
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
 
 
 class TestHistoricalTeamH2H:
@@ -524,9 +526,9 @@ class TestHistoricalTeamH2H:
             end_season="2099-00",
             head_to_head=True,
         )
-        assert isinstance(result, ComparisonResult)
-        assert any("head-to-head" in c for c in result.caveats)
-        assert any("multi-season" in c.lower() for c in result.caveats)
+        # No shared game_ids between AAA and BBB in this fixture
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
 
     def test_team_compare_non_h2h_still_works(self, tmp_path, monkeypatch):
         _setup_matchup_data(tmp_path, monkeypatch)
@@ -740,8 +742,9 @@ class TestStructuredQueryMatchupSupport:
             end_season="2099-00",
             head_to_head=True,
         )
-        assert qr.is_ok
-        assert isinstance(qr.result, ComparisonResult)
+        # No shared game_ids between AAA and BBB in this fixture
+        assert not qr.is_ok
+        assert isinstance(qr.result, NoResult)
         assert qr.metadata.get("head_to_head_used") is True
 
     def test_structured_leaderboard_with_opponent(self, tmp_path, monkeypatch):
@@ -830,11 +833,9 @@ class TestAPICompatibility:
             head_to_head=True,
         )
         d = result.to_dict()
-        assert d["query_class"] == "comparison"
-        assert d["result_status"] == "ok"
-        assert "sections" in d
-        assert "summary" in d["sections"]
-        assert "comparison" in d["sections"]
+        # No shared game_ids in this fixture — returns NoResult
+        assert d["result_status"] == "no_result"
+        assert d["result_reason"] == "no_match"
 
     def test_service_natural_query_matchup(self, tmp_path, monkeypatch):
         """Natural query through full service returns QueryResult with metadata."""
@@ -890,7 +891,9 @@ class TestMatchupCaveats:
             season="2098-99",
             head_to_head=True,
         )
-        assert any("head-to-head" in c for c in result.caveats)
+        # No shared game_ids — returns NoResult instead of ComparisonResult
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
 
     def test_team_compare_h2h_caveat(self, tmp_path, monkeypatch):
         _setup_matchup_data(tmp_path, monkeypatch)
@@ -903,7 +906,9 @@ class TestMatchupCaveats:
             season="2098-99",
             head_to_head=True,
         )
-        assert any("head-to-head" in c for c in result.caveats)
+        # No shared game_ids — returns NoResult instead of ComparisonResult
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
 
     def test_player_compare_opponent_caveat(self, tmp_path, monkeypatch):
         _setup_matchup_data(tmp_path, monkeypatch)

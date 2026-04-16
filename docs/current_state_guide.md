@@ -369,6 +369,7 @@ Current UI capabilities:
 - pre-filled sample query buttons
 - result rendering for all query classes (summary, comparison, split, finder, leaderboard, streak)
 - envelope metadata display (status, route, freshness, notes, caveats)
+- no-result display with reason-specific messaging (no_match, no_data, unrouted, ambiguous, unsupported)
 - raw JSON toggle
 - in-session query history
 - saved queries (localStorage persistence with load/save/export)
@@ -431,10 +432,37 @@ The web UI displays a collapsible freshness panel with:
 
 ---
 
+## Result contract
+
+All structured result classes produce a `to_dict()` output that always includes `result_reason` (set to `null` for successful results). This key is never omitted.
+
+### ResultStatus values
+
+- `ok` — query executed and produced data
+- `no_result` — query was understood but produced no usable output
+- `error` — execution failed
+
+### ResultReason values
+
+- `no_match` — query was valid, filter returned nothing
+- `no_data` — requested season/type is not loaded
+- `unrouted` — parser could not select a route
+- `ambiguous` — parser matched multiple routes
+- `unsupported` — query was understood but the requested combination is not supported (e.g. mutually exclusive filters, invalid stat name, unknown route)
+- `error` — execution raised an unexpected error
+
+### Validation behavior
+
+Unsupported filter combinations (e.g. `home_only + away_only`, `wins_only + losses_only`, invalid stat names) return a structured `NoResult` with `result_reason="unsupported"` and a descriptive note. They do not raise `ValueError` or produce HTTP error responses.
+
+Invalid routes in the structured query endpoint return a `NoResult` with `result_reason="unsupported"` inside a normal response envelope.
+
+---
+
 ## Current tested-state snapshot
 
-- full suite: **1650 passing tests**
-- 41 test files covering parser, routing, result contracts, CLI smoke, API, query service, and specialized query coverage
+- full suite: **1742 passing tests**
+- 42 test files covering parser, routing, result contracts, CLI smoke, API, query service, and specialized query coverage
 - test areas include: natural query parsing, explicit intent detection, leaderboard queries, streak queries, matchup queries, boolean parsing, occurrence/compound occurrence queries, playoff his- test areas include: natural query parsing, explicit intent detection, leuti- test areas include: nage- test areas include: natural query parres- test areas include: natural qud more
 
 This count reflects the current repo state. It should be updated whenever the test surface changes materially.

@@ -255,10 +255,20 @@ def build_result(
     head_to_head: bool = False,
 ) -> ComparisonResult | NoResult:
     if home_only and away_only:
-        raise ValueError("Cannot use both home_only and away_only")
+        return NoResult(
+            query_class="comparison",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["Cannot use both home_only and away_only"],
+        )
 
     if wins_only and losses_only:
-        raise ValueError("Cannot use both wins_only and losses_only")
+        return NoResult(
+            query_class="comparison",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["Cannot use both wins_only and losses_only"],
+        )
 
     seasons = resolve_seasons(season, start_season, end_season)
     try:
@@ -317,6 +327,9 @@ def build_result(
 
     a_context = build_player_team_context(a_df, team_df) if not a_df.empty else a_df.copy()
     b_context = build_player_team_context(b_df, team_df) if not b_df.empty else b_df.copy()
+
+    if a_df.empty and b_df.empty:
+        return NoResult(query_class="comparison", reason="no_match")
 
     summary_a = summarize_player(a_df, a_context, player_a)
     summary_b = summarize_player(b_df, b_context, player_b)

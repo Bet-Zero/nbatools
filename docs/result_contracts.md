@@ -186,6 +186,8 @@ Conceptual shape:
   - `no_match` — query was valid and executed, but the filter returned nothing
   - `no_data` — the requested season/type/window is not loaded
   - `unrouted` — parser could not confidently select a route
+  - `ambiguous` — parser matched multiple routes with similar confidence
+  - `unsupported` — query was understood but the requested combination is not supported (e.g. mutually exclusive filters, invalid stat name)
   - `error` — execution failed for a known reason
 - **reason:** a short machine-readable reason code
 - **message:** a human-readable explanation suitable for CLI or UI display

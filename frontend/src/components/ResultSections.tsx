@@ -77,6 +77,7 @@ export default function ResultSections({ data }: Props) {
         <NoResultDisplay
           reason={data.result_reason}
           status={data.result_status}
+          notes={data.notes}
         />
       );
     }
@@ -94,6 +95,7 @@ export default function ResultSections({ data }: Props) {
         <NoResultDisplay
           reason={data.result_reason}
           status={data.result_status}
+          notes={data.notes}
         />
       );
     }

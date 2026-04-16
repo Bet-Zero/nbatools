@@ -257,11 +257,12 @@ class TestResultTrustFields:
         d = r.to_dict()
         assert d["current_through"] == "2025-04-10"
 
-    def test_result_reason_omitted_when_none(self):
+    def test_result_reason_present_when_none(self):
+        """result_reason is always present in to_dict() for contract consistency."""
         summary = pd.DataFrame([{"player_name": "X", "games": 10}])
         r = SummaryResult(summary=summary)
         d = r.to_dict()
-        assert "result_reason" not in d
+        assert d["result_reason"] is None
 
     def test_result_reason_included_when_set(self):
         summary = pd.DataFrame([{"player_name": "X", "games": 10}])

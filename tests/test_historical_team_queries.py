@@ -1174,24 +1174,26 @@ class TestTeamHistoricalEdgeCases:
             )
 
     def test_comparison_both_home_away_rejected(self):
-        with pytest.raises(ValueError, match="both home_only and away_only"):
-            team_compare_build_result(
-                team_a="ALP",
-                team_b="BET",
-                season="2098-99",
-                home_only=True,
-                away_only=True,
-            )
+        result = team_compare_build_result(
+            team_a="ALP",
+            team_b="BET",
+            season="2098-99",
+            home_only=True,
+            away_only=True,
+        )
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "unsupported"
 
     def test_comparison_both_wins_losses_rejected(self):
-        with pytest.raises(ValueError, match="both wins_only and losses_only"):
-            team_compare_build_result(
-                team_a="ALP",
-                team_b="BET",
-                season="2098-99",
-                wins_only=True,
-                losses_only=True,
-            )
+        result = team_compare_build_result(
+            team_a="ALP",
+            team_b="BET",
+            season="2098-99",
+            wins_only=True,
+            losses_only=True,
+        )
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "unsupported"
 
     def test_leaderboard_invalid_stat(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)

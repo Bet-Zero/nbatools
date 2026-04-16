@@ -40,10 +40,20 @@ def build_result(
     stat = stat.lower().strip()
     if stat not in ALLOWED_STATS:
         allowed = ", ".join(sorted(ALLOWED_STATS.keys()))
-        raise ValueError(f"Unsupported stat '{stat}'. Allowed stats: {allowed}")
+        return NoResult(
+            query_class="leaderboard",
+            reason="unsupported",
+            result_status="no_result",
+            notes=[f"Unsupported stat '{stat}'. Allowed stats: {allowed}"],
+        )
 
     if limit <= 0:
-        raise ValueError("limit must be greater than 0")
+        return NoResult(
+            query_class="leaderboard",
+            reason="unsupported",
+            result_status="no_result",
+            notes=["limit must be greater than 0"],
+        )
 
     df = pd.read_csv(path)
 

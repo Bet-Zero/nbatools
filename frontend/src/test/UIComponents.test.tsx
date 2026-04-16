@@ -35,6 +35,43 @@ describe("NoResultDisplay", () => {
     render(<NoResultDisplay reason={null} status="no_result" />);
     expect(screen.getByText("No matching data found.")).toBeInTheDocument();
   });
+
+  it("shows unsupported variant", () => {
+    render(
+      <NoResultDisplay
+        reason="unsupported"
+        status="no_result"
+        notes={["Cannot use both home_only and away_only"]}
+      />,
+    );
+    expect(screen.getByText("Unsupported Query")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "This query combination is not supported by the engine.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Cannot use both home_only and away_only/),
+    ).toBeInTheDocument();
+  });
+
+  it("shows ambiguous variant", () => {
+    render(<NoResultDisplay reason="ambiguous" status="no_result" />);
+    expect(screen.getByText("Ambiguous Query")).toBeInTheDocument();
+    expect(
+      screen.getByText(/matched multiple possible entities/),
+    ).toBeInTheDocument();
+  });
+
+  it("does not show suggestions for unsupported reason", () => {
+    render(<NoResultDisplay reason="unsupported" status="no_result" />);
+    expect(screen.queryByText("Suggestions")).not.toBeInTheDocument();
+  });
+
+  it("shows suggestions for no_match reason", () => {
+    render(<NoResultDisplay reason="no_match" status="no_result" />);
+    expect(screen.getByText("Suggestions")).toBeInTheDocument();
+  });
 });
 
 describe("Loading", () => {

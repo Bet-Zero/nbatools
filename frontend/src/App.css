@@ -938,6 +938,20 @@ body {
   margin-bottom: 6px;
 }
 
+/* ---- No Result Notes ---- */
+
+.no-result-notes {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--fg);
+  text-align: left;
+  display: inline-block;
+}
+
+.no-result-note {
+  margin-bottom: 2px;
+}
+
 /* ---- No Result Suggestions ---- */
 
 .no-result-suggestions {

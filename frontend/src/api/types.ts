@@ -14,7 +14,14 @@ export interface RoutesResponse {
 // --- Result status / reason ---
 
 export type ResultStatus = "ok" | "no_result" | "error";
-export type ResultReason = "no_match" | "no_data" | "unrouted" | "error" | null;
+export type ResultReason =
+  | "no_match"
+  | "no_data"
+  | "unrouted"
+  | "ambiguous"
+  | "unsupported"
+  | "error"
+  | null;
 
 // --- Query classes ---
 
@@ -24,7 +31,8 @@ export type QueryClass =
   | "split_summary"
   | "finder"
   | "leaderboard"
-  | "streak";
+  | "streak"
+  | "count";
 
 // --- Route names ---
 
@@ -42,7 +50,19 @@ export type RouteName =
   | "top_player_games"
   | "top_team_games"
   | "player_streak_finder"
-  | "team_streak_finder";
+  | "team_streak_finder"
+  | "team_record"
+  | "team_matchup_record"
+  | "team_record_leaderboard"
+  | "player_occurrence_leaders"
+  | "team_occurrence_leaders"
+  | "playoff_history"
+  | "playoff_appearances"
+  | "playoff_matchup_history"
+  | "playoff_round_record"
+  | "record_by_decade"
+  | "record_by_decade_leaderboard"
+  | "matchup_by_decade";
 
 // --- Result metadata ---
 

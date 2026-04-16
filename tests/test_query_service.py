@@ -216,9 +216,12 @@ class TestStructuredQueryExecution:
             leaders_df = qr.result.leaders
             assert "Kobe Bryant" in leaders_df["player_name"].values
 
-    def test_invalid_route_raises(self):
-        with pytest.raises(ValueError, match="Unknown route"):
-            execute_structured_query("nonexistent_route", season="2024-25")
+    def test_invalid_route_returns_unsupported(self):
+        qr = execute_structured_query("nonexistent_route", season="2024-25")
+        assert isinstance(qr.result, NoResult)
+        assert not qr.is_ok
+        assert qr.result_reason == "unsupported"
+        assert qr.result_status == "no_result"
 
     def test_no_data_returns_no_result(self):
         qr = execute_structured_query(

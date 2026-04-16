@@ -16,7 +16,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -201,16 +201,11 @@ def natural_query(body: NaturalQueryRequest) -> QueryResponse:
 
 
 @app.post("/structured-query", response_model=QueryResponse)
-def structured_query(body: StructuredQueryRequest) -> QueryResponse | JSONResponse:
+def structured_query(body: StructuredQueryRequest) -> QueryResponse:
     """Execute a structured (route-based) query.
 
     Calls ``execute_structured_query`` from the query service and returns
     the structured result as JSON.
     """
-    try:
-        qr = execute_structured_query(body.route, **body.kwargs)
-    except ValueError as exc:
-        return JSONResponse(
-            content={"ok": False, "error": "invalid_route", "detail": str(exc)},
-        )
+    qr = execute_structured_query(body.route, **body.kwargs)
     return _query_result_to_response(qr)

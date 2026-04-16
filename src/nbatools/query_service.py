@@ -309,15 +309,25 @@ def execute_natural_query(query: str) -> QueryResult:
 
     try:
         result = _execute_build_result(route, kwargs, extra_conditions)
-    except (FileNotFoundError, KeyError, TypeError) as exc:
+    except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         if isinstance(exc, FileNotFoundError):
             reason = "no_data"
+        elif isinstance(exc, ValueError):
+            reason = "unsupported"
         elif route is None:
             reason = "unrouted"
         else:
             reason = "error"
-        result = NoResult(query_class=route_to_query_class(route), reason=reason)
+        notes: list[str] = []
+        if isinstance(exc, ValueError):
+            notes = [str(exc)]
+        result = NoResult(
+            query_class=route_to_query_class(route),
+            reason=reason,
+            result_status="no_result" if reason == "unsupported" else "error",
+            notes=notes,
+        )
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -497,7 +507,18 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         If *route* is not a recognised route name.
     """
     if route not in VALID_ROUTES:
-        raise ValueError(f"Unknown route {route!r}. Valid routes: {sorted(VALID_ROUTES)}")
+        result = NoResult(
+            query_class="unknown",
+            reason="unsupported",
+            result_status="no_result",
+            notes=[f"Unknown route {route!r}. Valid routes: {sorted(VALID_ROUTES)}"],
+        )
+        return QueryResult(
+            result=result,
+            metadata={"route": route},
+            query=f"structured:{route}",
+            route=route,
+        )
 
     build_map = _get_build_result_map()
     build_fn = build_map[route]
@@ -564,6 +585,19 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         result = build_fn(**kwargs)
     except FileNotFoundError:
         result = NoResult(query_class=query_class, reason="no_data")
+        return QueryResult(
+            result=result,
+            metadata=metadata,
+            query=query_desc,
+            route=route,
+        )
+    except ValueError as exc:
+        result = NoResult(
+            query_class=query_class,
+            reason="unsupported",
+            result_status="no_result",
+            notes=[str(exc)],
+        )
         return QueryResult(
             result=result,
             metadata=metadata,

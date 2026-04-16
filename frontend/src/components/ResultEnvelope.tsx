@@ -17,6 +17,26 @@ function statusLabel(status: string): string {
   }
 }
 
+function reasonLabel(reason: string | null): string | null {
+  if (!reason) return null;
+  switch (reason) {
+    case "no_match":
+      return "no match";
+    case "no_data":
+      return "data unavailable";
+    case "unrouted":
+      return "unrecognized query";
+    case "ambiguous":
+      return "ambiguous entity";
+    case "unsupported":
+      return "unsupported";
+    case "error":
+      return "error";
+    default:
+      return reason;
+  }
+}
+
 function routeLabel(route: string): string {
   return route.replace(/_/g, " ");
 }
@@ -63,7 +83,7 @@ export default function ResultEnvelope({ data }: Props) {
         )}
         {data.result_reason && (
           <span className="muted" style={{ fontSize: "0.78rem" }}>
-            {data.result_reason}
+            {reasonLabel(data.result_reason)}
           </span>
         )}
         {data.current_through && (
