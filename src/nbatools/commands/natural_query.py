@@ -1289,22 +1289,10 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
     return None, None
 
 
-def _ensure_parent_dir(path_str: str) -> None:
-    path = Path(path_str)
-    if path.parent != Path("."):
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-
-def _write_text_file(path_str: str, text: str) -> None:
-    _ensure_parent_dir(path_str)
-    Path(path_str).write_text(text, encoding="utf-8")
-
-
 # ---------------------------------------------------------------------------
-# Structured-first build_result map
+# build_result map
 # ---------------------------------------------------------------------------
-# Maps route name → build_result callable, used by the structured-first
-# orchestration path so we never need to capture stdout from run().
+# Maps route name → build_result callable, used by the orchestration layer.
 
 _BUILD_RESULT_MAP: dict[str, Callable] = {}
 
@@ -1345,7 +1333,7 @@ def _get_build_result_map() -> dict[str, Callable]:
 
 
 # ---------------------------------------------------------------------------
-# Structured-first helpers: work on result objects, not text
+# Helpers: work on result objects, not text
 # ---------------------------------------------------------------------------
 
 
@@ -1384,7 +1372,6 @@ def _apply_extra_conditions_to_result(result, extra_conditions: list[dict]):
     """Apply stat-threshold extra conditions directly to the result's DataFrame.
 
     Returns a modified result (or NoResult if the filtered DataFrame is empty).
-    This replaces _apply_extra_conditions_to_raw_output for structured-first paths.
     """
     if not extra_conditions:
         return result
@@ -1417,10 +1404,7 @@ def _execute_build_result(
     kwargs: dict,
     extra_conditions: list[dict] | None = None,
 ):
-    """Build a structured result directly from a command's build_result().
-
-    Replaces _execute_capture_raw: no stdout capture, no text stripping.
-    """
+    """Build a structured result directly from a command's build_result()."""
     if extra_conditions is None:
         extra_conditions = []
 
@@ -1434,10 +1418,7 @@ def _execute_build_result(
 
 
 def _combine_or_results(results: list):
-    """Combine multiple finder-style results (for OR queries) into one FinderResult.
-
-    Replaces _combine_or_raw_outputs: works with DataFrames directly.
-    """
+    """Combine multiple finder-style results (for OR queries) into one FinderResult."""
     frames = []
     first_columns: list[str] | None = None
     query_class = "finder"
@@ -1490,10 +1471,7 @@ def _combine_or_results(results: list):
 
 
 def _execute_or_query_build_result(query: str):
-    """Build a structured result for OR queries.
-
-    Replaces _execute_or_query_capture_raw: uses build_result directly.
-    """
+    """Build a structured result for OR queries."""
     clauses = _split_or_clauses(query)
     if len(clauses) <= 1:
         parsed = parse_query(query)
@@ -1527,11 +1505,7 @@ def _execute_or_query_build_result(query: str):
 
 
 def _execute_grouped_boolean_build_result(query: str):
-    """Build a structured result for grouped boolean queries.
-
-    Replaces _execute_grouped_boolean_query_capture_raw: passes pre-filtered
-    DataFrames to build_result(df=...) instead of calling run() via stdout.
-    """
+    """Build a structured result for grouped boolean queries."""
     parsed = parse_query(query)
     route = parsed["route"]
 
@@ -3221,8 +3195,12 @@ def render_query_result(
             text_to_save = format_pretty_from_result(result, query)
         else:
             text_to_save = wrapped
-        _write_text_file(
-            export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
+        _p = Path(export_txt_path)
+        if _p.parent != Path("."):
+            _p.parent.mkdir(parents=True, exist_ok=True)
+        _p.write_text(
+            text_to_save + ("" if text_to_save.endswith("\n") else "\n"),
+            encoding="utf-8",
         )
 
     # Console output
