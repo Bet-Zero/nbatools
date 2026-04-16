@@ -36,6 +36,7 @@ tokens.txt
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.testmondata
 htmlcov/
 .coverage
 coverage.xml

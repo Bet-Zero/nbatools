@@ -33,6 +33,7 @@ api = [
 dev = [
     "pytest>=8.0",
     "pytest-xdist>=3.5",
+    "pytest-testmon>=2.1",
     "ruff>=0.5",
     "pre-commit>=3.7",
     "httpx>=0.28",

@@ -114,6 +114,24 @@ Do not knowingly leave behind:
 
 Every meaningful feature change should include appropriate tests.
 
+### Test commands
+
+Use the Makefile targets — do not invent ad hoc pytest invocations.
+
+| Command               | What it does                                                                   | When to use                                                         |
+| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `make test-impacted`  | Runs only tests whose file-level dependencies changed (pytest-testmon, serial) | During active development for fast feedback                         |
+| `make test`           | Full regression suite (parallel via xdist)                                     | Before merging, after broad changes, when full confidence is needed |
+| `make test-preflight` | Impacted tests first (fast fail), then full suite                              | Before concluding any implementation task                           |
+
+**Workflow for agents:**
+
+1. While iterating on code, run `make test-impacted` for fast feedback.
+2. Before declaring work complete, run `make test-preflight`.
+3. If `test-impacted` misses something (dynamic imports, data file changes, monkey-patching), fall back to `make test`.
+
+Testmon tracks file-level dependencies. It does **not** detect changes in data files, environment variables, or dynamically loaded modules. When in doubt, run the full suite.
+
 ### Minimum expectations by change type
 
 - parsing change -> parser tests
