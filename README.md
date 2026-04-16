@@ -2,7 +2,7 @@
 
 NBA Tools is a query-first NBA stats engine with a natural-language interface, a CLI, an HTTP API, and a React web UI.
 
-It powers three surfaces — a CLI for development and power-user queries, a FastAPI HTTP layer, and a React + TypeScript + Vite web UI — all backed by the same query engine.
+It powers three surfaces -- a CLI for development and power-user queries, a FastAPI HTTP layer, and a React + TypeScript + Vite web UI -- all backed by the same query engine.
 
 ---
 
@@ -22,7 +22,7 @@ Web UI:
 
 Run tests:
 
-    pytest
+    make test
 
 ---
 
@@ -47,19 +47,41 @@ Run tests:
 
     nbatools-cli ask "top scorers this season"
     nbatools-cli ask "highest ts% among players"
-    nbatools-cli ask "most 30 point game    nbanbatools-cli ask "most games with 30+ points and 10+ rebounds"
+    nbatools-cli ask "most 30 point games"
+    nbatools-cli ask "most games with 30+ points and 10+ rebounds"
     nbatools-cli ask "best offensive teams"
     nbatools-cli ask "teams with best efg%"
+
+### Streaks
+
+    nbatools-cli ask "Jokic longest streak of 30 point games"
+    nbatools-cli ask "Jokic 5 straight games with 20+ points"
+    nbatools-cli ask "longest Lakers winning streak"
+    nbatools-cli ask "Celtics 5 straight games scoring 120+"
+
+### Splits
+
+    nbatools-cli ask "Jokic home vs away in 2025-26"
+    nbatools-cli ask "Jokic home away split last 20 games"
+    nbatools-cli ask "Celtics wins vs losses"
 
 ### Date-aware queries
 
     nbatools-cli ask "top scorers in March"
     nbatools-cli ask "best offensive teams since January"
-    nbatools-    nba "Jokic since All-Star    nbatools-    nls-cli ask "Jokic last 3 seasons"
-    nbatools-    nba "Jokic since All-Sic longest streak of 30 point games"
-    nbatools-cli a    nbatools-cli a    nbatools-cli a    nbatoba    nbatools-cli a    nbatools-cli a    nbak"
-    nbatools-cli ask "Celtics 5 s    nbatools-cli ask "Celtics 5 s    nbatools-clioo    nbatools-cli ask "Celtics 5 s    nbat"
-    nbatools-cli ask "Celtics wins vs losses"
+    nbatools-cli ask "Jokic since All-Star break"
+    nbatools-cli ask "Jokic last 3 seasons"
+
+### Game finders and boolean filters
+
+    nbatools-cli ask "Jokic over 25 points and over 10 rebounds"
+    nbatools-cli ask "Jokic over 25 points or over 10 rebounds"
+    nbatools-cli ask "Jokic (over 25 points and over 10 rebounds) or over 15 assists"
+
+### Count queries
+
+    nbatools-cli ask "how many games did Jokic score over 30 points"
+    nbatools-cli ask "how many Celtics wins this season"
 
 ### Records and playoff history
 
@@ -67,13 +89,9 @@ Run tests:
     nbatools-cli ask "Lakers record vs Celtics"
     nbatools-cli ask "best record this season"
     nbatools-cli ask "Lakers playoff history"
-    nbatools-cli ask     nbatools-cli ask     nbatools-cli ask     nbatools-cli ask     nbatools-cli ask     nbatoos-cli ask "Laker    nbatools-cli ask     nbatools-cli ask       nbatools-cli ask     nbatools-cli ask nd     nbatools-cli ask  nb    nbatools-cli ask     nbatools-cli ask er 12 assists"
-    nbatools-cli ask "Jokic (over 25 points and over 10 rebounds) or over 15 assists"
-
-### Count queries
-
-    nbatools-cli ask "how many games did Jokic score over 30 points"
-    nbatools-cli ask "how many Celtics wins this season"
+    nbatools-cli ask "most finals appearances"
+    nbatools-cli ask "Lakers vs Celtics playoff history"
+    nbatools-cli ask "Lakers record by decade"
 
 ---
 
@@ -83,22 +101,32 @@ Run tests:
 
 The engine supports these query classes:
 
-- **finder** — games matching conditions
-- **count** — count of matching games/occurrences
-- **summary** — aggregated stats- **summary** — aggregated stats- **summar-si- **summary** — aggregated ssplit** — home/away or wins/losses breakdowns
-- **leaderboard** — ranked lists (season leaders, - **leaderboard** — ranked lists (season le�� consecutive games meeting a condition
-- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **r, - **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **rec- **reon /- **rec- **rec-
+- **finder** -- games matching conditions
+- **count** -- count of matching games/occurrences
+- **summary** -- aggregated stats over a sample
+- **comparison** -- side-by-side stats for two entities
+- **split** -- home/away or wins/losses breakdowns
+- **leaderboard** -- ranked lists (season leaders, occurrence leaders, top games)
+- **streak** -- consecutive games meeting a condition
+- **record** -- team win-loss records with optional filters
+- **playoff** -- playoff history, appearances, round records, matchup history
+
+### Filters and windows
+
+- season / season range / last N seasons
 - last N games / recent form
 - home / away / wins / losses
-- opponent / - opponent / - opponent / - opponent / - opponent / - o Ja- ary- opponent / - opponenws (last 30 days)
+- opponent / head-to-head
+- month / since month / last 30 days
 - since All-Star break
 - career / all-time
-- p- p- p- p- p- p- p- p- p- p- p- p- p- p- itions (over / under / between) with boolean chaining
+- playoffs
+- threshold conditions (over / under / between) with boolean chaining (and / or / parentheses)
 
 ### Entity resolution
 
 - 90+ curated player aliases and nicknames
-- accent normalization (jokic → Jokić, doncic → Dončić)
+- accent normalization (jokic -> Jokić, doncic -> Dončić)
 - team name / abbreviation / nickname resolution
 - ambiguity detection with confidence levels
 
@@ -116,43 +144,90 @@ Player summaries, comparisons, and splits also show sample-aware USG%, AST%, REB
     nbatools-cli ask "top scorers in March" --csv outputs/top_scorers_march.csv
     nbatools-cli ask "Jokic vs Embiid recent form" --json outputs/jokic_embiid_recent.json
 
+---
 
-   nbatools-cli ask "Jokicon   nbatools-cli ask "JokicoI provides pipeline and analysis commands:
+## Web UI
 
-### `raw` — Pull data from the NBA API
+The React frontend is served by FastAPI at `/`.
 
-    nbatools-cli raw pull-teams --season 2024-25
-    nba    nba    nba    -p    nba    nba    nba    -p    nba    nba    nba    -p    nba    nba    nba    -p    nba    nba  nbatools-cli raw pull-schedule --season 2024-25
-    nbatools-cli raw pull-rosters --season 2024-25
-    nbatools-cli raw pull-standi    nbatools-cli raw pull-standi    nbatools-cl r    nbatools-cli raw pull-standi    nbatool-cli raw pull-team-season-    nbatools-cli raw pull-standi    nbatools-cli raw pull-standi    nbatools-cl r    nbatools-cli raw pull-st — Build features from raw data
+    nbatools-api              # http://127.0.0.1:8000
 
-    nbatools-cli processing validate-raw --season 2024-25
-    nbatools-cli processing build-team-game-features --season 2024-25
-    nbatools-cli processing build-game-features --season 2024-25
-    nbatools-cli processing build-player-game-features --season 2024-25
-    nbatools-cli processing build-league-season-stat    nbatools-cli processing build-leagucessing analyze-3pt-battles --season 2024-25
+Features: query bar, sample query buttons, result tables for all query classes, raw JSON toggle, query history, saved queries, freshness status panel, and a Dev Tools panel for structured queries.
 
-### `ops` — ### `ops` — ### `ops` — ### `ops` �ps backfill-season --season 2024-25
-    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatools-cli    nbatoolsm LAL
-    nbatoo    nbatoo    nbatoo    nbatoo    nbatoo    nba sho    nbatoo    nbatoo    nbatoo    nbatoo    nbatoo    nba sho    nbatoo    nbatoo    nbatoo    nbatoo    nbatoo    nba sho    nbatoo    nbatoo    nbatoo    nbatoo    nbatoo    nba sho    nbatoo    nbatoo    nbatoo    nbatoo    nbatoo    nba sho    nbatoo    nbatoo    nbatoo    nbatoo    nbaks     nbatoo    nbatoo    nbatoo    nbatoo    nbatoo    nbditable mode with dev dependencies
+For development with hot reload, see `docs/ui_guide.md`.
+
+---
+
+## Data Pipeline
+
+### Refresh data
+
+    # One-shot refresh of the current season
+    nbatools-cli pipeline refresh
+
+    # Automated repeating refresh
+    nbatools-cli pipeline auto-refresh --interval 6h
+
+### Pipeline stages
+
+The pipeline orchestrates: raw data pulls -> validation -> feature builds -> manifest update.
+
+Individual stages are also available via CLI command groups:
+
+- `nbatools-cli raw` -- pull data from the NBA API
+- `nbatools-cli processing` -- build features from raw data
+- `nbatools-cli ops` -- backfill, inventory, manifest management
+
+### Freshness
+
+    GET /freshness    # returns structured freshness report
+
+The UI shows a collapsible freshness panel with status badge, current-through date, and per-season details.
+
+---
+
+## Structured CLI Queries
+
+For full control, use the structured query interface:
+
+    nbatools-cli query player-game-summary --player "Nikola Jokić" --season 2025-26 --last-n 10
+    nbatools-cli query season-leaders --season 2025-26 --stat pts --limit 10 --min-games 20
+    nbatools-cli query top-player-games --season 2005-06 --stat pts --limit 10
+    nbatools-cli query player-game-finder --player "Kobe Bryant" --season 2005-06 --stat pts --min-value 40
+    nbatools-cli query game-finder --team BOS --season 2025-26 --home-only --wins-only
+
+26 structured routes are available. Run `nbatools-cli query --help` for the full list.
+
+---
+
+## Setup
+
+```bash
+# Install in editable mode with dev dependencies
 pip install -e ".[dev]"
 
 # Install frontend dependencies
 cd frontend && npm install && cd ..
 
-# Run tests
-pytest
-
-# Frontend dev (hot reload) — two terminals:
-# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Terminal 1:# Te Build frontend for production
+# Build frontend for production
 cd frontend && npm run build
-# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands iub# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands iub# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands in src/nbatools/u# Output lands iub# Output lands in src/nbes
+# Output lands in src/nbatools/ui/dist/ and is served by FastAPI
+
+# Run tests
+make test
+
+# Frontend dev (hot reload) -- two terminals:
+# Terminal 1: API server
+uvicorn nbatools.api:app --reload
+# Terminal 2: Vite dev server with proxy
+cd frontend && npm run dev
+```
 
 ---
 
 ## Current Tested State
 
-- full suite: **1650 passing tests**
+- full suite: ~**1,684 test functions** across 42 test files
 - coverage spans parser, routing, result contracts, CLI smoke, API, query service, and specialized query areas
 
 For release history, see `CHANGELOG.md`.
