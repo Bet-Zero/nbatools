@@ -228,17 +228,46 @@ def execute_natural_query(query: str) -> QueryResult:
         "(" in normalized or ")" in normalized
     )
 
+    def _build_special_path_error_result(
+        exc: FileNotFoundError | KeyError | TypeError | ValueError,
+        parsed: dict,
+        grouped_boolean_used: bool,
+    ) -> QueryResult:
+        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=grouped_boolean_used)
+        route = parsed.get("route")
+        if isinstance(exc, FileNotFoundError):
+            reason = "no_data"
+        elif isinstance(exc, ValueError):
+            reason = "unsupported"
+        elif route is None:
+            reason = "unrouted"
+        else:
+            reason = "error"
+        notes = [str(exc)] if isinstance(exc, ValueError) else []
+        result = NoResult(
+            query_class=route_to_query_class(route),
+            reason=reason,
+            result_status="no_result" if reason == "unsupported" else "error",
+            notes=notes,
+        )
+        return QueryResult(
+            result=result,
+            metadata=metadata,
+            query=query,
+            route=route,
+        )
+
     # -- Grouped boolean path --
     if grouped_boolean_used:
         try:
             result = _execute_grouped_boolean_build_result(query)
-        except Exception:
-            result = NoResult(query_class="finder", reason="error")
-
-        try:
             parsed = parse_query(query)
-        except Exception:
-            parsed = _build_parse_state(query)
+        except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
+            try:
+                parsed = parse_query(query)
+            except ValueError:
+                parsed = _build_parse_state(query)
+            return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
 
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=True)
         return QueryResult(
@@ -252,13 +281,13 @@ def execute_natural_query(query: str) -> QueryResult:
     if " or " in normalized:
         try:
             result = _execute_or_query_build_result(query)
-        except Exception:
-            result = NoResult(query_class="finder", reason="error")
-
-        try:
             parsed = parse_query(query)
-        except Exception:
-            parsed = _build_parse_state(query)
+        except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
+            try:
+                parsed = parse_query(query)
+            except ValueError:
+                parsed = _build_parse_state(query)
+            return _build_special_path_error_result(exc, parsed, grouped_boolean_used=False)
 
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         return QueryResult(

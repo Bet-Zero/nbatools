@@ -1,8 +1,5 @@
-import json
 import re
 from collections.abc import Callable
-from contextlib import redirect_stdout
-from io import StringIO
 from pathlib import Path
 
 import pandas as pd
@@ -24,22 +21,15 @@ from nbatools.commands.entity_resolution import (  # noqa: E402
     resolve_team_in_query,
 )
 from nbatools.commands.format_output import (
-    METADATA_LABEL,
     build_error_output,
     build_no_result_output,
     format_pretty_from_result,
-    format_pretty_output,
-    parse_labeled_sections,
-    parse_metadata_block,
     route_to_query_class,
-    wrap_raw_output,
     wrap_result_with_metadata,
     write_csv_from_result,
     write_json_from_result,
 )
-from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.game_finder import build_result as game_finder_build_result
-from nbatools.commands.game_finder import run as game_finder_run
 from nbatools.commands.game_summary import (
     _apply_filters as apply_team_summary_filters,
 )
@@ -52,17 +42,12 @@ from nbatools.commands.game_summary import (
 from nbatools.commands.game_summary import (
     resolve_seasons as resolve_team_summary_seasons,
 )
-from nbatools.commands.game_summary import (
-    run as game_summary_run,
-)
 from nbatools.commands.player_compare import (
     build_result as player_compare_build_result,
 )
-from nbatools.commands.player_compare import run as player_compare_run
 from nbatools.commands.player_game_finder import (
     build_result as player_game_finder_build_result,
 )
-from nbatools.commands.player_game_finder import run as player_game_finder_run
 from nbatools.commands.player_game_summary import (
     _apply_filters as apply_player_summary_filters,
 )
@@ -75,20 +60,15 @@ from nbatools.commands.player_game_summary import (
 from nbatools.commands.player_game_summary import (
     resolve_seasons as resolve_player_summary_seasons,
 )
-from nbatools.commands.player_game_summary import (
-    run as player_game_summary_run,
-)
 from nbatools.commands.player_occurrence_leaders import (
     build_result as player_occurrence_leaders_build_result,
 )
 from nbatools.commands.player_split_summary import (
     build_result as player_split_summary_build_result,
 )
-from nbatools.commands.player_split_summary import run as player_split_summary_run
 from nbatools.commands.player_streak_finder import (
     build_result as player_streak_finder_build_result,
 )
-from nbatools.commands.player_streak_finder import run as player_streak_finder_run
 from nbatools.commands.playoff_history import (
     ROUND_ALIASES,
     build_matchup_by_decade_result,
@@ -107,11 +87,9 @@ from nbatools.commands.query_boolean_parser import (
 from nbatools.commands.season_leaders import (
     build_result as season_leaders_build_result,
 )
-from nbatools.commands.season_leaders import run as season_leaders_run
 from nbatools.commands.season_team_leaders import (
     build_result as season_team_leaders_build_result,
 )
-from nbatools.commands.season_team_leaders import run as season_team_leaders_run
 from nbatools.commands.structured_results import (
     FinderResult,
     LeaderboardResult,
@@ -121,7 +99,6 @@ from nbatools.commands.structured_results import (
 from nbatools.commands.team_compare import (
     build_result as team_compare_build_result,
 )
-from nbatools.commands.team_compare import run as team_compare_run
 from nbatools.commands.team_occurrence_leaders import (
     build_result as team_occurrence_leaders_build_result,
 )
@@ -133,19 +110,15 @@ from nbatools.commands.team_record import (
 from nbatools.commands.team_split_summary import (
     build_result as team_split_summary_build_result,
 )
-from nbatools.commands.team_split_summary import run as team_split_summary_run
 from nbatools.commands.team_streak_finder import (
     build_result as team_streak_finder_build_result,
 )
-from nbatools.commands.team_streak_finder import run as team_streak_finder_run
 from nbatools.commands.top_player_games import (
     build_result as top_player_games_build_result,
 )
-from nbatools.commands.top_player_games import run as top_player_games_run
 from nbatools.commands.top_team_games import (
     build_result as top_team_games_build_result,
 )
-from nbatools.commands.top_team_games import run as top_team_games_run
 
 STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary|average|averages|record|for|during|playoff|playoffs|postseason|last|past|recent|form|split|over|under|between|and|or)"  # noqa: E501
 
@@ -1335,9 +1308,6 @@ def _write_text_file(path_str: str, text: str) -> None:
     Path(path_str).write_text(text, encoding="utf-8")
 
 
-_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE", "NO_RESULT", "ERROR")
-
-
 # ---------------------------------------------------------------------------
 # Structured-first build_result map
 # ---------------------------------------------------------------------------
@@ -1728,276 +1698,6 @@ def _execute_grouped_boolean_build_result(query: str):
         df.insert(0, "rank", range(1, len(df) + 1))
 
     return FinderResult(games=df)
-
-
-def _emit_result(
-    result,
-    parsed: dict,
-    query: str,
-    grouped_boolean_used: bool,
-    pretty: bool,
-    export_csv_path: str | None,
-    export_txt_path: str | None,
-    export_json_path: str | None,
-) -> None:
-    """Emit output from a structured result — no text round-tripping.
-
-    Replaces _emit: renders, exports, and prints from the result object.
-    """
-    metadata = _build_metadata_dict(parsed, query, grouped_boolean_used)
-    query_class = route_to_query_class(parsed.get("route") if parsed else None)
-
-    # NoResult: use the canonical no-result output format
-    if isinstance(result, NoResult):
-        reason = result.result_reason or result.reason or "no_match"
-        wrapped = build_no_result_output(metadata, reason=reason)
-    else:
-        wrapped = wrap_result_with_metadata(result, metadata, query_class)
-
-    # Export directly from structured result (no text reparsing)
-    if export_csv_path:
-        write_csv_from_result(result, export_csv_path)
-
-    if export_json_path:
-        write_json_from_result(result, export_json_path, metadata)
-
-    if export_txt_path:
-        if pretty:
-            text_to_save = format_pretty_from_result(result, query)
-        else:
-            text_to_save = wrapped
-        _write_text_file(
-            export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
-        )
-
-    # Console output
-    if not pretty:
-        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
-        return
-
-    pretty_text = format_pretty_from_result(result, query)
-    print(pretty_text)
-
-
-def _build_metadata_dict(parsed: dict, query: str, grouped_boolean_used: bool) -> dict:
-    if not parsed:
-        return {"query_text": query}
-
-    route = parsed.get("route")
-    query_class = route_to_query_class(route)
-
-    player = parsed.get("player")
-    if not player:
-        player_a = parsed.get("player_a")
-        player_b = parsed.get("player_b")
-        if player_a and player_b:
-            player = f"{player_a}, {player_b}"
-        else:
-            player = player_a or player_b
-
-    team = parsed.get("team")
-    if not team:
-        team_a = parsed.get("team_a")
-        team_b = parsed.get("team_b")
-        if team_a and team_b:
-            team = f"{team_a}, {team_b}"
-        else:
-            team = team_a or team_b
-
-    notes = parsed.get("notes") or []
-
-    # -- compute current_through from available season info --
-    current_through: str | None = None
-    season = parsed.get("season")
-    start_season = parsed.get("start_season")
-    end_season = parsed.get("end_season")
-    season_type = parsed.get("season_type") or "Regular Season"
-
-    if season:
-        current_through = compute_current_through_for_seasons([season], season_type)
-    elif start_season and end_season:
-        from nbatools.commands._seasons import int_to_season, season_to_int
-
-        seasons = [
-            int_to_season(y)
-            for y in range(season_to_int(start_season), season_to_int(end_season) + 1)
-        ]
-        current_through = compute_current_through_for_seasons(seasons, season_type)
-
-    meta: dict = {
-        "query_text": query,
-        "route": route,
-        "query_class": query_class,
-        "season": season,
-        "start_season": start_season,
-        "end_season": end_season,
-        "season_type": parsed.get("season_type"),
-        "start_date": parsed.get("start_date"),
-        "end_date": parsed.get("end_date"),
-        "player": player,
-        "team": team,
-        "opponent": parsed.get("opponent"),
-        "split_type": parsed.get("split_type"),
-        "grouped_boolean_used": grouped_boolean_used,
-        "head_to_head_used": bool(parsed.get("head_to_head")),
-    }
-
-    if current_through is not None:
-        meta["current_through"] = current_through
-
-    if notes:
-        meta["notes"] = notes
-
-    return meta
-
-
-def _wrap_natural_query_raw(
-    raw_text: str, parsed: dict, query: str, grouped_boolean_used: bool
-) -> str:
-    metadata = _build_metadata_dict(parsed, query, grouped_boolean_used)
-    query_class = route_to_query_class(parsed.get("route") if parsed else None)
-    return wrap_raw_output(raw_text, metadata, query_class)
-
-
-def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
-    _ensure_parent_dir(path_str)
-    text = (raw_text or "").strip()
-
-    if not text:
-        Path(path_str).write_text("", encoding="utf-8")
-        return
-
-    if text.lower() == "no matching games":
-        Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
-        return
-
-    sections = parse_labeled_sections(text)
-    sections_no_meta = {k: v for k, v in sections.items() if k != METADATA_LABEL}
-
-    if not sections_no_meta:
-        Path(path_str).write_text("", encoding="utf-8")
-        return
-
-    if len(sections_no_meta) == 1:
-        only_label, only_block = next(iter(sections_no_meta.items()))
-        if only_label in _SINGLE_TABLE_LABELS:
-            if only_block.lower() == "no matching games":
-                Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
-                return
-            try:
-                df = pd.read_csv(StringIO(only_block))
-                df.to_csv(path_str, index=False)
-                return
-            except Exception:
-                Path(path_str).write_text(
-                    only_block + ("\n" if not only_block.endswith("\n") else ""),
-                    encoding="utf-8",
-                )
-                return
-
-    parts: list[str] = []
-    for label in (
-        "SUMMARY",
-        "BY_SEASON",
-        "COMPARISON",
-        "SPLIT_COMPARISON",
-        "FINDER",
-        "LEADERBOARD",
-        "STREAK",
-        "NO_RESULT",
-        "ERROR",
-    ):
-        if label in sections_no_meta:
-            parts.append(f"{label}\n{sections_no_meta[label]}")
-    if not parts and "TABLE" in sections_no_meta:
-        parts.append(sections_no_meta["TABLE"])
-
-    rebuilt = "\n\n".join(parts).strip()
-    Path(path_str).write_text(rebuilt + "\n", encoding="utf-8")
-
-
-def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
-    _ensure_parent_dir(path_str)
-    text = (raw_text or "").strip()
-
-    if not text:
-        Path(path_str).write_text("[]\n", encoding="utf-8")
-        return
-
-    if text.lower() == "no matching games":
-        payload = {"message": "no matching games"}
-        Path(path_str).write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        return
-
-    sections = parse_labeled_sections(text)
-    metadata_block = sections.pop(METADATA_LABEL, None)
-
-    payload: dict[str, object] = {}
-
-    if metadata_block is not None:
-        meta = parse_metadata_block(metadata_block)
-        if "notes" in meta and isinstance(meta["notes"], str):
-            meta["notes"] = [n for n in meta["notes"].split("|") if n]
-        payload["metadata"] = meta
-
-    for label, block in sections.items():
-        if not block:
-            continue
-        key = label.lower() if label != "TABLE" else "table"
-        if block.lower() == "no matching games":
-            payload[key] = []
-            continue
-        try:
-            df = pd.read_csv(StringIO(block))
-            payload[key] = df.to_dict(orient="records")
-        except Exception:
-            payload[key] = block
-
-    if not payload:
-        try:
-            df = pd.read_csv(StringIO(text))
-            payload_list = df.to_dict(orient="records")
-            Path(path_str).write_text(
-                json.dumps(payload_list, indent=2, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
-            return
-        except Exception:
-            payload = {"raw_text": text}
-
-    Path(path_str).write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-
-
-def _apply_extra_conditions_to_raw_output(raw_text: str, extra_conditions: list[dict]) -> str:
-    if not extra_conditions:
-        return raw_text
-
-    text = raw_text.strip()
-    if not text or text.startswith("SUMMARY\n"):
-        return raw_text
-
-    try:
-        df = pd.read_csv(StringIO(text))
-    except Exception:
-        return raw_text
-
-    for cond in extra_conditions:
-        stat = cond["stat"]
-        if stat not in df.columns:
-            return "no matching games\n"
-        if cond["min_value"] is not None:
-            df = df[df[stat] >= cond["min_value"]]
-        if cond["max_value"] is not None:
-            df = df[df[stat] <= cond["max_value"]]
-
-    if df.empty:
-        return "no matching games\n"
-
-    return df.to_csv(index=False)
 
 
 def _split_or_clauses(text: str) -> list[str]:
@@ -3387,93 +3087,6 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
     return _finalize_route(out)
 
 
-def _strip_new_section_label(text: str) -> str:
-    """Strip FINDER/LEADERBOARD/STREAK label prefix from structured run() output.
-
-    These labels are emitted by the new structured-first run() functions.
-    The natural query layer needs raw CSV for post-processing (extra conditions,
-    OR combining, grouped boolean evaluation).  SUMMARY/COMPARISON/SPLIT labels
-    are left intact because existing bail-out checks depend on them.
-    """
-    for label in ("FINDER", "LEADERBOARD", "STREAK"):
-        prefix = f"{label}\n"
-        if text.startswith(prefix):
-            return text[len(prefix) :]
-    return text
-
-
-def _execute_capture_raw(
-    func: Callable,
-    kwargs: dict,
-    extra_conditions: list[dict] | None = None,
-) -> str:
-    if extra_conditions is None:
-        extra_conditions = []
-
-    buffer = StringIO()
-    with redirect_stdout(buffer):
-        func(**kwargs)
-    raw_text = _strip_new_section_label(buffer.getvalue())
-
-    if extra_conditions:
-        raw_text = _apply_extra_conditions_to_raw_output(raw_text, extra_conditions)
-
-    return raw_text
-
-
-def _combine_or_raw_outputs(raw_outputs: list[str]) -> str:
-    frames = []
-    first_columns: list[str] | None = None
-
-    for raw_text in raw_outputs:
-        text = raw_text.strip()
-        if not text or text.lower() == "no matching games" or text.startswith("SUMMARY\n"):
-            continue
-        try:
-            df = pd.read_csv(StringIO(text))
-        except Exception:
-            continue
-
-        if first_columns is None:
-            first_columns = list(df.columns)
-        frames.append(df)
-
-    if not frames:
-        return "no matching games\n"
-
-    combined = pd.concat(frames, ignore_index=True)
-
-    dedupe_keys = [c for c in ["game_id", "player_id", "team_id"] if c in combined.columns]
-    if dedupe_keys:
-        combined = combined.drop_duplicates(subset=dedupe_keys)
-    else:
-        combined = combined.drop_duplicates()
-
-    if "game_date" in combined.columns:
-        try:
-            combined["_game_date_sort"] = pd.to_datetime(combined["game_date"], errors="coerce")
-            sort_cols = ["_game_date_sort"]
-            ascending = [False]
-            if "game_id" in combined.columns:
-                sort_cols.append("game_id")
-                ascending.append(False)
-            combined = combined.sort_values(sort_cols, ascending=ascending)
-            combined = combined.drop(columns="_game_date_sort")
-        except Exception:
-            pass
-
-    if "rank" in combined.columns:
-        combined = combined.drop(columns="rank")
-        combined.insert(0, "rank", range(1, len(combined) + 1))
-
-    if first_columns:
-        ordered = [c for c in first_columns if c in combined.columns]
-        extras = [c for c in combined.columns if c not in ordered]
-        combined = combined[ordered + extras]
-
-    return combined.to_csv(index=False)
-
-
 def _extract_grouped_condition_text(query: str) -> str:
     normalized = normalize_text(query)
     condition_text = normalized
@@ -3577,292 +3190,6 @@ def _load_grouped_team_base_df(parsed: dict) -> pd.DataFrame:
     return df
 
 
-def _execute_grouped_boolean_query_capture_raw(query: str) -> str:
-    parsed = parse_query(query)
-    route = parsed["route"]
-
-    if route in {"player_game_summary", "player_split_summary"}:
-        condition_text = _extract_grouped_condition_text(query)
-        if not expression_contains_boolean_ops(condition_text):
-            raise ValueError("No grouped boolean expression detected.")
-
-        tree = parse_condition_text(condition_text)
-        base_df = _load_grouped_player_base_df(parsed)
-
-        if base_df.empty:
-            return "no matching games\n"
-
-        filtered_df = evaluate_condition_tree(tree, base_df)
-
-        if filtered_df.empty:
-            return "no matching games\n"
-
-        buffer = StringIO()
-        with redirect_stdout(buffer):
-            if route == "player_game_summary":
-                player_game_summary_run(
-                    season=parsed["season"],
-                    start_season=parsed["start_season"],
-                    end_season=parsed["end_season"],
-                    season_type=parsed["season_type"],
-                    player=parsed["player"],
-                    team=parsed["team"],
-                    opponent=parsed["opponent"],
-                    home_only=parsed["home_only"],
-                    away_only=parsed["away_only"],
-                    wins_only=parsed["wins_only"],
-                    losses_only=parsed["losses_only"],
-                    stat=None,
-                    min_value=None,
-                    max_value=None,
-                    last_n=None,
-                    df=filtered_df,
-                )
-            else:
-                player_split_summary_run(
-                    split=parsed["split_type"],
-                    season=parsed["season"],
-                    start_season=parsed["start_season"],
-                    end_season=parsed["end_season"],
-                    season_type=parsed["season_type"],
-                    player=parsed["player"],
-                    team=parsed["team"],
-                    opponent=parsed["opponent"],
-                    stat=None,
-                    min_value=None,
-                    max_value=None,
-                    last_n=None,
-                    df=filtered_df,
-                )
-        return buffer.getvalue()
-
-    if route in {"game_summary", "team_split_summary"}:
-        condition_text = _extract_grouped_condition_text(query)
-        if not expression_contains_boolean_ops(condition_text):
-            raise ValueError("No grouped boolean expression detected.")
-
-        tree = parse_condition_text(condition_text)
-        base_df = _load_grouped_team_base_df(parsed)
-
-        if base_df.empty:
-            return "no matching games\n"
-
-        filtered_df = evaluate_condition_tree(tree, base_df)
-
-        if filtered_df.empty:
-            return "no matching games\n"
-
-        buffer = StringIO()
-        with redirect_stdout(buffer):
-            if route == "game_summary":
-                game_summary_run(
-                    season=parsed["season"],
-                    start_season=parsed["start_season"],
-                    end_season=parsed["end_season"],
-                    season_type=parsed["season_type"],
-                    team=parsed["team"],
-                    opponent=parsed["opponent"],
-                    home_only=parsed["home_only"],
-                    away_only=parsed["away_only"],
-                    wins_only=parsed["wins_only"],
-                    losses_only=parsed["losses_only"],
-                    stat=None,
-                    min_value=None,
-                    max_value=None,
-                    last_n=None,
-                    df=filtered_df,
-                )
-            else:
-                team_split_summary_run(
-                    split=parsed["split_type"],
-                    season=parsed["season"],
-                    start_season=parsed["start_season"],
-                    end_season=parsed["end_season"],
-                    season_type=parsed["season_type"],
-                    team=parsed["team"],
-                    opponent=parsed["opponent"],
-                    stat=None,
-                    min_value=None,
-                    max_value=None,
-                    last_n=None,
-                    df=filtered_df,
-                )
-        return buffer.getvalue()
-
-    if route not in {"player_game_finder", "game_finder"}:
-        raise ValueError(
-            "Grouped boolean logic is currently supported for finder, player summary/split, "
-            "and team summary/split natural queries."
-        )
-
-    condition_text = _extract_grouped_condition_text(query)
-    if not expression_contains_boolean_ops(condition_text):
-        raise ValueError("No grouped boolean expression detected.")
-
-    tree = parse_condition_text(condition_text)
-
-    base_kwargs = dict(parsed["route_kwargs"])
-    base_kwargs["stat"] = None
-    base_kwargs["min_value"] = None
-    base_kwargs["max_value"] = None
-    base_kwargs["sort_by"] = "game_date"
-    base_kwargs["ascending"] = False
-
-    func_map = {
-        "player_game_finder": player_game_finder_run,
-        "game_finder": game_finder_run,
-    }
-    func = func_map[route]
-
-    raw_text = _execute_capture_raw(func, base_kwargs)
-    text = raw_text.strip()
-
-    if not text or text.lower() == "no matching games" or text.startswith("SUMMARY\n"):
-        return raw_text
-
-    try:
-        df = pd.read_csv(StringIO(text))
-    except Exception:
-        return raw_text
-
-    df = evaluate_condition_tree(tree, df)
-
-    if df.empty:
-        return "no matching games\n"
-
-    if "game_date" in df.columns:
-        try:
-            df["_game_date_sort"] = pd.to_datetime(df["game_date"], errors="coerce")
-            sort_cols = ["_game_date_sort"]
-            ascending = [False]
-            if "game_id" in df.columns:
-                sort_cols.append("game_id")
-                ascending.append(False)
-            df = df.sort_values(sort_cols, ascending=ascending)
-            df = df.drop(columns="_game_date_sort")
-        except Exception:
-            pass
-
-    if "rank" in df.columns:
-        df = df.drop(columns="rank")
-        df.insert(0, "rank", range(1, len(df) + 1))
-
-    return df.to_csv(index=False)
-
-
-def _execute_or_query_capture_raw(query: str) -> str:
-    clauses = _split_or_clauses(query)
-    if len(clauses) <= 1:
-        parsed = parse_query(query)
-        func_map = {
-            "top_player_games": top_player_games_run,
-            "top_team_games": top_team_games_run,
-            "season_leaders": season_leaders_run,
-            "season_team_leaders": season_team_leaders_run,
-            "player_game_summary": player_game_summary_run,
-            "game_summary": game_summary_run,
-            "player_game_finder": player_game_finder_run,
-            "player_streak_finder": player_streak_finder_run,
-            "team_streak_finder": team_streak_finder_run,
-            "game_finder": game_finder_run,
-            "player_compare": player_compare_run,
-            "team_compare": team_compare_run,
-            "player_split_summary": player_split_summary_run,
-            "team_split_summary": team_split_summary_run,
-        }
-        func = func_map[parsed["route"]]
-        return _execute_capture_raw(
-            func, parsed["route_kwargs"], parsed.get("extra_conditions", [])
-        )
-
-    base = _build_parse_state(query)
-    clause_parsed = [
-        _merge_inherited_context(base, _build_parse_state(clause)) for clause in clauses
-    ]
-
-    allowed_routes = {"player_game_finder", "game_finder"}
-    routes = {item["route"] for item in clause_parsed}
-    if len(routes) != 1 or list(routes)[0] not in allowed_routes:
-        raise ValueError(
-            "Top-level OR is currently supported for finder-style queries, for example: "
-            "'Jokic over 25 points or over 10 rebounds' or "
-            "'Celtics over 120 points or over 15 threes'."
-        )
-
-    func_map = {
-        "player_game_finder": player_game_finder_run,
-        "game_finder": game_finder_run,
-    }
-    route = clause_parsed[0]["route"]
-    func = func_map[route]
-
-    raw_outputs = []
-    for item in clause_parsed:
-        raw_outputs.append(
-            _execute_capture_raw(func, item["route_kwargs"], item.get("extra_conditions", []))
-        )
-
-    return _combine_or_raw_outputs(raw_outputs)
-
-
-_ROUTE_FUNC_MAP: dict[str, Callable] = {}
-
-
-def _get_route_func_map() -> dict[str, Callable]:
-    if not _ROUTE_FUNC_MAP:
-        _ROUTE_FUNC_MAP.update(
-            {
-                "top_player_games": top_player_games_run,
-                "top_team_games": top_team_games_run,
-                "season_leaders": season_leaders_run,
-                "season_team_leaders": season_team_leaders_run,
-                "player_game_summary": player_game_summary_run,
-                "game_summary": game_summary_run,
-                "player_game_finder": player_game_finder_run,
-                "player_streak_finder": player_streak_finder_run,
-                "team_streak_finder": team_streak_finder_run,
-                "game_finder": game_finder_run,
-                "player_compare": player_compare_run,
-                "team_compare": team_compare_run,
-                "player_split_summary": player_split_summary_run,
-                "team_split_summary": team_split_summary_run,
-            }
-        )
-    return _ROUTE_FUNC_MAP
-
-
-def _emit(
-    raw_text: str,
-    parsed: dict,
-    query: str,
-    grouped_boolean_used: bool,
-    pretty: bool,
-    export_csv_path: str | None,
-    export_txt_path: str | None,
-    export_json_path: str | None,
-) -> None:
-    wrapped = _wrap_natural_query_raw(raw_text, parsed, query, grouped_boolean_used)
-    pretty_text = format_pretty_output(wrapped, query)
-
-    if export_csv_path:
-        _write_csv_from_raw_output(wrapped, export_csv_path)
-
-    if export_json_path:
-        _write_json_from_raw_output(wrapped, export_json_path)
-
-    if export_txt_path:
-        text_to_save = wrapped if not pretty else pretty_text
-        _write_text_file(
-            export_txt_path, text_to_save + ("" if text_to_save.endswith("\n") else "\n")
-        )
-
-    if not pretty:
-        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
-        return
-
-    print(pretty_text)
-
-
 def render_query_result(
     query_result,
     query: str,
@@ -3924,61 +3251,8 @@ def run(
 ) -> None:
     from nbatools.query_service import execute_natural_query
 
-    normalized = normalize_text(query)
-
-    grouped_boolean_used = expression_contains_boolean_ops(normalized) and (
-        "(" in normalized or ")" in normalized
-    )
-
     qr = execute_natural_query(query)
 
-    # For grouped boolean / OR edge cases where the service returned an
-    # error, fall back to the legacy text-based capture path for backward
-    # compatibility.
-    if not qr.is_ok and getattr(qr.result, "reason", None) == "error":
-        if grouped_boolean_used:
-            try:
-                raw_text = _execute_grouped_boolean_query_capture_raw(query)
-                try:
-                    parsed = parse_query(query)
-                except Exception:
-                    parsed = _build_parse_state(query)
-                _emit(
-                    raw_text,
-                    parsed,
-                    query,
-                    grouped_boolean_used=True,
-                    pretty=pretty,
-                    export_csv_path=export_csv_path,
-                    export_txt_path=export_txt_path,
-                    export_json_path=export_json_path,
-                )
-                return
-            except Exception:
-                pass  # fall through to render the NoResult from service
-
-        elif " or " in normalized:
-            try:
-                raw_text = _execute_or_query_capture_raw(query)
-                try:
-                    parsed = parse_query(query)
-                except Exception:
-                    parsed = _build_parse_state(query)
-                _emit(
-                    raw_text,
-                    parsed,
-                    query,
-                    grouped_boolean_used=False,
-                    pretty=pretty,
-                    export_csv_path=export_csv_path,
-                    export_txt_path=export_txt_path,
-                    export_json_path=export_json_path,
-                )
-                return
-            except Exception:
-                pass  # fall through to render the NoResult from service
-
-    # Render from the service result
     render_query_result(
         qr,
         query,

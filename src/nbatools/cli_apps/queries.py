@@ -1,71 +1,27 @@
 from __future__ import annotations
 
-import json
+import inspect
 from collections.abc import Callable
-from contextlib import redirect_stdout
-from io import StringIO
-from pathlib import Path
 from typing import Any
 
-import pandas as pd
 import typer
 
-from nbatools.commands.format_output import (
-    METADATA_LABEL,
-    build_no_result_output,
-    parse_labeled_sections,
-    parse_metadata_block,
-    route_to_query_class,
-    wrap_raw_output,
-    wrap_result_with_metadata,
-    write_csv_from_result,
-    write_json_from_result,
-)
-from nbatools.commands.game_finder import build_result as game_finder_build_result
 from nbatools.commands.game_finder import run as game_finder_run
-from nbatools.commands.game_summary import build_result as game_summary_build_result
 from nbatools.commands.game_summary import run as game_summary_run
-from nbatools.commands.player_compare import build_result as player_compare_build_result
+from nbatools.commands.natural_query import render_query_result
 from nbatools.commands.player_compare import run as player_compare_run
-from nbatools.commands.player_game_finder import (
-    build_result as player_game_finder_build_result,
-)
 from nbatools.commands.player_game_finder import run as player_game_finder_run
-from nbatools.commands.player_game_summary import (
-    build_result as player_game_summary_build_result,
-)
 from nbatools.commands.player_game_summary import run as player_game_summary_run
-from nbatools.commands.player_split_summary import (
-    build_result as player_split_summary_build_result,
-)
 from nbatools.commands.player_split_summary import run as player_split_summary_run
-from nbatools.commands.player_streak_finder import (
-    build_result as player_streak_finder_build_result,
-)
 from nbatools.commands.player_streak_finder import run as player_streak_finder_run
-from nbatools.commands.season_leaders import build_result as season_leaders_build_result
 from nbatools.commands.season_leaders import run as season_leaders_run
-from nbatools.commands.season_team_leaders import (
-    build_result as season_team_leaders_build_result,
-)
 from nbatools.commands.season_team_leaders import run as season_team_leaders_run
-from nbatools.commands.structured_results import NoResult
-from nbatools.commands.team_compare import build_result as team_compare_build_result
 from nbatools.commands.team_compare import run as team_compare_run
-from nbatools.commands.team_split_summary import (
-    build_result as team_split_summary_build_result,
-)
 from nbatools.commands.team_split_summary import run as team_split_summary_run
-from nbatools.commands.team_streak_finder import (
-    build_result as team_streak_finder_build_result,
-)
 from nbatools.commands.team_streak_finder import run as team_streak_finder_run
-from nbatools.commands.top_player_games import (
-    build_result as top_player_games_build_result,
-)
 from nbatools.commands.top_player_games import run as top_player_games_run
-from nbatools.commands.top_team_games import build_result as top_team_games_build_result
 from nbatools.commands.top_team_games import run as top_team_games_run
+from nbatools.query_service import execute_structured_query
 
 app = typer.Typer(
     help=(
@@ -100,181 +56,17 @@ _FUNC_TO_ROUTE: dict[Callable, str] = {
     team_streak_finder_run: "team_streak_finder",
 }
 
-_RUN_TO_BUILD_RESULT: dict[Callable, Callable] = {
-    top_player_games_run: top_player_games_build_result,
-    top_team_games_run: top_team_games_build_result,
-    season_leaders_run: season_leaders_build_result,
-    season_team_leaders_run: season_team_leaders_build_result,
-    game_finder_run: game_finder_build_result,
-    player_game_finder_run: player_game_finder_build_result,
-    player_game_summary_run: player_game_summary_build_result,
-    game_summary_run: game_summary_build_result,
-    player_compare_run: player_compare_build_result,
-    team_compare_run: team_compare_build_result,
-    player_split_summary_run: player_split_summary_build_result,
-    team_split_summary_run: team_split_summary_build_result,
-    player_streak_finder_run: player_streak_finder_build_result,
-    team_streak_finder_run: team_streak_finder_build_result,
-}
 
-_SINGLE_TABLE_LABELS = ("FINDER", "LEADERBOARD", "STREAK", "TABLE", "NO_RESULT", "ERROR")
-
-
-def _ensure_parent_dir(path_str: str) -> None:
-    path = Path(path_str)
-    if path.parent != Path("."):
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-
-def _write_text_file(path_str: str, text: str) -> None:
-    _ensure_parent_dir(path_str)
-    Path(path_str).write_text(text, encoding="utf-8")
-
-
-def _build_cli_metadata(func: Callable, kwargs: dict[str, Any]) -> dict[str, Any]:
-    route = _FUNC_TO_ROUTE.get(func)
-    query_class = route_to_query_class(route)
-
-    player = kwargs.get("player")
-    player_a = kwargs.get("player_a")
-    player_b = kwargs.get("player_b")
-    if not player and player_a and player_b:
-        player = f"{player_a}, {player_b}"
-    elif not player:
-        player = player_a or player_b
-
-    team = kwargs.get("team")
-    team_a = kwargs.get("team_a")
-    team_b = kwargs.get("team_b")
-    if not team and team_a and team_b:
-        team = f"{team_a}, {team_b}"
-    elif not team:
-        team = team_a or team_b
-
-    return {
-        "route": route,
-        "query_class": query_class,
-        "season": kwargs.get("season"),
-        "start_season": kwargs.get("start_season"),
-        "end_season": kwargs.get("end_season"),
-        "season_type": kwargs.get("season_type"),
-        "start_date": kwargs.get("start_date"),
-        "end_date": kwargs.get("end_date"),
-        "player": player,
-        "team": team,
-        "opponent": kwargs.get("opponent"),
-        "split_type": kwargs.get("split"),
-    }
-
-
-def _write_csv_from_raw_output(raw_text: str, path_str: str) -> None:
-    _ensure_parent_dir(path_str)
-    text = (raw_text or "").strip()
-
-    if not text:
-        Path(path_str).write_text("", encoding="utf-8")
-        return
-
-    if text.lower() == "no matching games":
-        Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
-        return
-
-    sections = parse_labeled_sections(text)
-    sections_no_meta = {k: v for k, v in sections.items() if k != METADATA_LABEL}
-
-    if not sections_no_meta:
-        Path(path_str).write_text("", encoding="utf-8")
-        return
-
-    if len(sections_no_meta) == 1:
-        only_label, only_block = next(iter(sections_no_meta.items()))
-        if only_label in _SINGLE_TABLE_LABELS:
-            if only_block.lower() == "no matching games":
-                Path(path_str).write_text("message\nno matching games\n", encoding="utf-8")
-                return
-            try:
-                df = pd.read_csv(StringIO(only_block))
-                df.to_csv(path_str, index=False)
-                return
-            except Exception:
-                Path(path_str).write_text(
-                    only_block + ("\n" if not only_block.endswith("\n") else ""),
-                    encoding="utf-8",
-                )
-                return
-
-    parts: list[str] = []
-    for label in (
-        "SUMMARY",
-        "BY_SEASON",
-        "COMPARISON",
-        "SPLIT_COMPARISON",
-        "FINDER",
-        "LEADERBOARD",
-        "STREAK",
-        "NO_RESULT",
-        "ERROR",
-    ):
-        if label in sections_no_meta:
-            parts.append(f"{label}\n{sections_no_meta[label]}")
-    if not parts and "TABLE" in sections_no_meta:
-        parts.append(sections_no_meta["TABLE"])
-
-    rebuilt = "\n\n".join(parts).strip()
-    Path(path_str).write_text(rebuilt + "\n", encoding="utf-8")
-
-
-def _write_json_from_raw_output(raw_text: str, path_str: str) -> None:
-    _ensure_parent_dir(path_str)
-    text = (raw_text or "").strip()
-
-    if not text:
-        Path(path_str).write_text("[]\n", encoding="utf-8")
-        return
-
-    if text.lower() == "no matching games":
-        payload = {"message": "no matching games"}
-        Path(path_str).write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        return
-
-    sections = parse_labeled_sections(text)
-    metadata_block = sections.pop(METADATA_LABEL, None)
-
-    payload: dict[str, object] = {}
-
-    if metadata_block is not None:
-        payload["metadata"] = parse_metadata_block(metadata_block)
-
-    for label, block in sections.items():
-        if not block:
-            continue
-        key = label.lower() if label != "TABLE" else "table"
-        if block.lower() == "no matching games":
-            payload[key] = []
-            continue
-        try:
-            df = pd.read_csv(StringIO(block))
-            payload[key] = df.to_dict(orient="records")
-        except Exception:
-            payload[key] = block
-
-    if not payload:
-        try:
-            df = pd.read_csv(StringIO(text))
-            payload_list = df.to_dict(orient="records")
-            Path(path_str).write_text(
-                json.dumps(payload_list, indent=2, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
-            return
-        except Exception:
-            payload = {"raw_text": text}
-
-    Path(path_str).write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+def _normalize_route_kwargs(
+    func: Callable, args: tuple[Any, ...], kwargs: dict[str, Any]
+) -> dict[str, Any]:
+    try:
+        bound = inspect.signature(func).bind(*args, **kwargs)
+    except TypeError as exc:
+        raise TypeError(
+            f"Unable to normalize structured query arguments for {func.__name__}: {exc}"
+        ) from exc
+    return dict(bound.arguments)
 
 
 def _run_and_handle_exports(
@@ -286,80 +78,21 @@ def _run_and_handle_exports(
     **kwargs,
 ) -> None:
     route = _FUNC_TO_ROUTE.get(func)
+    if route is None:
+        raise ValueError(
+            f"Unsupported structured query runner: {getattr(func, '__name__', repr(func))}"
+        )
 
-    # -- Structured-first path via query service --
-    # Use the query service when all arguments are keyword-based (the normal
-    # CLI path).  When positional *args are present (legacy / test callers),
-    # call build_result directly because the service API is kwargs-only.
-    if route is not None and not args:
-        from nbatools.query_service import execute_structured_query
-
-        qr = execute_structured_query(route, **kwargs)
-        result = qr.result
-        metadata = qr.metadata
-
-        query_class = route_to_query_class(route)
-
-        # NoResult: use canonical no-result output format
-        if isinstance(result, NoResult):
-            reason = result.result_reason or result.reason or "no_match"
-            wrapped = build_no_result_output(metadata, reason=reason)
-        else:
-            wrapped = wrap_result_with_metadata(result, metadata, query_class)
-
-        # Export directly from structured result (no text reparsing)
-        if csv:
-            write_csv_from_result(result, csv)
-        if txt:
-            _write_text_file(txt, wrapped if wrapped.endswith("\n") else wrapped + "\n")
-        if json_path:
-            write_json_from_result(result, json_path, metadata)
-
-        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
-        return
-
-    # -- Direct build_result path (positional args or non-structured) --
-    build_fn = _RUN_TO_BUILD_RESULT.get(func) if route is not None else None
-    if build_fn is not None:
-        result = build_fn(*args, **kwargs)
-
-        metadata = _build_cli_metadata(func, kwargs)
-        query_class = route_to_query_class(route)
-
-        if isinstance(result, NoResult):
-            reason = result.result_reason or result.reason or "no_match"
-            wrapped = build_no_result_output(metadata, reason=reason)
-        else:
-            wrapped = wrap_result_with_metadata(result, metadata, query_class)
-
-        if csv:
-            write_csv_from_result(result, csv)
-        if txt:
-            _write_text_file(txt, wrapped if wrapped.endswith("\n") else wrapped + "\n")
-        if json_path:
-            write_json_from_result(result, json_path, metadata)
-
-        print(wrapped, end="" if wrapped.endswith("\n") else "\n")
-        return
-
-    # -- Fallback for any future non-structured commands --
-    buffer = StringIO()
-    with redirect_stdout(buffer):
-        func(*args, **kwargs)
-    raw_text = buffer.getvalue()
-
-    metadata = _build_cli_metadata(func, kwargs)
-    query_class = route_to_query_class(_FUNC_TO_ROUTE.get(func))
-    wrapped = wrap_raw_output(raw_text, metadata, query_class)
-
-    if csv:
-        _write_csv_from_raw_output(wrapped, csv)
-    if txt:
-        _write_text_file(txt, wrapped if wrapped.endswith("\n") else wrapped + "\n")
-    if json_path:
-        _write_json_from_raw_output(wrapped, json_path)
-
-    print(wrapped, end="" if wrapped.endswith("\n") else "\n")
+    route_kwargs = _normalize_route_kwargs(func, args, kwargs)
+    qr = execute_structured_query(route, **route_kwargs)
+    render_query_result(
+        qr,
+        qr.query,
+        pretty=False,
+        export_csv_path=csv,
+        export_txt_path=txt,
+        export_json_path=json_path,
+    )
 
 
 def _export_options():
