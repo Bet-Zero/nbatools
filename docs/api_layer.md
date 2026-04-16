@@ -139,6 +139,26 @@ Every query response has the same top-level shape:
 
 The `result` dict contains the output of `StructuredResult.to_dict()` — the same data the CLI renders, but as machine-readable JSON. The `result_reason` key is **always present** in `to_dict()` output (set to `null` for successful results).
 
+### Reason → status mapping
+
+Expected failures produce `result_status: "no_result"`:
+
+| `result_reason` | Meaning |
+| --------------- | ------- |
+| `no_match`      | Data exists, filters matched nothing |
+| `no_data`       | Season/type data file unavailable |
+| `unsupported`   | Invalid filter combination, unsupported stat, or unknown route |
+| `ambiguous`     | Entity resolution found multiple matches |
+
+System-level failures produce `result_status: "error"`:
+
+| `result_reason` | Meaning |
+| --------------- | ------- |
+| `unrouted`      | Query could not be parsed/routed |
+| `error`         | Unexpected internal exception |
+
+This mapping is enforced by `query_service.reason_to_status()`.
+
 ## Error responses
 
 Invalid routes return a normal envelope with a structured `NoResult`:
@@ -159,7 +179,7 @@ Invalid routes return a normal envelope with a structured `NoResult`:
 
 Unsupported filter combinations (e.g. both `home_only` and `away_only`) also return a normal envelope with `result_reason: "unsupported"` and a descriptive note — they do not raise HTTP errors.
 
-Unrouted natural queries return a normal envelope with `ok: false` and `result_status: "no_result"`.
+Unrouted natural queries return a normal envelope with `ok: false` and `result_status: "error"`.
 
 ## Architecture
 

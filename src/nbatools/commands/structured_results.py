@@ -31,6 +31,19 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Result status vocabulary
 # ---------------------------------------------------------------------------
+#
+# Conversion policy (reason → status):
+#
+#   no_match    → no_result   (data exists, filters matched nothing)
+#   no_data     → no_result   (data files missing — expected for unloaded seasons)
+#   unsupported → no_result   (invalid filter combo or unsupported stat)
+#   ambiguous   → no_result   (entity resolution found multiple matches)
+#   unrouted    → error       (query could not be parsed/routed)
+#   error       → error       (unexpected internal exception)
+#
+# query_service.py is the authoritative enforcement point.  Commands may
+# return NoResult with any reason; the service layer normalises the status.
+# ---------------------------------------------------------------------------
 
 
 class ResultStatus(StrEnum):
@@ -42,7 +55,17 @@ class ResultStatus(StrEnum):
 
 
 class ResultReason(StrEnum):
-    """Canonical reason codes attached to non-OK results."""
+    """Canonical reason codes attached to non-OK results.
+
+    Reasons map to statuses as follows:
+
+    - ``no_match``    → ``no_result`` — data exists, filters matched nothing
+    - ``no_data``     → ``no_result`` — underlying data file is unavailable
+    - ``unsupported`` → ``no_result`` — invalid filter combination or stat
+    - ``ambiguous``   → ``no_result`` — multiple entity matches
+    - ``unrouted``    → ``error``     — query could not be parsed/routed
+    - ``error``       → ``error``     — unexpected internal failure
+    """
 
     NO_MATCH = "no_match"
     NO_DATA = "no_data"

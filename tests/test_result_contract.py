@@ -540,3 +540,87 @@ class TestResultReasonConsistencyOK:
     def test_count_ok_reason_none(self):
         r = CountResult(count=5)
         assert r.to_dict()["result_reason"] is None
+
+
+# ===================================================================
+# reason_to_status policy
+# ===================================================================
+
+
+class TestReasonToStatusPolicy:
+    """reason_to_status maps expected failures to no_result and system failures to error."""
+
+    def test_expected_reasons_map_to_no_result(self):
+        from nbatools.query_service import reason_to_status
+
+        for reason in ("no_match", "no_data", "unsupported", "ambiguous"):
+            assert reason_to_status(reason) == "no_result", f"{reason} should map to no_result"
+
+    def test_system_reasons_map_to_error(self):
+        from nbatools.query_service import reason_to_status
+
+        for reason in ("unrouted", "error"):
+            assert reason_to_status(reason) == "error", f"{reason} should map to error"
+
+    def test_unknown_reason_maps_to_error(self):
+        from nbatools.query_service import reason_to_status
+
+        assert reason_to_status("something_else") == "error"
+
+
+# ===================================================================
+# no_data status consistency across entry points
+# ===================================================================
+
+
+class TestNoDataStatusConsistency:
+    """no_data should produce no_result status regardless of entry point."""
+
+    def test_no_data_natural_query_returns_no_result_status(self):
+        """Natural query with missing data should be no_result, not error."""
+        qr = execute_natural_query("Jokic summary 1950-51")
+        assert isinstance(qr.result, NoResult)
+        assert not qr.is_ok
+        if qr.result_reason == "no_data":
+            assert qr.result_status == "no_result"
+
+    def test_no_data_structured_query_returns_no_result_status(self):
+        """Structured query with missing data should be no_result, not error."""
+        qr = execute_structured_query(
+            "player_game_summary",
+            season="1950-51",
+            player="Nikola Jokić",
+        )
+        assert isinstance(qr.result, NoResult)
+        assert not qr.is_ok
+        if qr.result_reason == "no_data":
+            assert qr.result_status == "no_result"
+
+    def test_no_data_api_envelope_ok_false(self):
+        """no_data results should have ok=False in the API envelope."""
+        from nbatools.api import _query_result_to_response
+
+        result = NoResult(query_class="summary", reason="no_data")
+        qr = QueryResult(result=result, query="test", route="player_game_summary")
+        response = _query_result_to_response(qr)
+        d = response.model_dump()
+        assert d["ok"] is False
+        assert d["result_status"] == "no_result"
+        assert d["result_reason"] == "no_data"
+
+
+# ===================================================================
+# _REASON_DISPLAY completeness
+# ===================================================================
+
+
+class TestReasonDisplayCompleteness:
+    """_REASON_DISPLAY should have entries for all canonical reason codes."""
+
+    def test_all_canonical_reasons_have_display_text(self):
+        from nbatools.commands.format_output import _REASON_DISPLAY
+
+        for reason in ResultReason:
+            assert reason.value in _REASON_DISPLAY, (
+                f"Missing _REASON_DISPLAY entry for {reason.value!r}"
+            )

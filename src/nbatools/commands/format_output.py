@@ -652,6 +652,8 @@ _REASON_DISPLAY = {
     "no_match": "No matching games found for this query.",
     "no_data": "No data available for this query.",
     "unrouted": "Could not map this query to a supported pattern.",
+    "unsupported": "This query combination is not supported.",
+    "ambiguous": "The query matched multiple entities. Please be more specific.",
     "error": "An error occurred while processing this query.",
 }
 

@@ -439,17 +439,23 @@ All structured result classes produce a `to_dict()` output that always includes 
 ### ResultStatus values
 
 - `ok` — query executed and produced data
-- `no_result` — query was understood but produced no usable output
-- `error` — execution failed
+- `no_result` — query was understood but produced no usable output (expected failures)
+- `error` — system-level execution failure (unrouted query, internal bug)
 
 ### ResultReason values
 
-- `no_match` — query was valid, filter returned nothing
-- `no_data` — requested season/type is not loaded
-- `unrouted` — parser could not select a route
-- `ambiguous` — parser matched multiple routes
-- `unsupported` — query was understood but the requested combination is not supported (e.g. mutually exclusive filters, invalid stat name, unknown route)
-- `error` — execution raised an unexpected error
+Each reason maps to a canonical status:
+
+| Reason        | Status      | Meaning                                                                 |
+| ------------- | ----------- | ----------------------------------------------------------------------- |
+| `no_match`    | `no_result` | Data exists, filters matched nothing                                    |
+| `no_data`     | `no_result` | Underlying season/type data file is unavailable                         |
+| `unsupported` | `no_result` | Invalid filter combination, unsupported stat, or unknown route          |
+| `ambiguous`   | `no_result` | Entity resolution found multiple matches                                |
+| `unrouted`    | `error`     | Parser could not select a route                                         |
+| `error`       | `error`     | Unexpected internal exception                                           |
+
+The mapping is enforced by `query_service.reason_to_status()`. Expected failures (conditions the user or data can cause) always produce `no_result`; only system-level failures produce `error`.
 
 ### Validation behavior
 

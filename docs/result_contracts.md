@@ -189,10 +189,13 @@ Conceptual shape:
   - `ambiguous` — parser matched multiple routes with similar confidence
   - `unsupported` — query was understood but the requested combination is not supported (e.g. mutually exclusive filters, invalid stat name)
   - `error` — execution failed for a known reason
+- **reason → status mapping** (implemented in `query_service.reason_to_status()`):
+  - Expected failures → `result_status: "no_result"`: `no_match`, `no_data`, `unsupported`, `ambiguous`
+  - System failures → `result_status: "error"`: `unrouted`, `error`
 - **reason:** a short machine-readable reason code
-- **message:** a human-readable explanation suitable for CLI or UI display
+- **message:** a human-readable explanation suitable for CLI or UI display (see `_REASON_DISPLAY` in `format_output.py`)
 - **echoed context:** the query text, detected route (if any), and any partially-resolved filters so the user can see what the engine thought they meant
-- **current CLI surfaces that map here:** currently handled ad hoc per command. This result class exists partly to consolidate that.
+- **current state:** fully implemented in `NoResult` class; reason/status mapping enforced by `query_service.py`; display mapping in `format_output._REASON_DISPLAY`
 
 ---
 
