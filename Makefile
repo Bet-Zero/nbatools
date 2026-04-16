@@ -20,10 +20,12 @@ test-impacted:
 	pytest --testmon -n0
 
 ## Broader confidence run before finishing a task.
-## Runs impacted tests first (fast fail), then the full suite.
+## Runs all tests except slow-marked ones (parallel via xdist).
+## Broader than test-unit (includes needs_data tests that run locally)
+## but cheaper than the full suite (skips slow tests).
+## Does not use testmon — deterministic in all environments.
 test-preflight:
-	pytest --testmon -n0
-	pytest
+	pytest -m "not slow"
 
 # ── Domain / subset targets ───────────────────────────────────────
 #

@@ -122,7 +122,7 @@ Use the Makefile targets — do not invent ad hoc pytest invocations.
 | --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
 | `make test-impacted`  | Runs only tests whose file-level dependencies changed (pytest-testmon, serial) | During active development for fast feedback                         |
 | `make test`           | Full regression suite (parallel via xdist)                                     | Before merging, after broad changes, when full confidence is needed |
-| `make test-preflight` | Impacted tests first (fast fail), then full suite                              | Before concluding any implementation task                           |
+| `make test-preflight` | All tests except `slow` (parallel via xdist, no testmon)                       | Before concluding any implementation task                           |
 
 ### Domain subset targets
 

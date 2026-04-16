@@ -18,18 +18,18 @@ Makefile targets provide deterministic test commands:
 ```bash
 make test             # Full regression suite (parallel via xdist)
 make test-impacted    # Only tests affected by recent code changes (pytest-testmon, serial)
-make test-preflight   # Impacted tests first, then full suite — run before finishing a task
+make test-preflight   # All tests except slow — broad confidence before finishing a task
 ```
 
 You can still invoke `pytest` directly with any flags you like.
 
 ### When to use each
 
-| Command               | When                                                                                          |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| `make test-impacted`  | During active development for fast feedback                                                   |
-| `make test`           | Before merging, in CI, or when you want full confidence                                       |
-| `make test-preflight` | Before concluding a feature/fix — catches impacted regressions fast, then verifies everything |
+| Command               | When                                                                |
+| --------------------- | ------------------------------------------------------------------- |
+| `make test-impacted`  | During active development for fast feedback                         |
+| `make test`           | Before merging, in CI, or when you want full confidence             |
+| `make test-preflight` | Before concluding a feature/fix — broad coverage without slow tests |
 
 ### Domain / subset targets
 
