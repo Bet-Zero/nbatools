@@ -182,6 +182,42 @@ Testmon tracks file-level dependencies. It does **not** detect changes in data f
 - do not update README or current-state docs unless the behavior is verified
 - do not remove tests to make a failing implementation look clean
 
+## CI testing policy
+
+CI is defined in `.github/workflows/ci.yml`. It implements a layered testing strategy:
+
+### What runs when
+
+| Trigger             | `lint` | `test-fast` | `test-full` |
+| ------------------- | ------ | ----------- | ----------- |
+| Pull request        | ✓      | ✓           |             |
+| Push to `main`      | ✓      | ✓           | ✓           |
+| Nightly (06:00 UTC) | ✓      | ✓           | ✓           |
+| Manual dispatch     | ✓      | ✓           | ✓           |
+
+- **`test-fast`** calls `make test-unit`. Excludes `slow` and `needs_data` tests. Runs in parallel. This is the fast feedback path.
+- **`test-full`** calls `make test`. Full regression suite in parallel. This is the correctness backstop.
+
+### How this maps to agent workflow
+
+| Agent phase                    | Local command         | CI equivalent |
+| ------------------------------ | --------------------- | ------------- |
+| Active iteration               | `make test-impacted`  | —             |
+| Subsystem confidence           | `make test-<domain>`  | —             |
+| Before declaring work complete | `make test-preflight` | —             |
+| PR pushed                      | —                     | `test-fast`   |
+| Merged to main / nightly       | —                     | `test-full`   |
+
+Local development uses `make test-impacted` (testmon) for the fastest feedback. CI does not use testmon — it uses `make test-unit` (marker-based exclusion, parallel) as the fast path instead. Testmon state is a local development optimization only.
+
+### Caching
+
+CI caches pip dependencies via `actions/setup-python`'s `cache: pip`. Testmon state (`.testmondata`) is **not** cached in CI — it is a local development tool and its state is not meaningful across CI runs from clean checkouts.
+
+### Key invariant
+
+The full regression suite (`make test`) always runs on merge to main and nightly. This is the backstop. Do not remove it.
+
 ## Documentation expectations
 
 Each doc has a specific role.

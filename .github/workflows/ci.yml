@@ -1,10 +1,24 @@
 name: CI
 
+# ── Trigger policy ────────────────────────────────────────────────
+#
+#   pull_request  → lint + test-fast   (quick feedback for iteration)
+#   push to main  → lint + test-fast + test-full  (regression gate)
+#   nightly       → lint + test-fast + test-full  (backstop)
+#   manual        → lint + test-fast + test-full  (on-demand confidence)
+#
+# All test jobs call Makefile targets so the repo owns the pytest
+# flags.  See AGENTS.md § "CI testing policy" and CONTRIBUTING.md
+# § "Continuous Integration" for the full rationale.
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "0 6 * * *" # nightly at 06:00 UTC
+  workflow_dispatch: {}
 
 jobs:
   lint:
@@ -18,7 +32,10 @@ jobs:
       - run: ruff check src/ tests/
       - run: ruff format --check src/ tests/
 
-  test:
+  # ── Fast feedback ────────────────────────────────────────────────
+  # Runs on every trigger.  Uses `make test-unit` which excludes
+  # slow and data-dependent tests and runs in parallel via xdist.
+  test-fast:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,5 +45,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
       - run: pip install -e ".[dev]"
-      - run: pytest
+      - run: make test-unit
+
+  # ── Full regression suite ────────────────────────────────────────
+  # Runs on push to main, nightly schedule, and manual dispatch.
+  # Skipped on pull requests to keep PR feedback fast.
+  # Uses `make test` which runs the entire suite in parallel.
+  test-full:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: make test

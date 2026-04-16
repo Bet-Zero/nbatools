@@ -88,6 +88,32 @@ ruff check src/ tests/
 ruff format src/ tests/
 ```
 
+## Continuous Integration
+
+CI runs on GitHub Actions (`.github/workflows/ci.yml`).
+
+### What runs when
+
+| Trigger                      | Lint | `make test-unit` | `make test` |
+| ---------------------------- | ---- | ---------------- | ----------- |
+| Pull request                 | ✓    | ✓                |             |
+| Push to `main`               | ✓    | ✓                | ✓           |
+| Nightly schedule (06:00 UTC) | ✓    | ✓                | ✓           |
+| Manual (`workflow_dispatch`) | ✓    | ✓                | ✓           |
+
+- **`test-fast`** (`make test-unit`): Excludes `slow` and `needs_data` tests. Runs in parallel across Python 3.11/3.12/3.13. Provides fast feedback on every trigger.
+- **`test-full`** (`make test`): Full regression suite in parallel. Runs on main push, nightly, and manual dispatch. Skipped on PRs to keep feedback fast.
+
+### Caching
+
+CI caches pip dependencies via `actions/setup-python`'s built-in `cache: pip` option. This avoids re-downloading packages on each run.
+
+**pytest-testmon** is intentionally **not cached in CI**. Testmon is a local development tool (`make test-impacted`) — it tracks file-level dependencies across runs in a developer's working tree. In CI, each run starts from a clean checkout and the testmon database would rarely provide meaningful speedup. The fast CI path uses `make test-unit` (marker-based exclusion, parallel execution) instead.
+
+### `needs_data` tests in CI
+
+Tests marked `@pytest.mark.needs_data` auto-skip when `data/raw/` is absent. Since raw data is gitignored, these tests are effectively skipped in CI. They run only in local environments that have pulled NBA data.
+
 ## Pull Requests
 
 1. Fork the repo and create a feature branch.
