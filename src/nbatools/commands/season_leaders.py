@@ -390,7 +390,8 @@ def _merge_game_log_derived_advanced(
         ),
     )
 
-    # USG%: 100 * ((FGA + 0.44*FTA + TOV) * (TeamMin/5)) / (Min * (TeamFGA + 0.44*TeamFTA + TeamTOV))
+    # USG%: 100 * ((FGA + 0.44*FTA + TOV) * (TeamMin/5))
+    #        / (Min * (TeamFGA + 0.44*TeamFTA + TeamTOV))
     player_actions = player_agg["p_fga"] + 0.44 * player_agg["p_fta"] + player_agg["p_tov"]
     team_actions = player_agg["t_fga"] + 0.44 * player_agg["t_fta"] + player_agg["t_tov"]
     usg_numer = player_actions * (player_agg["t_minutes"] / 5.0)

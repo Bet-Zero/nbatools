@@ -115,7 +115,6 @@ class TestRunAutoRefresh:
         run_auto_refresh(60, max_iterations=1)
         mock_refresh.assert_called_once()
         mock_log.assert_called_once()
-        call_kwargs = mock_log.call_args[1] if mock_log.call_args[1] else {}
         # The log should be called; check it was invoked
         assert mock_log.called
 

@@ -4,9 +4,9 @@ from io import StringIO
 import pandas as pd
 import pytest
 
+from nbatools.commands._date_utils import CURRENT_QUERY_DATE
 from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
 from nbatools.commands.natural_query import (
-    CURRENT_QUERY_DATE,
     parse_query,
 )
 from nbatools.commands.natural_query import (

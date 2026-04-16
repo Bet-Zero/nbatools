@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 from nbatools.commands._seasons import (
@@ -41,7 +41,7 @@ from nbatools.commands.freshness import compute_current_through
 # ---------------------------------------------------------------------------
 
 
-class StageStatus(str, Enum):
+class StageStatus(StrEnum):
     SUCCESS = "success"
     FAILED = "failed"
     SKIPPED = "skipped"

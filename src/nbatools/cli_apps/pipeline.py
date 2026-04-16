@@ -163,7 +163,8 @@ def status(
     if info["manifest"]:
         m = info["manifest"]
         print(
-            f"Manifest: raw={m['raw_complete']}  processed={m['processed_complete']}  loaded_at={m['loaded_at']}"
+            f"Manifest: raw={m['raw_complete']}  processed={m['processed_complete']}"
+            f"  loaded_at={m['loaded_at']}"
         )
     else:
         print("Manifest: (no entry)")

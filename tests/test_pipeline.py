@@ -108,9 +108,9 @@ class TestPipelineResult:
         sr.current_through = "2026-04-11"
         pr.seasons = [sr]
         lines = pr.summary_lines
-        assert any("current_season_refresh" in l for l in lines)
-        assert any("2026-04-11" in l for l in lines)
-        assert any("Succeeded: 1" in l for l in lines)
+        assert any("current_season_refresh" in line for line in lines)
+        assert any("2026-04-11" in line for line in lines)
+        assert any("Succeeded: 1" in line for line in lines)
 
 
 # ---------------------------------------------------------------------------

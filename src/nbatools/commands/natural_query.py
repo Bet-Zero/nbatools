@@ -1142,16 +1142,8 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
 
     # Pattern to detect compound occurrence: two or more threshold expressions connected by "and"
     # First, try to find all threshold patterns in the text
-    threshold_pattern = (
-        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
-    )
 
     # Also detect "under X stat" patterns
-    under_pattern = (
-        r"under\s+(\d+)\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
-    )
 
     # Find all threshold matches
     found_conditions: list[dict] = []
@@ -1483,7 +1475,7 @@ def _combine_or_results(results: list):
             combined = combined.sort_values(sort_cols, ascending=ascending)
             combined = combined.drop(columns="_game_date_sort")
         except Exception:
-            pass
+            pass  # sorting is best-effort; failure here is cosmetic only
 
     if "rank" in combined.columns:
         combined = combined.drop(columns="rank")
@@ -1691,7 +1683,7 @@ def _execute_grouped_boolean_build_result(query: str):
             df = df.sort_values(sort_cols, ascending=ascending_list)
             df = df.drop(columns="_game_date_sort")
         except Exception:
-            pass
+            pass  # sorting is best-effort; failure here is cosmetic only
 
     if "rank" in df.columns:
         df = df.drop(columns="rank")

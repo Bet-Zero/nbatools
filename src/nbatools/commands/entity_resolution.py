@@ -194,7 +194,6 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "adebayo": "Bam Adebayo",
     "towns": "Karl-Anthony Towns",
     "anthony": "Carmelo Anthony",
-    "westbrook": "Russell Westbrook",
     "simmons": "Ben Simmons",
     "williamson": "Zion Williamson",
     "ingram": "Brandon Ingram",
@@ -203,7 +202,6 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "simons": "Anfernee Simons",
     "reaves": "Austin Reaves",
     "edwards": "Anthony Edwards",
-    "fox": "De'Aaron Fox",
     "barnes": "Scottie Barnes",
     "banchero": "Paolo Banchero",
     "wembanyama": "Victor Wembanyama",
@@ -237,9 +235,7 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "kidd": "Jason Kidd",
     "drummond": "Andre Drummond",
     "sabonis": "Domantas Sabonis",
-    "maxey": "Tyrese Maxey",
     "haliburton": "Tyrese Haliburton",
-    "sengun": "Alperen Sengun",
 }
 
 # Full-name aliases with accent normalization
@@ -471,8 +467,6 @@ TEAM_ALIASES_EXPANDED: dict[str, str] = {
     "golden state warriors": "GSW",
     "houston rockets": "HOU",
     "indiana pacers": "IND",
-    "los angeles clippers": "LAC",
-    "los angeles lakers": "LAL",
     "memphis grizzlies": "MEM",
     "miami heat": "MIA",
     "milwaukee bucks": "MIL",

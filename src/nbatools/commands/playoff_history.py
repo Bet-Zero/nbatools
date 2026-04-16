@@ -286,10 +286,8 @@ def build_playoff_history_result(
     # Breakdown: by decade or by season
     if by_decade:
         by_group = _build_decade_breakdown(df, playoff_round=playoff_round)
-        by_group_label = "by_decade"
     else:
         by_group = _build_season_breakdown(df, playoff_round=playoff_round)
-        by_group_label = "by_season"
 
     if len(seasons) > 1:
         caveats.append(f"playoff history aggregated across {seasons[0]} to {seasons[-1]}")

@@ -146,6 +146,20 @@ def _build_query_metadata(
 # Query envelope
 # ---------------------------------------------------------------------------
 
+# Reasons that represent expected/anticipated failures → no_result status.
+# All other reasons represent system-level failures → error status.
+_EXPECTED_REASONS: frozenset[str] = frozenset({"unsupported", "no_data", "no_match", "ambiguous"})
+
+
+def reason_to_status(reason: str) -> str:
+    """Map a result reason to its canonical result status.
+
+    Expected failures (unsupported filters, missing data, zero matches,
+    entity ambiguity) map to ``"no_result"``.  System-level failures
+    (unrouted, internal error) map to ``"error"``.
+    """
+    return "no_result" if reason in _EXPECTED_REASONS else "error"
+
 
 @dataclass
 class QueryResult:
@@ -247,7 +261,7 @@ def execute_natural_query(query: str) -> QueryResult:
         result = NoResult(
             query_class=route_to_query_class(route),
             reason=reason,
-            result_status="no_result" if reason == "unsupported" else "error",
+            result_status=reason_to_status(reason),
             notes=notes,
         )
         return QueryResult(
@@ -354,7 +368,7 @@ def execute_natural_query(query: str) -> QueryResult:
         result = NoResult(
             query_class=route_to_query_class(route),
             reason=reason,
-            result_status="no_result" if reason == "unsupported" else "error",
+            result_status=reason_to_status(reason),
             notes=notes,
         )
         return QueryResult(

@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, timedelta
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 import pandas as pd
@@ -38,7 +38,7 @@ from nbatools.commands.data_utils import normalize_season_type
 _STALE_THRESHOLD_DAYS = 3
 
 
-class FreshnessStatus(str, Enum):
+class FreshnessStatus(StrEnum):
     """Explicit freshness state for data trustworthiness."""
 
     FRESH = "fresh"
@@ -353,7 +353,6 @@ def build_freshness_info(
 
     season_details: list[SeasonFreshness] = []
     overall_ct: str | None = None
-    any_incomplete = False
 
     for season in seasons:
         ct = compute_current_through(season, season_type, data_root)
@@ -369,9 +368,6 @@ def build_freshness_info(
             manifest_ok,
             reference_date=reference_date,
         )
-        if not manifest_ok:
-            any_incomplete = True
-
         season_details.append(
             SeasonFreshness(
                 season=season,
