@@ -25,6 +25,8 @@ env/
 # Data & outputs (large, local-only)
 data/
 outputs/
+
+# Legacy standalone scripts (retired — see docs/scripts_retirement.md)
 scripts/
 
 # Secrets & config

@@ -197,7 +197,7 @@ Ranked by value / risk ratio:
 | **3**    | Extract leaderboard stat aliases from `natural_query.py` into `_constants.py`                                                                      | Medium (reduces NQ module density) | None                                       | Small   |
 | **4**    | Extract inline `TEAM_ALIASES`/`PLAYER_ALIASES` from `natural_query.py` — consolidate into `entity_resolution.py`                                   | Medium (eliminates duplication)    | Low                                        | Small   |
 | **5**    | Extract date utilities (`_infer_all_star_break_start`, `_resolve_year_for_month_in_season`) from `natural_query.py` into a `_date_utils.py` module | Medium (separation of concerns)    | None                                       | Small   |
-| **6**    | Retire `/scripts/` analysis scripts — migrate or archive                                                                                           | Medium (removes confusion)         | Low                                        | Small   |
+| **6**    | ~~Retire `/scripts/` analysis scripts — migrate or archive~~ **Resolved** (see `docs/scripts_retirement.md`)                                      | Medium (removes confusion)         | Low                                        | Small   |
 | **7**    | Clarify result contracts docs — rename `result_contracts.md` to `result_contracts_target.md` or add banner                                         | Low (reduces confusion)            | None                                       | Trivial |
 | **8**    | Consolidate query guide docs (merge `quick_query_guide.md` into `query_guide.md`)                                                                  | Low (reduces doc surface)          | None                                       | Small   |
 
@@ -208,7 +208,7 @@ Ranked by value / risk ratio:
 ### Phase 1: Immediate (safe, high-signal)
 
 1. **Fix README.md** — Regenerate from current capabilities. This is the most visible issue.
-2. **Retire `/scripts/`** — Add a note or remove stale scripts that duplicate CLI commands.
+2. **~~Retire `/scripts/`~~** — **Done.** Scripts retired with replacement mapping in `docs/scripts_retirement.md`. Stale lint rule removed from `pyproject.toml`.
 
 ### Phase 2: Near-term (reduces technical debt)
 

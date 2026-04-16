@@ -9,6 +9,11 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### Changed
+- Retired all standalone `/scripts/` analysis scripts — canonical command replacements documented in `docs/scripts_retirement.md`
+- Removed stale `scripts/*` lint rule from `pyproject.toml`
+- Updated `docs/architecture_hygiene_audit.md` to mark scripts retirement as resolved
+
 ### Added
 - Natural player season leaderboard coverage:
   - top scorers
