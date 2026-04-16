@@ -1,15 +1,28 @@
 import json
 import re
-from calendar import monthcalendar, monthrange
 from collections.abc import Callable
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import pandas as pd
 
 from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
+from nbatools.commands._date_utils import extract_date_range
+from nbatools.commands._leaderboard_utils import (
+    detect_player_leaderboard_stat,
+    detect_team_leaderboard_stat,
+)
+
+# Import entity resolution (used by detect_player / detect_team etc.)
+from nbatools.commands.entity_resolution import (  # noqa: E402
+    PLAYER_ALIASES,
+    TEAM_ALIASES,
+    ResolutionResult,
+    format_ambiguity_message,
+    resolve_player_in_query,
+    resolve_team_in_query,
+)
 from nbatools.commands.format_output import (
     METADATA_LABEL,
     build_error_output,
@@ -134,116 +147,6 @@ from nbatools.commands.top_team_games import (
 )
 from nbatools.commands.top_team_games import run as top_team_games_run
 
-TEAM_ALIASES = {
-    "atlanta": "ATL",
-    "hawks": "ATL",
-    "boston": "BOS",
-    "celtics": "BOS",
-    "brooklyn": "BKN",
-    "nets": "BKN",
-    "charlotte": "CHA",
-    "hornets": "CHA",
-    "chicago": "CHI",
-    "bulls": "CHI",
-    "cleveland": "CLE",
-    "cavs": "CLE",
-    "cavaliers": "CLE",
-    "dallas": "DAL",
-    "mavericks": "DAL",
-    "mavs": "DAL",
-    "denver": "DEN",
-    "nuggets": "DEN",
-    "detroit": "DET",
-    "pistons": "DET",
-    "golden state": "GSW",
-    "warriors": "GSW",
-    "houston": "HOU",
-    "rockets": "HOU",
-    "indiana": "IND",
-    "pacers": "IND",
-    "clippers": "LAC",
-    "la clippers": "LAC",
-    "los angeles clippers": "LAC",
-    "lakers": "LAL",
-    "la lakers": "LAL",
-    "los angeles lakers": "LAL",
-    "memphis": "MEM",
-    "grizzlies": "MEM",
-    "miami": "MIA",
-    "heat": "MIA",
-    "milwaukee": "MIL",
-    "bucks": "MIL",
-    "minnesota": "MIN",
-    "wolves": "MIN",
-    "timberwolves": "MIN",
-    "new orleans": "NOP",
-    "pelicans": "NOP",
-    "new york": "NYK",
-    "knicks": "NYK",
-    "oklahoma city": "OKC",
-    "thunder": "OKC",
-    "orlando": "ORL",
-    "magic": "ORL",
-    "philadelphia": "PHI",
-    "sixers": "PHI",
-    "76ers": "PHI",
-    "phoenix": "PHX",
-    "suns": "PHX",
-    "portland": "POR",
-    "blazers": "POR",
-    "trail blazers": "POR",
-    "sacramento": "SAC",
-    "kings": "SAC",
-    "san antonio": "SAS",
-    "spurs": "SAS",
-    "toronto": "TOR",
-    "raptors": "TOR",
-    "utah": "UTA",
-    "jazz": "UTA",
-    "washington": "WAS",
-    "wizards": "WAS",
-}
-
-PLAYER_ALIASES = {
-    "kobe": "Kobe Bryant",
-    "lebron": "LeBron James",
-    "jokic": "Nikola Jokić",
-    "nikola jokic": "Nikola Jokić",
-    "embiid": "Joel Embiid",
-    "joel embiid": "Joel Embiid",
-    "luka": "Luka Dončić",
-    "harden": "James Harden",
-    "iverson": "Allen Iverson",
-    "dirk": "Dirk Nowitzki",
-    "rodman": "Dennis Rodman",
-    "tim duncan": "Tim Duncan",
-}
-
-# Import entity resolution (used by detect_player / detect_team etc.)
-from nbatools.commands.entity_resolution import (  # noqa: E402
-    PLAYER_FULL_NAME_ALIASES,
-    PLAYER_NICKNAME_ALIASES,
-    TEAM_ALIASES_EXPANDED,
-    ResolutionResult,
-    format_ambiguity_message,
-    resolve_player_in_query,
-    resolve_team_in_query,
-)
-
-# Merge curated aliases into PLAYER_ALIASES for backwards compatibility.
-# Entity-resolution nicknames / full-name aliases supplement the original dict.
-for _k, _v in PLAYER_NICKNAME_ALIASES.items():
-    if _k not in PLAYER_ALIASES:
-        PLAYER_ALIASES[_k] = _v
-for _k, _v in PLAYER_FULL_NAME_ALIASES.items():
-    if _k not in PLAYER_ALIASES:
-        PLAYER_ALIASES[_k] = _v
-
-# Merge expanded team aliases into TEAM_ALIASES for backwards compatibility.
-for _k, _v in TEAM_ALIASES_EXPANDED.items():
-    if _k not in TEAM_ALIASES:
-        TEAM_ALIASES[_k] = _v
-
 STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary|average|averages|record|for|during|playoff|playoffs|postseason|last|past|recent|form|split|over|under|between|and|or)"  # noqa: E501
 
 
@@ -256,100 +159,6 @@ def strip_matchup_noise(text: str) -> str:
 
 def detect_head_to_head(text: str) -> bool:
     return bool(re.search(MATCHUP_NOISE_PATTERN, text))
-
-
-LEADERBOARD_STAT_ALIASES = {
-    "true shooting percentage": "ts_pct",
-    "true shooting %": "ts_pct",
-    "true shooting": "ts_pct",
-    "effective field goal percentage": "efg_pct",
-    "effective field goal %": "efg_pct",
-    "effective field goal": "efg_pct",
-    "effective fg %": "efg_pct",
-    "effective fg": "efg_pct",
-    "assists per game": "ast",
-    "rebounds per game": "reb",
-    "points per game": "pts",
-    "steals per game": "stl",
-    "blocks per game": "blk",
-    "turnovers per game": "tov",
-    "three pointers made": "fg3m",
-    "three-point makes": "fg3m",
-    "threes made": "fg3m",
-    "30-point games": "games_30p",
-    "30 point games": "games_30p",
-    "40-point games": "games_40p",
-    "40 point games": "games_40p",
-    "20-point games": "games_20p",
-    "20 point games": "games_20p",
-    "10-assist games": "games_10a",
-    "10 assist games": "games_10a",
-    "10-rebound games": "games_10r",
-    "10 rebound games": "games_10r",
-    "scorers": "pts",
-    "scoring": "pts",
-    "points": "pts",
-    "rebounding": "reb",
-    "rebounders": "reb",
-    "rebounds": "reb",
-    "assists": "ast",
-    "steals": "stl",
-    "steal": "stl",
-    "blocks": "blk",
-    "block": "blk",
-    "shot blockers": "blk",
-    "shot-blockers": "blk",
-    "turnovers": "tov",
-    "turnover": "tov",
-    "plus minus": "plus_minus",
-    "plus/minus": "plus_minus",
-    "plus_minus": "plus_minus",
-    "+/-": "plus_minus",
-    "apg": "ast",
-    "rpg": "reb",
-    "ppg": "pts",
-    "spg": "stl",
-    "bpg": "blk",
-    "3pm": "fg3m",
-    "threes": "fg3m",
-    "ts pct": "ts_pct",
-    "ts%": "ts_pct",
-    "efg pct": "efg_pct",
-    "efg%": "efg_pct",
-    # Advanced player metrics
-    "usage rate": "usg_pct",
-    "usage percentage": "usg_pct",
-    "usage %": "usg_pct",
-    "usage": "usg_pct",
-    "usg%": "usg_pct",
-    "usg pct": "usg_pct",
-    "usg_pct": "usg_pct",
-    "assist percentage": "ast_pct",
-    "assist %": "ast_pct",
-    "ast%": "ast_pct",
-    "ast pct": "ast_pct",
-    "ast_pct": "ast_pct",
-    "rebound percentage": "reb_pct",
-    "rebound %": "reb_pct",
-    "reb%": "reb_pct",
-    "reb pct": "reb_pct",
-    "reb_pct": "reb_pct",
-    "turnover percentage": "tov_pct",
-    "turnover %": "tov_pct",
-    "turnover rate": "tov_pct",
-    "tov%": "tov_pct",
-    "tov pct": "tov_pct",
-    "tov_pct": "tov_pct",
-    # Ratings (leaderboard only — season-advanced, single-season)
-    "offensive rating": "off_rating",
-    "off rating": "off_rating",
-    "off_rating": "off_rating",
-    "defensive rating": "def_rating",
-    "def rating": "def_rating",
-    "def_rating": "def_rating",
-    "net rating": "net_rating",
-    "net_rating": "net_rating",
-}
 
 
 def extract_top_n(text: str) -> int | None:
@@ -368,17 +177,6 @@ def extract_top_n(text: str) -> int | None:
     if m:
         value = int(m.group(1))
         return value if value > 0 else None
-    return None
-
-
-def _matches_loose_phrase(text: str, phrase: str) -> bool:
-    return bool(re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", text))
-
-
-def detect_player_leaderboard_stat(text: str) -> str | None:
-    for key in sorted(LEADERBOARD_STAT_ALIASES.keys(), key=len, reverse=True):
-        if _matches_loose_phrase(text, key):
-            return LEADERBOARD_STAT_ALIASES[key]
     return None
 
 
@@ -454,84 +252,6 @@ def extract_position_filter(text: str) -> str | None:
         if candidate in _POSITION_GROUP_PATTERNS:
             return _POSITION_GROUP_PATTERNS[candidate]
 
-    return None
-
-
-TEAM_LEADERBOARD_STAT_ALIASES = {
-    "best offensive teams": "off_rating",
-    "offensive teams": "off_rating",
-    "best offense": "off_rating",
-    "offensive rating": "off_rating",
-    "off rating": "off_rating",
-    "off_rating": "off_rating",
-    "worst offensive teams": "off_rating",
-    "best defensive teams": "def_rating",
-    "defensive teams": "def_rating",
-    "best defense": "def_rating",
-    "defensive rating": "def_rating",
-    "def rating": "def_rating",
-    "def_rating": "def_rating",
-    "worst defensive teams": "def_rating",
-    "teams with most threes": "fg3m",
-    "most threes per game teams": "fg3m",
-    "most threes per game": "fg3m",
-    "teams with best efg%": "efg_pct",
-    "teams with best efg pct": "efg_pct",
-    "best team efg%": "efg_pct",
-    "best efg% teams": "efg_pct",
-    "teams with best ts%": "ts_pct",
-    "teams with best ts pct": "ts_pct",
-    "best team ts%": "ts_pct",
-    "best ts% teams": "ts_pct",
-    "best net rating teams": "net_rating",
-    "best net rating": "net_rating",
-    "net rating": "net_rating",
-    "net_rating": "net_rating",
-    "worst net rating teams": "net_rating",
-    "fastest teams": "pace",
-    "fastest pace teams": "pace",
-    "highest pace teams": "pace",
-    "slowest teams": "pace",
-    "slowest pace teams": "pace",
-    "lowest pace teams": "pace",
-    "pace": "pace",
-    "most steals teams": "stl",
-    "team steals": "stl",
-    "most blocks teams": "blk",
-    "team blocks": "blk",
-    "most turnovers teams": "tov",
-    "team turnovers": "tov",
-    "lowest turnover teams": "tov",
-    "fewest turnovers teams": "tov",
-    "fewest turnover teams": "tov",
-    "best plus minus teams": "plus_minus",
-    "best plus/minus teams": "plus_minus",
-    "team plus minus": "plus_minus",
-    "most wins": "wins",
-    "most wins teams": "wins",
-    "teams with most wins": "wins",
-    "best record teams": "win_pct",
-    "best record": "win_pct",
-    "best winning percentage": "win_pct",
-    "best win pct": "win_pct",
-    "highest winning percentage": "win_pct",
-    "most losses": "losses",
-    "most losses teams": "losses",
-    "teams with most losses": "losses",
-    "fewest losses": "losses",
-    "fewest losses teams": "losses",
-    "best scoring teams": "pts",
-    "highest scoring teams": "pts",
-    "most points per game teams": "pts",
-    "most rebounds teams": "reb",
-    "most assists teams": "ast",
-}
-
-
-def detect_team_leaderboard_stat(text: str) -> str | None:
-    for key in sorted(TEAM_LEADERBOARD_STAT_ALIASES.keys(), key=len, reverse=True):
-        if _matches_loose_phrase(text, key):
-            return TEAM_LEADERBOARD_STAT_ALIASES[key]
     return None
 
 
@@ -629,95 +349,6 @@ def extract_last_n(text: str) -> int | None:
             value = int(m.group(1))
             return value if value > 0 else None
     return None
-
-
-MONTH_NAME_TO_NUM = {
-    "january": 1,
-    "february": 2,
-    "march": 3,
-    "april": 4,
-    "may": 5,
-    "june": 6,
-    "july": 7,
-    "august": 8,
-    "september": 9,
-    "october": 10,
-    "november": 11,
-    "december": 12,
-}
-
-CURRENT_QUERY_DATE = pd.Timestamp.now(tz=ZoneInfo("America/Detroit")).floor("D").tz_localize(None)
-
-ALL_STAR_BREAK_START_OVERRIDES = {
-    "2022-23": "2023-02-20",
-    "2023-24": "2024-02-19",
-    "2024-25": "2025-02-17",
-    "2025-26": "2026-02-16",
-}
-
-
-def _infer_all_star_break_start(season: str | None) -> str | None:
-    if season in ALL_STAR_BREAK_START_OVERRIDES:
-        return ALL_STAR_BREAK_START_OVERRIDES[season]
-
-    if season and re.match(r"^(?:19|20)\d{2}-\d{2}$", season):
-        end_year = int(season.split("-")[0]) + 1
-    else:
-        end_year = (
-            CURRENT_QUERY_DATE.year if CURRENT_QUERY_DATE.month < 7 else CURRENT_QUERY_DATE.year + 1
-        )
-
-    cal = monthcalendar(end_year, 2)
-    sundays = [week[6] for week in cal if week[6] != 0]
-    if len(sundays) < 3:
-        return None
-
-    third_sunday = sundays[2]
-    start_ts = pd.Timestamp(year=end_year, month=2, day=third_sunday) + pd.Timedelta(days=1)
-    return start_ts.date().isoformat()
-
-
-def _resolve_year_for_month_in_season(season: str | None, month_num: int) -> int:
-    if season and re.match(r"^(?:19|20)\d{2}-\d{2}$", season):
-        start_year = int(season.split("-")[0])
-        return start_year if month_num >= 10 else start_year + 1
-
-    current_year = int(CURRENT_QUERY_DATE.year)
-    current_month = int(CURRENT_QUERY_DATE.month)
-    return current_year if month_num <= current_month else current_year - 1
-
-
-def extract_date_range(text: str, season: str | None) -> tuple[str | None, str | None]:
-    if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
-        return _infer_all_star_break_start(season), None
-
-    m = re.search(r"\blast\s+(\d+)\s+days?\b", text)
-    if m:
-        days = int(m.group(1))
-        if days > 0:
-            start = (CURRENT_QUERY_DATE - pd.Timedelta(days=days - 1)).date().isoformat()
-            end = CURRENT_QUERY_DATE.date().isoformat()
-            return start, end
-
-    month_pattern = "|".join(MONTH_NAME_TO_NUM.keys())
-
-    m = re.search(rf"\bsince\s+({month_pattern})\b", text)
-    if m:
-        month_num = MONTH_NAME_TO_NUM[m.group(1)]
-        year = _resolve_year_for_month_in_season(season, month_num)
-        start = f"{year}-{month_num:02d}-01"
-        return start, None
-
-    m = re.search(rf"\b(?:in|during)\s+({month_pattern})\b", text)
-    if m:
-        month_num = MONTH_NAME_TO_NUM[m.group(1)]
-        year = _resolve_year_for_month_in_season(season, month_num)
-        last_day = monthrange(year, month_num)[1]
-        start = f"{year}-{month_num:02d}-01"
-        end = f"{year}-{month_num:02d}-{last_day:02d}"
-        return start, end
-
-    return None, None
 
 
 STREAK_SPECIAL_PATTERNS = {

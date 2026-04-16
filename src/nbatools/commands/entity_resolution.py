@@ -62,6 +62,21 @@ def _ambiguous(candidates: list[str], source: str) -> ResolutionResult:
 # Only grounded, widely recognized aliases.  No speculative/meme mappings.
 # ---------------------------------------------------------------------------
 
+CURATED_PLAYER_ALIASES: dict[str, str] = {
+    "kobe": "Kobe Bryant",
+    "lebron": "LeBron James",
+    "jokic": "Nikola Jokić",
+    "nikola jokic": "Nikola Jokić",
+    "embiid": "Joel Embiid",
+    "joel embiid": "Joel Embiid",
+    "luka": "Luka Dončić",
+    "harden": "James Harden",
+    "iverson": "Allen Iverson",
+    "dirk": "Dirk Nowitzki",
+    "rodman": "Dennis Rodman",
+    "tim duncan": "Tim Duncan",
+}
+
 PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     # Initials / acronyms
     "sga": "Shai Gilgeous-Alexander",
@@ -251,6 +266,76 @@ PLAYER_FULL_NAME_ALIASES: dict[str, str] = {
 # Curated team aliases (expanded)
 # ---------------------------------------------------------------------------
 
+CURATED_TEAM_ALIASES: dict[str, str] = {
+    "atlanta": "ATL",
+    "hawks": "ATL",
+    "boston": "BOS",
+    "celtics": "BOS",
+    "brooklyn": "BKN",
+    "nets": "BKN",
+    "charlotte": "CHA",
+    "hornets": "CHA",
+    "chicago": "CHI",
+    "bulls": "CHI",
+    "cleveland": "CLE",
+    "cavs": "CLE",
+    "cavaliers": "CLE",
+    "dallas": "DAL",
+    "mavericks": "DAL",
+    "mavs": "DAL",
+    "denver": "DEN",
+    "nuggets": "DEN",
+    "detroit": "DET",
+    "pistons": "DET",
+    "golden state": "GSW",
+    "warriors": "GSW",
+    "houston": "HOU",
+    "rockets": "HOU",
+    "indiana": "IND",
+    "pacers": "IND",
+    "clippers": "LAC",
+    "la clippers": "LAC",
+    "los angeles clippers": "LAC",
+    "lakers": "LAL",
+    "la lakers": "LAL",
+    "los angeles lakers": "LAL",
+    "memphis": "MEM",
+    "grizzlies": "MEM",
+    "miami": "MIA",
+    "heat": "MIA",
+    "milwaukee": "MIL",
+    "bucks": "MIL",
+    "minnesota": "MIN",
+    "wolves": "MIN",
+    "timberwolves": "MIN",
+    "new orleans": "NOP",
+    "pelicans": "NOP",
+    "new york": "NYK",
+    "knicks": "NYK",
+    "oklahoma city": "OKC",
+    "thunder": "OKC",
+    "orlando": "ORL",
+    "magic": "ORL",
+    "philadelphia": "PHI",
+    "sixers": "PHI",
+    "76ers": "PHI",
+    "phoenix": "PHX",
+    "suns": "PHX",
+    "portland": "POR",
+    "blazers": "POR",
+    "trail blazers": "POR",
+    "sacramento": "SAC",
+    "kings": "SAC",
+    "san antonio": "SAS",
+    "spurs": "SAS",
+    "toronto": "TOR",
+    "raptors": "TOR",
+    "utah": "UTA",
+    "jazz": "UTA",
+    "washington": "WAS",
+    "wizards": "WAS",
+}
+
 TEAM_ALIASES_EXPANDED: dict[str, str] = {
     # Standard city / nickname mappings (existing)
     "atlanta": "ATL",
@@ -405,6 +490,24 @@ TEAM_ALIASES_EXPANDED: dict[str, str] = {
     "utah jazz": "UTA",
     "washington wizards": "WAS",
 }
+
+
+def _merge_alias_maps(*alias_maps: dict[str, str]) -> dict[str, str]:
+    merged: dict[str, str] = {}
+    for alias_map in alias_maps:
+        for key, value in alias_map.items():
+            merged.setdefault(key, value)
+    return merged
+
+
+# Backward-compatible merged alias maps used by natural-query helpers.
+PLAYER_ALIASES: dict[str, str] = _merge_alias_maps(
+    CURATED_PLAYER_ALIASES,
+    PLAYER_NICKNAME_ALIASES,
+    PLAYER_FULL_NAME_ALIASES,
+)
+
+TEAM_ALIASES: dict[str, str] = _merge_alias_maps(CURATED_TEAM_ALIASES, TEAM_ALIASES_EXPANDED)
 
 # All 30 canonical abbreviations
 ALL_TEAM_ABBRS: set[str] = {
