@@ -62,7 +62,7 @@ The Finder→CountResult conversion (lines 385–396) is clean and small. The Le
 | Responsibility | Lines (approx) | Verdict |
 |---|---|---|
 | Constants: section labels, metadata field order, route-to-query-class map | 1–96 | **Clearly belongs** |
-| `route_to_query_class()` | 92–95 | **Clearly belongs** — used by both query_service.py and _natural_query_execution.py |
+| `route_to_query_class()` | 92–95 | **Clearly belongs** — used by both `query_service.py` and `_natural_query_execution.py` |
 | `build_metadata_block()` / `parse_metadata_block()` | 98–167 | **Clearly belongs** — metadata serialization |
 | `wrap_raw_output()` / `build_no_result_output()` / `build_error_output()` | 170–240 | **Clearly belongs** — raw text envelope construction |
 | `strip_metadata_section()` / `parse_labeled_sections()` | 121–261 | **Clearly belongs** — section parsing for the labeled-text format |
