@@ -6,13 +6,13 @@ commands that orchestrate the full pull → validate → build → manifest pipe
 
 import typer
 
-from nbatools.commands.pipeline import (
+from nbatools.commands.pipeline.orchestrator import (
     PipelineResult,
     backfill_seasons,
     pipeline_status,
     refresh_current_season,
 )
-from nbatools.commands.pipeline import (
+from nbatools.commands.pipeline.orchestrator import (
     rebuild_season as rebuild_season_fn,
 )
 
@@ -205,7 +205,7 @@ def auto_refresh(
     Executes 'pipeline refresh' on a repeating schedule.  Writes a
     last_refresh.json log after each attempt.  Press Ctrl-C to stop.
     """
-    from nbatools.commands.auto_refresh import parse_interval, run_auto_refresh
+    from nbatools.commands.pipeline.auto_refresh import parse_interval, run_auto_refresh
 
     try:
         seconds = parse_interval(interval)
