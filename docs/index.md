@@ -9,31 +9,51 @@ If you're new, start here and follow the order below.
 ## Start Here
 
 1. `../README.md` — project overview and fastest examples
-2. `quick_query_guide.md` — short mental model and starter queries
-3. `current_state_guide.md` — current supported behavior
-4. `../QUERY_GUIDE.md` — deeper structured and natural query reference
+2. `quick_query_guide.md` — quick-start examples (shortest path to trying queries)
+3. `current_state_guide.md` — verified shipped behavior (the source of truth for what works)
+4. `query_guide.md` — full structured and natural query reference
 
 ---
 
 ## Core Guides
 
 ### Project overview
+
 - `../README.md`
 
 ### Current query surface
-- `current_state_guide.md`
-- `quick_query_guide.md`
-- `../QUERY_GUIDE.md`
+
+- `current_state_guide.md` — verified shipped behavior
+- `quick_query_guide.md` — quick-start examples
+- `query_guide.md` — comprehensive reference (structured + natural)
 
 ### Data and pipeline
-- `../DATA_CATALOG.md`
-- `../PIPELINE_RUNBOOK.md`
+
+- `data_catalog.md`
+- `pipeline_runbook.md`
 
 ### System design
-- `../SYSTEM_CONVENTIONS.md`
-- `../SCHEMA_FINAL_DECISIONS.md`
+
+- `project_conventions.md` — engineering conventions and architecture rules
+- `system_conventions.md` — data format and naming conventions
+
+### Result contracts
+
+- `result_contracts.md` — **design target** for engine result shapes
+- `result_contracts_audit.md` — historical audit snapshot (pre-structured-result-layer)
+
+### Internal architecture
+
+- `query_service_layer.md` — query service interface
+- `structured_result_layer.md` — structured result object design
+- `api_layer.md` — FastAPI HTTP layer
+
+### UI
+
+- `ui_guide.md` — web UI setup, dev workflow, component reference
 
 ### Release history
+
 - `../CHANGELOG.md`
 
 ---
@@ -58,20 +78,23 @@ If you're new, start here and follow the order below.
 ## Recommended Reading Paths
 
 ### Fastest path
+
 1. `quick_query_guide.md`
 2. try a few `nbatools-cli ask` queries
 3. use `current_state_guide.md` as reference
 
 ### Full product understanding
+
 1. `../README.md`
 2. `current_state_guide.md`
-3. `../QUERY_GUIDE.md`
-4. `../DATA_CATALOG.md`
-5. `../PIPELINE_RUNBOOK.md`
+3. `query_guide.md`
+4. `data_catalog.md`
+5. `pipeline_runbook.md`
 
 ### Extending the system
-1. `../SYSTEM_CONVENTIONS.md`
-2. `../SCHEMA_FINAL_DECISIONS.md`
+
+1. `project_conventions.md`
+2. `system_conventions.md`
 3. `../CHANGELOG.md`
 
 ---
@@ -98,4 +121,4 @@ Tests:
 
 ## Current Tested State
 
-- full suite: **206 passing tests**
+- full suite: **1650+ passing tests** across 41+ test files

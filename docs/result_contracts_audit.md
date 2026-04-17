@@ -1,8 +1,24 @@
-# Result Contracts Audit
+# Result Contracts Audit — Historical Snapshot
+
+> **Status: historical audit (2025-04-16).**
+> This document is a point-in-time audit of raw engine output against the
+> target contracts in [result_contracts.md](result_contracts.md).
+>
+> Since this audit was written, the **structured result layer** has been
+> implemented — all routes now produce first-class result objects
+> (`SummaryResult`, `ComparisonResult`, `SplitSummaryResult`, `FinderResult`,
+> `LeaderboardResult`, `StreakResult`, `CountResult`, `NoResult`) with
+> consistent metadata, status, notes, and caveats. Many of the gaps
+> documented below (missing section labels, missing metadata, no-result as
+> an afterthought) have been resolved by that layer.
+>
+> This audit is retained for reference — it records the reasoning that
+> motivated the structured result work. It should **not** be read as a
+> description of current gaps.
 
 ## Purpose
 
-This is an **audit of current engine output behavior** against the target contracts in [docs/result_contracts.md](result_contracts.md). It is not a design doc and it is not a description of shipped contract compliance.
+This is an **audit of engine output behavior at a point in time** against the target contracts in [docs/result_contracts.md](result_contracts.md). It is not a design doc and it is not a description of shipped contract compliance.
 
 The goal is to measure how far the current raw/structured outputs are from the seven result classes and the shared metadata block, without changing product behavior. Nothing in this doc asserts that the engine already satisfies a contract; where the current code only partially aligns, that is called out explicitly.
 

@@ -190,16 +190,16 @@ The repo has matured into a well-layered system. The conventions doc describes a
 
 Ranked by value / risk ratio:
 
-| Priority | Opportunity                                                                                                                                        | Value                              | Risk                                       | Effort  |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------ | ------- |
-| **1**    | Fix corrupted README.md                                                                                                                            | High (user-facing)                 | None                                       | Small   |
-| **2**    | Remove dual execution paths in `cli_apps/queries.py` and `natural_query.py` `run()` — make structured-first the only path                          | High (bug masking, complexity)     | Low (structured path is already canonical) | Medium  |
-| **3**    | Extract leaderboard stat aliases from `natural_query.py` into `_constants.py`                                                                      | Medium (reduces NQ module density) | None                                       | Small   |
-| **4**    | Extract inline `TEAM_ALIASES`/`PLAYER_ALIASES` from `natural_query.py` — consolidate into `entity_resolution.py`                                   | Medium (eliminates duplication)    | Low                                        | Small   |
-| **5**    | Extract date utilities (`_infer_all_star_break_start`, `_resolve_year_for_month_in_season`) from `natural_query.py` into a `_date_utils.py` module | Medium (separation of concerns)    | None                                       | Small   |
-| **6**    | ~~Retire `/scripts/` analysis scripts — migrate or archive~~ **Resolved** (see `docs/scripts_retirement.md`)                                      | Medium (removes confusion)         | Low                                        | Small   |
-| **7**    | Clarify result contracts docs — rename `result_contracts.md` to `result_contracts_target.md` or add banner                                         | Low (reduces confusion)            | None                                       | Trivial |
-| **8**    | Consolidate query guide docs (merge `quick_query_guide.md` into `query_guide.md`)                                                                  | Low (reduces doc surface)          | None                                       | Small   |
+| Priority | Opportunity                                                                                                                                              | Value                              | Risk                                       | Effort  |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------ | ------- |
+| **1**    | Fix corrupted README.md                                                                                                                                  | High (user-facing)                 | None                                       | Small   |
+| **2**    | Remove dual execution paths in `cli_apps/queries.py` and `natural_query.py` `run()` — make structured-first the only path                                | High (bug masking, complexity)     | Low (structured path is already canonical) | Medium  |
+| **3**    | Extract leaderboard stat aliases from `natural_query.py` into `_constants.py`                                                                            | Medium (reduces NQ module density) | None                                       | Small   |
+| **4**    | Extract inline `TEAM_ALIASES`/`PLAYER_ALIASES` from `natural_query.py` — consolidate into `entity_resolution.py`                                         | Medium (eliminates duplication)    | Low                                        | Small   |
+| **5**    | Extract date utilities (`_infer_all_star_break_start`, `_resolve_year_for_month_in_season`) from `natural_query.py` into a `_date_utils.py` module       | Medium (separation of concerns)    | None                                       | Small   |
+| **6**    | ~~Retire `/scripts/` analysis scripts — migrate or archive~~ **Resolved** (see `docs/scripts_retirement.md`)                                             | Medium (removes confusion)         | Low                                        | Small   |
+| **7**    | ~~Clarify result contracts docs — rename `result_contracts.md` to `result_contracts_target.md` or add banner~~ **Resolved** (banners added to both docs) | Low (reduces confusion)            | None                                       | Trivial |
+| **8**    | ~~Consolidate query guide docs (merge `quick_query_guide.md` into `query_guide.md`)~~ **Resolved** (kept separate with role banners; see below)          | Low (reduces doc surface)          | None                                       | Small   |
 
 ---
 
@@ -220,10 +220,10 @@ Ranked by value / risk ratio:
 5. **Unify CLI export path** — Make `cli_apps/queries.py` always use the structured result path. Remove stdout-capture fallback and `_ROUTE_FUNC_MAP`. This requires verifying all routes produce equivalent results through the structured path.
 6. **Improve `_finalize_route()` readability** — Not a full rewrite, but add a decision table comment at the top documenting the priority order of route checks. Consider extracting the largest route-class blocks (playoff routing, occurrence routing) into sub-functions.
 
-### Phase 4: Can wait
+### Phase 4: ~~Can wait~~ Resolved
 
-7. **Doc consolidation** — Merge overlapping query guides, relabel result contracts docs.
-8. **AGENTS.md / project_conventions.md dedup** — These serve different audiences (agents vs. human devs) and the overlap is manageable.
+7. ~~**Doc consolidation**~~ — **Resolved.** Role banners added to `result_contracts.md`, `result_contracts_audit.md`, `query_guide.md`, `quick_query_guide.md`, and `current_state_guide.md`. Query guides kept separate (they serve different audiences) with cross-links. `docs/index.md` updated with correct paths and doc map. `natural_query_cleanup_plan.md` updated with completion status.
+8. **AGENTS.md / project_conventions.md dedup** — These serve different audiences (agents vs. human devs) and the overlap is manageable. Left as-is.
 
 ### Explicitly do not touch yet
 
@@ -238,14 +238,14 @@ Ranked by value / risk ratio:
 
 These areas may look like they need cleanup but should **not** be refactored right now:
 
-| Item                                                                    | Why it looks messy                                        | Why to leave it                                                                                                                                                                   |
-| ----------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `natural_query.py` is 4,358 lines                                       | Large file                                                | It is heavily tested, functional, and the risk of a big split outweighs the benefit. Shrink it incrementally by extracting data (aliases, constants) and utilities (dates) first. |
-| `format_output.py` uses heuristics to detect query type from raw output | Violates structured-result philosophy                     | The fix is to add section labels to raw output (tracked in `result_contracts_audit.md`). Rewriting the formatter without fixing the input would create churn.                     |
-| Player/team route symmetry in `_finalize_route()`                       | Near-duplicate if/elif branches for player vs. team paths | This mirrors real domain asymmetry (player metrics ≠ team metrics). Forcing unification would create awkward abstractions.                                                        |
-| `CountResult` extraction in `query_service.py`                          | Tightly coupled to column names                           | Works for all current routes. Refactoring before adding new count-compatible routes would be premature.                                                                           |
-| `savedQueryStorage.ts` in the frontend                                  | Feature outside the "thin UI" rule                        | It is browser-local bookmarking, well-isolated, and does not affect the engine. Moving it to the backend would add complexity with no current need.                               |
-| Multiple query-guide docs                                               | Redundant coverage of "what you can ask"                  | Each serves a slightly different audience (quick examples vs. comprehensive reference vs. verified state). Consolidation is low-value.                                            |
+| Item                                                                    | Why it looks messy                                        | Why to leave it                                                                                                                                                                    |
+| ----------------------------------------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `natural_query.py` is 4,358 lines                                       | Large file                                                | It is heavily tested, functional, and the risk of a big split outweighs the benefit. Shrink it incrementally by extracting data (aliases, constants) and utilities (dates) first.  |
+| `format_output.py` uses heuristics to detect query type from raw output | Violates structured-result philosophy                     | The fix is to add section labels to raw output (tracked in `result_contracts_audit.md`). Rewriting the formatter without fixing the input would create churn.                      |
+| Player/team route symmetry in `_finalize_route()`                       | Near-duplicate if/elif branches for player vs. team paths | This mirrors real domain asymmetry (player metrics ≠ team metrics). Forcing unification would create awkward abstractions.                                                         |
+| `CountResult` extraction in `query_service.py`                          | Tightly coupled to column names                           | Works for all current routes. Refactoring before adding new count-compatible routes would be premature.                                                                            |
+| `savedQueryStorage.ts` in the frontend                                  | Feature outside the "thin UI" rule                        | It is browser-local bookmarking, well-isolated, and does not affect the engine. Moving it to the backend would add complexity with no current need.                                |
+| Multiple query-guide docs                                               | Redundant coverage of "what you can ask"                  | Each serves a slightly different audience (quick examples vs. comprehensive reference vs. verified state). **Resolved** by adding role banners and cross-links instead of merging. |
 
 ---
 

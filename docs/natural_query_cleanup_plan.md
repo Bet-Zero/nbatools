@@ -1,5 +1,24 @@
 # natural_query.py Cleanup Plan
 
+> **Status: partially complete (last reviewed 2026-04-16).**
+>
+> Phase A (safe deduplication) and significant portions of Phase B
+> (responsibility cleanup) have been completed in prior cleanup passes.
+> Key progress:
+>
+> - duplicate routing branches in `_finalize_route` removed
+> - duplicate `team_streak_finder` branch removed
+> - intent detectors extracted for clearer parse → route separation
+> - entity resolution consolidated in `entity_resolution.py`
+> - structured result layer shipped (all routes return result objects)
+> - structured-first execution path is now canonical
+>
+> Remaining value: Phase C (optional helper-module extraction) if the file
+> continues to grow, and any Phase B items not yet addressed.
+> See `docs/architecture_hygiene_audit.md` items #3–5 for the next
+> concrete extraction targets (leaderboard stat aliases, inline
+> player/team aliases, date utilities).
+
 This document lays out the cleanup plan for `src/nbatools/commands/natural_query.py`.
 
 The goal is **not** to rewrite the natural query system from scratch.

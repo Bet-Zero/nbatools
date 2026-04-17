@@ -1,8 +1,13 @@
-# Result Contracts
+# Result Contracts — Design Target
 
-This document defines the **target result contracts** for `nbatools`.
+> **Status: design target.**
+> This document defines the _target_ result contracts for `nbatools`.
+> It is **not** a description of current engine output. For the current-state
+> audit of engine output against these targets, see
+> [result_contracts_audit.md](result_contracts_audit.md).
+> For verified shipped behavior, see [current_state_guide.md](current_state_guide.md).
 
-It is a design/contracts doc, not a description of what the engine currently produces. Today, result shapes vary across command modules. This doc describes what they should evolve toward so that the CLI, exports, and the React web UI can all consume the same engine.
+This doc describes the result shapes that command modules should evolve toward so that the CLI, exports, and the React web UI can all consume the same engine.
 
 Related docs:
 

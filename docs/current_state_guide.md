@@ -1,8 +1,16 @@
 # NBA Tools Current State Guide
 
-This guide describes the **current shipped behavior** of `nbatools`.
+> **Role: verified shipped behavior — the source of truth for what works today.**
+> This doc is intentionally narrower than the roadmap. Only behavior that
+> is implemented _and_ tested belongs here.
+>
+> Related docs:
+>
+> - [quick_query_guide.md](quick_query_guide.md) — quick-start examples
+> - [query_guide.md](query_guide.md) — full query reference with CLI commands
+> - [roadmap.md](roadmap.md) — planned / future capabilities
 
-It is intentionally narrower than the roadmap.
+This guide describes the **current shipped behavior** of `nbatools`.
 
 Use this document for:
 
@@ -17,8 +25,6 @@ Do **not** use this document for:
 - speculative future UI behavior
 - unverified broad claims
 - roadmap sequencing
-
-For future direction, see [docs/roadmap.md](roadmap.md).
 
 ---
 
@@ -42,7 +48,9 @@ For future direction, see [docs/roadmap.md](roadmap.md).
 
     # Start the API (serves the built React UI at /)
     nbatools-api
-    # Open http    # Open http    # Open httpis a React + TypeScript + Vite app that consumes the same API endpoints as any other client. It provides a query bar, sample query buttons, result tables for all query classes, a raw JSON toggle, query history, saved queries, and a Dev Tools panel for structured queries.
+    # Open http://localhost:8000 in a browser
+
+The web UI is a React + TypeScript + Vite app that consumes the same API endpoints as any other client. It provides a query bar, sample query buttons, result tables for all query classes, a raw JSON toggle, query history, saved queries, and a Dev Tools panel for structured queries.
 
 ---
 
@@ -446,14 +454,14 @@ All structured result classes produce a `to_dict()` output that always includes 
 
 Each reason maps to a canonical status:
 
-| Reason        | Status      | Meaning                                                                 |
-| ------------- | ----------- | ----------------------------------------------------------------------- |
-| `no_match`    | `no_result` | Data exists, filters matched nothing                                    |
-| `no_data`     | `no_result` | Underlying season/type data file is unavailable                         |
-| `unsupported` | `no_result` | Invalid filter combination, unsupported stat, or unknown route          |
-| `ambiguous`   | `no_result` | Entity resolution found multiple matches                                |
-| `unrouted`    | `error`     | Parser could not select a route                                         |
-| `error`       | `error`     | Unexpected internal exception                                           |
+| Reason        | Status      | Meaning                                                        |
+| ------------- | ----------- | -------------------------------------------------------------- |
+| `no_match`    | `no_result` | Data exists, filters matched nothing                           |
+| `no_data`     | `no_result` | Underlying season/type data file is unavailable                |
+| `unsupported` | `no_result` | Invalid filter combination, unsupported stat, or unknown route |
+| `ambiguous`   | `no_result` | Entity resolution found multiple matches                       |
+| `unrouted`    | `error`     | Parser could not select a route                                |
+| `error`       | `error`     | Unexpected internal exception                                  |
 
 The mapping is enforced by `query_service.reason_to_status()`. Expected failures (conditions the user or data can cause) always produce `no_result`; only system-level failures produce `error`.
 
