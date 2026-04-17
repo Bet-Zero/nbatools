@@ -9,6 +9,7 @@ from nbatools.commands._date_utils import extract_date_range
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
+    wants_ascending_leaderboard,
 )
 from nbatools.commands._matchup_utils import (
     detect_head_to_head,
@@ -17,6 +18,25 @@ from nbatools.commands._matchup_utils import (
     detect_team_in_text,
     extract_player_comparison,
     extract_team_comparison,
+)
+from nbatools.commands._occurrence_route_utils import (
+    _COMPOUND_STAT_MAP,
+    _parse_single_threshold,
+    extract_compound_occurrence_event,
+    extract_occurrence_event,
+    try_compound_occurrence_route,
+    try_occurrence_count_route,
+    wants_occurrence_leaderboard,
+)
+from nbatools.commands._playoff_record_route_utils import (
+    detect_by_decade_intent,
+    detect_by_round_intent,
+    detect_playoff_appearance_intent,
+    detect_playoff_history_intent,
+    detect_playoff_round_filter,
+    detect_record_intent,
+    try_playoff_record_route,
+    try_record_leaderboard_route,
 )
 from nbatools.commands.entity_resolution import (
     PLAYER_ALIASES,
@@ -73,7 +93,6 @@ from nbatools.commands.player_streak_finder import (
     build_result as player_streak_finder_build_result,
 )
 from nbatools.commands.playoff_history import (
-    ROUND_ALIASES,
     build_matchup_by_decade_result,
     build_playoff_appearances_result,
     build_playoff_history_result,
@@ -166,11 +185,6 @@ def wants_leaderboard(text: str) -> bool:
             text,
         )
     )
-
-
-def wants_ascending_leaderboard(text: str) -> bool:
-    """Detect if the leaderboard should sort ascending (lowest/fewest/least/bottom)."""
-    return bool(re.search(r"\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom\b", text))
 
 
 # ---------------------------------------------------------------------------
@@ -837,328 +851,8 @@ def wants_count(text: str) -> bool:
     )
 
 
-def detect_record_intent(text: str) -> bool:
-    """Detect explicit record-oriented intent.
-
-    Triggers on phrases that strongly signal the user wants a W/L record
-    rather than stat averages.  Examples:
-    - "best record since 2015"
-    - "Lakers vs Celtics all-time record"
-    - "home record", "away record", "playoff record"
-    - "most wins since 2010", "which teams had the most wins"
-    - "win percentage", "winning percentage"
-    - "worst record"
-    """
-    return bool(
-        re.search(
-            r"\b(?:record|win(?:ning)?\s+(?:percent(?:age)?|pct)|win\s*%"
-            r"|most\s+(?:home\s+|away\s+)?wins|most\s+(?:home\s+|away\s+)?losses"
-            r"|fewest\s+(?:home\s+|away\s+)?losses"
-            r"|best\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
-            r"|worst\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
-            r"|highest\s+win|lowest\s+win"
-            r"|home\s+record|away\s+record"
-            r"|playoff\s+record|postseason\s+record"
-            r"|matchup\s+record|all[- ]?time\s+record)\b",
-            text,
-        )
-    )
 
 
-def detect_by_decade_intent(text: str) -> bool:
-    """Detect 'by decade' bucketing intent."""
-    return bool(re.search(r"\bby\s+decade\b", text))
-
-
-def detect_playoff_appearance_intent(text: str) -> bool:
-    """Detect intent for playoff/round appearance queries.
-
-    Triggers on phrases like:
-    - "finals appearances"
-    - "playoff appearances"
-    - "conference finals appearances"
-    - "second round appearances"
-    """
-    return bool(
-        re.search(
-            r"\b(?:playoff|postseason|finals?|conference\s+finals?|"
-            r"(?:first|1st|second|2nd)\s+round|semifinal)"
-            r"\s+appearance",
-            text,
-        )
-    )
-
-
-def detect_playoff_history_intent(text: str) -> bool:
-    """Detect explicit playoff history queries.
-
-    Triggers on:
-    - "playoff history"
-    - "playoff series"
-    - "postseason history"
-    """
-    return bool(
-        re.search(
-            r"\b(?:playoff|postseason)\s+(?:history|series)\b",
-            text,
-        )
-    )
-
-
-def detect_playoff_round_filter(text: str) -> str | None:
-    """Extract a playoff round filter from natural language.
-
-    Returns a round code ('01'-'04') or None.
-    """
-    # Check each alias against the query text
-    t = text.lower()
-    # Longest-match first to avoid "finals" matching before "conference finals"
-    sorted_aliases = sorted(ROUND_ALIASES.keys(), key=len, reverse=True)
-    for alias in sorted_aliases:
-        if alias in t:
-            return ROUND_ALIASES[alias]
-    return None
-
-
-def detect_by_round_intent(text: str) -> bool:
-    """Detect 'by round' breakdown intent for playoff matchup history."""
-    return bool(re.search(r"\bby\s+round\b", text))
-
-
-def extract_occurrence_event(text: str) -> dict | None:
-    """Detect and extract an occurrence-event definition from natural language.
-
-    Returns a dict with either:
-    - {"stat": str, "min_value": float}  for single-stat thresholds
-    - {"special_event": str}  for multi-stat events (triple_double, double_double)
-
-    Returns None if no occurrence event is detected.
-
-    Examples:
-        "40 point games"       → {"stat": "pts", "min_value": 40}
-        "40-point games"       → {"stat": "pts", "min_value": 40}
-        "5+ three games"       → {"stat": "fg3m", "min_value": 5}
-        "triple doubles"       → {"special_event": "triple_double"}
-        "double doubles"       → {"special_event": "double_double"}
-        "15 rebound games"     → {"stat": "reb", "min_value": 15}
-        "120 point games"      → {"stat": "pts", "min_value": 120}
-        "games with 5+ threes" → {"stat": "fg3m", "min_value": 5}
-    """
-    # Special events: triple double / double double
-    if re.search(r"\btriple[- ]?doubles?\b", text):
-        return {"special_event": "triple_double"}
-    if re.search(r"\bdouble[- ]?doubles?\b", text):
-        return {"special_event": "double_double"}
-
-    # Pattern: "NUMBER+ STAT games" or "NUMBER STAT games" or "NUMBER-STAT games"
-    stat_event_patterns = [
-        # "40+ point games", "5+ three games", "15+ rebound games"
-        (r"\b(\d+)\+?\s*[- ]?(point|pts|scoring)\s+games?\b", "pts"),
-        (r"\b(\d+)\+?\s*[- ]?(rebound|reb|rebounds)\s+games?\b", "reb"),
-        (r"\b(\d+)\+?\s*[- ]?(assist|ast|assists)\s+games?\b", "ast"),
-        (r"\b(\d+)\+?\s*[- ]?(steal|stl|steals)\s+games?\b", "stl"),
-        (r"\b(\d+)\+?\s*[- ]?(block|blk|blocks)\s+games?\b", "blk"),
-        (r"\b(\d+)\+?\s*[- ]?(three|3pm|threes|3s|three-pointer|fg3m)\s+games?\b", "fg3m"),
-        (r"\b(\d+)\+?\s*[- ]?(turnover|tov|turnovers)\s+games?\b", "tov"),
-    ]
-
-    for pattern, stat in stat_event_patterns:
-        m = re.search(pattern, text)
-        if m:
-            return {"stat": stat, "min_value": float(m.group(1))}
-
-    # Pattern: "games with NUMBER+ STAT" or "games scoring NUMBER+"
-    games_with_patterns = [
-        (r"\bgames?\s+(?:with|scoring|of)\s+(\d+)\+?\s+(?:or\s+more\s+)?(points?|pts)\b", "pts"),
-        (r"\bgames?\s+(?:with|grabbing)\s+(\d+)\+?\s+(?:or\s+more\s+)?(rebounds?|reb)\b", "reb"),
-        (r"\bgames?\s+(?:with|dishing)\s+(\d+)\+?\s+(?:or\s+more\s+)?(assists?|ast)\b", "ast"),
-        (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(steals?|stl)\b", "stl"),
-        (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(blocks?|blk)\b", "blk"),
-        (
-            r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(threes?|3pm|3s|fg3m|three-pointers?)\b",
-            "fg3m",
-        ),
-        (r"\bgames?\s+(?:with)\s+(\d+)\+?\s+(?:or\s+more\s+)?(turnovers?|tov)\b", "tov"),
-    ]
-
-    for pattern, stat in games_with_patterns:
-        m = re.search(pattern, text)
-        if m:
-            return {"stat": stat, "min_value": float(m.group(1))}
-
-    return None
-
-
-# ---------------------------------------------------------------------------
-# Compound occurrence event extraction
-# ---------------------------------------------------------------------------
-
-# Stat aliases for compound occurrence parsing
-_COMPOUND_STAT_MAP = {
-    "points": "pts",
-    "point": "pts",
-    "pts": "pts",
-    "rebounds": "reb",
-    "rebound": "reb",
-    "reb": "reb",
-    "assists": "ast",
-    "assist": "ast",
-    "ast": "ast",
-    "steals": "stl",
-    "steal": "stl",
-    "stl": "stl",
-    "blocks": "blk",
-    "block": "blk",
-    "blk": "blk",
-    "threes": "fg3m",
-    "three": "fg3m",
-    "3pm": "fg3m",
-    "3s": "fg3m",
-    "fg3m": "fg3m",
-    "three-pointers": "fg3m",
-    "three-pointer": "fg3m",
-    "turnovers": "tov",
-    "turnover": "tov",
-    "tov": "tov",
-}
-
-
-def _parse_single_threshold(text: str) -> dict | None:
-    """Parse a single threshold phrase like '30+ points' or '10 rebounds'.
-
-    Returns {"stat": str, "min_value": float} or None if no match.
-    """
-    # Pattern: "NUMBER+ STAT" or "NUMBER STAT" or "under NUMBER STAT"
-    # Examples: "30+ points", "10 rebounds", "5+ threes", "under 10 turnovers"
-
-    # "under X stat" → max_value
-    under_match = re.search(
-        r"\bunder\s+(\d+)\+?\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b",
-        text,
-    )
-    if under_match:
-        value = float(under_match.group(1))
-        stat_text = under_match.group(2).lower()
-        stat = _COMPOUND_STAT_MAP.get(stat_text)
-        if stat:
-            return {"stat": stat, "max_value": value - 0.0001}  # "under 10" means < 10
-
-    # Standard patterns: "30+ points", "10 rebounds"
-    standard_match = re.search(
-        r"\b(\d+)\+?\s+(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\b",
-        text,
-    )
-    if standard_match:
-        value = float(standard_match.group(1))
-        stat_text = standard_match.group(2).lower()
-        stat = _COMPOUND_STAT_MAP.get(stat_text)
-        if stat:
-            return {"stat": stat, "min_value": value}
-
-    return None
-
-
-def extract_compound_occurrence_event(text: str) -> list[dict] | None:
-    """Extract compound occurrence conditions from natural language.
-
-    Parses queries like:
-    - "games with 30+ points and 10+ rebounds"
-    - "40+ points and 5+ threes"
-    - "25+ points and 10+ assists"
-    - "120+ points and 15+ threes" (team)
-    - "130+ points and under 10 turnovers"
-
-    Returns a list of condition dicts:
-    [{"stat": "pts", "min_value": 30}, {"stat": "reb", "min_value": 10}]
-
-    Returns None if no compound pattern is detected or only single condition found.
-    Only returns for queries that explicitly have AND between conditions.
-    """
-    # Check for compound pattern with " and " between thresholds
-    # We need to detect patterns like "X+ stat and Y+ stat"
-    text_lower = text.lower()
-
-    # Must have "and" in the text for compound detection
-    if " and " not in text_lower:
-        return None
-
-    # Split on " and " and try to parse each part
-    # But be careful: "and" can appear in other contexts
-    # We look for patterns like "NUMBER+ STAT and NUMBER+ STAT"
-
-    # Pattern to detect compound occurrence: two or more threshold expressions connected by "and"
-    # First, try to find all threshold patterns in the text
-
-    # Also detect "under X stat" patterns
-
-    # Find all threshold matches
-    found_conditions: list[dict] = []
-    seen_stats: set[str] = set()
-
-    # Check for pattern like "NUMBER+ STAT and NUMBER+ STAT"
-    compound_pattern = (
-        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)\s+"
-        r"(?:and|&)\s+"
-        r"(\d+)\+?\s*(points?|pts|rebounds?|reb|assists?|ast|steals?|stl|"
-        r"blocks?|blk|threes?|3pm|3s|fg3m|three-pointers?|turnovers?|tov)"
-    )
-
-    compound_match = re.search(compound_pattern, text_lower)
-    if compound_match:
-        # Extract both conditions
-        val1 = float(compound_match.group(1))
-        stat1 = _COMPOUND_STAT_MAP.get(compound_match.group(2).lower())
-        val2 = float(compound_match.group(3))
-        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4).lower())
-
-        if stat1 and stat2 and stat1 != stat2:
-            return [
-                {"stat": stat1, "min_value": val1},
-                {"stat": stat2, "min_value": val2},
-            ]
-
-    # Try more flexible parsing: look at " and " separated parts
-    # Split on " and " and parse each segment
-    parts = re.split(r"\s+and\s+", text_lower)
-
-    if len(parts) >= 2:
-        # Check if multiple parts contain threshold patterns
-        for part in parts:
-            cond = _parse_single_threshold(part)
-            if cond:
-                stat = cond.get("stat")
-                if stat and stat not in seen_stats:
-                    found_conditions.append(cond)
-                    seen_stats.add(stat)
-
-    # Only return if we found 2+ distinct conditions
-    if len(found_conditions) >= 2:
-        return found_conditions
-
-    return None
-
-
-def wants_occurrence_leaderboard(text: str) -> bool:
-    """Detect if the query is asking for an occurrence leaderboard.
-
-    Triggers on patterns like:
-    - "most 40 point games since 2015"
-    - "leaders in triple doubles since 2020"
-    - "who has the most 5+ three games"
-    """
-    event = extract_occurrence_event(text)
-    if event is None:
-        return False
-
-    return bool(
-        re.search(
-            r"\b(most|leaders?|top(?:\s+\d+)?|rank|ranked|ranking|who\s+has\s+the\s+most|who\s+leads?)\b",
-            text,
-        )
-    )
 
 
 def wants_recent_form(text: str) -> bool:
@@ -1820,17 +1514,10 @@ def _finalize_route(parsed: dict) -> dict:
     leaderboard_intent = parsed.get("leaderboard_intent", False)
     team_leaderboard_intent = parsed.get("team_leaderboard_intent", False)
     occurrence_event = parsed.get("occurrence_event")
-    occurrence_leaderboard_intent = parsed.get("occurrence_leaderboard_intent", False)
     position_filter = parsed.get("position_filter")
     head_to_head = parsed.get("head_to_head", False)
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
-    compound_occurrence_conditions = parsed.get("compound_occurrence_conditions")
-    by_decade_intent = parsed.get("by_decade_intent", False)
-    playoff_appearance_intent = parsed.get("playoff_appearance_intent", False)
-    playoff_history_intent = parsed.get("playoff_history_intent", False)
-    playoff_round_filter = parsed.get("playoff_round_filter")
-    by_round_intent = parsed.get("by_round_intent", False)
 
     notes: list[str] = []
     route = None
@@ -1895,220 +1582,10 @@ def _finalize_route(parsed: dict) -> dict:
             "limit": 25,
         }
     # ---------------------------------------------------------------------------
-    # Playoff appearance routing
+    # Playoff / record / decade routing cluster
     # ---------------------------------------------------------------------------
-    elif playoff_appearance_intent and not player_a and not player_b:
-        # "most finals appearances since 2000", "Lakers playoff appearances since 1990"
-        pa_season = season
-        pa_start = start_season
-        pa_end = end_season
-        if not pa_season and not pa_start and not pa_end:
-            from nbatools.commands._seasons import resolve_career
-
-            pa_start, pa_end = resolve_career("Playoffs")
-
-        route = "playoff_appearances"
-        route_kwargs = {
-            "team": team,
-            "season": pa_season,
-            "start_season": pa_start,
-            "end_season": pa_end,
-            "playoff_round": playoff_round_filter,
-            "limit": top_n or 10,
-            "ascending": False,
-        }
-    # ---------------------------------------------------------------------------
-    # Playoff matchup history: team_a vs team_b playoff history
-    # ---------------------------------------------------------------------------
-    elif (
-        (playoff_history_intent or (season_type == "Playoffs" and record_intent))
-        and team_a
-        and team_b
-    ):
-        pm_season = season
-        pm_start = start_season
-        pm_end = end_season
-        if not pm_season and not pm_start and not pm_end:
-            from nbatools.commands._seasons import resolve_career
-
-            pm_start, pm_end = resolve_career("Playoffs")
-
-        route = "playoff_matchup_history"
-        route_kwargs = {
-            "team_a": team_a,
-            "team_b": team_b,
-            "season": pm_season,
-            "start_season": pm_start,
-            "end_season": pm_end,
-            "playoff_round": playoff_round_filter,
-            "by_round": by_round_intent,
-        }
-    # ---------------------------------------------------------------------------
-    # Matchup by decade: "Lakers vs Celtics by decade"
-    # ---------------------------------------------------------------------------
-    elif by_decade_intent and team_a and team_b:
-        md_season = season
-        md_start = start_season
-        md_end = end_season
-        if not md_season and not md_start and not md_end:
-            from nbatools.commands._seasons import resolve_career
-
-            md_start, md_end = resolve_career(season_type)
-
-        route = "matchup_by_decade"
-        route_kwargs = {
-            "team_a": team_a,
-            "team_b": team_b,
-            "season": md_season,
-            "start_season": md_start,
-            "end_season": md_end,
-            "season_type": season_type,
-        }
-    # ---------------------------------------------------------------------------
-    # Playoff history: single team playoff history/summary
-    # ---------------------------------------------------------------------------
-    elif playoff_history_intent and team and not team_a and not team_b:
-        ph_season = season
-        ph_start = start_season
-        ph_end = end_season
-        if not ph_season and not ph_start and not ph_end:
-            from nbatools.commands._seasons import resolve_career
-
-            ph_start, ph_end = resolve_career("Playoffs")
-
-        route = "playoff_history"
-        route_kwargs = {
-            "team": team,
-            "season": ph_season,
-            "start_season": ph_start,
-            "end_season": ph_end,
-            "playoff_round": playoff_round_filter,
-            "by_decade": by_decade_intent,
-            "opponent": opponent,
-        }
-    # ---------------------------------------------------------------------------
-    # By-decade record: single team record by decade
-    # ---------------------------------------------------------------------------
-    elif by_decade_intent and team and not team_a and not team_b:
-        bd_season = season
-        bd_start = start_season
-        bd_end = end_season
-        if not bd_season and not bd_start and not bd_end:
-            from nbatools.commands._seasons import resolve_career
-
-            bd_start, bd_end = resolve_career(season_type)
-
-        route = "record_by_decade"
-        route_kwargs = {
-            "team": team,
-            "season": bd_season,
-            "start_season": bd_start,
-            "end_season": bd_end,
-            "season_type": season_type,
-            "opponent": opponent,
-        }
-    # ---------------------------------------------------------------------------
-    # By-decade leaderboard: "most wins by decade since 1980"
-    # ---------------------------------------------------------------------------
-    elif (
-        by_decade_intent
-        and (record_intent or leaderboard_intent or team_leaderboard_intent)
-        and not team
-        and not team_a
-        and not team_b
-        and not player
-    ):
-        bdl_season = season
-        bdl_start = start_season
-        bdl_end = end_season
-        if not bdl_season and not bdl_start and not bdl_end:
-            from nbatools.commands._seasons import resolve_career
-
-            bdl_start, bdl_end = resolve_career(season_type)
-
-        record_stat = "wins"
-        if re.search(r"\bwin_pct\b|\bwin\s*%\b|\bwinning\s+pct\b", q):
-            record_stat = "win_pct"
-        elif re.search(r"\bloss", q):
-            record_stat = "losses"
-
-        route = "record_by_decade_leaderboard"
-        route_kwargs = {
-            "season": bdl_season,
-            "start_season": bdl_start,
-            "end_season": bdl_end,
-            "season_type": season_type,
-            "stat": record_stat,
-            "limit": top_n or 10,
-            "ascending": False,
-            "playoff_round": playoff_round_filter,
-        }
-    # ---------------------------------------------------------------------------
-    # Playoff round record leaderboard: "best finals record since 1980"
-    # ---------------------------------------------------------------------------
-    elif (
-        season_type == "Playoffs"
-        and playoff_round_filter
-        and record_intent
-        and not team
-        and not team_a
-        and not team_b
-        and not player
-    ):
-        prl_season = season
-        prl_start = start_season
-        prl_end = end_season
-        if not prl_season and not prl_start and not prl_end:
-            from nbatools.commands._seasons import resolve_career
-
-            prl_start, prl_end = resolve_career("Playoffs")
-
-        record_stat = "win_pct"
-        if re.search(r"\bmost\s+wins\b", q):
-            record_stat = "wins"
-        elif re.search(r"\bmost\s+loss", q):
-            record_stat = "losses"
-
-        route = "playoff_round_record"
-        route_kwargs = {
-            "season": prl_season,
-            "start_season": prl_start,
-            "end_season": prl_end,
-            "playoff_round": playoff_round_filter,
-            "stat": record_stat,
-            "limit": top_n or 10,
-            "ascending": False,
-        }
-    # ---------------------------------------------------------------------------
-    # Playoff history with round filter: team + playoff + round-specific intent
-    # e.g. "Lakers record in the Finals", "Celtics record in conference finals"
-    # ---------------------------------------------------------------------------
-    elif (
-        team
-        and not team_a
-        and not team_b
-        and season_type == "Playoffs"
-        and playoff_round_filter
-        and record_intent
-    ):
-        phrf_season = season
-        phrf_start = start_season
-        phrf_end = end_season
-        if not phrf_season and not phrf_start and not phrf_end:
-            from nbatools.commands._seasons import resolve_career
-
-            phrf_start, phrf_end = resolve_career("Playoffs")
-
-        route = "playoff_history"
-        route_kwargs = {
-            "team": team,
-            "season": phrf_season,
-            "start_season": phrf_start,
-            "end_season": phrf_end,
-            "playoff_round": playoff_round_filter,
-            "by_decade": by_decade_intent,
-            "opponent": opponent,
-        }
+    elif (ppr := try_playoff_record_route(parsed)) is not None:
+        route, route_kwargs = ppr
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
         route_kwargs = {
@@ -2243,258 +1720,16 @@ def _finalize_route(parsed: dict) -> dict:
             "ascending": False,
         }
     # ---------------------------------------------------------------------------
-    # Compound occurrence routing: multiple threshold conditions with AND
-    # ONLY route here for leaderboard/count queries, NOT for finder-style
-    # queries like "last N games" or specific entity + opponent + conditions.
+    # Occurrence routing cluster (compound + single leaderboard)
     # ---------------------------------------------------------------------------
-    elif (
-        compound_occurrence_conditions
-        and len(compound_occurrence_conditions) >= 2
-        and not re.search(r"\b(last|past|recent)\s+\d+\s+games?\b", q)
-        and (occurrence_leaderboard_intent or count_intent or team_leaderboard_intent)
-    ):
-        # Compound occurrence query detected (e.g., "30+ points and 10+ rebounds")
-        occ_season = season
-        occ_start = start_season
-        occ_end = end_season
-        if not occ_season and not occ_start and not occ_end:
-            occ_season = default_season_for_context(season_type)
-
-        is_team_occurrence = (
-            bool(
-                re.search(r"\bteam\b|\bteams?\b", q)
-                and not re.search(r"\bplayer\b|\bplayers?\b", q)
-            )
-            or team_leaderboard_intent
-            or (team and not player)
-        )
-
-        # Single player compound occurrence count
-        if player and not player_a and not player_b and count_intent:
-            route = "player_occurrence_leaders"
-            route_kwargs = {
-                "conditions": compound_occurrence_conditions,
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": 500,  # Large limit to ensure player is included
-                "player": player,  # Filter to this player
-            }
-        # Single team compound occurrence count
-        elif team and not team_a and not team_b and (count_intent or is_team_occurrence):
-            route = "team_occurrence_leaders"
-            route_kwargs = {
-                "conditions": compound_occurrence_conditions,
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": 500 if count_intent else (top_n or 10),
-                "team": team,  # Filter to this team
-            }
-        # Team compound occurrence leaderboard (no specific team)
-        elif is_team_occurrence and not player and not player_a and not player_b:
-            route = "team_occurrence_leaders"
-            route_kwargs = {
-                "conditions": compound_occurrence_conditions,
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": top_n or 10,
-            }
-        # Player compound occurrence leaderboard (no specific player)
-        else:
-            route = "player_occurrence_leaders"
-            route_kwargs = {
-                "conditions": compound_occurrence_conditions,
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": top_n or 10,
-            }
-    elif (
-        occurrence_leaderboard_intent
-        and occurrence_event
-        and not player
-        and not player_a
-        and not player_b
-        and not (detect_player_leaderboard_stat(q) or "").startswith("games_")
-    ):
-        # Occurrence leaderboard: "most triple doubles since 2020",
-        # "most 5+ three games vs Celtics", "most 15+ rebound games since 2018"
-        # Queries with known count-leaderboard stats (games_30p, games_40p, etc.)
-        # are handled by the existing season_leaders route.
-        occ_season = season
-        occ_start = start_season
-        occ_end = end_season
-        if not occ_season and not occ_start and not occ_end:
-            occ_season = default_season_for_context(season_type)
-
-        is_team_occurrence = (
-            bool(
-                re.search(r"\bteam\b|\bteams?\b", q)
-                and not re.search(r"\bplayer\b|\bplayers?\b", q)
-            )
-            or team_leaderboard_intent
-        )
-
-        if is_team_occurrence:
-            occ_stat = occurrence_event.get("stat", "pts")
-            occ_min = occurrence_event.get("min_value", 100)
-            route = "team_occurrence_leaders"
-            route_kwargs = {
-                "stat": occ_stat,
-                "min_value": occ_min,
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": top_n or 10,
-            }
-        elif "special_event" in occurrence_event:
-            route = "player_occurrence_leaders"
-            route_kwargs = {
-                "special_event": occurrence_event["special_event"],
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": top_n or 10,
-            }
-        else:
-            route = "player_occurrence_leaders"
-            route_kwargs = {
-                "stat": occurrence_event.get("stat"),
-                "min_value": occurrence_event.get("min_value"),
-                "season": occ_season,
-                "start_season": occ_start,
-                "end_season": occ_end,
-                "season_type": season_type,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "wins_only": wins_only,
-                "losses_only": losses_only,
-                "start_date": start_date,
-                "end_date": end_date,
-                "limit": top_n or 10,
-            }
+    elif (ocr := try_compound_occurrence_route(parsed)) is not None:
+        route, route_kwargs = ocr
     # ---------------------------------------------------------------------------
-    # Record-leaderboard routing: "best record since 2015", "most wins since 2010",
-    # "highest win percentage", etc. — when no specific team is named
+    # Record-leaderboard routing cluster
     # ---------------------------------------------------------------------------
-    elif (
-        record_intent
-        and not player
-        and not player_a
-        and not player_b
-        and not team
-        and not team_a
-        and not team_b
-        and not occurrence_event
-    ):
-        lb_season = season
-        lb_start = start_season
-        lb_end = end_season
-        if not lb_season and not lb_start and not lb_end:
-            lb_season = default_season_for_context(season_type)
-
-        # Determine the sort stat from query phrasing
-        record_stat = "win_pct"
-        if re.search(r"\bmost\s+wins\b|\bmost\s+home\s+wins\b|\bmost\s+away\s+wins\b", q):
-            record_stat = "wins"
-        elif re.search(r"\bmost\s+loss", q):
-            record_stat = "losses"
-        elif re.search(r"\bfewest\s+loss", q):
-            record_stat = "losses"
-
-        lb_ascending = wants_ascending_leaderboard(q)
-        # Smart ascending for record stats
-        if re.search(r"\b(best|top|highest)\b", q):
-            lb_ascending = False
-        elif re.search(r"\b(worst|lowest|fewest)\b", q):
-            lb_ascending = True
-            if record_stat == "losses":
-                lb_ascending = True  # fewest losses is ascending
-
-        route = "team_record_leaderboard"
-        # If a playoff round filter is detected, redirect to playoff_round_record
-        if playoff_round_filter:
-            route = "playoff_round_record"
-            if not lb_season and not lb_start and not lb_end:
-                from nbatools.commands._seasons import resolve_career
-
-                lb_start, lb_end = resolve_career("Playoffs")
-                lb_season = None
-            route_kwargs = {
-                "season": lb_season,
-                "start_season": lb_start,
-                "end_season": lb_end,
-                "playoff_round": playoff_round_filter,
-                "stat": record_stat,
-                "limit": top_n or 10,
-                "ascending": lb_ascending,
-            }
-        else:
-            route_kwargs = {
-                "season": lb_season,
-                "start_season": lb_start,
-                "end_season": lb_end,
-                "season_type": season_type,
-                "stat": record_stat,
-                "opponent": opponent,
-                "home_only": home_only,
-                "away_only": away_only,
-                "limit": top_n or 10,
-                "ascending": lb_ascending,
-                "start_date": start_date,
-                "end_date": end_date,
-            }
+    elif (rlr := try_record_leaderboard_route(parsed)) is not None:
+        route, route_kwargs, rl_notes = rlr
+        notes.extend(rl_notes)
     elif (
         player is None
         and team is None
@@ -2628,39 +1863,11 @@ def _finalize_route(parsed: dict) -> dict:
                 "opponent": opponent,
                 "position": position_filter,
             }
-    elif (
-        count_intent
-        and occurrence_event
-        and "special_event" in occurrence_event
-        and player
-        and not player_a
-        and not player_b
-    ):
-        # Special event count for a player: "count Jokic triple doubles since 2021"
-        # Use player_occurrence_leaders with limit=1 to get just this player's count.
-        # The service layer will convert to CountResult.
-        occ_season = season
-        occ_start = start_season
-        occ_end = end_season
-        if not occ_season and not occ_start and not occ_end:
-            occ_season = default_season_for_context(season_type)
-        route = "player_occurrence_leaders"
-        route_kwargs = {
-            "special_event": occurrence_event["special_event"],
-            "season": occ_season,
-            "start_season": occ_start,
-            "end_season": occ_end,
-            "season_type": season_type,
-            "opponent": opponent,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "start_date": start_date,
-            "end_date": end_date,
-            "limit": 500,  # large limit to ensure player is included
-            "player": player,  # Filter to this player
-        }
+    # ---------------------------------------------------------------------------
+    # Single-player special-event occurrence count
+    # ---------------------------------------------------------------------------
+    elif (oco := try_occurrence_count_route(parsed)) is not None:
+        route, route_kwargs = oco
     elif (finder_intent or count_intent) and player and not player_a and not player_b:
         # Explicit list/count intent overrides summary/range routing
         finder_limit = None if count_intent else 25
