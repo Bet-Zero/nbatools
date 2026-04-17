@@ -1,6 +1,6 @@
 import typer
 
-from nbatools.commands.battle_summary import run as battle_summary_run
+from nbatools.commands.analysis.battle_summary import run as battle_summary_run
 
 app = typer.Typer()
 

@@ -153,14 +153,14 @@ def _raw_pull_stages(
     ``pull_games`` raises a "No data returned" error, the remaining raw stages
     are skipped cleanly (useful for upcoming playoff seasons).
     """
-    from nbatools.commands.pull_games import run as pull_games
-    from nbatools.commands.pull_player_game_stats import run as pull_player_game_stats
-    from nbatools.commands.pull_player_season_advanced import run as pull_player_season_advanced
-    from nbatools.commands.pull_rosters import run as pull_rosters
-    from nbatools.commands.pull_schedule import run as pull_schedule
-    from nbatools.commands.pull_standings_snapshots import run as pull_standings
-    from nbatools.commands.pull_team_game_stats import run as pull_team_game_stats
-    from nbatools.commands.pull_team_season_advanced import run as pull_team_season_advanced
+    from nbatools.commands.pipeline.pull_games import run as pull_games
+    from nbatools.commands.pipeline.pull_player_game_stats import run as pull_player_game_stats
+    from nbatools.commands.pipeline.pull_player_season_advanced import run as pull_player_season_advanced
+    from nbatools.commands.pipeline.pull_rosters import run as pull_rosters
+    from nbatools.commands.pipeline.pull_schedule import run as pull_schedule
+    from nbatools.commands.pipeline.pull_standings_snapshots import run as pull_standings
+    from nbatools.commands.pipeline.pull_team_game_stats import run as pull_team_game_stats
+    from nbatools.commands.pipeline.pull_team_season_advanced import run as pull_team_season_advanced
 
     results: list[StageResult] = []
 
@@ -214,16 +214,16 @@ def _raw_pull_stages(
 
 
 def _validate_stage(season: str, season_type: str) -> StageResult:
-    from nbatools.commands.validate_raw import run as validate_raw
+    from nbatools.commands.pipeline.validate_raw import run as validate_raw
 
     return _run_stage("validate_raw", validate_raw, season, season_type)
 
 
 def _build_stages(season: str, season_type: str) -> list[StageResult]:
-    from nbatools.commands.build_game_features import run as build_game_features
-    from nbatools.commands.build_league_season_stats import run as build_league_season_stats
-    from nbatools.commands.build_player_game_features import run as build_player_game_features
-    from nbatools.commands.build_team_game_features import run as build_team_game_features
+    from nbatools.commands.pipeline.build_game_features import run as build_game_features
+    from nbatools.commands.pipeline.build_league_season_stats import run as build_league_season_stats
+    from nbatools.commands.pipeline.build_player_game_features import run as build_player_game_features
+    from nbatools.commands.pipeline.build_team_game_features import run as build_team_game_features
 
     results: list[StageResult] = []
     results.append(
@@ -240,7 +240,7 @@ def _build_stages(season: str, season_type: str) -> list[StageResult]:
 
 
 def _manifest_stage(season: str, season_type: str) -> StageResult:
-    from nbatools.commands.update_manifest import run as update_manifest
+    from nbatools.commands.ops.update_manifest import run as update_manifest
 
     return _run_stage("update_manifest", update_manifest, season, season_type)
 
@@ -282,7 +282,7 @@ def refresh_season(
 
     # --- skip-existing check ---
     if skip_existing:
-        from nbatools.commands.backfill_season import outputs_exist
+        from nbatools.commands.pipeline.backfill_season import outputs_exist
 
         if outputs_exist(season, season_type):
             result.stages.append(
@@ -537,7 +537,7 @@ def pipeline_status(
     """
     import pandas as pd
 
-    from nbatools.commands.update_manifest import (
+    from nbatools.commands.ops.update_manifest import (
         processed_paths,
         raw_paths,
     )

@@ -24,7 +24,7 @@ import time
 from datetime import datetime
 
 from nbatools.commands.freshness import write_refresh_log
-from nbatools.commands.pipeline import PipelineResult, refresh_current_season
+from nbatools.commands.pipeline.orchestrator import PipelineResult, refresh_current_season
 
 
 def _format_interval(seconds: int) -> str:

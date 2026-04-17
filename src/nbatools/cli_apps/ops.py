@@ -1,12 +1,12 @@
 import typer
 
-from nbatools.commands.backfill_range import run as backfill_range_run
-from nbatools.commands.backfill_season import run as backfill_season_run
-from nbatools.commands.inventory import run as inventory_run
-from nbatools.commands.run_tests import run as run_tests_run
-from nbatools.commands.show_manifest import run as show_manifest_run
-from nbatools.commands.show_team_history import run as show_team_history_run
-from nbatools.commands.update_manifest import run as update_manifest_run
+from nbatools.commands.ops.inventory import run as inventory_run
+from nbatools.commands.ops.run_tests import run as run_tests_run
+from nbatools.commands.ops.show_manifest import run as show_manifest_run
+from nbatools.commands.ops.show_team_history import run as show_team_history_run
+from nbatools.commands.ops.update_manifest import run as update_manifest_run
+from nbatools.commands.pipeline.backfill_range import run as backfill_range_run
+from nbatools.commands.pipeline.backfill_season import run as backfill_season_run
 
 app = typer.Typer()
 

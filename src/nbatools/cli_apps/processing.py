@@ -1,11 +1,11 @@
 import typer
 
-from nbatools.commands.analyze_3pt_battles import run as analyze_3pt_battles_run
-from nbatools.commands.build_game_features import run as build_game_features_run
-from nbatools.commands.build_league_season_stats import run as build_league_season_stats_run
-from nbatools.commands.build_player_game_features import run as build_player_game_features_run
-from nbatools.commands.build_team_game_features import run as build_team_game_features_run
-from nbatools.commands.validate_raw import run as validate_raw_run
+from nbatools.commands.analysis.analyze_3pt_battles import run as analyze_3pt_battles_run
+from nbatools.commands.pipeline.build_game_features import run as build_game_features_run
+from nbatools.commands.pipeline.build_league_season_stats import run as build_league_season_stats_run
+from nbatools.commands.pipeline.build_player_game_features import run as build_player_game_features_run
+from nbatools.commands.pipeline.build_team_game_features import run as build_team_game_features_run
+from nbatools.commands.pipeline.validate_raw import run as validate_raw_run
 
 app = typer.Typer()
 

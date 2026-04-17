@@ -14,8 +14,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nbatools.commands.auto_refresh import parse_interval, run_auto_refresh
-from nbatools.commands.pipeline import PipelineResult, SeasonResult, StageResult, StageStatus
+from nbatools.commands.pipeline.auto_refresh import parse_interval, run_auto_refresh
+from nbatools.commands.pipeline.orchestrator import PipelineResult, SeasonResult, StageResult, StageStatus
 
 pytestmark = pytest.mark.engine
 
@@ -98,8 +98,8 @@ class TestRunAutoRefresh:
             finished_at="2026-04-14T10:05:00",
         )
 
-    @patch("nbatools.commands.auto_refresh.refresh_current_season")
-    @patch("nbatools.commands.auto_refresh.write_refresh_log")
+    @patch("nbatools.commands.pipeline.auto_refresh.refresh_current_season")
+    @patch("nbatools.commands.pipeline.auto_refresh.write_refresh_log")
     def test_single_iteration_success(self, mock_log, mock_refresh):
         mock_refresh.return_value = self._make_success_result()
         run_auto_refresh(60, max_iterations=1)
@@ -108,8 +108,8 @@ class TestRunAutoRefresh:
         args = mock_log.call_args
         assert args.kwargs.get("success") is True or args[1].get("success") is True
 
-    @patch("nbatools.commands.auto_refresh.refresh_current_season")
-    @patch("nbatools.commands.auto_refresh.write_refresh_log")
+    @patch("nbatools.commands.pipeline.auto_refresh.refresh_current_season")
+    @patch("nbatools.commands.pipeline.auto_refresh.write_refresh_log")
     def test_single_iteration_failure(self, mock_log, mock_refresh):
         mock_refresh.return_value = self._make_failure_result()
         run_auto_refresh(60, max_iterations=1)
@@ -118,23 +118,23 @@ class TestRunAutoRefresh:
         # The log should be called; check it was invoked
         assert mock_log.called
 
-    @patch("nbatools.commands.auto_refresh.refresh_current_season")
-    @patch("nbatools.commands.auto_refresh.write_refresh_log")
+    @patch("nbatools.commands.pipeline.auto_refresh.refresh_current_season")
+    @patch("nbatools.commands.pipeline.auto_refresh.write_refresh_log")
     def test_multiple_iterations(self, mock_log, mock_refresh):
         mock_refresh.return_value = self._make_success_result()
         run_auto_refresh(60, max_iterations=3)
         assert mock_refresh.call_count == 3
         assert mock_log.call_count == 3
 
-    @patch("nbatools.commands.auto_refresh.refresh_current_season")
-    @patch("nbatools.commands.auto_refresh.write_refresh_log")
+    @patch("nbatools.commands.pipeline.auto_refresh.refresh_current_season")
+    @patch("nbatools.commands.pipeline.auto_refresh.write_refresh_log")
     def test_includes_playoffs_option(self, mock_log, mock_refresh):
         mock_refresh.return_value = self._make_success_result()
         run_auto_refresh(60, include_playoffs=True, max_iterations=1)
         mock_refresh.assert_called_once_with(include_playoffs=True)
 
-    @patch("nbatools.commands.auto_refresh.refresh_current_season")
-    @patch("nbatools.commands.auto_refresh.write_refresh_log")
+    @patch("nbatools.commands.pipeline.auto_refresh.refresh_current_season")
+    @patch("nbatools.commands.pipeline.auto_refresh.write_refresh_log")
     def test_exception_during_refresh(self, mock_log, mock_refresh):
         mock_refresh.side_effect = RuntimeError("crash")
         run_auto_refresh(60, max_iterations=1)

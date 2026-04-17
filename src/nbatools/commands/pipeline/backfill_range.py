@@ -1,5 +1,5 @@
 from nbatools.commands._seasons import int_to_season, season_to_int
-from nbatools.commands.backfill_season import run as backfill_season_run
+from nbatools.commands.pipeline.backfill_season import run as backfill_season_run
 
 
 def run(start_season: str, end_season: str, include_playoffs: bool, skip_existing: bool = False):

@@ -48,7 +48,7 @@ The main organizational weakness is that `commands/` is a **flat directory conta
 |---|---|
 | **`commands/` is flat across five lifecycles** | The directory mixes: (a) 21 query command modules, (b) 9 data-pull modules, (c) 4 data-build modules, (d) 10 ops/pipeline modules, (e) 8 infrastructure/framework modules, (f) 3 analysis modules, (g) 9 private helpers. All 60+ files at the same level. |
 | **Naming convention split** | Private helpers use `_` prefix. Query commands use domain names (`player_game_summary.py`). Pipeline modules use verb prefixes (`pull_`, `build_`, `backfill_`). This is acceptable but the verb-prefix convention is the only structural signal for lifecycle — there's no directory-level separation. |
-| **`run_tests.py` in `commands/`** | A test runner command (`commands/run_tests.py`, 21 lines) lives alongside query and pipeline modules. It's wired through `cli_apps/ops.py`. Minor but slightly out of place — it's not a query command or a data operation. |
+| **`run_tests.py` in `commands/ops/`** | A test runner command (`commands/ops/run_tests.py`, 21 lines) lives in the ops subpackage. It's wired through `cli_apps/ops.py`. |
 
 #### What will become a future pain point
 
@@ -169,9 +169,9 @@ This flat structure is adequate for now. The marker-based grouping and Makefile 
 
 ## 3. Recommended Folder Architecture
 
-### 3.1 `commands/` — add lifecycle sub-packages (highest value)
+### 3.1 `commands/` — lifecycle sub-packages ✅ IMPLEMENTED
 
-The single highest-value structural change is grouping `commands/` by lifecycle:
+The `commands/` directory has been reorganized into lifecycle-based subpackages:
 
 ```
 src/nbatools/commands/
@@ -223,6 +223,7 @@ src/nbatools/commands/
   # ── Data pipeline ────────────────────────────────────────
   pipeline/
     __init__.py
+    orchestrator.py          ← was pipeline.py (renamed to avoid package/module collision)
     pull_games.py
     pull_player_game_stats.py
     pull_player_season_advanced.py
@@ -240,7 +241,6 @@ src/nbatools/commands/
     backfill_range.py
     backfill_season.py
     auto_refresh.py
-    pipeline.py  → rename to orchestrator.py or keep
   
   # ── Ops ──────────────────────────────────────────────────
   ops/
@@ -261,10 +261,14 @@ src/nbatools/commands/
 
 **Why this structure:**
 
-- Query command modules stay at the top level of `commands/` because they **are** the engine. They're what `query_service.py` dispatches to. Keeping them at the root of `commands/` preserves the current import paths with zero changes.
-- Pipeline, ops, and analysis files move to sub-packages. These are accessed only through `cli_apps/` wrappers, not through the query service, so their import paths are isolated.
+**Implementation notes:**
+
+- Query command modules stay at the top level of `commands/` because they **are** the engine. They're what `query_service.py` dispatches to.
+- Pipeline, ops, and analysis files live in sub-packages. These are accessed only through `cli_apps/` wrappers, not through the query service.
 - The `_`-prefixed NQ helpers and engine infrastructure stay at the top level alongside the query commands they support.
-- `cli_apps/` import paths change (e.g., `from nbatools.commands.pipeline.pull_games import run` instead of `from nbatools.commands.pull_games import run`), but `cli_apps/` is a thin wrapper layer, so these updates are mechanical.
+- `pipeline.py` was renamed to `orchestrator.py` to avoid the Python package/module name collision with the `pipeline/` directory.
+- `cli_apps/` import paths use the subpackage prefix (e.g., `from nbatools.commands.pipeline.pull_games import run`).
+- `pipeline/orchestrator.py` imports from `commands/ops/update_manifest` (cross-subpackage dependency for manifest updates).
 
 ### 3.2 `docs/` — add a historical reference subdirectory
 
@@ -328,15 +332,9 @@ This matches the existing marker-based grouping and Makefile targets. **Not need
 
 ## 4. Top Structure Cleanup Opportunities
 
-### Priority 1: Move pipeline/ops/analysis into sub-packages (high value, moderate risk)
+### Priority 1: Move pipeline/ops/analysis into sub-packages ✅ DONE
 
-**Value:** Immediately clarifies what's "engine-core" vs. "operational" in the commands directory. Reduces cognitive load for new contributors. Makes the 60+ file flat directory navigable.
-
-**Risk:** Moderate. Import paths change for `cli_apps/raw.py`, `cli_apps/processing.py`, `cli_apps/ops.py`, `cli_apps/analysis.py`, `cli_apps/pipeline.py`, and any tests that import pipeline/ops modules directly. All changes are mechanical (search-and-replace import paths).
-
-**Safe now?** Yes, with care. The pipeline/ops/analysis modules are accessed only through CLI wrappers and are not part of the query engine dispatch path. Import updates are fully mechanical.
-
-**Estimated scope:** ~30 files touched (mostly import-line updates), no logic changes.
+**Status:** Implemented. 26 files moved into `commands/pipeline/`, `commands/ops/`, and `commands/analysis/`. 36 files touched total (mostly import-line updates). Zero test regressions.
 
 ### Priority 2: Move completed audits to `docs/archive/` (high value, zero risk)
 
@@ -373,23 +371,17 @@ This matches the existing marker-based grouping and Makefile targets. **Not need
    - Update `docs/index.md` links
    - Zero code risk
 
-### Phase 2 — Pipeline/ops/analysis sub-packaging (next dedicated pass)
+### Phase 2 — Pipeline/ops/analysis sub-packaging ✅ DONE
 
-2. **Create `commands/pipeline/` sub-package.**
-   - Move `pull_*.py`, `build_*.py`, `validate_raw.py`, `backfill_*.py`, `auto_refresh.py`, `pipeline.py` (16 files)
-   - Update imports in `cli_apps/raw.py`, `cli_apps/processing.py`, `cli_apps/pipeline.py`
-   - Update any test imports
-   - Run `make test-preflight` to confirm
+All three sub-packages created and verified:
 
-3. **Create `commands/ops/` sub-package.**
-   - Move `inventory.py`, `show_manifest.py`, `show_team_history.py`, `update_manifest.py`, `run_tests.py` (5 files)
-   - Update imports in `cli_apps/ops.py`
-   - Run `make test-preflight`
+2. **`commands/pipeline/`** — 18 files moved (pull_*, build_*, validate_raw, backfill_*, auto_refresh, orchestrator.py)
+3. **`commands/ops/`** — 5 files moved (inventory, show_manifest, show_team_history, update_manifest, run_tests)
+4. **`commands/analysis/`** — 3 files moved (analyze_3pt_battles, battle_summary, advanced_metrics)
 
-4. **Create `commands/analysis/` sub-package.**
-   - Move `analyze_3pt_battles.py`, `battle_summary.py`, `advanced_metrics.py` (3 files)
-   - Update imports in `cli_apps/analysis.py`
-   - Run `make test-preflight`
+Import updates applied to: `cli_apps/raw.py`, `cli_apps/processing.py`, `cli_apps/ops.py`, `cli_apps/pipeline.py`, `cli_apps/analysis.py`, `tests/test_pipeline.py`, `tests/test_auto_refresh.py`, and three internal pipeline modules.
+
+`pipeline.py` renamed to `orchestrator.py` to avoid package/module name collision.
 
 ### Phase 3 — Evaluate after Phase 2 settles
 
@@ -420,9 +412,9 @@ This matches the existing marker-based grouping and Makefile targets. **Not need
 | New execution/runtime helper | `src/nbatools/commands/_natural_query_execution.py` |
 | New stat aliases or constants | `src/nbatools/commands/_constants.py` |
 | New date/season parsing | `src/nbatools/commands/_date_utils.py` or `_seasons.py` |
-| New data pull source | `src/nbatools/commands/pull_<source>.py` (or `pipeline/pull_<source>.py` after Phase 2) |
-| New derived dataset builder | `src/nbatools/commands/build_<dataset>.py` (or `pipeline/build_<dataset>.py` after Phase 2) |
-| New ops/maintenance tool | `src/nbatools/commands/<tool>.py` (or `ops/<tool>.py` after Phase 2) |
+| New data pull source | `src/nbatools/commands/pipeline/pull_<source>.py` |
+| New derived dataset builder | `src/nbatools/commands/pipeline/build_<dataset>.py` |
+| New ops/maintenance tool | `src/nbatools/commands/ops/<tool>.py` |
 | New structured result type | `src/nbatools/commands/structured_results.py` |
 | New output format support | `src/nbatools/commands/format_output.py` |
 | New metric definition | `src/nbatools/commands/metric_registry.py` |
@@ -468,36 +460,19 @@ This matches the existing marker-based grouping and Makefile targets. **Not need
 
 ---
 
-## 7. Optional: Highest-Value Follow-Up Prompt
+## 7. ~~Optional: Highest-Value Follow-Up Prompt~~ ✅ COMPLETED
 
-If one reorganization pass should be done next, it is the pipeline/ops/analysis sub-packaging (Phase 2 above). Here is a ready-to-run prompt:
+The pipeline/ops/analysis sub-packaging (Phase 2) has been implemented. The prompt below was used as a reference for the implementation.
 
-> **Task:** Create `commands/pipeline/`, `commands/ops/`, and `commands/analysis/` sub-packages.
->
-> Move the following files into sub-packages within `src/nbatools/commands/`:
->
-> **`pipeline/`:** `pull_games.py`, `pull_player_game_stats.py`, `pull_player_season_advanced.py`, `pull_rosters.py`, `pull_schedule.py`, `pull_standings_snapshots.py`, `pull_team_game_stats.py`, `pull_team_season_advanced.py`, `pull_teams.py`, `build_game_features.py`, `build_league_season_stats.py`, `build_player_game_features.py`, `build_team_game_features.py`, `validate_raw.py`, `backfill_range.py`, `backfill_season.py`, `auto_refresh.py`, `pipeline.py`
->
-> **`ops/`:** `inventory.py`, `show_manifest.py`, `show_team_history.py`, `update_manifest.py`, `run_tests.py`
->
-> **`analysis/`:** `analyze_3pt_battles.py`, `battle_summary.py`, `advanced_metrics.py`
->
-> For each sub-package:
-> 1. Create `__init__.py`
-> 2. Move the files
-> 3. Update all imports in `cli_apps/`, `commands/`, and `tests/` that reference the moved modules
-> 4. Run `make test-preflight` after each sub-package to confirm nothing broke
-> 5. Do not change any logic — this is a pure structural move
->
-> Note: `pipeline.py` (the orchestrator) imports from several `pull_*` and `build_*` modules. When it moves into `pipeline/`, its internal imports become relative. Update them to relative imports within the sub-package.
+> *(Historical reference — task completed)*
 
 ---
 
 ## 8. Notes
 
-### Tiny safe structural cleanup made during this audit
+### Structural changes made
 
-**None.** This audit is documentation-only. No files were moved or modified. The structural improvements identified should be implemented in dedicated follow-up passes with proper testing.
+**Phase 2 (pipeline/ops/analysis sub-packaging):** Implemented. 26 files moved into three subpackages. 36 files touched. `pipeline.py` renamed to `orchestrator.py`. Zero test regressions (1294 passed, same pre-existing failures). All imports updated across `cli_apps/`, `commands/`, and `tests/`.
 
 ### Relationship to prior audits
 
