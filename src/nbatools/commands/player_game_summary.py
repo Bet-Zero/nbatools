@@ -4,6 +4,8 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    filter_by_opponent_player,
+    filter_without_player,
     load_player_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -146,6 +148,8 @@ def build_result(
     player: str | None = None,
     team: str | None = None,
     opponent: str | None = None,
+    opponent_player: str | None = None,
+    without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -209,6 +213,13 @@ def build_result(
             start_date=start_date,
             end_date=end_date,
         )
+
+        # Cross-reference filters: opponent_player and without_player
+        if opponent_player and not df.empty:
+            df = filter_by_opponent_player(df, opponent_player, seasons, season_type)
+
+        if without_player and not df.empty:
+            df = filter_without_player(df, without_player, seasons, season_type, team=team)
     else:
         df = df.copy()
         if "game_date" in df.columns:

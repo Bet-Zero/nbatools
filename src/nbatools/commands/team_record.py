@@ -18,7 +18,10 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands.data_utils import load_team_games_for_seasons
+from nbatools.commands.data_utils import (
+    filter_without_player,
+    load_team_games_for_seasons,
+)
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import (
     ComparisonResult,
@@ -136,6 +139,7 @@ def build_team_record_result(
     end_season: str | None = None,
     season_type: str = "Regular Season",
     opponent: str | None = None,
+    without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     stat: str | None = None,
@@ -170,6 +174,9 @@ def build_team_record_result(
         start_date=start_date,
         end_date=end_date,
     )
+
+    if without_player and not df.empty:
+        df = filter_without_player(df, without_player, seasons, season_type, team=team)
 
     if df.empty:
         return NoResult(query_class="summary")

@@ -10,8 +10,10 @@ from nbatools.commands._leaderboard_utils import (
 from nbatools.commands._matchup_utils import (
     detect_head_to_head,
     detect_opponent,
+    detect_opponent_player,
     detect_player_resolved,
     detect_team_in_text,
+    detect_without_player,
     extract_player_comparison,
     extract_team_comparison,
 )
@@ -36,31 +38,92 @@ from nbatools.commands._occurrence_route_utils import (
 )
 from nbatools.commands._parse_helpers import (
     STREAK_SPECIAL_PATTERNS as STREAK_SPECIAL_PATTERNS,
+)
+from nbatools.commands._parse_helpers import (
     TEAM_STREAK_SPECIAL_PATTERNS as TEAM_STREAK_SPECIAL_PATTERNS,
+)
+from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
+)
+from nbatools.commands._parse_helpers import (
     detect_career_intent as detect_career_intent,
+)
+from nbatools.commands._parse_helpers import (
+    detect_distinct_player_count as detect_distinct_player_count,
+)
+from nbatools.commands._parse_helpers import (
+    detect_distinct_team_count as detect_distinct_team_count,
+)
+from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
+)
+from nbatools.commands._parse_helpers import (
+    detect_season_high_intent as detect_season_high_intent,
+)
+from nbatools.commands._parse_helpers import (
     detect_season_type as detect_season_type,
+)
+from nbatools.commands._parse_helpers import (
     detect_split_type as detect_split_type,
+)
+from nbatools.commands._parse_helpers import (
     detect_stat as detect_stat,
+)
+from nbatools.commands._parse_helpers import (
     detect_wins_losses as detect_wins_losses,
+)
+from nbatools.commands._parse_helpers import (
     extract_last_n as extract_last_n,
+)
+from nbatools.commands._parse_helpers import (
     extract_last_n_seasons as extract_last_n_seasons,
+)
+from nbatools.commands._parse_helpers import (
     extract_min_value as extract_min_value,
+)
+from nbatools.commands._parse_helpers import (
     extract_position_filter as extract_position_filter,
+)
+from nbatools.commands._parse_helpers import (
     extract_season as extract_season,
+)
+from nbatools.commands._parse_helpers import (
     extract_season_range as extract_season_range,
+)
+from nbatools.commands._parse_helpers import (
     extract_since_season as extract_since_season,
+)
+from nbatools.commands._parse_helpers import (
     extract_streak_request as extract_streak_request,
+)
+from nbatools.commands._parse_helpers import (
     extract_team_streak_request as extract_team_streak_request,
+)
+from nbatools.commands._parse_helpers import (
     extract_threshold_conditions as extract_threshold_conditions,
+)
+from nbatools.commands._parse_helpers import (
     extract_top_n as extract_top_n,
+)
+from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
+)
+from nbatools.commands._parse_helpers import (
     wants_finder as wants_finder,
+)
+from nbatools.commands._parse_helpers import (
     wants_leaderboard as wants_leaderboard,
+)
+from nbatools.commands._parse_helpers import (
     wants_recent_form as wants_recent_form,
+)
+from nbatools.commands._parse_helpers import (
     wants_split_summary as wants_split_summary,
+)
+from nbatools.commands._parse_helpers import (
     wants_summary as wants_summary,
+)
+from nbatools.commands._parse_helpers import (
     wants_team_leaderboard as wants_team_leaderboard,
 )
 from nbatools.commands._playoff_record_route_utils import (
@@ -102,7 +165,10 @@ __all__ = [
     "TEAM_STREAK_SPECIAL_PATTERNS",
     "default_season_for_context",
     "detect_career_intent",
+    "detect_distinct_player_count",
+    "detect_distinct_team_count",
     "detect_home_away",
+    "detect_season_high_intent",
     "detect_season_type",
     "detect_split_type",
     "detect_stat",
@@ -181,6 +247,9 @@ def _build_parse_state(query: str) -> dict:
     head_to_head = detect_head_to_head(q)
     streak_request = extract_streak_request(q)
     team_streak_request = extract_team_streak_request(q)
+    season_high_intent = detect_season_high_intent(q)
+    distinct_player_count = detect_distinct_player_count(q)
+    distinct_team_count = detect_distinct_team_count(q)
 
     # -- Playoff history / era-bucket intent detection --
     by_decade_intent = detect_by_decade_intent(q)
@@ -247,13 +316,31 @@ def _build_parse_state(query: str) -> dict:
             }
 
     opponent = None
+    opponent_player = None
     q_without_opponent = q
     team = None
+    without_player = None
 
     if not (team_a and team_b):
         opponent, q_without_opponent = detect_opponent(q)
+
+        # If no team opponent found via "vs", check if "vs" targets a player
+        if opponent is None and not (player_a and player_b):
+            opp_player, q_cleaned = detect_opponent_player(q)
+            if opp_player:
+                opponent_player = opp_player
+                q_without_opponent = q_cleaned
+
         if not (player_a and player_b):
             team = detect_team_in_text(q_without_opponent)
+
+    # Detect "without PLAYER" pattern (e.g., "Warriors record without Steph Curry")
+    without_player, _ = detect_without_player(q)
+
+    # If without_player is the same as the detected player, clear player so the
+    # query routes to the team path (e.g., "Lakers record without LeBron")
+    if without_player and player and without_player.upper() == player.upper():
+        player = None
 
     home_only, away_only = detect_home_away(q)
     wins_only, losses_only = detect_wins_losses(q)
@@ -333,6 +420,11 @@ def _build_parse_state(query: str) -> dict:
         "head_to_head": head_to_head,
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
+        "season_high_intent": season_high_intent,
+        "distinct_player_count": distinct_player_count,
+        "distinct_team_count": distinct_team_count,
+        "opponent_player": opponent_player,
+        "without_player": without_player,
         "entity_ambiguity": entity_ambiguity,
         "by_decade_intent": by_decade_intent,
         "playoff_appearance_intent": playoff_appearance_intent,
@@ -398,6 +490,11 @@ def _finalize_route(parsed: dict) -> dict:
     head_to_head = parsed.get("head_to_head", False)
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
+    season_high_intent = parsed.get("season_high_intent", False)
+    distinct_player_count = parsed.get("distinct_player_count", False)
+    distinct_team_count = parsed.get("distinct_team_count", False)
+    opponent_player = parsed.get("opponent_player")
+    without_player = parsed.get("without_player")
 
     notes: list[str] = []
     route = None
@@ -429,7 +526,74 @@ def _finalize_route(parsed: dict) -> dict:
         out["notes"] = [msg]
         return out
 
-    if (
+    # ---------------------------------------------------------------------------
+    # Season-high / single-game-best routing
+    # ---------------------------------------------------------------------------
+    if season_high_intent and player and not player_a and not player_b:
+        # Single player season-high: "Cade Cunningham season high"
+        # Route to finder, limit 1, sort by stat descending
+        route = "player_game_finder"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "player": player,
+            "team": team,
+            "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat or "pts",
+            "min_value": min_value,
+            "max_value": max_value,
+            "limit": top_n or 5,
+            "sort_by": "stat",
+            "ascending": False,
+            "last_n": last_n,
+        }
+        notes.append("season_high: showing top single-game performances")
+    elif season_high_intent and not player and not player_a and not player_b:
+        # League-wide season-high: "highest scoring games this season"
+        route = "top_player_games"
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": stat or "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "ascending": False,
+        }
+    # ---------------------------------------------------------------------------
+    # Distinct player/team count routing
+    # ---------------------------------------------------------------------------
+    elif distinct_player_count and (occurrence_event or (stat and min_value is not None)):
+        # "How many players have had a 40 point game this season?"
+        # "How many players scored 40 points this season?"
+        route = "player_occurrence_leaders"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "occurrence_event": occurrence_event,
+            "limit": None,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "start_date": start_date,
+            "end_date": end_date,
+        }
+        notes.append("distinct_count: counting distinct players meeting condition")
+    elif (
         team
         and team_streak_request
         and not team_a
@@ -762,6 +926,8 @@ def _finalize_route(parsed: dict) -> dict:
             "player": player,
             "team": team,
             "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -787,6 +953,7 @@ def _finalize_route(parsed: dict) -> dict:
             "season_type": season_type,
             "team": team,
             "opponent": opponent,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -818,6 +985,8 @@ def _finalize_route(parsed: dict) -> dict:
             "player": player,
             "team": team,
             "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -839,6 +1008,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_season": end_season,
             "season_type": season_type,
             "opponent": opponent,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "stat": stat,
@@ -865,6 +1035,7 @@ def _finalize_route(parsed: dict) -> dict:
             "season_type": season_type,
             "team": team,
             "opponent": opponent,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -886,6 +1057,8 @@ def _finalize_route(parsed: dict) -> dict:
             "player": player,
             "team": team,
             "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -909,6 +1082,7 @@ def _finalize_route(parsed: dict) -> dict:
             "season_type": season_type,
             "team": team,
             "opponent": opponent,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,

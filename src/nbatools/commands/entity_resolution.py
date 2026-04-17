@@ -236,6 +236,8 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "drummond": "Andre Drummond",
     "sabonis": "Domantas Sabonis",
     "haliburton": "Tyrese Haliburton",
+    "bronny": "Bronny James",
+    "bronny james": "Bronny James",
 }
 
 # Full-name aliases with accent normalization

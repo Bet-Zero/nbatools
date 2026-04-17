@@ -149,3 +149,109 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
             return team_a, team_b
 
     return None, None
+
+
+# ---------------------------------------------------------------------------
+# Player-vs-player-as-opponent detection
+# ---------------------------------------------------------------------------
+
+
+def extract_player_vs_player_as_opponent(text: str) -> tuple[str | None, str | None]:
+    """Detect 'PLAYER stats/... vs PLAYER' where the second player is an opponent filter.
+
+    Unlike extract_player_comparison (which requires 'PLAYER vs PLAYER' adjacently),
+    this catches patterns where words like 'stats', 'record', 'averages' appear between
+    the first player and 'vs', indicating the user wants one player's stats filtered
+    to games against the second player, not a head-to-head comparison.
+
+    Returns (player_a, opponent_player) or (None, None) if no match.
+    """
+    cleaned_text = strip_matchup_noise(text)
+
+    # Pattern: PLAYER [context words] vs/against PLAYER
+    context_words = (
+        r"(?:stats?|averages?|record|numbers?|performance|scoring|games?|season|this season|last)"  # noqa: E501
+    )
+
+    for alias_a, player_a in sorted(PLAYER_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+        stop = STOP_WORDS
+        pattern = (
+            rf"\b{re.escape(alias_a)}\b\s+"
+            rf"(?:[\w\s]*?{context_words}[\w\s]*?\s+)?"
+            rf"(?:vs\.?|versus|against)\s+"
+            rf"([a-z0-9 .&'\-]+?)"
+            rf"(?=\s+(?:{stop})\b|$)"
+        )
+        m = re.search(pattern, cleaned_text)
+        if not m:
+            continue
+
+        full_match = m.group(0)
+        vs_pos = re.search(r"\b(?:vs\.?|versus|against)\b", full_match)
+        if vs_pos:
+            between = full_match[len(alias_a) : vs_pos.start()].strip()
+            if between and re.search(context_words, between):
+                phrase_b = m.group(1).strip()
+                player_b = detect_player(phrase_b)
+                if player_b and player_b != player_a:
+                    return player_a, player_b
+
+    return None, None
+
+
+def detect_opponent_player(text: str) -> tuple[str | None, str]:
+    """Detect 'vs/against PLAYER_NAME' where the opponent is a player, not a team.
+
+    This runs after detect_opponent (team-level) fails. It catches cases like
+    'Jokic stats vs Embiid' where the 'vs' target is a player name.
+
+    Returns (opponent_player_name, cleaned_text) or (None, original_text).
+    """
+    cleaned_text = strip_matchup_noise(text)
+
+    patterns = [
+        rf"\bvs\.?\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        rf"\bversus\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        rf"\bagainst\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+    ]
+
+    for pattern in patterns:
+        m = re.search(pattern, cleaned_text)
+        if not m:
+            continue
+        phrase = m.group(1).strip()
+        player = detect_player(phrase)
+        if player:
+            cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+            cleaned = normalize_text(cleaned)
+            return player, cleaned
+
+    return None, cleaned_text
+
+
+# ---------------------------------------------------------------------------
+# Without-player detection
+# ---------------------------------------------------------------------------
+
+
+def detect_without_player(text: str) -> tuple[str | None, str]:
+    """Detect 'without PLAYER' pattern in query.
+
+    Returns (excluded_player_name, cleaned_text) or (None, original_text).
+    Used for queries like 'Warriors record without Steph Curry'.
+    """
+    cleaned_text = normalize_text(text)
+
+    pattern = rf"\bwithout\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)"
+    m = re.search(pattern, cleaned_text)
+    if not m:
+        return None, cleaned_text
+
+    phrase = m.group(1).strip()
+    player = detect_player(phrase)
+    if player:
+        cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+        cleaned = normalize_text(cleaned)
+        return player, cleaned
+
+    return None, cleaned_text

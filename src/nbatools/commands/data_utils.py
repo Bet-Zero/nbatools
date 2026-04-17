@@ -129,6 +129,77 @@ def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.Da
     return _load_player_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
 
 
+def get_game_ids_for_player(player_name: str, seasons: list[str], season_type: str) -> set:
+    """Return the set of game_ids where a given player appears in box scores."""
+    df = load_player_games_for_seasons(seasons, season_type)
+    mask = df["player_name"].astype(str).str.upper() == player_name.upper()
+    return set(df.loc[mask, "game_id"].unique())
+
+
+def filter_by_opponent_player(
+    df: pd.DataFrame,
+    opponent_player: str,
+    seasons: list[str],
+    season_type: str,
+) -> pd.DataFrame:
+    """Filter df to games where opponent_player was on the opposing team.
+
+    For player game logs: keep rows where the game_id appears in
+    opponent_player's game logs AND opponent_player was on a different team.
+    """
+    opp_df = load_player_games_for_seasons(seasons, season_type)
+    opp_mask = opp_df["player_name"].astype(str).str.upper() == opponent_player.upper()
+    opp_rows = opp_df.loc[opp_mask, ["game_id", "team_abbr"]].drop_duplicates()
+
+    if opp_rows.empty:
+        return df.iloc[0:0].copy()
+
+    # Build set of (game_id, opponent_team_abbr) pairs so we only include
+    # games where the opponent player was actually on the OTHER team
+    if "opponent_team_abbr" in df.columns:
+        merged = df.merge(
+            opp_rows.rename(columns={"team_abbr": "_opp_player_team"}),
+            on="game_id",
+            how="inner",
+        )
+        result = merged[
+            merged["opponent_team_abbr"].str.upper() == merged["_opp_player_team"].str.upper()
+        ].drop(columns=["_opp_player_team"])
+        return result.copy()
+    else:
+        # Fallback: just filter by game_id presence
+        game_ids = set(opp_rows["game_id"])
+        return df[df["game_id"].isin(game_ids)].copy()
+
+
+def filter_without_player(
+    df: pd.DataFrame,
+    without_player: str,
+    seasons: list[str],
+    season_type: str,
+    team: str | None = None,
+) -> pd.DataFrame:
+    """Filter df to games where without_player did NOT play.
+
+    Specifically: exclude game_ids where without_player appeared for the
+    same team (or at all, if no team context).
+    """
+    player_df = load_player_games_for_seasons(seasons, season_type)
+    p_mask = player_df["player_name"].astype(str).str.upper() == without_player.upper()
+    p_rows = player_df.loc[p_mask, ["game_id", "team_abbr"]].drop_duplicates()
+
+    if p_rows.empty:
+        return df.copy()
+
+    if team and "team_abbr" in df.columns:
+        # Only exclude games where the player was on the same team
+        team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+    else:
+        team_games = set(p_rows["game_id"])
+
+    return df[~df["game_id"].isin(team_games)].copy()
+
+
 def add_usage_ast_reb_rate_columns(
     df: pd.DataFrame, seasons: list[str] | tuple[str, ...], season_type: str, data_root: str = ""
 ) -> pd.DataFrame:

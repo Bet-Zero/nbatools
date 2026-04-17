@@ -60,8 +60,12 @@ STAT_ALIASES: dict[str, str] = {
     # Three-point percentage
     "three point percentage": "fg3_pct",
     "three-point percentage": "fg3_pct",
+    "3 point percentage": "fg3_pct",
+    "3-point percentage": "fg3_pct",
     "three point %": "fg3_pct",
     "three-point %": "fg3_pct",
+    "3 point %": "fg3_pct",
+    "3-point %": "fg3_pct",
     "3pt%": "fg3_pct",
     "3p%": "fg3_pct",
     "fg3_pct": "fg3_pct",
@@ -135,6 +139,7 @@ STAT_PATTERN = (
     r"threes made|three pointers made|three-point makes|threes|3pm|3s|fg3m|"
     r"turnovers|turnover|tov|minutes|"
     r"field goal percentage|field goal %|fg%|fg_pct|"
+    r"3 point percentage|3-point percentage|3 point %|3-point %|"
     r"three point percentage|three-point percentage|three point %|three-point %|3pt%|3p%|fg3_pct|"
     r"free throw percentage|free throw %|ft%|ft_pct|"
     r"effective field goal percentage|effective field goal %|effective field goal|"

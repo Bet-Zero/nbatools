@@ -37,7 +37,13 @@ def wants_leaderboard(text: str) -> bool:
     ):
         return True
 
-    if re.search(r"\bin a game\b|\bsingle game\b|\bgame high\b|\bgame-high\b", text):
+    if re.search(
+        r"\bin a game\b|\bsingle game\b|\bgame high\b|\bgame-high\b|\bseason[- ]?high\b", text
+    ):
+        return False
+
+    # "highest/best scoring games" → single-game-best, not leaderboard
+    if re.search(r"\b(?:highest|best)\s+(?:scoring\s+)?games?\b", text):
         return False
 
     if detect_player_leaderboard_stat(text) is None:
@@ -717,8 +723,55 @@ def wants_count(text: str) -> bool:
     )
 
 
+def detect_season_high_intent(text: str) -> bool:
+    """Detect single-game-best / season-high intent.
+
+    Triggers on:
+    - 'season high' / 'season-high'
+    - 'best game' / 'best single game'
+    - 'highest game' / 'highest single game'
+    - 'game high' / 'game-high'
+    - 'best scoring game(s)'
+    - 'highest scoring game(s)'
+    """
+    return bool(
+        re.search(
+            r"\bseason[- ]?high\b"
+            r"|\bbest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
+            r"|\bhighest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
+            r"|\bgame[- ]?high\b"
+            r"|\bsingle[- ]?game\s+(?:high|best|record)\b",
+            text,
+        )
+    )
 
 
+def detect_distinct_player_count(text: str) -> bool:
+    """Detect 'how many players' / 'number of players' counting intent.
+
+    Triggers on queries asking for count of distinct players meeting a condition.
+    Example: 'How many players have recorded 10+ assists in a game this year?'
+    """
+    return bool(
+        re.search(
+            r"\bhow\s+many\s+players?\b"
+            r"|\bnumber\s+of\s+players?\b"
+            r"|\bcount\s+(?:of\s+)?(?:distinct\s+)?players?\b",
+            text,
+        )
+    )
+
+
+def detect_distinct_team_count(text: str) -> bool:
+    """Detect 'how many teams' counting intent."""
+    return bool(
+        re.search(
+            r"\bhow\s+many\s+teams?\b"
+            r"|\bnumber\s+of\s+teams?\b"
+            r"|\bcount\s+(?:of\s+)?(?:distinct\s+)?teams?\b",
+            text,
+        )
+    )
 
 
 def wants_recent_form(text: str) -> bool:
