@@ -11,7 +11,8 @@ If you're new, start here and follow the order below.
 1. `../README.md` — project overview and fastest examples
 2. `reference/quick_query_guide.md` — quick-start examples (shortest path to trying queries)
 3. `reference/current_state_guide.md` — verified shipped behavior (the source of truth for what works)
-4. `reference/query_guide.md` — full structured and natural query reference
+4. `reference/query_catalog.md` — living catalog of supported question/query types and common phrasing
+5. `reference/query_guide.md` — full structured and natural query reference
 
 ---
 
@@ -35,6 +36,7 @@ Current-state documentation and verified behavior specs.
 
 - `reference/current_state_guide.md` — verified shipped behavior
 - `reference/quick_query_guide.md` — quick-start examples
+- `reference/query_catalog.md` — living catalog of supported question/query types and phrasing patterns
 - `reference/query_guide.md` — comprehensive reference (structured + natural)
 - `reference/data_catalog.md` — dataset inventory
 - `reference/data_contracts.md` — dataset-level contracts
@@ -115,9 +117,10 @@ Point-in-time audit snapshots and historical records.
 
 1. `../README.md`
 2. `reference/current_state_guide.md`
-3. `reference/query_guide.md`
-4. `reference/data_catalog.md`
-5. `operations/pipeline_runbook.md`
+3. `reference/query_catalog.md`
+4. `reference/query_guide.md`
+5. `reference/data_catalog.md`
+6. `operations/pipeline_runbook.md`
 
 ### Extending the system
 
