@@ -30,12 +30,14 @@ from typing import Any
 
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
-from nbatools.commands.natural_query import (
-    _build_parse_state,
+from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
     _execute_or_query_build_result,
     _get_build_result_map,
+)
+from nbatools.commands.natural_query import (
+    _build_parse_state,
     normalize_text,
     parse_query,
 )
