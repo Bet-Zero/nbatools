@@ -383,7 +383,7 @@ def _execute_or_query_build_result(query: str) -> tuple:
             )
         )
 
-    return _combine_or_results(results), clause_parsed[0]
+    return _combine_or_results(results), clause_parsed[0] if clause_parsed else base
 
 
 def _execute_grouped_boolean_build_result(query: str, parsed: dict):

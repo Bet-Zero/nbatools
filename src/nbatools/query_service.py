@@ -275,10 +275,12 @@ def execute_natural_query(query: str) -> QueryResult:
 
     # -- Grouped boolean path --
     if grouped_boolean_used:
+        # Guarantee parsed is always assigned before the execution try block.
+        parsed = _build_parse_state(query)
         try:
             parsed = parse_query(query)
         except ValueError:
-            parsed = _build_parse_state(query)
+            pass  # keep _build_parse_state result
         try:
             result = _execute_grouped_boolean_build_result(query, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
