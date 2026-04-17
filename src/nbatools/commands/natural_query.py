@@ -22,6 +22,7 @@ from nbatools.commands._natural_query_execution import (  # noqa: F401
     _execute_grouped_boolean_build_result,
     _execute_or_query_build_result,
     _get_build_result_map,
+    _split_or_clauses,
     render_query_result,
 )
 from nbatools.commands._occurrence_route_utils import (
@@ -765,16 +766,6 @@ def wants_recent_form(text: str) -> bool:
 
 def wants_split_summary(text: str) -> bool:
     return "split" in text or detect_split_type(text) is not None
-
-
-def _split_or_clauses(text: str) -> list[str]:
-    text = normalize_text(text)
-    if " or " not in text:
-        return [text]
-
-    raw_parts = re.split(r"\s+or\s+", text, flags=re.IGNORECASE)
-    parts = [normalize_text(p) for p in raw_parts if normalize_text(p)]
-    return parts if parts else [text]
 
 
 def _build_parse_state(query: str) -> dict:

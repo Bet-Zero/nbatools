@@ -276,13 +276,12 @@ def execute_natural_query(query: str) -> QueryResult:
     # -- Grouped boolean path --
     if grouped_boolean_used:
         try:
-            result = _execute_grouped_boolean_build_result(query)
             parsed = parse_query(query)
+        except ValueError:
+            parsed = _build_parse_state(query)
+        try:
+            result = _execute_grouped_boolean_build_result(query, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
-            try:
-                parsed = parse_query(query)
-            except ValueError:
-                parsed = _build_parse_state(query)
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
 
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=True)
@@ -296,8 +295,7 @@ def execute_natural_query(query: str) -> QueryResult:
     # -- OR query path --
     if " or " in normalized:
         try:
-            result = _execute_or_query_build_result(query)
-            parsed = parse_query(query)
+            result, parsed = _execute_or_query_build_result(query)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             try:
                 parsed = parse_query(query)

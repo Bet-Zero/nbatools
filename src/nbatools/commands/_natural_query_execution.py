@@ -132,6 +132,19 @@ from nbatools.commands.top_team_games import (
 
 _BUILD_RESULT_MAP: dict[str, Callable] = {}
 
+# ---------------------------------------------------------------------------
+# Precomputed alias sequences (length-descending) for condition text extraction
+# ---------------------------------------------------------------------------
+# Sorted once at import time so _extract_grouped_condition_text doesn't re-sort
+# on every call.
+
+_SORTED_PLAYER_ALIAS_NAMES: list[str] = sorted(
+    PLAYER_ALIASES.keys(), key=len, reverse=True
+)
+_SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(
+    TEAM_ALIASES.keys(), key=len, reverse=True
+)
+
 
 def _get_build_result_map() -> dict[str, Callable]:
     if not _BUILD_RESULT_MAP:
@@ -219,7 +232,9 @@ def _apply_extra_conditions_to_result(result, extra_conditions: list[dict]):
         return result
 
     for cond in extra_conditions:
-        stat = cond["stat"]
+        stat = cond.get("stat")
+        if not stat:
+            return NoResult(query_class=getattr(result, "query_class", "finder"))
         if stat not in df.columns:
             return NoResult(query_class=getattr(result, "query_class", "finder"))
         if cond.get("min_value") is not None:
@@ -304,22 +319,47 @@ def _combine_or_results(results: list):
     return FinderResult(games=combined)
 
 
-def _execute_or_query_build_result(query: str):
-    """Build a structured result for OR queries."""
-    # Lazy import to avoid circular dependency
+# ---------------------------------------------------------------------------
+# OR-clause splitter (no natural_query dependency)
+# ---------------------------------------------------------------------------
+
+
+def _split_or_clauses(text: str) -> list[str]:
+    text = normalize_text(text)
+    if " or " not in text:
+        return [text]
+
+    raw_parts = re.split(r"\s+or\s+", text, flags=re.IGNORECASE)
+    parts = [normalize_text(p) for p in raw_parts if normalize_text(p)]
+    return parts if parts else [text]
+
+
+def _execute_or_query_build_result(query: str) -> tuple:
+    """Build a structured result for OR queries.
+
+    Returns ``(result, parsed)`` so the caller can use the parsed state
+    directly without re-parsing the query.
+
+    ``_build_parse_state``, ``_merge_inherited_context``, and ``parse_query``
+    are still imported lazily here because they depend on ``_finalize_route``
+    and all of the parse-helper functions that live in ``natural_query.py``.
+    Moving them cleanly requires extracting the full parsing layer into a
+    dedicated module (a separate, larger cleanup pass).
+    """
+    # Lazy imports to avoid circular dependency with natural_query.py
     from nbatools.commands.natural_query import (
         _build_parse_state,
         _merge_inherited_context,
-        _split_or_clauses,
         parse_query,
     )
 
     clauses = _split_or_clauses(query)
     if len(clauses) <= 1:
         parsed = parse_query(query)
-        return _execute_build_result(
+        result = _execute_build_result(
             parsed["route"], parsed["route_kwargs"], parsed.get("extra_conditions", [])
         )
+        return result, parsed
 
     base = _build_parse_state(query)
     clause_parsed = [
@@ -343,15 +383,16 @@ def _execute_or_query_build_result(query: str):
             )
         )
 
-    return _combine_or_results(results)
+    return _combine_or_results(results), clause_parsed[0]
 
 
-def _execute_grouped_boolean_build_result(query: str):
-    """Build a structured result for grouped boolean queries."""
-    # Lazy import to avoid circular dependency
-    from nbatools.commands.natural_query import parse_query
+def _execute_grouped_boolean_build_result(query: str, parsed: dict):
+    """Build a structured result for grouped boolean queries.
 
-    parsed = parse_query(query)
+    ``parsed`` must be the result of ``parse_query(query)`` and is accepted as
+    a parameter so the caller can supply it directly, avoiding a second
+    ``parse_query`` call inside this function.
+    """
     route = parsed["route"]
 
     if route in {"player_game_summary", "player_split_summary"}:
@@ -520,10 +561,10 @@ def _extract_grouped_condition_text(query: str) -> str:
     normalized = normalize_text(query)
     condition_text = normalized
 
-    for name in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
+    for name in _SORTED_PLAYER_ALIAS_NAMES:
         condition_text = re.sub(rf"\b{re.escape(name)}\b", "", condition_text)
 
-    for name in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
+    for name in _SORTED_TEAM_ALIAS_NAMES:
         condition_text = re.sub(rf"\b{re.escape(name)}\b", "", condition_text)
 
     condition_text = re.sub(r"\b(?:19|20)\d{2}-\d{2}\b", "", condition_text)
