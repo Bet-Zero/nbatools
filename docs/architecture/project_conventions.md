@@ -468,6 +468,30 @@ Use for:
 - implementation guardrails
 - testing and doc update expectations
 
+## 10.7 Documentation directory structure
+
+```
+docs/
+  index.md                 — entry point and doc map
+  reference/               — current-state, verified behavior, data specs
+  architecture/            — design docs, conventions, internal layers
+  operations/              — runbooks, pipeline ops, UI dev guide
+  planning/                — roadmap, active plans
+  audits/                  — audit snapshots, historical docs
+```
+
+When adding a new doc, place it in the directory that matches its role:
+
+| Doc role | Directory | Examples |
+|----------|-----------|----------|
+| Verified shipped behavior or data spec | `docs/reference/` | current_state_guide, data_contracts, query_guide |
+| Engineering convention or layer design | `docs/architecture/` | project_conventions, api_layer |
+| Operational runbook or dev guide | `docs/operations/` | pipeline_runbook, ui_guide |
+| Roadmap, plan, or active design proposal | `docs/planning/` | roadmap, data_freshness_plan |
+| Point-in-time audit or completed plan | `docs/audits/` | architecture_hygiene_audit, scripts_retirement |
+
+After adding or moving a doc, update `docs/index.md` to include it.
+
 ---
 
 ## 11. Feature delivery checklist

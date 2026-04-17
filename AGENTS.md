@@ -222,7 +222,15 @@ The full regression suite (`make test`) always runs on merge to main and nightly
 
 ## Documentation expectations
 
-Each doc has a specific role.
+Each doc has a specific role. The `docs/` directory is organized by role:
+
+- `docs/reference/` — current-state, verified behavior, data specs
+- `docs/architecture/` — design docs, conventions, internal layers
+- `docs/operations/` — runbooks, pipeline ops, UI dev guide
+- `docs/planning/` — roadmap, active plans
+- `docs/audits/` — audit snapshots, historical docs
+
+Key docs:
 
 - `README.md` -> user-facing overview and high-level examples
 - `docs/reference/current_state_guide.md` -> verified shipped behavior only
@@ -232,6 +240,8 @@ Each doc has a specific role.
 - `docs/operations/ui_guide.md` -> web UI setup, dev workflow, and component reference
 
 Agents should keep these boundaries clean.
+
+When adding a new doc, place it in the directory matching its role (see `docs/architecture/project_conventions.md` §10.7 for the full placement table). Update `docs/index.md` after adding or moving a doc.
 
 In particular:
 
