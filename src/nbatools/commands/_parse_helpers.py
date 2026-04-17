@@ -522,6 +522,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                     }
                 )
             else:
+                if detect_stat(m.group(2)) is None:
+                    continue
                 stat, min_value, max_value = _parse_threshold_match(
                     m.group(1), m.group(2), mode, epsilon
                 )
