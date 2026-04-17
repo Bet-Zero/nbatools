@@ -46,7 +46,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,api]"
       - run: make test-unit
 
   # ── Full regression suite ────────────────────────────────────────
@@ -65,5 +65,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,api]"
       - run: make test
