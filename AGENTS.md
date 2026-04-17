@@ -234,6 +234,7 @@ Key docs:
 
 - `README.md` -> user-facing overview and high-level examples
 - `docs/reference/current_state_guide.md` -> verified shipped behavior only
+- `docs/reference/query_catalog.md` -> living catalog of supported question/query types and common phrasing patterns
 - `docs/planning/roadmap.md` -> planned or next capabilities
 - `docs/architecture/project_conventions.md` -> architecture and engineering rules
 - `docs/reference/data_contracts.md` -> dataset definitions and expectations
@@ -248,6 +249,7 @@ In particular:
 - do not put roadmap material into current-state docs
 - do not advertise unsupported or untested behavior in README
 - do not silently broaden claims without code and tests backing them up
+- when a meaningful shipped query capability changes, update `docs/reference/query_catalog.md` in the same pass so the repo keeps a living inventory of supported question types and phrasing patterns
 
 ## Output and interface expectations
 
@@ -306,6 +308,7 @@ Use this checklist:
 - Does this move the repo toward a reusable engine?
 - If changing the API response shape, is the React frontend updated to handle it?
 - If changing the frontend, was `npm run build` run to update the served assets?
+- If the shipped query surface changed, was `docs/reference/query_catalog.md` updated so the repo’s living query inventory stays current?
 
 If a feature does not improve the reusable engine or its consumers, rethink the implementation.
 
