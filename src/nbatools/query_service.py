@@ -30,12 +30,15 @@ from typing import Any
 
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
-from nbatools.commands.natural_query import (
-    _build_parse_state,
+from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
     _execute_or_query_build_result,
+    _extract_grouped_condition_text,
     _get_build_result_map,
+)
+from nbatools.commands.natural_query import (
+    _build_parse_state,
     normalize_text,
     parse_query,
 )
@@ -273,14 +276,16 @@ def execute_natural_query(query: str) -> QueryResult:
 
     # -- Grouped boolean path --
     if grouped_boolean_used:
+        # Guarantee parsed is always assigned before the execution try block.
+        parsed = _build_parse_state(query)
         try:
-            result = _execute_grouped_boolean_build_result(query)
             parsed = parse_query(query)
+        except ValueError:
+            pass  # keep _build_parse_state result
+        condition_text = _extract_grouped_condition_text(query)
+        try:
+            result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
-            try:
-                parsed = parse_query(query)
-            except ValueError:
-                parsed = _build_parse_state(query)
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
 
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=True)
@@ -294,8 +299,7 @@ def execute_natural_query(query: str) -> QueryResult:
     # -- OR query path --
     if " or " in normalized:
         try:
-            result = _execute_or_query_build_result(query)
-            parsed = parse_query(query)
+            result, parsed = _execute_or_query_build_result(query)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             try:
                 parsed = parse_query(query)

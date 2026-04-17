@@ -22,7 +22,7 @@ from nbatools.commands.format_output import (
     write_csv_from_result,
     write_json_from_result,
 )
-from nbatools.commands.natural_query import (
+from nbatools.commands._natural_query_execution import (
     _apply_extra_conditions_to_result,
     _combine_or_results,
     _execute_build_result,
