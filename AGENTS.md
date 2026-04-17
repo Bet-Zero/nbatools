@@ -118,11 +118,11 @@ Every meaningful feature change should include appropriate tests.
 
 Use the Makefile targets — do not invent ad hoc pytest invocations.
 
-| Command               | What it does                                                                   | When to use                                                         |
-| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `make test-impacted`  | Runs only tests whose file-level dependencies changed (pytest-testmon, serial) | During active development for fast feedback                         |
-| `make test`           | Full regression suite (parallel via xdist)                                     | Before merging, after broad changes, when full confidence is needed |
-| `make test-preflight` | All tests except `slow` (parallel via xdist, no testmon)                       | Before concluding any implementation task                           |
+| Command               | What it does                                                                   | When to use                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `make test-impacted`  | Runs only tests whose file-level dependencies changed (pytest-testmon, serial) | **Default** — during active development and as the normal finishing step                     |
+| `make test`           | Full regression suite (parallel via xdist)                                     | Maximum-confidence validation: before merging, after broad changes, or explicitly risky work |
+| `make test-preflight` | All tests except `slow` (parallel via xdist, no testmon)                       | Broad, cross-cutting, or higher-risk changes only — not the default finishing step           |
 
 ### Domain subset targets
 
@@ -141,15 +141,15 @@ These targets do **not** use `--testmon`. They always run every test with the ma
 
 ### Choosing a test command based on what changed
 
-| Code area changed                      | Recommended command                           |
-| -------------------------------------- | --------------------------------------------- |
-| A single command module                | `make test-impacted` (testmon catches it)     |
-| `natural_query.py` parsing helpers     | `make test-impacted`, then `make test-parser` |
-| `natural_query.py` routing logic       | `make test-impacted`, then `make test-query`  |
-| A command module + NQ routing together | `make test-impacted`, then `make test-engine` |
-| `api.py` or API response shape         | `make test-api`                               |
-| `format_output.py` or result contracts | `make test-output`                            |
-| Broad refactor or unclear scope        | `make test-preflight`                         |
+| Code area changed                      | Recommended command                             |
+| -------------------------------------- | ----------------------------------------------- |
+| A single command module                | `make test-impacted` (testmon catches it)       |
+| `natural_query.py` parsing helpers     | `make test-impacted`, then `make test-parser`   |
+| `natural_query.py` routing logic       | `make test-impacted`, then `make test-query`    |
+| A command module + NQ routing together | `make test-impacted`, then `make test-engine`   |
+| `api.py` or API response shape         | `make test-api`                                 |
+| `format_output.py` or result contracts | `make test-output`                              |
+| Broad refactor or unclear scope        | `make test-preflight` (escalation, not default) |
 
 ### Testmon + marker interaction
 
@@ -161,10 +161,11 @@ the full slice.
 
 **Workflow for agents:**
 
-1. While iterating on code, run `make test-impacted` for fast feedback.
-2. If you know the subsystem, run the matching `make test-<domain>` for broader confidence.
-3. Before declaring work complete, run `make test-preflight`.
-4. If `test-impacted` misses something (dynamic imports, data file changes, monkey-patching), fall back to `make test`.
+1. While iterating, run `make test-impacted` for fast feedback.
+2. If the change is localized to a known subsystem, also run the matching `make test-<domain>` target.
+3. Steps 1–2 are the normal "done" signal for ordinary implementation work. Do not escalate further by default.
+4. Run `make test-preflight` only for broad, cross-cutting, or higher-risk changes (e.g., refactors spanning multiple subsystems, unclear scope, or changes to shared infrastructure like `natural_query.py` routing).
+5. Run `make test` only for maximum-confidence validation — before merging, or when `test-impacted` is known to be unreliable for the change (dynamic imports, data file changes, monkey-patching).
 
 Testmon tracks file-level dependencies. It does **not** detect changes in data files, environment variables, or dynamically loaded modules. When in doubt, run the full suite.
 
@@ -200,13 +201,14 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 
 ### How this maps to agent workflow
 
-| Agent phase                    | Local command         | CI equivalent |
-| ------------------------------ | --------------------- | ------------- |
-| Active iteration               | `make test-impacted`  | —             |
-| Subsystem confidence           | `make test-<domain>`  | —             |
-| Before declaring work complete | `make test-preflight` | —             |
-| PR pushed                      | —                     | `test-fast`   |
-| Merged to main / nightly       | —                     | `test-full`   |
+| Agent phase                                  | Local command         | CI equivalent |
+| -------------------------------------------- | --------------------- | ------------- |
+| Active iteration                             | `make test-impacted`  | —             |
+| Subsystem confidence                         | `make test-<domain>`  | —             |
+| Before declaring work complete (normal)      | `make test-impacted`  | —             |
+| Before declaring work complete (broad/risky) | `make test-preflight` | —             |
+| PR pushed                                    | —                     | `test-fast`   |
+| Merged to main / nightly                     | —                     | `test-full`   |
 
 Local development uses `make test-impacted` (testmon) for the fastest feedback. CI does not use testmon — it uses `make test-unit` (marker-based exclusion, parallel) as the fast path instead. Testmon state is a local development optimization only.
 

@@ -16,20 +16,20 @@ pre-commit install
 Makefile targets provide deterministic test commands:
 
 ```bash
+make test-impacted    # Default: only tests affected by recent code changes (pytest-testmon, serial)
 make test             # Full regression suite (parallel via xdist)
-make test-impacted    # Only tests affected by recent code changes (pytest-testmon, serial)
-make test-preflight   # All tests except slow — broad confidence before finishing a task
+make test-preflight   # All tests except slow — for broad, cross-cutting, or higher-risk changes only
 ```
 
 You can still invoke `pytest` directly with any flags you like.
 
 ### When to use each
 
-| Command               | When                                                                |
-| --------------------- | ------------------------------------------------------------------- |
-| `make test-impacted`  | During active development for fast feedback                         |
-| `make test`           | Before merging, in CI, or when you want full confidence             |
-| `make test-preflight` | Before concluding a feature/fix — broad coverage without slow tests |
+| Command               | When                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `make test-impacted`  | **Default** — during active development and as the normal finishing step for ordinary work |
+| `make test`           | Before merging, in CI, or when you want full confidence                                    |
+| `make test-preflight` | Broad, cross-cutting, or higher-risk changes only — not the default finishing step         |
 
 ### Domain / subset targets
 
