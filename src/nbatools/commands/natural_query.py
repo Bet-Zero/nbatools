@@ -4,21 +4,24 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
+from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN, normalize_text
 from nbatools.commands._date_utils import extract_date_range
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
 )
-
-# Import entity resolution (used by detect_player / detect_team etc.)
-from nbatools.commands.entity_resolution import (  # noqa: E402
+from nbatools.commands._matchup_utils import (
+    detect_head_to_head,
+    detect_opponent,
+    detect_player_resolved,
+    detect_team_in_text,
+    extract_player_comparison,
+    extract_team_comparison,
+)
+from nbatools.commands.entity_resolution import (
     PLAYER_ALIASES,
     TEAM_ALIASES,
-    ResolutionResult,
     format_ambiguity_message,
-    resolve_player_in_query,
-    resolve_team_in_query,
 )
 from nbatools.commands.format_output import (
     build_error_output,
@@ -119,19 +122,6 @@ from nbatools.commands.top_player_games import (
 from nbatools.commands.top_team_games import (
     build_result as top_team_games_build_result,
 )
-
-STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary|average|averages|record|for|during|playoff|playoffs|postseason|last|past|recent|form|split|over|under|between|and|or)"  # noqa: E501
-
-
-MATCHUP_NOISE_PATTERN = r"\b(?:head\s*[- ]\s*to\s*[- ]\s*head|h2h|matchup|matchups)\b"
-
-
-def strip_matchup_noise(text: str) -> str:
-    return normalize_text(re.sub(MATCHUP_NOISE_PATTERN, " ", text))
-
-
-def detect_head_to_head(text: str) -> bool:
-    return bool(re.search(MATCHUP_NOISE_PATTERN, text))
 
 
 def extract_top_n(text: str) -> int | None:
@@ -244,10 +234,6 @@ def wants_team_leaderboard(text: str) -> bool:
         return True
 
     return False
-
-
-def normalize_text(text: str) -> str:
-    return " ".join(text.lower().strip().split())
 
 
 def extract_season(text: str) -> str | None:
@@ -535,44 +521,6 @@ def detect_stat(text: str) -> str | None:
     for key in sorted(STAT_ALIASES.keys(), key=len, reverse=True):
         if key in text:
             return STAT_ALIASES[key]
-    return None
-
-
-def detect_player(text: str) -> str | None:
-    # First try the original curated alias dict (preserves exact existing behavior)
-    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
-            return PLAYER_ALIASES[key]
-    # Fall back to entity resolution (data-driven last-name lookup)
-    result = resolve_player_in_query(text)
-    if result.is_confident:
-        return result.resolved
-    return None
-
-
-def detect_player_resolved(text: str) -> ResolutionResult:
-    """Like detect_player but returns full resolution result including ambiguity."""
-    # First try the original curated alias dict
-    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
-            return ResolutionResult(
-                resolved=PLAYER_ALIASES[key],
-                candidates=[PLAYER_ALIASES[key]],
-                confidence="confident",
-                source="alias",
-            )
-    # Fall back to entity resolution (data-driven last-name lookup)
-    return resolve_player_in_query(text)
-
-
-def detect_team_in_text(text: str) -> str | None:
-    for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
-            return TEAM_ALIASES[key]
-    # Fall back to entity resolution for abbreviations etc.
-    result = resolve_team_in_query(text)
-    if result.is_confident:
-        return result.resolved
     return None
 
 
@@ -1219,74 +1167,6 @@ def wants_recent_form(text: str) -> bool:
 
 def wants_split_summary(text: str) -> bool:
     return "split" in text or detect_split_type(text) is not None
-
-
-def detect_opponent(text: str) -> tuple[str | None, str]:
-    cleaned_text = strip_matchup_noise(text)
-
-    patterns = [
-        rf"\bvs\.?\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
-        rf"\bversus\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
-        rf"\bagainst\s+([a-z0-9 .&'-]+?)(?=\s+{STOP_WORDS}\b|$)",
-    ]
-
-    for pattern in patterns:
-        m = re.search(pattern, cleaned_text)
-        if not m:
-            continue
-
-        phrase = m.group(1).strip()
-        detected = detect_team_in_text(phrase)
-        if detected:
-            cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
-            cleaned = normalize_text(cleaned)
-            return detected, cleaned
-
-    return None, cleaned_text
-
-
-def extract_player_comparison(text: str) -> tuple[str | None, str | None]:
-    cleaned_text = strip_matchup_noise(text)
-
-    for alias_a, player_a in sorted(PLAYER_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
-        stop = STOP_WORDS
-        pattern = (  # noqa: E501
-            rf"\b{re.escape(alias_a)}\b\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
-            rf"(?=\s+(?:{stop})\b|$)"
-        )
-        m = re.search(pattern, cleaned_text)
-        if not m:
-            continue
-
-        phrase_b = m.group(1).strip()
-        player_b = detect_player(phrase_b)
-        if player_b:
-            return player_a, player_b
-
-    return None, None
-
-
-def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
-    cleaned_text = strip_matchup_noise(text)
-
-    team_keys = sorted(TEAM_ALIASES.keys(), key=len, reverse=True)
-    for alias_a in team_keys:
-        stop = STOP_WORDS
-        pattern = (
-            rf"\b{re.escape(alias_a)}\b\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
-            rf"(?=\s+(?:{stop})\b|$)"
-        )
-        m = re.search(pattern, cleaned_text)
-        if not m:
-            continue
-
-        team_a = TEAM_ALIASES[alias_a]
-        phrase_b = m.group(1).strip()
-        team_b = detect_team_in_text(phrase_b)
-        if team_b and team_b != team_a:
-            return team_a, team_b
-
-    return None, None
 
 
 # ---------------------------------------------------------------------------
