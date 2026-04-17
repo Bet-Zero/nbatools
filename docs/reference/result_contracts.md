@@ -4,17 +4,17 @@
 > This document defines the _target_ result contracts for `nbatools`.
 > It is **not** a description of current engine output. For the current-state
 > audit of engine output against these targets, see
-> [result_contracts_audit.md](result_contracts_audit.md).
+> [result_contracts_audit.md](../audits/result_contracts_audit.md).
 > For verified shipped behavior, see [current_state_guide.md](current_state_guide.md).
 
 This doc describes the result shapes that command modules should evolve toward so that the CLI, exports, and the React web UI can all consume the same engine.
 
 Related docs:
 
-- [docs/project_conventions.md](project_conventions.md) — engineering conventions (see section 9, UI-readiness)
+- [docs/architecture/project_conventions.md](../architecture/project_conventions.md) — engineering conventions (see section 9, UI-readiness)
 - [docs/data_contracts.md](data_contracts.md) — dataset-level contracts
 - [docs/current_state_guide.md](current_state_guide.md) — currently shipped behavior
-- [docs/roadmap.md](roadmap.md) — Phase 5 (product-layer readiness) and Phase 6 (first UI)
+- [docs/planning/roadmap.md](../planning/roadmap.md) — Phase 5 (product-layer readiness) and Phase 6 (first UI)
 
 ---
 
@@ -50,7 +50,7 @@ Even with no UI on the horizon, result contracts:
 
 ## 2. Core result classes
 
-The engine should think in these result classes. They align with the preferred route classes in [docs/project_conventions.md](project_conventions.md#42-preferred-route-classes).
+The engine should think in these result classes. They align with the preferred route classes in [docs/architecture/project_conventions.md](../architecture/project_conventions.md#42-preferred-route-classes).
 
 1. **finder** — list of matching games or entities
 2. **summary** — aggregated stats for one entity over a sample
@@ -221,7 +221,7 @@ Future result objects should carry:
 - **split_type** — when the result is a split summary
 - **grouped_boolean_used** — whether a grouped boolean expression was parsed and applied
 - **head_to_head_used** — whether a head-to-head restriction was applied
-- **current_through** — freshness marker for the underlying data; should align with the working definition in [docs/data_freshness_plan.md](data_freshness_plan.md#9-current-through--what-users-should-be-able-to-trust). Future-ready — not all results carry this today.
+- **current_through** — freshness marker for the underlying data; should align with the working definition in [docs/planning/data_freshness_plan.md](../planning/data_freshness_plan.md#9-current-through--what-users-should-be-able-to-trust). Future-ready — not all results carry this today.
 - **notes / caveats** — short, machine-readable notes when the engine applied a semantic fallback. Examples:
   - leaderboard metric not present in season-advanced table, derived from game logs
   - sample-aware player rate recomputed from the filtered sample rather than season-average
@@ -248,7 +248,7 @@ The rule:
 
 ## 6. Section label guidance
 
-The following section labels are already established as machine-readable output markers and are documented as stable in [docs/project_conventions.md](project_conventions.md#64-output-section-labels):
+The following section labels are already established as machine-readable output markers and are documented as stable in [docs/architecture/project_conventions.md](../architecture/project_conventions.md#64-output-section-labels):
 
 - `SUMMARY`
 - `BY_SEASON`
@@ -293,10 +293,10 @@ This doc is meant to be useful _before_ any UI work begins.
 
 ### 8.2 How code should move toward these contracts without a rewrite
 
-- **Do not do a broad rewrite.** Per [docs/project_conventions.md](project_conventions.md#82-avoid-architecture-churn), architecture churn without a clear payoff is discouraged.
+- **Do not do a broad rewrite.** Per [docs/architecture/project_conventions.md](../architecture/project_conventions.md#82-avoid-architecture-churn), architecture churn without a clear payoff is discouraged.
 - **Migrate opportunistically.** When a command is already being edited for another reason, bring its result shape closer to the contract for its class. Over time, this converges without a dedicated refactor pass.
 - **Prefer additive changes.** Adding fields to a result is safer than renaming or restructuring them. Presentation layers can ignore new fields.
-- **Protect migrations with tests.** When a result shape is tightened, back it with export or structured-output tests, per the testing conventions in [docs/project_conventions.md](project_conventions.md#7-testing-conventions).
+- **Protect migrations with tests.** When a result shape is tightened, back it with export or structured-output tests, per the testing conventions in [docs/architecture/project_conventions.md](../architecture/project_conventions.md#7-testing-conventions).
 - **Update the current-state guide only after verification.** This doc describes the target. [docs/current_state_guide.md](current_state_guide.md) describes what is actually shipped and tested. Keep that distinction strict.
 
 The target is gradual convergence: every route ends up producing a result that fits one of the seven result classes, carries the shared metadata block, and can be rendered by the CLI, exports, and the React UI without any of them needing to know about the others.

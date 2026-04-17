@@ -2,7 +2,7 @@
 
 > **Status: historical audit (2025-04-16).**
 > This document is a point-in-time audit of raw engine output against the
-> target contracts in [result_contracts.md](result_contracts.md).
+> target contracts in [result_contracts.md](../reference/result_contracts.md).
 >
 > Since this audit was written, the **structured result layer** has been
 > implemented — all routes now produce first-class result objects
@@ -18,7 +18,7 @@
 
 ## Purpose
 
-This is an **audit of engine output behavior at a point in time** against the target contracts in [docs/result_contracts.md](result_contracts.md). It is not a design doc and it is not a description of shipped contract compliance.
+This is an **audit of engine output behavior at a point in time** against the target contracts in [docs/reference/result_contracts.md](../reference/result_contracts.md). It is not a design doc and it is not a description of shipped contract compliance.
 
 The goal is to measure how far the current raw/structured outputs are from the seven result classes and the shared metadata block, without changing product behavior. Nothing in this doc asserts that the engine already satisfies a contract; where the current code only partially aligns, that is called out explicitly.
 
@@ -33,7 +33,7 @@ Scope notes:
 Baseline observations that apply to every class below, and that are not repeated in each section:
 
 - Every `run()` function emits results via `print(df.to_csv(index=False))`. Nothing returns a structured object.
-- None of the commands emit `query_text`, `route` / `query_class`, `current_through`, `grouped_boolean_used`, `head_to_head_used`, or `notes / caveats` as per [result_contracts.md §4](result_contracts.md#4-shared-metadata-contract). These fields are missing universally.
+- None of the commands emit `query_text`, `route` / `query_class`, `current_through`, `grouped_boolean_used`, `head_to_head_used`, or `notes / caveats` as per [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract). These fields are missing universally.
 - Resolved `date_window` (absolute start/end dates the engine actually used) is not emitted by any command, even though the engine computes it internally for `last N games`, `since <month>`, and `since All-Star break`.
 - No command distinguishes `no_match`, `no_data`, `unrouted`, or `error`. The literal string `no matching games` is used for all empty-result paths.
 
@@ -67,7 +67,7 @@ Covers [player_game_summary.py](../src/nbatools/commands/player_game_summary.py)
 
 **Raw output shape today.** Two sections, both as CSV, separated by `SUMMARY` and `BY_SEASON` labels. The SUMMARY row carries the overall aggregates plus some per-row context (`player_name` / `team_name`, `season_start`, `season_end`, `season_type`, `games`, `wins`, `losses`, `win_pct`, the `_avg` and `_sum` box-score fields, and sample-aware `usg_pct_avg`, `ast_pct_avg`, `reb_pct_avg` for player summaries). BY_SEASON is a per-season breakdown with the same metric family. Empty result writes `SUMMARY\nno matching games`.
 
-**Stable section labels that already exist.** `SUMMARY`, `BY_SEASON`. Both are in the "already stable" list in [project_conventions.md §6.4](project_conventions.md#64-output-section-labels) and are referenced by [result_contracts.md §6](result_contracts.md#6-section-label-guidance).
+**Stable section labels that already exist.** `SUMMARY`, `BY_SEASON`. Both are in the "already stable" list in [project_conventions.md §6.4](../architecture/project_conventions.md#64-output-section-labels) and are referenced by [result_contracts.md §6](../reference/result_contracts.md#6-section-label-guidance).
 
 **Metadata already present.** Span (`season_start`, `season_end`), `season_type`, games, wins/losses/win_pct, entity name. Sample-aware rate metrics are present for player summaries.
 
@@ -77,8 +77,8 @@ Covers [player_game_summary.py](../src/nbatools/commands/player_game_summary.py)
 - No resolved `date_window` when the request was `last N games` or `since <month>` — the engine filters on those but doesn't echo the absolute start/end dates it used.
 - No `opponent_context` even when `Jokic summary vs Lakers` resolves through an opponent filter.
 - No `player_id` / `team_id` — only name — so the SUMMARY row can't be joined against other data sources without string-matching.
-- No `grouped_boolean_used` flag, even though grouped boolean filters are supported on summaries per [current_state_guide.md §grouped-boolean-coverage](current_state_guide.md#grouped-boolean-coverage).
-- No `notes / caveats` field for the case where the sample-aware rate metric is recomputed from the filtered sample rather than a season average — which per [result_contracts.md §4](result_contracts.md#4-shared-metadata-contract) is the canonical example of a silent fallback that should become visible.
+- No `grouped_boolean_used` flag, even though grouped boolean filters are supported on summaries per [current_state_guide.md §grouped-boolean-coverage](../reference/current_state_guide.md#grouped-boolean-coverage).
+- No `notes / caveats` field for the case where the sample-aware rate metric is recomputed from the filtered sample rather than a season average — which per [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) is the canonical example of a silent fallback that should become visible.
 
 **Is pretty formatting doing work that belongs in raw output?** Partly. The raw SUMMARY row already contains every numeric value the pretty view prints. But the metric-label mapping (`pts_avg` → `PTS`, `efg_pct_avg` → `eFG%`, etc. in [format_output.py:157-186](../src/nbatools/commands/format_output.py#L157-L186)) and the `Record: 9-1` formatting live in the formatter. Those are presentation and are fine there. The one load-bearing thing that doesn't exist in raw output is any header identifying this as a `summary` result class.
 
@@ -102,7 +102,7 @@ Covers [player_compare.py](../src/nbatools/commands/player_compare.py), [team_co
 - `head_to_head_used` is never emitted, even though [player_compare.py:268-282](../src/nbatools/commands/player_compare.py#L268-L282) literally branches on `head_to_head=True` and filters to same-game pairs. This is a significant gap: the contract calls this out specifically, and it is invisible in output today.
 - No `sample_size_differs` indicator for the non-head-to-head case where entity A and entity B have different numbers of games in the sample.
 - No opponent context, no date-window context, no route metadata.
-- Grouped boolean context is correctly **not** in scope here per [result_contracts.md §3.3](result_contracts.md#33-comparison), so no gap there.
+- Grouped boolean context is correctly **not** in scope here per [result_contracts.md §3.3](../reference/result_contracts.md#33-comparison), so no gap there.
 
 **Is pretty formatting doing work that belongs in raw output?** Partly. The pretty formatter reconstructs `Games: X vs Y`, `Record: ...`, `Win%: ...`, and the metric rows from the SUMMARY block. Those values are in raw. But the head-to-head distinction — which changes the meaning of the whole table — is only visible in the query string and is lost entirely on the way to the raw blob.
 
@@ -124,7 +124,7 @@ Covers [player_split_summary.py](../src/nbatools/commands/player_split_summary.p
 
 - Same universal gaps: no `query_text`, no `route`, no `opponent_context`, no resolved `date_window`, no `grouped_boolean_used` (even though split summaries do support grouped boolean filtering per the current state guide).
 - No per-bucket date range (buckets within the same sample can span the same window, but if a filter like `last 20 games` was applied, the resolved range is never echoed).
-- The `split` field is a machine-safe enum (`home_away`, `wins_losses`), which is good — this is actually the one spot where a `split_type` field per [result_contracts.md §4](result_contracts.md#4-shared-metadata-contract) already exists in raw output.
+- The `split` field is a machine-safe enum (`home_away`, `wins_losses`), which is good — this is actually the one spot where a `split_type` field per [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) already exists in raw output.
 
 **Is pretty formatting doing work that belongs in raw output?** Mostly no. The raw output already carries the canonical split enum. The pretty formatter maps `home_away` → `Home vs Away` and `wins` → `Wins` for display, which is presentation. The one load-bearing mapping is `_pretty_bucket_name` and `_pretty_split_name` in [format_output.py:139-154](../src/nbatools/commands/format_output.py#L139-L154); those are legitimate renderers.
 
@@ -146,7 +146,7 @@ Covers [season_leaders.py](../src/nbatools/commands/season_leaders.py), [season_
 
 - No header metadata at all — no query text, no `stat` being ranked, no `limit` / top-N value, no sort direction, no `min_games` qualifier that was applied, no FGA/FG3A/FTA minimum that was silently applied for percentage metrics in [season_leaders.py:298-306](../src/nbatools/commands/season_leaders.py#L298-L306).
 - No resolved `date_window`, even though date-windowed leaderboards are a first-class feature and even though `_recommended_min_games` in [season_leaders.py:112-123](../src/nbatools/commands/season_leaders.py#L112-L123) quietly lowers the minimum-games threshold when a window is active.
-- No `dataset source` provenance. [season_leaders.py:356-371](../src/nbatools/commands/season_leaders.py#L356-L371) builds from game logs and then optionally merges the advanced table; that distinction is exactly the [result_contracts.md §4](result_contracts.md#4-shared-metadata-contract) fallback case (`leaderboard metric not present in season-advanced table, derived from game logs`) and it is currently silent.
+- No `dataset source` provenance. [season_leaders.py:356-371](../src/nbatools/commands/season_leaders.py#L356-L371) builds from game logs and then optionally merges the advanced table; that distinction is exactly the [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) fallback case (`leaderboard metric not present in season-advanced table, derived from game logs`) and it is currently silent.
 - No `notes / caveats` for the case where `ts_pct`, `usage_rate`, etc. came from the advanced table vs the basic one.
 
 **Is pretty formatting doing work that belongs in raw output?** Yes, and visibly. `format_output._detect_value_column` in [format_output.py:77-136](../src/nbatools/commands/format_output.py#L77-L136) is an entire priority-list heuristic for guessing which column the leaderboard was ranked by — a fact that the raw output does not record. The pretty layer is reverse-engineering a value the engine already knew and discarded.
@@ -190,7 +190,7 @@ Covers the empty-state behavior of every command and the parser-level failure pa
 
 **Metadata already present.** Nothing beyond the literal message.
 
-**Metadata missing relative to the contract.** Everything from [result_contracts.md §3.7](result_contracts.md#37-no-result--error-style-result):
+**Metadata missing relative to the contract.** Everything from [result_contracts.md §3.7](../reference/result_contracts.md#37-no-result--error-style-result):
 
 - No `result_kind` enum — `no_match`, `no_data`, `unrouted`, `error` are indistinguishable in output. A query that routed and found nothing and a query that requested a season the engine does not have loaded are currently the same string.
 - No `reason` code.
@@ -214,7 +214,7 @@ The gaps cluster into four groups, in decreasing order of how well the current c
 
 3. **Shared metadata block (contract §4).** Almost entirely missing across every class: `query_text`, `route`, resolved `date_window`, `opponent_context`, `grouped_boolean_used`, `head_to_head_used`, `current_through`, `notes / caveats`. These are universally absent from raw output and cannot be recovered by pretty or exports because they never exist upstream.
 
-4. **Result transport.** The engine does not return structured results from `run()` — it prints CSV blobs to stdout that every downstream consumer re-parses. This is the deepest architectural gap and the one this audit explicitly recommends **not** tackling as part of incremental alignment. The contracts doc's own near-term guidance in [result_contracts.md §8.2](result_contracts.md#82-how-code-should-move-toward-these-contracts-without-a-rewrite) says to migrate opportunistically and avoid broad rewrites; moving off stdout transport is a broad rewrite.
+4. **Result transport.** The engine does not return structured results from `run()` — it prints CSV blobs to stdout that every downstream consumer re-parses. This is the deepest architectural gap and the one this audit explicitly recommends **not** tackling as part of incremental alignment. The contracts doc's own near-term guidance in [result_contracts.md §8.2](../reference/result_contracts.md#82-how-code-should-move-toward-these-contracts-without-a-rewrite) says to migrate opportunistically and avoid broad rewrites; moving off stdout transport is a broad rewrite.
 
 One cross-cutting observation: the pretty formatter is doing a modest amount of work that should live in raw output, concentrated in two places — the `rank`-column detection and the leaderboard value-column detection. Both exist because the corresponding raw outputs lack a class label and lack a header identifying the ranking metric. Both become unnecessary the moment section labels and a small metadata header land.
 
@@ -252,6 +252,6 @@ Rationale:
 - Together they remove the pretty formatter's class-detection heuristics, which is the single clearest case of "pretty formatting doing work that should belong in raw structured output" in the current code.
 - They create the scaffolding every later step in the alignment order needs. Caveats, head-to-head flags, resolved date windows, and the no-result class all slot into the header block once it exists.
 - They do not require changing the result transport layer, so the stdout-capture architecture in `natural_query._execute_capture_raw` and `cli_apps/queries._run_and_handle_exports` continues to work unchanged.
-- They are verifiable with a small number of new structured-output tests rather than a broad test rewrite, consistent with the testing guidance in [project_conventions.md §7](project_conventions.md#7-testing-conventions).
+- They are verifiable with a small number of new structured-output tests rather than a broad test rewrite, consistent with the testing guidance in [project_conventions.md §7](../architecture/project_conventions.md#7-testing-conventions).
 
 This audit takes no position on when this work should happen. It only identifies what to do first when it does.

@@ -11,7 +11,7 @@ All workflows return structured ``PipelineResult`` objects with
 stage-by-stage status, so callers (CLI, tests, future automation)
 can inspect exactly what happened.
 
-Rebuild order follows ``docs/data_freshness_plan.md`` §4:
+Rebuild order follows ``docs/planning/data_freshness_plan.md`` §4:
   1. Raw pulls (games → schedule → rosters → team_game_stats →
      player_game_stats → standings_snapshots → team_season_advanced →
      player_season_advanced)

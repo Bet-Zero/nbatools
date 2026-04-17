@@ -251,7 +251,7 @@ This is especially important for:
 
 ## 5.4 Data contracts should be documented
 
-When datasets, required columns, or downstream consumers change, update `docs/data_contracts.md`.
+When datasets, required columns, or downstream consumers change, update `docs/reference/data_contracts.md`.
 
 ---
 
@@ -423,7 +423,7 @@ Use for:
 - high-level examples
 - broad user-facing capability summary
 
-## 10.2 `docs/current_state_guide.md`
+## 10.2 `docs/reference/current_state_guide.md`
 
 Use for:
 
@@ -434,7 +434,7 @@ Use for:
 
 Do not use it for speculative or planned behavior.
 
-## 10.3 `docs/roadmap.md`
+## 10.3 `docs/planning/roadmap.md`
 
 Use for:
 
@@ -443,7 +443,7 @@ Use for:
 - planned expansions
 - not-yet-shipped ideas
 
-## 10.4 `docs/data_contracts.md`
+## 10.4 `docs/reference/data_contracts.md`
 
 Use for:
 
@@ -452,7 +452,7 @@ Use for:
 - required columns
 - producers and consumers
 
-## 10.5 `docs/ui_guide.md`
+## 10.5 `docs/operations/ui_guide.md`
 
 Use for:
 

@@ -8,7 +8,7 @@
 >
 > - [quick_query_guide.md](quick_query_guide.md) — quick-start examples
 > - [query_guide.md](query_guide.md) — full query reference with CLI commands
-> - [roadmap.md](roadmap.md) — planned / future capabilities
+> - [roadmap.md](../planning/roadmap.md) — planned / future capabilities
 
 This guide describes the **current shipped behavior** of `nbatools`.
 

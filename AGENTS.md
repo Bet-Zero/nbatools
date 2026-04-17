@@ -225,11 +225,11 @@ The full regression suite (`make test`) always runs on merge to main and nightly
 Each doc has a specific role.
 
 - `README.md` -> user-facing overview and high-level examples
-- `docs/current_state_guide.md` -> verified shipped behavior only
-- `docs/roadmap.md` -> planned or next capabilities
-- `docs/project_conventions.md` -> architecture and engineering rules
-- `docs/data_contracts.md` -> dataset definitions and expectations
-- `docs/ui_guide.md` -> web UI setup, dev workflow, and component reference
+- `docs/reference/current_state_guide.md` -> verified shipped behavior only
+- `docs/planning/roadmap.md` -> planned or next capabilities
+- `docs/architecture/project_conventions.md` -> architecture and engineering rules
+- `docs/reference/data_contracts.md` -> dataset definitions and expectations
+- `docs/operations/ui_guide.md` -> web UI setup, dev workflow, and component reference
 
 Agents should keep these boundaries clean.
 

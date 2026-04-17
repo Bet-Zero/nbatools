@@ -6,10 +6,10 @@ It is an engineering plan, not a product spec. The goal is a repeatable, trustwo
 
 Related docs:
 
-- [docs/data_catalog.md](data_catalog.md) — what tables exist and where they live
-- [docs/data_contracts.md](data_contracts.md) — what query code depends on
-- [docs/pipeline_runbook.md](pipeline_runbook.md) — how the pipeline is currently operated
-- [docs/roadmap.md](roadmap.md) — Phase 4 (data freshness) and Phase 6 (UI)
+- [docs/reference/data_catalog.md](../reference/data_catalog.md) — what tables exist and where they live
+- [docs/reference/data_contracts.md](../reference/data_contracts.md) — what query code depends on
+- [docs/operations/pipeline_runbook.md](../operations/pipeline_runbook.md) — how the pipeline is currently operated
+- [docs/planning/roadmap.md](roadmap.md) — Phase 4 (data freshness) and Phase 6 (UI)
 
 ---
 
@@ -35,7 +35,7 @@ Related docs:
 ### Guiding principles
 
 - **Local-first.** Everything runs on disk against CSVs under `data/`. No new infra in this pass.
-- **Contracts first.** Refresh jobs must produce the columns required by [docs/data_contracts.md](data_contracts.md). If a pull regresses a required column, that is a freshness bug, not a cosmetic one.
+- **Contracts first.** Refresh jobs must produce the columns required by [docs/reference/data_contracts.md](../reference/data_contracts.md). If a pull regresses a required column, that is a freshness bug, not a cosmetic one.
 - **Idempotent.** Re-running a refresh for the same season/type should be safe and should not corrupt state.
 - **Explicit current-through.** Users should be able to trust a visible statement of how recent the loaded data is.
 - **Manual now, automatable later.** Everything in this plan should be runnable by a human today and mechanizable later without a rewrite.
@@ -44,7 +44,7 @@ Related docs:
 
 ## 2. Where the data comes from
 
-All raw data originates from the NBA data source via the existing `pull-*` commands documented in [docs/pipeline_runbook.md](pipeline_runbook.md).
+All raw data originates from the NBA data source via the existing `pull-*` commands documented in [docs/operations/pipeline_runbook.md](../operations/pipeline_runbook.md).
 
 The refresh story uses only commands that already exist:
 
@@ -67,8 +67,8 @@ Split by refresh priority, not by directory.
 
 These are the datasets query commands read. If any of these are stale, users get stale answers.
 
-- `player_game_stats` — [docs/data_contracts.md](data_contracts.md#1-player_game_stats)
-- `team_game_stats` — [docs/data_contracts.md](data_contracts.md#2-team_game_stats)
+- `player_game_stats` — [docs/reference/data_contracts.md](../reference/data_contracts.md#1-player_game_stats)
+- `team_game_stats` — [docs/reference/data_contracts.md](../reference/data_contracts.md#2-team_game_stats)
 - `games` (canonical game identity)
 - `player_season_advanced`
 - `team_season_advanced`
@@ -153,7 +153,7 @@ When there are no games scheduled, daily refresh is unnecessary. A weekly run is
 
 ### Playoffs
 
-Once `2025-26 Playoffs` data begins to appear, add a parallel refresh for `--season-type "Playoffs"` on the same cadence. Until then, playoff pulls cleanly skip per [docs/pipeline_runbook.md](pipeline_runbook.md#4-playoff-handling).
+Once `2025-26 Playoffs` data begins to appear, add a parallel refresh for `--season-type "Playoffs"` on the same cadence. Until then, playoff pulls cleanly skip per [docs/operations/pipeline_runbook.md](../operations/pipeline_runbook.md#4-playoff-handling).
 
 ---
 
@@ -178,7 +178,7 @@ Rebuilds are expensive on API calls. Do not rebuild a season speculatively — r
 
 ## 7. Historical backfill
 
-Historical coverage today is `1996-97` through `2024-25` for both season types, plus `2025-26 Regular Season`. See [docs/data_catalog.md](data_catalog.md#6-coverage-status).
+Historical coverage today is `1996-97` through `2024-25` for both season types, plus `2025-26 Regular Season`. See [docs/reference/data_catalog.md](../reference/data_catalog.md#6-coverage-status).
 
 Backfill procedure for a range of seasons not yet on disk:
 

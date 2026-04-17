@@ -72,7 +72,7 @@ Current work should focus on:
 ### What shipped
 
 - `AGENTS.md` and operating docs established
-- `docs/project_conventions.md` and `docs/data_contracts.md` in place
+- `docs/architecture/project_conventions.md` and `docs/reference/data_contracts.md` in place
 - parser/router cleanup (natural_query.py restructured with intent detectors, entity resolution, occurrence extraction)
 - current-state docs aligned with verified behavior
 - test suite expanded from ~125 to 1650 tests
@@ -115,7 +115,7 @@ Make results trustworthy for real use.
 
 ### What exists
 
-- `docs/data_freshness_plan.md` — design and implementation plan
+- `docs/planning/data_freshness_plan.md` — design and implementation plan
 - `commands/freshness.py` — freshness computation, classification, `FreshnessStatus` enum
 - `commands/pipeline/orchestrator.py` — canonical data pipeline with manifest tracking
 - `commands/pipeline/auto_refresh.py` — automated refresh loop
