@@ -26,7 +26,7 @@ env/
 data/
 outputs/
 
-# Legacy standalone scripts (retired — see docs/scripts_retirement.md)
+# Legacy standalone scripts (retired — see docs/audits/scripts_retirement.md)
 scripts/
 
 # Secrets & config

@@ -15,7 +15,7 @@
 >
 > Remaining value: Phase C (optional helper-module extraction) if the file
 > continues to grow, and any Phase B items not yet addressed.
-> See `docs/architecture_hygiene_audit.md` items #3–5 for the next
+> See `docs/audits/architecture_hygiene_audit.md` items #3–5 for the next
 > concrete extraction targets (leaderboard stat aliases, inline
 > player/team aliases, date utilities).
 

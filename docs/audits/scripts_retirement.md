@@ -75,8 +75,8 @@ All four scripts shared these issues:
 | ------------------------------------- | ------------------------------------ |
 | Removed stale `scripts/*` lint rule   | `pyproject.toml`                     |
 | Added retirement note to `.gitignore` | `.gitignore`                         |
-| Marked cleanup item #6 as resolved    | `docs/architecture_hygiene_audit.md` |
-| Created this document                 | `docs/scripts_retirement.md`         |
+| Marked cleanup item #6 as resolved    | `docs/audits/architecture_hygiene_audit.md` |
+| Created this document                 | `docs/audits/scripts_retirement.md`         |
 
 ## Local cleanup (optional)
 

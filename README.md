@@ -154,7 +154,7 @@ The React frontend is served by FastAPI at `/`.
 
 Features: query bar, sample query buttons, result tables for all query classes, raw JSON toggle, query history, saved queries, freshness status panel, and a Dev Tools panel for structured queries.
 
-For development with hot reload, see `docs/ui_guide.md`.
+For development with hot reload, see `docs/operations/ui_guide.md`.
 
 ---
 

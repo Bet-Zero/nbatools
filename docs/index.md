@@ -9,51 +9,74 @@ If you're new, start here and follow the order below.
 ## Start Here
 
 1. `../README.md` — project overview and fastest examples
-2. `quick_query_guide.md` — quick-start examples (shortest path to trying queries)
-3. `current_state_guide.md` — verified shipped behavior (the source of truth for what works)
-4. `query_guide.md` — full structured and natural query reference
+2. `reference/quick_query_guide.md` — quick-start examples (shortest path to trying queries)
+3. `reference/current_state_guide.md` — verified shipped behavior (the source of truth for what works)
+4. `reference/query_guide.md` — full structured and natural query reference
 
 ---
 
-## Core Guides
+## Directory Layout
 
-### Project overview
+```
+docs/
+  index.md                 ← you are here
+  reference/               — current-state, verified behavior, data specs
+  architecture/            — design docs, conventions, internal layers
+  operations/              — runbooks, pipeline ops, UI dev guide
+  planning/                — roadmap, active plans
+  audits/                  — audit snapshots, historical docs
+```
 
-- `../README.md`
+---
 
-### Current query surface
+## Reference — `reference/`
 
-- `current_state_guide.md` — verified shipped behavior
-- `quick_query_guide.md` — quick-start examples
-- `query_guide.md` — comprehensive reference (structured + natural)
+Current-state documentation and verified behavior specs.
 
-### Data and pipeline
+- `reference/current_state_guide.md` — verified shipped behavior
+- `reference/quick_query_guide.md` — quick-start examples
+- `reference/query_guide.md` — comprehensive reference (structured + natural)
+- `reference/data_catalog.md` — dataset inventory
+- `reference/data_contracts.md` — dataset-level contracts
+- `reference/result_contracts.md` — **design target** for engine result shapes
+- `reference/system_conventions.md` — data format and naming conventions
 
-- `data_catalog.md`
-- `pipeline_runbook.md`
+## Architecture — `architecture/`
 
-### System design
+Engineering conventions and internal layer design.
 
-- `project_conventions.md` — engineering conventions and architecture rules
-- `system_conventions.md` — data format and naming conventions
-- `repo_structure_audit.md` — folder/file architecture audit and cleanup plan
+- `architecture/project_conventions.md` — engineering conventions and architecture rules
+- `architecture/api_layer.md` — FastAPI HTTP layer
+- `architecture/query_service_layer.md` — query service interface
+- `architecture/structured_result_layer.md` — structured result object design
 
-### Result contracts
+## Operations — `operations/`
 
-- `result_contracts.md` — **design target** for engine result shapes
-- `result_contracts_audit.md` — historical audit snapshot (pre-structured-result-layer)
+Runbooks and operational guides.
 
-### Internal architecture
+- `operations/pipeline_runbook.md` — data pipeline operations
+- `operations/ui_guide.md` — web UI setup, dev workflow, component reference
 
-- `query_service_layer.md` — query service interface
-- `structured_result_layer.md` — structured result object design
-- `api_layer.md` — FastAPI HTTP layer
+## Planning — `planning/`
 
-### UI
+Roadmap and active plans.
 
-- `ui_guide.md` — web UI setup, dev workflow, component reference
+- `planning/roadmap.md` — planned and future capabilities
+- `planning/data_freshness_plan.md` — data freshness design and implementation plan
+- `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 
-### Release history
+## Audits — `audits/`
+
+Point-in-time audit snapshots and historical records.
+
+- `audits/architecture_hygiene_audit.md` — full architecture review
+- `audits/glue_layer_scope_audit.md` — glue layer scope assessment
+- `audits/natural_query_final_scope_audit.md` — natural_query.py final scope audit
+- `audits/repo_structure_audit.md` — folder/file architecture audit
+- `audits/result_contracts_audit.md` — result contracts audit (pre-structured-result-layer)
+- `audits/scripts_retirement.md` — scripts retirement decision record
+
+## Release History
 
 - `../CHANGELOG.md`
 
@@ -80,22 +103,22 @@ If you're new, start here and follow the order below.
 
 ### Fastest path
 
-1. `quick_query_guide.md`
+1. `reference/quick_query_guide.md`
 2. try a few `nbatools-cli ask` queries
-3. use `current_state_guide.md` as reference
+3. use `reference/current_state_guide.md` as reference
 
 ### Full product understanding
 
 1. `../README.md`
-2. `current_state_guide.md`
-3. `query_guide.md`
-4. `data_catalog.md`
-5. `pipeline_runbook.md`
+2. `reference/current_state_guide.md`
+3. `reference/query_guide.md`
+4. `reference/data_catalog.md`
+5. `operations/pipeline_runbook.md`
 
 ### Extending the system
 
-1. `project_conventions.md`
-2. `system_conventions.md`
+1. `architecture/project_conventions.md`
+2. `reference/system_conventions.md`
 3. `../CHANGELOG.md`
 
 ---

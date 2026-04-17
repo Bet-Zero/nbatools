@@ -1,7 +1,7 @@
 # Repository Structure Audit
 
 **Date:** 2026-04-17
-**Scope:** Folder/file architecture assessment against `docs/project_conventions.md`
+**Scope:** Folder/file architecture assessment against `docs/architecture/project_conventions.md`
 
 ---
 
@@ -336,7 +336,7 @@ This matches the existing marker-based grouping and Makefile targets. **Not need
 
 **Status:** Implemented. 26 files moved into `commands/pipeline/`, `commands/ops/`, and `commands/analysis/`. 36 files touched total (mostly import-line updates). Zero test regressions.
 
-### Priority 2: Move completed audits to `docs/archive/` (high value, zero risk)
+### Priority 2: Move completed audits to `docs/audits/` (high value, zero risk)
 
 **Value:** Declutters the docs directory. Makes it immediately clear which docs are current guidance vs. historical reference.
 
@@ -366,7 +366,7 @@ This matches the existing marker-based grouping and Makefile targets. **Not need
 
 ### Phase 1 — Safe, immediate cleanups (this pass or next)
 
-1. **Move completed audit/plan docs to `docs/archive/`.**
+1. **Move completed audit/plan docs to `docs/audits/`.**
    - Move 6 files: `architecture_hygiene_audit.md`, `natural_query_cleanup_plan.md`, `natural_query_final_scope_audit.md`, `glue_layer_scope_audit.md`, `result_contracts_audit.md`, `scripts_retirement.md`
    - Update `docs/index.md` links
    - Zero code risk
@@ -439,14 +439,14 @@ Import updates applied to: `cli_apps/raw.py`, `cli_apps/processing.py`, `cli_app
 
 | What you're writing | Where it goes |
 |---|---|
-| Shipped behavior update | `docs/current_state_guide.md` |
-| Query reference update | `docs/query_guide.md` |
-| Dataset schema change | `docs/data_contracts.md` |
-| Engineering rule change | `docs/project_conventions.md` |
-| Future plan | `docs/roadmap.md` |
-| UI documentation | `docs/ui_guide.md` |
-| Pipeline operations | `docs/pipeline_runbook.md` |
-| Audit or completed plan | `docs/archive/<name>.md` (after Phase 1) |
+| Shipped behavior update | `docs/reference/current_state_guide.md` |
+| Query reference update | `docs/reference/query_guide.md` |
+| Dataset schema change | `docs/reference/data_contracts.md` |
+| Engineering rule change | `docs/architecture/project_conventions.md` |
+| Future plan | `docs/planning/roadmap.md` |
+| UI documentation | `docs/operations/ui_guide.md` |
+| Pipeline operations | `docs/operations/pipeline_runbook.md` |
+| Audit or completed plan | `docs/audits/<name>.md` (after Phase 1) |
 
 ### Tests
 
