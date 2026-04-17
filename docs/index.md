@@ -36,6 +36,7 @@ If you're new, start here and follow the order below.
 
 - `project_conventions.md` — engineering conventions and architecture rules
 - `system_conventions.md` — data format and naming conventions
+- `repo_structure_audit.md` — folder/file architecture audit and cleanup plan
 
 ### Result contracts
 
