@@ -34,6 +34,7 @@ from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
     _execute_or_query_build_result,
+    _extract_grouped_condition_text,
     _get_build_result_map,
 )
 from nbatools.commands.natural_query import (
@@ -281,8 +282,9 @@ def execute_natural_query(query: str) -> QueryResult:
             parsed = parse_query(query)
         except ValueError:
             pass  # keep _build_parse_state result
+        condition_text = _extract_grouped_condition_text(query)
         try:
-            result = _execute_grouped_boolean_build_result(query, parsed)
+            result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
 

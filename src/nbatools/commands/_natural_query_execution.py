@@ -386,17 +386,21 @@ def _execute_or_query_build_result(query: str) -> tuple:
     return _combine_or_results(results), clause_parsed[0] if clause_parsed else base
 
 
-def _execute_grouped_boolean_build_result(query: str, parsed: dict):
+def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     """Build a structured result for grouped boolean queries.
 
     ``parsed`` must be the result of ``parse_query(query)`` and is accepted as
     a parameter so the caller can supply it directly, avoiding a second
     ``parse_query`` call inside this function.
+
+    ``condition_text`` must be the result of
+    ``_extract_grouped_condition_text(query)`` and is accepted as a parameter
+    so the caller controls all text pre-processing, keeping this function free
+    of raw query string access.
     """
     route = parsed["route"]
 
     if route in {"player_game_summary", "player_split_summary"}:
-        condition_text = _extract_grouped_condition_text(query)
         if not expression_contains_boolean_ops(condition_text):
             raise ValueError("No grouped boolean expression detected.")
 
@@ -451,7 +455,6 @@ def _execute_grouped_boolean_build_result(query: str, parsed: dict):
             )
 
     if route in {"game_summary", "team_split_summary"}:
-        condition_text = _extract_grouped_condition_text(query)
         if not expression_contains_boolean_ops(condition_text):
             raise ValueError("No grouped boolean expression detected.")
 
@@ -507,7 +510,6 @@ def _execute_grouped_boolean_build_result(query: str, parsed: dict):
             "and team summary/split natural queries."
         )
 
-    condition_text = _extract_grouped_condition_text(query)
     if not expression_contains_boolean_ops(condition_text):
         raise ValueError("No grouped boolean expression detected.")
 
