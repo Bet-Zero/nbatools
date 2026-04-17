@@ -86,14 +86,28 @@ Should not contain:
 
 ## 3.3 `src/nbatools/commands/*`
 
-Responsibilities:
+The `commands/` directory is organized into lifecycle-based groups:
 
-- core query behavior
-- analytics logic
-- filtering and aggregation
-- reusable helpers tied to domain behavior
+**Top-level (query engine core):**
+- Query command modules (e.g., `player_game_summary.py`, `team_streak_finder.py`)
+- Natural-query routing/parsing (`natural_query.py` + `_`-prefixed helpers)
+- Engine infrastructure (`data_utils.py`, `format_output.py`, `freshness.py`, `metric_registry.py`, `structured_results.py`, `entity_resolution.py`, `query_boolean_parser.py`)
 
-This is where most real work should live.
+**`commands/pipeline/`** — data ingestion, processing, and refresh orchestration:
+- `pull_*.py` — raw data source pulls
+- `build_*.py` — derived dataset builders
+- `validate_raw.py` — raw data validation
+- `backfill_*.py` — historical backfill tools
+- `auto_refresh.py` — automated refresh loop
+- `orchestrator.py` — pipeline orchestration (refresh, rebuild, backfill workflows)
+
+**`commands/ops/`** — operational/maintenance tools:
+- `inventory.py`, `show_manifest.py`, `update_manifest.py`, `show_team_history.py`, `run_tests.py`
+
+**`commands/analysis/`** — domain analyses outside the main query surface:
+- `analyze_3pt_battles.py`, `battle_summary.py`, `advanced_metrics.py`
+
+Query command modules and engine infrastructure stay at the `commands/` top level because they **are** the engine core — what `query_service.py` dispatches to.
 
 ## 3.4 `src/nbatools/commands/natural_query.py`
 
@@ -139,16 +153,15 @@ The frontend calls the API and renders what it gets back.
 
 After any frontend source change, rebuild with `cd frontend && npm run build` so the FastAPI-served build stays current.
 
-## 3.7 Raw / processing / ops / analysis groups
+## 3.7 Pipeline / ops / analysis subpackages
 
-These are data-lifecycle and operational surfaces.
+These lifecycle groups now live in dedicated subpackages under `commands/`:
 
-They should remain distinct from user-query semantics.
+- `commands/pipeline/` → source ingestion (`pull_*`), derived datasets (`build_*`), validation, backfills, auto-refresh, and the pipeline orchestrator
+- `commands/ops/` → maintenance, manifests, inventory, team history
+- `commands/analysis/` → domain analyses outside the main natural query surface
 
-- `raw` -> source ingestion
-- `processing` -> derived datasets/features
-- `ops` -> maintenance, manifests, backfills, inventory
-- `analysis` -> domain analyses outside the main natural query surface
+They are accessed through `cli_apps/` wrappers and are **not** part of the query engine dispatch path. Their import paths use the subpackage prefix (e.g., `from nbatools.commands.pipeline.pull_games import run`).
 
 ---
 

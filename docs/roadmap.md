@@ -117,8 +117,8 @@ Make results trustworthy for real use.
 
 - `docs/data_freshness_plan.md` — design and implementation plan
 - `commands/freshness.py` — freshness computation, classification, `FreshnessStatus` enum
-- `commands/pipeline.py` — canonical data pipeline with manifest tracking
-- `commands/auto_refresh.py` — automated refresh loop
+- `commands/pipeline/orchestrator.py` — canonical data pipeline with manifest tracking
+- `commands/pipeline/auto_refresh.py` — automated refresh loop
 - `current_through` metadata is present in query responses
 
 ### Remaining work
