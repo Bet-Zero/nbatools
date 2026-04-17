@@ -183,3 +183,8 @@ def detect_player_leaderboard_stat(text: str) -> str | None:
 
 def detect_team_leaderboard_stat(text: str) -> str | None:
     return _detect_leaderboard_stat(text, TEAM_LEADERBOARD_STAT_ALIASES)
+
+
+def wants_ascending_leaderboard(text: str) -> bool:
+    """Detect if the leaderboard should sort ascending (lowest/fewest/least/bottom)."""
+    return bool(re.search(r"\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom\b", text))
