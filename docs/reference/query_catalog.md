@@ -56,7 +56,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 
 ### 2.1 Entities
 
-- player name: `Jokic`, `Nikola Jokić`, `LeBron`, `SGA`
+- player name: `Jokic`, `Nikola Jokić`, `LeBron`, `SGA`, `Bronny`
 - team name/alias: `Lakers`, `LAL`, `Celtics`, `Sixers`, `Wolves`
 - player vs player: `Jokic vs Embiid`
 - team vs team: `Celtics vs Bucks`
@@ -74,7 +74,11 @@ If a feature is not reflected here, it should not be assumed shipped.
 
 ### 2.3 Sample filters
 
-- opponent: `vs Lakers`, `against Celtics`
+### 2.3 Sample filters
+
+- opponent (team): `vs Lakers`, `against Celtics`
+- opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
+- without player: `without LeBron`, `without Stephen Curry`
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
@@ -88,6 +92,16 @@ If a feature is not reflected here, it should not be assumed shipped.
 - `25+ points`
 - `5+ threes`
 - reverse phrasing for some stats: `ts% over .600`, `efg% under .500`
+
+### 2.6 Stat name aliases
+
+Common stat phrasings that are recognized:
+
+- `fg%`, `field goal percentage`, `field goal %` → fg_pct
+- `3pt%`, `3 point percentage`, `3-point percentage`, `3 point %`, `three point percentage` → fg3_pct
+- `ft%`, `free throw percentage`, `free throw %` → ft_pct
+- `efg%`, `ts%` → efg_pct, ts_pct
+- standard names: `points`, `rebounds`, `assists`, `steals`, `blocks`, `threes`, `turnovers`
 
 ### 2.5 Boolean logic
 
@@ -117,6 +131,8 @@ Examples:
 - `show me Jokic games vs Lakers`
 - `find LeBron away wins`
 - `what games did Tatum have over 35 points and 5+ threes`
+- `Cade Cunningham season high` (routes to top single games for the player)
+- `LeBron best game this season`
 
 ### Team finder
 
@@ -162,6 +178,19 @@ Common triggers:
 - `number of`
 - `total games`
 
+### Distinct player/team count
+
+Counts distinct players (or teams) meeting a threshold condition, rather than counting games for one entity.
+
+Examples:
+
+- `how many players scored 40 points this season`
+- `number of players with 10 assists this season`
+
+Routes to `player_occurrence_leaders` with `limit=None` and a note indicating distinct-count semantics.
+
+**Limitation:** requires a stat + threshold (e.g., "scored 40 points"). Phrasing without an explicit threshold (e.g., "how many players played this season") is not supported.
+
 ---
 
 ## 3.3 Summary queries — aggregate one player or one team over a sample
@@ -176,6 +205,8 @@ Examples:
 - `Jokic since 2021`
 - `LeBron career`
 - `Jokic playoff stats vs Suns since 2021`
+- `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
+- `Jokic averages against Stephen Curry` (summary filtered to games where opponent played)
 
 ### Team summary
 
@@ -190,7 +221,9 @@ Examples:
 
 Common combinations:
 
-- opponent filters
+- opponent team filters
+- opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
+- without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
 - home / away
 - wins / losses
 - season ranges
@@ -261,6 +294,10 @@ Examples:
 - `best ts% vs Celtics last 3 seasons`
 - `highest plus minus vs Celtics since 2021`
 - `most steals in playoffs since 2010`
+- `best 3 point percentage` (recognized stat alias → fg3_pct)
+- `best field goal percentage` (recognized stat alias → fg_pct)
+- `best free throw percentage` (recognized stat alias → ft_pct)
+- `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 
 ### Team leaderboards
 
@@ -273,6 +310,9 @@ Examples:
 - `best record since 2015`
 - `worst away record since 2020`
 - `best scoring teams vs Lakers since 2018`
+- `best team 3 point percentage` (team stat alias → fg3_pct)
+- `team fg%` (team stat alias → fg_pct)
+- `team ft%` (team stat alias → ft_pct)
 
 ### Position-filtered leaderboards
 
@@ -333,6 +373,8 @@ Examples:
 - `best home record over the last 5 seasons`
 - `worst away record since 2020`
 - `Celtics record when scoring 120+ since 2022`
+- `Lakers record without LeBron James`
+- `Warriors wins without Stephen Curry`
 
 ### Team vs team matchup record
 

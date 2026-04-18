@@ -68,6 +68,7 @@ Find games matching conditions. Returns a list of matching games with box-score 
 - recent filtered windows (last N games)
 - multi-condition filtering with boolean logic
 - grouped boolean filtering (AND / OR / parentheses)
+- season-high / best-game routing (e.g., "Cade Cunningham season high" routes to top single games)
 
 Examples:
 
@@ -169,6 +170,7 @@ Win-loss record queries for teams.
 - team vs team head-to-head record
 - team record leaderboard (best/worst records league-wide)
 - record with opponent, home/away, and date filters
+- record without a specified player (e.g., team record in games where the named player did not play)
 
 Examples:
 
@@ -176,6 +178,8 @@ Examples:
     nbatools-cli ask "Lakers record vs Celtics"
     nbatools-cli ask "best record this season"
     nbatools-cli ask "worst record since 2022-23"
+    nbatools-cli ask "Lakers record without LeBron James"
+    nbatools-cli ask "Warriors wins without Stephen Curry"
 
 ### 9. Playoff queries
 
@@ -220,7 +224,15 @@ Examples:
     Jokic under 20 points
     Jokic between 20 and 30 points
 
-### Multi-condition chaining
+### Stat name aliases
+
+The parser recognizes natural-language stat phrasings beyond the standard shorthand:
+
+- `field goal percentage`, `fg%` → fg_pct
+- `3 point percentage`, `3-point percentage`, `three point percentage`, `3pt%` → fg3_pct
+- `free throw percentage`, `ft%` → ft_pct
+
+These aliases work in both player and team leaderboard queries.
 
 - `and` / `or` / parentheses
 
@@ -256,25 +268,23 @@ Grouped boolean logic currently works across:
 
 ### Opponent / matchup / head-to-head
 
-| Pattern                             | Examples                                                |
-| ----------------------------------- | ------------------------------------------------------- |
-| vs opponent                         | `Jokic vs Lakers`                                       |
-| summary vs opponent                 | `Jokic summary vs Lakers`                               |
-| head-to-head                        | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics` |
-| head-to-head                        | `Jokic h2h vs Embiid`, `Lakers head-to-head vs          |
-| head-to-head                        | `Jokic h2h vs Embiid`, `Lakers head-to-head vs          |
-| ltics`                              |
-| s                                   |
-| ----------------------------------- | -----------------------------------------               |
-| single occurrence leaderboard       | `most 30 point games`                                   |
-| compound occurrence leaderboard     | `most games with 30+ points and 10+ rebounds`           |
-| player occurrence count             | `how many 30 point games did Jokic have`                |
+| Pattern                         | Examples                                                               |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| vs opponent (team)              | `Jokic vs Lakers`                                                      |
+| vs opponent (player)            | `LeBron stats vs Kevin Durant`, `Jokic averages against Stephen Curry` |
+| without player                  | `Lakers record without LeBron`, `Warriors wins without Steph Curry`    |
+| summary vs opponent             | `Jokic summary vs Lakers`                                              |
+| head-to-head                    | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics`                |
+| single occurrence leaderboard   | `most 30 point games`                                                  |
+| compound occurrence leaderboard | `most games with 30+ points and 10+ rebounds`                          |
+| player occurrence count         | `how many 30 point games did Jokic have`                               |
+| distinct player count           | `how many players scored 40 points this season`                        |
 
 ### Entity resolution
 
 The parser includes entity resolution with:
 
-- **Player aliases**: 90+ curated nicknames and shorthand (bron → LeBron James, joker → Nikola Jokić, sga → Shai Gilgeous-Alexander, wemby → Victor Wembanyama)
+- **Player aliases**: 90+ curated nicknames and shorthand (bron → LeBron James, joker → Nikola Jokić, sga → Shai Gilgeous-Alexander, wemby → Victor Wembanyama, bronny → Bronny James)
 - **Accent normalization**: nikola jokic → Nikola Jokić, luka doncic → Luka Dončić
 - **Team aliases**: full team name/abbreviation/nickname mapping (hawks → ATL, lakers → LAL)
 - **Ambiguity detection**: returns confidence levels (confident / ambiguous / none) with candidates; ambiguous results short-circuit to a no-result with metadata

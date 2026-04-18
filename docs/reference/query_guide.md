@@ -40,6 +40,9 @@ Natural examples:
 - `best offensive teams`
 - `teams with best efg%`
 - `teams with most threes`
+- `best 3 point percentage` (stat alias → fg3_pct)
+- `best field goal percentage` (stat alias → fg_pct)
+- `team ft%` (stat alias → ft_pct)
 
 ## Finders
 
@@ -55,6 +58,8 @@ Natural examples:
 - `Jokic under 20 points`
 - `Jokic between 20 and 30 points`
 - `Celtics wins vs Bucks over 120 points`
+- `Cade Cunningham season high` (routes to top single games)
+- `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 
 ## Summaries
 
@@ -70,6 +75,8 @@ Natural examples:
 - `Jokic recent form`
 - `Celtics last 15 games summary`
 - `Jokic summary vs Lakers`
+- `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
+- `Jokic averages against Stephen Curry`
 
 ## Comparisons
 
@@ -166,6 +173,9 @@ Natural examples:
 - `teams with best efg%`
 - `teams with best ts%`
 - `teams with most threes`
+- `best 3 point percentage`
+- `best field goal percentage`
+- `team fg%`
 
 ## Matchups and head-to-head
 
@@ -176,6 +186,25 @@ Natural examples:
 - `Jokic h2h vs Embiid`
 - `Lakers head-to-head vs Celtics`
 - `Celtics h2h vs Bucks home`
+- `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
+- `Jokic averages against Stephen Curry`
+
+## Without-player queries
+
+- `Lakers record without LeBron`
+- `Warriors wins without Stephen Curry`
+- `Celtics summary without Jaylen Brown`
+
+## Season-high / best-game queries
+
+- `Cade Cunningham season high`
+- `LeBron best game this season`
+- `highest scoring games this season` (routes to top_player_games)
+
+## Distinct count queries
+
+- `how many players scored 40 points this season`
+- `number of players with 10 assists this season`
 
 ## Date-aware queries
 
