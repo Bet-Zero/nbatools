@@ -2,7 +2,7 @@
 
 > **Role:** Sequenced, PR-sized work items for Phase A of [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) — _phrasing parity on shipped capabilities._
 >
-> **How to work this file:** Find the first unchecked item below. Review the reference docs it cites. Execute per its acceptance criteria. Run the test commands. Check the item off, commit, open a PR. Repeat. When every item above is checked, work the final meta-task.
+> **How to work this file:** Find the first unchecked item below. Review the reference docs it cites. Execute per its acceptance criteria. Run the test commands. Check the item off, commit. Repeat. When every item above is checked, work the final meta-task.
 >
 > **Do not skip ahead** unless an earlier item is genuinely blocked. Items are ordered to minimize rework — later items assume earlier ones are done.
 
