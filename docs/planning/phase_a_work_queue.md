@@ -251,7 +251,7 @@
 
 ---
 
-## 8. `[ ]` Split and context phrasing parity
+## 8. `[x]` Split and context phrasing parity
 
 **Why:** Splits (home/away, wins/losses) are common and simple, but often the first thing users shorten to telegraphic phrasing (`Celtics home away`, `Jokic wins losses`). Parity here covers those.
 

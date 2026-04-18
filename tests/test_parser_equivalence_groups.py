@@ -338,3 +338,57 @@ def test_streak_longest_with_at_least_3_threes():
     assert streak["stat"] == "fg3m"
     assert streak["min_value"] == 3.0
     assert streak["longest"] is True
+
+
+# ---------------------------------------------------------------------------
+# §3.10 — Split and context phrasing parity (Phase A item 8)
+# ---------------------------------------------------------------------------
+
+
+def test_split_wins_versus_losses():
+    """Gap inventory #48 — `wins versus losses` (Q) vs `wins vs losses` (S).
+
+    `summary_intent` differs (Q=True via verb phrase, S=False) but both
+    reach player_split_summary with wins_losses split.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "How does Anthony Edwards shoot in wins versus losses?",
+            "Anthony Edwards shooting in wins vs losses",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "summary_intent",
+        },
+    )
+    assert reference["route"] == "player_split_summary"
+    assert reference["split_type"] == "wins_losses"
+
+
+def test_leaderboard_at_home_this_season():
+    """Gap inventory #46 — `Who scores the most at home` (Q) vs
+    `most points at home` (S). Both reach season_leaders.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "Who scores the most at home this season?",
+            "most points at home this season",
+        ]
+    )
+    assert reference["route"] == "season_leaders"
+    assert reference["stat"] == "pts"
+    assert reference["home_only"] is True
+
+
+def test_team_best_road_record():
+    """Gap inventory #47 — `best road record` routes identically."""
+    reference = assert_parse_equivalence(
+        [
+            "Which teams have the best road record this year?",
+            "best road record this year",
+        ]
+    )
+    assert reference["route"] == "team_record_leaderboard"

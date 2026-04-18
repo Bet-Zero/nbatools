@@ -82,7 +82,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
-- split views: `home vs away`, `wins vs losses`
+- split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language
 
@@ -272,6 +272,7 @@ Examples:
 - `Jokic home vs away in 2025-26`
 - `Jokic home away split last 20 games`
 - `Jokic wins vs losses`
+- `How does Anthony Edwards shoot in wins versus losses?`
 
 ### Team split
 
@@ -303,6 +304,7 @@ Examples:
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 - `who leads the NBA in points per game` / `who leads the league in assists` (question form; routes to leaderboard)
 - `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
+- `Who scores the most at home this season?` / `most points at home this season` (leaderboard + home filter)
 
 ### Team leaderboards
 

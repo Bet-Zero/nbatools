@@ -53,6 +53,7 @@ LEADERBOARD_STAT_ALIASES: dict[str, str] = {
     "10 rebound games": "games_10r",
     "scorers": "pts",
     "scoring": "pts",
+    "scores": "pts",
     "points": "pts",
     "rebounding": "reb",
     "rebounders": "reb",

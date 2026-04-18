@@ -487,9 +487,12 @@ def default_season_for_context(season_type: str) -> str:
 
 
 def detect_split_type(text: str) -> str | None:
-    if re.search(r"\bhome\s+vs\s+away\b|\bhome\s+away\b|\baway\s+home\b", text):
+    if re.search(r"\bhome\s+(?:vs\.?|versus)\s+away\b|\bhome\s+away\b|\baway\s+home\b", text):
         return "home_away"
-    if re.search(r"\bwins?\s+vs\s+loss(?:es)?\b|\bwins?\s+loss(?:es)?\b|\bwins_losses\b", text):
+    if re.search(
+        r"\bwins?\s+(?:vs\.?|versus)\s+loss(?:es)?\b|\bwins?\s+loss(?:es)?\b|\bwins_losses\b|\bin\s+wins\s+(?:and|&)\s+loss(?:es)?\b",
+        text,
+    ):
         return "wins_losses"
     return None
 
