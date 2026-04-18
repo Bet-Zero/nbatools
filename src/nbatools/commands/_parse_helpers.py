@@ -696,17 +696,12 @@ def detect_wins_losses(text: str) -> tuple[bool, bool]:
 
 
 def wants_summary(text: str) -> bool:
-    summary_terms = [
-        "summary",
-        "summarize",
-        "average",
-        "averages",
-        "avg",
-        "record",
-        "what is the record",
-        "what was the record",
-    ]
-    if any(term in text for term in summary_terms):
+    # Word-bounded so `record` does not match `recorded` etc.
+    if re.search(
+        r"\bsummary\b|\bsummarize\b|\baverage\b|\baverages\b|\bavg\b"
+        r"|\brecord\b|\bwhat is the record\b|\bwhat was the record\b",
+        text,
+    ):
         return True
     # Verb-phrase triggers for summary intent. Word-bounded so that
     # substrings like `perform` don't accidentally match `form`, and tight

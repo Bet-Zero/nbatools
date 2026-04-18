@@ -215,3 +215,66 @@ def test_record_when_player_makes_6_threes():
     assert reference["route"] == "player_game_summary"
     assert reference["stat"] == "fg3m"
     assert reference["min_value"] == 6.0
+
+
+# ---------------------------------------------------------------------------
+# §3.8 — Occurrence / frequency phrasing parity (Phase A item 6)
+# ---------------------------------------------------------------------------
+
+
+def test_occurrence_triple_double_this_season():
+    """examples.md §3.8 #36 — `how often ... triple-double` vs shorthand."""
+    reference = assert_parse_equivalence(
+        [
+            "How often has Nikola Jokić recorded a triple-double this season?",
+            "Jokic triple doubles this season",
+        ]
+    )
+    assert reference["route"] == "player_game_finder"
+    assert reference["occurrence_event"] is not None
+
+
+def test_occurrence_5_or_more_threes():
+    """examples.md §3.8 #37 — `5 or more threes` vs `5+ threes`.
+
+    threshold_conditions pipeline differs (Q extracts via operator
+    pattern, S via `N+`) but stat/min/route match.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "How often has Stephen Curry made 5 or more threes this year?",
+            "Curry 5+ threes this year",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "threshold_conditions",
+            "extra_conditions",
+        },
+    )
+    assert reference["route"] == "player_game_finder"
+    assert reference["stat"] == "fg3m"
+    assert reference["min_value"] == 5.0
+
+
+def test_occurrence_5_or_more_blocks():
+    """examples.md §3.8 #40 — `5 or more blocks` vs `5+ blocks`."""
+    reference = assert_parse_equivalence(
+        [
+            "How often has Victor Wembanyama had 5 or more blocks this season?",
+            "Wembanyama 5+ blocks this season",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "threshold_conditions",
+            "extra_conditions",
+        },
+    )
+    assert reference["route"] == "player_game_finder"
+    assert reference["stat"] == "blk"
+    assert reference["min_value"] == 5.0

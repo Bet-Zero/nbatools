@@ -186,7 +186,7 @@
 
 ---
 
-## 6. `[ ]` Occurrence and frequency phrasing parity
+## 6. `[x]` Occurrence and frequency phrasing parity
 
 **Why:** "How often" and "how many" are extremely natural user phrasings. Occurrence is already shipped (single, compound, distinct-count); parity here is about making all three phrasing styles reach the existing routes.
 

@@ -984,7 +984,7 @@ def _finalize_route(parsed: dict) -> dict:
         summary_intent
         or career_intent
         or range_intent
-        or ("record" in q)
+        or bool(re.search(r"\brecord\b", q))
         or ("averages" in q)
         or ("average" in q)
         # Default: `<player> + <timeframe>` with no more-specific signal
@@ -1060,7 +1060,7 @@ def _finalize_route(parsed: dict) -> dict:
         summary_intent
         or career_intent
         or range_intent
-        or ("record" in q)
+        or bool(re.search(r"\brecord\b", q))
         or ("averages" in q)
         or ("average" in q)
     ):
