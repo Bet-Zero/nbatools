@@ -131,7 +131,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ## 3. `[ ]` Create glossary module for fuzzy-term definitions
 
-**Why:** Phase A hardcoded time-word defaults inline (`lately` → `last_n=10`, `past month` → 30 days). A glossary module centralizes these so the code documents its own product-policy decisions.
+**Why:** Phase A hardcoded time-word defaults inline (`lately` → `last_n=10`, `past month` → 30 days). A glossary module centralizes these so the code documents its own product-policy decisions. Spec §18 becomes a mirror of this module, documented once and kept in sync.
 
 **Scope:**
 
@@ -139,20 +139,21 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 - Include time terms (already shipped in Phase A), undefined skill terms (not shipped, marked as such), and opponent-quality terms (reserved for Phase E)
 - Refactor `extract_last_n` and `extract_date_range` to read from the glossary rather than hardcoding values
 - Mark unshipped terms clearly (e.g., `shipped=False`) so code that tries to use them gets a clear error
+- Update spec §18 to be a complete mirror of the glossary module — every term present, each with its shipped/reserved/undefined status
 
 **Files likely touched:**
 
 - `src/nbatools/commands/_glossary.py` (new)
 - `src/nbatools/commands/_parse_helpers.py` — `extract_last_n` refactor
 - `src/nbatools/commands/_date_utils.py` — `extract_date_range` refactor
-- `docs/architecture/parser/specification.md` — §18 sync
+- `docs/architecture/parser/specification.md` — §18 full sync
 
 **Acceptance criteria:**
 
 - Every fuzzy time term from spec §18.1 is defined in the glossary module
 - Undefined/reserved terms are in the glossary but marked as not shipped
 - `extract_last_n` and `extract_date_range` read their defaults from the glossary
-- Specification §18 matches the glossary module
+- Specification §18 is a complete mirror of the glossary module — every term present, each with its shipped/reserved/undefined status
 
 **Tests to run:**
 
@@ -169,26 +170,27 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ## 4. `[ ]` Reserve undefined skill and quality terms in glossary
 
-**Why:** Terms like `hottest`, `best games`, `all-around`, `catch-and-shoot`, `contenders`, `good teams` appear in user queries but have no formal definition. Reserving them in the glossary makes the parser's coverage explicit and prevents silent guessing (guardrail §7.2).
+**Why:** Terms like `hottest`, `best games`, `all-around`, `catch-and-shoot`, `contenders`, `good teams` appear in user queries but have no formal definition. Reserving them in the glossary makes the parser's coverage explicit and prevents silent guessing (guardrail §7.2). This item adds the reservation slots only — improved error messaging for reserved terms is deferred to Phase D where "I can't do this query" becomes a first-class response shape.
 
 **Scope:**
 
 - Add every identified undefined term from Phase A residuals and spec §18.2 to the glossary with `shipped=False`
 - Categorize: skill terms, quality terms, opponent-quality terms
-- Ensure the parser returns a clear "not supported" when encountering a reserved-but-unshipped term (rather than guessing)
 - Document the reservation in spec §18
 
 **Files likely touched:**
 
 - `src/nbatools/commands/_glossary.py` — add reserved entries
-- `src/nbatools/commands/natural_query.py` — optionally improve error message when a reserved term is detected
 - `docs/architecture/parser/specification.md` — §18.2, §18.3
 
 **Acceptance criteria:**
 
 - Every undefined term from Phase A's gap inventory is in the glossary
-- Reserved terms produce a better error than the generic "could not map" message
-- Spec §18 documents all reserved terms
+- Spec §18 documents all reserved terms with their status
+
+**Explicitly out of scope:**
+
+- Improved error messages or "not supported" responses for reserved terms. Deferred to Phase D (ambiguity and confidence), where clear-failure messaging becomes a first-class response shape across the parser. Adding partial messaging in Phase B would either duplicate Phase D's work or constrain its design.
 
 **Tests to run:**
 
@@ -284,11 +286,11 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 **Acceptance criteria:**
 
 - Every entry in the unified alias dict is represented in the catalog
-- The catalog section is auto-verifiable (a test or script can confirm it matches the code)
+- Every canonical stat has at least one alias example documented
 
 **Tests to run:**
 
-- None (docs only), but optionally add a test that verifies catalog examples parse correctly
+- None (docs only)
 
 **Reference docs to consult:**
 
@@ -362,38 +364,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 10. `[ ]` Sync specification §18 with live glossary
-
-**Why:** The specification's glossary section (§18) should exactly match the code. Phase A partially updated §18.1 but the full glossary (terms, aliases, reserved slots) needs a comprehensive sync.
-
-**Scope:**
-
-- Verify every entry in the glossary module matches spec §18
-- Add any missing sections (§18.3 for skill terms, §18.4 for reserved terms)
-- Ensure the spec documents the `shipped` status of each term
-
-**Files likely touched:**
-
-- `docs/architecture/parser/specification.md` — §18
-
-**Acceptance criteria:**
-
-- §18 is a complete mirror of the glossary module
-- Every term has a status (shipped / reserved / undefined)
-- No drift between spec and code
-
-**Tests to run:**
-
-- None (docs only)
-
-**Reference docs to consult:**
-
-- `src/nbatools/commands/_glossary.py` from item 3
-- [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary)
-
----
-
-## 11. `[ ]` Phase B retrospective and Phase C work queue draft
+## 10. `[ ]` Phase B retrospective and Phase C work queue draft
 
 **Why:** Self-propagating final task. Ensures learnings are captured and the next phase is scoped before this one closes.
 
@@ -431,6 +402,6 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Phase B is complete. The draft of `phase_c_work_queue.md` from item 11 is the handoff artifact.
+When all items above are checked `[x]`, Phase B is complete. The draft of `phase_c_work_queue.md` from item 10 is the handoff artifact.
 
 If any item is skipped (`[-]`), note the reason inline so the reason survives in git history.
