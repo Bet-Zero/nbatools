@@ -605,6 +605,7 @@ All absence forms below are now shipped:
 - `no X`, `minus X`, `sans X` ✅
 
 Remaining unsupported:
+
 - `X off` — reserved for on/off (§11), NOT absence
 - `not including playoffs`
 - `non overtime games`

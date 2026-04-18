@@ -268,17 +268,17 @@ Grouped boolean logic currently works across:
 
 ### Opponent / matchup / head-to-head
 
-| Pattern                         | Examples                                                               |
-| ------------------------------- | ---------------------------------------------------------------------- |
-| vs opponent (team)              | `Jokic vs Lakers`                                                      |
-| vs opponent (player)            | `LeBron stats vs Kevin Durant`, `Jokic averages against Stephen Curry` |
+| Pattern                         | Examples                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| vs opponent (team)              | `Jokic vs Lakers`                                                            |
+| vs opponent (player)            | `LeBron stats vs Kevin Durant`, `Jokic averages against Stephen Curry`       |
 | without player                  | `Lakers record without LeBron`, `Warriors w/o Curry`, `Suns when Booker out` |
-| summary vs opponent             | `Jokic summary vs Lakers`                                              |
-| head-to-head                    | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics`                |
-| single occurrence leaderboard   | `most 30 point games`                                                  |
-| compound occurrence leaderboard | `most games with 30+ points and 10+ rebounds`                          |
-| player occurrence count         | `how many 30 point games did Jokic have`                               |
-| distinct player count           | `how many players scored 40 points this season`                        |
+| summary vs opponent             | `Jokic summary vs Lakers`                                                    |
+| head-to-head                    | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics`                      |
+| single occurrence leaderboard   | `most 30 point games`                                                        |
+| compound occurrence leaderboard | `most games with 30+ points and 10+ rebounds`                                |
+| player occurrence count         | `how many 30 point games did Jokic have`                                     |
+| distinct player count           | `how many players scored 40 points this season`                              |
 
 ### Entity resolution
 

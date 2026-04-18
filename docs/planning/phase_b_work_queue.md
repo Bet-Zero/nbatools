@@ -43,6 +43,7 @@
 ### Scope adjustments for Phase B
 
 Phase A shipped fuzzy time-word handling (item 9), which the plan originally placed in Phase B as "formalize fuzzy-time definitions in glossary." Phase B should therefore focus on:
+
 1. **Consolidating** the scattered alias tables (STAT_ALIASES, LEADERBOARD_STAT_ALIASES, verbal-form aliases) into one shared resource
 2. **Creating** a glossary module that centralizes fuzzy-term definitions
 3. **Reserving** undefined terms in the glossary with clear "not yet shipped" markers
