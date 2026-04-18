@@ -119,7 +119,7 @@
 
 ---
 
-## 4. `[ ]` Summary phrasing parity
+## 4. `[x]` Summary phrasing parity
 
 **Why:** Summaries (`recent form`, `stats`, `averages`) are the second-most-common shape. "Player + timeframe" shorthand (`Jokic last 10`) relies on default-routing to summary, which needs consistent phrasing coverage.
 

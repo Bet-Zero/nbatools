@@ -77,3 +77,87 @@ def test_team_leaderboard_best_offensive_rating():
     )
     assert reference["stat"] == "off_rating"
     assert reference["team_leaderboard_intent"] is True
+
+
+def test_summary_player_vs_teams_this_season():
+    """examples.md §3.5 #24 — summary parity for `how has X played` Q form
+    and the search-form shorthand with no specific finder signal.
+
+    `Tatum vs winning teams this season` has no resolved opponent (phrase
+    is not a known team), so the `<player> + <timeframe>` summary default
+    fires just like the Q form's `how has X played` verb-phrase trigger.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "How has Jayson Tatum played against winning teams this season?",
+            "Tatum vs winning teams this season",
+        ],
+        # summary_intent differs (Q=True via verb phrase, S=False via
+        # timeframe-default rule) but both reach player_game_summary.
+        # notes also differs (Q emits stat-sampling note).
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "notes",
+            "summary_intent",
+        },
+    )
+    assert reference["route"] == "player_game_summary"
+    assert reference["player"] == "Jayson Tatum"
+
+
+def test_summary_team_when_player_out():
+    """examples.md §3.6 #26 — `How do the Xs perform when Y out` verb phrase
+    reaches summary and the shorthand `Xs when Y out` now defaults to
+    summary via the player-plus-timeframe rule.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "How do the Suns perform when Devin Booker didn't play?",
+            "Suns when Booker out",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "notes",
+            "summary_intent",
+        },
+    )
+    assert reference["route"] == "player_game_summary"
+
+
+def test_summary_player_when_other_player_out_this_season():
+    """examples.md §3.6 #30 — route parity verified.
+
+    Both forms now route to ``player_game_summary``, but full canonical
+    equivalence is blocked by the §6 entity-resolution anomaly (Q side
+    resolves ``team='WAS'``). Only the route and core player slot are
+    asserted here; the full equivalence test will land once the entity
+    bug is fixed.
+    """
+    from nbatools.commands.natural_query import parse_query
+
+    q = parse_query("How has Tyrese Maxey played when Joel Embiid was out this season?")
+    s = parse_query("Maxey when Embiid out this season")
+    assert q["route"] == "player_game_summary"
+    assert s["route"] == "player_game_summary"
+    assert q["player"] == s["player"]
+
+
+def test_summary_shorthand_jokic_last_10():
+    """parser/specification.md §15.3 worked example — `Jokic last 10`
+    shorthand now routes to summary (the previously-documented default
+    target). Locks in the player-plus-timeframe rule.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "Jokic last 10",
+            "Jokic last 10 games",
+        ]
+    )
+    assert reference["route"] == "player_game_summary"
+    assert reference["last_n"] == 10

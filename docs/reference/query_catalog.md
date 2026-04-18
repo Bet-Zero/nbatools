@@ -204,6 +204,9 @@ Examples:
 - `Jokic summary vs Lakers`
 - `Jokic since 2021`
 - `LeBron career`
+- `Jokic last 10` / `Jokic last 10 games` (player + timeframe shorthand → summary per spec §15.3)
+- `Jokic this season` (player + implicit season → summary)
+- `How has Jayson Tatum played against winning teams this season?` (verb-phrase question form → summary)
 - `Jokic playoff stats vs Suns since 2021`
 - `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
 - `Jokic averages against Stephen Curry` (summary filtered to games where opponent played)

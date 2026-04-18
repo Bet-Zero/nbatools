@@ -25,11 +25,17 @@ STAT_ALIASES: dict[str, str] = {
     # Rebounds
     "rebounds": "reb",
     "rebound": "reb",
+    "rebounded": "reb",
+    "rebounding": "reb",
     "reb": "reb",
     # Assists
     "assists": "ast",
     "assist": "ast",
+    "assisted": "ast",
     "ast": "ast",
+    # Scoring (verbal forms — noun "points" already above)
+    "scored": "pts",
+    "scoring": "pts",
     # Steals
     "steals": "stl",
     "steal": "stl",

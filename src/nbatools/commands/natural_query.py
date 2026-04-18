@@ -987,6 +987,31 @@ def _finalize_route(parsed: dict) -> dict:
         or ("record" in q)
         or ("averages" in q)
         or ("average" in q)
+        # Default: `<player> + <timeframe>` with no more-specific signal
+        # routes to summary (parser spec §15.2/§15.3, e.g. `Jokic last
+        # 10` → summary). Deliberately narrow — does not fire when an
+        # opponent, explicit date range, or stat filter is present, so
+        # shorthand like `Jokic vs Lakers` / `Jokic since January`
+        # keeps its game-log finder shape until later Phase A items
+        # (opponent-quality, date-finders) handle those explicitly.
+        # The `games in <X>` idiom is a finder signal (e.g. `Kobe
+        # playoff games in 2008-09`) and is also excluded here.
+        or (
+            (season or start_season or last_n)
+            and start_date is None
+            and end_date is None
+            and opponent is None
+            and opponent_player is None
+            and without_player is None
+            and stat is None
+            and min_value is None
+            and max_value is None
+            and not occurrence_event
+            and not streak_request
+            and not season_high_intent
+            and not split_type
+            and not re.search(r"\bgames?\s+in\b", q)
+        )
     ):
         route = "player_game_summary"
         route_kwargs = {

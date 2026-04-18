@@ -692,14 +692,26 @@ def wants_summary(text: str) -> bool:
         "averages",
         "avg",
         "record",
-        "how did",
-        "how has",
         "what is the record",
         "what was the record",
     ]
     if any(term in text for term in summary_terms):
         return True
-    if "form" in text or "recent form" in text:
+    # Verb-phrase triggers for summary intent. Word-bounded so that
+    # substrings like `perform` don't accidentally match `form`, and tight
+    # enough not to pick up `how many` / `how often` (which are counting
+    # intents, handled elsewhere).
+    if re.search(
+        r"\bhow\s+(?:has|have|did|do|does)\s+(?:the\s+)?[\w'\-]+"
+        r"(?:\s+[\w'\-]+){0,4}\s+"
+        r"(?:perform|performs|performed|play|plays|played|shoot|shoots|shot"
+        r"|score|scores|scored|rebound|rebounds|rebounded|done|fared|fare)\b",
+        text,
+    ):
+        return True
+    if re.search(r"\brecent\s+form\b|\bform\b", text):
+        # Preserve pre-existing `form` / `recent form` detection, but guard
+        # with a word boundary so substrings like `perform` do not count.
         return True
     return False
 
