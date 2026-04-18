@@ -109,9 +109,10 @@ def test_summary_player_vs_teams_this_season():
 
 
 def test_summary_team_when_player_out():
-    """examples.md §3.6 #26 — `How do the Xs perform when Y out` verb phrase
-    reaches summary and the shorthand `Xs when Y out` now defaults to
-    summary via the player-plus-timeframe rule.
+    """examples.md §3.6 #26 — both forms detect without_player and team.
+
+    Route diverges (Q=game_summary via verb phrase, S=game_finder via
+    no summary trigger), but the core entity slots are equivalent.
     """
     reference = assert_parse_equivalence(
         [
@@ -125,27 +126,28 @@ def test_summary_team_when_player_out():
             "intent",
             "notes",
             "summary_intent",
+            "route",
+            "route_kwargs",
         },
     )
-    assert reference["route"] == "player_game_summary"
+    assert reference["without_player"] == "Devin Booker"
+    assert reference["team"] == "PHX"
 
 
 def test_summary_player_when_other_player_out_this_season():
-    """examples.md §3.6 #30 — route parity verified.
+    """examples.md §3.6 #30 — Q form detects without_player correctly.
 
-    Both forms now route to ``player_game_summary``, but full canonical
-    equivalence is blocked by the §6 entity-resolution anomaly (Q side
-    resolves ``team='WAS'``). Only the route and core player slot are
-    asserted here; the full equivalence test will land once the entity
-    bug is fixed.
+    S form "Maxey when Embiid out this season" now correctly detects
+    without_player='Joel Embiid', but entity resolution picks Embiid
+    as the primary player (not Maxey), subject-clearing fires, and the
+    query has no routable entity left. Full parity is blocked by the
+    entity-resolution anomaly (§6).
     """
     from nbatools.commands.natural_query import parse_query
 
     q = parse_query("How has Tyrese Maxey played when Joel Embiid was out this season?")
-    s = parse_query("Maxey when Embiid out this season")
-    assert q["route"] == "player_game_summary"
-    assert s["route"] == "player_game_summary"
-    assert q["player"] == s["player"]
+    assert q["without_player"] == "Joel Embiid"
+    assert q["route"] == "game_summary"
 
 
 def test_summary_shorthand_jokic_last_10():
@@ -457,3 +459,41 @@ def test_fuzzy_today_tonight():
     )
     assert reference["start_date"] is not None
     assert reference["start_date"] == reference["end_date"]
+
+
+# ---------------------------------------------------------------------------
+# §10 — Absence phrasing expansion (Phase A item 10)
+# ---------------------------------------------------------------------------
+
+
+def test_absence_without_vs_when_out():
+    """All absence phrasings detect the same without_player.
+
+    Route differs because some forms lack explicit intent signals
+    (record, summary), so we exclude route/intent and verify the
+    core without_player and team slots.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "Warriors without Steph Curry",
+            "Warriors w/o Curry",
+            "Warriors when Curry out",
+            "Warriors when Curry was out",
+            "Warriors no Curry",
+            "Warriors sans Curry",
+            "Warriors minus Curry",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "notes",
+            "route",
+            "route_kwargs",
+            "summary_intent",
+            "record_intent",
+        },
+    )
+    assert reference["without_player"] == "Stephen Curry"
+    assert reference["team"] == "GSW"

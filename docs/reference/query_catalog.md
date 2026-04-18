@@ -80,7 +80,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 
 - opponent (team): `vs Lakers`, `against Celtics`
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
-- without player: `without LeBron`, `without Stephen Curry`
+- without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`

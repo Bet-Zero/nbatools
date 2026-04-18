@@ -235,23 +235,37 @@ def detect_opponent_player(text: str) -> tuple[str | None, str]:
 
 
 def detect_without_player(text: str) -> tuple[str | None, str]:
-    """Detect 'without PLAYER' pattern in query.
+    """Detect absence patterns like 'without PLAYER', 'w/o PLAYER',
+    'when PLAYER out', 'when PLAYER didn't play', 'no PLAYER',
+    'sans PLAYER', 'minus PLAYER'.
 
     Returns (excluded_player_name, cleaned_text) or (None, original_text).
     Used for queries like 'Warriors record without Steph Curry'.
     """
     cleaned_text = normalize_text(text)
 
-    pattern = rf"\bwithout\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)"
-    m = re.search(pattern, cleaned_text)
-    if not m:
-        return None, cleaned_text
+    # Ordered most-specific first to avoid partial matches.
+    absence_patterns = [
+        # `without PLAYER` / `w/o PLAYER`
+        rf"\b(?:without|w/o)\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        # `when PLAYER didn't play` / `when PLAYER did not play`
+        r"\bwhen\s+([a-z0-9 .&'\-]+?)\s+(?:didn'?t|did\s+not)\s+play\b",
+        # `when PLAYER is/was out`
+        r"\bwhen\s+([a-z0-9 .&'\-]+?)\s+(?:is|was)\s+out\b",
+        # `when PLAYER out` (no copula)
+        r"\bwhen\s+([a-z0-9 .&'\-]+?)\s+out\b",
+        # `no PLAYER` / `sans PLAYER` / `minus PLAYER`
+        rf"\b(?:no|sans|minus)\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+    ]
 
-    phrase = m.group(1).strip()
-    player = detect_player(phrase)
-    if player:
-        cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
-        cleaned = normalize_text(cleaned)
-        return player, cleaned
+    for pattern in absence_patterns:
+        m = re.search(pattern, cleaned_text)
+        if m:
+            phrase = m.group(1).strip()
+            player = detect_player(phrase)
+            if player:
+                cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+                cleaned = normalize_text(cleaned)
+                return player, cleaned
 
     return None, cleaned_text

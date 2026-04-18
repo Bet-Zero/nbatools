@@ -568,14 +568,20 @@ Opponent-quality filters should carry both the surface term and the resolved def
 
 ## 10. Absence and with-without logic
 
-Already shipped via `detect_without_player`. Supports:
+Shipped via `detect_without_player`. Supports:
 
 - `without X`
 - `w/o X`
-- `when X was out` (in some forms)
-- `when X didn't play` (in some forms)
+- `when X out`
+- `when X was out` / `when X is out`
+- `when X didn't play` / `when X did not play`
+- `no X`
+- `sans X`
+- `minus X`
 
 The detected player ID is stored in `without_player`. If the same player is also detected as the primary subject, the subject is cleared so the query routes to the team path (e.g., `Lakers record without LeBron` → team path, not player path).
+
+Note: `X off` is deliberately **not** matched as absence — it is reserved for future on/off court analysis (§11).
 
 ### 10.1 Distinguish carefully between absence concepts
 
@@ -590,13 +596,18 @@ These are structurally different and should not be conflated:
 
 ### 10.2 Negation forms to handle
 
-- `without X`
-- `X off` — currently routes as on/off (not supported); should route to without
-- `no X`, `minus X`, `sans X`
+All absence forms below are now shipped:
+
+- `without X` ✅
+- `w/o X` ✅
+- `when X out` / `when X was out` / `when X is out` ✅
+- `when X didn't play` / `when X did not play` ✅
+- `no X`, `minus X`, `sans X` ✅
+
+Remaining unsupported:
+- `X off` — reserved for on/off (§11), NOT absence
 - `not including playoffs`
 - `non overtime games`
-
-Short compressed negations are where this category most often fails. Explicit negative-filter parsing (rather than regex cleanup) is the target.
 
 ---
 

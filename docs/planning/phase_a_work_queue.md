@@ -319,7 +319,7 @@
 
 ---
 
-## 10. `[ ]` Absence phrasing expansion
+## 10. `[x]` Absence phrasing expansion
 
 **Why:** `detect_without_player` already exists and works well for `without X`. Users also naturally say `X out`, `X didn't play`, `no X`, `sans X`, `minus X` — all of which should reach the same logic.
 
