@@ -470,7 +470,7 @@
 
 ---
 
-## 14. `[ ]` Audit slot-to-route contract for leaderboards
+## 14. `[x]` Audit slot-to-route contract for leaderboards
 
 **Why:** Phase A proved the parser sets `last_n`, `home_only`/`away_only`, and `wins_only`/`losses_only` correctly for leaderboard queries. Manual testing showed `points leaders last 10` and `most points in wins` both return season-long leaders, meaning the routes silently ignore those slots. The phrasing-parity guarantee is empty if the routes don't honor the slots they're passed.
 

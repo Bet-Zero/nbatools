@@ -32,6 +32,14 @@ def build_result(
     limit: int = 10,
     season_type: str = "Regular Season",
     ascending: bool = False,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    last_n: int | None = None,
+    opponent: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
     path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
@@ -62,6 +70,41 @@ def build_result(
     col = ALLOWED_STATS[stat]
     if col not in df.columns:
         raise ValueError(f"Column '{col}' not found in {path}")
+
+    # Apply filters
+    if "game_date" in df.columns:
+        df["game_date"] = pd.to_datetime(df["game_date"], errors="coerce")
+
+    if start_date is not None and "game_date" in df.columns:
+        df = df[df["game_date"] >= pd.to_datetime(start_date)].copy()
+
+    if end_date is not None and "game_date" in df.columns:
+        df = df[df["game_date"] <= pd.to_datetime(end_date)].copy()
+
+    if opponent:
+        opp_upper = opponent.upper()
+        opp_mask = pd.Series(False, index=df.index)
+        if "opponent_team_abbr" in df.columns:
+            opp_mask = opp_mask | df["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
+        df = df[opp_mask].copy()
+
+    if home_only and "is_home" in df.columns:
+        df = df[df["is_home"] == 1].copy()
+
+    if away_only and "is_away" in df.columns:
+        df = df[df["is_away"] == 1].copy()
+
+    if wins_only and "wl" in df.columns:
+        df = df[df["wl"] == "W"].copy()
+
+    if losses_only and "wl" in df.columns:
+        df = df[df["wl"] == "L"].copy()
+
+    if last_n is not None and last_n > 0 and "game_date" in df.columns:
+        df = df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
+
+    if df.empty:
+        return NoResult(query_class="leaderboard", reason="no_data")
 
     out_cols = [
         "team_name",

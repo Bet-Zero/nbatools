@@ -306,6 +306,7 @@ def build_result(
     away_only: bool = False,
     wins_only: bool = False,
     losses_only: bool = False,
+    last_n: int | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -394,12 +395,19 @@ def build_result(
     if losses_only and "wl" in basic.columns:
         basic = basic[basic["wl"] == "L"].copy()
 
+    if last_n is not None and last_n > 0 and "game_date" in basic.columns:
+        # Keep only each team's most recent N games
+        basic = basic.sort_values(
+            ["team_id", "game_date", "game_id"], ascending=[True, False, False]
+        )
+        basic = basic.groupby("team_id", group_keys=False).head(last_n).copy()
+
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_data")
 
     df = _build_from_game_logs(basic)
 
-    game_filter_active = home_only or away_only or wins_only or losses_only
+    game_filter_active = home_only or away_only or wins_only or losses_only or last_n is not None
     if not multi_season and not date_window_active and not opponent and not game_filter_active:
         adv_path = Path(f"data/raw/team_season_advanced/{seasons[0]}_{safe}.csv")
         df = _merge_advanced_if_available(df, adv_path)
@@ -414,7 +422,7 @@ def build_result(
         df,
         target_col,
         min_games,
-        date_window_active=date_window_active,
+        date_window_active=date_window_active or game_filter_active,
         opponent_active=bool(opponent),
         num_seasons=len(seasons),
     )
@@ -466,6 +474,8 @@ def build_result(
         caveats.append("filtered to wins only")
     if losses_only:
         caveats.append("filtered to losses only")
+    if last_n is not None:
+        caveats.append(f"filtered to each team's last {last_n} games")
 
     return LeaderboardResult(
         leaders=result,

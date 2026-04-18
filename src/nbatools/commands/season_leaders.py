@@ -616,6 +616,11 @@ def build_result(
     end_season: str | None = None,
     opponent: str | None = None,
     position: str | None = None,
+    home_only: bool = False,
+    away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
+    last_n: int | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -658,6 +663,13 @@ def build_result(
             f"Opponent-filtered leaderboard not supported for '{target_col}'. "
             "Use scoring, rebounds, assists, threes, eFG%, TS%, or threshold game counts."
         )
+    if (
+        home_only or away_only or wins_only or losses_only
+    ) and target_col in DATE_WINDOW_UNSUPPORTED_ADVANCED:
+        raise ValueError(
+            f"Game-filtered leaderboard not supported for '{target_col}'. "
+            "Use scoring, rebounds, assists, threes, eFG%, TS%, or threshold game counts."
+        )
 
     # Load and concatenate game logs across all seasons
     frames: list[pd.DataFrame] = []
@@ -688,6 +700,25 @@ def build_result(
         if "opponent_team_name" in basic.columns:
             opp_mask = opp_mask | basic["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
         basic = basic[opp_mask].copy()
+
+    if home_only and "is_home" in basic.columns:
+        basic = basic[basic["is_home"] == 1].copy()
+
+    if away_only and "is_away" in basic.columns:
+        basic = basic[basic["is_away"] == 1].copy()
+
+    if wins_only and "wl" in basic.columns:
+        basic = basic[basic["wl"] == "W"].copy()
+
+    if losses_only and "wl" in basic.columns:
+        basic = basic[basic["wl"] == "L"].copy()
+
+    if last_n is not None and last_n > 0 and "game_date" in basic.columns:
+        # Keep only each player's most recent N games
+        basic = basic.sort_values(
+            ["player_id", "game_date", "game_id"], ascending=[True, False, False]
+        )
+        basic = basic.groupby("player_id", group_keys=False).head(last_n).copy()
 
     if basic.empty:
         return NoResult(query_class="leaderboard", reason="no_data")
@@ -729,7 +760,10 @@ def build_result(
             )
 
         adv_path = Path(f"data/raw/player_season_advanced/{the_season}_{safe}.csv")
-        if not date_window_active and not opponent:
+        game_filter_active = (
+            home_only or away_only or wins_only or losses_only or last_n is not None
+        )
+        if not date_window_active and not opponent and not game_filter_active:
             df = _merge_advanced_if_available(df, adv_path)
 
         if roster_lookup is not None and "team_abbr" in df.columns:
@@ -758,11 +792,13 @@ def build_result(
     if target_col not in df.columns:
         raise ValueError(f"Column '{target_col}' not available for season leaders output")
 
+    game_filter_active = home_only or away_only or wins_only or losses_only or last_n is not None
+
     df = _apply_default_guardrails(
         df,
         target_col,
         min_games,
-        date_window_active=date_window_active,
+        date_window_active=date_window_active or game_filter_active,
         opponent_active=bool(opponent),
         num_seasons=len(seasons),
     )
@@ -808,8 +844,21 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {opponent.upper()}")
+    if home_only:
+        caveats.append("filtered to home games only")
+    if away_only:
+        caveats.append("filtered to away games only")
+    if wins_only:
+        caveats.append("filtered to wins only")
+    if losses_only:
+        caveats.append("filtered to losses only")
+    if last_n is not None:
+        caveats.append(f"filtered to each player's last {last_n} games")
     if target_col in GAME_LOG_DERIVED_ADVANCED:
-        if date_window_active or multi_season or opponent:
+        game_filter_active = (
+            home_only or away_only or wins_only or losses_only or last_n is not None
+        )
+        if date_window_active or multi_season or opponent or game_filter_active:
             caveats.append(f"{target_col} recomputed from filtered game-log sample")
     if position_filtered:
         caveats.append(f"filtered to position group: {position}")

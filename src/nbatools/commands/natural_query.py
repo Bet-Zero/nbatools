@@ -575,6 +575,14 @@ def _finalize_route(parsed: dict) -> dict:
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "opponent": opponent,
         }
     # ---------------------------------------------------------------------------
     # Distinct player/team count routing
@@ -767,6 +775,14 @@ def _finalize_route(parsed: dict) -> dict:
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "opponent": opponent,
         }
     elif "top team" in q or ("top" in q and "team games" in q):
         route = "top_team_games"
@@ -776,6 +792,14 @@ def _finalize_route(parsed: dict) -> dict:
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "opponent": opponent,
         }
     # ---------------------------------------------------------------------------
     # Occurrence routing cluster (compound + single leaderboard)
@@ -851,6 +875,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "away_only": away_only,
                 "wins_only": wins_only,
                 "losses_only": losses_only,
+                "last_n": last_n,
             }
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
@@ -882,6 +907,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "away_only": away_only,
                 "wins_only": wins_only,
                 "losses_only": losses_only,
+                "last_n": last_n,
             }
         else:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
@@ -920,6 +946,11 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_season": lb_end_season,
                 "opponent": opponent,
                 "position": position_filter,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "last_n": last_n,
             }
     # ---------------------------------------------------------------------------
     # Single-player special-event occurrence count
