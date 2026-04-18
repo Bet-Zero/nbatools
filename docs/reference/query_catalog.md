@@ -76,8 +76,6 @@ If a feature is not reflected here, it should not be assumed shipped.
 
 ### 2.3 Sample filters
 
-### 2.3 Sample filters
-
 - opponent (team): `vs Lakers`, `against Celtics`
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`

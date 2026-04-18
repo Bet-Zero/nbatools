@@ -272,7 +272,7 @@ Grouped boolean logic currently works across:
 | ------------------------------- | ---------------------------------------------------------------------- |
 | vs opponent (team)              | `Jokic vs Lakers`                                                      |
 | vs opponent (player)            | `LeBron stats vs Kevin Durant`, `Jokic averages against Stephen Curry` |
-| without player                  | `Lakers record without LeBron`, `Warriors wins without Steph Curry`    |
+| without player                  | `Lakers record without LeBron`, `Warriors w/o Curry`, `Suns when Booker out` |
 | summary vs opponent             | `Jokic summary vs Lakers`                                              |
 | head-to-head                    | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics`                |
 | single occurrence leaderboard   | `most 30 point games`                                                  |

@@ -383,7 +383,7 @@
 
 ---
 
-## 12. `[ ]` Sync `query_catalog.md` with Phase A additions
+## 12. `[x]` Sync `query_catalog.md` with Phase A additions
 
 **Why:** Per AGENTS.md, `query_catalog.md` is the living inventory and must stay in sync with shipped capability. Phase A will have broadened the surface forms that various routes accept; that belongs in the catalog.
 
