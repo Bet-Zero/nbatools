@@ -66,136 +66,136 @@ Primary class: `leaderboard`
 
 Primary class: `leaderboard` or `summary` with fuzzy timeframe
 
-11. Who scored the most points last night?
-12. Which players have been the hottest from three lately?
-13. Who has the most assists over the past month?
-14. What team has played the best defense recently?
-15. Who is averaging the most rebounds in the last 2 weeks?
-16. Which players have been the most efficient recently?
-17. What teams have the best record over the past month?
-18. Who has had the most steals lately?
-19. Which scorers have cooled off over their last 10 games?
-20. What players have the most double-doubles recently?
+1. Who scored the most points last night?
+2. Which players have been the hottest from three lately?
+3. Who has the most assists over the past month?
+4. What team has played the best defense recently?
+5. Who is averaging the most rebounds in the last 2 weeks?
+6. Which players have been the most efficient recently?
+7. What teams have the best record over the past month?
+8. Who has had the most steals lately?
+9. Which scorers have cooled off over their last 10 games?
+10. What players have the most double-doubles recently?
 
 ### 2.3 Last N games / since date / over span
 
 Primary class: `leaderboard` or `summary` with explicit windowed timeframe
 
-21. Who is averaging the most points in his last 5 games?
-22. Which team has the best net rating in its last 10 games?
-23. Who has the most made threes in the last 7 games?
-24. What players have averaged a double-double over their last 15 games?
-25. Who has been the best rebounder since January 1?
-26. Which teams have the best record since the All-Star break?
-27. What players have the highest usage rate over their last 8 games?
-28. Who is shooting the best from three since February 1 with at least 4 attempts per game?
-29. What team has allowed the fewest paint points in its last 12 games?
-30. Who has the most blocks since March 1?
+1. Who is averaging the most points in his last 5 games?
+2. Which team has the best net rating in its last 10 games?
+3. Who has the most made threes in the last 7 games?
+4. What players have averaged a double-double over their last 15 games?
+5. Who has been the best rebounder since January 1?
+6. Which teams have the best record since the All-Star break?
+7. What players have the highest usage rate over their last 8 games?
+8. Who is shooting the best from three since February 1 with at least 4 attempts per game?
+9. What team has allowed the fewest paint points in its last 12 games?
+10. Who has the most blocks since March 1?
 
 ### 2.4 Best games / biggest games / most efficient
 
 Primary class: `leaderboard` (season-high variant) or `occurrence`
 
-31. What were the biggest scoring games this season?
-32. Which players had the best games by Game Score this year?
-33. What are the highest assist games by a point guard this season?
-34. Who has had the most efficient 30-point games this year?
-35. What were the best rebounding games by a center this season?
-36. Which players have the hottest 3-game scoring stretch this year?
-37. What are the biggest triple-double games this season?
-38. Who has the best shooting games with at least 25 points this year?
-39. What are the most dominant games by plus-minus this season?
-40. Which players have had the best two-way games this season?
+1. What were the biggest scoring games this season?
+2. Which players had the best games by Game Score this year?
+3. What are the highest assist games by a point guard this season?
+4. Who has had the most efficient 30-point games this year?
+5. What were the best rebounding games by a center this season?
+6. Which players have the hottest 3-game scoring stretch this year?
+7. What are the biggest triple-double games this season?
+8. Who has the best shooting games with at least 25 points this year?
+9. What are the most dominant games by plus-minus this season?
+10. Which players have had the best two-way games this season?
 
 ### 2.5 Against good teams / top teams / contenders
 
-Primary class: `summary` or `record` with opponent-quality filter *(opponent-quality filter not yet shipped — see [`specification.md` §9](./specification.md#9-opponent-quality-filters))*
+Primary class: `summary` or `record` with opponent-quality filter _(opponent-quality filter not yet shipped — see [`specification.md` §9](./specification.md#9-opponent-quality-filters))_
 
-41. Who scores the most against teams over .500 this season?
-42. Which team has the best record against contenders this year?
-43. What players have the highest true shooting percentage against top-10 defenses?
-44. How has Jayson Tatum played against good teams this season?
-45. What is the Celtics' record against teams above .600?
-46. Which players average the most assists against playoff teams?
-47. What team has the best defense against top-5 offenses this year?
-48. Who rebounds the best against elite frontcourts?
-49. Which scorers have the biggest drop-off against winning teams?
-50. What players have the most 30-point games against contenders this season?
+1. Who scores the most against teams over .500 this season?
+2. Which team has the best record against contenders this year?
+3. What players have the highest true shooting percentage against top-10 defenses?
+4. How has Jayson Tatum played against good teams this season?
+5. What is the Celtics' record against teams above .600?
+6. Which players average the most assists against playoff teams?
+7. What team has the best defense against top-5 offenses this year?
+8. Who rebounds the best against elite frontcourts?
+9. Which scorers have the biggest drop-off against winning teams?
+10. What players have the most 30-point games against contenders this season?
 
 ### 2.6 When a teammate didn't play / was out
 
 Primary class: `summary` or `record` with `without_player` filter
 
-51. How do the Suns perform when Devin Booker didn't play?
-52. What is the Bucks' record when Giannis Antetokounmpo was out?
-53. Who averages the most points when their co-star didn't play this season?
-54. How has Anthony Davis rebounded when LeBron James was out?
-55. What is the Mavericks' offensive rating when Luka Dončić didn't play?
-56. How does Jamal Murray score when Nikola Jokić is out?
-57. What is the Knicks' record when Jalen Brunson doesn't play?
-58. Which players see the biggest usage increase when their star teammate is out?
-59. How has Tyrese Maxey played when Joel Embiid didn't play this season?
-60. What team has stayed afloat best when its leading scorer was out?
+1. How do the Suns perform when Devin Booker didn't play?
+2. What is the Bucks' record when Giannis Antetokounmpo was out?
+3. Who averages the most points when their co-star didn't play this season?
+4. How has Anthony Davis rebounded when LeBron James was out?
+5. What is the Mavericks' offensive rating when Luka Dončić didn't play?
+6. How does Jamal Murray score when Nikola Jokić is out?
+7. What is the Knicks' record when Jalen Brunson doesn't play?
+8. Which players see the biggest usage increase when their star teammate is out?
+9. How has Tyrese Maxey played when Joel Embiid didn't play this season?
+10. What team has stayed afloat best when its leading scorer was out?
 
-### 2.7 "Who's been the best at ___ over ___"
+### 2.7 "Who's been the best at **_ over _**"
 
 Primary class: `leaderboard` with timeframe + skill filter
 
-61. Who's been the best scorer over the last 10 games?
-62. Who's been the best rebounder since January 1?
-63. Who's been the best rim protector over the past month?
-64. Who's been the best playmaker in the last 15 games?
-65. Who's been the best catch-and-shoot shooter this season?
-66. Who's been the best at drawing fouls over the past 20 games?
-67. Who's been the best transition scorer this year?
-68. Who's been the best isolation defender over the past month?
-69. Who's been the best shot creator in clutch time this season?
-70. Who's been the best offensive rebounder lately?
+1. Who's been the best scorer over the last 10 games?
+2. Who's been the best rebounder since January 1?
+3. Who's been the best rim protector over the past month?
+4. Who's been the best playmaker in the last 15 games?
+5. Who's been the best catch-and-shoot shooter this season?
+6. Who's been the best at drawing fouls over the past 20 games?
+7. Who's been the best transition scorer this year?
+8. Who's been the best isolation defender over the past month?
+9. Who's been the best shot creator in clutch time this season?
+10. Who's been the best offensive rebounder lately?
 
 ### 2.8 Frequency / how often
 
 Primary class: `count` or `occurrence`
 
-71. How often has Nikola Jokić recorded a triple-double this season?
-72. How often has Stephen Curry made 5 or more threes this year?
-73. How often has a team won when trailing after 3 quarters this season?
-74. How often has Luka Dončić scored 40 or more this year?
-75. How often has a player had 10+ assists and 0 turnovers this season?
-76. How often have the Lakers held opponents under 100 points this year?
-77. How often has Victor Wembanyama had 5+ blocks this season?
-78. How often has a team scored 140 or more points this year?
-79. How often has Jalen Brunson scored 30+ in his last 20 games?
-80. How often has a road team won by 20+ this season?
+1. How often has Nikola Jokić recorded a triple-double this season?
+2. How often has Stephen Curry made 5 or more threes this year?
+3. How often has a team won when trailing after 3 quarters this season?
+4. How often has Luka Dončić scored 40 or more this year?
+5. How often has a player had 10+ assists and 0 turnovers this season?
+6. How often have the Lakers held opponents under 100 points this year?
+7. How often has Victor Wembanyama had 5+ blocks this season?
+8. How often has a team scored 140 or more points this year?
+9. How often has Jalen Brunson scored 30+ in his last 20 games?
+10. How often has a road team won by 20+ this season?
 
-### 2.9 Record when ___
+### 2.9 Record when \_\_\_
 
 Primary class: `record` with conditional filter
 
-81. What's the Mavericks' record when Luka Dončić scores 35 or more?
-82. What is the Knicks' record when they allow fewer than 110 points?
-83. What is Denver's record when Nikola Jokić has a triple-double?
-84. What's Boston's record when Jayson Tatum shoots under 40%?
-85. What is the Lakers' record when LeBron James and Anthony Davis both play?
-86. What's the Thunder's record when Shai Gilgeous-Alexander scores 30+?
-87. What is Milwaukee's record when it wins the rebounding battle?
-88. What's the Warriors' record when Stephen Curry makes at least 6 threes?
-89. What is the Suns' record when Kevin Durant leads the team in scoring?
-90. What's the Cavaliers' record when they score fewer than 105 points?
+1. What's the Mavericks' record when Luka Dončić scores 35 or more?
+2. What is the Knicks' record when they allow fewer than 110 points?
+3. What is Denver's record when Nikola Jokić has a triple-double?
+4. What's Boston's record when Jayson Tatum shoots under 40%?
+5. What is the Lakers' record when LeBron James and Anthony Davis both play?
+6. What's the Thunder's record when Shai Gilgeous-Alexander scores 30+?
+7. What is Milwaukee's record when it wins the rebounding battle?
+8. What's the Warriors' record when Stephen Curry makes at least 6 threes?
+9. What is the Suns' record when Kevin Durant leads the team in scoring?
+10. What's the Cavaliers' record when they score fewer than 105 points?
 
 ### 2.10 Splits and context filters
 
 Primary class: `split` or context-filtered variants
 
-91. Who scores the most at home this season?
-92. Which teams have the best road record this year?
-93. How does Anthony Edwards shoot in wins vs losses?
-94. Who averages the most points in the first half this season?
-95. Which players score the most in the 4th quarter?
-96. What is the Lakers' record on back-to-backs this season?
-97. Who has the best clutch field goal percentage this year?
-98. What team has the best record in one-possession games this season?
-99. Which players average the most points as a starter vs off the bench?
-100. What is the Nuggets' net rating with Nikola Jokić on the floor vs off the floor?
+1. Who scores the most at home this season?
+2. Which teams have the best road record this year?
+3. How does Anthony Edwards shoot in wins vs losses?
+4. Who averages the most points in the first half this season?
+5. Which players score the most in the 4th quarter?
+6. What is the Lakers' record on back-to-backs this season?
+7. Who has the best clutch field goal percentage this year?
+8. What team has the best record in one-possession games this season?
+9. Which players average the most points as a starter vs off the bench?
+10. What is the Nuggets' net rating with Nikola Jokić on the floor vs off the floor?
 
 ---
 
@@ -205,105 +205,105 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 
 ### 3.1 Leaders and rankings
 
-| #  | Question form                                             | Search / shorthand form                    |
-| -- | --------------------------------------------------------- | ------------------------------------------ |
-| 1  | Who leads the NBA in points per game this season?         | points per game leaders this season        |
-| 2  | Which players have the most rebounds this year?           | most rebounds this year                    |
-| 3  | Who has the highest true shooting percentage this season? | best true shooting percentage this season  |
-| 4  | Which team has the best offensive rating this year?       | best offensive rating team this year       |
-| 5  | Who has the most assists over the last 10 games?          | most assists last 10 games                 |
+| #   | Question form                                             | Search / shorthand form                   |
+| --- | --------------------------------------------------------- | ----------------------------------------- |
+| 1   | Who leads the NBA in points per game this season?         | points per game leaders this season       |
+| 2   | Which players have the most rebounds this year?           | most rebounds this year                   |
+| 3   | Who has the highest true shooting percentage this season? | best true shooting percentage this season |
+| 4   | Which team has the best offensive rating this year?       | best offensive rating team this year      |
+| 5   | Who has the most assists over the last 10 games?          | most assists last 10 games                |
 
 ### 3.2 Recent / lately / past month
 
-| #  | Question form                                          | Search / shorthand form       |
-| -- | ------------------------------------------------------ | ----------------------------- |
-| 6  | Who scored the most points last night?                 | most points last night        |
-| 7  | Which players have been the hottest from three lately? | hottest from 3 lately         |
-| 8  | Who has been the best scorer over the past month?      | best scorers past month       |
-| 9  | What team has played the best defense recently?        | best defense recently         |
-| 10 | Who has the most double-doubles lately?                | most double doubles lately    |
+| #   | Question form                                          | Search / shorthand form    |
+| --- | ------------------------------------------------------ | -------------------------- |
+| 6   | Who scored the most points last night?                 | most points last night     |
+| 7   | Which players have been the hottest from three lately? | hottest from 3 lately      |
+| 8   | Who has been the best scorer over the past month?      | best scorers past month    |
+| 9   | What team has played the best defense recently?        | best defense recently      |
+| 10  | Who has the most double-doubles lately?                | most double doubles lately |
 
 ### 3.3 Last N games / since date
 
-| #  | Question form                                                                              | Search / shorthand form                         |
-| -- | ------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| 11 | Who is averaging the most points in his last 5 games?                                      | most points last 5 games                        |
-| 12 | Which team has the best net rating in its last 15 games?                                   | best net rating last 15 games                   |
-| 13 | Who has made the most threes since January 1?                                              | most threes since January 1                     |
-| 14 | Which players have averaged a double-double over their last 10 games?                      | double double average last 10 games             |
-| 15 | Who is shooting the best from three over the last month with at least 5 attempts per game? | best 3pt percentage last month min 5 attempts   |
+| #   | Question form                                                                              | Search / shorthand form                       |
+| --- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| 11  | Who is averaging the most points in his last 5 games?                                      | most points last 5 games                      |
+| 12  | Which team has the best net rating in its last 15 games?                                   | best net rating last 15 games                 |
+| 13  | Who has made the most threes since January 1?                                              | most threes since January 1                   |
+| 14  | Which players have averaged a double-double over their last 10 games?                      | double double average last 10 games           |
+| 15  | Who is shooting the best from three over the last month with at least 5 attempts per game? | best 3pt percentage last month min 5 attempts |
 
 ### 3.4 Best games / biggest games / most efficient
 
-| #  | Question form                                                       | Search / shorthand form                 |
-| -- | ------------------------------------------------------------------- | --------------------------------------- |
-| 16 | What were the biggest scoring games this season?                    | biggest scoring games this season       |
-| 17 | Which players have had the most efficient 30-point games this year? | most efficient 30 point games this year |
-| 18 | What are the best rebounding games by centers this season?          | best rebounding games by centers        |
-| 19 | Who has had the best all-around games this year?                    | best all around games this year         |
-| 20 | What were the highest assist games by point guards this season?     | highest assist games by point guards    |
+| #   | Question form                                                       | Search / shorthand form                 |
+| --- | ------------------------------------------------------------------- | --------------------------------------- |
+| 16  | What were the biggest scoring games this season?                    | biggest scoring games this season       |
+| 17  | Which players have had the most efficient 30-point games this year? | most efficient 30 point games this year |
+| 18  | What are the best rebounding games by centers this season?          | best rebounding games by centers        |
+| 19  | Who has had the best all-around games this year?                    | best all around games this year         |
+| 20  | What were the highest assist games by point guards this season?     | highest assist games by point guards    |
 
 ### 3.5 Against good teams / contenders
 
-*Opponent-quality filters are not yet shipped — see [`specification.md` §9](./specification.md#9-opponent-quality-filters).*
+_Opponent-quality filters are not yet shipped — see [`specification.md` §9](./specification.md#9-opponent-quality-filters)._
 
-| #  | Question form                                                  | Search / shorthand form            |
-| -- | -------------------------------------------------------------- | ---------------------------------- |
-| 21 | Who scores the most against teams over .500 this season?       | most points vs teams over .500     |
-| 22 | What team has the best record against contenders this year?    | best record vs contenders          |
-| 23 | Which players shoot the best against top-10 defenses?          | best shooting vs top 10 defenses   |
-| 24 | How has Jayson Tatum played against winning teams this season? | Tatum vs winning teams this season |
-| 25 | What is the Celtics' record against teams above .600?          | Celtics record vs teams above .600 |
+| #   | Question form                                                  | Search / shorthand form            |
+| --- | -------------------------------------------------------------- | ---------------------------------- |
+| 21  | Who scores the most against teams over .500 this season?       | most points vs teams over .500     |
+| 22  | What team has the best record against contenders this year?    | best record vs contenders          |
+| 23  | Which players shoot the best against top-10 defenses?          | best shooting vs top 10 defenses   |
+| 24  | How has Jayson Tatum played against winning teams this season? | Tatum vs winning teams this season |
+| 25  | What is the Celtics' record against teams above .600?          | Celtics record vs teams above .600 |
 
 ### 3.6 When a teammate didn't play
 
-| #  | Question form                                                         | Search / shorthand form                 |
-| -- | --------------------------------------------------------------------- | --------------------------------------- |
-| 26 | How do the Suns perform when Devin Booker didn't play?                | Suns when Booker out                    |
-| 27 | What is the Bucks' record when Giannis Antetokounmpo was out?         | Bucks record when Giannis out           |
-| 28 | How has Anthony Davis rebounded when LeBron James didn't play?        | Anthony Davis rebounds when LeBron out  |
-| 29 | What is the Mavericks' offensive rating when Luka Dončić didn't play? | Mavericks offensive rating without Luka |
-| 30 | How has Tyrese Maxey played when Joel Embiid was out this season?     | Maxey when Embiid out this season       |
+| #   | Question form                                                         | Search / shorthand form                 |
+| --- | --------------------------------------------------------------------- | --------------------------------------- |
+| 26  | How do the Suns perform when Devin Booker didn't play?                | Suns when Booker out                    |
+| 27  | What is the Bucks' record when Giannis Antetokounmpo was out?         | Bucks record when Giannis out           |
+| 28  | How has Anthony Davis rebounded when LeBron James didn't play?        | Anthony Davis rebounds when LeBron out  |
+| 29  | What is the Mavericks' offensive rating when Luka Dončić didn't play? | Mavericks offensive rating without Luka |
+| 30  | How has Tyrese Maxey played when Joel Embiid was out this season?     | Maxey when Embiid out this season       |
 
-### 3.7 "Who's been the best at ___ over ___"
+### 3.7 "Who's been the best at **_ over _**"
 
-| #  | Question form                                           | Search / shorthand form                 |
-| -- | ------------------------------------------------------- | --------------------------------------- |
-| 31 | Who's been the best rebounder over the past month?      | best rebounder past month               |
-| 32 | Who's been the best shot blocker in the last 10 games?  | best shot blocker last 10 games         |
-| 33 | Who's been the best playmaker since the All-Star break? | best playmaker since all star break     |
-| 34 | Who's been the best catch-and-shoot player this season? | best catch and shoot player this season |
-| 35 | Who's been the best transition scorer lately?           | best transition scorer lately           |
+| #   | Question form                                           | Search / shorthand form                 |
+| --- | ------------------------------------------------------- | --------------------------------------- |
+| 31  | Who's been the best rebounder over the past month?      | best rebounder past month               |
+| 32  | Who's been the best shot blocker in the last 10 games?  | best shot blocker last 10 games         |
+| 33  | Who's been the best playmaker since the All-Star break? | best playmaker since all star break     |
+| 34  | Who's been the best catch-and-shoot player this season? | best catch and shoot player this season |
+| 35  | Who's been the best transition scorer lately?           | best transition scorer lately           |
 
 ### 3.8 Frequency / how often
 
-| #  | Question form                                                        | Search / shorthand form              |
-| -- | -------------------------------------------------------------------- | ------------------------------------ |
-| 36 | How often has Nikola Jokić recorded a triple-double this season?     | Jokic triple doubles this season     |
-| 37 | How often has Stephen Curry made 5 or more threes this year?         | Curry 5+ threes this year            |
-| 38 | How often has Luka Dončić scored 40 or more this season?             | Luka 40+ point games this season     |
-| 39 | How often have the Lakers held opponents under 100 points this year? | Lakers opponents under 100 this year |
-| 40 | How often has Victor Wembanyama had 5 or more blocks this season?    | Wembanyama 5+ blocks this season     |
+| #   | Question form                                                        | Search / shorthand form              |
+| --- | -------------------------------------------------------------------- | ------------------------------------ |
+| 36  | How often has Nikola Jokić recorded a triple-double this season?     | Jokic triple doubles this season     |
+| 37  | How often has Stephen Curry made 5 or more threes this year?         | Curry 5+ threes this year            |
+| 38  | How often has Luka Dončić scored 40 or more this season?             | Luka 40+ point games this season     |
+| 39  | How often have the Lakers held opponents under 100 points this year? | Lakers opponents under 100 this year |
+| 40  | How often has Victor Wembanyama had 5 or more blocks this season?    | Wembanyama 5+ blocks this season     |
 
-### 3.9 Record when ___
+### 3.9 Record when \_\_\_
 
-| #  | Question form                                                             | Search / shorthand form                    |
-| -- | ------------------------------------------------------------------------- | ------------------------------------------ |
-| 41 | What's the Mavericks' record when Luka Dončić scores 35 or more?          | Mavericks record when Luka scores 35+      |
-| 42 | What is the Knicks' record when they allow fewer than 110 points?         | Knicks record when allowing under 110      |
-| 43 | What is Denver's record when Nikola Jokić has a triple-double?            | Denver record when Jokic triple double     |
-| 44 | What is the Warriors' record when Stephen Curry makes at least 6 threes?  | Warriors record when Curry makes 6+ threes |
-| 45 | What is the Lakers' record when LeBron James and Anthony Davis both play? | Lakers record when LeBron and AD both play |
+| #   | Question form                                                             | Search / shorthand form                    |
+| --- | ------------------------------------------------------------------------- | ------------------------------------------ |
+| 41  | What's the Mavericks' record when Luka Dončić scores 35 or more?          | Mavericks record when Luka scores 35+      |
+| 42  | What is the Knicks' record when they allow fewer than 110 points?         | Knicks record when allowing under 110      |
+| 43  | What is Denver's record when Nikola Jokić has a triple-double?            | Denver record when Jokic triple double     |
+| 44  | What is the Warriors' record when Stephen Curry makes at least 6 threes?  | Warriors record when Curry makes 6+ threes |
+| 45  | What is the Lakers' record when LeBron James and Anthony Davis both play? | Lakers record when LeBron and AD both play |
 
 ### 3.10 Splits / context / shorthand search style
 
-| #  | Question form                                                                        | Search / shorthand form                    |
-| -- | ------------------------------------------------------------------------------------ | ------------------------------------------ |
-| 46 | Who scores the most at home this season?                                             | most points at home this season            |
-| 47 | Which teams have the best road record this year?                                     | best road record this year                 |
-| 48 | How does Anthony Edwards shoot in wins versus losses?                                | Anthony Edwards shooting in wins vs losses |
-| 49 | Which players score the most in the 4th quarter this season?                         | most 4th quarter points this season        |
-| 50 | What is the Nuggets' net rating with Nikola Jokić on the floor versus off the floor? | Nuggets net rating Jokic on off            |
+| #   | Question form                                                                        | Search / shorthand form                    |
+| --- | ------------------------------------------------------------------------------------ | ------------------------------------------ |
+| 46  | Who scores the most at home this season?                                             | most points at home this season            |
+| 47  | Which teams have the best road record this year?                                     | best road record this year                 |
+| 48  | How does Anthony Edwards shoot in wins versus losses?                                | Anthony Edwards shooting in wins vs losses |
+| 49  | Which players score the most in the 4th quarter this season?                         | most 4th quarter points this season        |
+| 50  | What is the Nuggets' net rating with Nikola Jokić on the floor versus off the floor? | Nuggets net rating Jokic on off            |
 
 ---
 
@@ -525,18 +525,22 @@ Use these as reference for how the stages connect. Slot names match [`specificat
 **Raw input:** `how many Jokic games with 30+ points and 10+ rebounds since 2021`
 
 **Stage 1 — Normalized:**
+
 ```
 how many jokic games with 30+ points and 10+ rebounds since 2021
 ```
 
 **Stage 2 — Resolved entities:**
+
 - `jokic` → player: Nikola Jokic (id: `NIKOLA_JOKIC`, accent-insensitive match)
 
 **Stage 3 — Intent flags / class:**
+
 - `count_intent: true` (signal: `how many`)
 - Primary class: `count` (with compound threshold)
 
 **Stage 4 — Slots extracted:**
+
 - player: `NIKOLA_JOKIC`
 - stat: `pts` (from primary threshold)
 - min_value: 30
@@ -563,7 +567,12 @@ how many jokic games with 30+ points and 10+ rebounds since 2021
     { "stat": "pts", "min_value": 30, "max_value": null, "text": "30+ points" }
   ],
   "extra_conditions": [
-    { "stat": "reb", "min_value": 10, "max_value": null, "text": "10+ rebounds" }
+    {
+      "stat": "reb",
+      "min_value": 10,
+      "max_value": null,
+      "text": "10+ rebounds"
+    }
   ],
   "start_season": "2020-21",
   "end_season": "2025-26",
@@ -573,9 +582,7 @@ how many jokic games with 30+ points and 10+ rebounds since 2021
     "player": "NIKOLA_JOKIC",
     "stat": "pts",
     "min_value": 30,
-    "extra_conditions": [
-      { "stat": "reb", "min_value": 10 }
-    ],
+    "extra_conditions": [{ "stat": "reb", "min_value": 10 }],
     "start_season": "2020-21",
     "end_season": "2025-26"
   }
@@ -589,18 +596,22 @@ how many jokic games with 30+ points and 10+ rebounds since 2021
 **Raw input:** `jokic 30+ pts 10+ reb since 2021 count`
 
 **Stage 1 — Normalized:**
+
 ```
 jokic 30+ pts 10+ reb since 2021 count
 ```
 
 **Stage 2 — Resolved entities:**
+
 - `jokic` → player: Nikola Jokic
 
 **Stage 3 — Intent flags / class:**
+
 - `count_intent: true` (signal: `count` token)
 - Primary class: `count`
 
 **Stage 4 — Slots extracted:**
+
 - player: `NIKOLA_JOKIC`
 - stat: `pts`
 - threshold_conditions: `[{ stat: "pts", min_value: 30, text: "30+ pts" }]`
@@ -618,26 +629,32 @@ jokic 30+ pts 10+ reb since 2021 count
 **Raw input:** `Jokic last 10`
 
 **Stage 1 — Normalized:**
+
 ```
 jokic last 10 games
 ```
+
 (`last 10` → `last 10 games` via alias mapping.)
 
 **Stage 2 — Resolved entities:**
+
 - `jokic` → player: Nikola Jokic
 
 **Stage 3 — Intent flags / class:**
+
 - No operator word, no threshold, no `how many` → no explicit intent flag
 - Default rule matches: `<player> + <timeframe>` → `summary`
 - `summary_intent` set by default logic
 
 **Stage 4 — Slots extracted:**
+
 - player: `NIKOLA_JOKIC`
 - last_n: 10
 - season: defaulted to current (`2025-26`)
 - stat: none specified
 
 **Stage 5 — Defaults applied:**
+
 - No season + any stat/filter signal → `default_season_for_context(season_type)` triggers
 - `recent form` signal implicit → `last_n = 10` (explicit here)
 
@@ -669,30 +686,35 @@ jokic last 10 games
 
 **Raw input:** `Celtics vs contenders`
 
-*Note: Opponent-quality filters (`contenders`, `good teams`, etc.) are not yet shipped. This trace shows the target state once Phase E of the expansion plan lands.*
+_Note: Opponent-quality filters (`contenders`, `good teams`, etc.) are not yet shipped. This trace shows the target state once Phase E of the expansion plan lands._
 
 **Stage 1 — Normalized:**
+
 ```
 celtics against contenders
 ```
 
 **Stage 2 — Resolved entities:**
+
 - `celtics` → team: Boston Celtics (id: `BOS`)
 - `contenders` → opponent quality (policy-resolved per [`specification.md` §18.2](./specification.md#182-opponent-quality-definitions-proposed--not-yet-shipped))
 
 **Stage 3 — Intent flags / class:**
+
 - Team subject + opponent-quality filter + no explicit metric
 - Default rule matches: `<team> + <opponent-quality>` → `record`
 - `record_intent` set by default logic
 - Alternate parse: `summary` (team stats vs opponent group) — surfaced if confidence medium
 
 **Stage 4 — Slots extracted:**
+
 - team: `BOS`
 - record_intent: true (default)
 - opponent_quality filter: `{ surface_term: "contenders", definition: { metric: "net_rating_rank", operator: "top_n", value: 6 } }`
 - season: defaulted to current
 
 **Stage 5 — Defaults applied:**
+
 - Missing timeframe → season default
 - Missing metric → record
 - Alternate surfaced (summary vs contenders)
@@ -707,7 +729,11 @@ celtics against contenders
   "record_intent": true,
   "opponent_quality_filter": {
     "surface_term": "contenders",
-    "definition": { "metric": "net_rating_rank", "operator": "top_n", "value": 6 }
+    "definition": {
+      "metric": "net_rating_rank",
+      "operator": "top_n",
+      "value": 6
+    }
   },
   "season": "2025-26",
   "confidence": 0.71,
@@ -787,7 +813,7 @@ Patterns not required for the current shipped surface but flagged as targets in 
 - `against contenders`
 - `against top-10 defenses`
 - `best record vs winning teams`
-- *Requires policy definitions — see [`specification.md` §18.2](./specification.md#182-opponent-quality-definitions-proposed--not-yet-shipped).*
+- _Requires policy definitions — see [`specification.md` §18.2](./specification.md#182-opponent-quality-definitions-proposed--not-yet-shipped)._
 
 ### 8.2 On/off and lineup queries (Phase E)
 
@@ -796,7 +822,7 @@ Patterns not required for the current shipped surface but flagged as targets in 
 - `best 5-man lineups`
 - `net rating with Tatum and Brown together`
 - `best 3-man units with at least 200 minutes`
-- *See [`specification.md` §11](./specification.md#11-onoff-and-lineup-support).*
+- _See [`specification.md` §11](./specification.md#11-onoff-and-lineup-support)._
 
 ### 8.3 Expanded context filters (Phase E)
 

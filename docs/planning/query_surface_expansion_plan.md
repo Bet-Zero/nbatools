@@ -1,476 +1,483 @@
 # Query Surface Expansion Plan
 
 > **Role: active planning doc.**
-> This file synthesizes the user-supplied parser example sets and notes into a
-> practical plan for expanding the natural query surface.
 >
-> Source inputs synthesized here:
+> This plan drives the next rounds of natural-query parser and surface expansion. It replaces the earlier attempt at this doc and is grounded in:
 >
-> - `NBAToolParserExamples.md` — 100 example questions
-> - `NBAToolParserMixedExamples.md` — 50 paired question/search-form examples
-> - `NBAToolParserNotes.md` — parser behavior notes and shorthand guidance
+> - the actual state of `src/nbatools/commands/natural_query.py` and its helper modules
+> - the living shipped inventory in [`docs/reference/query_catalog.md`](../reference/query_catalog.md)
+> - the design references in [`docs/architecture/parser/`](../architecture/parser/)
+> - the working style rules in [`AGENTS.md`](../../AGENTS.md)
+>
+> **Read before editing:** this file is a _plan_, not a capability catalog or a spec. Changes here should be directional, not fine-grained implementation detail.
 
 ---
 
-## 1. Why this doc exists
+## 1. Context
 
-The current engine already supports a broad set of NBA queries, but real manual
-usage showed an important product truth:
+The current engine is mature. It ships ten query classes (finder, count, summary, comparison, split, leaderboard, streak, record, playoff, occurrence), has ~1,684 tests across 42 files, supports 90+ curated player aliases, handles compound boolean threshold logic with AND/OR/parentheses, and exposes itself through a CLI, FastAPI HTTP layer, and React UI.
 
-- the app works
-- the UI is real
-- many shipped routes are useful
-- but the natural-language surface still feels too brittle outside curated examples
+Despite that, the natural-language surface still feels brittle outside curated examples. The gap is less about raw capability and more about:
 
-The three parser docs are valuable because they do **not** just list more query
-ideas. They reveal the bigger product requirement:
+- **phrasing coverage** for already-shipped capabilities (search-form and compressed shorthand don't consistently parse to the same place as full questions)
+- **defaults and fuzzy-term definitions** that are applied inconsistently because they aren't documented in one place
+- **parse-level confidence** and alternate interpretations, neither of which currently exist
+- **new capability families** (opponent-quality buckets, on/off, lineups, expanded contexts) that users will ask for
 
-> The parser must support **question form, search form, and compressed shorthand**
-> as first-class input styles.
-
-This doc turns that insight into a concrete expansion plan.
+The design references in [`docs/architecture/parser/`](../architecture/parser/) describe the target state. This plan is the bridge from where the parser is today to where those docs say it should be.
 
 ---
 
-## 2. Core parser/product principle
+## 2. Scope and principles
 
-The parser should be designed around **intent + slots**, not around whether the
-input is a grammatically complete question.
+### Guiding principles (abbreviated)
 
-That means these should often map to the same underlying parse target:
+See [`docs/architecture/parser/overview.md`](../architecture/parser/overview.md) for full discussion. The short version:
 
-- `Who has the most points over the last 10 games?`
-- `most points last 10 games`
-- `points leaders last 10`
+1. **Question form, search form, and compressed shorthand are all first-class.** Already codified in AGENTS.md.
+2. **Favor intent + slots over sentence grammar.** The repo's parse state already embodies this.
+3. **Defaults are product policy, not implementation detail.** Document them; don't bury them in code.
+4. **The biggest risk is confident-but-inconsistent interpretations**, not weird grammar.
+5. **Prefer honest unsupported responses over silently wrong answers.**
 
-Likewise:
+### What this plan drives
 
-- `How has Luka played when Kyrie didn't play?`
-- `Luka when Kyrie out`
-- `Luka w/o Kyrie`
+- which phrasing coverage work to do next, in what order
+- where new capability families should live
+- which tests and docs need to move in lockstep
 
-And:
+### What this plan does NOT drive
 
-- `What is the Celtics' record against teams over .500?`
-- `Celtics record vs teams over .500`
-- `Celtics vs contenders`
-
-The long-term parser should treat all three styles as normal.
-
----
-
-## 3. Input styles that must be treated as first-class
-
-## 3.1 Full question form
-
-Examples:
-
-- `Who leads the NBA in points per game this season?`
-- `What is the Bucks' record when Giannis Antetokounmpo was out?`
-- `How often has Stephen Curry made 5 or more threes this year?`
-
-## 3.2 Search phrase form
-
-Examples:
-
-- `points per game leaders this season`
-- `Bucks record when Giannis out`
-- `Curry 5+ threes this year`
-
-## 3.3 Compressed shorthand form
-
-Examples:
-
-- `points leaders last 10`
-- `Luka w/o Kyrie last 5`
-- `Knicks clutch`
-- `SGA vs winning teams`
-- `Jokic td this season`
-
-These should be treated as normal supported input shapes, not edge cases.
+- the living inventory of shipped capabilities — that's [`query_catalog.md`](../reference/query_catalog.md)
+- the spec of the parser's components — that's [`parser/specification.md`](../architecture/parser/specification.md)
+- verified behavior boundaries — that's [`current_state_guide.md`](../reference/current_state_guide.md)
+- implementation details inside any specific module
 
 ---
 
-## 4. Slot model to optimize for
+## 3. Current state snapshot
 
-Most desired queries in the example docs decompose into a stable set of slots.
+A short orientation, not a full inventory. For capabilities see [`query_catalog.md`](../reference/query_catalog.md); for components see [`parser/specification.md`](../architecture/parser/specification.md).
 
-| Slot | Meaning |
-| --- | --- |
-| `subject` | player, team, league, position group, lineup |
-| `metric` | points, rebounds, TS%, record, net rating, frequency, etc. |
-| `aggregation` | per game, total, average, max, count, rate, record |
-| `timeframe` | this season, last 10, since Jan 1, past month, career |
-| `filter_opponent` | team opponent, opponent strength, defense rank, contender class |
-| `filter_teammate_status` | when X was out, with X, without X |
-| `filter_threshold` | 30+ points, under 110 points, 5+ threes |
-| `context` | home, away, wins, losses, clutch, quarter, starter/bench, B2B |
-| `comparison_type` | leader, best, hottest, most efficient, frequency, record |
+### 3.1 Architecture shape
 
-The parser should prefer extracting these slots over relying on sentence grammar.
+- `src/nbatools/commands/natural_query.py` is the orchestration layer: `_build_parse_state(query)` extracts ~40 slots in parallel, `_finalize_route(parsed)` picks a route via an if/elif chain, `parse_query` and `run` are thin entry points.
+- Specialized routers handle clusters: `try_playoff_record_route`, `try_occurrence_count_route`, `try_compound_occurrence_route`.
+- OR queries split via `_split_or_clauses` and merge context via `_merge_inherited_context`, then combine with `_combine_or_results`.
+- Helpers are organized by concern: `_parse_helpers`, `_matchup_utils`, `_occurrence_route_utils`, `_playoff_record_route_utils`, `_leaderboard_utils`, `_date_utils`, `_constants`, `entity_resolution`, `query_boolean_parser`.
 
----
+### 3.2 What's shipped and solid
 
-## 5. High-value feature families surfaced by the example docs
+- entity resolution with ambiguity handling and candidate lists
+- time parsing: explicit seasons, season ranges, since-season, last-N-seasons, career, last-N-games, date ranges, by-decade
+- threshold parsing with AND, OR, and grouped boolean with parentheses
+- core query classes: finder, count, summary, comparison, split, leaderboard, streak, record, playoff, occurrence
+- filters: home/away, wins/losses, without-player, opponent team, opponent player, position, playoff round
+- multi-surface consumption: CLI, API, UI all read the same envelope
 
-## 5.1 Leaders and rankings
+### 3.3 What's partial
 
-Examples from the input docs:
+- fuzzy time words (`lately`, `past month`, `last night`) resolve inconsistently
+- shorthand normalization is scattered across many `detect_*` helpers rather than centralized
+- fuzzy-term product policy (`good teams`, `contenders`, `recently`, `best games`) is not documented in one place
+- word-order flexibility isn't an explicit test category
 
-- points-per-game leaders
-- total rebounds leaders
-- best offensive rating team
-- best true shooting percentage
-- best field goal percentage among guards
-- best net rating team
+### 3.4 What's not yet shipped
 
-### Already partly aligned
-The current engine already supports many leaderboard shapes.
-
-### Remaining expansion themes
-- broader phrase coverage for stat names
-- broader phrase coverage for ranking language (`best`, `hottest`, `most efficient`)
-- more support for context-constrained leaderboards
+- on/off queries as a distinct intent family
+- lineup queries (2-man, 3-man, 5-man units)
+- opponent-quality buckets (`contenders`, `good teams`, `top-10 defenses`)
+- expanded context filters (clutch, quarters, back-to-backs, starter/bench, overtime, one-possession)
+- stretch / rolling-window queries (`hottest 3-game stretch`)
+- parse-level confidence and alternate interpretations
+- canonical parse state formalized as a versioned contract
 
 ---
 
-## 5.2 Recent / lately / over the past month
+## 4. Gap analysis
 
-Examples:
+Dimension-by-dimension view of where the parser is vs. where [`parser/specification.md`](../architecture/parser/specification.md) says it should be.
 
-- `Who scored the most points last night?`
-- `Which players have been the hottest from three lately?`
-- `What teams have the best record over the past month?`
-- `Who has had the most steals lately?`
-
-### Product significance
-This is one of the biggest “normal user” phrasing families.
-
-### Implication
-The parser should support fuzzy recency wording such as:
-
-- `last night`
-- `lately`
-- `recently`
-- `over the past month`
-- `past 2 weeks`
-
-These may need explicit date/window normalization rules.
-
----
-
-## 5.3 Last-N / since-date / over-span
-
-Examples:
-
-- `last 5 games`
-- `last 10 games`
-- `since January 1`
-- `since March 1`
-- `over the last 15 games`
-
-### Product significance
-This is now a core natural-query expectation, not an extra feature.
-
-### Implication
-The parser should normalize all of these cleanly into the same timeframe model.
+| Dimension                         | Shipped state                                          | Target state                                                           | Gap    | Phase |
+| --------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------- | ------ | ----- |
+| Surface normalization             | `normalize_text`; many detectors do their own variants | Single consolidated normalizer with published alias table              | Medium | B     |
+| Alias mapping (stats, relations)  | Scattered across detectors; partial coverage           | One source of truth, documented in glossary                            | Medium | B     |
+| Entity resolution                 | Mature: confidence, candidates, source                 | Extend pattern to teams, opponents, stats                              | Small  | D     |
+| Time parsing — explicit           | Seasons, ranges, since, last-N, career, dates, decade  | No change needed                                                       | None   | —     |
+| Time parsing — fuzzy              | `recent form` only; others partial                     | `lately`, `past month`, `last night`, `last couple weeks` normalized   | Medium | A/B   |
+| Threshold operators               | Mature: AND, OR, grouped booleans with parens          | No change needed                                                       | None   | —     |
+| Context filters                   | home/away, wins/losses, playoff rounds, position       | Add clutch, quarters, B2B, starter/bench, OT, one-possession           | Large  | E     |
+| Opponent filters (team, player)   | Shipped                                                | No change needed                                                       | None   | —     |
+| Opponent-quality buckets          | Not shipped                                            | `contenders`, `good teams`, `top-10 defenses` with product definitions | Large  | E     |
+| Absence (`without X`)             | Shipped; clears player when it matches subject         | Broaden phrasing (`X out`, `X didn't play`, `no X`, `sans X`)          | Small  | A     |
+| On/off queries                    | Not shipped                                            | New intent family with `lineup_members`, `presence_state` slots        | Large  | E     |
+| Lineup queries                    | Not shipped                                            | New intent family with `unit_size`, `minute_minimum` slots             | Large  | E     |
+| Streak queries                    | Shipped: player + team, with defaults                  | No change needed                                                       | None   | —     |
+| Occurrence queries                | Shipped: single, compound, distinct-count              | No change needed                                                       | None   | —     |
+| Playoff / historical              | Shipped: history, appearances, rounds, decades         | No change needed                                                       | None   | —     |
+| Defaults for underspecified       | Some defaults applied in `_build_parse_state`          | Explicit, documented, applied consistently                             | Medium | C     |
+| Word-order flexibility            | Works for some patterns, not systematically tested     | Explicit equivalence-group coverage                                    | Medium | A     |
+| Search-form / shorthand coverage  | Many shipped capabilities accept only some phrasings   | All shipped capabilities accept question + search + shorthand          | Large  | A     |
+| Parse-level confidence            | Not shipped (entity-level only)                        | Parse-wide confidence score                                            | Medium | D     |
+| Alternate interpretations         | Not shipped                                            | Surface top-2 when confidence is medium                                | Medium | D     |
+| Canonical parse state             | Implicit dict; route + route_kwargs appended           | Formalized schema with `intent` enum, `confidence`, `alternates`       | Medium | D     |
+| Glossary / fuzzy-term definitions | Scattered across code; no doc source of truth          | One table, referenced from parser and stats engine                     | Medium | B     |
+| Evaluation harness                | Marker-based (`parser`, `query`), testmon-backed       | Add explicit equivalence-group tests + failure-mode cases              | Medium | A     |
 
 ---
 
-## 5.4 Best games / biggest games / hottest stretch
+## 5. Phased roadmap
 
-Examples:
+Five phases. Earlier phases unblock later ones. Each phase is self-contained enough to ship independently and leave the repo in a cleaner state.
 
-- `biggest scoring games this season`
-- `best games by Game Score`
-- `hottest 3-game scoring stretch`
-- `best two-way games this season`
+The letters map to v1's phases for continuity — A/B/C align with the v1 plan, D is new, and E bundles what v1 called "Phase D — new capability families."
 
-### Product significance
-Users naturally ask for:
-- best single games
-- best short stretches
-- most dominant or most efficient performances
+### 5.1 Phase A — Phrasing parity on shipped capabilities
 
-### Implication
-This is a major query family and should not be collapsed into generic season leaders.
+**Goal:** Every capability already listed in `query_catalog.md` should accept question form, search form, and compressed shorthand consistently.
 
----
+**Scope (what changes):**
 
-## 5.5 Against good teams / contenders / opponent-strength buckets
+- Add search-form and shorthand variants for existing leaderboards, summaries, records, occurrences, streaks, and splits
+- Strengthen fuzzy time-word handling where it already partially works (`lately`, `past month`, `recent`)
+- Broaden absence phrasing (`X out`, `X didn't play`, `no X`, `sans X`) — `without_player` detection already exists, but not all surface forms route there
+- Establish word-order equivalence as an explicit test category
 
-Examples:
+**Where the work lives:**
 
-- `against teams over .500`
-- `against contenders`
-- `against top-10 defenses`
-- `against playoff teams`
-- `against elite frontcourts`
+- `src/nbatools/commands/natural_query.py` — routing predicates in `_finalize_route`
+- `src/nbatools/commands/_parse_helpers.py` — intent flag detectors (`wants_*`, `detect_*`)
+- `src/nbatools/commands/_matchup_utils.py` — `detect_without_player` phrasing expansion
+- `src/nbatools/commands/_date_utils.py` — fuzzy time windows
 
-### Product significance
-This is a big missing family in most simple parsers.
+**What's NOT in scope:**
 
-### Implication
-Some of these are directly grounded today (`teams over .500`), while others need a
-clear product definition (`contenders`, `elite frontcourts`, `good teams`).
+- new capability families (on/off, lineups, opponent-quality) — those are Phase E
+- adding new stat types, routes, or query classes
+- centralizing the normalization layer — that's Phase B
 
-The important rule is:
+**Definition of done:**
 
-> do not fake these labels.
+- equivalence groups from [`parser/examples.md §7`](../architecture/parser/examples.md) pass as parser tests
+- at least 50 paired question/search/shorthand triples route identically
+- `query_catalog.md` updated to reflect any surface-form additions
 
-If `contenders` or `good teams` are supported, define them explicitly.
-If not, do not pretend they are interpretable.
+**Tests to run:**
 
----
+- `make test-parser` (primary)
+- `make test-query` (routing regressions)
+- `make test-impacted` during iteration
 
-## 5.6 When a teammate didn't play / was out
+**Reference doc sections to consult:**
 
-Examples:
-
-- `Bucks record when Giannis was out`
-- `Luka when Kyrie out`
-- `Austin Reaves stats without LeBron`
-- `Which players see the biggest usage increase when their star teammate is out?`
-
-### Product significance
-This is one of the most important user-facing contexts.
-
-### Current state
-With/without-player support is now part of the shipped surface in meaningful cases.
-
-### Remaining expansion themes
-- broaden phrasing coverage
-- improve reliability on shorthand (`w/o`, `out`, `didn't play`)
-- eventually expand to richer “with star off” style questions where the data model supports it
+- [`parser/specification.md §2`](../architecture/parser/specification.md#2-input-normalization) — aliases
+- [`parser/specification.md §6`](../architecture/parser/specification.md#6-time-parsing) — fuzzy time
+- [`parser/examples.md §3`](../architecture/parser/examples.md#3-paired-examples-question-form-vs-search-form) — pairs
+- [`parser/examples.md §5.4`](../architecture/parser/examples.md#54-word-order-swaps) — word-order
 
 ---
 
-## 5.7 Frequency / how-often queries
+### 5.2 Phase B — Consolidated normalization and codified glossary
 
-Examples:
+**Goal:** One source of truth for alias mapping, fuzzy-term definitions, and product-policy defaults. Pull scattered normalization into a coherent layer.
 
-- `How often has Jokic recorded a triple-double this season?`
-- `How often has Curry made 5+ threes this year?`
-- `How often has a team scored 140+ this year?`
+**Scope (what changes):**
 
-### Product significance
-This is a core mental model for sports users.
+- Consolidate alias mapping into `normalize_text` (or a companion module) so detectors consume a uniform input
+- Create a glossary module (or data file) for fuzzy-term definitions: `recently`, `lately`, `past month`, `last couple weeks`, `best games`, `hottest`, `efficient`, `clutch`
+- Document every term in [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary) with the current live definition
+- Ensure stat-alias table is a shared resource (used by detectors, documented in [`query_catalog.md §2.6`](../reference/query_catalog.md))
 
-### Implication
-These should cleanly map to:
-- count of games
-- count of distinct players/teams
-- count over a specified sample
+**Where the work lives:**
 
-Distinct-entity count should be treated as its own supported subfamily.
+- `src/nbatools/commands/_constants.py` — alias table expansion
+- `src/nbatools/commands/_parse_helpers.py` — consume centralized aliases
+- `src/nbatools/commands/_date_utils.py` — fuzzy-time resolution using glossary
+- new module (e.g. `src/nbatools/commands/_glossary.py`) for fuzzy-term definitions
+- [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary) — keep the documented glossary in sync
 
----
+**What's NOT in scope:**
 
-## 5.8 Record when ___
+- opponent-quality buckets (`contenders`, `good teams`) — those ship in Phase E, but their _definitions_ get reserved in the glossary now so Phase E can populate them cleanly
+- changing what's already shipped; this is a consolidation phase, not a behavior-change phase
 
-Examples:
+**Definition of done:**
 
-- `Mavericks record when Luka scores 35+`
-- `Knicks record when allowing under 110`
-- `Warriors record when Curry makes 6+ threes`
-- `Lakers record when LeBron and AD both play`
+- all alias mapping flows through one resource
+- glossary module documents every fuzzy term used anywhere in the parser
+- specification's glossary section matches the code
+- no detector hardcodes a time-window meaning inline
 
-### Product significance
-This is an extremely natural and valuable sports-query family.
+**Tests to run:**
 
-### Implication
-Record-under-condition support should be treated as a first-class route family,
-not just a side effect of other team-summary routes.
+- `make test-parser`
+- `make test-query`
+- `make test-preflight` (because this touches shared infra)
 
----
+**Reference doc sections to consult:**
 
-## 5.9 Splits and contexts
-
-Examples:
-
-- home / road
-- wins / losses
-- first half / fourth quarter
-- clutch
-- one-possession games
-- back-to-backs
-- starter vs bench
-- on/off
-
-### Product significance
-These are normal sports contexts, not niche analyst-only questions.
-
-### Implication
-They should be modeled as explicit context slots rather than ad hoc phrasing.
+- [`parser/specification.md §2.2`](../architecture/parser/specification.md#22-alias-mapping)
+- [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary)
 
 ---
 
-## 6. Query families that are especially important for future expansion
+### 5.3 Phase C — Explicit defaults for underspecified queries
 
-From the three input docs, these are the highest-value future parser/product families:
+**Goal:** Every underspecified query pattern has a documented default behavior. Defaults are product policy, applied consistently, and changeable without rewriting parser code.
 
-1. **Search-form support**
-   - `most points last 10 games`
-   - `best road record this year`
-   - `Curry 5+ threes this season`
+**Scope (what changes):**
 
-2. **Compressed shorthand support**
-   - `Luka last 5`
-   - `SGA 30+ games`
-   - `Bucks ortg w/o Giannis`
-   - `Celtics drtg last 10`
+- Audit `_build_parse_state` and `_finalize_route` for implicit defaults
+- Promote implicit defaults to explicit, named rules
+- Ensure each pattern in [`parser/specification.md §15`](../architecture/parser/specification.md#15-defaults-for-underspecified-queries) is either applied consistently or flagged as an open policy decision
+- Add notes to the parse state output (`notes` list) when a default was applied, so UI can surface "showing X because..." when useful
 
-3. **Word-order flexibility**
-   - `best scorers last month`
-   - `last month best scorers`
-   - `scorers best last month`
+**Default rules in scope:**
 
-4. **Normalization rules**
-   - `vs` → against
-   - `w/` → with
-   - `w/o` → without / when X did not play
-   - `last 10` → last 10 games
-   - `this month` → current month window
+- `<player> + <timeframe>` → `summary`
+- `<team> + <opponent-quality>` → `record` (even though opponent-quality isn't shipped until Phase E — the default rule ships here so Phase E can plug in)
+- `<player> + <threshold>` → `occurrence` / `count`
+- `"best games" + <subject>` → ranked game logs by Game Score
+- `<team> + recently` → recent record + recent summary
+- `<metric>` only, no subject → league-wide leaderboard
 
-5. **Implicit intent defaults**
-   Examples from the notes doc:
-   - `Giannis last 10 games` → default to summary
-   - `Curry 5+ threes this season` → default to frequency/count
-   - `LeBron best games` → default to best game outputs
-   - `Celtics vs contenders` → default likely record unless another metric is made explicit
+**Where the work lives:**
 
----
+- `src/nbatools/commands/natural_query.py` — `_finalize_route` default branches
+- `src/nbatools/commands/_parse_helpers.py` — `default_season_for_context` and related
+- new helper (or consolidation in an existing one) for default-rule application
 
-## 7. Recommended parser rules from the notes doc
+**What's NOT in scope:**
 
-## 7.1 Question form should be optional
+- parse-level confidence scoring — that's Phase D
+- surfacing alternates — that's Phase D
 
-Do not make “is this a full question?” part of the main routing decision.
+**Definition of done:**
 
-## 7.2 Non-question phrasing should be first-class
+- every default rule named in [`parser/specification.md §15.2`](../architecture/parser/specification.md#152-defaults-to-formalize) is applied consistently or explicitly marked as unsupported
+- the `notes` field on the parse state includes an entry when a default fired
+- [`parser/specification.md §15`](../architecture/parser/specification.md#15-defaults-for-underspecified-queries) matches the code
 
-Search-bar phrasing is normal product usage, not sloppy input.
+**Tests to run:**
 
-## 7.3 Missing verbs should be tolerated
+- `make test-parser`
+- `make test-query`
+- `make test-impacted` during iteration
 
-Examples:
+**Reference doc sections to consult:**
 
-- `Giannis last 10 games`
-- `Lakers against above .500 teams`
-- `Thunder in clutch games`
-
-These need defaults, not failure.
-
-## 7.4 Intent should come from content words, not grammar
-
-Prefer parsing around:
-- entity nouns
-- stat names
-- ranking words
-- context words
-- timeframe phrases
-- threshold operators
-
-## 7.5 Defaults should be explicit and documented
-
-Examples worth formalizing:
-
-- player + timeframe only → summary
-- team + opponent-strength only → likely record
-- player + threshold event only → frequency/count
-- `best games` → game-level ranking
-
-Defaults should not be accidental.
+- [`parser/specification.md §15`](../architecture/parser/specification.md#15-defaults-for-underspecified-queries)
+- [`parser/overview.md §5`](../architecture/parser/overview.md#5-product-policy-decisions-to-lock-down-early)
 
 ---
 
-## 8. Suggested parser-training/test-data strategy
+### 5.4 Phase D — Confidence, alternates, and canonical parse formalization
 
-The paired examples doc suggests a good robustness strategy.
+**Goal:** The parse state becomes an explicit, versioned contract with a confidence score and optional alternate interpretations.
 
-For many important intents, maintain three forms:
+**Scope (what changes):**
 
-1. **Full question**
-   - `Who has the most points over the last 10 games?`
-2. **Search phrase**
-   - `most points last 10 games`
-3. **Compressed shorthand**
-   - `points leaders last 10`
+- Add a parse-wide `confidence` field to the parse state
+- Add an `intent` enum to the parse state, replacing pure inference from intent-flag combinations
+- Add an `alternates` list for medium-confidence parses (top 1–2 alternate parses)
+- Extend entity-level ambiguity handling to teams and stats, not just players
+- Update `_finalize_route` to populate these new fields
+- Update the result envelope to carry confidence and alternate interpretations to the UI
 
-This is a better parser benchmark than question-only examples.
+**Where the work lives:**
 
-### Recommended test-data tiers
+- `src/nbatools/commands/natural_query.py` — `_build_parse_state` and `_finalize_route`
+- `src/nbatools/commands/entity_resolution.py` — extend pattern to more entity types
+- `src/nbatools/commands/_natural_query_execution.py` — carry confidence through render
+- `src/nbatools/api.py` — QueryResponse envelope (if the shape changes)
+- `frontend/src/api/types.ts` and `ResultEnvelope.tsx` — surface alternates in UI
 
-#### Tier 1 — canonical examples
-Clean, high-signal examples for each supported intent.
+**What's NOT in scope:**
 
-#### Tier 2 — paired search-form variants
-Question + non-question variants that should parse the same way.
+- training a confidence model; heuristic scoring is fine for first pass
+- broad UI redesign; the alternate-surface can be minimal
 
-#### Tier 3 — shorthand variants
-Compressed inputs that should still resolve acceptably.
+**Definition of done:**
 
-#### Tier 4 — ambiguity/unsupported boundaries
-Inputs that should fail clearly instead of guessing.
+- every parse state carries `intent` (enum), `confidence` (0–1), and `alternates` (list; usually empty)
+- at least 10 known ambiguous-query cases surface a reasonable alternate
+- the React UI renders "did you mean X" for medium-confidence parses (simple chip or link is enough)
+- `QueryResponse` envelope documents the new fields
 
----
+**Tests to run:**
 
-## 9. Recommended implementation order
+- `make test-parser`
+- `make test-query`
+- `make test-api` (envelope change)
+- `make test` (maximum confidence, because envelope change touches multiple surfaces)
 
-### Phase A — search-form parity on existing capabilities
-Focus on making already-shipped capabilities easier to access.
+**Reference doc sections to consult:**
 
-Examples:
-
-- `most points last 10 games`
-- `best road record this year`
-- `Curry 5+ threes this season`
-- `Bucks record when Giannis out`
-
-### Phase B — shorthand normalization layer
-Support common compressed forms:
-
-- `vs`
-- `w/`
-- `w/o`
-- omitted `games`
-- abbreviated stat names where already grounded
-
-### Phase C — explicit default-intent rules
-Document and implement sane defaults for short queries.
-
-### Phase D — new capability families
-Only after phrasing coverage improves, expand into bigger missing families such as:
-
-- opponent-strength buckets
-- stretch queries (`hottest 3-game scoring stretch`)
-- richer context filters (`clutch`, `back-to-back`, `starter vs bench`, `on/off`)
+- [`parser/specification.md §16`](../architecture/parser/specification.md#16-ambiguity-and-confidence)
+- [`parser/specification.md §17`](../architecture/parser/specification.md#17-canonical-intermediate-representation)
 
 ---
 
-## 10. Guardrails
+### 5.5 Phase E — New capability families
 
-1. Do not treat vague labels like `good teams` or `contenders` as supported unless they are explicitly defined.
-2. Do not rely on embedding/semantic luck for search-form support — add explicit test coverage.
-3. Do not broaden docs claims beyond what is actually shipped and tested.
-4. Prefer honest unsupported responses over silently wrong route guesses.
-5. Use real user phrasing as the roadmap driver whenever possible.
+**Goal:** Add the major user-facing capability families that aren't shipped yet.
+
+Phase E is large and naturally breaks into independent sub-phases that can ship in any order once A/B/C/D are stable.
+
+#### 5.5.1 Opponent-quality buckets
+
+- `against contenders`, `against good teams`, `against top-10 defenses`, `against playoff teams`
+- new filter type: `opponent_quality` carrying surface term + resolved definition
+- definitions live in the glossary (Phase B) and get populated with real values here
+- routes: new or extended team/player routes accepting the filter
+
+#### 5.5.2 On/off queries
+
+- `Jokic on/off`, `Nuggets with Jokic on the floor`, `without Giannis`
+- new slots: `lineup_members`, `presence_state`, `minute_minimum`
+- new route family: `player_on_off`, `team_with_without_player`
+- data access layer: may require new queries against on-off splits data
+
+#### 5.5.3 Lineup queries
+
+- `best 5-man lineups`, `3-man units with 200+ minutes`, `net rating with Tatum and Brown together`
+- new slots: `unit_size`, minute thresholds
+- new route family: `lineup_leaderboard`, `lineup_summary`
+- data access: lineup data source
+
+#### 5.5.4 Expanded context filters
+
+- clutch, quarter (1st/2nd/3rd/4th), half (1st/2nd), overtime, one-possession games, back-to-backs, rest advantage/disadvantage, nationally televised, starter/bench role
+- extensions to existing filter slots; in most cases these slot into existing routes
+- some (clutch, starter/bench) may require new data aggregations
+
+#### 5.5.5 Stretch / rolling-window queries
+
+- `hottest 3-game scoring stretch`, `best 5-game stretch by Game Score`
+- new route family or an aggregation mode on existing leaderboard routes
+- product decision: what metric defines "hot"?
+
+**Cross-cutting guidance for Phase E:**
+
+- each sub-phase should land its own capability catalog update in [`query_catalog.md`](../reference/query_catalog.md)
+- each sub-phase should add its examples to [`parser/examples.md`](../architecture/parser/examples.md)
+- each sub-phase should include equivalence-group tests for question/search/shorthand forms of its new capabilities
+- sub-phases with new routes should touch API and UI envelope if the response shape changes
+
+**Tests to run per sub-phase:**
+
+- `make test-parser` + `make test-query` + `make test-engine` (new computation usually)
+- `make test-api` if envelope changed
+- `make test` before merging
+
+**Reference doc sections to consult:**
+
+- opponent-quality: [`parser/specification.md §9`](../architecture/parser/specification.md#9-opponent-quality-filters)
+- on/off + lineups: [`parser/specification.md §11`](../architecture/parser/specification.md#11-onoff-and-lineup-support)
+- expanded contexts: [`parser/specification.md §8`](../architecture/parser/specification.md#8-context-filters)
+- stretch queries: [`parser/examples.md §8.4`](../architecture/parser/examples.md#84-stretch--rolling-window-queries-phase-e)
 
 ---
 
-## 11. Immediate practical use
+## 6. Testing strategy
 
-This doc should guide the next parser/product passes in three ways:
+Align with the existing repo conventions ([`AGENTS.md`](../../AGENTS.md) has the full testing policy).
 
-1. **Backlog source** — use its query families as the next-wave roadmap
-2. **Test-data source** — convert the examples into parser/routing regression tests
-3. **Design guardrail** — keep search-form and shorthand support in scope, not as afterthoughts
+### 6.1 Equivalence groups as the core parser test
+
+Every phase should add or extend equivalence groups from [`parser/examples.md §7`](../architecture/parser/examples.md#7-equivalence-groups). A passing group means all phrasings in it produce identical parse states (modulo confidence).
+
+### 6.2 Marker-based subset tests
+
+Parser work uses pytest markers `parser` and `query`:
+
+- Phase A: primarily `parser` marker (slot extraction + phrasing)
+- Phase B: `parser` (normalization, aliases)
+- Phase C: `parser` and `query` (defaults affect routing)
+- Phase D: `parser`, `query`, and `api` (envelope change)
+- Phase E sub-phases: vary by sub-phase; most touch `parser`, `query`, and `engine`
+
+### 6.3 Failure-mode coverage
+
+Each phase should add at least a handful of explicit failure-mode test cases (from [`parser/examples.md §5`](../architecture/parser/examples.md#5-stress-test-inputs) and [`parser/specification.md §20`](../architecture/parser/specification.md#20-failure-modes)). These should test that the parser fails cleanly rather than guesses wrong.
+
+### 6.4 Logging-driven iteration
+
+After each phase ships, monitor real-user query logs for:
+
+- repeated reformulations (signals a bad first parse)
+- low-confidence patterns at high volume
+- unsupported shorthand that shows up frequently
+
+Feed learnings back into the next phase's scope.
 
 ---
 
-## 12. Relationship to other docs
+## 7. Guardrails
 
-- `docs/reference/query_catalog.md` = living shipped inventory of what users can ask now
-- `docs/reference/current_state_guide.md` = strict verified current behavior
-- `docs/reference/query_guide.md` = broader reference/examples doc
-- **this file** = planning doc for expanding the query surface based on real example sets and parser notes
+These apply across every phase.
+
+### 7.1 Do not broaden claims without backing them up
+
+Do not update [`query_catalog.md`](../reference/query_catalog.md) or [`README.md`](../../README.md) to advertise a capability until it is both shipped and tested. Docs describe verified behavior; they don't describe intent.
+
+### 7.2 Do not fake undefined labels
+
+Don't accept `good teams`, `contenders`, `hottest`, `best games`, `clutch`, or similar fuzzy terms as supported unless a definition exists in the glossary. Prefer returning a clear "not supported" than silently guessing.
+
+### 7.3 Prefer small, targeted changes
+
+Per [`AGENTS.md`](../../AGENTS.md), prefer tightening a route over adding a parallel one. Don't let new work create a third copy of existing logic.
+
+### 7.4 Keep the parser UI-agnostic and transport-agnostic
+
+Per [`AGENTS.md`](../../AGENTS.md), parser logic stays in `commands/`, not in CLI wrappers or frontend code. Envelope changes propagate through `api.py` and UI `types.ts` in lockstep.
+
+### 7.5 Update `query_catalog.md` in the same pass
+
+When a phase ships new capability, [`query_catalog.md`](../reference/query_catalog.md) gets updated in the same PR, not later.
+
+### 7.6 Keep parser and test coverage in sync
+
+Per [`AGENTS.md`](../../AGENTS.md): a feature is not shipped if docs changed but tests didn't. Each phase adds test coverage commensurate with its scope.
+
+### 7.7 Do not merge unrelated refactors into capability work
+
+Refactors that aren't motivated by the phase's scope should land separately, so capability regressions can be bisected cleanly.
+
+---
+
+## 8. Out of scope for this plan
+
+The following are deliberately excluded and should be addressed in separate planning docs if needed:
+
+- **Storage-layer changes.** CSV + pandas stays the current model per AGENTS.md.
+- **ML-based intent classification.** The parser remains heuristic; confidence scoring (Phase D) is heuristic, not model-backed.
+- **Query personalization.** Per-user history-aware parsing is not planned here.
+- **Multi-intent queries.** "Compare Jokic and Embiid and show Jokic's best games" — compound intents in one query are out of scope.
+- **Conversational multi-turn.** "Now show me against Lakers" as a follow-up to a prior query is out of scope.
+
+---
+
+## 9. Document relationships
+
+This plan sits alongside:
+
+| Doc                                                                                    | Role                                               |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **This file**                                                                          | Active planning doc for parser/surface expansion   |
+| [`docs/architecture/parser/overview.md`](../architecture/parser/overview.md)           | Parser design principles                           |
+| [`docs/architecture/parser/specification.md`](../architecture/parser/specification.md) | Parser component spec                              |
+| [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md)           | Parser example library + equivalence groups        |
+| [`docs/reference/query_catalog.md`](../reference/query_catalog.md)                     | Living shipped inventory (update with every phase) |
+| [`docs/reference/current_state_guide.md`](../reference/current_state_guide.md)         | Strict verified behavior                           |
+| [`docs/reference/query_guide.md`](../reference/query_guide.md)                         | Broader narrative reference                        |
+| [`AGENTS.md`](../../AGENTS.md)                                                         | Repo-wide conventions and testing policy           |
+| [`docs/planning/roadmap.md`](./roadmap.md)                                             | Broader repo roadmap (non-parser)                  |
+
+### Update cadence
+
+- **This plan** — edited when phase scope changes, not phase-by-phase. Retire it when Phase E is substantially complete or supersede it with a successor plan.
+- **`query_catalog.md`** — updated in the same PR as any shipped capability change.
+- **Parser reference docs** — updated when component behavior changes or new capability families are designed.
+- **Current state guide** — updated when verified-behavior claims change.

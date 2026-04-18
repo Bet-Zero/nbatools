@@ -2,7 +2,7 @@
 
 > **Purpose of this doc:** The component-by-component technical reference for the natural-query parser in `nbatools`. For each stage, this defines what it does, what it must support, what decisions need to be made, and how it connects to the next stage. For framing and design principles, see [`overview.md`](./overview.md). For example inputs and end-to-end traces, see [`examples.md`](./examples.md).
 >
-> **Scope:** This doc describes the parser's *design* — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
+> **Scope:** This doc describes the parser's _design_ — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
 ---
 
@@ -78,7 +78,7 @@ parse state with route + route_kwargs + notes
 Key architectural notes:
 
 - **Slot extraction is parallel, not sequential.** `_build_parse_state` runs every detector and extractor on the normalized query independently. Later stages consume the combined state.
-- **Intent is inferred, not declared.** There is no single "intent classification" step. The *combination of slot values and intent flags* determines routing in `_finalize_route`.
+- **Intent is inferred, not declared.** There is no single "intent classification" step. The _combination of slot values and intent flags_ determines routing in `_finalize_route`.
 - **The parse state is the canonical intermediate representation** (see §17).
 - **OR clauses are handled separately** via `query_boolean_parser` and `_split_or_clauses`, with `_merge_inherited_context` carrying context into each clause.
 
@@ -102,22 +102,22 @@ Handle messy input before slot extraction runs. Centralized in `normalize_text()
 
 Common aliases should collapse to a canonical form before downstream parsing. Some are already handled in scattered detectors; a consolidated alias layer is a target for the normalization-consolidation phase (see expansion plan).
 
-| Alias                           | Canonical form              |
-| ------------------------------- | --------------------------- |
-| `vs`                            | `against`                   |
-| `w/`                            | `with`                      |
-| `w/o`                           | `without`                   |
-| `out`, `inactive`, `absent`     | `did not play`              |
-| `last 10`                       | `last 10 games`             |
-| `3s`, `threes`, `3pm`           | `3-pointers made`           |
-| `ts`, `ts%`                     | `true shooting percentage`  |
-| `ortg`                          | `offensive rating`          |
-| `drtg`                          | `defensive rating`          |
-| `netrtg`, `net`                 | `net rating`                |
-| `ppg`, `rpg`, `apg`             | per-game stat forms         |
-| `td`, `dd`                      | triple-double, double-double|
+| Alias                                | Canonical form                    |
+| ------------------------------------ | --------------------------------- |
+| `vs`                                 | `against`                         |
+| `w/`                                 | `with`                            |
+| `w/o`                                | `without`                         |
+| `out`, `inactive`, `absent`          | `did not play`                    |
+| `last 10`                            | `last 10 games`                   |
+| `3s`, `threes`, `3pm`                | `3-pointers made`                 |
+| `ts`, `ts%`                          | `true shooting percentage`        |
+| `ortg`                               | `offensive rating`                |
+| `drtg`                               | `defensive rating`                |
+| `netrtg`, `net`                      | `net rating`                      |
+| `ppg`, `rpg`, `apg`                  | per-game stat forms               |
+| `td`, `dd`                           | triple-double, double-double      |
 | `boards`, `dimes`, `swipes`, `swats` | rebounds, assists, steals, blocks |
-| `scoring`                       | `points`                    |
+| `scoring`                            | `points`                          |
 
 See the [living stat-alias inventory in `query_catalog.md` §2.6](../../reference/query_catalog.md) for what is currently recognized.
 
@@ -156,7 +156,7 @@ Identify the real-world subject(s) the query references. Implemented across `_ma
 - **player comparison pair** — `extract_player_comparison` → (`player_a`, `player_b`)
 - **team comparison pair** — `extract_team_comparison` → (`team_a`, `team_b`)
 - **position group** — `extract_position_filter`
-- **lineup / unit** — *not yet supported* (see §11)
+- **lineup / unit** — _not yet supported_ (see §11)
 
 ### 3.2 Name reference styles
 
@@ -235,58 +235,58 @@ This is deliberately different from a flat "one intent enum" model. The combinat
 
 ### 4.1 Query classes
 
-| Class             | Answers                                                          |
-| ----------------- | ---------------------------------------------------------------- |
-| `finder`          | Game rows matching conditions                                    |
-| `count`           | Count of games or occurrences matching a condition               |
-| `summary`         | Aggregated stats over a sample (player or team)                  |
-| `comparison`      | Side-by-side stats for two entities                              |
-| `split`           | Home/away or wins/losses breakdowns                              |
-| `leaderboard`     | Ranked lists (season leaders, occurrence leaders, top games)     |
-| `streak`          | Consecutive games meeting a condition                            |
-| `record`          | Team win-loss records with optional filters                      |
-| `playoff`         | Playoff history, appearances, round records, matchup history    |
-| `occurrence`      | Count of games where a stat threshold was met (single or compound)|
+| Class         | Answers                                                            |
+| ------------- | ------------------------------------------------------------------ |
+| `finder`      | Game rows matching conditions                                      |
+| `count`       | Count of games or occurrences matching a condition                 |
+| `summary`     | Aggregated stats over a sample (player or team)                    |
+| `comparison`  | Side-by-side stats for two entities                                |
+| `split`       | Home/away or wins/losses breakdowns                                |
+| `leaderboard` | Ranked lists (season leaders, occurrence leaders, top games)       |
+| `streak`      | Consecutive games meeting a condition                              |
+| `record`      | Team win-loss records with optional filters                        |
+| `playoff`     | Playoff history, appearances, round records, matchup history       |
+| `occurrence`  | Count of games where a stat threshold was met (single or compound) |
 
 ### 4.2 Intent modifiers (flags on the parse state)
 
-| Flag                         | Signals                                                          |
-| ---------------------------- | ---------------------------------------------------------------- |
-| `summary_intent`             | User wants aggregated stats (`summary`, `averages`, `recent form`)|
-| `finder_intent`              | User wants matching game rows (`show me`, `list`, `find`)        |
-| `count_intent`               | User wants a count (`how many`, `count`, `number of`)            |
-| `record_intent`              | User wants win-loss (`record`, `win percentage`)                 |
-| `leaderboard_intent`         | Player leaderboard (`top scorers`, `most 3s`)                    |
-| `team_leaderboard_intent`    | Team leaderboard (`best offensive teams`)                        |
-| `occurrence_leaderboard_intent` | Most X-point games (`most 40 point games`)                    |
-| `season_high_intent`         | Best single games for a player (`season high`, `best game`)      |
-| `distinct_player_count`      | Count of distinct players meeting condition                      |
-| `distinct_team_count`        | Count of distinct teams meeting condition                        |
-| `split_intent`               | Home-vs-away or wins-vs-losses split                             |
-| `range_intent`               | Season range or date range specified                             |
-| `career_intent`              | Career / all-time scope                                          |
-| `head_to_head`               | H2H filter requested                                             |
-| `by_decade_intent`           | Decade-bucketed result                                           |
-| `playoff_appearance_intent`  | Counts playoff appearances                                       |
-| `playoff_history_intent`     | Playoff-specific query                                           |
-| `by_round_intent`            | Results bucketed by playoff round                                |
+| Flag                            | Signals                                                            |
+| ------------------------------- | ------------------------------------------------------------------ |
+| `summary_intent`                | User wants aggregated stats (`summary`, `averages`, `recent form`) |
+| `finder_intent`                 | User wants matching game rows (`show me`, `list`, `find`)          |
+| `count_intent`                  | User wants a count (`how many`, `count`, `number of`)              |
+| `record_intent`                 | User wants win-loss (`record`, `win percentage`)                   |
+| `leaderboard_intent`            | Player leaderboard (`top scorers`, `most 3s`)                      |
+| `team_leaderboard_intent`       | Team leaderboard (`best offensive teams`)                          |
+| `occurrence_leaderboard_intent` | Most X-point games (`most 40 point games`)                         |
+| `season_high_intent`            | Best single games for a player (`season high`, `best game`)        |
+| `distinct_player_count`         | Count of distinct players meeting condition                        |
+| `distinct_team_count`           | Count of distinct teams meeting condition                          |
+| `split_intent`                  | Home-vs-away or wins-vs-losses split                               |
+| `range_intent`                  | Season range or date range specified                               |
+| `career_intent`                 | Career / all-time scope                                            |
+| `head_to_head`                  | H2H filter requested                                               |
+| `by_decade_intent`              | Decade-bucketed result                                             |
+| `playoff_appearance_intent`     | Counts playoff appearances                                         |
+| `playoff_history_intent`        | Playoff-specific query                                             |
+| `by_round_intent`               | Results bucketed by playoff round                                  |
 
 ### 4.3 Class × modifier examples
 
-| Query                                          | Class           | Key modifiers                    |
-| ---------------------------------------------- | --------------- | -------------------------------- |
-| `most points last 10`                          | `leaderboard`   | `leaderboard_intent`             |
-| `Jokic last 10`                                | `summary`       | `summary_intent` (inferred)      |
-| `biggest scoring games this season`            | `leaderboard`   | `season_high_intent` (league-wide)|
-| `Curry 5+ threes this season`                  | `count`/`occurrence` | `occurrence_event` populated |
-| `Mavericks record when Luka scores 35+`        | `record`        | `record_intent` + threshold       |
-| `Celtics vs contenders`                        | `record` (default)| `record_intent` + opponent-quality (future) |
-| `Edwards in wins vs losses`                    | `split`         | `split_intent` + `split_type="wins_vs_losses"`|
-| `Suns when Booker out`                         | `summary`/`record` | `without_player` filter       |
-| `Nuggets Jokic on off`                         | *future*        | on/off (not yet implemented)      |
-| `LeBron vs Durant career stats`                | `comparison`    | `career_intent` + player comparison|
-| `Jokic longest 30-point streak`                | `streak`        | `streak_request` populated        |
-| `Lakers vs Celtics playoff history`            | `playoff`       | `playoff_history_intent`          |
+| Query                                   | Class                | Key modifiers                                  |
+| --------------------------------------- | -------------------- | ---------------------------------------------- |
+| `most points last 10`                   | `leaderboard`        | `leaderboard_intent`                           |
+| `Jokic last 10`                         | `summary`            | `summary_intent` (inferred)                    |
+| `biggest scoring games this season`     | `leaderboard`        | `season_high_intent` (league-wide)             |
+| `Curry 5+ threes this season`           | `count`/`occurrence` | `occurrence_event` populated                   |
+| `Mavericks record when Luka scores 35+` | `record`             | `record_intent` + threshold                    |
+| `Celtics vs contenders`                 | `record` (default)   | `record_intent` + opponent-quality (future)    |
+| `Edwards in wins vs losses`             | `split`              | `split_intent` + `split_type="wins_vs_losses"` |
+| `Suns when Booker out`                  | `summary`/`record`   | `without_player` filter                        |
+| `Nuggets Jokic on off`                  | _future_             | on/off (not yet implemented)                   |
+| `LeBron vs Durant career stats`         | `comparison`         | `career_intent` + player comparison            |
+| `Jokic longest 30-point streak`         | `streak`             | `streak_request` populated                     |
+| `Lakers vs Celtics playoff history`     | `playoff`            | `playoff_history_intent`                       |
 
 ### 4.4 Decision signals
 
@@ -314,75 +314,75 @@ All slots are extracted in parallel in `_build_parse_state()` and collected into
 
 **Time slots**
 
-| Slot            | Source                       | Values                                 |
-| --------------- | ---------------------------- | -------------------------------------- |
-| `season`        | `extract_season`             | `"2025-26"`                            |
-| `start_season`  | `extract_season_range`, `extract_since_season`, `extract_last_n_seasons` | `"2020-21"`      |
-| `end_season`    | `extract_season_range`, defaults | `"2025-26"`                        |
-| `start_date`    | `extract_date_range`         | ISO date                               |
-| `end_date`      | `extract_date_range`         | ISO date                               |
-| `season_type`   | `detect_season_type`         | `"regular"` / `"playoffs"` / etc.      |
-| `last_n`        | `extract_last_n`             | int (games)                            |
-| `top_n`         | `extract_top_n`              | int (ranking limit)                    |
+| Slot           | Source                                                                   | Values                            |
+| -------------- | ------------------------------------------------------------------------ | --------------------------------- |
+| `season`       | `extract_season`                                                         | `"2025-26"`                       |
+| `start_season` | `extract_season_range`, `extract_since_season`, `extract_last_n_seasons` | `"2020-21"`                       |
+| `end_season`   | `extract_season_range`, defaults                                         | `"2025-26"`                       |
+| `start_date`   | `extract_date_range`                                                     | ISO date                          |
+| `end_date`     | `extract_date_range`                                                     | ISO date                          |
+| `season_type`  | `detect_season_type`                                                     | `"regular"` / `"playoffs"` / etc. |
+| `last_n`       | `extract_last_n`                                                         | int (games)                       |
+| `top_n`        | `extract_top_n`                                                          | int (ranking limit)               |
 
 **Entity slots**
 
-| Slot              | Source                         | Values                                 |
-| ----------------- | ------------------------------ | -------------------------------------- |
-| `player`          | `detect_player_resolved`       | player ID                              |
-| `player_a`, `player_b` | `extract_player_comparison` | two player IDs                       |
-| `team`            | `detect_team_in_text`          | team code                              |
-| `team_a`, `team_b`| `extract_team_comparison`      | two team codes                         |
-| `opponent`        | `detect_opponent`              | team code                              |
-| `opponent_player` | `detect_opponent_player`       | player ID                              |
-| `without_player`  | `detect_without_player`        | player ID                              |
-| `position_filter` | `extract_position_filter`      | e.g. `"guards"`, `"centers"`           |
+| Slot                   | Source                      | Values                       |
+| ---------------------- | --------------------------- | ---------------------------- |
+| `player`               | `detect_player_resolved`    | player ID                    |
+| `player_a`, `player_b` | `extract_player_comparison` | two player IDs               |
+| `team`                 | `detect_team_in_text`       | team code                    |
+| `team_a`, `team_b`     | `extract_team_comparison`   | two team codes               |
+| `opponent`             | `detect_opponent`           | team code                    |
+| `opponent_player`      | `detect_opponent_player`    | player ID                    |
+| `without_player`       | `detect_without_player`     | player ID                    |
+| `position_filter`      | `extract_position_filter`   | e.g. `"guards"`, `"centers"` |
 
 **Stat / threshold slots**
 
-| Slot                   | Source                          | Values                                 |
-| ---------------------- | ------------------------------- | -------------------------------------- |
-| `stat`                 | `detect_stat`                   | canonical stat name                    |
-| `min_value`            | `extract_threshold_conditions` or `extract_min_value` | numeric |
-| `max_value`            | `extract_threshold_conditions`  | numeric                                |
-| `threshold_conditions` | `extract_threshold_conditions`  | list of threshold dicts (primary)      |
-| `extra_conditions`     | `extract_threshold_conditions`  | list of threshold dicts (AND-combined) |
+| Slot                   | Source                                                | Values                                 |
+| ---------------------- | ----------------------------------------------------- | -------------------------------------- |
+| `stat`                 | `detect_stat`                                         | canonical stat name                    |
+| `min_value`            | `extract_threshold_conditions` or `extract_min_value` | numeric                                |
+| `max_value`            | `extract_threshold_conditions`                        | numeric                                |
+| `threshold_conditions` | `extract_threshold_conditions`                        | list of threshold dicts (primary)      |
+| `extra_conditions`     | `extract_threshold_conditions`                        | list of threshold dicts (AND-combined) |
 
 **Context / filter slots**
 
-| Slot                | Source                     | Values                                 |
-| ------------------- | -------------------------- | -------------------------------------- |
-| `home_only`, `away_only` | `detect_home_away`    | bool                                   |
-| `wins_only`, `losses_only` | `detect_wins_losses` | bool                                  |
-| `split_type`        | `detect_split_type`        | `"home_away"` / `"wins_losses"` / etc. |
-| `head_to_head`      | `detect_head_to_head`      | bool                                   |
-| `playoff_round_filter` | `detect_playoff_round_filter` | round name                       |
+| Slot                       | Source                        | Values                                 |
+| -------------------------- | ----------------------------- | -------------------------------------- |
+| `home_only`, `away_only`   | `detect_home_away`            | bool                                   |
+| `wins_only`, `losses_only` | `detect_wins_losses`          | bool                                   |
+| `split_type`               | `detect_split_type`           | `"home_away"` / `"wins_losses"` / etc. |
+| `head_to_head`             | `detect_head_to_head`         | bool                                   |
+| `playoff_round_filter`     | `detect_playoff_round_filter` | round name                             |
 
 **Structured-query slots**
 
-| Slot                            | Source                              | Values            |
-| ------------------------------- | ----------------------------------- | ----------------- |
-| `occurrence_event`              | `extract_occurrence_event`          | event dict        |
-| `compound_occurrence_conditions`| `extract_compound_occurrence_event` | list of event dicts |
-| `streak_request`                | `extract_streak_request`            | streak config     |
-| `team_streak_request`           | `extract_team_streak_request`       | streak config     |
+| Slot                             | Source                              | Values              |
+| -------------------------------- | ----------------------------------- | ------------------- |
+| `occurrence_event`               | `extract_occurrence_event`          | event dict          |
+| `compound_occurrence_conditions` | `extract_compound_occurrence_event` | list of event dicts |
+| `streak_request`                 | `extract_streak_request`            | streak config       |
+| `team_streak_request`            | `extract_team_streak_request`       | streak config       |
 
 ### 5.2 Required slots by query class
 
 Each class has minimum slots that must be filled (directly or via defaults) for routing to succeed.
 
-| Class          | Minimum slots                                                    | Commonly optional                           |
-| -------------- | ---------------------------------------------------------------- | ------------------------------------------- |
-| `finder`       | `player` or `team`; `season`/range/date window                   | `stat`, `min_value`, context filters        |
-| `count`        | `player` or `team`; at least one threshold condition; time scope | additional thresholds (AND/OR)              |
-| `summary`      | `player` or `team`; time scope                                   | `stat`, opponent, context filters           |
-| `comparison`   | two entities (`player_a`+`player_b` or `team_a`+`team_b`); time scope | context filters                        |
-| `split`        | entity; `split_type`; time scope                                 | `stat`, opponent                            |
-| `leaderboard`  | `stat` (or `leaderboard_intent` + default); time scope           | `top_n`, `position_filter`, opponent        |
-| `streak`       | entity; `streak_request` or `team_streak_request`                | time scope                                  |
-| `record`       | `team` (single or vs matchup); time scope                        | `threshold_conditions`, opponent, context   |
-| `playoff`      | entity; at least one playoff modifier                            | opponent, round filter, decade              |
-| `occurrence`   | `occurrence_event` (stat + threshold); time scope                | compound conditions                         |
+| Class         | Minimum slots                                                         | Commonly optional                         |
+| ------------- | --------------------------------------------------------------------- | ----------------------------------------- |
+| `finder`      | `player` or `team`; `season`/range/date window                        | `stat`, `min_value`, context filters      |
+| `count`       | `player` or `team`; at least one threshold condition; time scope      | additional thresholds (AND/OR)            |
+| `summary`     | `player` or `team`; time scope                                        | `stat`, opponent, context filters         |
+| `comparison`  | two entities (`player_a`+`player_b` or `team_a`+`team_b`); time scope | context filters                           |
+| `split`       | entity; `split_type`; time scope                                      | `stat`, opponent                          |
+| `leaderboard` | `stat` (or `leaderboard_intent` + default); time scope                | `top_n`, `position_filter`, opponent      |
+| `streak`      | entity; `streak_request` or `team_streak_request`                     | time scope                                |
+| `record`      | `team` (single or vs matchup); time scope                             | `threshold_conditions`, opponent, context |
+| `playoff`     | entity; at least one playoff modifier                                 | opponent, round filter, decade            |
+| `occurrence`  | `occurrence_event` (stat + threshold); time scope                     | compound conditions                       |
 
 When a required slot is missing and cannot be filled by defaults (§15), routing should return low confidence or request clarification rather than guess.
 
@@ -394,30 +394,30 @@ Time expressions are one of the top sources of parser failure. The repo already 
 
 ### 6.1 Currently handled
 
-| Form                                    | Helper                     | Example                    |
-| --------------------------------------- | -------------------------- | -------------------------- |
-| `this season`                           | default / `extract_season` | → current season           |
-| explicit season (`2025-26`)             | `extract_season`           | `"2025-26"`                |
-| season range (`from X to Y`)            | `extract_season_range`     | start + end                |
-| since season / year                     | `extract_since_season`     | start + end                |
-| last N seasons                          | `extract_last_n_seasons`   | start + end                |
-| career / all-time                       | `detect_career_intent`     | start + end                |
-| last N games                            | `extract_last_n`           | integer                    |
-| date range / month / since date         | `extract_date_range`       | start + end dates          |
-| `recent form` → last 10                 | `wants_recent_form`        | `last_n=10`                |
-| season type (playoffs, regular)         | `detect_season_type`       | string                     |
-| by-decade                               | `detect_by_decade_intent`  | flag                       |
+| Form                            | Helper                     | Example           |
+| ------------------------------- | -------------------------- | ----------------- |
+| `this season`                   | default / `extract_season` | → current season  |
+| explicit season (`2025-26`)     | `extract_season`           | `"2025-26"`       |
+| season range (`from X to Y`)    | `extract_season_range`     | start + end       |
+| since season / year             | `extract_since_season`     | start + end       |
+| last N seasons                  | `extract_last_n_seasons`   | start + end       |
+| career / all-time               | `detect_career_intent`     | start + end       |
+| last N games                    | `extract_last_n`           | integer           |
+| date range / month / since date | `extract_date_range`       | start + end dates |
+| `recent form` → last 10         | `wants_recent_form`        | `last_n=10`       |
+| season type (playoffs, regular) | `detect_season_type`       | string            |
+| by-decade                       | `detect_by_decade_intent`  | flag              |
 
 ### 6.2 Partial / needing expansion
 
-| Form                                    | Status                                               |
-| --------------------------------------- | ---------------------------------------------------- |
-| `lately`, `recently`                    | Partial; maps to recent form inconsistently          |
-| `past month`, `last month`              | Partial; depends on date-range extraction            |
-| `past 2 weeks`, `last couple weeks`     | Not reliable                                         |
-| `last night`, `tonight`, `yesterday`    | Not reliable                                         |
-| `since the All-Star break`              | Partial                                              |
-| `before Christmas`, `after the deadline`| Partial                                              |
+| Form                                     | Status                                      |
+| ---------------------------------------- | ------------------------------------------- |
+| `lately`, `recently`                     | Partial; maps to recent form inconsistently |
+| `past month`, `last month`               | Partial; depends on date-range extraction   |
+| `past 2 weeks`, `last couple weeks`      | Not reliable                                |
+| `last night`, `tonight`, `yesterday`     | Not reliable                                |
+| `since the All-Star break`               | Partial                                     |
+| `before Christmas`, `after the deadline` | Partial                                     |
 
 ### 6.3 Decisions to lock down
 
@@ -438,13 +438,13 @@ The repo already has a mature threshold system supporting compound boolean logic
 
 ### 7.1 Operator normalization
 
-| Surface forms                                          | Canonical operator |
-| ------------------------------------------------------ | ------------------ |
-| `30+`, `30 plus`, `30 or more`, `at least 30`          | `>=` 30            |
-| `over 30`, `more than 30`                              | `>` 30             |
-| `under 110`, `less than 110`, `fewer than 110`         | `<` 110            |
-| `between 20 and 30`, `20 to 30`                        | range `[20, 30]`   |
-| `exactly 10`                                           | `==` 10            |
+| Surface forms                                  | Canonical operator |
+| ---------------------------------------------- | ------------------ |
+| `30+`, `30 plus`, `30 or more`, `at least 30`  | `>=` 30            |
+| `over 30`, `more than 30`                      | `>` 30             |
+| `under 110`, `less than 110`, `fewer than 110` | `<` 110            |
+| `between 20 and 30`, `20 to 30`                | range `[20, 30]`   |
+| `exactly 10`                                   | `==` 10            |
 
 Handled by `extract_threshold_conditions` which returns a list of condition dicts.
 
@@ -491,7 +491,7 @@ A threshold can carry additional context:
 - threshold inside a streak: `5 straight games with 30+ points`
 - threshold inside a count: `how many 40-point games`
 
-The threshold slot travels *with* the rest of the parse state; it doesn't stand alone.
+The threshold slot travels _with_ the rest of the parse state; it doesn't stand alone.
 
 ---
 
@@ -504,7 +504,7 @@ Define where or when within a game the stat applies.
 **Location / schedule**
 
 - `home`, `away` → `home_only` / `away_only`
-- `back-to-backs`, `b2b` — *partial*
+- `back-to-backs`, `b2b` — _partial_
 
 **Outcome**
 
@@ -581,12 +581,12 @@ The detected player ID is stored in `without_player`. If the same player is also
 
 These are structurally different and should not be conflated:
 
-| Concept                                 | Supported?                                          |
-| --------------------------------------- | --------------------------------------------------- |
-| Player absent from game (DNP)           | ✅ via `without_player`                             |
-| Player off court during possessions     | *future* — see §11 (on/off)                         |
-| Player did not start                    | Not supported                                       |
-| Player played limited minutes           | Not supported                                       |
+| Concept                             | Supported?                  |
+| ----------------------------------- | --------------------------- |
+| Player absent from game (DNP)       | ✅ via `without_player`     |
+| Player off court during possessions | _future_ — see §11 (on/off) |
+| Player did not start                | Not supported               |
+| Player played limited minutes       | Not supported               |
 
 ### 10.2 Negation forms to handle
 
@@ -606,13 +606,13 @@ Short compressed negations are where this category most often fails. Explicit ne
 
 ### 11.1 Target query types
 
-| Query type                    | Example                                                          |
-| ----------------------------- | ---------------------------------------------------------------- |
-| On/off split                  | `Jokic on/off`, `Nuggets with and without Jokic`                 |
-| Single-player presence filter | `with Curry on the floor`, `without Giannis`                     |
-| Specific lineup               | `lineups with LeBron and AD`                                     |
-| Ranked lineups                | `best 5-man lineups`, `best 3-man units with at least 200 mins`  |
-| Multi-player net rating       | `net rating with Tatum and Brown together`                       |
+| Query type                    | Example                                                         |
+| ----------------------------- | --------------------------------------------------------------- |
+| On/off split                  | `Jokic on/off`, `Nuggets with and without Jokic`                |
+| Single-player presence filter | `with Curry on the floor`, `without Giannis`                    |
+| Specific lineup               | `lineups with LeBron and AD`                                    |
+| Ranked lineups                | `best 5-man lineups`, `best 3-man units with at least 200 mins` |
+| Multi-player net rating       | `net rating with Tatum and Brown together`                      |
 
 ### 11.2 New slots required
 
@@ -760,38 +760,38 @@ Most real queries are underspecified. Without good defaults, the parser feels ra
 
 ### 15.1 Defaults already in place
 
-| Pattern                                        | Current behavior                                              |
-| ---------------------------------------------- | ------------------------------------------------------------- |
-| No season + any stat/filter signal             | `default_season_for_context(season_type)` → current season    |
-| `recent form` / recent-form signals            | `last_n = 10`                                                 |
-| Streak query without explicit time             | Three-season window ending at current                         |
-| Season-high without player                     | League-wide `top_player_games`                                |
+| Pattern                             | Current behavior                                           |
+| ----------------------------------- | ---------------------------------------------------------- |
+| No season + any stat/filter signal  | `default_season_for_context(season_type)` → current season |
+| `recent form` / recent-form signals | `last_n = 10`                                              |
+| Streak query without explicit time  | Three-season window ending at current                      |
+| Season-high without player          | League-wide `top_player_games`                             |
 
 ### 15.2 Defaults to formalize
 
 These should be explicit, documented, and applied consistently:
 
-| Pattern                                   | Target default behavior                                     |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| `<player> + <timeframe>` only             | `summary` (stat line for the window)                        |
-| `<team> + <opponent-quality>` only        | `record` vs that opponent group                             |
-| `<player> + <threshold>` only             | `occurrence` / `count`                                      |
-| `"best games" + <subject>`                | Ranked game logs by default metric (Game Score or points)   |
-| `<team> + recently`                       | Recent record + recent team summary                         |
-| `<player> + recently`                     | Recent stat line summary                                    |
-| `<metric>` only, no subject               | League-wide leaderboard                                     |
-| `<player> + vs <team-quality>`            | Stat line summary filtered by opponent quality              |
+| Pattern                            | Target default behavior                                   |
+| ---------------------------------- | --------------------------------------------------------- |
+| `<player> + <timeframe>` only      | `summary` (stat line for the window)                      |
+| `<team> + <opponent-quality>` only | `record` vs that opponent group                           |
+| `<player> + <threshold>` only      | `occurrence` / `count`                                    |
+| `"best games" + <subject>`         | Ranked game logs by default metric (Game Score or points) |
+| `<team> + recently`                | Recent record + recent team summary                       |
+| `<player> + recently`              | Recent stat line summary                                  |
+| `<metric>` only, no subject        | League-wide leaderboard                                   |
+| `<player> + vs <team-quality>`     | Stat line summary filtered by opponent quality            |
 
 ### 15.3 Worked examples
 
-| Query                        | Default parse                                                       |
-| ---------------------------- | ------------------------------------------------------------------- |
-| `Jokic last 10`              | Summary for Jokic over his last 10 games                            |
-| `Celtics vs contenders`      | Celtics record vs contenders (this season)                          |
-| `Curry 5+ threes`            | Occurrence count of games Curry made 5+ threes (this season)        |
-| `best Giannis games`         | Top Giannis game performances ranked by Game Score                  |
-| `Thunder clutch`             | Thunder record (or stats) in clutch situations *(clutch not yet shipped)*|
-| `points leaders`             | League-wide points leaderboard                                      |
+| Query                   | Default parse                                                             |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `Jokic last 10`         | Summary for Jokic over his last 10 games                                  |
+| `Celtics vs contenders` | Celtics record vs contenders (this season)                                |
+| `Curry 5+ threes`       | Occurrence count of games Curry made 5+ threes (this season)              |
+| `best Giannis games`    | Top Giannis game performances ranked by Game Score                        |
+| `Thunder clutch`        | Thunder record (or stats) in clutch situations _(clutch not yet shipped)_ |
+| `points leaders`        | League-wide points leaderboard                                            |
 
 ### 15.4 Defaults are product policy
 
@@ -823,11 +823,11 @@ The parse state does not currently carry a parse-wide confidence score. Adding o
 
 Suggested tiers:
 
-| Confidence | Example                              | Behavior                                          |
-| ---------- | ------------------------------------ | ------------------------------------------------- |
-| High (>0.85) | `most points last night`           | Execute directly                                  |
-| Medium (0.60–0.85) | `Celtics recently`           | Execute with best parse; optionally show alt      |
-| Low (<0.60)  | Totally ambiguous / unresolvable   | Ask for clarification                             |
+| Confidence         | Example                          | Behavior                                     |
+| ------------------ | -------------------------------- | -------------------------------------------- |
+| High (>0.85)       | `most points last night`         | Execute directly                             |
+| Medium (0.60–0.85) | `Celtics recently`               | Execute with best parse; optionally show alt |
+| Low (<0.60)        | Totally ambiguous / unresolvable | Ask for clarification                        |
 
 ### 16.3 Common ambiguous inputs
 
@@ -869,11 +869,11 @@ The state dict includes the slots described in §5 plus:
 
 ### 17.2 Proposed additions
 
-| Field         | Purpose                                                         |
-| ------------- | --------------------------------------------------------------- |
-| `intent`      | Enum of query class (finder / count / summary / ...) — makes class explicit rather than inferred from flag combinations |
-| `confidence`  | Parse-wide confidence score (0–1)                               |
-| `alternates`  | List of alternate parses when confidence is medium              |
+| Field        | Purpose                                                                                                                 |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `intent`     | Enum of query class (finder / count / summary / ...) — makes class explicit rather than inferred from flag combinations |
+| `confidence` | Parse-wide confidence score (0–1)                                                                                       |
+| `alternates` | List of alternate parses when confidence is medium                                                                      |
 
 These don't exist today. Adding them is a target of the expansion plan's Phase D.
 
@@ -894,7 +894,12 @@ These don't exist today. Adding them is a target of the expansion plan's Phase D
     { "stat": "pts", "min_value": 30, "max_value": null, "text": "30+ points" }
   ],
   "extra_conditions": [
-    { "stat": "reb", "min_value": 10, "max_value": null, "text": "10+ rebounds" }
+    {
+      "stat": "reb",
+      "min_value": 10,
+      "max_value": null,
+      "text": "10+ rebounds"
+    }
   ],
   "start_season": "2020-21",
   "end_season": "2025-26",
@@ -923,40 +928,40 @@ Consolidated reference for fuzzy terms, aliases, and defaults. Should be the sin
 
 ### 18.1 Time-term definitions (suggested defaults — confirm at product level)
 
-| Term               | Definition                                 | Current state     |
-| ------------------ | ------------------------------------------ | ----------------- |
-| `recently`         | Last 10 games                              | Partial / inconsistent |
-| `lately`           | Last 10 games                              | Partial / inconsistent |
-| `past month`       | Rolling 30 days                            | Partial           |
-| `last couple weeks`| Rolling 14 days                            | Not supported     |
-| `this year`        | Current season                             | Supported         |
-| `this season`      | Current season                             | Supported         |
-| `career`           | All regular-season + playoff games to date | Supported         |
-| `last N`           | Last N **games** (not days)                | Supported         |
+| Term                | Definition                                 | Current state          |
+| ------------------- | ------------------------------------------ | ---------------------- |
+| `recently`          | Last 10 games                              | Partial / inconsistent |
+| `lately`            | Last 10 games                              | Partial / inconsistent |
+| `past month`        | Rolling 30 days                            | Partial                |
+| `last couple weeks` | Rolling 14 days                            | Not supported          |
+| `this year`         | Current season                             | Supported              |
+| `this season`       | Current season                             | Supported              |
+| `career`            | All regular-season + playoff games to date | Supported              |
+| `last N`            | Last N **games** (not days)                | Supported              |
 
 ### 18.2 Opponent-quality definitions (proposed — not yet shipped)
 
-| Term                 | Proposed definition                                    |
-| -------------------- | ------------------------------------------------------ |
-| `good teams`         | Teams with win % ≥ .500                                |
-| `winning teams`      | Teams with win % ≥ .500                                |
-| `top teams`          | Top 8 by net rating                                    |
-| `contenders`         | Top 6 by net rating (product-configurable label)       |
-| `playoff teams`      | Teams currently in top 10 of conference (incl. play-in)|
-| `top-10 defenses`    | Top 10 by defensive rating at query time               |
-| `top-10 offenses`    | Top 10 by offensive rating at query time              |
-| `elite defenses`     | Top 5 by defensive rating at query time                |
-| `bad teams`          | Teams with win % < .400                                |
+| Term              | Proposed definition                                     |
+| ----------------- | ------------------------------------------------------- |
+| `good teams`      | Teams with win % ≥ .500                                 |
+| `winning teams`   | Teams with win % ≥ .500                                 |
+| `top teams`       | Top 8 by net rating                                     |
+| `contenders`      | Top 6 by net rating (product-configurable label)        |
+| `playoff teams`   | Teams currently in top 10 of conference (incl. play-in) |
+| `top-10 defenses` | Top 10 by defensive rating at query time                |
+| `top-10 offenses` | Top 10 by offensive rating at query time                |
+| `elite defenses`  | Top 5 by defensive rating at query time                 |
+| `bad teams`       | Teams with win % < .400                                 |
 
 ### 18.3 Subjective-term definitions
 
-| Term                 | Proposed definition                                    |
-| -------------------- | ------------------------------------------------------ |
-| `best games`         | Ranked by Game Score (default); by points if specified |
-| `biggest games`      | Ranked by points scored                                |
-| `hottest`            | Rolling average over last 5 games, ranked              |
-| `efficient`          | Ranked by True Shooting %                              |
-| `clutch`             | Last 5 min of 4th quarter or OT, score within 5        |
+| Term            | Proposed definition                                    |
+| --------------- | ------------------------------------------------------ |
+| `best games`    | Ranked by Game Score (default); by points if specified |
+| `biggest games` | Ranked by points scored                                |
+| `hottest`       | Rolling average over last 5 games, ranked              |
+| `efficient`     | Ranked by True Shooting %                              |
+| `clutch`        | Last 5 min of 4th quarter or OT, score within 5        |
 
 ### 18.4 Metric aliases
 
@@ -964,46 +969,46 @@ See [`query_catalog.md` §2.6](../../reference/query_catalog.md) for the living 
 
 Canonical examples:
 
-| User phrasing                               | Canonical metric             |
-| ------------------------------------------- | ---------------------------- |
-| `points`, `scoring`, `pts`                  | `pts`                        |
-| `rebounds`, `boards`, `rebs`                | `reb`                        |
-| `assists`, `dimes`, `asts`                  | `ast`                        |
-| `steals`, `swipes`                          | `stl`                        |
-| `blocks`, `swats`                           | `blk`                        |
-| `threes`, `3s`, `3pm`, `made threes`        | `fg3m`                       |
-| `true shooting`, `ts`, `ts%`                | `ts_pct`                     |
-| `effective field goal`, `efg`, `efg%`       | `efg_pct`                    |
-| `field goal %`, `fg%`                       | `fg_pct`                     |
-| `3pt%`, `three-point percentage`            | `fg3_pct`                    |
-| `free throw %`, `ft%`                       | `ft_pct`                     |
-| `plus-minus`, `+/-`                         | `plus_minus`                 |
-| `turnovers`, `tos`, `tov`                   | `tov`                        |
-| `triple-double`, `td`                       | `triple-double`              |
-| `double-double`, `dd`                       | `double-double`              |
+| User phrasing                         | Canonical metric |
+| ------------------------------------- | ---------------- |
+| `points`, `scoring`, `pts`            | `pts`            |
+| `rebounds`, `boards`, `rebs`          | `reb`            |
+| `assists`, `dimes`, `asts`            | `ast`            |
+| `steals`, `swipes`                    | `stl`            |
+| `blocks`, `swats`                     | `blk`            |
+| `threes`, `3s`, `3pm`, `made threes`  | `fg3m`           |
+| `true shooting`, `ts`, `ts%`          | `ts_pct`         |
+| `effective field goal`, `efg`, `efg%` | `efg_pct`        |
+| `field goal %`, `fg%`                 | `fg_pct`         |
+| `3pt%`, `three-point percentage`      | `fg3_pct`        |
+| `free throw %`, `ft%`                 | `ft_pct`         |
+| `plus-minus`, `+/-`                   | `plus_minus`     |
+| `turnovers`, `tos`, `tov`             | `tov`            |
+| `triple-double`, `td`                 | `triple-double`  |
+| `double-double`, `dd`                 | `double-double`  |
 
 ### 18.5 Relation aliases
 
-| User phrasing                        | Canonical form          |
-| ------------------------------------ | ----------------------- |
-| `vs`, `against`                      | `against`               |
-| `w/`, `with`                         | `with`                  |
-| `w/o`, `without`, `minus`, `sans`    | `without`               |
-| `out`, `inactive`, `DNP`             | `did not play`          |
-| `on`, `on the floor`, `on court`     | `on court` (future)     |
-| `off`, `off the floor`, `off court`  | `off court` (future)    |
+| User phrasing                       | Canonical form       |
+| ----------------------------------- | -------------------- |
+| `vs`, `against`                     | `against`            |
+| `w/`, `with`                        | `with`               |
+| `w/o`, `without`, `minus`, `sans`   | `without`            |
+| `out`, `inactive`, `DNP`            | `did not play`       |
+| `on`, `on the floor`, `on court`    | `on court` (future)  |
+| `off`, `off the floor`, `off court` | `off court` (future) |
 
 ### 18.6 Default-behavior table
 
-| Query shape                              | Default parse                                            |
-| ---------------------------------------- | -------------------------------------------------------- |
-| `<player> + <timeframe>`                 | `summary`                                                |
-| `<team> + <opponent-quality>`            | `record` vs that opponent group                          |
-| `<player> + <threshold>`                 | `occurrence` / `count`                                   |
-| `best <player> games`                    | Ranked game logs by Game Score                           |
-| `<team> + recently`                      | `summary` (team-level) + recent record                   |
-| `<metric>` only, no subject              | `leaderboard` (league-wide)                              |
-| `<player> vs <team-quality>`             | `summary` filtered by opponent quality                   |
+| Query shape                   | Default parse                          |
+| ----------------------------- | -------------------------------------- |
+| `<player> + <timeframe>`      | `summary`                              |
+| `<team> + <opponent-quality>` | `record` vs that opponent group        |
+| `<player> + <threshold>`      | `occurrence` / `count`                 |
+| `best <player> games`         | Ranked game logs by Game Score         |
+| `<team> + recently`           | `summary` (team-level) + recent record |
+| `<metric>` only, no subject   | `leaderboard` (league-wide)            |
+| `<player> vs <team-quality>`  | `summary` filtered by opponent quality |
 
 ---
 
@@ -1048,17 +1053,17 @@ See [`examples.md` §6](./examples.md) for complete equivalence groups.
 
 Score parses component-by-component:
 
-| Component                 | Weight       |
-| ------------------------- | ------------ |
-| Entity resolution correct | high         |
-| Query class correct       | high         |
-| Intent flags correct      | high         |
-| Stat correct              | high         |
-| Thresholds correct        | high         |
-| Time scope correct        | medium       |
-| Context filters correct   | medium       |
-| Defaults applied correctly| medium       |
-| Confidence calibrated     | low-medium   |
+| Component                  | Weight     |
+| -------------------------- | ---------- |
+| Entity resolution correct  | high       |
+| Query class correct        | high       |
+| Intent flags correct       | high       |
+| Stat correct               | high       |
+| Thresholds correct         | high       |
+| Time scope correct         | medium     |
+| Context filters correct    | medium     |
+| Defaults applied correctly | medium     |
+| Confidence calibrated      | low-medium |
 
 A parser can be "almost right" in ways that still produce a bad answer. Component-level scoring catches these.
 
@@ -1066,13 +1071,13 @@ A parser can be "almost right" in ways that still produce a bad answer. Componen
 
 Align with the existing repo conventions (see [`AGENTS.md`](../../../AGENTS.md) for full detail):
 
-| Scenario                           | Test command                        |
-| ---------------------------------- | ----------------------------------- |
-| Parser helper change               | `make test-impacted`, then `make test-parser` |
-| Routing logic change               | `make test-impacted`, then `make test-query` |
-| Core computation change            | `make test-impacted`, then `make test-engine` |
-| Broad / cross-cutting change       | `make test-preflight`               |
-| Before merge / maximum confidence  | `make test`                         |
+| Scenario                          | Test command                                  |
+| --------------------------------- | --------------------------------------------- |
+| Parser helper change              | `make test-impacted`, then `make test-parser` |
+| Routing logic change              | `make test-impacted`, then `make test-query`  |
+| Core computation change           | `make test-impacted`, then `make test-engine` |
+| Broad / cross-cutting change      | `make test-preflight`                         |
+| Before merge / maximum confidence | `make test`                                   |
 
 Parser and routing tests use pytest markers (`parser`, `query`) which combine with testmon for fast feedback during iteration.
 

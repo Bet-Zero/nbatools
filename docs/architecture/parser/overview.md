@@ -1,6 +1,6 @@
 # Parser Overview
 
-> **Purpose of this doc:** High-level framing for anyone (or any agent) working on the natural-query parser in `nbatools`. Read this first to understand *the approach*. For implementation detail, see [`specification.md`](./specification.md). For test inputs and worked examples, see [`examples.md`](./examples.md). For active expansion work, see [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
+> **Purpose of this doc:** High-level framing for anyone (or any agent) working on the natural-query parser in `nbatools`. Read this first to understand _the approach_. For implementation detail, see [`specification.md`](./specification.md). For test inputs and worked examples, see [`examples.md`](./examples.md). For active expansion work, see [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
 
 ---
 
@@ -33,7 +33,7 @@ All of those are valid intents. They just omit question words, verbs, and stopwo
 
 This principle is already codified in `AGENTS.md`:
 
-> *"For parser work, treat all of these as first-class input styles: full question form, search-bar / fragment form, compressed shorthand form. Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar."*
+> _"For parser work, treat all of these as first-class input styles: full question form, search-bar / fragment form, compressed shorthand form. Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar."_
 
 This doc and its companions make that principle explicit and lay out how to operationalize it.
 
@@ -58,11 +58,11 @@ Every query — question or not — carries the same underlying structure:
 
 Two very different-looking queries can carry the same structure:
 
-| Input                                                | Query class     | Entity    | Stat   | Window      |
-| ---------------------------------------------------- | --------------- | --------- | ------ | ----------- |
-| `Who has the most points over the last 10 games?`    | `leaderboard`   | league    | points | `last_n=10` |
-| `most points last 10 games`                          | `leaderboard`   | league    | points | `last_n=10` |
-| `points leaders last 10`                             | `leaderboard`   | league    | points | `last_n=10` |
+| Input                                             | Query class   | Entity | Stat   | Window      |
+| ------------------------------------------------- | ------------- | ------ | ------ | ----------- |
+| `Who has the most points over the last 10 games?` | `leaderboard` | league | points | `last_n=10` |
+| `most points last 10 games`                       | `leaderboard` | league | points | `last_n=10` |
+| `points leaders last 10`                          | `leaderboard` | league | points | `last_n=10` |
 
 **If the parser maps all three to the same parse state, the rest of the system only has to handle one thing.**
 
@@ -88,7 +88,12 @@ The parser routes this to `player_game_finder` in count mode with a parse state 
     { "stat": "pts", "min_value": 30, "max_value": null, "text": "30+ points" }
   ],
   "extra_conditions": [
-    { "stat": "reb", "min_value": 10, "max_value": null, "text": "10+ rebounds" }
+    {
+      "stat": "reb",
+      "min_value": 10,
+      "max_value": null,
+      "text": "10+ rebounds"
+    }
   ],
   "start_season": "2020-21",
   "end_season": "2025-26"
@@ -122,24 +127,24 @@ The parser problem is **less about understanding English** and **more about maki
 
 These are not parser questions — they're product questions. But they have to be decided before the parser can behave consistently.
 
-| Term / situation                | Needs a defined answer                                                   |
-| ------------------------------- | ------------------------------------------------------------------------ |
-| `recently` / `lately`           | Last 5 games? Last 10? Last 30 days? Current month?                      |
-| `past month`                    | Rolling 30 days or current calendar month?                               |
-| `this year`                     | Current season or calendar year?                                         |
-| `last 10`                       | Games (default) or days?                                                 |
-| `good teams`                    | Above .500? Above .600? Net rating threshold?                            |
-| `contenders`                    | Top 6 by record? Title odds? Playoff teams? Custom label?                |
-| `top defenses`                  | By defensive rating, season-long or as of query time?                    |
-| `best games`                    | By points? Game Score? TS%? Composite?                                   |
-| `hottest`                       | By recent scoring? Shooting %? Composite?                                |
-| `efficient`                     | By TS%? eFG%? Points per shot?                                           |
-| Default for `player + timeframe`                 | Stat line summary                                       |
-| Default for `team + opponent filter`             | Record                                                  |
-| Default for `player + threshold event`           | Count/frequency                                         |
-| Default for `best games`                         | Ranked game logs                                        |
-| When to ask for clarification                    | Confidence threshold                                    |
-| How many alternate interpretations to surface    | 0? 1? 2?                                                |
+| Term / situation                              | Needs a defined answer                                    |
+| --------------------------------------------- | --------------------------------------------------------- |
+| `recently` / `lately`                         | Last 5 games? Last 10? Last 30 days? Current month?       |
+| `past month`                                  | Rolling 30 days or current calendar month?                |
+| `this year`                                   | Current season or calendar year?                          |
+| `last 10`                                     | Games (default) or days?                                  |
+| `good teams`                                  | Above .500? Above .600? Net rating threshold?             |
+| `contenders`                                  | Top 6 by record? Title odds? Playoff teams? Custom label? |
+| `top defenses`                                | By defensive rating, season-long or as of query time?     |
+| `best games`                                  | By points? Game Score? TS%? Composite?                    |
+| `hottest`                                     | By recent scoring? Shooting %? Composite?                 |
+| `efficient`                                   | By TS%? eFG%? Points per shot?                            |
+| Default for `player + timeframe`              | Stat line summary                                         |
+| Default for `team + opponent filter`          | Record                                                    |
+| Default for `player + threshold event`        | Count/frequency                                           |
+| Default for `best games`                      | Ranked game logs                                          |
+| When to ask for clarification                 | Confidence threshold                                      |
+| How many alternate interpretations to surface | 0? 1? 2?                                                  |
 
 **If these are vague, parser quality will look worse than it actually is.**
 
@@ -151,11 +156,11 @@ These are not parser questions — they're product questions. But they have to b
 
 For nearly every intent, the system should handle three phrasings that mean the same thing:
 
-| Style                 | Example                                                |
-| --------------------- | ------------------------------------------------------ |
-| Full question         | `Who has the most points over the last 10 games?`      |
-| Search phrase         | `most points last 10 games`                            |
-| Compressed shorthand  | `points leaders last 10`                               |
+| Style                | Example                                           |
+| -------------------- | ------------------------------------------------- |
+| Full question        | `Who has the most points over the last 10 games?` |
+| Search phrase        | `most points last 10 games`                       |
+| Compressed shorthand | `points leaders last 10`                          |
 
 If the parser handles all three consistently, it will feel fast and smart. If it only handles one, users will quickly learn which magic phrasing it wants — and then leave.
 
@@ -178,19 +183,19 @@ If the system enforces none of those four things, it will feel like a search eng
 
 ## 8. How these docs fit together
 
-| Doc                                                 | Role                                                                        |
-| --------------------------------------------------- | --------------------------------------------------------------------------- |
-| **`overview.md`** (this file)                       | Framing, principles, product-policy decisions                               |
-| [`specification.md`](./specification.md)            | Component-by-component technical reference: pipeline, slots, canonical shape, evaluation |
-| [`examples.md`](./examples.md)                      | Query examples by category, paired/shorthand variants, end-to-end traces, stress tests |
+| Doc                                      | Role                                                                                     |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **`overview.md`** (this file)            | Framing, principles, product-policy decisions                                            |
+| [`specification.md`](./specification.md) | Component-by-component technical reference: pipeline, slots, canonical shape, evaluation |
+| [`examples.md`](./examples.md)           | Query examples by category, paired/shorthand variants, end-to-end traces, stress tests   |
 
 ### Related repo docs
 
-| Doc                                                                                    | Role                                                |
-| -------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| [`AGENTS.md`](../../../AGENTS.md)                                                      | Repo-wide agent conventions, working style, testing |
-| [`docs/reference/query_catalog.md`](../../reference/query_catalog.md)                  | Living inventory of shipped query capabilities      |
-| [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md)      | Strict verified current behavior                    |
+| Doc                                                                                               | Role                                                |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [`AGENTS.md`](../../../AGENTS.md)                                                                 | Repo-wide agent conventions, working style, testing |
+| [`docs/reference/query_catalog.md`](../../reference/query_catalog.md)                             | Living inventory of shipped query capabilities      |
+| [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md)                 | Strict verified current behavior                    |
 | [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md) | Active plan for expanding the natural-query surface |
 
-Read this doc for the *why*. Read the spec for the *what*. Read the examples for *how it shows up in real user language*. Read the expansion plan for *what's being built next*.
+Read this doc for the _why_. Read the spec for the _what_. Read the examples for _how it shows up in real user language_. Read the expansion plan for _what's being built next_.
