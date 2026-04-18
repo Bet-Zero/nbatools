@@ -50,7 +50,7 @@
 
 ---
 
-## 2. `[ ]` Reconnaissance: catalog current phrasing gaps
+## 2. `[x]` Reconnaissance: catalog current phrasing gaps
 
 **Why:** Phase A's work is scoped by _which pairs don't currently route identically_. Knowing which specific pairs diverge lets later items be targeted instead of speculative.
 
