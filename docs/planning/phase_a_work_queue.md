@@ -352,7 +352,7 @@
 
 ---
 
-## 11. `[ ]` Word-order equivalence test suite
+## 11. `[x]` Word-order equivalence test suite
 
 **Why:** By this point, many phrasing differences are handled. Word-order variants (`best scorers last month` vs. `last month best scorers`) are a specific subcategory that's easy to miss. An explicit test suite locks it in and makes regressions visible.
 

@@ -292,8 +292,9 @@ def extract_streak_request(text: str) -> dict | None:
 
     # `longest streak with (at least) N STAT` — e.g.
     # "Curry longest streak with at least 3 threes"
+    # "longest Curry streak with at least 3 threes" (word-order variant)
     m = re.search(
-        r"\blongest\s+streak\s+with\s+(?:at\s+least\s+)?(\d+)(?:\+)?\s+([a-z0-9 .%-]+?)(?=\s|$)",
+        r"\blongest\s+(?:[a-z .'\-]+\s+)?streak\s+with\s+(?:at\s+least\s+)?(\d+)(?:\+)?\s+([a-z0-9 .%-]+?)(?=\s|$)",
         normalized,
     )
     if m:
