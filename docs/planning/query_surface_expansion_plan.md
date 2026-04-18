@@ -459,7 +459,41 @@ The following are deliberately excluded and should be addressed in separate plan
 
 ---
 
-## 9. Document relationships
+## 9. Work queue convention
+
+This plan is directional. Sequenced, PR-sized work items for the active phase live in a companion work-queue file in the same directory: `phase_a_work_queue.md`, `phase_b_work_queue.md`, etc.
+
+### 9.1 Why separate
+
+The plan stays stable — its scope and phases rarely change. Work queues change often: tasks complete, learnings reshape priorities, new items get discovered. Keeping them separate means the plan doesn't churn when tactical work does.
+
+### 9.2 Queue lifecycle
+
+- **Drafted** when its phase activates — roughly when the prior phase is ~80% complete (so there's no dead time between phases, and learnings from the prior phase can inform the new queue's scope).
+- **Worked** one item at a time. Each item has acceptance criteria and test commands; when done, the item is checked off in the queue file and committed.
+- **Closed** when every item is checked and the queue's final meta-task — drafting the next phase's queue — is complete.
+
+### 9.3 Self-propagation
+
+The **final task in every work queue is the same**: "verify all prior items are checked, then draft the next phase's work queue per this plan." This means the same "work the next item" command naturally produces the next phase's queue when it's time, with no separate invocation needed.
+
+The current phase is always "the most recent work queue that isn't fully checked off." An agent reading the planning directory can determine this by listing `phase_*_work_queue.md` files and finding the one with unchecked items.
+
+### 9.4 Reusable agent prompt
+
+Any agent — Claude Code, Cursor, a repo-level Claude, etc. — can work a phase with this prompt:
+
+> Read `docs/planning/query_surface_expansion_plan.md` and the active work queue (the most recent `docs/planning/phase_*_work_queue.md` with unchecked items). Find the next unchecked item. Review the relevant reference docs in `docs/architecture/parser/`. Execute the item according to its acceptance criteria. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires, and open a PR.
+
+No new prompt is needed for phase transitions — the final task of each queue handles it.
+
+### 9.5 When the plan itself needs updating
+
+If a phase's work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same PR that closes the relevant queue item. Don't let the plan drift silently from the actual direction.
+
+---
+
+## 10. Document relationships
 
 This plan sits alongside:
 
