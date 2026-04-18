@@ -70,6 +70,8 @@ If a feature is not reflected here, it should not be assumed shipped.
 - career / all-time: `career`, `all-time`
 - last N games: `last 10 games`
 - month / date windows: `in March`, `since January`, `since All-Star break`, `last 30 days`
+- fuzzy time words: `lately`, `recently` (→ last 10 games), `past month`, `last month` (→ rolling 30 days), `last couple weeks`, `past 2 weeks` (→ rolling 14 days)
+- single-day: `last night`, `yesterday`, `today`, `tonight`
 - season type: `playoffs`, `postseason`
 
 ### 2.3 Sample filters

@@ -68,6 +68,30 @@ def extract_date_range(text: str, season: str | None) -> tuple[str | None, str |
     if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
         return _infer_all_star_break_start(season), None
 
+    # --- Fuzzy time words (spec §18.1) ---
+
+    # `last night` / `yesterday` → yesterday's date
+    if re.search(r"\b(?:last\s+night|yesterday)\b", text):
+        d = (CURRENT_QUERY_DATE - pd.Timedelta(days=1)).date().isoformat()
+        return d, d
+
+    # `today` / `tonight` → today's date
+    if re.search(r"\b(?:today|tonight)\b", text):
+        d = CURRENT_QUERY_DATE.date().isoformat()
+        return d, d
+
+    # `past month` / `last month` → rolling 30 days
+    if re.search(r"\b(?:past|last)\s+month\b", text):
+        start = (CURRENT_QUERY_DATE - pd.Timedelta(days=29)).date().isoformat()
+        end = CURRENT_QUERY_DATE.date().isoformat()
+        return start, end
+
+    # `last couple weeks` / `past 2 weeks` / `past few weeks` → rolling 14 days
+    if re.search(r"\b(?:past|last)\s+(?:couple|couple\s+of|few|2)\s+weeks?\b", text):
+        start = (CURRENT_QUERY_DATE - pd.Timedelta(days=13)).date().isoformat()
+        end = CURRENT_QUERY_DATE.date().isoformat()
+        return start, end
+
     m = re.search(r"\blast\s+(\d+)\s+days?\b", text)
     if m:
         days = int(m.group(1))

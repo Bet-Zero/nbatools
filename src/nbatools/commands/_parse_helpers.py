@@ -185,13 +185,17 @@ def extract_last_n_seasons(text: str) -> int | None:
 
 
 def extract_last_n(text: str) -> int | None:
+    # `lately` / `recently` → last 10 games per spec §18.1
+    if re.search(r"\b(?:lately|recently)\b", text):
+        return 10
+
     patterns = [
         r"\blast\s+(\d+)\s+games?\b",
         r"\bpast\s+(\d+)\s+games?\b",
         r"\brecent\s+(\d+)\s+games?\b",
-        r"\blast\s+(\d+)(?!\s+seasons?)\b",
-        r"\bpast\s+(\d+)(?!\s+seasons?)\b",
-        r"\brecent\s+(\d+)(?!\s+seasons?)\b",
+        r"\blast\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
+        r"\bpast\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
+        r"\brecent\s+(\d+)(?!\s+(?:seasons?|weeks?|days?|months?))\b",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)

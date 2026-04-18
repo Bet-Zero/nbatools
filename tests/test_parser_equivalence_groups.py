@@ -392,3 +392,68 @@ def test_team_best_road_record():
         ]
     )
     assert reference["route"] == "team_record_leaderboard"
+
+
+# ---------------------------------------------------------------------------
+# §18.1 — Fuzzy time-word expansion (Phase A item 9)
+# ---------------------------------------------------------------------------
+
+
+def test_fuzzy_lately_recently_last_n_10():
+    """spec §18.1 — `lately` and `recently` both resolve to last_n=10."""
+    reference = assert_parse_equivalence(
+        [
+            "Jokic lately",
+            "Jokic recently",
+        ]
+    )
+    assert reference["route"] == "player_game_summary"
+    assert reference["last_n"] == 10
+
+
+def test_fuzzy_past_month_last_month():
+    """spec §18.1 — `past month` and `last month` resolve to rolling 30 days."""
+    reference = assert_parse_equivalence(
+        [
+            "Jokic past month",
+            "Jokic last month",
+        ]
+    )
+    assert reference["start_date"] is not None
+    assert reference["end_date"] is not None
+
+
+def test_fuzzy_last_couple_weeks_past_2_weeks():
+    """spec §18.1 — `last couple weeks` and `past 2 weeks` → rolling 14 days."""
+    reference = assert_parse_equivalence(
+        [
+            "Jokic last couple weeks",
+            "Jokic past 2 weeks",
+        ]
+    )
+    assert reference["start_date"] is not None
+    assert reference["end_date"] is not None
+
+
+def test_fuzzy_last_night_yesterday():
+    """spec §18.1 — `last night` and `yesterday` → same single date."""
+    reference = assert_parse_equivalence(
+        [
+            "Jokic last night",
+            "Jokic yesterday",
+        ]
+    )
+    assert reference["start_date"] is not None
+    assert reference["start_date"] == reference["end_date"]
+
+
+def test_fuzzy_today_tonight():
+    """spec §18.1 — `today` and `tonight` → same single date."""
+    reference = assert_parse_equivalence(
+        [
+            "Jokic today",
+            "Jokic tonight",
+        ]
+    )
+    assert reference["start_date"] is not None
+    assert reference["start_date"] == reference["end_date"]

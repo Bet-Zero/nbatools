@@ -283,7 +283,7 @@
 
 ---
 
-## 9. `[ ]` Fuzzy time-word expansion
+## 9. `[x]` Fuzzy time-word expansion
 
 **Why:** `lately`, `recently`, `past month`, `last couple weeks` are common in natural phrasing but resolve inconsistently today. Getting these right unlocks a large swath of shorthand that currently routes unpredictably.
 

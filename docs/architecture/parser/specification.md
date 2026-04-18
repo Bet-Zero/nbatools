@@ -928,16 +928,22 @@ Consolidated reference for fuzzy terms, aliases, and defaults. Should be the sin
 
 ### 18.1 Time-term definitions (suggested defaults — confirm at product level)
 
-| Term                | Definition                                 | Current state          |
-| ------------------- | ------------------------------------------ | ---------------------- |
-| `recently`          | Last 10 games                              | Partial / inconsistent |
-| `lately`            | Last 10 games                              | Partial / inconsistent |
-| `past month`        | Rolling 30 days                            | Partial                |
-| `last couple weeks` | Rolling 14 days                            | Not supported          |
-| `this year`         | Current season                             | Supported              |
-| `this season`       | Current season                             | Supported              |
-| `career`            | All regular-season + playoff games to date | Supported              |
-| `last N`            | Last N **games** (not days)                | Supported              |
+| Term                | Definition                                 | Current state |
+| ------------------- | ------------------------------------------ | ------------- |
+| `recently`          | Last 10 games                              | Supported     |
+| `lately`            | Last 10 games                              | Supported     |
+| `past month`        | Rolling 30 days                            | Supported     |
+| `last month`        | Rolling 30 days                            | Supported     |
+| `last couple weeks` | Rolling 14 days                            | Supported     |
+| `past 2 weeks`      | Rolling 14 days                            | Supported     |
+| `last night`        | Yesterday's date                           | Supported     |
+| `yesterday`         | Yesterday's date                           | Supported     |
+| `today`             | Today's date                               | Supported     |
+| `tonight`           | Today's date                               | Supported     |
+| `this year`         | Current season                             | Supported     |
+| `this season`       | Current season                             | Supported     |
+| `career`            | All regular-season + playoff games to date | Supported     |
+| `last N`            | Last N **games** (not days)                | Supported     |
 
 ### 18.2 Opponent-quality definitions (proposed — not yet shipped)
 
