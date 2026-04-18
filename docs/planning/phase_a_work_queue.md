@@ -429,7 +429,7 @@
   - Did any items reveal issues the plan didn't anticipate?
   - Are there shorthand or phrasing gaps that should have been in Phase A but weren't?
 - Review the plan's Phase B scope ([`query_surface_expansion_plan.md §5.2`](./query_surface_expansion_plan.md)) against what Phase A actually accomplished. Note any scope adjustments needed
-- If the plan needs changes, edit [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) in the same PR — don't let it drift silently
+- If the plan needs changes, edit [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) in the same session — don't let it drift silently
 - Draft `phase_b_work_queue.md` following the same structure as this file:
   - Each item has: title, why, scope, files likely touched, acceptance criteria, test commands, reference docs, status checkbox
   - Items are ordered to minimize rework

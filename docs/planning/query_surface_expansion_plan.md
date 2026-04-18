@@ -435,7 +435,7 @@ Per [`AGENTS.md`](../../AGENTS.md), parser logic stays in `commands/`, not in CL
 
 ### 7.5 Update `query_catalog.md` in the same pass
 
-When a phase ships new capability, [`query_catalog.md`](../reference/query_catalog.md) gets updated in the same PR, not later.
+When a phase ships new capability, [`query_catalog.md`](../reference/query_catalog.md) gets updated in the same session, not later.
 
 ### 7.6 Keep parser and test coverage in sync
 
@@ -483,13 +483,13 @@ The current phase is always "the most recent work queue that isn't fully checked
 
 Any agent — Claude Code, Cursor, a repo-level Claude, etc. — can work a phase with this prompt:
 
-> Read `docs/planning/query_surface_expansion_plan.md` and the active work queue (the most recent `docs/planning/phase_*_work_queue.md` with unchecked items). Find the next unchecked item. Review the relevant reference docs in `docs/architecture/parser/`. Execute the item according to its acceptance criteria. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires, and open a PR.
+> Read `docs/planning/query_surface_expansion_plan.md` and the active work queue (the most recent `docs/planning/phase_*_work_queue.md` with unchecked items). Find the next unchecked item. Review the relevant reference docs in `docs/architecture/parser/`. Execute the item according to its acceptance criteria. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires.
 
 No new prompt is needed for phase transitions — the final task of each queue handles it.
 
 ### 9.5 When the plan itself needs updating
 
-If a phase's work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same PR that closes the relevant queue item. Don't let the plan drift silently from the actual direction.
+If a phase's work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same session that closes the relevant queue item. Don't let the plan drift silently from the actual direction.
 
 ---
 
@@ -512,6 +512,6 @@ This plan sits alongside:
 ### Update cadence
 
 - **This plan** — edited when phase scope changes, not phase-by-phase. Retire it when Phase E is substantially complete or supersede it with a successor plan.
-- **`query_catalog.md`** — updated in the same PR as any shipped capability change.
+- **`query_catalog.md`** — updated in the same session as any shipped capability change.
 - **Parser reference docs** — updated when component behavior changes or new capability families are designed.
 - **Current state guide** — updated when verified-behavior claims change.

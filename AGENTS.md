@@ -274,13 +274,13 @@ Some active plans in `docs/planning/` organize their work into phases with compa
 
 To pick up scheduled work on a phase-based plan, use this prompt:
 
-> Read the plan doc and the active work queue (the most recent `phase_*_work_queue.md` in the plan's directory with unchecked items). Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires, and open a PR.
+> Read the plan doc and the active work queue (the most recent `phase_*_work_queue.md` in the plan's directory with unchecked items). Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires.
 
 The active queue is always the most recent `phase_*_work_queue.md` file in the plan's directory that still has unchecked items. No separate prompt is needed for phase transitions.
 
 #### Keeping plan and queue in sync
 
-If phase work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same PR as the queue item that triggered the change. Plan and queue should not drift apart silently.
+If phase work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same session as the queue item that triggered the change. Plan and queue should not drift apart silently.
 
 ## Output and interface expectations
 
