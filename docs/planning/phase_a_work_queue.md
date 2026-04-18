@@ -153,7 +153,7 @@
 
 ---
 
-## 5. `[ ]` Record phrasing parity
+## 5. `[x]` Record phrasing parity
 
 **Why:** Record queries are a natural sports intent and already have a dedicated router cluster. Phrasing parity unlocks that cluster for users who type search-form or shorthand.
 

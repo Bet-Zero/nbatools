@@ -36,6 +36,7 @@ STAT_ALIASES: dict[str, str] = {
     # Scoring (verbal forms — noun "points" already above)
     "scored": "pts",
     "scoring": "pts",
+    "scores": "pts",
     # Steals
     "steals": "stl",
     "steal": "stl",

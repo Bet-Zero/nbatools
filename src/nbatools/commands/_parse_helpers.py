@@ -471,12 +471,22 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             0.0,
         ),
         (
+            rf"\b{_NUM}\s+or\s+more\s+{STAT_PATTERN}\b",
+            "min",
+            0.0,
+        ),
+        (
             rf"\bunder\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0001,
         ),
         (
             rf"\bless than\s+{_NUM}\s+{STAT_PATTERN}\b",
+            "max",
+            0.0001,
+        ),
+        (
+            rf"\bfewer than\s+{_NUM}\s+{STAT_PATTERN}\b",
             "max",
             0.0001,
         ),
@@ -614,6 +624,7 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
         r"\bat least (\d+)\b",
         r"\bminimum (\d+)\b",
         r"\bmin(?:imum)? (\d+)\b",
+        r"\b(\d+)\s+or\s+more\b",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)

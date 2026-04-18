@@ -161,3 +161,57 @@ def test_summary_shorthand_jokic_last_10():
     )
     assert reference["route"] == "player_game_summary"
     assert reference["last_n"] == 10
+
+
+def test_record_when_player_scores_35_or_more():
+    """examples.md §3.9 #41 — record query with `N or more` threshold.
+
+    Both `35 or more` (Q) and `35+` (S) now extract min_value=35
+    and `scores` resolves to stat=pts via verbal-form alias.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "What's the Mavericks' record when Luka Dončić scores 35 or more?",
+            "Mavericks record when Luka scores 35+",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "notes",
+            "summary_intent",
+        },
+    )
+    assert reference["route"] == "player_game_summary"
+    assert reference["stat"] == "pts"
+    assert reference["min_value"] == 35.0
+
+
+def test_record_when_player_makes_6_threes():
+    """examples.md §3.9 #44 — record query with `at least N threes`
+    vs `6+ threes`. Both extract stat=fg3m, min_value=6.
+
+    `threshold_conditions` differs (Q extracts via threshold-conditions
+    pipeline, S via extract_min_value), but core slots agree.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "What is the Warriors' record when Stephen Curry makes at least 6 threes?",
+            "Warriors record when Curry makes 6+ threes",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "notes",
+            "summary_intent",
+            "threshold_conditions",
+            "extra_conditions",
+            "leaderboard_intent",
+        },
+    )
+    assert reference["route"] == "player_game_summary"
+    assert reference["stat"] == "fg3m"
+    assert reference["min_value"] == 6.0
