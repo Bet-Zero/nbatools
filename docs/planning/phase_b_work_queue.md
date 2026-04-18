@@ -1,0 +1,427 @@
+# Phase B Work Queue
+
+> **Role:** Sequenced, PR-sized work items for Phase B of [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) — _Consolidated normalization and codified glossary._
+>
+> **How to work this file:** Find the first unchecked item below. Review the reference docs it cites. Execute per its acceptance criteria. Run the test commands. Check the item off, commit. Repeat. When every item above is checked, work the final meta-task.
+>
+> **Do not skip ahead** unless an earlier item is genuinely blocked. Items are ordered to minimize rework — later items assume earlier ones are done.
+
+---
+
+## Status legend
+
+- `[ ]` — not started
+- `[~]` — in progress
+- `[x]` — complete and merged
+- `[-]` — skipped (with inline note explaining why)
+
+---
+
+## Phase A retrospective
+
+### What went well
+
+- **Equivalence-group test infrastructure** (item 1) paid off immediately — every subsequent item used it, and failure messages point straight at the diverging keys.
+- **Incremental catalog updates** during each item kept the documentation burden low for item 12.
+- **Verb-phrase summary triggers** (item 4) and **verbal-form stat aliases** (item 3) were the two highest-leverage fixes: they unlocked the most equivalence groups with the fewest code changes.
+- **Fuzzy time words** (item 9) were straightforward once `extract_date_range` and `extract_last_n` were the clear insertion points.
+
+### What was harder than expected
+
+- **Summary default routing** (item 4) required careful narrowing — the initial `<player> + <timeframe>` rule was too broad and broke 7 existing tests. The guard clause list grew to ~10 exclusions.
+- **Absence expansion** (item 10) exposed an entity-resolution issue: when two players appear in a query (e.g., "Maxey when Embiid out"), `detect_player` picks the wrong one, and subject-clearing makes it worse. This is a pre-existing issue, not caused by Phase A, but now more visible.
+- **Word-order "vs" detection** (item 11) — `"Jokic this season vs Embiid"` breaks comparison detection because "vs" is not adjacent to both player names. Not fixed; documented as residual.
+
+### What Phase A didn't cover (residuals for later phases)
+
+- **Entity-resolution anomalies**: #30 (`team='WAS'` for a Philly player), #45 (`player='Carmelo Anthony'` from "Anthony Davis"), two-player queries where `detect_player` picks the wrong subject. These need Phase E or a dedicated entity-resolution overhaul.
+- **Undefined fuzzy-skill terms**: "all-around games" (#19), "catch-and-shoot" (#34), "transition scorer" (#35) — guardrail §7.2 says don't fake these; needs glossary definitions (Phase B can reserve the slots).
+- **Context filters**: "4th quarter" (#49), "clutch" — Phase E territory.
+- **Opponent-quality buckets**: "top-10 defenses" (#23), "contenders" — Phase E, but definitions should be reserved in Phase B glossary.
+- **Multi-player AND**: "LeBron and AD both play" (#45) — plan §8 excludes multi-intent from all phases.
+
+### Scope adjustments for Phase B
+
+Phase A shipped fuzzy time-word handling (item 9), which the plan originally placed in Phase B as "formalize fuzzy-time definitions in glossary." Phase B should therefore focus on:
+1. **Consolidating** the scattered alias tables (STAT_ALIASES, LEADERBOARD_STAT_ALIASES, verbal-form aliases) into one shared resource
+2. **Creating** a glossary module that centralizes fuzzy-term definitions
+3. **Reserving** undefined terms in the glossary with clear "not yet shipped" markers
+4. **Reconciling** the two stat-pattern systems (STAT_PATTERN regex vs. STAT_ALIASES dict)
+
+---
+
+## 1. `[ ]` Audit current alias fragmentation
+
+**Why:** Before consolidating, we need a clear inventory of where aliases are defined and where they diverge. Multiple locations have overlapping but inconsistent alias tables.
+
+**Scope:**
+
+- Catalog every alias definition across the codebase: `STAT_ALIASES`, `LEADERBOARD_STAT_ALIASES`, `TEAM_LEADERBOARD_STAT_ALIASES`, `STAT_PATTERN`, stat detection in `_occurrence_route_utils.py`, etc.
+- For each alias source, record: location, what it maps, which detectors consume it
+- Identify aliases that exist in one table but not another (e.g., verbal forms added to STAT_ALIASES in Phase A but not to STAT_PATTERN)
+- Produce a markdown inventory in `docs/planning/phase_b_alias_inventory.md`
+
+**Files likely touched:**
+
+- `docs/planning/phase_b_alias_inventory.md` (new)
+- No code changes — reconnaissance only
+
+**Acceptance criteria:**
+
+- Every alias source is cataloged with its location and consumers
+- Divergences between tables are identified and documented
+- The inventory is structured for items 2–4 to consume as a punchlist
+
+**Tests to run:**
+
+- None (reconnaissance only)
+
+**Reference docs to consult:**
+
+- `src/nbatools/commands/_constants.py` — `STAT_ALIASES`, `STAT_PATTERN`
+- `src/nbatools/commands/_leaderboard_utils.py` — `LEADERBOARD_STAT_ALIASES`
+- [`parser/specification.md §2.2`](../architecture/parser/specification.md#22-alias-mapping)
+
+---
+
+## 2. `[ ]` Unify stat aliases into a single source of truth
+
+**Why:** `STAT_ALIASES`, `LEADERBOARD_STAT_ALIASES`, and `STAT_PATTERN` have overlapping but divergent content. A single canonical alias table eliminates drift and reduces the surface area for future phrasing work.
+
+**Scope:**
+
+- Merge `STAT_ALIASES` and `LEADERBOARD_STAT_ALIASES` into one dict (or have the leaderboard dict explicitly extend the base dict)
+- Auto-generate `STAT_PATTERN` regex from the alias dict keys so it can never drift
+- Ensure all detectors (`detect_stat`, `detect_player_leaderboard_stat`, `detect_team_leaderboard_stat`) consume the unified source
+- Preserve the distinction between "this stat exists for leaderboard queries" and "this stat exists generally" if needed (via metadata in the alias entry, not separate dicts)
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_constants.py` — canonical alias dict
+- `src/nbatools/commands/_leaderboard_utils.py` — consume from `_constants.py`
+- `src/nbatools/commands/_parse_helpers.py` — `detect_stat` and `STAT_PATTERN`
+
+**Acceptance criteria:**
+
+- `STAT_PATTERN` is generated from the alias dict, not hand-maintained
+- No alias exists in one table that should exist in both but doesn't
+- All existing tests pass with no behavior change
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+- `make test-preflight`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §2.2`](../architecture/parser/specification.md#22-alias-mapping)
+- Item 1's alias inventory
+
+---
+
+## 3. `[ ]` Create glossary module for fuzzy-term definitions
+
+**Why:** Phase A hardcoded time-word defaults inline (`lately` → `last_n=10`, `past month` → 30 days). A glossary module centralizes these so the code documents its own product-policy decisions.
+
+**Scope:**
+
+- Create `src/nbatools/commands/_glossary.py` with a data structure defining every fuzzy term and its expansion
+- Include time terms (already shipped in Phase A), undefined skill terms (not shipped, marked as such), and opponent-quality terms (reserved for Phase E)
+- Refactor `extract_last_n` and `extract_date_range` to read from the glossary rather than hardcoding values
+- Mark unshipped terms clearly (e.g., `shipped=False`) so code that tries to use them gets a clear error
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_glossary.py` (new)
+- `src/nbatools/commands/_parse_helpers.py` — `extract_last_n` refactor
+- `src/nbatools/commands/_date_utils.py` — `extract_date_range` refactor
+- `docs/architecture/parser/specification.md` — §18 sync
+
+**Acceptance criteria:**
+
+- Every fuzzy time term from spec §18.1 is defined in the glossary module
+- Undefined/reserved terms are in the glossary but marked as not shipped
+- `extract_last_n` and `extract_date_range` read their defaults from the glossary
+- Specification §18 matches the glossary module
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+- `make test-preflight`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary)
+- Phase A item 9 implementation
+
+---
+
+## 4. `[ ]` Reserve undefined skill and quality terms in glossary
+
+**Why:** Terms like `hottest`, `best games`, `all-around`, `catch-and-shoot`, `contenders`, `good teams` appear in user queries but have no formal definition. Reserving them in the glossary makes the parser's coverage explicit and prevents silent guessing (guardrail §7.2).
+
+**Scope:**
+
+- Add every identified undefined term from Phase A residuals and spec §18.2 to the glossary with `shipped=False`
+- Categorize: skill terms, quality terms, opponent-quality terms
+- Ensure the parser returns a clear "not supported" when encountering a reserved-but-unshipped term (rather than guessing)
+- Document the reservation in spec §18
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_glossary.py` — add reserved entries
+- `src/nbatools/commands/natural_query.py` — optionally improve error message when a reserved term is detected
+- `docs/architecture/parser/specification.md` — §18.2, §18.3
+
+**Acceptance criteria:**
+
+- Every undefined term from Phase A's gap inventory is in the glossary
+- Reserved terms produce a better error than the generic "could not map" message
+- Spec §18 documents all reserved terms
+
+**Tests to run:**
+
+- `make test-parser`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary)
+- `docs/planning/phase_a_gap_inventory.md` — undefined terms
+
+---
+
+## 5. `[ ]` Normalize text earlier in the pipeline
+
+**Why:** Currently, `normalize_text` is called independently in many detectors. Some detectors lowercase, some don't; some strip whitespace, some receive already-normalized text. A single normalization pass at pipeline entry eliminates inconsistencies.
+
+**Scope:**
+
+- Ensure `_build_parse_state` normalizes text once at entry and passes the normalized form to all detectors
+- Audit each detector for redundant `normalize_text` calls and remove them
+- Verify that case-sensitive operations (entity resolution) still receive original-case text where needed
+
+**Files likely touched:**
+
+- `src/nbatools/commands/natural_query.py` — `_build_parse_state` entry point
+- `src/nbatools/commands/_parse_helpers.py` — remove per-detector normalization
+- `src/nbatools/commands/_matchup_utils.py` — same
+
+**Acceptance criteria:**
+
+- Text normalization happens exactly once at pipeline entry
+- No detector calls `normalize_text` internally (or explicitly documents why it needs to)
+- All existing tests pass
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §2.1`](../architecture/parser/specification.md#21-pre-processing-pipeline)
+
+---
+
+## 6. `[ ]` Reconcile STAT_PATTERN with alias dict
+
+**Why:** `STAT_PATTERN` is a hand-maintained regex that must stay in sync with `STAT_ALIASES`. Phase A added verbal forms to `STAT_ALIASES` but not to `STAT_PATTERN`, relying on `detect_stat` (which uses the dict). If item 2 auto-generates the pattern, this item verifies correctness and handles edge cases.
+
+**Scope:**
+
+- Verify that auto-generated `STAT_PATTERN` correctly handles multi-word aliases (e.g., "three point percentage")
+- Ensure the regex sorts longer aliases first to avoid partial matches (e.g., "three point %" before "three")
+- Test with all stat aliases from the unified dict
+- Remove any remaining hand-maintained `STAT_PATTERN` if fully generated
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_constants.py` — pattern generation logic
+- Tests for edge cases
+
+**Acceptance criteria:**
+
+- `STAT_PATTERN` is provably correct for all entries in the alias dict
+- Multi-word aliases match correctly
+- No partial-match regressions
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+
+**Reference docs to consult:**
+
+- Item 2 implementation
+
+---
+
+## 7. `[ ]` Document stat-alias table in query_catalog.md
+
+**Why:** Users (and agents) need to know which stat phrasings are recognized. The unified alias table should have a human-readable rendering in the catalog.
+
+**Scope:**
+
+- Add a §2.6 (or equivalent) to `query_catalog.md` listing every recognized stat alias grouped by canonical stat
+- Include both standard and verbal forms
+- Note which aliases are leaderboard-only if that distinction persists
+
+**Files likely touched:**
+
+- `docs/reference/query_catalog.md` — new §2.6
+
+**Acceptance criteria:**
+
+- Every entry in the unified alias dict is represented in the catalog
+- The catalog section is auto-verifiable (a test or script can confirm it matches the code)
+
+**Tests to run:**
+
+- None (docs only), but optionally add a test that verifies catalog examples parse correctly
+
+**Reference docs to consult:**
+
+- [`query_catalog.md`](../reference/query_catalog.md)
+- Unified alias dict from item 2
+
+---
+
+## 8. `[ ]` Consolidate threshold operator handling
+
+**Why:** Threshold extraction has multiple code paths (`extract_min_value`, `extract_threshold_conditions`, inline `N or more` / `N+` patterns added in Phase A). Consolidating into one threshold-extraction pipeline reduces future maintenance.
+
+**Scope:**
+
+- Identify all places where threshold values are extracted
+- Consolidate into `extract_threshold_conditions` as the single entry point
+- Ensure `extract_min_value` either delegates to the consolidated path or is removed
+- Verify that all threshold patterns from Phase A (item 5, item 6) still work
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_parse_helpers.py` — `extract_min_value`, `extract_threshold_conditions`
+- `src/nbatools/commands/natural_query.py` — callers
+
+**Acceptance criteria:**
+
+- One code path for threshold extraction
+- All Phase A equivalence tests still pass
+- No duplicate threshold patterns
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §7`](../architecture/parser/specification.md#7-thresholds)
+
+---
+
+## 9. `[ ]` Add leaderboard verbal-form aliases to unified dict
+
+**Why:** Phase A added `scored`, `scoring`, `scores`, `rebounded`, `rebounding`, `assisted` to `STAT_ALIASES` and `scores` to `LEADERBOARD_STAT_ALIASES`. After item 2 unifies the dicts, ensure all verbal forms are consistently available across all contexts.
+
+**Scope:**
+
+- Review every verbal-form alias added in Phase A
+- Ensure each is in the unified dict with appropriate metadata
+- Add any missing verbal forms discovered during review (e.g., `blocked`, `stolen`)
+- Update STAT_PATTERN (or its auto-generation) to include them
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_constants.py`
+
+**Acceptance criteria:**
+
+- Every verbal-form stat alias is in the unified dict
+- `detect_stat` and `detect_player_leaderboard_stat` both recognize them
+- No regression in existing tests
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+
+**Reference docs to consult:**
+
+- Phase A items 3, 8 implementations
+
+---
+
+## 10. `[ ]` Sync specification §18 with live glossary
+
+**Why:** The specification's glossary section (§18) should exactly match the code. Phase A partially updated §18.1 but the full glossary (terms, aliases, reserved slots) needs a comprehensive sync.
+
+**Scope:**
+
+- Verify every entry in the glossary module matches spec §18
+- Add any missing sections (§18.3 for skill terms, §18.4 for reserved terms)
+- Ensure the spec documents the `shipped` status of each term
+
+**Files likely touched:**
+
+- `docs/architecture/parser/specification.md` — §18
+
+**Acceptance criteria:**
+
+- §18 is a complete mirror of the glossary module
+- Every term has a status (shipped / reserved / undefined)
+- No drift between spec and code
+
+**Tests to run:**
+
+- None (docs only)
+
+**Reference docs to consult:**
+
+- `src/nbatools/commands/_glossary.py` from item 3
+- [`parser/specification.md §18`](../architecture/parser/specification.md#18-glossary-and-vocabulary)
+
+---
+
+## 11. `[ ]` Phase B retrospective and Phase C work queue draft
+
+**Why:** Self-propagating final task. Ensures learnings are captured and the next phase is scoped before this one closes.
+
+**Scope:**
+
+- Review every checked item above: outcomes, surprises, residuals
+- Review the plan's Phase C scope ([`query_surface_expansion_plan.md §5.3`](./query_surface_expansion_plan.md)) against what Phase B actually accomplished
+- If the plan needs changes, edit [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) in the same session
+- Draft `phase_c_work_queue.md` following the same structure as this file
+
+**Files likely touched:**
+
+- `docs/planning/phase_c_work_queue.md` (new)
+- `docs/planning/query_surface_expansion_plan.md` (if scope change)
+- `docs/planning/phase_b_work_queue.md` (check this item as done)
+
+**Acceptance criteria:**
+
+- `phase_c_work_queue.md` exists and covers Phase C's scope
+- Every item in the new queue is PR-sized with clear acceptance criteria
+- The final item is the meta-task "retrospective + draft Phase D work queue"
+- This item in `phase_b_work_queue.md` is checked off
+
+**Tests to run:**
+
+- None (docs only)
+
+**Reference docs to consult:**
+
+- [`query_surface_expansion_plan.md §9`](./query_surface_expansion_plan.md) — work queue convention
+- [`query_surface_expansion_plan.md §5.3`](./query_surface_expansion_plan.md) — Phase C scope
+- This file as a structural template
+
+---
+
+## Appendix: progress tracking
+
+When all items above are checked `[x]`, Phase B is complete. The draft of `phase_c_work_queue.md` from item 11 is the handoff artifact.
+
+If any item is skipped (`[-]`), note the reason inline so the reason survives in git history.

@@ -418,7 +418,7 @@
 
 ---
 
-## 13. `[ ]` Phase A retrospective and Phase B work queue draft
+## 13. `[x]` Phase A retrospective and Phase B work queue draft
 
 **Why:** This is the self-propagating task. With Phase A's scope substantially complete, Phase B should be drafted now so there's no dead time between phases, and any Phase A learnings should reshape Phase B's scope before it starts.
 
