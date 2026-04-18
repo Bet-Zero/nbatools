@@ -78,6 +78,14 @@ It should **not** become an unmanaged dumping ground for unrelated business logi
 
 If a feature requires substantial new computation, reusable filtering logic, or domain-specific analysis, move that logic into a dedicated command/helper module.
 
+For parser work, treat all of these as first-class input styles:
+
+- full question form
+- search-bar / fragment form
+- compressed shorthand form
+
+Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. See `docs/planning/query_surface_expansion_plan.md` for the active parser/query-surface expansion plan.
+
 ### Frontend-layer rule
 
 The React frontend in `frontend/` is a presentation layer.
@@ -235,6 +243,7 @@ Key docs:
 - `README.md` -> user-facing overview and high-level examples
 - `docs/reference/current_state_guide.md` -> verified shipped behavior only
 - `docs/reference/query_catalog.md` -> living catalog of supported question/query types and common phrasing patterns
+- `docs/planning/query_surface_expansion_plan.md` -> active plan for broadening question/search/shorthand query coverage
 - `docs/planning/roadmap.md` -> planned or next capabilities
 - `docs/architecture/project_conventions.md` -> architecture and engineering rules
 - `docs/reference/data_contracts.md` -> dataset definitions and expectations
