@@ -219,7 +219,7 @@
 
 ---
 
-## 7. `[ ]` Streak phrasing parity
+## 7. `[x]` Streak phrasing parity
 
 **Why:** Streak queries are shipped and distinctive, but the surface-form coverage may be narrower than the question-form coverage. Parity here extends an already-solid capability.
 

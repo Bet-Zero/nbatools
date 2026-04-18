@@ -353,8 +353,13 @@ Examples:
 
 - `Jokic 5 straight games with 20+ points`
 - `Jokic longest streak of 30 point games`
+- `Jokic longest 30-point streak`
+- `longest Jokic 30 point streak`
+- `Jokic consecutive 30 point games longest`
 - `Jokic consecutive games with a made three`
 - `Jokic longest triple-double streak`
+- `LeBron current 20+ point streak`
+- `Curry longest streak with at least 3 threes`
 
 ### Team streaks
 

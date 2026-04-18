@@ -286,6 +286,62 @@ def extract_streak_request(text: str) -> dict | None:
                 "longest": True,
             }
 
+    # `longest streak with (at least) N STAT` — e.g.
+    # "Curry longest streak with at least 3 threes"
+    m = re.search(
+        r"\blongest\s+streak\s+with\s+(?:at\s+least\s+)?(\d+)(?:\+)?\s+([a-z0-9 .%-]+?)(?=\s|$)",
+        normalized,
+    )
+    if m:
+        stat = detect_stat(m.group(2))
+        if stat:
+            return {
+                "special_condition": None,
+                "stat": stat,
+                "min_value": float(m.group(1)),
+                "max_value": None,
+                "min_streak_length": None,
+                "longest": True,
+            }
+
+    # `N+ STAT streak` or `current N+ STAT streak` — e.g.
+    # "LeBron current 20+ point streak", "Jokic longest 30-point streak"
+    m = re.search(
+        r"\b(?:longest|current)?\s*(\d+)(?:\+)?[- ]([a-z0-9 .%-]+?)\s+streak\b",
+        normalized,
+    )
+    if m:
+        stat = detect_stat(m.group(2))
+        if stat:
+            longest = "longest" in normalized or "current" not in normalized
+            return {
+                "special_condition": None,
+                "stat": stat,
+                "min_value": float(m.group(1)),
+                "max_value": None,
+                "min_streak_length": None,
+                "longest": longest,
+            }
+
+    # `consecutive N STAT games (longest)` — e.g.
+    # "Jokic consecutive 30 point games longest"
+    m = re.search(
+        r"\bconsecutive\s+(\d+)(?:\+)?[- ]?([a-z0-9 .%-]+?)\s+games?\b",
+        normalized,
+    )
+    if m:
+        stat = detect_stat(m.group(2))
+        if stat:
+            longest = "longest" in normalized
+            return {
+                "special_condition": None,
+                "stat": stat,
+                "min_value": float(m.group(1)),
+                "max_value": None,
+                "min_streak_length": None,
+                "longest": longest,
+            }
+
     return None
 
 

@@ -278,3 +278,63 @@ def test_occurrence_5_or_more_blocks():
     assert reference["route"] == "player_game_finder"
     assert reference["stat"] == "blk"
     assert reference["min_value"] == 5.0
+
+
+# ---------------------------------------------------------------------------
+# §4.1 — Streak phrasing parity (Phase A item 7)
+# ---------------------------------------------------------------------------
+
+
+def test_streak_longest_30_point_games():
+    """examples.md §4.1 — four surface forms for `longest 30-point streak`
+    all produce identical parse state.
+    """
+    reference = assert_parse_equivalence(
+        [
+            "Jokic longest streak of 30 point games",
+            "Jokic longest 30-point streak",
+            "longest Jokic 30 point streak",
+            "Jokic consecutive 30 point games longest",
+        ],
+        exclude_keys={
+            "normalized_query",
+            "confidence",
+            "alternates",
+            "intent",
+            "notes",
+            "occurrence_event",
+            "min_value",
+        },
+    )
+    assert reference["route"] == "player_streak_finder"
+    streak = reference["streak_request"]
+    assert streak["stat"] == "pts"
+    assert streak["min_value"] == 30.0
+    assert streak["longest"] is True
+
+
+def test_streak_current_20_point():
+    """examples.md §4.1 — `current N+ STAT streak` shorthand.
+
+    Single form; verifies route and streak_request structure.
+    """
+    from nbatools.commands.natural_query import parse_query
+
+    r = parse_query("LeBron current 20+ point streak")
+    assert r["route"] == "player_streak_finder"
+    streak = r["streak_request"]
+    assert streak["stat"] == "pts"
+    assert streak["min_value"] == 20.0
+    assert streak["longest"] is False
+
+
+def test_streak_longest_with_at_least_3_threes():
+    """examples.md §4.1 — `longest streak with at least N STAT`."""
+    from nbatools.commands.natural_query import parse_query
+
+    r = parse_query("Curry longest streak with at least 3 threes")
+    assert r["route"] == "player_streak_finder"
+    streak = r["streak_request"]
+    assert streak["stat"] == "fg3m"
+    assert streak["min_value"] == 3.0
+    assert streak["longest"] is True
