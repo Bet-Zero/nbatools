@@ -17,7 +17,7 @@
 
 ---
 
-## 1. `[ ]` Equivalence-group test infrastructure
+## 1. `[x]` Equivalence-group test infrastructure
 
 **Why:** Phase A is primarily about making semantically equivalent queries produce identical parse states. The rest of Phase A needs a concise, reusable way to assert that. Building this first pays off on every subsequent item.
 
