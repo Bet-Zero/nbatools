@@ -240,6 +240,14 @@ def _build_parse_state(query: str) -> dict:
     split_type = detect_split_type(q)
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
+
+    # Fallback: if no STAT_ALIASES hit but leaderboard intent is present,
+    # promote a leaderboard-only alias (e.g. "scoring", "scorers") into the
+    # `stat` slot so question/search/shorthand forms produce identical states.
+    if stat is None and leaderboard_intent:
+        stat = detect_player_leaderboard_stat(q)
+    if stat is None and team_leaderboard_intent:
+        stat = detect_team_leaderboard_stat(q)
     occurrence_event = extract_occurrence_event(q)
     compound_occurrence_conditions = extract_compound_occurrence_event(q)
     occurrence_leaderboard_intent = wants_occurrence_leaderboard(q)
@@ -745,7 +753,13 @@ def _finalize_route(parsed: dict) -> dict:
             "longest": streak_request.get("longest", False),
             "limit": 25,
         }
-    elif "top" in q and "games" in q and player is None and ("scoring" in q or stat is not None):
+    elif (
+        "top" in q
+        and "games" in q
+        and player is None
+        and ("scoring" in q or stat is not None)
+        and not leaderboard_intent
+    ):
         route = "top_player_games"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),

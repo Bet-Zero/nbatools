@@ -29,8 +29,9 @@ def extract_top_n(text: str) -> int | None:
 def wants_leaderboard(text: str) -> bool:
     if re.search(
         r"\bseason leaders?\b|\bled the league\b|\bleaders?\s+in\b"
+        r"|\bleads?\s+(?:the\s+)?(?:nba|league)\s+in\b"
         r"|\b(?:career|playoff|all[- ]?time)\s+(?:\w+\s+)*leaders?\b"
-        r"|\bleaders?\s+(?:since|last|past)\b"
+        r"|\bleaders?\s+(?:since|last|past|this|over)\b"
         r"|\brank\b|\branked\b|\branking\b|\bwho\s+(?:has|had|leads?|led)\s+the\s+most\b"
         r"|\brank\s+(?:players?|teams?)\s+by\b",
         text,
@@ -48,6 +49,12 @@ def wants_leaderboard(text: str) -> bool:
 
     if detect_player_leaderboard_stat(text) is None:
         return False
+
+    # Stat-alias + the noun "leaders" anywhere is a strong leaderboard signal.
+    # Covers `scoring leaders`, `points leaders`, `last 10 scoring leaders`,
+    # etc., where no operator word like `most`/`best` is present.
+    if re.search(r"\bleaders?\b", text):
+        return True
 
     return bool(
         re.search(
@@ -402,8 +409,11 @@ def extract_team_streak_request(text: str) -> dict | None:
 
 
 def detect_stat(text: str) -> str | None:
+    # Word-boundary match so short codes like "ast" do not falsely match
+    # substrings in words like "last" — the pre-fix behavior of `key in text`
+    # caused `top scorers last 10 games` to resolve stat to 'ast'.
     for key in sorted(STAT_ALIASES.keys(), key=len, reverse=True):
-        if key in text:
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", text):
             return STAT_ALIASES[key]
     return None
 

@@ -199,6 +199,10 @@ TEAM_LEADERBOARD_STAT_ALIASES: dict[str, str] = {
     "most points per game teams": "pts",
     "most rebounds teams": "reb",
     "most assists teams": "ast",
+    "best road record": "win_pct",
+    "road record": "win_pct",
+    "best home record": "win_pct",
+    "home record": "win_pct",
 }
 
 

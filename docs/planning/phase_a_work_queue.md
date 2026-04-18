@@ -83,7 +83,7 @@
 
 ---
 
-## 3. `[ ]` Leaderboard phrasing parity
+## 3. `[x]` Leaderboard phrasing parity
 
 **Why:** Leaderboards are the highest-volume user intent and the most common first query. Parity here has the most user-visible impact.
 

@@ -298,6 +298,8 @@ Examples:
 - `best field goal percentage` (recognized stat alias → fg_pct)
 - `best free throw percentage` (recognized stat alias → ft_pct)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
+- `who leads the NBA in points per game` / `who leads the league in assists` (question form; routes to leaderboard)
+- `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
 
 ### Team leaderboards
 
