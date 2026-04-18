@@ -64,6 +64,7 @@ Runbooks and operational guides.
 Roadmap and active plans.
 
 - `planning/roadmap.md` — planned and future capabilities
+- `planning/query_surface_expansion_plan.md` — parser/query-surface expansion plan synthesized from example and notes docs
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 
@@ -125,8 +126,9 @@ Point-in-time audit snapshots and historical records.
 ### Extending the system
 
 1. `architecture/project_conventions.md`
-2. `reference/system_conventions.md`
-3. `../CHANGELOG.md`
+2. `planning/query_surface_expansion_plan.md`
+3. `reference/system_conventions.md`
+4. `../CHANGELOG.md`
 
 ---
 
