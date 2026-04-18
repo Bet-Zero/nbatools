@@ -462,6 +462,131 @@
 
 ---
 
+---
+
+## Addendum — result-level bug fixes (added post-retrospective)
+
+> **Why these exist:** Items 1–13 completed successfully at the parse-state level. Manual spot-checking after Phase A closed revealed three bugs where the parser correctly extracts slots but downstream routes don't respect them, producing confident-but-wrong results. Per the plan's §7.2 guardrail ("prefer honest unsupported responses over silently wrong answers"), these need to be fixed before Phase B starts. Scoped to stay narrow — broader ambiguity handling stays in Phase D.
+
+---
+
+## 14. `[ ]` Audit slot-to-route contract for leaderboards
+
+**Why:** Phase A proved the parser sets `last_n`, `home_only`/`away_only`, and `wins_only`/`losses_only` correctly for leaderboard queries. Manual testing showed `points leaders last 10` and `most points in wins` both return season-long leaders, meaning the routes silently ignore those slots. The phrasing-parity guarantee is empty if the routes don't honor the slots they're passed.
+
+**Scope:**
+
+- For each leaderboard route called by `_finalize_route` (`season_leaders`, `top_player_games`, `season_team_leaders`, `top_team_games`, and anything else in the leaderboard cluster), verify it reads and applies: `last_n`, `home_only`, `away_only`, `wins_only`, `losses_only`, `start_date`, `end_date`
+- Fix any route that silently drops these slots
+- Add tests that assert on **result content**, not just parse state — e.g., a `last_n=10` leaderboard's `pts_per_game` values should differ from the season-long leaderboard for the same players
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_leaderboard_utils.py`
+- Engine modules implementing `season_leaders`, `top_player_games`, `season_team_leaders`, `top_team_games` (follow imports from the utils module)
+- `tests/parser/` or `tests/engine/` — new result-level tests
+
+**Acceptance criteria:**
+
+- Every leaderboard route respects the slots above when present
+- `points leaders last 10` returns different `pts_per_game` values than `points leaders this season`
+- `most points in wins` returns different values than `most points this season`
+- At least 5 new result-level tests asserting filters actually change outputs
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+- `make test-engine`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §5`](../architecture/parser/specification.md#5-slot-extraction) — slot contract
+- [`query_catalog.md §3.6`](../reference/query_catalog.md) — currently-claimed leaderboard surface
+
+---
+
+## 15. `[ ]` Audit slot-to-route contract for team_record
+
+**Why:** Same pattern as item 14, for the record family. The `without_player` slot is correctly detected by the parser (Phase A item 10 added phrasings for it) but `team_record` doesn't filter the sample — manual testing returned a full-season record when `without_player` should have narrowed the sample significantly.
+
+**Scope:**
+
+- Verify `team_record` applies `without_player` when present
+- Check related record routes for the same issue: `team_matchup_record`, record-leaderboard routes in `try_record_leaderboard_route`, playoff-record routes in `try_playoff_record_route`
+- Add result-level tests: the sample size (games counted) must shrink when `without_player` filter is active
+
+**Files likely touched:**
+
+- `src/nbatools/commands/_playoff_record_route_utils.py`
+- Engine modules implementing `team_record` and its variants
+- `tests/parser/` or `tests/engine/` — new result-level tests
+
+**Acceptance criteria:**
+
+- `team_record` respects `without_player`
+- A query like `Lakers record without LeBron` returns a smaller sample than `Lakers record this season`
+- Same check for `home_only`, `away_only`, `wins_only`, `losses_only` if any of those are currently dropped
+- At least 3 new result-level tests
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+- `make test-engine`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §10`](../architecture/parser/specification.md#10-absence-and-with-without-logic)
+- [`query_catalog.md §3.8`](../reference/query_catalog.md) — currently-claimed record surface
+
+---
+
+## 16. `[ ]` Guard against zero-sample filter combinations
+
+**Why:** Manual testing of `Celtics record when Giannis out` exposed a serious failure mode: the parser set `team=BOS, without_player=GIANNIS`, but Giannis has never played for Boston, so the filter is nonsensical. Instead of returning "no matching games," the engine silently fell through to an unfiltered full-season record — a confident wrong answer. Plan §7.2 explicitly calls this out as the #1 failure mode. A narrow guard is cheap and high-value; full proactive detection of nonsensical filters stays in Phase D.
+
+**Scope:**
+
+- In the routes touched by items 14 and 15, detect when applied filters reduce the sample to zero rows
+- Return an explicit empty-sample result with a clear note (e.g., `"no games matched the specified filters"`), not a fallback to unfiltered data
+- Align with the existing comparison `no_match` behavior per [`query_catalog.md §3.4`](../reference/query_catalog.md)
+- Document this behavior in [`query_catalog.md`](../reference/query_catalog.md) so users know zero-sample → explicit no-match, not silent fallback
+
+**Files likely touched:**
+
+- Same engine routes as items 14 and 15
+- Result envelope / `QueryResponse` handling if a new status is needed
+- `docs/reference/query_catalog.md` — new note about zero-sample behavior
+- `tests/engine/` — tests for zero-sample cases
+
+**Acceptance criteria:**
+
+- `Celtics record when Giannis out` returns an explicit no-match result, not a full-season record
+- Other nonsensical filter combinations return no-match rather than fallback data
+- The no-match result is structurally consistent with existing `no_match` results from the comparison family
+- Catalog documents the behavior
+
+**Explicitly out of scope:**
+
+- Proactive detection of nonsensical filter combinations before execution (Phase D)
+- Surfacing alternate interpretations when a filter is nonsensical (Phase D)
+- Parse-level confidence scoring (Phase D)
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+- `make test-engine`
+- `make test-output` (if envelope shape changes)
+
+**Reference docs to consult:**
+
+- [`query_surface_expansion_plan.md §7.2`](./query_surface_expansion_plan.md) — guardrail: honest unsupported over silent wrong
+- [`query_catalog.md §3.4`](../reference/query_catalog.md) — existing `no_match` behavior precedent
+
+---
+
 ## Appendix: progress tracking
 
 When all items above are checked `[x]`, Phase A is complete. The draft of `phase_b_work_queue.md` from item 13 is the handoff artifact.
