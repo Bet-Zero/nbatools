@@ -259,7 +259,42 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 8. `[ ]` Phase C retrospective and Phase D work queue draft
+## Phase C retrospective
+
+### What went well
+
+- **Inventory-first approach** (item 1) was the right call — cataloging all 20 implicit defaults in `_finalize_route` before touching code gave a clear punchlist and prevented ad hoc discovery during later items.
+- **Named default rules** (item 6) landed cleanly. The `(should_fire, notes_message)` signature is simple, independently testable, and keeps policy separate from routing mechanics. Five rules extracted without breaking any existing tests.
+- **`notes` entries** as the documentation mechanism (items 2–5) proved lightweight — no new data structures needed, just appending strings. The UI already renders `notes`, so defaults became user-visible for free.
+- **Spec §15 sync** (item 7) was straightforward because items 1–6 had already reconciled code and spec incrementally. The final pass was mostly verification, not writing.
+- **Guard-clause refinement** on the `player_timeframe_summary_default` was already done in Phase A (item 4), so Phase C item 2 was mostly adding the `notes` entry and documenting the exclusion list — not re-inventing it.
+
+### What was harder than expected
+
+- **Boundary between finder and occurrence routing** (item 4) required careful analysis. Threshold-only queries like "Jokic over 25 points" vs "Jokic 5+ threes" route to different places depending on whether the threshold reads as a filter (finder) or an event definition (occurrence). The boundary is inherently fuzzy and the named rules document it rather than eliminate the ambiguity.
+- **Remaining default branches** (item 5) were numerous. Many branches apply non-obvious defaults (stat fallback to `pts`, leaderboard source selection in date windows, top-games limit defaults) that weren't initially obvious as "defaults" but clearly affect result shape.
+- **Deciding what counts as a "default"** — cosmetic defaults (e.g., `ascending=False` for leaderboards) vs. policy defaults (e.g., stat → `pts` when unspecified) required judgment calls about which warranted `notes` entries. The rule of thumb became: document it if it affects what data the user sees, not just how it's sorted.
+
+### What Phase C didn't cover (residuals for later phases)
+
+- **Confidence scoring**: defaults fire silently — there's no mechanism to say "I applied a default and I'm 75% sure this is what you meant." Phase D addresses this.
+- **Alternate interpretations**: when a default fires, the alternate parse (the non-default route) isn't surfaced. Phase D's alternates mechanism would let the UI say "showing summary; did you mean finder?"
+- **Opponent-quality defaults** (§15.2): `<team> + <opponent-quality>` → record is still spec'd but unshipped because opponent-quality buckets are Phase E territory.
+- **"Best games" ranking** (§15.2): not formalized because the product definition of "best" (Game Score? custom metric?) isn't settled.
+- **Entity-resolution extension**: extending ambiguity handling to team/stat references (not just players) would interact with defaults but belongs in Phase D.
+
+### Scope adjustments for Phase D
+
+Phase C's named-rules extraction provides a clean foundation for Phase D's confidence scoring — each named rule that fires can contribute a confidence signal (e.g., "a default fired" → lower confidence). Phase D should:
+
+1. Design the confidence scoring function to consume default-rule firing signals
+2. Formalize the `intent` enum using the route names already in `_finalize_route`
+3. Start with heuristic confidence (entity confidence × signal clarity × default penalty) rather than anything ML-based
+4. Add `alternates` incrementally — start with the most common ambiguous patterns from §16.3
+
+---
+
+## 8. `[x]` Phase C retrospective and Phase D work queue draft
 
 **Why:** Self-propagating final task. Ensures learnings are captured and the next phase is scoped before this one closes.
 
