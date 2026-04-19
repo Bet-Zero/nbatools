@@ -821,45 +821,76 @@ These affect every subsequent answer. They should be documented in §18 (Glossar
 
 Some queries genuinely have more than one reasonable parse. Handle this explicitly.
 
-### 16.1 Entity-level ambiguity (already shipped)
+### 16.1 Entity-level ambiguity (shipped)
 
 `detect_player_resolved` returns an ambiguous result when a reference matches multiple players. `_finalize_route` short-circuits with a clarification prompt via `format_ambiguity_message` when no other entity is resolved.
 
-This pattern should extend to:
+This pattern has been extended to:
 
-- ambiguous team references
-- ambiguous opponent references
-- ambiguous stat references
+- **Team references**: `resolve_team()` in `entity_resolution.py` returns a `team_resolution_confidence` signal (`confident` / `none`) that feeds into the parse-wide confidence score.
+- **Stat references**: `resolve_stat()` validates stat aliases against the unified `STAT_ALIASES` dict and sets `stat_resolution_confidence` (`confident` / `none`).
 
-### 16.2 Parse-level confidence (proposed)
+Not yet extended to: ambiguous opponent references (deferred to Phase E).
 
-The parse state does not currently carry a parse-wide confidence score. Adding one enables:
+### 16.2 Parse-level confidence (implemented)
 
-- graceful fallback for low-confidence parses
-- surfacing alternate interpretations
-- monitoring / logging for low-confidence patterns
+The parse state carries a parse-wide `confidence` score (0.0–1.0), computed by `compute_parse_confidence()` in `_confidence.py`. The function uses a heuristic model — no ML.
 
-Suggested tiers:
+**Scoring formula** (base = 0.70, clamped to [0.0, 1.0]):
 
-| Confidence         | Example                          | Behavior                                     |
-| ------------------ | -------------------------------- | -------------------------------------------- |
-| High (>0.85)       | `most points last night`         | Execute directly                             |
-| Medium (0.60–0.85) | `Celtics recently`               | Execute with best parse; optionally show alt |
-| Low (<0.60)        | Totally ambiguous / unresolvable | Ask for clarification                        |
+| Signal                        | Effect                                         |
+| ----------------------------- | ---------------------------------------------- |
+| Route is `None` / unsupported | −0.40 (early return)                           |
+| Entity resolved (player/team) | +0.08                                          |
+| No entity, not a leaderboard  | −0.05                                          |
+| `entity_ambiguity` present    | −0.20                                          |
+| Explicit intent flag set      | +0.10                                          |
+| Default rule fired (`notes`)  | −0.08 per default                              |
+| Stat resolved (`confident`)   | +0.05                                          |
+| Stat not resolved             | −0.03                                          |
+| Team resolved (not in entity) | +0.04                                          |
+| Timeframe specified            | +0.05                                          |
+| No timeframe                  | −0.05                                          |
+| Threshold present             | +0.05                                          |
+
+**Confidence tiers:**
+
+| Confidence         | Example                                       | Behavior                                     |
+| ------------------ | --------------------------------------------- | -------------------------------------------- |
+| High (>0.85)       | `Jokic triple doubles` (0.90)                 | Execute directly                             |
+| Medium (0.60–0.85) | `Celtics recently` (0.80)                     | Execute with best parse; show alternates     |
+| Low (<0.60)        | No route / unresolvable entity                | Would prompt for clarification               |
 
 ### 16.3 Common ambiguous inputs
 
-- `Celtics recently` — record? team summary? recent games?
-- `Tatum vs Knicks` — head-to-head career? recent game? season vs NYK?
-- `Jokic triple doubles` — count? list? recent? career?
-- `best games Booker` — by what metric?
-- `Thunder clutch` — record? team stats? player stats?
+Verified routing as of Phase D implementation:
+
+| Query                 | Route                    | Confidence | Alternates                                |
+| --------------------- | ------------------------ | ---------- | ----------------------------------------- |
+| `Celtics recently`    | `game_finder`            | 0.80       | —                                         |
+| `Tatum vs Knicks`     | `player_game_finder`     | 0.80       | `player_game_summary` (averages vs NYK)   |
+| `Jokic triple doubles`| `player_game_finder`     | 0.90       | — (high confidence, no alternates)        |
+| `best games Booker`   | `player_game_finder`     | 0.90       | — (high confidence, no alternates)        |
+| `Thunder clutch`      | `game_finder`            | 0.80       | — (clutch filter not yet shipped; Phase E)|
 
 ### 16.4 Disambiguation strategy
 
 1. Apply defaults (§15) to pick the most likely parse
 2. If two parses are close in likelihood, return the top one with alternate surfaced as a "did you mean" option
 3. Only prompt for clarification when genuinely ambiguous or a required slot is unresolvable
+
+**Implementation:** `generate_alternates()` in `_confidence.py` checks known ambiguity patterns when confidence < 0.85 and returns up to 2 alternates. Each alternate is a dict:
+
+```json
+{
+  "intent": "summary",
+  "route": "player_game_summary",
+  "description": "Jayson Tatum averages vs NYK",
+  "confidence": 0.75
+}
+```
+
+The React UI renders alternates as clickable "Did you mean?" chips via the `DidYouMean` component. The API surfaces them in the `QueryResponse` envelope.
 
 **Anti-pattern**: silent wrong answers. Pretending the parse is certain when it isn't is worse than asking.
 
@@ -882,18 +913,30 @@ The state dict includes the slots described in §5 plus:
 - `normalized_query` — the cleaned query string
 - `route` — the selected engine route name
 - `route_kwargs` — dict of arguments for that route
-- `notes` — optional list of parser-side notes for result display
+- `notes` — optional list of parser-side notes for result display (includes `"default: …"` entries when a named default rule fired; see §15)
 - `entity_ambiguity` — set when entity resolution short-circuited
+- `intent` — `QueryIntent` value (e.g. `"summary"`, `"finder"`, `"leaderboard"`); populated by `route_to_intent()` in `_constants.py` at the end of `_finalize_route`
+- `confidence` — parse-wide confidence score (0.0–1.0); computed by `compute_parse_confidence()` in `_confidence.py` (see §16.2)
+- `alternates` — list of alternate interpretation dicts when confidence < 0.85; generated by `generate_alternates()` in `_confidence.py` (see §16.3–16.4); empty for high-confidence parses
+- `stat_resolution_confidence` — `"confident"` or `"none"`, from `resolve_stat()`
+- `team_resolution_confidence` — `"confident"` or `"none"`, from `resolve_team()`
 
-### 17.2 Proposed additions
+### 17.2 `QueryIntent` enum values
 
-| Field        | Purpose                                                                                                                 |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `intent`     | Enum of query class (finder / count / summary / ...) — makes class explicit rather than inferred from flag combinations |
-| `confidence` | Parse-wide confidence score (0–1)                                                                                       |
-| `alternates` | List of alternate parses when confidence is medium                                                                      |
+The `QueryIntent` class in `_constants.py` defines these intent labels:
 
-These don't exist today. Adding them is a target of the expansion plan's Phase D.
+| Intent         | Value              | Route examples                                                       |
+| -------------- | ------------------ | -------------------------------------------------------------------- |
+| `SUMMARY`      | `"summary"`        | `player_game_summary`, `game_summary`, `team_record`, `playoff_history` |
+| `COMPARISON`   | `"comparison"`     | `player_compare`, `team_compare`, `team_matchup_record`              |
+| `FINDER`       | `"finder"`         | `player_game_finder`, `game_finder`                                  |
+| `COUNT`        | `"count"`          | `player_game_finder` (with `count_intent=True`)                      |
+| `SPLIT`        | `"split_summary"`  | `player_split_summary`, `team_split_summary`                         |
+| `LEADERBOARD`  | `"leaderboard"`    | `season_leaders`, `top_player_games`, `player_occurrence_leaders`     |
+| `STREAK`       | `"streak"`         | `player_streak_finder`, `team_streak_finder`                         |
+| `UNSUPPORTED`  | `"unsupported"`    | `None` route                                                         |
+
+The `ROUTE_TO_INTENT` dict in `_constants.py` maps every route name to its intent. `route_to_intent(route, count_intent=...)` is the public lookup function.
 
 ### 17.3 Complete example
 
@@ -902,31 +945,48 @@ These don't exist today. Adding them is a target of the expansion plan's Phase D
 ```json
 {
   "normalized_query": "how many jokic games with 30+ points and 10+ rebounds since 2021",
-  "player": "NIKOLA_JOKIC",
+  "player": "Nikola Jokić",
   "team": null,
   "count_intent": true,
   "stat": "pts",
-  "min_value": 30,
+  "min_value": 30.0,
   "max_value": null,
   "threshold_conditions": [
-    { "stat": "pts", "min_value": 30, "max_value": null, "text": "30+ points" }
+    { "stat": "pts", "min_value": 30.0, "max_value": null, "text": "30+ points" },
+    { "stat": "reb", "min_value": 10.0, "max_value": null, "text": "10+ rebounds" }
   ],
   "extra_conditions": [
-    {
-      "stat": "reb",
-      "min_value": 10,
-      "max_value": null,
-      "text": "10+ rebounds"
-    }
+    { "stat": "reb", "min_value": 10.0, "max_value": null, "text": "10+ rebounds" }
   ],
-  "start_season": "2020-21",
+  "start_season": "2021-22",
   "end_season": "2025-26",
   "season": null,
-  "season_type": "regular",
+  "season_type": "Regular Season",
   "last_n": null,
-  "route": "player_game_finder",
-  "route_kwargs": { "mode": "count", "...": "..." },
-  "notes": []
+  "route": "player_occurrence_leaders",
+  "route_kwargs": {
+    "conditions": [
+      { "stat": "pts", "min_value": 30.0 },
+      { "stat": "reb", "min_value": 10.0 }
+    ],
+    "season": null,
+    "start_season": "2021-22",
+    "end_season": "2025-26",
+    "season_type": "Regular Season",
+    "opponent": null,
+    "home_only": false,
+    "away_only": false,
+    "wins_only": false,
+    "losses_only": false,
+    "start_date": null,
+    "end_date": null,
+    "limit": 500,
+    "player": "Nikola Jokić"
+  },
+  "notes": [],
+  "intent": "leaderboard",
+  "confidence": 1.0,
+  "alternates": []
 }
 ```
 

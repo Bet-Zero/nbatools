@@ -13,6 +13,7 @@ Covers:
 
 import pytest
 
+from nbatools.commands._matchup_utils import detect_team_in_text
 from nbatools.commands.entity_resolution import (
     ResolutionResult,
     format_ambiguity_message,
@@ -23,7 +24,6 @@ from nbatools.commands.entity_resolution import (
 from nbatools.commands.natural_query import (
     detect_player,
     detect_player_resolved,
-    detect_team_in_text,
     parse_query,
 )
 from nbatools.commands.structured_results import ResultReason
