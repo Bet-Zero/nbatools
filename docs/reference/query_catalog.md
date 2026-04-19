@@ -100,10 +100,10 @@ Every recognized stat phrasing grouped by canonical stat name. Both standard nam
 | Canonical stat | Recognized aliases                                                                                                                                                                   |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `pts`          | `pts`, `point`, `points`, `scored`, `scores`, `scoring`                                                                                                                              |
-| `reb`          | `reb`, `rebound`, `rebounds`, `rebounded`, `rebounding`                                                                                                                              |
-| `ast`          | `ast`, `assist`, `assists`, `assisted`                                                                                                                                               |
-| `stl`          | `stl`, `steal`, `steals`                                                                                                                                                             |
-| `blk`          | `blk`, `block`, `blocks`                                                                                                                                                             |
+| `reb`          | `reb`, `rebound`, `rebounds`, `rebounded`, `rebounding`, `boards`                                                                                                                    |
+| `ast`          | `ast`, `assist`, `assists`, `assisted`, `dimes`                                                                                                                                      |
+| `stl`          | `stl`, `steal`, `steals`, `swipes`                                                                                                                                                   |
+| `blk`          | `blk`, `block`, `blocks`, `swats`                                                                                                                                                    |
 | `fg3m`         | `3s`, `3pm`, `fg3m`, `threes`, `threes made`, `three-point makes`, `three pointers made`                                                                                             |
 | `tov`          | `tov`, `turnover`, `turnovers`                                                                                                                                                       |
 | `minutes`      | `minutes`                                                                                                                                                                            |
