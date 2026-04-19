@@ -270,7 +270,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 7. `[ ]` Sync spec §16 and §17 with implemented behavior
+## 7. `[x]` Sync spec §16 and §17 with implemented behavior
 
 **Why:** After items 1–6, spec §16 (ambiguity/confidence) and §17 (canonical IR) should mirror the implementation exactly. This is the documentation-lockstep step.
 
@@ -306,7 +306,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 8. `[ ]` Phase D retrospective and Phase E work queue draft
+## 8. `[x]` Phase D retrospective and Phase E work queue draft
 
 **Why:** Self-propagating final task. Ensures learnings are captured and the next phase is scoped before this one closes.
 
@@ -340,6 +340,43 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 - [`query_surface_expansion_plan.md §9`](./query_surface_expansion_plan.md) — work queue convention
 - [`query_surface_expansion_plan.md §5.5`](./query_surface_expansion_plan.md) — Phase E scope
 - This file as a structural template
+
+---
+
+## Phase D retrospective
+
+### What went well
+
+- **QueryIntent enum + ROUTE_TO_INTENT mapping** (item 1) was clean — a plain class with string constants was simpler than a Python Enum and equally effective. The `route_to_intent()` function elegantly handles the count/finder duality with a single `count_intent` flag.
+- **Heuristic confidence scoring** (item 2) landed with a straightforward additive model (base 0.70, signal adjustments, clamped to [0,1]). The scoring formula is transparent and easy to tune — no ML complexity needed for the current query surface.
+- **Entity resolution extension** (item 3) for teams and stats was lightweight — `resolve_team()` and `resolve_stat()` return confidence signals that feed directly into `compute_parse_confidence` without restructuring the parse pipeline.
+- **Alternates generation** (item 4) works well for the known ambiguity patterns. The pattern-matching approach (5 specific patterns in `generate_alternates`) is simple and maintainable — each pattern is ~10 lines with clear trigger conditions.
+- **API envelope threading** (item 5) — adding optional fields with sensible defaults meant zero breaking changes for existing consumers. Pydantic's `Optional` fields with defaults made this trivial.
+- **DidYouMean UI** (item 6) — clickable chips that re-query with the alternate description. Minimal implementation, functional first pass.
+- **Spec sync** (item 7) — updating §16 and §17 was straightforward because items 1–6 had built the implementation incrementally. Also fixed a pre-existing import error in `test_entity_resolution.py`.
+
+### What was harder than expected
+
+- **Confidence calibration** — initial tier boundaries (0.85/0.60) produce reasonable results but some queries feel miscalibrated. For example, `most points this season` scores 0.82 (medium) even though it's unambiguous — the penalty comes from no entity being present, which is correct for a league-wide leaderboard but feels counterintuitive.
+- **Alternates coverage** — only 5 patterns are coded in `generate_alternates`. Many medium-confidence queries (0.60–0.85) don't match any pattern and get no alternates even though the user might benefit from seeing one. Expanding pattern coverage is straightforward but labor-intensive.
+
+### What Phase D didn't cover (residuals for later phases)
+
+- **Unsupported-query messaging**: queries that raise `ValueError` (like `"scoring"` alone) don't produce a parse state at all — they crash before confidence/alternates can run. Phase E or a dedicated error-handling pass should catch these and return a structured "unsupported" response with confidence=0 and helpful suggestions.
+- **Session-context disambiguation** (§16.5): "prefer the parse consistent with recent query context" is spec'd but not implemented — would require stateful session tracking, which is out of scope for the current stateless parser.
+- **ML-based confidence**: the heuristic model is adequate for the current surface but will plateau as query diversity grows. A future phase could train a lightweight classifier on (query, correct_route) pairs.
+- **Entity-resolution anomalies**: wrong-subject detection in two-player queries and team resolution from player city remain unfixed from Phase A.
+
+### Scope adjustments for Phase E
+
+Phase E is large (5 sub-phases in the plan). The work queue should:
+
+1. Start with **expanded context filters** (§5.5.4) — these extend existing routes and don't require new data sources, making them the lowest-risk entry point.
+2. **Opponent-quality buckets** (§5.5.1) second — definitions are already reserved in the glossary, and the filter mechanism is similar to context filters.
+3. **On/off queries** (§5.5.2) and **lineup queries** (§5.5.3) third — these require new data access layers and are higher-risk.
+4. **Stretch / rolling-window queries** (§5.5.5) last — product definition of "hot" isn't settled.
+
+Each sub-phase should be independently shippable.
 
 ---
 
