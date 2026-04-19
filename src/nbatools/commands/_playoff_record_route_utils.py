@@ -354,6 +354,7 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
     end_season = parsed["end_season"]
     season_type = parsed["season_type"]
     opponent = parsed["opponent"]
+    without_player = parsed.get("without_player")
     home_only = parsed["home_only"]
     away_only = parsed["away_only"]
     wins_only = parsed["wins_only"]
@@ -413,6 +414,7 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
             "season_type": season_type,
             "stat": record_stat,
             "opponent": opponent,
+            "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,

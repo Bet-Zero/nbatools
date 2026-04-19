@@ -542,7 +542,7 @@
 
 ---
 
-## 16. `[ ]` Guard against zero-sample filter combinations
+## 16. `[x]` Guard against zero-sample filter combinations
 
 **Why:** Manual testing of `Celtics record when Giannis out` exposed a serious failure mode: the parser set `team=BOS, without_player=GIANNIS`, but Giannis has never played for Boston, so the filter is nonsensical. Instead of returning "no matching games," the engine silently fell through to an unfiltered full-season record — a confident wrong answer. Plan §7.2 explicitly calls this out as the #1 failure mode. A narrow guard is cheap and high-value; full proactive detection of nonsensical filters stays in Phase D.
 

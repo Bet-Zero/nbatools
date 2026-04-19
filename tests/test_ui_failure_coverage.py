@@ -29,6 +29,7 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands.entity_resolution import resolve_player
 from nbatools.commands.natural_query import _build_parse_state, parse_query
+from nbatools.query_service import execute_natural_query
 
 pytestmark = pytest.mark.query
 
@@ -206,6 +207,18 @@ class TestWithoutPlayer:
         parsed = parse_query("Warriors wins without Stephen Curry")
         assert parsed["team"] == "GSW"
         assert parsed.get("without_player") == "Stephen Curry"
+
+    def test_record_without_player_wrong_team_returns_no_match(self):
+        qr = execute_natural_query("Celtics record when Giannis out")
+        assert qr.route == "team_record"
+        assert qr.result.result_reason == "no_match"
+        assert qr.result.notes == ["No games matched the specified filters"]
+
+    def test_record_leaderboard_without_player_returns_no_match(self):
+        qr = execute_natural_query("best record without Stephen Curry")
+        assert qr.route == "team_record_leaderboard"
+        assert qr.result.result_reason == "no_match"
+        assert qr.result.notes == ["No games matched the specified filters"]
 
 
 # ---------------------------------------------------------------------------

@@ -403,7 +403,11 @@ def build_result(
         basic = basic.groupby("team_id", group_keys=False).head(last_n).copy()
 
     if basic.empty:
-        return NoResult(query_class="leaderboard", reason="no_data")
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No games matched the specified filters"],
+        )
 
     df = _build_from_game_logs(basic)
 
@@ -428,7 +432,11 @@ def build_result(
     )
 
     if df.empty:
-        return NoResult(query_class="leaderboard")
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No games matched the specified filters"],
+        )
 
     out_cols = ["team_name", "team_abbr", "team_id", "games_played", target_col]
     missing = [c for c in out_cols if c not in df.columns]

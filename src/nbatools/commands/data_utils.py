@@ -178,6 +178,7 @@ def filter_without_player(
     seasons: list[str],
     season_type: str,
     team: str | None = None,
+    strict_team_match: bool = False,
 ) -> pd.DataFrame:
     """Filter df to games where without_player did NOT play.
 
@@ -189,11 +190,13 @@ def filter_without_player(
     p_rows = player_df.loc[p_mask, ["game_id", "team_abbr"]].drop_duplicates()
 
     if p_rows.empty:
-        return df.copy()
+        return df.iloc[0:0].copy() if strict_team_match else df.copy()
 
-    if team and "team_abbr" in df.columns:
+    if team:
         # Only exclude games where the player was on the same team
         team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+        if strict_team_match and not team_games:
+            return df.iloc[0:0].copy()
     else:
         team_games = set(p_rows["game_id"])
 

@@ -351,6 +351,14 @@ def _write_without_player_data(tmp_path, safe="regular_season"):
         2,
         [f"2098-99_2_99_{i}" for i in range(2)],
     )
+    player_rows += _player_game_rows(
+        "2098-99",
+        "Stephen Curry",
+        30,
+        "BET",
+        2,
+        [f"2098-99_2_99_{i}" for i in range(3, 6)],
+    )
     _write_csv(tmp_path / f"data/raw/player_game_stats/2098-99_{safe}.csv", player_rows)
 
 
@@ -733,6 +741,20 @@ class TestBuildTeamRecordResult:
         result = build_team_record_result(team="XYZ", season="2098-99")
         assert isinstance(result, NoResult)
 
+    def test_record_without_player_on_other_team_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_without_player_data(tmp_path)
+
+        result = build_team_record_result(
+            team="ALP",
+            season="2098-99",
+            without_player="Stephen Curry",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
+
     def test_record_playoff_season(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         rows = _team_game_rows(
@@ -872,6 +894,21 @@ class TestBuildMatchupRecordResult:
         # ALP vs BET never play each other in single_season data
         result = build_matchup_record_result(team_a="ALP", team_b="XYZ", season="2098-99")
         assert isinstance(result, (ComparisonResult, NoResult))
+
+    def test_matchup_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_matchup_data(tmp_path)
+
+        result = build_matchup_record_result(
+            team_a="ALP",
+            team_b="BET",
+            season="2098-99",
+            start_date="2101-01-01",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
 
     def test_matchup_to_dict(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -1017,6 +1054,36 @@ class TestBuildRecordLeaderboardResult:
         monkeypatch.chdir(tmp_path)
         result = build_record_leaderboard_result(season="2098-99", stat="win_pct")
         assert isinstance(result, NoResult)
+
+    def test_leaderboard_without_player_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_multi_season(tmp_path)
+
+        result = build_record_leaderboard_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            stat="win_pct",
+            without_player="Stephen Curry",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
+
+    def test_leaderboard_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_multi_season(tmp_path)
+
+        result = build_record_leaderboard_result(
+            start_season="2098-99",
+            end_season="2099-00",
+            stat="win_pct",
+            start_date="2101-01-01",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
 
     def test_leaderboard_caveats_multi_season(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)

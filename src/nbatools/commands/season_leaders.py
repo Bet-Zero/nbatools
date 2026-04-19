@@ -721,7 +721,11 @@ def build_result(
         basic = basic.groupby("player_id", group_keys=False).head(last_n).copy()
 
     if basic.empty:
-        return NoResult(query_class="leaderboard", reason="no_data")
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No games matched the specified filters"],
+        )
 
     # Position-group filtering: restrict to players matching a position group
     position_codes = _resolve_position_filter(position)
@@ -804,7 +808,11 @@ def build_result(
     )
 
     if df.empty:
-        return NoResult(query_class="leaderboard")
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No games matched the specified filters"],
+        )
 
     out_cols = ["player_name", "player_id"]
     if "team_abbr" in df.columns:

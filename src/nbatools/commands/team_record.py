@@ -34,6 +34,8 @@ from nbatools.commands.structured_results import (
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+_EMPTY_SAMPLE_NOTE = "No games matched the specified filters"
+
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -132,6 +134,14 @@ def _stat_averages(df: pd.DataFrame) -> dict:
     return avgs
 
 
+def _empty_sample_result(query_class: str) -> NoResult:
+    return NoResult(
+        query_class=query_class,
+        reason="no_match",
+        notes=[_EMPTY_SAMPLE_NOTE],
+    )
+
+
 # ---------------------------------------------------------------------------
 # Public API: team record summary
 # ---------------------------------------------------------------------------
@@ -188,10 +198,17 @@ def build_team_record_result(
     )
 
     if without_player and not df.empty:
-        df = filter_without_player(df, without_player, seasons, season_type, team=team)
+        df = filter_without_player(
+            df,
+            without_player,
+            seasons,
+            season_type,
+            team=team,
+            strict_team_match=True,
+        )
 
     if df.empty:
-        return NoResult(query_class="summary")
+        return _empty_sample_result("summary")
 
     rec = _compute_record(df)
     avgs = _stat_averages(df)
@@ -345,7 +362,7 @@ def build_matchup_record_result(
     )
 
     if a_df.empty and b_df.empty:
-        return NoResult(query_class="comparison")
+        return _empty_sample_result("comparison")
 
     rec_a = _compute_record(a_df)
     rec_b = _compute_record(b_df)
@@ -430,6 +447,7 @@ def build_record_leaderboard_result(
     season_type: str = "Regular Season",
     stat: str = "win_pct",
     opponent: str | None = None,
+    without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -450,6 +468,8 @@ def build_record_leaderboard_result(
         raise ValueError("Cannot use both wins_only and losses_only")
     if limit <= 0:
         raise ValueError("limit must be greater than 0")
+    if without_player:
+        return _empty_sample_result("leaderboard")
 
     seasons = resolve_seasons(season, start_season, end_season)
 
@@ -471,7 +491,7 @@ def build_record_leaderboard_result(
     )
 
     if df.empty:
-        return NoResult(query_class="leaderboard", reason="no_data")
+        return _empty_sample_result("leaderboard")
 
     # Group by team and compute record
     if "wl" in df.columns:
@@ -489,7 +509,7 @@ def build_record_leaderboard_result(
     agg = agg[agg["games_played"] >= min_games].copy()
 
     if agg.empty:
-        return NoResult(query_class="leaderboard")
+        return _empty_sample_result("leaderboard")
 
     # Determine sort column
     target_col = stat if stat in ("wins", "losses", "win_pct") else "win_pct"

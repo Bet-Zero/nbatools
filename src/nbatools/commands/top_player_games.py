@@ -102,7 +102,11 @@ def build_result(
         df = df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
 
     if df.empty:
-        return NoResult(query_class="leaderboard", reason="no_data")
+        return NoResult(
+            query_class="leaderboard",
+            reason="no_match",
+            notes=["No games matched the specified filters"],
+        )
 
     out_cols = [
         "player_name",

@@ -12,7 +12,7 @@ import pytest
 
 from nbatools.commands.season_leaders import build_result as season_leaders_build
 from nbatools.commands.season_team_leaders import build_result as season_team_leaders_build
-from nbatools.commands.structured_results import LeaderboardResult
+from nbatools.commands.structured_results import LeaderboardResult, NoResult
 from nbatools.commands.top_player_games import build_result as top_player_games_build
 from nbatools.commands.top_team_games import build_result as top_team_games_build
 
@@ -446,6 +446,27 @@ class TestSeasonLeadersCaveats:
         assert "last 10 games" in caveats_text
 
 
+class TestSeasonLeadersEmptySample:
+    def test_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
+            _make_player_game_rows(),
+        )
+
+        result = season_leaders_build(
+            season="2099-00",
+            stat="pts",
+            limit=10,
+            min_games=1,
+            start_date="2100-01-01",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
+
+
 # ---------------------------------------------------------------------------
 # season_team_leaders filter contract tests
 # ---------------------------------------------------------------------------
@@ -476,6 +497,27 @@ class TestTeamLeadersLastN:
 
         assert abs(full_aaa.iloc[0]["pts_per_game"] - 100.0) < 0.01
         assert abs(last5_aaa.iloc[0]["pts_per_game"] - 90.0) < 0.01
+
+
+class TestTeamLeadersEmptySample:
+    def test_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_team_game_rows(),
+        )
+
+        result = season_team_leaders_build(
+            season="2099-00",
+            stat="pts",
+            limit=10,
+            min_games=1,
+            start_date="2100-01-01",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
 
 
 # ---------------------------------------------------------------------------
@@ -523,6 +565,26 @@ class TestTopPlayerGamesLastN:
         assert last10.leaders.iloc[0]["pts"] <= 20
 
 
+class TestTopPlayerGamesEmptySample:
+    def test_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
+            _make_player_game_rows(),
+        )
+
+        result = top_player_games_build(
+            season="2099-00",
+            stat="pts",
+            limit=5,
+            start_date="2100-01-01",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]
+
+
 # ---------------------------------------------------------------------------
 # top_team_games filter contract tests
 # ---------------------------------------------------------------------------
@@ -543,3 +605,23 @@ class TestTopTeamGamesHomeOnly:
         assert isinstance(home, LeaderboardResult)
         for _, row in home.leaders.iterrows():
             assert row["is_home"] == 1
+
+
+class TestTopTeamGamesEmptySample:
+    def test_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_team_game_rows(),
+        )
+
+        result = top_team_games_build(
+            season="2099-00",
+            stat="pts",
+            limit=5,
+            start_date="2100-01-01",
+        )
+
+        assert isinstance(result, NoResult)
+        assert result.result_reason == "no_match"
+        assert result.notes == ["No games matched the specified filters"]

@@ -321,6 +321,10 @@ Examples:
 - `team fg%` (team stat alias → fg_pct)
 - `team ft%` (team stat alias → ft_pct)
 
+Leaderboard no-match behavior:
+
+- if data exists but the requested date/context/sample filters leave no games in scope, leaderboard routes return `no_match` rather than falling back to a broader leaderboard
+
 ### Position-filtered leaderboards
 
 Examples:
@@ -403,6 +407,10 @@ Examples:
 - `best record since 2015`
 - `which teams had the most wins since 2010`
 - `highest win percentage vs Lakers since 2018`
+
+Record no-match behavior:
+
+- if team/opponent/absence/date/context filters leave no matching sample, record routes return `no_match` with an explicit empty-sample note instead of falling back to a full-season result
 
 ---
 
