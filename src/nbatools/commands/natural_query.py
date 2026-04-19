@@ -23,7 +23,7 @@ from nbatools.commands._matchup_utils import (
     detect_opponent_player,
     detect_player,
     detect_player_resolved,
-    detect_team_in_text,
+    detect_team_resolved,
     detect_without_player,
     extract_player_comparison,
     extract_team_comparison,
@@ -147,7 +147,7 @@ from nbatools.commands._playoff_record_route_utils import (
     try_playoff_record_route,
     try_record_leaderboard_route,
 )
-from nbatools.commands.entity_resolution import format_ambiguity_message
+from nbatools.commands.entity_resolution import format_ambiguity_message, resolve_stat
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
@@ -292,6 +292,11 @@ def _build_parse_state(query: str) -> dict:
         min_value = extract_min_value(q, stat)
         max_value = None
 
+    # Stat resolution confidence: "confident" when a recognized alias was
+    # matched, "none" when no stat was detected.
+    stat_resolution = resolve_stat(stat)
+    stat_resolution_confidence = stat_resolution.confidence
+
     if last_n is None and wants_recent_form(q):
         last_n = 10
 
@@ -342,6 +347,8 @@ def _build_parse_state(query: str) -> dict:
     team = None
     without_player = None
 
+    team_resolution_confidence = "none"
+
     if not (team_a and team_b):
         opponent, q_without_opponent = detect_opponent(q)
 
@@ -353,7 +360,12 @@ def _build_parse_state(query: str) -> dict:
                 q_without_opponent = q_cleaned
 
         if not (player_a and player_b):
-            team = detect_team_in_text(q_without_opponent)
+            team_result = detect_team_resolved(q_without_opponent)
+            if team_result.is_confident:
+                team = team_result.resolved
+                team_resolution_confidence = "confident"
+            else:
+                team_resolution_confidence = team_result.confidence
 
     # Detect "without PLAYER" pattern (e.g., "Warriors record without Steph Curry")
     without_player, _ = detect_without_player(q)
@@ -462,6 +474,8 @@ def _build_parse_state(query: str) -> dict:
         "opponent_player": opponent_player,
         "without_player": without_player,
         "entity_ambiguity": entity_ambiguity,
+        "team_resolution_confidence": team_resolution_confidence,
+        "stat_resolution_confidence": stat_resolution_confidence,
         "by_decade_intent": by_decade_intent,
         "playoff_appearance_intent": playoff_appearance_intent,
         "playoff_history_intent": playoff_history_intent,

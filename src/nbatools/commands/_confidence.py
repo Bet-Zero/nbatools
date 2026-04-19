@@ -74,12 +74,19 @@ def compute_parse_confidence(parsed: dict) -> float:
     if default_count:
         score -= 0.08 * default_count
 
-    # --- Stat specified ------------------------------------------------
-    if parsed.get("stat") is not None:
+    # --- Stat resolution -----------------------------------------------
+    stat_conf = parsed.get("stat_resolution_confidence", "none")
+    if stat_conf == "confident":
         score += 0.05
     else:
-        # No explicit stat — mild penalty (many queries legitimately omit it)
+        # No recognized stat — mild penalty (many queries legitimately omit it)
         score -= 0.03
+
+    # --- Team resolution -----------------------------------------------
+    team_conf = parsed.get("team_resolution_confidence", "none")
+    if team_conf == "confident" and not has_entity:
+        # Team was resolved but wasn't already counted in entity signals
+        score += 0.04
 
     # --- Timeframe specified -------------------------------------------
     has_timeframe = bool(

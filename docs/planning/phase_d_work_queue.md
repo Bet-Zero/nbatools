@@ -110,7 +110,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 3. `[ ]` Extend entity-level ambiguity to teams and stats
+## 3. `[x]` Extend entity-level ambiguity to teams and stats
 
 **Why:** `entity_resolution.py` currently handles player ambiguity (confidence: `confident` / `ambiguous` / `none`) but team and stat references have no equivalent. "OKC" is unambiguous, but "Washington" could be Wizards or Nationals context; stat aliases like "boards" are unambiguous but arbitrary abbreviations might not be.
 

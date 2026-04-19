@@ -932,6 +932,19 @@ def resolve_team_in_query(text: str) -> ResolutionResult:
     return _no_match()
 
 
+def resolve_stat(stat_value: str | None) -> ResolutionResult:
+    """Return a resolution result for a detected stat value.
+
+    *stat_value* is the canonical stat code already resolved by
+    ``detect_stat`` (e.g. ``"pts"``, ``"reb"``).  A non-None value
+    means the alias was recognized → confident.  ``None`` means no
+    stat was detected → no-match.
+    """
+    if stat_value is not None:
+        return _confident(stat_value, source="stat_alias")
+    return _no_match()
+
+
 # ---------------------------------------------------------------------------
 # Comparison extraction with entity resolution
 # ---------------------------------------------------------------------------
