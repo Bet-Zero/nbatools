@@ -228,7 +228,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 6. `[ ]` Reconcile STAT_PATTERN with alias dict
+## 6. `[x]` Reconcile STAT_PATTERN with alias dict
 
 **Why:** `STAT_PATTERN` is a hand-maintained regex that must stay in sync with `STAT_ALIASES`. Phase A added verbal forms to `STAT_ALIASES` but not to `STAT_PATTERN`, relying on `detect_stat` (which uses the dict). If item 2 auto-generates the pattern, this item verifies correctness and handles edge cases.
 
