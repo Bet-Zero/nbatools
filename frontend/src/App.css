@@ -848,7 +848,9 @@ body {
   padding: 0.25rem 0.75rem;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .alternate-chip:hover {
