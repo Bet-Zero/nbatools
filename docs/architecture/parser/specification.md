@@ -979,12 +979,12 @@ Consolidated reference for fuzzy terms, aliases, and defaults. The canonical sou
 | `biggest games`     | Ranked by points scored                                | No      |
 | `hottest`           | Rolling average over last 5 games, ranked              | No      |
 | `efficient`         | Ranked by True Shooting %                              | No      |
-| `clutch`            | Last 5 min of 4th quarter or OT, score within 5       | No      |
+| `clutch`            | Last 5 min of 4th quarter or OT, score within 5        | No      |
 | `all-around games`  | Undefined — not yet shipped                            | No      |
 | `catch-and-shoot`   | Undefined — not yet shipped                            | No      |
 | `transition scorer` | Undefined — not yet shipped                            | No      |
-| `efficient`     | Ranked by True Shooting %                              |
-| `clutch`        | Last 5 min of 4th quarter or OT, score within 5        |
+| `efficient`         | Ranked by True Shooting %                              |
+| `clutch`            | Last 5 min of 4th quarter or OT, score within 5        |
 
 ### 18.4 Metric aliases
 
