@@ -4,6 +4,13 @@ import pandas as pd
 
 from nbatools.commands._constants import normalize_text
 from nbatools.commands._date_utils import CURRENT_QUERY_DATE, extract_date_range
+from nbatools.commands._default_rules import (
+    metric_only_leaderboard_default,
+    player_threshold_finder_default,
+    player_timeframe_summary_default,
+    streak_default_window,
+    team_threshold_finder_default,
+)
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
@@ -662,8 +669,9 @@ def _finalize_route(parsed: dict) -> dict:
             "longest": team_streak_request.get("longest", False),
             "limit": 25,
         }
-        if parsed.get("streak_default_window"):
-            notes.append("default: team streak uses three-season window when no season specified")
+        _fires, _note = streak_default_window(parsed)
+        if _fires:
+            notes.append(_note)
     # ---------------------------------------------------------------------------
     # Playoff / record / decade routing cluster
     # ---------------------------------------------------------------------------
@@ -786,8 +794,9 @@ def _finalize_route(parsed: dict) -> dict:
             "longest": streak_request.get("longest", False),
             "limit": 25,
         }
-        if parsed.get("streak_default_window"):
-            notes.append("default: player streak uses three-season window when no season specified")
+        _fires, _note = streak_default_window(parsed)
+        if _fires:
+            notes.append(_note)
     elif (
         "top" in q
         and "games" in q
@@ -841,17 +850,9 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
-    elif (
-        player is None
-        and team is None
-        and not player_a
-        and not player_b
-        and not team_a
-        and not team_b
-        and (leaderboard_intent or team_leaderboard_intent)
-    ):
+    elif (_lb := metric_only_leaderboard_default(parsed))[0]:
         # No subject entity → league-wide leaderboard default (spec §15.2)
-        notes.append("default: <metric> only → league-wide leaderboard")
+        notes.append(_lb[1])
         # For leaderboards, prefer multi-season params if available
         lb_season = season
         lb_start_season = start_season
@@ -1049,44 +1050,12 @@ def _finalize_route(parsed: dict) -> dict:
         or bool(re.search(r"\brecord\b", q))
         or ("averages" in q)
         or ("average" in q)
-        # Default: `<player> + <timeframe>` with no more-specific signal
-        # routes to summary (parser spec §15.2/§15.3, e.g. `Jokic last
-        # 10` → summary). Deliberately narrow — does not fire when an
-        # opponent, explicit date range, or stat filter is present, so
-        # shorthand like `Jokic vs Lakers` / `Jokic since January`
-        # keeps its game-log finder shape until later Phase A items
-        # (opponent-quality, date-finders) handle those explicitly.
-        # The `games in <X>` idiom is a finder signal (e.g. `Kobe
-        # playoff games in 2008-09`) and is also excluded here.
-        or (
-            (season or start_season or last_n)
-            and start_date is None
-            and end_date is None
-            and opponent is None
-            and opponent_player is None
-            and without_player is None
-            and stat is None
-            and min_value is None
-            and max_value is None
-            and not occurrence_event
-            and not streak_request
-            and not season_high_intent
-            and not split_type
-            and not re.search(r"\bgames?\s+in\b", q)
-        )
+        or player_timeframe_summary_default(parsed)[0]
     ):
         route = "player_game_summary"
-        # Document when the <player> + <timeframe> default fires (spec §15.2)
-        _explicit_summary = (
-            summary_intent
-            or career_intent
-            or range_intent
-            or bool(re.search(r"\brecord\b", q))
-            or ("averages" in q)
-            or ("average" in q)
-        )
-        if not _explicit_summary:
-            notes.append("default: <player> + <timeframe> → summary")
+        _fires, _note = player_timeframe_summary_default(parsed)
+        if _fires:
+            notes.append(_note)
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -1161,9 +1130,9 @@ def _finalize_route(parsed: dict) -> dict:
         }
     elif player:
         route = "player_game_finder"
-        # Document the fallback default (spec §15.2)
-        if min_value is not None or max_value is not None:
-            notes.append("default: <player> + <threshold> → finder")
+        _fires, _note = player_threshold_finder_default(parsed)
+        if _fires:
+            notes.append(_note)
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -1212,8 +1181,9 @@ def _finalize_route(parsed: dict) -> dict:
             "ascending": False,
             "last_n": last_n,
         }
-        if min_value is not None or max_value is not None:
-            notes.append("default: <team> + <threshold> → finder")
+        _fires, _note = team_threshold_finder_default(parsed)
+        if _fires:
+            notes.append(_note)
     else:
         raise ValueError(
             "Could not map query to a supported pattern yet. "
