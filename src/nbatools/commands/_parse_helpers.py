@@ -1,6 +1,6 @@
 import re
 
-from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN, normalize_text
+from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
 from nbatools.commands._glossary import FUZZY_LAST_N_TERMS
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
@@ -96,14 +96,14 @@ def extract_position_filter(text: str) -> str | None:
     # "among guards", "among centers", "among big men", etc.
     m = re.search(r"\bamong\s+([\w\s]+?)(?:\s+(?:since|this|last|over|in|from|during|$))", text)
     if m:
-        candidate = m.group(1).strip().lower()
+        candidate = m.group(1).strip()  # already lowercase from pipeline normalization
         if candidate in _POSITION_GROUP_PATTERNS:
             return _POSITION_GROUP_PATTERNS[candidate]
 
     # "by guards", "for centers", etc.
     m = re.search(r"\b(?:by|for)\s+(guards?|forwards?|centers?|bigs?|big\s+men|wings?)\b", text)
     if m:
-        candidate = m.group(1).strip().lower()
+        candidate = m.group(1).strip()  # already lowercase from pipeline normalization
         if candidate in _POSITION_GROUP_PATTERNS:
             return _POSITION_GROUP_PATTERNS[candidate]
 
@@ -219,7 +219,9 @@ STREAK_SPECIAL_PATTERNS = {
 
 
 def extract_streak_request(text: str) -> dict | None:
-    normalized = normalize_text(text)
+    # Receives pre-normalized text from _build_parse_state; no per-detector
+    # normalization needed.
+    normalized = text
 
     if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
         return None
@@ -365,7 +367,9 @@ TEAM_STREAK_SPECIAL_PATTERNS = {
 
 
 def extract_team_streak_request(text: str) -> dict | None:
-    normalized = normalize_text(text)
+    # Receives pre-normalized text from _build_parse_state; no per-detector
+    # normalization needed.
+    normalized = text
 
     if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
         return None

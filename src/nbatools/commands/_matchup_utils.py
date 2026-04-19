@@ -71,6 +71,8 @@ MATCHUP_NOISE_PATTERN = r"\b(?:head\s*[- ]\s*to\s*[- ]\s*head|h2h|matchup|matchu
 
 
 def strip_matchup_noise(text: str) -> str:
+    # normalize_text here is for whitespace cleanup after regex substitution,
+    # not primary normalization (text is already normalized at pipeline entry).
     return normalize_text(re.sub(MATCHUP_NOISE_PATTERN, " ", text))
 
 
@@ -101,6 +103,7 @@ def detect_opponent(text: str) -> tuple[str | None, str]:
         detected = detect_team_in_text(phrase)
         if detected:
             cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+            # Whitespace cleanup after string surgery.
             cleaned = normalize_text(cleaned)
             return detected, cleaned
 
@@ -223,6 +226,7 @@ def detect_opponent_player(text: str) -> tuple[str | None, str]:
         player = detect_player(phrase)
         if player:
             cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+            # Whitespace cleanup after string surgery.
             cleaned = normalize_text(cleaned)
             return player, cleaned
 
@@ -242,7 +246,9 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     Returns (excluded_player_name, cleaned_text) or (None, original_text).
     Used for queries like 'Warriors record without Steph Curry'.
     """
-    cleaned_text = normalize_text(text)
+    # Receives pre-normalized text from _build_parse_state; no per-detector
+    # normalization needed.
+    cleaned_text = text
 
     # Ordered most-specific first to avoid partial matches.
     absence_patterns = [
@@ -265,6 +271,7 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
             player = detect_player(phrase)
             if player:
                 cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+                # Whitespace cleanup after string surgery.
                 cleaned = normalize_text(cleaned)
                 return player, cleaned
 

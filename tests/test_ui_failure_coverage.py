@@ -183,15 +183,15 @@ class TestWithoutPlayer:
     """'Lakers record without LeBron' should filter out games LeBron played."""
 
     def test_detect_without_player_basic(self):
-        player, cleaned = detect_without_player("Lakers record without LeBron James")
+        player, cleaned = detect_without_player("lakers record without lebron james")
         assert player == "LeBron James"
 
     def test_detect_without_player_no_match(self):
-        player, cleaned = detect_without_player("Lakers record")
+        player, cleaned = detect_without_player("lakers record")
         assert player is None
 
     def test_detect_without_player_strips_from_text(self):
-        player, cleaned = detect_without_player("Lakers record without Steph Curry")
+        player, cleaned = detect_without_player("lakers record without steph curry")
         # "Steph Curry" may be resolved to "Stephen Curry"
         assert player in ("Steph Curry", "Stephen Curry")
         assert "without" not in cleaned.lower()

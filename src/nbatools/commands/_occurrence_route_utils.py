@@ -10,7 +10,6 @@ import re
 
 from nbatools.commands._seasons import default_end_season
 
-
 # ---------------------------------------------------------------------------
 # Single occurrence event extraction
 # ---------------------------------------------------------------------------
@@ -130,7 +129,7 @@ def _parse_single_threshold(text: str) -> dict | None:
     )
     if under_match:
         value = float(under_match.group(1))
-        stat_text = under_match.group(2).lower()
+        stat_text = under_match.group(2)  # already lowercase from pipeline normalization
         stat = _COMPOUND_STAT_MAP.get(stat_text)
         if stat:
             return {"stat": stat, "max_value": value - 0.0001}  # "under 10" means < 10
@@ -143,7 +142,7 @@ def _parse_single_threshold(text: str) -> dict | None:
     )
     if standard_match:
         value = float(standard_match.group(1))
-        stat_text = standard_match.group(2).lower()
+        stat_text = standard_match.group(2)  # already lowercase from pipeline normalization
         stat = _COMPOUND_STAT_MAP.get(stat_text)
         if stat:
             return {"stat": stat, "min_value": value}
@@ -169,7 +168,8 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     """
     # Check for compound pattern with " and " between thresholds
     # We need to detect patterns like "X+ stat and Y+ stat"
-    text_lower = text.lower()
+    # Receives pre-normalized (lowercased) text from _build_parse_state.
+    text_lower = text
 
     # Must have "and" in the text for compound detection
     if " and " not in text_lower:
@@ -201,9 +201,9 @@ def extract_compound_occurrence_event(text: str) -> list[dict] | None:
     if compound_match:
         # Extract both conditions
         val1 = float(compound_match.group(1))
-        stat1 = _COMPOUND_STAT_MAP.get(compound_match.group(2).lower())
+        stat1 = _COMPOUND_STAT_MAP.get(compound_match.group(2))  # already lowercase
         val2 = float(compound_match.group(3))
-        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4).lower())
+        stat2 = _COMPOUND_STAT_MAP.get(compound_match.group(4))  # already lowercase
 
         if stat1 and stat2 and stat1 != stat2:
             return [

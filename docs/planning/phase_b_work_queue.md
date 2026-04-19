@@ -195,7 +195,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 5. `[ ]` Normalize text earlier in the pipeline
+## 5. `[x]` Normalize text earlier in the pipeline
 
 **Why:** Currently, `normalize_text` is called independently in many detectors. Some detectors lowercase, some don't; some strip whitespace, some receive already-normalized text. A single normalization pass at pipeline entry eliminates inconsistencies.
 

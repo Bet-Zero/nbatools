@@ -90,8 +90,8 @@ def detect_playoff_round_filter(text: str) -> str | None:
 
     Returns a round code ('01'-'04') or None.
     """
-    # Check each alias against the query text
-    t = text.lower()
+    # Receives pre-normalized (lowercased) text from _build_parse_state.
+    t = text
     # Longest-match first to avoid "finals" matching before "conference finals"
     sorted_aliases = sorted(ROUND_ALIASES.keys(), key=len, reverse=True)
     for alias in sorted_aliases:
