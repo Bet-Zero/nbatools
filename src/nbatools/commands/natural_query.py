@@ -11,6 +11,7 @@ from nbatools.commands._matchup_utils import (
     detect_head_to_head,
     detect_opponent,
     detect_opponent_player,
+    detect_player,
     detect_player_resolved,
     detect_team_in_text,
     detect_without_player,
@@ -193,6 +194,7 @@ __all__ = [
     "wants_team_leaderboard",
     # Text normalisation (from _constants)
     "normalize_text",
+    "detect_player",
 ]
 
 
@@ -713,6 +715,8 @@ def _finalize_route(parsed: dict) -> dict:
             "season_type": season_type,
             "home_only": home_only,
             "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
@@ -1081,6 +1085,8 @@ def _finalize_route(parsed: dict) -> dict:
             "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "stat": stat,
             "min_value": min_value,
             "max_value": max_value,

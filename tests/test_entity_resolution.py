@@ -432,7 +432,7 @@ class TestParseQueryEntityResolution:
         p = parse_query("Tatum last 10 games")
         assert p["player"] == "Jayson Tatum"
         assert p["last_n"] == 10
-        assert p["route"] == "player_game_finder"
+        assert p["route"] == "player_game_summary"
 
     def test_brunson_since_2021(self):
         p = parse_query("Brunson since 2021")
@@ -444,7 +444,7 @@ class TestParseQueryEntityResolution:
         p = parse_query("Curry last 10 games")
         assert p["player"] == "Stephen Curry"
         assert p["last_n"] == 10
-        assert p["route"] == "player_game_finder"
+        assert p["route"] == "player_game_summary"
 
     # -- Player nickname resolution in queries --
 
@@ -452,7 +452,7 @@ class TestParseQueryEntityResolution:
         p = parse_query("SGA last 20 games")
         assert p["player"] == "Shai Gilgeous-Alexander"
         assert p["last_n"] == 20
-        assert p["route"] == "player_game_finder"
+        assert p["route"] == "player_game_summary"
 
     def test_ant_vs_lakers(self):
         p = parse_query("Ant vs Lakers")

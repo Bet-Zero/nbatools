@@ -12,7 +12,6 @@ from nbatools.commands._leaderboard_utils import wants_ascending_leaderboard
 from nbatools.commands._seasons import default_end_season, resolve_career
 from nbatools.commands.playoff_history import ROUND_ALIASES
 
-
 # ---------------------------------------------------------------------------
 # Intent detection helpers
 # ---------------------------------------------------------------------------
@@ -357,6 +356,8 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
     opponent = parsed["opponent"]
     home_only = parsed["home_only"]
     away_only = parsed["away_only"]
+    wins_only = parsed["wins_only"]
+    losses_only = parsed["losses_only"]
     start_date = parsed.get("start_date")
     end_date = parsed.get("end_date")
     top_n = parsed.get("top_n")
@@ -414,6 +415,8 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
             "opponent": opponent,
             "home_only": home_only,
             "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
             "limit": top_n or 10,
             "ascending": lb_ascending,
             "start_date": start_date,

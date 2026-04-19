@@ -506,7 +506,7 @@
 
 ---
 
-## 15. `[ ]` Audit slot-to-route contract for team_record
+## 15. `[x]` Audit slot-to-route contract for team_record
 
 **Why:** Same pattern as item 14, for the record family. The `without_player` slot is correctly detected by the parser (Phase A item 10 added phrasings for it) but `team_record` doesn't filter the sample — manual testing returned a full-season record when `without_player` should have narrowed the sample significantly.
 

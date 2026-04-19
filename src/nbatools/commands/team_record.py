@@ -51,6 +51,8 @@ def _apply_game_filters(
     opponent: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
@@ -93,6 +95,10 @@ def _apply_game_filters(
         out = out[out["is_home"] == 1].copy()
     if away_only and "is_away" in out.columns:
         out = out[out["is_away"] == 1].copy()
+    if wins_only and "wl" in out.columns:
+        out = out[out["wl"] == "W"].copy()
+    if losses_only and "wl" in out.columns:
+        out = out[out["wl"] == "L"].copy()
 
     if stat and stat in out.columns:
         if min_value is not None:
@@ -142,6 +148,8 @@ def build_team_record_result(
     without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
@@ -154,6 +162,8 @@ def build_team_record_result(
     """
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
+    if wins_only and losses_only:
+        raise ValueError("Cannot use both wins_only and losses_only")
 
     seasons = resolve_seasons(season, start_season, end_season)
 
@@ -168,6 +178,8 @@ def build_team_record_result(
         opponent=opponent,
         home_only=home_only,
         away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
         stat=stat,
         min_value=min_value,
         max_value=max_value,
@@ -228,10 +240,16 @@ def build_team_record_result(
         )
     if opponent:
         caveats.append(f"record filtered to games vs {opponent.upper()}")
+    if without_player:
+        caveats.append(f"record filtered to games without {without_player}")
     if home_only:
         caveats.append("home record only")
     if away_only:
         caveats.append("away record only")
+    if wins_only:
+        caveats.append("wins only")
+    if losses_only:
+        caveats.append("losses only")
     if stat and (min_value is not None or max_value is not None):
         parts = [f"record in games where {stat}"]
         if min_value is not None:
@@ -270,6 +288,8 @@ def build_matchup_record_result(
     season_type: str = "Regular Season",
     home_only: bool = False,
     away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
@@ -283,6 +303,8 @@ def build_matchup_record_result(
     """
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
+    if wins_only and losses_only:
+        raise ValueError("Cannot use both wins_only and losses_only")
 
     seasons = resolve_seasons(season, start_season, end_season)
 
@@ -298,6 +320,8 @@ def build_matchup_record_result(
         opponent=team_b,
         home_only=home_only,
         away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
         stat=stat,
         min_value=min_value,
         max_value=max_value,
@@ -311,6 +335,8 @@ def build_matchup_record_result(
         opponent=team_a,
         home_only=False,  # Don't apply home/away to team B (it's relative to team A)
         away_only=False,
+        wins_only=wins_only,
+        losses_only=losses_only,
         stat=stat,
         min_value=min_value,
         max_value=max_value,
@@ -364,6 +390,10 @@ def build_matchup_record_result(
         caveats.append(f"home games for {team_a.upper()} only")
     if away_only:
         caveats.append(f"away games for {team_a.upper()} only")
+    if wins_only:
+        caveats.append("wins only")
+    if losses_only:
+        caveats.append("losses only")
     if stat and (min_value is not None or max_value is not None):
         parts = [f"games where {stat}"]
         if min_value is not None:
@@ -402,6 +432,8 @@ def build_record_leaderboard_result(
     opponent: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
+    wins_only: bool = False,
+    losses_only: bool = False,
     limit: int = 10,
     ascending: bool = False,
     start_date: str | None = None,
@@ -414,6 +446,8 @@ def build_record_leaderboard_result(
     """
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
+    if wins_only and losses_only:
+        raise ValueError("Cannot use both wins_only and losses_only")
     if limit <= 0:
         raise ValueError("limit must be greater than 0")
 
@@ -430,6 +464,8 @@ def build_record_leaderboard_result(
         opponent=opponent,
         home_only=home_only,
         away_only=away_only,
+        wins_only=wins_only,
+        losses_only=losses_only,
         start_date=start_date,
         end_date=end_date,
     )
@@ -486,6 +522,10 @@ def build_record_leaderboard_result(
         caveats.append("home record only")
     if away_only:
         caveats.append("away record only")
+    if wins_only:
+        caveats.append("wins only")
+    if losses_only:
+        caveats.append("losses only")
     if start_date or end_date:
         dp = []
         if start_date:
