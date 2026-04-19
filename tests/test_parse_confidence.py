@@ -41,6 +41,8 @@ class TestComputeParseConfidence:
             "playoff_history_intent": False,
             "playoff_appearance_intent": False,
             "stat": "pts",
+            "stat_resolution_confidence": "confident",
+            "team_resolution_confidence": "none",
             "season": "2025-26",
             "start_season": None,
             "last_n": None,
@@ -85,7 +87,7 @@ class TestComputeParseConfidence:
         assert low < high
 
     def test_no_stat_penalises(self):
-        state = self._base(stat=None)
+        state = self._base(stat=None, stat_resolution_confidence="none")
         full = compute_parse_confidence(self._base())
         no_stat = compute_parse_confidence(state)
         assert no_stat < full
@@ -200,3 +202,38 @@ class TestParseQueryConfidence:
     def test_high_confidence_finder(self):
         result = parse_query("Curry games with 5+ threes this season")
         assert result["confidence"] > 0.85
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: resolution confidence fields in parse state
+# ---------------------------------------------------------------------------
+
+
+class TestResolutionFieldsInParseState:
+    """Verify team/stat resolution confidence fields are populated."""
+
+    @pytest.mark.parser
+    def test_stat_resolution_confident(self):
+        result = parse_query("Jokic points last 10 games")
+        assert result["stat_resolution_confidence"] == "confident"
+
+    @pytest.mark.parser
+    def test_stat_resolution_none_when_no_stat(self):
+        result = parse_query("Jokic last 10 games")
+        assert result["stat_resolution_confidence"] == "none"
+
+    @pytest.mark.parser
+    def test_team_resolution_confident(self):
+        result = parse_query("Lakers record this season")
+        assert result["team_resolution_confidence"] == "confident"
+
+    @pytest.mark.parser
+    def test_team_resolution_none_when_no_team(self):
+        result = parse_query("Jokic last 10 games")
+        assert result["team_resolution_confidence"] == "none"
+
+    @pytest.mark.parser
+    def test_both_fields_present(self):
+        result = parse_query("scoring leaders this season")
+        assert "stat_resolution_confidence" in result
+        assert "team_resolution_confidence" in result

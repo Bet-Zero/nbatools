@@ -63,6 +63,19 @@ def detect_team_in_text(text: str) -> str | None:
     return None
 
 
+def detect_team_resolved(text: str) -> ResolutionResult:
+    """Like detect_team_in_text but returns full ResolutionResult."""
+    for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"\b{re.escape(key)}\b", text):
+            return ResolutionResult(
+                resolved=TEAM_ALIASES[key],
+                candidates=[TEAM_ALIASES[key]],
+                confidence="confident",
+                source="team_alias",
+            )
+    return resolve_team_in_query(text)
+
+
 # ---------------------------------------------------------------------------
 # Matchup / head-to-head helpers
 # ---------------------------------------------------------------------------

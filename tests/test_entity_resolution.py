@@ -695,3 +695,63 @@ class TestResolutionResult:
         r = ResolutionResult()
         assert not r.is_confident
         assert not r.is_ambiguous
+
+
+# ---------------------------------------------------------------------------
+# resolve_stat tests
+# ---------------------------------------------------------------------------
+
+
+class TestResolveStat:
+    """Verify resolve_stat returns correct ResolutionResult."""
+
+    def test_recognized_stat_is_confident(self):
+        from nbatools.commands.entity_resolution import resolve_stat
+
+        r = resolve_stat("pts")
+        assert r.is_confident
+        assert r.resolved == "pts"
+        assert r.source == "stat_alias"
+
+    def test_none_stat_is_no_match(self):
+        from nbatools.commands.entity_resolution import resolve_stat
+
+        r = resolve_stat(None)
+        assert not r.is_confident
+        assert r.confidence == "none"
+
+    def test_any_canonical_stat_is_confident(self):
+        from nbatools.commands.entity_resolution import resolve_stat
+
+        for stat in ("reb", "ast", "stl", "blk", "fg3m", "usg_pct"):
+            r = resolve_stat(stat)
+            assert r.is_confident, f"Expected confident for {stat}"
+
+
+# ---------------------------------------------------------------------------
+# detect_team_resolved tests
+# ---------------------------------------------------------------------------
+
+
+class TestDetectTeamResolved:
+    """Verify detect_team_resolved returns ResolutionResult."""
+
+    def test_known_team_is_confident(self):
+        from nbatools.commands._matchup_utils import detect_team_resolved
+
+        r = detect_team_resolved("lakers record this season")
+        assert r.is_confident
+        assert r.resolved == "LAL"
+
+    def test_abbreviation_is_confident(self):
+        from nbatools.commands._matchup_utils import detect_team_resolved
+
+        r = detect_team_resolved("celtics vs knicks")
+        assert r.is_confident
+
+    def test_no_team_is_no_match(self):
+        from nbatools.commands._matchup_utils import detect_team_resolved
+
+        r = detect_team_resolved("scoring leaders")
+        assert not r.is_confident
+        assert r.confidence == "none"
