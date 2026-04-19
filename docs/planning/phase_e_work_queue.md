@@ -40,7 +40,7 @@ Items 1–4 add context filters that extend existing routes. These are the lowes
 
 ---
 
-## 1. `[ ]` Add `clutch` context filter
+## 1. `[x]` Add `clutch` context filter
 
 **Why:** "Clutch" is one of the most common unshipped filter terms. Users ask "Tatum clutch stats", "Lakers clutch record", "best clutch scorers". The glossary already reserves this term with `shipped=False`.
 
