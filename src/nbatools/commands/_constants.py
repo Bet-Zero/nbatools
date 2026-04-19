@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 # ---------------------------------------------------------------------------
 # Text normalisation helpers
 # ---------------------------------------------------------------------------
@@ -140,24 +142,11 @@ STAT_ALIASES: dict[str, str] = {
 }
 
 
-STAT_PATTERN = (
-    r"(points|point|pts|rebounds|rebound|reb|assists|assist|ast|"
-    r"steals|steal|stl|blocks|block|blk|"
-    r"threes made|three pointers made|three-point makes|threes|3pm|3s|fg3m|"
-    r"turnovers|turnover|tov|minutes|"
-    r"field goal percentage|field goal %|fg%|fg_pct|"
-    r"3 point percentage|3-point percentage|3 point %|3-point %|"
-    r"three point percentage|three-point percentage|three point %|three-point %|3pt%|3p%|fg3_pct|"
-    r"free throw percentage|free throw %|ft%|ft_pct|"
-    r"effective field goal percentage|effective field goal %|effective field goal|"
-    r"effective fg %|effective fg|efg%|efg_pct|"
-    r"true shooting percentage|true shooting %|true shooting|ts%|ts_pct|"
-    r"plus minus|plus/minus|plus_minus|\+/-|"
-    r"usage rate|usage percentage|usage %|usage|usg%|usg_pct|usg|"
-    r"assist percentage|assist %|ast%|ast_pct|"
-    r"rebound percentage|rebound %|reb%|reb_pct|"
-    r"turnover percentage|turnover %|turnover rate|tov%|tov_pct|"
-    r"offensive rating|off rating|off_rating|"
-    r"defensive rating|def rating|def_rating|"
-    r"net rating|net_rating|pace)"
-)
+def _build_stat_pattern(aliases: dict[str, str]) -> str:
+    """Auto-generate a regex alternation from alias keys, longest-first."""
+    sorted_keys = sorted(aliases.keys(), key=len, reverse=True)
+    escaped = "|".join(re.escape(k) for k in sorted_keys)
+    return f"({escaped})"
+
+
+STAT_PATTERN = _build_stat_pattern(STAT_ALIASES)

@@ -85,7 +85,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 2. `[ ]` Unify stat aliases into a single source of truth
+## 2. `[x]` Unify stat aliases into a single source of truth
 
 **Why:** `STAT_ALIASES`, `LEADERBOARD_STAT_ALIASES`, and `STAT_PATTERN` have overlapping but divergent content. A single canonical alias table eliminates drift and reduces the surface area for future phrasing work.
 
