@@ -97,30 +97,30 @@ If a feature is not reflected here, it should not be assumed shipped.
 
 Every recognized stat phrasing grouped by canonical stat name. Both standard names and verbal forms (e.g., `scored`, `rebounding`) are first-class.
 
-| Canonical stat | Recognized aliases |
-| -------------- | ------------------ |
-| `pts` | `pts`, `point`, `points`, `scored`, `scores`, `scoring` |
-| `reb` | `reb`, `rebound`, `rebounds`, `rebounded`, `rebounding` |
-| `ast` | `ast`, `assist`, `assists`, `assisted` |
-| `stl` | `stl`, `steal`, `steals` |
-| `blk` | `blk`, `block`, `blocks` |
-| `fg3m` | `3s`, `3pm`, `fg3m`, `threes`, `threes made`, `three-point makes`, `three pointers made` |
-| `tov` | `tov`, `turnover`, `turnovers` |
-| `minutes` | `minutes` |
-| `fg_pct` | `fg%`, `fg_pct`, `field goal %`, `field goal percentage` |
-| `fg3_pct` | `3p%`, `3pt%`, `fg3_pct`, `3 point %`, `3-point %`, `three point %`, `three-point %`, `3 point percentage`, `3-point percentage`, `three point percentage`, `three-point percentage` |
-| `ft_pct` | `ft%`, `ft_pct`, `free throw %`, `free throw percentage` |
-| `efg_pct` | `efg%`, `efg_pct`, `effective fg`, `effective fg %`, `effective field goal`, `effective field goal %`, `effective field goal percentage` |
-| `ts_pct` | `ts%`, `ts_pct`, `true shooting`, `true shooting %`, `true shooting percentage` |
-| `plus_minus` | `+/-`, `plus minus`, `plus/minus`, `plus_minus` |
-| `usg_pct` | `usg`, `usg%`, `usage`, `usage %`, `usg_pct`, `usage rate`, `usage percentage` |
-| `ast_pct` | `ast%`, `ast_pct`, `assist %`, `assist percentage` |
-| `reb_pct` | `reb%`, `reb_pct`, `rebound %`, `rebound percentage` |
-| `tov_pct` | `tov%`, `tov_pct`, `turnover %`, `turnover rate`, `turnover percentage` |
-| `off_rating` | `off rating`, `off_rating`, `offensive rating` |
-| `def_rating` | `def rating`, `def_rating`, `defensive rating` |
-| `net_rating` | `net rating`, `net_rating` |
-| `pace` | `pace` |
+| Canonical stat | Recognized aliases                                                                                                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pts`          | `pts`, `point`, `points`, `scored`, `scores`, `scoring`                                                                                                                              |
+| `reb`          | `reb`, `rebound`, `rebounds`, `rebounded`, `rebounding`                                                                                                                              |
+| `ast`          | `ast`, `assist`, `assists`, `assisted`                                                                                                                                               |
+| `stl`          | `stl`, `steal`, `steals`                                                                                                                                                             |
+| `blk`          | `blk`, `block`, `blocks`                                                                                                                                                             |
+| `fg3m`         | `3s`, `3pm`, `fg3m`, `threes`, `threes made`, `three-point makes`, `three pointers made`                                                                                             |
+| `tov`          | `tov`, `turnover`, `turnovers`                                                                                                                                                       |
+| `minutes`      | `minutes`                                                                                                                                                                            |
+| `fg_pct`       | `fg%`, `fg_pct`, `field goal %`, `field goal percentage`                                                                                                                             |
+| `fg3_pct`      | `3p%`, `3pt%`, `fg3_pct`, `3 point %`, `3-point %`, `three point %`, `three-point %`, `3 point percentage`, `3-point percentage`, `three point percentage`, `three-point percentage` |
+| `ft_pct`       | `ft%`, `ft_pct`, `free throw %`, `free throw percentage`                                                                                                                             |
+| `efg_pct`      | `efg%`, `efg_pct`, `effective fg`, `effective fg %`, `effective field goal`, `effective field goal %`, `effective field goal percentage`                                             |
+| `ts_pct`       | `ts%`, `ts_pct`, `true shooting`, `true shooting %`, `true shooting percentage`                                                                                                      |
+| `plus_minus`   | `+/-`, `plus minus`, `plus/minus`, `plus_minus`                                                                                                                                      |
+| `usg_pct`      | `usg`, `usg%`, `usage`, `usage %`, `usg_pct`, `usage rate`, `usage percentage`                                                                                                       |
+| `ast_pct`      | `ast%`, `ast_pct`, `assist %`, `assist percentage`                                                                                                                                   |
+| `reb_pct`      | `reb%`, `reb_pct`, `rebound %`, `rebound percentage`                                                                                                                                 |
+| `tov_pct`      | `tov%`, `tov_pct`, `turnover %`, `turnover rate`, `turnover percentage`                                                                                                              |
+| `off_rating`   | `off rating`, `off_rating`, `offensive rating`                                                                                                                                       |
+| `def_rating`   | `def rating`, `def_rating`, `defensive rating`                                                                                                                                       |
+| `net_rating`   | `net rating`, `net_rating`                                                                                                                                                           |
+| `pace`         | `pace`                                                                                                                                                                               |
 
 > **Source of truth:** `STAT_ALIASES` in `src/nbatools/commands/_constants.py`. `STAT_PATTERN` is auto-generated from this dict.
 
