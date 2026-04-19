@@ -33,7 +33,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 1. `[ ]` Audit current implicit defaults in `_finalize_route`
+## 1. `[x]` Audit current implicit defaults in `_finalize_route`
 
 **Why:** Before formalizing defaults, we need a clear inventory of where implicit defaults exist, what they do, and whether they match spec §15. The `_finalize_route` function has ~400 lines of if/elif routing with defaults embedded inline.
 
