@@ -65,7 +65,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 2. `[ ]` Design and implement heuristic confidence scoring
+## 2. `[x]` Design and implement heuristic confidence scoring
 
 **Why:** The parse state needs a parse-wide `confidence` score (0–1) so downstream consumers (API, UI) can decide how to present results. This item implements the scoring function using heuristic signals — no ML.
 
