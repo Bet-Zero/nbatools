@@ -228,6 +228,16 @@ CI caches pip dependencies via `actions/setup-python`'s `cache: pip`. Testmon st
 
 The full regression suite (`make test`) always runs on merge to main and nightly. This is the backstop. Do not remove it.
 
+### Merge policy
+
+This is a solo-developer repo. PRs are used for CI gating and atomic per-change history, not for review. The expected workflow is:
+
+1. Open a PR for each queue item or logical unit of work
+2. Wait for CI (`lint` + `test-fast`) to pass
+3. Merge immediately once CI is green — no review wait
+
+This gives us atomic per-item git history, keeps `main` green via CI, and avoids ceremony that doesn't apply to solo work. Do not leave PRs open waiting for review. Do not skip PRs in favor of direct-to-main commits unless explicitly told to.
+
 ## Documentation expectations
 
 Each doc has a specific role. The `docs/` directory is organized by role:
