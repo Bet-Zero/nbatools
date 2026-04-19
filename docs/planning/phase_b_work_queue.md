@@ -160,7 +160,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 4. `[ ]` Reserve undefined skill and quality terms in glossary
+## 4. `[x]` Reserve undefined skill and quality terms in glossary
 
 **Why:** Terms like `hottest`, `best games`, `all-around`, `catch-and-shoot`, `contenders`, `good teams` appear in user queries but have no formal definition. Reserving them in the glossary makes the parser's coverage explicit and prevents silent guessing (guardrail §7.2). This item adds the reservation slots only — improved error messaging for reserved terms is deferred to Phase D where "I can't do this query" becomes a first-class response shape.
 
