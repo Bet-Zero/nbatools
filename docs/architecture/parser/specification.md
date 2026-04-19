@@ -770,44 +770,50 @@ Handled via `try_record_leaderboard_route`.
 
 Most real queries are underspecified. Without good defaults, the parser feels random.
 
-### 15.1 Defaults already in place
+Default rules are implemented as named functions in `_default_rules.py`. Each takes the parse state and returns `(should_fire, notes_message)`.
 
-| Pattern                             | Current behavior                                           |
-| ----------------------------------- | ---------------------------------------------------------- |
-| No season + any stat/filter signal  | `default_season_for_context(season_type)` → current season |
-| `recent form` / recent-form signals | `last_n = 10`                                              |
-| Streak query without explicit time  | Three-season window ending at current                      |
-| Season-high without player          | League-wide `top_player_games`                             |
+### 15.1 Defaults in place
 
-### 15.2 Defaults to formalize
+| Pattern | Behavior | Named rule / implementation | `notes` prefix |
+| --- | --- | --- | --- |
+| No season + any stat/filter signal | `default_season_for_context(season_type)` → current season | `_build_parse_state` inline | — |
+| `recent form` / recent-form signals | `last_n = 10` | `_build_parse_state` inline | — |
+| Streak query without explicit time | Three-season window ending at current | `streak_default_window()` | `default:` |
+| Season-high without player | League-wide `top_player_games` | `_finalize_route` inline | `season_high:` |
+| Season-high with player | `player_game_finder` sorted by stat desc | `_finalize_route` inline | `season_high:` |
+| `<player> + <timeframe>` only | Summary (stat line for the window) | `player_timeframe_summary_default()` | `default:` |
+| `<metric>` only, no subject | League-wide leaderboard | `metric_only_leaderboard_default()` | `default:` |
+| `<player> + <threshold>` only | `player_game_finder` (list matching games) | `player_threshold_finder_default()` | `default:` |
+| `<team> + <threshold>` only | `game_finder` (list matching games) | `team_threshold_finder_default()` | `default:` |
+| Top player/team games (keyword) | `top_player_games` / `top_team_games` ranked by stat | `_finalize_route` inline | `default:` |
+| Stat fallback (season-advanced blocked) | Falls back to `pts` when stat unavailable in context | `_finalize_route` inline | `stat_fallback:` |
+| Leaderboard in date window | Game-log derived (excludes season-advanced stats) | `_finalize_route` inline | `leaderboard_source:` |
+| Player summary/compare/split | Sample-recomputed advanced metrics | `_finalize_route` inline | `sample_advanced_metrics:` |
 
-These should be explicit, documented, and applied consistently:
+### 15.2 Defaults not yet formalized
 
-| Pattern                            | Target default behavior                                   |
-| ---------------------------------- | --------------------------------------------------------- |
-| `<player> + <timeframe>` only      | `summary` (stat line for the window)                      |
-| `<team> + <opponent-quality>` only | `record` vs that opponent group                           |
-| `<player> + <threshold>` only      | `occurrence` / `count`                                    |
-| `"best games" + <subject>`         | Ranked game logs by default metric (Game Score or points) |
-| `<team> + recently`                | Recent record + recent team summary                       |
-| `<player> + recently`              | Recent stat line summary                                  |
-| `<metric>` only, no subject        | League-wide leaderboard                                   |
-| `<player> + vs <team-quality>`     | Stat line summary filtered by opponent quality            |
+These are recognized as desirable but not yet implemented:
+
+| Pattern | Target default behavior | Status |
+| --- | --- | --- |
+| `<team> + <opponent-quality>` only | `record` vs that opponent group | Not yet shipped (opponent-quality routing TBD) |
+| `"best games" + <subject>` | Ranked game logs by default metric | Partially covered by season-high routing |
+| `<player> + vs <team-quality>` | Stat line summary filtered by opponent quality | Not yet shipped |
 
 ### 15.3 Worked examples
 
-| Query                   | Default parse                                                             |
-| ----------------------- | ------------------------------------------------------------------------- |
-| `Jokic last 10`         | Summary for Jokic over his last 10 games                                  |
-| `Celtics vs contenders` | Celtics record vs contenders (this season)                                |
-| `Curry 5+ threes`       | Occurrence count of games Curry made 5+ threes (this season)              |
-| `best Giannis games`    | Top Giannis game performances ranked by Game Score                        |
-| `Thunder clutch`        | Thunder record (or stats) in clutch situations _(clutch not yet shipped)_ |
-| `points leaders`        | League-wide points leaderboard                                            |
+| Query | Default parse | Named rule |
+| --- | --- | --- |
+| `Jokic last 10` | Summary for Jokic over his last 10 games | `player_timeframe_summary_default` |
+| `Curry 5+ threes` | Finder listing games Curry made 5+ threes | `player_threshold_finder_default` |
+| `points leaders` | League-wide points leaderboard | `metric_only_leaderboard_default` |
+| `Jokic 5 straight games with 20+ points` | Streak finder with three-season window | `streak_default_window` |
+| `Lakers over 120 points` | Game finder listing Lakers 120+ point games | `team_threshold_finder_default` |
+| `highest scoring games this season` | League-wide top single-game performances | season-high inline |
 
 ### 15.4 Defaults are product policy
 
-These affect every subsequent answer. They should be documented in §18 (Glossary) and changeable without rewriting parser code.
+These affect every subsequent answer. They should be documented in §18 (Glossary) and changeable without rewriting parser code. Named functions in `_default_rules.py` make each rule inspectable and independently testable.
 
 ---
 

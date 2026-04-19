@@ -228,7 +228,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 7. `[ ]` Sync spec §15 with implemented defaults
+## 7. `[x]` Sync spec §15 with implemented defaults
 
 **Why:** After items 1–6, spec §15 should be an exact mirror of what's implemented. This is the documentation-lockstep step.
 

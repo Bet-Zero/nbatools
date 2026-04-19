@@ -141,6 +141,6 @@ def streak_default_window(parsed: dict) -> tuple[bool, str]:
     Spec §15.1: streak query without explicit time → three-season window.
     """
     if parsed.get("streak_default_window"):
-        kind = "team" if parsed.get("team_streak_request") else "player"
+        kind = "player" if parsed.get("player") else "team"
         return (True, f"default: {kind} streak uses three-season window when no season specified")
     return (False, "")
