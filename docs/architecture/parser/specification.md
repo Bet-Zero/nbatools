@@ -936,7 +936,7 @@ These don't exist today. Adding them is a target of the expansion plan's Phase D
 
 ## 18. Glossary and vocabulary
 
-Consolidated reference for fuzzy terms, aliases, and defaults. Should be the single source of truth — downstream code should read from it, not hardcode definitions.
+Consolidated reference for fuzzy terms, aliases, and defaults. The canonical source of truth for these definitions lives in `src/nbatools/commands/_glossary.py` — this section mirrors that module and must be kept in sync.
 
 ### 18.1 Time-term definitions (suggested defaults — confirm at product level)
 
@@ -959,25 +959,30 @@ Consolidated reference for fuzzy terms, aliases, and defaults. Should be the sin
 
 ### 18.2 Opponent-quality definitions (proposed — not yet shipped)
 
-| Term              | Proposed definition                                     |
-| ----------------- | ------------------------------------------------------- |
-| `good teams`      | Teams with win % ≥ .500                                 |
-| `winning teams`   | Teams with win % ≥ .500                                 |
-| `top teams`       | Top 8 by net rating                                     |
-| `contenders`      | Top 6 by net rating (product-configurable label)        |
-| `playoff teams`   | Teams currently in top 10 of conference (incl. play-in) |
-| `top-10 defenses` | Top 10 by defensive rating at query time                |
-| `top-10 offenses` | Top 10 by offensive rating at query time                |
-| `elite defenses`  | Top 5 by defensive rating at query time                 |
-| `bad teams`       | Teams with win % < .400                                 |
+| Term              | Proposed definition                                     | Shipped |
+| ----------------- | ------------------------------------------------------- | ------- |
+| `good teams`      | Teams with win % ≥ .500                                 | No      |
+| `winning teams`   | Teams with win % ≥ .500                                 | No      |
+| `top teams`       | Top 8 by net rating                                     | No      |
+| `contenders`      | Top 6 by net rating (product-configurable label)        | No      |
+| `playoff teams`   | Teams currently in top 10 of conference (incl. play-in) | No      |
+| `top-10 defenses` | Top 10 by defensive rating at query time                | No      |
+| `top-10 offenses` | Top 10 by offensive rating at query time                | No      |
+| `elite defenses`  | Top 5 by defensive rating at query time                 | No      |
+| `bad teams`       | Teams with win % < .400                                 | No      |
 
 ### 18.3 Subjective-term definitions
 
-| Term            | Proposed definition                                    |
-| --------------- | ------------------------------------------------------ |
-| `best games`    | Ranked by Game Score (default); by points if specified |
-| `biggest games` | Ranked by points scored                                |
-| `hottest`       | Rolling average over last 5 games, ranked              |
+| Term                | Proposed definition                                    | Shipped |
+| ------------------- | ------------------------------------------------------ | ------- |
+| `best games`        | Ranked by Game Score (default); by points if specified | No      |
+| `biggest games`     | Ranked by points scored                                | No      |
+| `hottest`           | Rolling average over last 5 games, ranked              | No      |
+| `efficient`         | Ranked by True Shooting %                              | No      |
+| `clutch`            | Last 5 min of 4th quarter or OT, score within 5       | No      |
+| `all-around games`  | Undefined — not yet shipped                            | No      |
+| `catch-and-shoot`   | Undefined — not yet shipped                            | No      |
+| `transition scorer` | Undefined — not yet shipped                            | No      |
 | `efficient`     | Ranked by True Shooting %                              |
 | `clutch`        | Last 5 min of 4th quarter or OT, score within 5        |
 

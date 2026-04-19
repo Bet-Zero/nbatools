@@ -121,7 +121,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 3. `[ ]` Create glossary module for fuzzy-term definitions
+## 3. `[x]` Create glossary module for fuzzy-term definitions
 
 **Why:** Phase A hardcoded time-word defaults inline (`lately` → `last_n=10`, `past month` → 30 days). A glossary module centralizes these so the code documents its own product-policy decisions. Spec §18 becomes a mirror of this module, documented once and kept in sync.
 

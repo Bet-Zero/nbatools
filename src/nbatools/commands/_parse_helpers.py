@@ -1,6 +1,7 @@
 import re
 
 from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN, normalize_text
+from nbatools.commands._glossary import FUZZY_LAST_N_TERMS
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
@@ -185,9 +186,10 @@ def extract_last_n_seasons(text: str) -> int | None:
 
 
 def extract_last_n(text: str) -> int | None:
-    # `lately` / `recently` → last 10 games per spec §18.1
-    if re.search(r"\b(?:lately|recently)\b", text):
-        return 10
+    # Fuzzy time words → fixed last-N values (glossary / spec §18.1)
+    for term, last_n in FUZZY_LAST_N_TERMS.items():
+        if re.search(rf"\b{re.escape(term)}\b", text):
+            return last_n
 
     patterns = [
         r"\blast\s+(\d+)\s+games?\b",
