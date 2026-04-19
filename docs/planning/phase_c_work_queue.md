@@ -164,7 +164,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 5. `[ ]` Add `notes` entries for all remaining default branches
+## 5. `[x]` Add `notes` entries for all remaining default branches
 
 **Why:** After items 2–4 cover the highest-impact defaults, remaining branches (team summary, team record, season-high, fallback finder/game_finder) should also document their defaults via `notes`.
 
