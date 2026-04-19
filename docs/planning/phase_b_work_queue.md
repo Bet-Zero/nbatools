@@ -261,7 +261,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 7. `[ ]` Document stat-alias table in query_catalog.md
+## 7. `[x]` Document stat-alias table in query_catalog.md
 
 **Why:** Users (and agents) need to know which stat phrasings are recognized. The unified alias table should have a human-readable rendering in the catalog.
 
