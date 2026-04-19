@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 
+from nbatools.commands._confidence import compute_parse_confidence
 from nbatools.commands._constants import normalize_text, route_to_intent
 from nbatools.commands._date_utils import CURRENT_QUERY_DATE, extract_date_range
 from nbatools.commands._default_rules import (
@@ -560,6 +561,7 @@ def _finalize_route(parsed: dict) -> dict:
             entity_ambiguity.get("type", "player"),
         )
         out["notes"] = [msg]
+        out["confidence"] = compute_parse_confidence(out)
         return out
 
     # ---------------------------------------------------------------------------
@@ -1217,6 +1219,8 @@ def _finalize_route(parsed: dict) -> dict:
 
     if notes:
         out["notes"] = notes
+
+    out["confidence"] = compute_parse_confidence(out)
 
     return out
 
