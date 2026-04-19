@@ -60,6 +60,9 @@ from nbatools.commands._parse_helpers import (
     detect_career_intent as detect_career_intent,
 )
 from nbatools.commands._parse_helpers import (
+    detect_clutch as detect_clutch,
+)
+from nbatools.commands._parse_helpers import (
     detect_distinct_player_count as detect_distinct_player_count,
 )
 from nbatools.commands._parse_helpers import (
@@ -377,6 +380,7 @@ def _build_parse_state(query: str) -> dict:
 
     home_only, away_only = detect_home_away(q)
     wins_only, losses_only = detect_wins_losses(q)
+    clutch = detect_clutch(q)
 
     if season is None and start_season is None and end_season is None:
         if any(
@@ -451,6 +455,7 @@ def _build_parse_state(query: str) -> dict:
         "away_only": away_only,
         "wins_only": wins_only,
         "losses_only": losses_only,
+        "clutch": clutch,
         "summary_intent": summary_intent,
         "finder_intent": finder_intent,
         "count_intent": count_intent,
@@ -527,6 +532,7 @@ def _finalize_route(parsed: dict) -> dict:
     away_only = parsed["away_only"]
     wins_only = parsed["wins_only"]
     losses_only = parsed["losses_only"]
+    clutch = parsed.get("clutch", False)
     summary_intent = parsed["summary_intent"]
     finder_intent = parsed.get("finder_intent", False)
     count_intent = parsed.get("count_intent", False)
@@ -1219,6 +1225,12 @@ def _finalize_route(parsed: dict) -> dict:
     out["route"] = route
     out["route_kwargs"] = route_kwargs
     out["intent"] = route_to_intent(route, count_intent=count_intent)
+
+    if clutch:
+        notes.append(
+            "clutch: filter detected but play-by-play clutch splits not yet available; "
+            "results are unfiltered"
+        )
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):

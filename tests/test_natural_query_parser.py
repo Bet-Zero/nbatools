@@ -341,3 +341,45 @@ def test_parse_and_or_query_routes_to_player_game_finder():
     parsed = parse_query("Jokic over 25 points and over 10 rebounds or over 15 assists")
     assert parsed["route"] == "player_game_finder"
     assert parsed["player"] == "Nikola Jokić"
+
+
+# ---------------------------------------------------------------------------
+# Clutch context filter
+# ---------------------------------------------------------------------------
+
+
+def test_clutch_keyword_sets_slot():
+    parsed = parse_query("Tatum clutch stats")
+    assert parsed["clutch"] is True
+
+
+def test_clutch_time_surface_form():
+    parsed = parse_query("Lakers clutch time record")
+    assert parsed["clutch"] is True
+
+
+def test_in_the_clutch_surface_form():
+    parsed = parse_query("Jokic in the clutch this season")
+    assert parsed["clutch"] is True
+
+
+def test_late_game_surface_form():
+    parsed = parse_query("late-game scoring leaders")
+    assert parsed["clutch"] is True
+
+
+def test_late_game_no_hyphen_surface_form():
+    parsed = parse_query("Curry late game stats")
+    assert parsed["clutch"] is True
+
+
+def test_no_clutch_when_absent():
+    parsed = parse_query("Tatum scoring average")
+    assert parsed["clutch"] is False
+
+
+def test_clutch_note_appended():
+    parsed = parse_query("Tatum clutch stats")
+    assert parsed["clutch"] is True
+    notes = parsed.get("notes", [])
+    assert any("clutch" in n for n in notes)

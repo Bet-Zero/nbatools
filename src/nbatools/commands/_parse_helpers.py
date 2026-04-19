@@ -749,6 +749,17 @@ def detect_wins_losses(text: str) -> tuple[bool, bool]:
     return wins_only, losses_only
 
 
+def detect_clutch(text: str) -> bool:
+    """Detect clutch context filter.
+
+    Surface forms: ``clutch``, ``in the clutch``, ``clutch time``,
+    ``late-game`` / ``late game``.
+    """
+    return bool(
+        re.search(r"\bclutch\b|\bin\s+the\s+clutch\b|\bclutch\s+time\b|\blate[- ]game\b", text)
+    )
+
+
 def wants_summary(text: str) -> bool:
     # Word-bounded so `record` does not match `recorded` etc.
     if re.search(
