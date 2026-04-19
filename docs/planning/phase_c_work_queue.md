@@ -132,7 +132,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 4. `[ ]` Formalize `<player> + <threshold>` → finder default
+## 4. `[x]` Formalize `<player> + <threshold>` → finder default
 
 **Why:** "Curry 5+ threes" should route to occurrence/count. "Jokic over 25 points" should route to finder. The routing exists but the policy isn't explicit and `notes` don't document it.
 

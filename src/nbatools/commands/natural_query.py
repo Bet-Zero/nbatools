@@ -1150,6 +1150,9 @@ def _finalize_route(parsed: dict) -> dict:
         }
     elif player:
         route = "player_game_finder"
+        # Document the fallback default (spec §15.2)
+        if min_value is not None or max_value is not None:
+            notes.append("default: <player> + <threshold> → finder")
         route_kwargs = {
             "season": season,
             "start_season": start_season,

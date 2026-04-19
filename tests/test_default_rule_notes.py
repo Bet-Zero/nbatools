@@ -133,3 +133,57 @@ class TestMetricOnlyLeaderboardDefault:
         parsed = parse_query("team scoring leaders")
         assert parsed["route"] == "season_team_leaders"
         assert DEFAULT_LEADERBOARD_NOTE in parsed.get("notes", [])
+
+
+# ===================================================================
+# Item 4: <player> + <threshold> → finder default
+# ===================================================================
+
+DEFAULT_THRESHOLD_FINDER_NOTE = "default: <player> + <threshold> → finder"
+
+
+class TestPlayerThresholdFinderDefault:
+    """When a player + threshold is present with no explicit finder/count
+    intent, the fallback routes to player_game_finder."""
+
+    def test_jokic_over_25_points(self):
+        parsed = parse_query("Jokic over 25 points")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE in parsed.get("notes", [])
+
+    def test_curry_5_plus_threes(self):
+        parsed = parse_query("Curry 5+ threes")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE in parsed.get("notes", [])
+
+    def test_embiid_30_plus_points_2024(self):
+        parsed = parse_query("Embiid 30+ points 2024-25")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE in parsed.get("notes", [])
+
+    def test_luka_under_20_points(self):
+        parsed = parse_query("Luka under 20 points")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE in parsed.get("notes", [])
+
+    def test_sga_between_25_and_35(self):
+        parsed = parse_query("SGA between 25 and 35 points")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE in parsed.get("notes", [])
+
+
+class TestPlayerThresholdDefaultNotFired:
+    """The threshold-finder default note must NOT appear when the user
+    explicitly requested a count or list."""
+
+    def test_explicit_count_intent(self):
+        """Explicit 'how many' → count mode, not fallback default."""
+        parsed = parse_query("how many Jokic 30+ point games")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE not in parsed.get("notes", [])
+
+    def test_explicit_list_intent(self):
+        """Explicit 'list' → finder, not fallback default."""
+        parsed = parse_query("list Jokic games with 30 points")
+        assert parsed["route"] == "player_game_finder"
+        assert DEFAULT_THRESHOLD_FINDER_NOTE not in parsed.get("notes", [])
