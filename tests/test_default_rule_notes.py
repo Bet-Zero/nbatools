@@ -187,3 +187,94 @@ class TestPlayerThresholdDefaultNotFired:
         parsed = parse_query("list Jokic games with 30 points")
         assert parsed["route"] == "player_game_finder"
         assert DEFAULT_THRESHOLD_FINDER_NOTE not in parsed.get("notes", [])
+
+
+# ===================================================================
+# Item 5: Remaining default-branch notes
+# ===================================================================
+
+
+class TestSeasonHighLeagueWideNote:
+    """League-wide season-high routes should document the default."""
+
+    def test_highest_scoring_games(self):
+        parsed = parse_query("highest scoring games this season")
+        assert parsed["route"] == "top_player_games"
+        assert "season_high: league-wide top single-game performances" in parsed.get("notes", [])
+
+
+class TestTopPlayerGamesNote:
+    """Top-games keyword routing documents the default sort stat.
+    Note: the 'top' keyword branch (`"top" in q and "games" in q`) is
+    unreachable because 'top' sets leaderboard_intent, which is excluded.
+    League-wide top games route through season_high_intent instead."""
+
+    def test_highest_scoring_games_note(self):
+        parsed = parse_query("highest scoring games this season")
+        assert parsed["route"] == "top_player_games"
+        assert "season_high: league-wide top single-game performances" in parsed.get("notes", [])
+
+    def test_season_high_games_note(self):
+        parsed = parse_query("season high games")
+        assert parsed["route"] == "top_player_games"
+        assert "season_high: league-wide top single-game performances" in parsed.get("notes", [])
+
+
+class TestTopTeamGamesNote:
+    """'Top team games' keyword routing documents the default sort stat."""
+
+    def test_top_team_games(self):
+        parsed = parse_query("top team games")
+        assert parsed["route"] == "top_team_games"
+        notes = parsed.get("notes", [])
+        assert any(n.startswith("default: top team games ranked by") for n in notes)
+
+    def test_top_team_scoring_games(self):
+        parsed = parse_query("top team scoring games this season")
+        assert parsed["route"] == "top_team_games"
+        notes = parsed.get("notes", [])
+        assert any(n.startswith("default: top team games ranked by") for n in notes)
+
+
+class TestStreakDefaultWindowNote:
+    """Streak routes without an explicit season document the three-season
+    window default."""
+
+    def test_player_streak_no_season(self):
+        parsed = parse_query("Jokic 5 straight games with 20+ points")
+        assert parsed["route"] == "player_streak_finder"
+        notes = parsed.get("notes", [])
+        assert any("three-season window" in n for n in notes)
+
+    def test_player_streak_with_season_no_note(self):
+        parsed = parse_query("Jokic 5 straight games with 20+ points 2024-25")
+        assert parsed["route"] == "player_streak_finder"
+        notes = parsed.get("notes", [])
+        assert not any("three-season window" in n for n in notes)
+
+    def test_team_streak_no_season(self):
+        parsed = parse_query("longest Lakers winning streak")
+        assert parsed["route"] == "team_streak_finder"
+        notes = parsed.get("notes", [])
+        assert any("three-season window" in n for n in notes)
+
+    def test_team_streak_with_season_no_note(self):
+        parsed = parse_query("longest Lakers winning streak 2024-25")
+        assert parsed["route"] == "team_streak_finder"
+        notes = parsed.get("notes", [])
+        assert not any("three-season window" in n for n in notes)
+
+
+class TestTeamThresholdFinderNote:
+    """Team + threshold fallback to game_finder documents the default."""
+
+    def test_team_over_120_points(self):
+        parsed = parse_query("Lakers over 120 points")
+        assert parsed["route"] == "game_finder"
+        assert "default: <team> + <threshold> → finder" in parsed.get("notes", [])
+
+    def test_team_explicit_finder_no_note(self):
+        """Explicit finder intent should not produce the fallback note."""
+        parsed = parse_query("list Lakers games over 120 points")
+        assert parsed["route"] == "game_finder"
+        assert "default: <team> + <threshold> → finder" not in parsed.get("notes", [])

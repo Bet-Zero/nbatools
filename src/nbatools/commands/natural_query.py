@@ -402,6 +402,9 @@ def _build_parse_state(query: str) -> dict:
         season = None
         start_season = f"{start_year}-{str(start_year + 1)[-2:]}"
         end_season = default_end
+        streak_default_window = True
+    else:
+        streak_default_window = False
 
     return {
         "normalized_query": q,
@@ -444,6 +447,7 @@ def _build_parse_state(query: str) -> dict:
         "head_to_head": head_to_head,
         "streak_request": streak_request,
         "team_streak_request": team_streak_request,
+        "streak_default_window": streak_default_window,
         "season_high_intent": season_high_intent,
         "distinct_player_count": distinct_player_count,
         "distinct_team_count": distinct_team_count,
@@ -600,6 +604,7 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "opponent": opponent,
         }
+        notes.append("season_high: league-wide top single-game performances")
     # ---------------------------------------------------------------------------
     # Distinct player/team count routing
     # ---------------------------------------------------------------------------
@@ -657,6 +662,8 @@ def _finalize_route(parsed: dict) -> dict:
             "longest": team_streak_request.get("longest", False),
             "limit": 25,
         }
+        if parsed.get("streak_default_window"):
+            notes.append("default: team streak uses three-season window when no season specified")
     # ---------------------------------------------------------------------------
     # Playoff / record / decade routing cluster
     # ---------------------------------------------------------------------------
@@ -779,6 +786,8 @@ def _finalize_route(parsed: dict) -> dict:
             "longest": streak_request.get("longest", False),
             "limit": 25,
         }
+        if parsed.get("streak_default_window"):
+            notes.append("default: player streak uses three-season window when no season specified")
     elif (
         "top" in q
         and "games" in q
@@ -802,6 +811,7 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "opponent": opponent,
         }
+        notes.append("default: top games ranked by " + (stat or "pts"))
     elif "top team" in q or ("top" in q and "team games" in q):
         route = "top_team_games"
         route_kwargs = {
@@ -819,6 +829,7 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "opponent": opponent,
         }
+        notes.append("default: top team games ranked by " + (stat or "pts"))
     # ---------------------------------------------------------------------------
     # Occurrence routing cluster (compound + single leaderboard)
     # ---------------------------------------------------------------------------
@@ -1201,6 +1212,8 @@ def _finalize_route(parsed: dict) -> dict:
             "ascending": False,
             "last_n": last_n,
         }
+        if min_value is not None or max_value is not None:
+            notes.append("default: <team> + <threshold> → finder")
     else:
         raise ValueError(
             "Could not map query to a supported pattern yet. "
