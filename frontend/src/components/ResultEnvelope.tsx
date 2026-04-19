@@ -2,6 +2,7 @@ import type { QueryResponse } from "../api/types";
 
 interface Props {
   data: QueryResponse;
+  onAlternateSelect?: (description: string) => void;
 }
 
 function statusLabel(status: string): string {
@@ -41,7 +42,7 @@ function routeLabel(route: string): string {
   return route.replace(/_/g, " ");
 }
 
-export default function ResultEnvelope({ data }: Props) {
+export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
 
@@ -132,6 +133,23 @@ export default function ResultEnvelope({ data }: Props) {
               <li key={i}>{caveat}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Did you mean? — alternate interpretations */}
+      {data.alternates.length > 0 && onAlternateSelect && (
+        <div className="info-block alternates-block">
+          <span className="alternates-label">Did you mean: </span>
+          {data.alternates.map((alt, i) => (
+            <button
+              key={i}
+              type="button"
+              className="alternate-chip"
+              onClick={() => onAlternateSelect(alt.description)}
+            >
+              {alt.description}
+            </button>
+          ))}
         </div>
       )}
     </div>

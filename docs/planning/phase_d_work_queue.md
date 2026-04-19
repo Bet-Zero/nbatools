@@ -232,7 +232,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 6. `[ ]` Surface alternates in the React UI
+## 6. `[x]` Surface alternates in the React UI
 
 **Why:** The API now exposes alternates, but the UI doesn't render them. This item adds a minimal "did you mean" display for medium-confidence parses.
 

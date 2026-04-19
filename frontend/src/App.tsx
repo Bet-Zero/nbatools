@@ -248,7 +248,7 @@ export default function App() {
       {/* Result area */}
       {result && (
         <section className="result-area">
-          <ResultEnvelope data={result} />
+          <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
 
           <div className="result-actions">
             <CopyButton

@@ -824,6 +824,38 @@ body {
   color: var(--warn);
 }
 
+/* ---- Alternates / Did you mean ---- */
+
+.alternates-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.alternates-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #888);
+}
+
+.alternate-chip {
+  background: var(--surface-alt, #2a2a3a);
+  border: 1px solid var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.alternate-chip:hover {
+  background: var(--accent, #4a9eff);
+  color: var(--bg, #1a1a2e);
+}
+
 /* ---- Query Input Enhancement ---- */
 
 .query-input-wrapper {
