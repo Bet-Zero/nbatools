@@ -291,7 +291,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 8. `[ ]` Consolidate threshold operator handling
+## 8. `[x]` Consolidate threshold operator handling
 
 **Why:** Threshold extraction has multiple code paths (`extract_min_value`, `extract_threshold_conditions`, inline `N or more` / `N+` patterns added in Phase A). Consolidating into one threshold-extraction pipeline reduces future maintenance.
 
@@ -324,7 +324,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 9. `[ ]` Add leaderboard verbal-form aliases to unified dict
+## 9. `[x]` Add leaderboard verbal-form aliases to unified dict
 
 **Why:** Phase A added `scored`, `scoring`, `scores`, `rebounded`, `rebounding`, `assisted` to `STAT_ALIASES` and `scores` to `LEADERBOARD_STAT_ALIASES`. After item 2 unifies the dicts, ensure all verbal forms are consistently available across all contexts.
 
@@ -356,7 +356,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 10. `[ ]` Phase B retrospective and Phase C work queue draft
+## 10. `[x]` Phase B retrospective and Phase C work queue draft
 
 **Why:** Self-propagating final task. Ensures learnings are captured and the next phase is scoped before this one closes.
 
@@ -389,6 +389,32 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 - [`query_surface_expansion_plan.md §9`](./query_surface_expansion_plan.md) — work queue convention
 - [`query_surface_expansion_plan.md §5.3`](./query_surface_expansion_plan.md) — Phase C scope
 - This file as a structural template
+
+---
+
+## Phase B retrospective
+
+### What went well
+
+- **Alias unification** (item 2) was the single highest-leverage change: `STAT_PATTERN` auto-generation from `STAT_ALIASES` eliminated a whole class of drift bugs, and `LEADERBOARD_STAT_ALIASES` extending the base dict means new aliases propagate everywhere automatically.
+- **Glossary module** (item 3) centralized fuzzy-term definitions that had been hardcoded inline in `extract_last_n` and `extract_date_range`. The `shipped` flag makes the parser's coverage boundary explicit.
+- **Early normalization** (item 5) — moving `normalize_text` to the top of `_build_parse_state` was straightforward and eliminated ~15 redundant per-detector calls.
+- **STAT_PATTERN reconciliation** (item 6) was mostly free after item 2 auto-generated the pattern — verification confirmed multi-word aliases sort correctly (longest-first).
+
+### What was harder than expected
+
+- **Threshold consolidation** (item 8) — adding `N+ STAT` to `extract_threshold_conditions` triggered a false positive: "last 10 scoring leaders" matched "10 scoring" as a threshold. Required lookbehind guards (`(?<!last )`, `(?<!past )`, etc.) in `extract_min_value`'s bare-pattern fallback.
+- **Glossary scope** (items 3–4) — deciding which undefined terms to reserve required reviewing Phase A's gap inventory exhaustively. The boundary between "reserved for later" and "never going to ship" is fuzzy.
+
+### What Phase B didn't cover (residuals for later phases)
+
+- **Occurrence-route threshold duplication**: `_occurrence_route_utils.py` has its own `_COMPOUND_STAT_MAP` and `_parse_single_threshold` that duplicate parts of `extract_threshold_conditions`. These weren't consolidated because occurrence routing depends on structural context (the ` and ` split logic) that doesn't map cleanly to the general threshold pipeline. A future unification could share the stat-map but keep the structural parsing separate.
+- **Entity-resolution anomalies** from Phase A remain: wrong-subject detection in two-player queries, team resolution from player city. These are Phase D/E territory.
+- **Improved error messaging for reserved terms**: deferred to Phase D where "I can't do this query" becomes a first-class response shape.
+
+### Scope adjustments for Phase C
+
+Phase B's glossary and alias work means Phase C can focus purely on default-rule formalization without worrying about term definitions. The `notes` field infrastructure (adding entries when a default fires) is the main new surface.
 
 ---
 

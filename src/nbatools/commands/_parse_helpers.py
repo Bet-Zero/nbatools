@@ -560,6 +560,12 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             "max",
             0.0001,
         ),
+        # Shorthand: N+ STAT — "30+ points", "5+ threes" (implicit >=)
+        (
+            rf"\b{_NUM}\+\s*{STAT_PATTERN}\b",
+            "min",
+            0.0,
+        ),
     ]
 
     # Reverse patterns: STAT operator NUMBER (for advanced stats like "TS% over .700")
@@ -689,6 +695,13 @@ def extract_threshold_conditions(text: str) -> list[dict]:
 
 
 def extract_min_value(text: str, stat: str | None) -> float | None:
+    """Fallback threshold extraction for when extract_threshold_conditions
+    finds no stat-aware match.
+
+    Handles stat-less generic patterns (``30+``, ``at least 30``) and bare
+    ``N STAT`` phrases using the unified alias table from ``STAT_PATTERN``.
+    """
+    # Generic stat-less patterns (no stat word adjacent to number)
     patterns = [
         r"\b(\d+)\+",
         r"\bat least (\d+)\b",
@@ -704,50 +717,21 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
     if stat is None:
         return None
 
-    stat_phrase_patterns = {
-        "pts": [
-            r"\b(\d+)\s+point games?\b",
-            r"\b(\d+)\s+points\b",
-            r"\b(\d+)-point games?\b",
-            r"\b(\d+)-points?\b",
-        ],
-        "reb": [
-            r"\b(\d+)\s+rebound games?\b",
-            r"\b(\d+)\s+rebounds\b",
-            r"\b(\d+)-rebound games?\b",
-        ],
-        "ast": [
-            r"\b(\d+)\s+assist games?\b",
-            r"\b(\d+)\s+assists\b",
-            r"\b(\d+)-assist games?\b",
-        ],
-        "stl": [
-            r"\b(\d+)\s+steal games?\b",
-            r"\b(\d+)\s+steals\b",
-            r"\b(\d+)-steal games?\b",
-        ],
-        "blk": [
-            r"\b(\d+)\s+block games?\b",
-            r"\b(\d+)\s+blocks\b",
-            r"\b(\d+)-block games?\b",
-        ],
-        "fg3m": [
-            r"\b(\d+)\s+three games?\b",
-            r"\b(\d+)\s+threes\b",
-            r"\b(\d+)\s+3s\b",
-            r"\b(\d+)\s+3pm\b",
-            r"\b(\d+)\s+threes made\b",
-        ],
-        "tov": [
-            r"\b(\d+)\s+turnover games?\b",
-            r"\b(\d+)\s+turnovers\b",
-            r"\b(\d+)-turnover games?\b",
-        ],
-    }
-
-    for pattern in stat_phrase_patterns.get(stat, []):
+    # Bare N STAT — uses the unified alias table instead of per-stat
+    # hardcoded patterns.  Order matters: "N STAT games" is more specific
+    # than bare "N STAT", so try it first.
+    # Guard against matching count/limit numbers that happen to precede
+    # a stat word (e.g. "last 10 scoring" where 10 is last_n, not a threshold).
+    _CG = r"(?<!last )(?<!past )(?<!top )(?<!first )(?<!bottom )"
+    bare_patterns = [
+        rf"{_CG}\b(\d+)\s+{STAT_PATTERN}\s+games?\b",  # "30 point games"
+        rf"{_CG}\b(\d+)-{STAT_PATTERN}\s+games?\b",  # "30-point games"
+        rf"{_CG}\b(\d+)\s+{STAT_PATTERN}\b",  # "30 points"
+        rf"{_CG}\b(\d+)-{STAT_PATTERN}\b",  # "30-points"
+    ]
+    for pattern in bare_patterns:
         m = re.search(pattern, text)
-        if m:
+        if m and detect_stat(m.group(2)) == stat:
             return float(m.group(1))
 
     return None
