@@ -8,14 +8,6 @@
 
 ---
 
-> **⚠️ Do not start items in this queue until the Phase A addendum is complete.**
->
-> After Phase A's retrospective, manual spot-checking revealed three result-level bugs (slots detected but dropped by engine routes, and silent-wrong-answer on nonsensical filter combinations). These are being addressed as items 14–16 of `phase_a_work_queue.md` before Phase B starts, because the Phase A equivalence guarantees are empty if the routes don't respect the slots the parser hands them.
->
-> When `phase_a_work_queue.md` items 14–16 are all checked `[x]`, this queue becomes active and the next-task prompt will find it automatically.
-
----
-
 ## Status legend
 
 - `[ ]` — not started
