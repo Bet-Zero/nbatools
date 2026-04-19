@@ -66,7 +66,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 2. `[ ]` Formalize `<player> + <timeframe>` → summary default
+## 2. `[x]` Formalize `<player> + <timeframe>` → summary default
 
 **Why:** This is the most common underspecified pattern. "Jokic last 10" should always route to summary. The rule exists (Phase A item 4 added it) but has a long guard-clause list and no `notes` entry documenting the default.
 

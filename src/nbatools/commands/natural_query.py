@@ -1063,6 +1063,17 @@ def _finalize_route(parsed: dict) -> dict:
         )
     ):
         route = "player_game_summary"
+        # Document when the <player> + <timeframe> default fires (spec §15.2)
+        _explicit_summary = (
+            summary_intent
+            or career_intent
+            or range_intent
+            or bool(re.search(r"\brecord\b", q))
+            or ("averages" in q)
+            or ("average" in q)
+        )
+        if not _explicit_summary:
+            notes.append("default: <player> + <timeframe> → summary")
         route_kwargs = {
             "season": season,
             "start_season": start_season,
