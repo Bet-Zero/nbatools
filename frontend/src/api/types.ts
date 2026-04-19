@@ -106,6 +106,15 @@ export interface ResultPayload {
   sections: Record<string, SectionRow[]>;
 }
 
+// --- Alternate parse ---
+
+export interface AlternateParse {
+  intent: string;
+  route: string;
+  description: string;
+  confidence: number;
+}
+
 // --- Query response envelope ---
 
 export interface QueryResponse {
@@ -115,6 +124,9 @@ export interface QueryResponse {
   result_status: ResultStatus;
   result_reason: string | null;
   current_through: string | null;
+  confidence: number | null;
+  intent: string | null;
+  alternates: AlternateParse[];
   notes: string[];
   caveats: string[];
   result: ResultPayload;

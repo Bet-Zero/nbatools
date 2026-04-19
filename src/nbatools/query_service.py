@@ -28,8 +28,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from nbatools.commands.format_output import route_to_query_class
-from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
@@ -37,6 +35,8 @@ from nbatools.commands._natural_query_execution import (
     _extract_grouped_condition_text,
     _get_build_result_map,
 )
+from nbatools.commands.format_output import route_to_query_class
+from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.natural_query import (
     _build_parse_state,
     normalize_text,
@@ -141,6 +141,15 @@ def _build_query_metadata(
 
     if notes:
         meta["notes"] = notes
+
+    # Phase D fields: confidence, intent, alternates
+    if parsed.get("confidence") is not None:
+        meta["confidence"] = parsed["confidence"]
+    if parsed.get("intent") is not None:
+        meta["intent"] = parsed["intent"]
+    alternates = parsed.get("alternates")
+    if alternates:
+        meta["alternates"] = alternates
 
     return meta
 

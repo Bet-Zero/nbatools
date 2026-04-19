@@ -192,7 +192,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 5. `[ ]` Add `confidence`, `intent`, and `alternates` to the API envelope
+## 5. `[x]` Add `confidence`, `intent`, and `alternates` to the API envelope
 
 **Why:** The engine now produces confidence, intent, and alternates, but the API response doesn't expose them. This item threads the new fields through the `QueryResponse` envelope so the frontend can consume them.
 

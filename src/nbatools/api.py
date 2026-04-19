@@ -76,6 +76,9 @@ class QueryResponse(BaseModel):
     result_status: str
     result_reason: str | None = None
     current_through: str | None = None
+    confidence: float | None = None
+    intent: str | None = None
+    alternates: list[dict[str, Any]] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
     caveats: list[str] = Field(default_factory=list)
     result: dict[str, Any] = Field(default_factory=dict)
@@ -139,6 +142,9 @@ def _query_result_to_response(qr: QueryResult) -> QueryResponse:
         result_status=qr.result_status,
         result_reason=qr.result_reason,
         current_through=qr.current_through,
+        confidence=qr.metadata.get("confidence"),
+        intent=qr.metadata.get("intent"),
+        alternates=qr.metadata.get("alternates", []),
         notes=notes,
         caveats=caveats,
         result=result_dict,

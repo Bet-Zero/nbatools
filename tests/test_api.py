@@ -303,6 +303,110 @@ class TestResponseShape:
         assert self.REQUIRED_KEYS.issubset(body.keys())
         assert body["ok"] is False
 
+    @patch("nbatools.api.execute_natural_query")
+    def test_confidence_intent_alternates_present(self, mock_exec):
+        """New Phase D fields appear in API response when metadata has them."""
+        result = SummaryResult(query_class="summary")
+        mock_exec.return_value = QueryResult(
+            result=result,
+            metadata={
+                "confidence": 0.78,
+                "intent": "summary",
+                "alternates": [
+                    {
+                        "intent": "finder",
+                        "route": "player_game_finder",
+                        "description": "JOKIC games with triple_double",
+                        "confidence": 0.73,
+                    }
+                ],
+            },
+            query="Jokic triple doubles",
+            route="player_game_summary",
+        )
+        resp = client.post("/query", json={"query": "Jokic triple doubles"})
+        body = resp.json()
+        assert body["confidence"] == 0.78
+        assert body["intent"] == "summary"
+        assert len(body["alternates"]) == 1
+        assert body["alternates"][0]["route"] == "player_game_finder"
+
+    @patch("nbatools.api.execute_natural_query")
+    def test_confidence_defaults_to_none(self, mock_exec):
+        """When metadata lacks Phase D fields, response has safe defaults."""
+        result = SummaryResult(query_class="summary")
+        mock_exec.return_value = QueryResult(
+            result=result, metadata={}, query="test", route="player_game_summary"
+        )
+        resp = client.post("/query", json={"query": "test"})
+        body = resp.json()
+        assert body["confidence"] is None
+        assert body["intent"] is None
+        assert body["alternates"] == []
+
+    @patch("nbatools.api.execute_natural_query")
+    def test_high_confidence_empty_alternates(self, mock_exec):
+        """High-confidence query has empty alternates in response."""
+        result = SummaryResult(query_class="summary")
+        mock_exec.return_value = QueryResult(
+            result=result,
+            metadata={"confidence": 0.93, "intent": "summary"},
+            query="Jokic last 10",
+            route="player_game_summary",
+        )
+        resp = client.post("/query", json={"query": "Jokic last 10"})
+        body = resp.json()
+        assert body["confidence"] == 0.93
+        assert body["alternates"] == []
+
+    @patch("nbatools.api.execute_structured_query")
+    def test_structured_query_has_new_fields(self, mock_exec):
+        """Structured query responses also include the new envelope fields."""
+        result = LeaderboardResult(query_class="leaderboard")
+        mock_exec.return_value = QueryResult(
+            result=result, metadata={}, query="test", route="season_leaders"
+        )
+        resp = client.post("/structured-query", json={"route": "season_leaders", "kwargs": {}})
+        body = resp.json()
+        assert "confidence" in body
+        assert "intent" in body
+        assert "alternates" in body
+
+    @patch("nbatools.api.execute_natural_query")
+    def test_alternates_shape(self, mock_exec):
+        """Each alternate in the response has the required keys."""
+        result = SummaryResult(query_class="summary")
+        mock_exec.return_value = QueryResult(
+            result=result,
+            metadata={
+                "confidence": 0.72,
+                "intent": "summary",
+                "alternates": [
+                    {
+                        "intent": "summary",
+                        "route": "team_record",
+                        "description": "BOS win-loss record",
+                        "confidence": 0.67,
+                    },
+                    {
+                        "intent": "summary",
+                        "route": "game_summary",
+                        "description": "BOS recent game log",
+                        "confidence": 0.62,
+                    },
+                ],
+            },
+            query="Celtics recently",
+            route="game_summary",
+        )
+        resp = client.post("/query", json={"query": "Celtics recently"})
+        body = resp.json()
+        for alt in body["alternates"]:
+            assert "intent" in alt
+            assert "route" in alt
+            assert "description" in alt
+            assert "confidence" in alt
+
 
 # ---------------------------------------------------------------------------
 # UI endpoint

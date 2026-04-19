@@ -11,6 +11,9 @@ function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
     result_status: "ok",
     result_reason: null,
     current_through: "2025-04-01",
+    confidence: null,
+    intent: null,
+    alternates: [],
     notes: [],
     caveats: [],
     result: {
