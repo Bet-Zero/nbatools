@@ -408,7 +408,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ### What Phase B didn't cover (residuals for later phases)
 
-- **Occurrence-route threshold duplication**: `_occurrence_route_utils.py` has its own `_COMPOUND_STAT_MAP` and `_parse_single_threshold` that duplicate parts of `extract_threshold_conditions`. These weren't consolidated because occurrence routing depends on structural context (the ` and ` split logic) that doesn't map cleanly to the general threshold pipeline. A future unification could share the stat-map but keep the structural parsing separate.
+- **Occurrence-route threshold duplication**: `_occurrence_route_utils.py` has its own `_COMPOUND_STAT_MAP` and `_parse_single_threshold` that duplicate parts of `extract_threshold_conditions`. These weren't consolidated because occurrence routing depends on structural context (the `and` split logic) that doesn't map cleanly to the general threshold pipeline. A future unification could share the stat-map but keep the structural parsing separate.
 - **Entity-resolution anomalies** from Phase A remain: wrong-subject detection in two-player queries, team resolution from player city. These are Phase D/E territory.
 - **Improved error messaging for reserved terms**: deferred to Phase D where "I can't do this query" becomes a first-class response shape.
 
