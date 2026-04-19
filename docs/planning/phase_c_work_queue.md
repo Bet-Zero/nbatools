@@ -66,7 +66,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 2. `[ ]` Formalize `<player> + <timeframe>` → summary default
+## 2. `[x]` Formalize `<player> + <timeframe>` → summary default
 
 **Why:** This is the most common underspecified pattern. "Jokic last 10" should always route to summary. The rule exists (Phase A item 4 added it) but has a long guard-clause list and no `notes` entry documenting the default.
 
@@ -101,7 +101,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 3. `[ ]` Formalize `<metric>` only → league-wide leaderboard default
+## 3. `[x]` Formalize `<metric>` only → league-wide leaderboard default
 
 **Why:** "points leaders" with no subject should always route to a league-wide leaderboard. This works today but has no explicit `notes` documentation and the rule isn't formally tracked.
 
@@ -132,7 +132,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 4. `[ ]` Formalize `<player> + <threshold>` → finder default
+## 4. `[x]` Formalize `<player> + <threshold>` → finder default
 
 **Why:** "Curry 5+ threes" should route to occurrence/count. "Jokic over 25 points" should route to finder. The routing exists but the policy isn't explicit and `notes` don't document it.
 
@@ -164,7 +164,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 5. `[ ]` Add `notes` entries for all remaining default branches
+## 5. `[x]` Add `notes` entries for all remaining default branches
 
 **Why:** After items 2–4 cover the highest-impact defaults, remaining branches (team summary, team record, season-high, fallback finder/game_finder) should also document their defaults via `notes`.
 
