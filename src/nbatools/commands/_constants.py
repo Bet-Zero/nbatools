@@ -159,3 +159,76 @@ def _build_stat_pattern(aliases: dict[str, str]) -> str:
 
 
 STAT_PATTERN = _build_stat_pattern(STAT_ALIASES)
+
+# ---------------------------------------------------------------------------
+# Query intent enum & route mapping
+# ---------------------------------------------------------------------------
+
+
+class QueryIntent:
+    """Explicit intent labels for parsed queries.
+
+    Each value corresponds to a query class / result shape.  The ``intent``
+    field in the parse state carries one of these values so consumers don't
+    have to infer intent from boolean-flag combinations.
+    """
+
+    SUMMARY = "summary"
+    COMPARISON = "comparison"
+    FINDER = "finder"
+    COUNT = "count"
+    SPLIT = "split_summary"
+    LEADERBOARD = "leaderboard"
+    STREAK = "streak"
+    UNSUPPORTED = "unsupported"
+
+
+ROUTE_TO_INTENT: dict[str, str] = {
+    # Summary routes
+    "player_game_summary": QueryIntent.SUMMARY,
+    "game_summary": QueryIntent.SUMMARY,
+    "team_record": QueryIntent.SUMMARY,
+    "playoff_history": QueryIntent.SUMMARY,
+    "record_by_decade": QueryIntent.SUMMARY,
+    # Comparison routes
+    "player_compare": QueryIntent.COMPARISON,
+    "team_compare": QueryIntent.COMPARISON,
+    "team_matchup_record": QueryIntent.COMPARISON,
+    "playoff_matchup_history": QueryIntent.COMPARISON,
+    "matchup_by_decade": QueryIntent.COMPARISON,
+    # Finder routes
+    "player_game_finder": QueryIntent.FINDER,
+    "game_finder": QueryIntent.FINDER,
+    # Split routes
+    "player_split_summary": QueryIntent.SPLIT,
+    "team_split_summary": QueryIntent.SPLIT,
+    # Leaderboard routes
+    "season_leaders": QueryIntent.LEADERBOARD,
+    "season_team_leaders": QueryIntent.LEADERBOARD,
+    "top_player_games": QueryIntent.LEADERBOARD,
+    "top_team_games": QueryIntent.LEADERBOARD,
+    "team_record_leaderboard": QueryIntent.LEADERBOARD,
+    "player_occurrence_leaders": QueryIntent.LEADERBOARD,
+    "team_occurrence_leaders": QueryIntent.LEADERBOARD,
+    "playoff_appearances": QueryIntent.LEADERBOARD,
+    "record_by_decade_leaderboard": QueryIntent.LEADERBOARD,
+    "playoff_round_record": QueryIntent.LEADERBOARD,
+    # Streak routes
+    "player_streak_finder": QueryIntent.STREAK,
+    "team_streak_finder": QueryIntent.STREAK,
+}
+
+
+def route_to_intent(route: str | None, *, count_intent: bool = False) -> str:
+    """Map a route name to its ``QueryIntent`` value.
+
+    When *count_intent* is ``True`` and the route is a finder, the intent
+    is ``count`` rather than ``finder`` — the count query class is a finder
+    executed in count mode.
+    """
+    if route is None:
+        return QueryIntent.UNSUPPORTED
+    base = ROUTE_TO_INTENT.get(route, QueryIntent.UNSUPPORTED)
+    if count_intent and base == QueryIntent.FINDER:
+        return QueryIntent.COUNT
+    return base

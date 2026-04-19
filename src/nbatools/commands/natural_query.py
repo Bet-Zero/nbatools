@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-from nbatools.commands._constants import normalize_text
+from nbatools.commands._constants import normalize_text, route_to_intent
 from nbatools.commands._date_utils import CURRENT_QUERY_DATE, extract_date_range
 from nbatools.commands._default_rules import (
     metric_only_leaderboard_default,
@@ -553,6 +553,7 @@ def _finalize_route(parsed: dict) -> dict:
         out = dict(parsed)
         out["route"] = None
         out["route_kwargs"] = {}
+        out["intent"] = "unsupported"
         msg = format_ambiguity_message(
             entity_ambiguity.get("input", ""),
             entity_ambiguity.get("candidates", []),
@@ -1200,6 +1201,7 @@ def _finalize_route(parsed: dict) -> dict:
     out = dict(parsed)
     out["route"] = route
     out["route_kwargs"] = route_kwargs
+    out["intent"] = route_to_intent(route, count_intent=count_intent)
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
