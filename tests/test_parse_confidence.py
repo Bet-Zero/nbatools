@@ -1,8 +1,8 @@
-"""Tests for heuristic confidence scoring."""
+"""Tests for heuristic confidence scoring and alternate-parse generation."""
 
 import pytest
 
-from nbatools.commands._confidence import compute_parse_confidence
+from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
 from nbatools.commands.natural_query import parse_query
 
 # ---------------------------------------------------------------------------
@@ -237,3 +237,205 @@ class TestResolutionFieldsInParseState:
         result = parse_query("scoring leaders this season")
         assert "stat_resolution_confidence" in result
         assert "team_resolution_confidence" in result
+
+
+# ---------------------------------------------------------------------------
+# Unit tests for generate_alternates
+# ---------------------------------------------------------------------------
+
+
+class TestGenerateAlternates:
+    """Verify alternate-generation logic for synthetic parse states."""
+
+    def _base(self, **overrides) -> dict:
+        state = {
+            "route": "player_game_summary",
+            "player": "JOKIC",
+            "team": None,
+            "player_a": None,
+            "player_b": None,
+            "team_a": None,
+            "team_b": None,
+            "entity_ambiguity": None,
+            "summary_intent": True,
+            "finder_intent": False,
+            "count_intent": False,
+            "record_intent": False,
+            "split_intent": False,
+            "career_intent": False,
+            "season_high_intent": False,
+            "streak_request": None,
+            "team_streak_request": None,
+            "head_to_head": False,
+            "leaderboard_intent": False,
+            "team_leaderboard_intent": False,
+            "occurrence_event": None,
+            "by_decade_intent": False,
+            "playoff_history_intent": False,
+            "playoff_appearance_intent": False,
+            "opponent": None,
+            "stat": "pts",
+            "stat_resolution_confidence": "confident",
+            "team_resolution_confidence": "none",
+            "season": "2025-26",
+            "start_season": None,
+            "last_n": None,
+            "start_date": None,
+            "min_value": None,
+            "max_value": None,
+            "notes": [],
+            "confidence": 0.75,
+        }
+        state.update(overrides)
+        return state
+
+    def test_high_confidence_returns_empty(self):
+        state = self._base(confidence=0.90)
+        assert generate_alternates(state) == []
+
+    def test_team_summary_alternate_is_team_record(self):
+        state = self._base(
+            route="game_summary",
+            team="BOS",
+            player=None,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        assert len(alts) >= 1
+        assert alts[0]["route"] == "team_record"
+        assert "win-loss" in alts[0]["description"].lower()
+
+    def test_player_opponent_finder_alternate_is_summary(self):
+        state = self._base(
+            route="player_game_finder",
+            player="TATUM",
+            opponent="NYK",
+            finder_intent=False,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        assert len(alts) >= 1
+        assert alts[0]["route"] == "player_game_summary"
+        assert "averages" in alts[0]["description"].lower()
+
+    def test_player_occurrence_alternate_is_finder(self):
+        state = self._base(
+            route="player_game_summary",
+            player="JOKIC",
+            occurrence_event={"special_event": "triple_double"},
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        assert len(alts) >= 1
+        assert alts[0]["route"] == "player_game_finder"
+        assert "triple_double" in alts[0]["description"]
+
+    def test_season_high_alternate_is_summary(self):
+        state = self._base(
+            route="player_game_finder",
+            player="BOOKER",
+            season_high_intent=True,
+            finder_intent=False,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        assert len(alts) >= 1
+        assert alts[0]["route"] == "player_game_summary"
+        assert "averages" in alts[0]["description"].lower()
+
+    def test_team_record_alternate_is_game_summary(self):
+        state = self._base(
+            route="team_record",
+            team="LAL",
+            player=None,
+            record_intent=False,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        assert len(alts) >= 1
+        assert alts[0]["route"] == "game_summary"
+        assert "game log" in alts[0]["description"].lower()
+
+    def test_alternates_capped_at_two(self):
+        """Even if multiple patterns match, max 2 alternates."""
+        # A player_game_finder with season_high + opponent could match 2 patterns
+        state = self._base(
+            route="player_game_finder",
+            player="BOOKER",
+            opponent="NYK",
+            season_high_intent=True,
+            finder_intent=False,
+            confidence=0.70,
+        )
+        alts = generate_alternates(state)
+        assert len(alts) <= 2
+
+    def test_each_alternate_has_required_keys(self):
+        state = self._base(
+            route="game_summary",
+            team="BOS",
+            player=None,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        for alt in alts:
+            assert "intent" in alt
+            assert "route" in alt
+            assert "description" in alt
+            assert "confidence" in alt
+
+    def test_alternate_confidence_lower_than_primary(self):
+        state = self._base(
+            route="game_summary",
+            team="BOS",
+            player=None,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        for alt in alts:
+            assert alt["confidence"] < 0.75
+
+    def test_no_alternates_for_explicit_finder_intent(self):
+        """When finder_intent is explicit, player+opponent should not suggest summary."""
+        state = self._base(
+            route="player_game_finder",
+            player="TATUM",
+            opponent="NYK",
+            finder_intent=True,
+            confidence=0.75,
+        )
+        alts = generate_alternates(state)
+        summary_alts = [a for a in alts if a["route"] == "player_game_summary"]
+        assert len(summary_alts) == 0
+
+
+# ---------------------------------------------------------------------------
+# Integration tests: alternates field in parse_query output
+# ---------------------------------------------------------------------------
+
+
+class TestParseQueryAlternates:
+    """Verify that parse_query populates the alternates field."""
+
+    @pytest.mark.parser
+    def test_alternates_field_present(self):
+        result = parse_query("Jokic last 10 games")
+        assert "alternates" in result
+        assert isinstance(result["alternates"], list)
+
+    @pytest.mark.parser
+    def test_high_confidence_no_alternates(self):
+        """Fully explicit query → no alternates."""
+        result = parse_query("Jokic games over 30 points this season")
+        assert result["alternates"] == []
+
+    @pytest.mark.parser
+    def test_alternates_have_required_keys(self):
+        """Any alternates that appear must have the spec'd keys."""
+        # Use a query likely to produce alternates
+        result = parse_query("Jokic triple doubles")
+        for alt in result.get("alternates", []):
+            assert "intent" in alt
+            assert "route" in alt
+            assert "description" in alt
+            assert "confidence" in alt

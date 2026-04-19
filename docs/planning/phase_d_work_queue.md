@@ -150,7 +150,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 4. `[ ]` Implement alternates for medium-confidence parses
+## 4. `[x]` Implement alternates for medium-confidence parses
 
 **Why:** When confidence is medium (0.60–0.85), the parser should surface the top alternate interpretation so the UI can offer "did you mean X?" This item adds the alternates mechanism.
 
