@@ -101,7 +101,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 3. `[ ]` Formalize `<metric>` only → league-wide leaderboard default
+## 3. `[x]` Formalize `<metric>` only → league-wide leaderboard default
 
 **Why:** "points leaders" with no subject should always route to a league-wide leaderboard. This works today but has no explicit `notes` documentation and the rule isn't formally tracked.
 

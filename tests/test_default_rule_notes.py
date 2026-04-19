@@ -96,3 +96,40 @@ class TestPlayerTimeframeDefaultNotFired:
         """Player + opponent routes elsewhere (finder), not summary default."""
         parsed = parse_query("Jokic vs Lakers last 10")
         assert DEFAULT_PLAYER_TIMEFRAME_NOTE not in parsed.get("notes", [])
+
+
+# ===================================================================
+# Item 3: <metric> only → league-wide leaderboard default
+# ===================================================================
+
+DEFAULT_LEADERBOARD_NOTE = "default: <metric> only → league-wide leaderboard"
+
+
+class TestMetricOnlyLeaderboardDefault:
+    """No-subject leaderboard fires when a stat/leaderboard signal is
+    present but no player or team entity is resolved."""
+
+    def test_points_leaders(self):
+        parsed = parse_query("points leaders")
+        assert parsed["route"] in ("season_leaders", "season_team_leaders")
+        assert DEFAULT_LEADERBOARD_NOTE in parsed.get("notes", [])
+
+    def test_scoring_leaders(self):
+        parsed = parse_query("scoring leaders")
+        assert parsed["route"] in ("season_leaders", "season_team_leaders")
+        assert DEFAULT_LEADERBOARD_NOTE in parsed.get("notes", [])
+
+    def test_rebounds_last_10(self):
+        parsed = parse_query("rebounds leaders last 10")
+        assert parsed["route"] in ("season_leaders", "season_team_leaders")
+        assert DEFAULT_LEADERBOARD_NOTE in parsed.get("notes", [])
+
+    def test_assists_leaders(self):
+        parsed = parse_query("assists leaders")
+        assert parsed["route"] in ("season_leaders", "season_team_leaders")
+        assert DEFAULT_LEADERBOARD_NOTE in parsed.get("notes", [])
+
+    def test_team_leaderboard_no_subject(self):
+        parsed = parse_query("team scoring leaders")
+        assert parsed["route"] == "season_team_leaders"
+        assert DEFAULT_LEADERBOARD_NOTE in parsed.get("notes", [])

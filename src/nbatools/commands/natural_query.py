@@ -839,6 +839,8 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_b
         and (leaderboard_intent or team_leaderboard_intent)
     ):
+        # No subject entity → league-wide leaderboard default (spec §15.2)
+        notes.append("default: <metric> only → league-wide leaderboard")
         # For leaderboards, prefer multi-season params if available
         lb_season = season
         lb_start_season = start_season
