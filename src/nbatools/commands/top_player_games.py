@@ -65,6 +65,15 @@ def build_result(
 
     df = pd.read_csv(path)
 
+    # Player game logs lack a 'wl' column — derive it from team game stats
+    # so that wins_only / losses_only filters can be applied.
+    if (wins_only or losses_only) and "wl" not in df.columns:
+        team_path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
+        if team_path.exists():
+            team_wl = pd.read_csv(team_path, usecols=["game_id", "team_id", "wl"])
+            team_wl = team_wl.drop_duplicates(subset=["game_id", "team_id"])
+            df = df.merge(team_wl, on=["game_id", "team_id"], how="left")
+
     col = ALLOWED_STATS[stat]
     if col not in df.columns:
         raise ValueError(f"Column '{col}' not found in {path}")

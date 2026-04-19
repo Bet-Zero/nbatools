@@ -683,6 +683,21 @@ def build_result(
 
     basic = pd.concat(frames, ignore_index=True)
 
+    # Player game logs lack a 'wl' column — derive it from team game stats
+    # so that wins_only / losses_only filters can be applied.
+    if (wins_only or losses_only) and "wl" not in basic.columns:
+        team_frames: list[pd.DataFrame] = []
+        for s in seasons:
+            team_path = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
+            if team_path.exists():
+                tf = pd.read_csv(team_path, usecols=["game_id", "team_id", "wl"])
+                team_frames.append(tf)
+        if team_frames:
+            team_wl = pd.concat(team_frames, ignore_index=True).drop_duplicates(
+                subset=["game_id", "team_id"]
+            )
+            basic = basic.merge(team_wl, on=["game_id", "team_id"], how="left")
+
     if "game_date" in basic.columns:
         basic["game_date"] = pd.to_datetime(basic["game_date"], errors="coerce").dt.normalize()
 

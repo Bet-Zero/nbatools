@@ -462,8 +462,6 @@
 
 ---
 
----
-
 ## Addendum — result-level bug fixes (added post-retrospective)
 
 > **Why these exist:** Items 1–13 completed successfully at the parse-state level. Manual spot-checking after Phase A closed revealed three bugs where the parser correctly extracts slots but downstream routes don't respect them, producing confident-but-wrong results. Per the plan's §7.2 guardrail ("prefer honest unsupported responses over silently wrong answers"), these need to be fixed before Phase B starts. Scoped to stay narrow — broader ambiguity handling stays in Phase D.
@@ -584,6 +582,43 @@
 
 - [`query_surface_expansion_plan.md §7.2`](./query_surface_expansion_plan.md) — guardrail: honest unsupported over silent wrong
 - [`query_catalog.md §3.4`](../reference/query_catalog.md) — existing `no_match` behavior precedent
+
+---
+
+## 17. `[x]` Complete slot-to-route contract: wins_only and losses_only
+
+**Why:** Item 14 addressed `last_n` and delivered equivalence-verified result differences, but manual re-testing after merge showed `wins_only` and `losses_only` are still being dropped downstream. `most points in wins` returns identical values to `points leaders this season`, meaning the kwarg reaches `season_leaders` (confirmed in natural_query.py) but the engine doesn't apply it. Item 14's acceptance criteria included this case but the result-level test was never written, so CI did not catch it. This item closes the gap narrowly and adds the specific test that should have existed.
+
+**Scope:**
+
+- Locate the engine-side implementation of `season_leaders` (and `season_team_leaders` if the same code path serves both) and fix the handling so `wins_only` and `losses_only` actually filter the underlying game sample before aggregation
+- Verify the fix propagates correctly when combined with other active slots (e.g., `wins_only` + `last_n=10` should apply both filters)
+- Add result-level tests that assert actual value differences — not just that the route was called with the right kwargs — for: `points leaders in wins` vs `points leaders this season`, and `points leaders in losses` vs `points leaders this season`
+- Add parallel tests for team leaderboards if the same gap exists there
+
+**Files likely touched:**
+
+- Engine module implementing `season_leaders` / `season_team_leaders` (follow imports from `_leaderboard_utils.py` if unsure of location)
+- `tests/parser/` or `tests/engine/` — new result-level tests, at least 2 new assertions covering `wins_only` and `losses_only`
+
+**Acceptance criteria:**
+
+- `nbatools-cli ask "most points in wins"` returns `pts_per_game` values that differ from `nbatools-cli ask "points leaders this season"`
+- `nbatools-cli ask "most points in losses"` returns `pts_per_game` values that differ from `nbatools-cli ask "points leaders this season"`
+- Same check passes for `team_leaderboard` equivalents if applicable
+- New result-level tests exist and pass specifically for `wins_only` and `losses_only`, asserting value-level differences (not just parse state or kwarg presence)
+
+**Tests to run:**
+
+- `make test-parser`
+- `make test-query`
+- `make test-engine`
+
+**Reference docs to consult:**
+
+- [`parser/specification.md §5`](../architecture/parser/specification.md#5-slot-extraction) — slot contract
+- Phase A item 14 for the pattern the fix should follow
+- [`query_catalog.md §3.6`](../reference/query_catalog.md) — leaderboard surface
 
 ---
 

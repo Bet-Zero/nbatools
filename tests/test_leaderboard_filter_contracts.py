@@ -55,7 +55,6 @@ def _make_player_game_rows():
                 "opponent_team_abbr": "BBB",
                 "is_home": 1,
                 "is_away": 0,
-                "wl": "W",
                 "pts": 30,
                 "reb": 10,
                 "ast": 5,
@@ -87,7 +86,6 @@ def _make_player_game_rows():
                 "opponent_team_abbr": "CCC",
                 "is_home": 0,
                 "is_away": 1,
-                "wl": "L",
                 "pts": 10,
                 "reb": 4,
                 "ast": 3,
@@ -119,7 +117,6 @@ def _make_player_game_rows():
                 "opponent_team_abbr": "AAA",
                 "is_home": 0,
                 "is_away": 1,
-                "wl": "L",
                 "pts": 20,
                 "reb": 6,
                 "ast": 4,
@@ -151,7 +148,6 @@ def _make_player_game_rows():
                 "opponent_team_abbr": "CCC",
                 "is_home": 1,
                 "is_away": 0,
-                "wl": "W",
                 "pts": 20,
                 "reb": 6,
                 "ast": 4,
@@ -170,6 +166,24 @@ def _make_player_game_rows():
                 "season_type": "Regular Season",
             }
         )
+    return rows
+
+
+def _make_player_team_wl_rows():
+    """Minimal team game stats with wl column for player-game merging.
+
+    Matches the game_id / team_id layout of _make_player_game_rows() so
+    the engine can derive wl for player game logs (real data lacks wl).
+    """
+    rows = []
+    for i in range(1, 11):
+        rows.append({"game_id": i, "team_id": 100, "wl": "W"})
+    for i in range(11, 21):
+        rows.append({"game_id": i, "team_id": 100, "wl": "L"})
+    for i in range(1, 11):
+        rows.append({"game_id": i + 100, "team_id": 200, "wl": "L"})
+    for i in range(11, 21):
+        rows.append({"game_id": i + 100, "team_id": 200, "wl": "W"})
     return rows
 
 
@@ -326,6 +340,10 @@ class TestSeasonLeadersWinsOnly:
             tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
             _make_player_game_rows(),
         )
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_player_team_wl_rows(),
+        )
 
         full = season_leaders_build(season="2099-00", stat="pts", limit=10, min_games=1)
         wins = season_leaders_build(
@@ -403,6 +421,10 @@ class TestSeasonLeadersLossesOnly:
             tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
             _make_player_game_rows(),
         )
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_player_team_wl_rows(),
+        )
 
         full = season_leaders_build(season="2099-00", stat="pts", limit=10, min_games=1)
         losses = season_leaders_build(
@@ -428,6 +450,10 @@ class TestSeasonLeadersCaveats:
         _write_csv(
             tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
             _make_player_game_rows(),
+        )
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_player_team_wl_rows(),
         )
 
         result = season_leaders_build(
@@ -499,6 +525,58 @@ class TestTeamLeadersLastN:
         assert abs(last5_aaa.iloc[0]["pts_per_game"] - 90.0) < 0.01
 
 
+class TestTeamLeadersWinsOnly:
+    """season_team_leaders with wins_only=True should only count win games."""
+
+    def test_wins_only_changes_team_ppg(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_team_game_rows(),
+        )
+
+        full = season_team_leaders_build(season="2099-00", stat="pts", limit=10, min_games=1)
+        wins = season_team_leaders_build(
+            season="2099-00", stat="pts", limit=10, min_games=1, wins_only=True
+        )
+
+        assert isinstance(full, LeaderboardResult)
+        assert isinstance(wins, LeaderboardResult)
+
+        # Team AAA: 100 ppg overall, 110 ppg in wins only
+        full_aaa = full.leaders[full.leaders["team_abbr"] == "AAA"]
+        wins_aaa = wins.leaders[wins.leaders["team_abbr"] == "AAA"]
+
+        assert abs(full_aaa.iloc[0]["pts_per_game"] - 100.0) < 0.01
+        assert abs(wins_aaa.iloc[0]["pts_per_game"] - 110.0) < 0.01
+
+
+class TestTeamLeadersLossesOnly:
+    """season_team_leaders with losses_only=True should only count loss games."""
+
+    def test_losses_only_changes_team_ppg(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_team_game_rows(),
+        )
+
+        full = season_team_leaders_build(season="2099-00", stat="pts", limit=10, min_games=1)
+        losses = season_team_leaders_build(
+            season="2099-00", stat="pts", limit=10, min_games=1, losses_only=True
+        )
+
+        assert isinstance(full, LeaderboardResult)
+        assert isinstance(losses, LeaderboardResult)
+
+        # Team AAA: 100 ppg overall, 90 ppg in losses only
+        full_aaa = full.leaders[full.leaders["team_abbr"] == "AAA"]
+        losses_aaa = losses.leaders[losses.leaders["team_abbr"] == "AAA"]
+
+        assert abs(full_aaa.iloc[0]["pts_per_game"] - 100.0) < 0.01
+        assert abs(losses_aaa.iloc[0]["pts_per_game"] - 90.0) < 0.01
+
+
 class TestTeamLeadersEmptySample:
     def test_filtered_empty_returns_no_match(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -533,6 +611,10 @@ class TestTopPlayerGamesWinsOnly:
         _write_csv(
             tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
             _make_player_game_rows(),
+        )
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_player_team_wl_rows(),
         )
 
         full = top_player_games_build(season="2099-00", stat="pts", limit=40)
