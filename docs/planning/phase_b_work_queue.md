@@ -51,7 +51,7 @@ Phase A shipped fuzzy time-word handling (item 9), which the plan originally pla
 
 ---
 
-## 1. `[ ]` Audit current alias fragmentation
+## 1. `[x]` Audit current alias fragmentation
 
 **Why:** Before consolidating, we need a clear inventory of where aliases are defined and where they diverge. Multiple locations have overlapping but inconsistent alias tables.
 
