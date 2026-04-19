@@ -30,7 +30,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 1. `[ ]` Define `QueryIntent` enum and map existing routes
+## 1. `[x]` Define `QueryIntent` enum and map existing routes
 
 **Why:** The parse state currently infers intent from ~15 boolean flags (`summary_intent`, `finder_intent`, `count_intent`, etc.) and route name strings. Phase D needs an explicit `intent` field. This item formalizes the enum and adds it to the parse state without changing any routing behavior.
 
@@ -74,6 +74,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 - Create a `compute_parse_confidence(parsed: dict) -> float` function in a new `_confidence.py` module
 - Scoring signals (each contributes to or detracts from confidence):
   - **Entity resolution confidence**: `confident` → high, `ambiguous` → low, `none` → medium (may be valid for league-wide queries)
+  - **Existing entity_ambiguity field**: `parsed["entity_ambiguity"]` is already populated by the parser when a player reference matches multiple candidates. When present, this is a strong low-confidence signal — use it directly rather than re-inventing entity-confidence detection.
   - **Explicit intent signal**: presence of explicit intent flags (`summary_intent`, `finder_intent`, etc.) → higher confidence than default-rule routing
   - **Default rule fired**: any `notes` entry starting with `"default:"` → moderate confidence penalty
   - **Stat specified**: explicit stat → higher confidence; stat fallback to `pts` → penalty
