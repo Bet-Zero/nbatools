@@ -104,7 +104,7 @@ SUBJECTIVE_TERMS: dict[str, SubjectiveTerm] = {
     "biggest games": SubjectiveTerm("Ranked by points scored"),
     "hottest": SubjectiveTerm("Rolling average over last 5 games, ranked"),
     "efficient": SubjectiveTerm("Ranked by True Shooting %"),
-    "clutch": SubjectiveTerm("Last 5 min of 4th quarter or OT, score within 5"),
+    "clutch": SubjectiveTerm("Last 5 min of 4th quarter or OT, score within 5", shipped=True),
     "all-around games": SubjectiveTerm("Undefined — not yet shipped"),
     "catch-and-shoot": SubjectiveTerm("Undefined — not yet shipped"),
     "transition scorer": SubjectiveTerm("Undefined — not yet shipped"),
