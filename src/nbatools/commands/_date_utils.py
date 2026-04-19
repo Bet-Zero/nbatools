@@ -66,31 +66,37 @@ def _resolve_year_for_month_in_season(season: str | None, month_num: int) -> int
     return current_year if month_num <= current_month else current_year - 1
 
 
-def extract_date_range(text: str, season: str | None) -> tuple[str | None, str | None]:
+def extract_date_range(
+    text: str,
+    season: str | None,
+    anchor_date: pd.Timestamp | None = None,
+) -> tuple[str | None, str | None]:
     if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?all[- ]star\s+break\b", text):
         return _infer_all_star_break_start(season), None
+
+    anchor = anchor_date if anchor_date is not None else CURRENT_QUERY_DATE
 
     # --- Fuzzy time words (glossary / spec §18.1) ---
     for term in FUZZY_DATE_TERMS:
         if not re.search(term.regex, text):
             continue
         if term.yesterday:
-            d = (CURRENT_QUERY_DATE - pd.Timedelta(days=1)).date().isoformat()
+            d = (anchor - pd.Timedelta(days=1)).date().isoformat()
             return d, d
         if term.same_day:
-            d = CURRENT_QUERY_DATE.date().isoformat()
+            d = anchor.date().isoformat()
             return d, d
         if term.days_back is not None:
-            start = (CURRENT_QUERY_DATE - pd.Timedelta(days=term.days_back - 1)).date().isoformat()
-            end = CURRENT_QUERY_DATE.date().isoformat()
+            start = (anchor - pd.Timedelta(days=term.days_back - 1)).date().isoformat()
+            end = anchor.date().isoformat()
             return start, end
 
     m = re.search(r"\blast\s+(\d+)\s+days?\b", text)
     if m:
         days = int(m.group(1))
         if days > 0:
-            start = (CURRENT_QUERY_DATE - pd.Timedelta(days=days - 1)).date().isoformat()
-            end = CURRENT_QUERY_DATE.date().isoformat()
+            start = (anchor - pd.Timedelta(days=days - 1)).date().isoformat()
+            end = anchor.date().isoformat()
             return start, end
 
     month_pattern = "|".join(MONTH_NAME_TO_NUM.keys())
