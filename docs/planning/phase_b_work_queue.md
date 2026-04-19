@@ -469,7 +469,7 @@ Phase B's glossary and alias work means Phase C can focus purely on default-rule
 
 ---
 
-## 12. `[ ]` Wire `last couple weeks` / `past 2 weeks` through date extraction
+## 12. `[x]` Wire `last couple weeks` / `past 2 weeks` through date extraction
 
 **Why:** `query_catalog.md` §2.2 documents `last couple weeks` and `past 2 weeks` as fuzzy-time forms that should resolve to a rolling 14-day window. The Phase B glossary module (`_glossary.py`) was supposed to centralize this. But manual testing shows `Jokic last couple weeks` returns "No matching games found" while equivalent queries like `Jokic past month` and `Jokic lately` work correctly. Either the glossary entry is missing, or the date-range extractor in `_date_utils.py` does not consult the glossary for these specific phrases.
 

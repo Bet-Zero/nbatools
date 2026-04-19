@@ -6,6 +6,7 @@ import pytest
 
 from nbatools.commands._date_utils import CURRENT_QUERY_DATE
 from nbatools.commands.format_output import METADATA_LABEL, parse_labeled_sections
+from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.natural_query import (
     parse_query,
 )
@@ -50,8 +51,13 @@ def test_parse_team_summary_in_march():
 
 def test_parse_matchup_last_30_days():
     parsed = parse_query("Jokic vs Lakers last 30 days")
-    expected_start = (CURRENT_QUERY_DATE - pd.Timedelta(days=29)).date().isoformat()
-    expected_end = CURRENT_QUERY_DATE.date().isoformat()
+    # Anchor to data end date when data is stale, otherwise CURRENT_QUERY_DATE
+    ct = compute_current_through("2025-26", "Regular Season")
+    anchor = (
+        pd.Timestamp(ct) if ct and pd.Timestamp(ct) < CURRENT_QUERY_DATE else CURRENT_QUERY_DATE
+    )
+    expected_start = (anchor - pd.Timedelta(days=29)).date().isoformat()
+    expected_end = anchor.date().isoformat()
 
     assert parsed["season"] == "2025-26"
     assert parsed["route"] == "player_game_finder"

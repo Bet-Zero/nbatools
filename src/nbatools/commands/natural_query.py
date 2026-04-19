@@ -1,7 +1,9 @@
 import re
 
+import pandas as pd
+
 from nbatools.commands._constants import normalize_text
-from nbatools.commands._date_utils import extract_date_range
+from nbatools.commands._date_utils import CURRENT_QUERY_DATE, extract_date_range
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
@@ -138,6 +140,7 @@ from nbatools.commands._playoff_record_route_utils import (
     try_record_leaderboard_route,
 )
 from nbatools.commands.entity_resolution import format_ambiguity_message
+from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
 __all__ = [
@@ -369,7 +372,18 @@ def _build_parse_state(query: str) -> dict:
         ):
             season = default_season_for_context(season_type)
 
-    start_date, end_date = extract_date_range(q, season)
+    # Anchor rolling date windows to the data end date when data is stale.
+    # Without this, a 14-day window ("last couple weeks") computed from
+    # today can miss all data when the dataset hasn't been refreshed.
+    anchor_date = None
+    if season:
+        ct = compute_current_through(season, season_type or "Regular Season")
+        if ct is not None:
+            ct_ts = pd.Timestamp(ct)
+            if ct_ts < CURRENT_QUERY_DATE:
+                anchor_date = ct_ts
+
+    start_date, end_date = extract_date_range(q, season, anchor_date=anchor_date)
 
     explicit_single_season = extract_season(q)
     explicit_range_start, explicit_range_end = extract_season_range(q)
