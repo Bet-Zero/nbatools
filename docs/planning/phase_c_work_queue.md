@@ -195,7 +195,7 @@ Phase C can now focus purely on default-rule formalization because the alias and
 
 ---
 
-## 6. `[ ]` Extract default rules into a named-rules module
+## 6. `[x]` Extract default rules into a named-rules module
 
 **Why:** Default rules are currently inline conditions scattered through `_finalize_route`. Extracting them into named, documented functions makes the policy inspectable and testable independent of the routing chain.
 
