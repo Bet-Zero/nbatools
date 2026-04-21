@@ -486,7 +486,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 12. `[ ]` Phase E retrospective and Phase F work queue draft
+## 12. `[x]` Phase E retrospective and Phase F work queue draft
 
 **Why:** Self-propagating final task. Ensures learnings are captured and the next phase (if any) is scoped.
 
@@ -520,8 +520,41 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
+## Phase E retrospective
+
+### What went well
+
+- **Expanded context filters** (items 2-4) landed cleanly because the slot model was already in place from earlier phases. Quarter/half, schedule-context, and role detection mostly reused existing parse-state and route-kwargs patterns instead of adding a parallel routing layer.
+- **Opponent-quality buckets** (item 5) shipped cleanly once the glossary definitions were populated with concrete product-policy meanings. The filter resolved to real team buckets without changing the public route shapes for the core summary/finder/record paths.
+- **Honest placeholder execution** for on/off and lineup queries (items 8-9) was the right tradeoff. The parser and router now recognize those families, confidence and intent classify them correctly, and the engine responds with explicit unsupported-data notes rather than pretending the whole-game tables can answer them.
+- **Stretch queries** (item 10) were the cleanest fully data-backed addition in Phase E. The existing game-log model was enough to support rolling-window leaderboards without introducing a new data subsystem.
+- **Smoke coverage discipline** held up throughout the phase. `PHASE_E_QUERY_SMOKE_CASES` now exercises both newly shipped behavior and the honest temporary behaviors that are part of the real product surface.
+
+### What was harder than expected
+
+- **Clutch** (item 1) remained intentionally partial. Parser-side detection and user-facing notes are solid, but there is still no play-by-play or other clutch-capable split source in the current data layer, so true filtered clutch execution could not be completed honestly.
+- **Schedule-context fidelity** is uneven. Back-to-back and related parser signals are useful, but `national_tv` is still a placeholder field in the schedule pull and one-possession context still lacks a dedicated execution-grade feature table.
+- **On/off and lineup execution** confirmed the data-layer boundary from the reconnaissance pass: whole-game logs, roster snapshots, and current processed features are not enough to derive on-court/off-court or lineup-unit stats without a separate ingestion or aggregation path.
+
+### What Phase E did not close
+
+- **True clutch execution** still requires a data source that can identify NBA clutch possessions or splits. Item 1 remains `[~]` by design until that exists.
+- **Real on/off and lineup results** remain unshipped. The placeholder routes are now part of the parser/query surface, but the engine still needs new play-by-play, stint, rotation, or upstream split tables before those routes can return real stats.
+- **National-TV and some schedule-context filters** still depend on richer schedule/context data before they can be treated as fully data-backed engine features.
+
+### Phase F decision
+
+- **No Phase F work queue is needed for the parser/query-surface expansion plan.** Phase E closes the planned parser-surface roadmap.
+- The remaining gaps are no longer parser-surface sequencing problems. They are **data and execution-subsystem** problems: clutch splits, true on/off, lineup-unit stats, and richer schedule-context joins.
+- If that work is prioritized later, it should live in a dedicated plan for new data ingestion and execution support rather than extending the parser phase series.
+
+---
+
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Phase E is complete. Sub-phases (E1–E5) can be worked in order. Items within each sub-phase are sequential.
+When item 12 is checked `[x]`, the planned parser/query-surface expansion sequence is complete. Item 1 remains `[~]` intentionally to record that clutch is parser-recognized but still lacks data-backed execution.
+
+---
+
 
 If any item is skipped (`[-]`), note the reason inline so the reason survives in git history.
