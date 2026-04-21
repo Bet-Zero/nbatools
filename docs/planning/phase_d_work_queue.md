@@ -30,27 +30,28 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ---
 
-## 1. `[x]` Define `QueryIntent` enum and map existing routes
+## 1. `[x]` Define `QueryIntent` labels and map existing routes
 
-**Why:** The parse state currently infers intent from ~15 boolean flags (`summary_intent`, `finder_intent`, `count_intent`, etc.) and route name strings. Phase D needs an explicit `intent` field. This item formalizes the enum and adds it to the parse state without changing any routing behavior.
+**Why:** The parse state currently infers intent from ~15 boolean flags (`summary_intent`, `finder_intent`, `count_intent`, etc.) and route name strings. Phase D needs an explicit `intent` field. This item formalizes the shipped broad intent buckets and adds them to the parse state without changing any routing behavior.
 
 **Scope:**
 
-- Define a `QueryIntent` string enum covering all current query classes: `summary`, `comparison`, `split_summary`, `finder`, `count`, `leaderboard`, `streak`, `record`, `playoff_history`, `occurrence`, `season_high`, `head_to_head`, `team_summary`, `team_record`, `team_streak`, `team_leaderboard`, `unsupported`
+- Define a `QueryIntent` string-constant class covering the shipped broad intent buckets: `summary`, `comparison`, `split_summary`, `finder`, `count`, `leaderboard`, `streak`, `unsupported`
+- Map existing routes into those broad buckets via `route_to_intent()`; multiple route families intentionally collapse into the same intent (for example, `team_record` and `playoff_history` both map to `summary`)
 - Add an `intent` field to the parse state dict, populated at the end of `_finalize_route` based on the selected route
 - Create a `route_to_intent()` mapping function so the mapping is explicit and testable
 - The `intent` field is informational only — routing logic remains unchanged
 
 **Files likely touched:**
 
-- `src/nbatools/commands/_constants.py` — `QueryIntent` enum definition
+- `src/nbatools/commands/_constants.py` — `QueryIntent` label definition
 - `src/nbatools/commands/natural_query.py` — populate `parsed["intent"]` in `_finalize_route`
 - `tests/` — verify intent field is populated correctly for representative queries
 
 **Acceptance criteria:**
 
-- Every successful parse state includes an `intent` field with a valid `QueryIntent` value
-- At least 15 test cases verify intent mapping across all major query classes
+- Every successful parse state includes an `intent` field with a valid broad `QueryIntent` value
+- At least 15 test cases verify intent mapping across representative routes / route families
 - Existing tests pass with no behavior change (intent is additive)
 
 **Tests to run:**
@@ -239,7 +240,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 **Scope:**
 
 - Add a `DidYouMean` component (or extend `ResultEnvelope.tsx`) that renders alternates as clickable chips/links
-- When clicked, re-query with the alternate's description (or a pre-built query string)
+- When clicked, re-query with the alternate's description text in this first pass; a future follow-up can carry a canonical query string or structured target
 - Show confidence indicator (optional — could be as simple as showing/hiding the "did you mean" section based on confidence threshold)
 - Keep it minimal — this is a functional first pass, not a design overhaul
 
@@ -253,7 +254,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 **Acceptance criteria:**
 
 - Medium-confidence queries show "Did you mean: [alternate description]?" below the result envelope
-- Clicking an alternate triggers a new query
+- Clicking an alternate triggers a new query via the alternate description text
 - High-confidence queries do not show alternates
 - Component renders correctly with 0, 1, and 2 alternates
 - Frontend builds cleanly (`npm run build`)
@@ -302,7 +303,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 **Reference docs to consult:**
 
 - `src/nbatools/commands/_confidence.py` — actual scoring implementation
-- `src/nbatools/commands/_constants.py` — `QueryIntent` enum
+- `src/nbatools/commands/_constants.py` — `QueryIntent` labels
 
 ---
 
@@ -347,7 +348,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ### What went well
 
-- **QueryIntent enum + ROUTE_TO_INTENT mapping** (item 1) was clean — a plain class with string constants was simpler than a Python Enum and equally effective. The `route_to_intent()` function elegantly handles the count/finder duality with a single `count_intent` flag.
+- **Broad `QueryIntent` labels + `ROUTE_TO_INTENT` mapping** (item 1) were clean — a plain class with string constants was simpler than a Python Enum and equally effective. Multiple route families intentionally collapse into 8 coarse buckets, and `route_to_intent()` handles the count/finder duality with a single `count_intent` flag.
 - **Heuristic confidence scoring** (item 2) landed with a straightforward additive model (base 0.70, signal adjustments, clamped to [0,1]). The scoring formula is transparent and easy to tune — no ML complexity needed for the current query surface.
 - **Entity resolution extension** (item 3) for teams and stats was lightweight — `resolve_team()` and `resolve_stat()` return confidence signals that feed directly into `compute_parse_confidence` without restructuring the parse pipeline.
 - **Alternates generation** (item 4) works well for the known ambiguity patterns. The pattern-matching approach (5 specific patterns in `generate_alternates`) is simple and maintainable — each pattern is ~10 lines with clear trigger conditions.
@@ -362,6 +363,7 @@ Phase D can build on this foundation: default-rule firing signals feed directly 
 
 ### What Phase D didn't cover (residuals for later phases)
 
+- **Alternate transport**: the UI currently re-queries alternates by submitting the alternate's human-readable description text. That's acceptable as a lightweight first pass, but a future pass should carry a canonical query string or structured target so alternates are not coupled to display wording.
 - **Unsupported-query messaging**: queries that raise `ValueError` (like `"scoring"` alone) don't produce a parse state at all — they crash before confidence/alternates can run. Phase E or a dedicated error-handling pass should catch these and return a structured "unsupported" response with confidence=0 and helpful suggestions.
 - **Session-context disambiguation** (§16.5): "prefer the parse consistent with recent query context" is spec'd but not implemented — would require stateful session tracking, which is out of scope for the current stateless parser.
 - **ML-based confidence**: the heuristic model is adequate for the current surface but will plateau as query diversity grows. A future phase could train a lightweight classifier on (query, correct_route) pairs.

@@ -23,7 +23,7 @@
 
 Phase D formalized the parser's confidence, alternates, and canonical parse state:
 
-- Defined `QueryIntent` enum with 8 intent labels and `ROUTE_TO_INTENT` mapping
+- Defined a broad `QueryIntent` label set with 8 intent labels and `ROUTE_TO_INTENT` mapping
 - Implemented heuristic confidence scoring in `_confidence.py` (base 0.70, signal adjustments)
 - Extended entity resolution to teams (`resolve_team`) and stats (`resolve_stat`)
 - Added alternates generation for 5 known ambiguity patterns
@@ -36,43 +36,46 @@ Phase E can now add new capability families knowing that each new route will aut
 
 ## Sub-phase E1: Expanded context filters
 
-Items 1–4 add context filters that extend existing routes. These are the lowest-risk additions because they don't require new data sources — they add filter slots that existing engine routes can consume.
+Items 1–4 add context filters that extend existing routes. Items 2–4 are the lowest-risk additions because they mainly add filter slots that existing engine routes can consume. Item 1 (`clutch`) is only partially landed today: parser-side detection exists, but true clutch filtering still depends on play-by-play-backed data the current layer does not expose.
 
 ---
 
-## 1. `[x]` Add `clutch` context filter
+## 1. `[~]` Add `clutch` context filter
 
-**Why:** "Clutch" is one of the most common unshipped filter terms. Users ask "Tatum clutch stats", "Lakers clutch record", "best clutch scorers". The glossary already reserves this term with `shipped=False`.
+**Why:** Parser-side `clutch` recognition has landed, but true clutch filtering has not. Current behavior detects clutch phrasing, sets `clutch=True` in the parse state, and appends a note that results are unfiltered because play-by-play clutch splits are not available in the current data layer.
 
 **Scope:**
 
-- Define the product-policy definition of "clutch" in `_glossary.py`: last 5 minutes of 4th quarter or OT, score within 5 points (NBA's official definition)
-- Add a `clutch` boolean slot to the parse state, detected from surface forms: `clutch`, `in the clutch`, `clutch time`, `late-game`
-- Wire the slot through to existing routes (`player_game_finder`, `player_game_summary`, `game_finder`, `season_leaders`) as a filter parameter
-- Engine support: if the data layer can filter by clutch criteria (game log has `PTS` but not clutch splits natively), document what's needed. If clutch filtering requires play-by-play data that doesn't exist, stub the filter and document the gap
-- Update glossary entry to `shipped=True`
+- Keep the product-policy definition of `clutch` pinned in `_glossary.py`: last 5 minutes of 4th quarter or OT, score within 5 points (NBA's official definition)
+- Keep the `clutch` boolean slot in the parse state, detected from surface forms: `clutch`, `in the clutch`, `clutch time`, `late-game`
+- Surface a user-facing note when `clutch` is detected explaining that true clutch splits are not yet available and results are unfiltered
+- Defer real route-level filtering / execution until a play-by-play-backed data source or aggregation layer exists
+- Keep glossary / queue / spec wording honest: parser recognition shipped; true clutch filtering not yet shipped
 
 **Files likely touched:**
 
 - `src/nbatools/commands/_glossary.py` — update clutch entry
 - `src/nbatools/commands/_parse_helpers.py` — `detect_clutch` helper
 - `src/nbatools/commands/natural_query.py` — `_build_parse_state` + `_finalize_route`
-- `src/nbatools/commands/_constants.py` — if new slot needed
-- Engine route files — accept `clutch` filter kwarg
+- `tests/test_natural_query_parser.py` — clutch detection / note coverage
 
 **Acceptance criteria:**
 
 - `parse_query("Tatum clutch stats")` includes `clutch=True` in the parse state
 - Surface forms `clutch`, `in the clutch`, `clutch time`, `late-game` all set the slot
-- Existing routes accept the filter without error (even if the engine returns unfiltered data with a note that clutch filtering is approximate)
-- Glossary entry updated
-- At least 5 parser tests covering clutch detection
+- A user-facing note explains that results are currently unfiltered because true clutch splits are not available yet
+- Glossary / queue wording does not claim true clutch filtering is fully shipped
+- At least 5 parser tests cover clutch detection and the unfiltered-results note
+
+**Remaining to reach `[x]`:**
+
+- Thread `clutch` through `route_kwargs` as a real filter, not just parse-state metadata
+- Execute true clutch filtering against play-by-play or another data source that can actually identify clutch possessions / splits
+- Flip glossary / spec / queue shipped status only after filtered clutch results are real
 
 **Tests to run:**
 
 - `make test-parser`
-- `make test-query`
-- `make test-engine` (if engine route touched)
 
 **Reference docs to consult:**
 
