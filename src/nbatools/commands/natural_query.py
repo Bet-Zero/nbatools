@@ -57,6 +57,9 @@ from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes as build_game_context_filter_notes,
 )
 from nbatools.commands._parse_helpers import (
+    build_on_off_note as build_on_off_note,
+)
+from nbatools.commands._parse_helpers import (
     build_opponent_quality_note as build_opponent_quality_note,
 )
 from nbatools.commands._parse_helpers import (
@@ -91,6 +94,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_nationally_televised as detect_nationally_televised,
+)
+from nbatools.commands._parse_helpers import (
+    detect_on_off as detect_on_off,
 )
 from nbatools.commands._parse_helpers import (
     detect_one_possession as detect_one_possession,
@@ -223,6 +229,7 @@ __all__ = [
     "detect_rest_days",
     "detect_one_possession",
     "detect_nationally_televised",
+    "detect_on_off",
     "detect_role",
     "detect_opponent_quality",
     "detect_quarter",
@@ -393,6 +400,9 @@ def _build_parse_state(query: str) -> dict:
     opponent_player = None
     q_without_opponent = q
     team = None
+    on_off_request = detect_on_off(q)
+    lineup_members = on_off_request["lineup_members"] if on_off_request else []
+    presence_state = on_off_request["presence_state"] if on_off_request else None
     without_player = None
 
     team_resolution_confidence = "none"
@@ -418,8 +428,9 @@ def _build_parse_state(query: str) -> dict:
             else:
                 team_resolution_confidence = team_result.confidence
 
-    # Detect "without PLAYER" pattern (e.g., "Warriors record without Steph Curry")
-    without_player, _ = detect_without_player(q)
+    # Detect game-absence only when the query is not an on/off-court request.
+    if on_off_request is None:
+        without_player, _ = detect_without_player(q)
 
     # If without_player is the same as the detected player, clear player so the
     # query routes to the team path (e.g., "Lakers record without LeBron")
@@ -503,6 +514,8 @@ def _build_parse_state(query: str) -> dict:
         "team_b": team_b,
         "opponent": opponent,
         "opponent_quality": opponent_quality,
+        "lineup_members": lineup_members,
+        "presence_state": presence_state,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -622,6 +635,8 @@ def _finalize_route(parsed: dict) -> dict:
     distinct_player_count = parsed.get("distinct_player_count", False)
     opponent_player = parsed.get("opponent_player")
     without_player = parsed.get("without_player")
+    lineup_members = parsed.get("lineup_members") or []
+    presence_state = parsed.get("presence_state")
 
     notes: list[str] = []
     route = None
@@ -656,10 +671,27 @@ def _finalize_route(parsed: dict) -> dict:
         out["alternates"] = generate_alternates(out)
         return out
 
+    if lineup_members and presence_state is not None:
+        route = "player_on_off"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "player": player or lineup_members[0],
+            "team": team,
+            "opponent": opponent,
+            "lineup_members": lineup_members,
+            "presence_state": presence_state,
+            "last_n": last_n,
+        }
+
     # ---------------------------------------------------------------------------
     # Season-high / single-game-best routing
     # ---------------------------------------------------------------------------
-    if season_high_intent and player and not player_a and not player_b:
+    elif season_high_intent and player and not player_a and not player_b:
         # Single player season-high: "Cade Cunningham season high"
         # Route to finder, limit 1, sort by stat descending
         route = "player_game_finder"
@@ -1324,6 +1356,11 @@ def _finalize_route(parsed: dict) -> dict:
         notes.append(role_note)
     if opponent_quality_note := build_opponent_quality_note(opponent_quality=opponent_quality):
         notes.append(opponent_quality_note)
+    if on_off_note := build_on_off_note(
+        lineup_members=lineup_members,
+        presence_state=presence_state,
+    ):
+        notes.append(on_off_note)
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
@@ -1368,6 +1405,8 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "team_b",
         "opponent",
         "opponent_quality",
+        "lineup_members",
+        "presence_state",
         "last_n",
         "split_type",
         "role",

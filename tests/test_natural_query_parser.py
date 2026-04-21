@@ -592,3 +592,59 @@ def test_opponent_quality_definition_is_structured():
     definition = parsed["opponent_quality"]["definition"]
     assert definition["source"] == "standings_snapshots"
     assert definition["value"] == 6
+
+
+# ---------------------------------------------------------------------------
+# On/off query intent and routing
+# ---------------------------------------------------------------------------
+
+
+def test_jokic_on_off_routes_to_placeholder_route():
+    parsed = parse_query("Jokic on/off")
+    assert parsed["route"] == "player_on_off"
+    assert parsed["intent"] == "on_off"
+    assert parsed["lineup_members"] == ["Nikola Jokić"]
+    assert parsed["presence_state"] == "both"
+
+
+def test_with_player_on_floor_sets_on_presence_state():
+    parsed = parse_query("Nuggets with Jokic on the floor")
+    assert parsed["route"] == "player_on_off"
+    assert parsed["lineup_members"] == ["Nikola Jokić"]
+    assert parsed["presence_state"] == "on"
+
+
+def test_without_player_on_floor_sets_off_presence_state():
+    parsed = parse_query("Nuggets without Jokic on the floor")
+    assert parsed["route"] == "player_on_off"
+    assert parsed["lineup_members"] == ["Nikola Jokić"]
+    assert parsed["presence_state"] == "off"
+
+
+def test_player_on_court_sets_on_presence_state():
+    parsed = parse_query("Jokic on court stats")
+    assert parsed["route"] == "player_on_off"
+    assert parsed["presence_state"] == "on"
+
+
+def test_player_off_court_sets_off_presence_state():
+    parsed = parse_query("Jokic off court stats")
+    assert parsed["route"] == "player_on_off"
+    assert parsed["presence_state"] == "off"
+
+
+def test_player_sitting_sets_off_presence_state():
+    parsed = parse_query("Jokic sitting")
+    assert parsed["route"] == "player_on_off"
+    assert parsed["presence_state"] == "off"
+
+
+def test_on_off_query_does_not_set_without_player_absence_slot():
+    parsed = parse_query("Nuggets without Jokic on the floor")
+    assert parsed["without_player"] is None
+
+
+def test_on_off_note_appended():
+    parsed = parse_query("Jokic on/off")
+    notes = parsed.get("notes", [])
+    assert any("on_off" in n and "placeholder" in n for n in notes)

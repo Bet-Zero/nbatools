@@ -317,6 +317,21 @@ class TestStructuredQueryExecution:
         assert qr.metadata["role"] == "bench"
         assert any("role" in note and "unfiltered" in note for note in qr.result.notes)
 
+    def test_structured_query_accepts_on_off_placeholder_route(self):
+        qr = execute_structured_query(
+            "player_on_off",
+            season="1950-51",
+            player="Nikola Jokić",
+            lineup_members=["Nikola Jokić"],
+            presence_state="both",
+        )
+        assert qr.route == "player_on_off"
+        assert isinstance(qr.result, NoResult)
+        assert qr.result_reason == "unsupported"
+        assert qr.metadata["lineup_members"] == ["Nikola Jokić"]
+        assert qr.metadata["presence_state"] == "both"
+        assert any("on_off" in note and "placeholder" in note for note in qr.result.notes)
+
 
 # ===================================================================
 # Metadata preservation

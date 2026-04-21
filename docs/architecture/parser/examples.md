@@ -871,6 +871,7 @@ Patterns not required for the current shipped surface but flagged as targets in 
 - `best 5-man lineups`
 - `net rating with Tatum and Brown together`
 - `best 3-man units with at least 200 minutes`
+- _Single-player on/off phrasing currently routes to a placeholder path with an honest unsupported-data note; lineup-family queries remain future work._
 - _See [`specification.md` §11](./specification.md#11-onoff-and-lineup-support)._
 
 ### 8.3 Execution-backed context filtering (future expansion)

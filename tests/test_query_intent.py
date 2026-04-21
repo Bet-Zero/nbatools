@@ -60,6 +60,7 @@ class TestRouteToIntent:
             ("playoff_round_record", QueryIntent.LEADERBOARD),
             ("player_streak_finder", QueryIntent.STREAK),
             ("team_streak_finder", QueryIntent.STREAK),
+            ("player_on_off", QueryIntent.ON_OFF),
         ],
     )
     def test_all_routes_mapped(self, route, expected):
@@ -151,6 +152,11 @@ class TestParseQueryIntentField:
         assert result["intent"] == QueryIntent.SUMMARY
 
     @pytest.mark.parser
+    def test_on_off_intent(self):
+        result = parse_query("Jokic on/off")
+        assert result["intent"] == QueryIntent.ON_OFF
+
+    @pytest.mark.parser
     def test_intent_always_present(self):
         """Every parse result should have an intent field."""
         queries = [
@@ -171,5 +177,6 @@ class TestParseQueryIntentField:
                 QueryIntent.SPLIT,
                 QueryIntent.LEADERBOARD,
                 QueryIntent.STREAK,
+                QueryIntent.ON_OFF,
                 QueryIntent.UNSUPPORTED,
             }, f"Invalid intent '{result['intent']}' for query: {q}"

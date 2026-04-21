@@ -36,6 +36,7 @@ NATIONAL_TV_NOTE_SUBSTRINGS = ("national_tv", "unfiltered")
 STARTER_NOTE_SUBSTRINGS = ("starter", "unfiltered")
 BENCH_NOTE_SUBSTRINGS = ("bench", "unfiltered")
 OPPONENT_QUALITY_NOTE_SUBSTRINGS = ("opponent_quality",)
+ON_OFF_NOTE_SUBSTRINGS = ("on_off", "placeholder")
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
@@ -210,6 +211,22 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_query_class="summary",
         expected_intents=("summary",),
         expected_note_substrings=OPPONENT_QUALITY_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Jokic on/off",
+        expected_routes=("player_on_off",),
+        expected_query_class="summary",
+        expected_statuses=("no_result",),
+        expected_intents=("on_off",),
+        expected_note_substrings=ON_OFF_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Nuggets without Jokic on the floor",
+        expected_routes=("player_on_off",),
+        expected_query_class="summary",
+        expected_statuses=("no_result",),
+        expected_intents=("on_off",),
+        expected_note_substrings=ON_OFF_NOTE_SUBSTRINGS,
     ),
 )
 

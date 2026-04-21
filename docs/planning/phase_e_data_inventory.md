@@ -66,15 +66,15 @@ No raw or processed directory currently exists for:
 
 This is a whole-game absence filter. It answers questions like "record when Giannis did not play." It does not answer on/off questions like "net rating with Giannis on the floor versus off the floor."
 
-### There is no dedicated on/off or lineup subsystem yet
+### There is still no data-backed on/off or lineup subsystem
 
-- No command modules exist matching `player_on_off`, `team_with_without_player`, `lineup_summary`, or `lineup_leaderboard`.
-- No files under [src/nbatools/commands](../../src/nbatools/commands) are dedicated to on/off or lineup execution.
-- [src/nbatools/commands/_constants.py](../../src/nbatools/commands/_constants.py) currently defines broad `QueryIntent` buckets for shipped routes only; there is no on/off or lineup intent label yet.
+- The repo still has no play-by-play, stint, rotation, or lineup tables that can execute real on/off or lineup splits.
+- A placeholder route such as `player_on_off` can exist without changing that underlying data reality.
+- Lineup-family routes such as `lineup_summary` and `lineup_leaderboard` still require new data ingestion or aggregation work.
 
 ### The current honest-stub pattern already exists
 
-- [docs/architecture/parser/specification.md](../architecture/parser/specification.md#11-onoff-and-lineup-support) still marks on/off and lineup support as not yet shipped.
+- [docs/architecture/parser/specification.md](../architecture/parser/specification.md#11-onoff-and-lineup-support) now distinguishes shipped single-player on/off parser/routing support from still-missing data-backed execution.
 - The current parser already uses honest execution notes for recognized-but-unavailable filters such as clutch, period splits, and schedule-context filters.
 - [src/nbatools/commands/natural_query.py](../../src/nbatools/commands/natural_query.py) appends a note when `clutch` is detected because play-by-play clutch splits are not available.
 

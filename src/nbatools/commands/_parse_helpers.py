@@ -6,6 +6,7 @@ from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
 )
+from nbatools.commands._matchup_utils import detect_player
 
 
 def extract_top_n(text: str) -> int | None:
@@ -931,6 +932,53 @@ def build_period_filter_note(
             "in the current game-log data; results are unfiltered"
         )
     return None
+
+
+def detect_on_off(text: str) -> dict | None:
+    """Detect single-player on/off phrasing."""
+    phrase_patterns = (
+        (r"\bwith\s+([a-z0-9 .&'\-]+?)\s+on\s+(?:the\s+)?floor\b", "on"),
+        (r"\bwith\s+([a-z0-9 .&'\-]+?)\s+on\s+court\b", "on"),
+        (r"\bwithout\s+([a-z0-9 .&'\-]+?)\s+on\s+(?:the\s+)?floor\b", "off"),
+        (r"\bwithout\s+([a-z0-9 .&'\-]+?)\s+on\s+court\b", "off"),
+        (r"\b([a-z0-9 .&'\-]+?)\s+on\s+court\b", "on"),
+        (r"\b([a-z0-9 .&'\-]+?)\s+off\s+court\b", "off"),
+        (r"\b([a-z0-9 .&'\-]+?)\s+sitting\b", "off"),
+    )
+
+    for pattern, presence_state in phrase_patterns:
+        match = re.search(pattern, text)
+        if not match:
+            continue
+        player = detect_player(match.group(1).strip())
+        if player:
+            return {
+                "lineup_members": [player],
+                "presence_state": presence_state,
+            }
+
+    if re.search(r"\bon/off\b", text):
+        player = detect_player(text)
+        if player:
+            return {
+                "lineup_members": [player],
+                "presence_state": "both",
+            }
+
+    return None
+
+
+def build_on_off_note(
+    lineup_members: list[str] | None = None,
+    presence_state: str | None = None,
+) -> str | None:
+    """Describe the current on/off placeholder behavior honestly."""
+    if not lineup_members or presence_state is None:
+        return None
+    return (
+        "on_off: query recognized but on/off splits require play-by-play or lineup-stint "
+        "data that is not yet available in the current data layer; placeholder route returned"
+    )
 
 
 def build_game_context_filter_notes(
