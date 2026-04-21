@@ -252,7 +252,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 6. `[ ]` Update query catalog and examples for context + opponent-quality filters
+## 6. `[x]` Update query catalog and examples for context + opponent-quality filters
 
 **Why:** Documentation lockstep for items 1–5. Every new filter needs catalog and example entries.
 

@@ -82,6 +82,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
+- clutch context: `clutch`, `in the clutch`, `clutch time`, `late-game`
+  (parser-recognized and route-propagated; current query engine returns unfiltered
+  results with an explicit note because play-by-play clutch splits are not available yet)
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
   (parser-recognized and engine-accepted; current game-log data returns unfiltered
   full-game results with an explicit note because period splits are not available yet)
@@ -90,9 +93,12 @@ If a feature is not reflected here, it should not be assumed shipped.
   results with an explicit note because schedule/context feature tables are not yet joined)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
   (parser-recognized and engine-accepted for player queries; current query engine returns
-  unfiltered results with an explicit note because starter/bench filtering is not yet wired in)
+  unfiltered results with an explicit note because starter/bench filtering is not yet wired in;
+  team-only phrases like `Celtics bench scoring` are intentionally ignored)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against teams over .500`, `against top-10 defenses`
-  (resolved to concrete opponent buckets using the latest regular-season standings or team-advanced data for the selected season)
+  (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
+  routes using the latest regular-season standings or team-advanced data for the selected season;
+  unsupported routes append an explicit note and remain unfiltered)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language
@@ -500,6 +506,100 @@ Examples:
 - `teams with the most games scoring 120+ and making 15+ threes since 2020`
 - `most games with 3+ steals and 2+ blocks`
 - `how many Celtics games vs Bucks with 120+ points and under 10 turnovers`
+
+---
+
+## 3.11 Context and opponent-quality filters
+
+### Clutch recognition
+
+Examples:
+
+- `Tatum clutch stats`
+- `Lakers clutch record`
+
+Current behavior:
+
+- parser sets `clutch=True`, routes normally, and appends an explicit unfiltered-results note because play-by-play clutch splits are not available yet
+
+### Quarter / half / overtime context
+
+Examples:
+
+- `LeBron 4th quarter scoring`
+- `Celtics first half record`
+
+Current behavior:
+
+- parser sets `quarter` / `half`, routes normally, and appends an explicit unfiltered-results note because current game-log data does not expose period splits
+
+### Back-to-back filter
+
+Examples:
+
+- `Lakers on back-to-backs record`
+- `Lakers b2b record`
+
+Current behavior:
+
+- parser sets `back_to_back=True`, preserves the filter in `route_kwargs`, and execution appends an explicit unfiltered-results note until schedule/context joins land
+
+### Rest filter
+
+Examples:
+
+- `Jokic with rest advantage`
+- `Jokic on 2 days rest`
+
+Current behavior:
+
+- parser sets `rest_days` to `advantage`, `disadvantage`, or an integer day count, preserves it in `route_kwargs`, and execution appends an explicit unfiltered-results note
+
+### One-possession filter
+
+Examples:
+
+- `Celtics one-possession record`
+- `Thunder one-possession games`
+
+Current behavior:
+
+- parser sets `one_possession=True`, preserves the filter in `route_kwargs`, and execution appends an explicit unfiltered-results note
+
+### National-TV filter
+
+Examples:
+
+- `Knicks on national TV record`
+- `Lakers nationally televised games`
+
+Current behavior:
+
+- parser sets `nationally_televised=True`, preserves the filter in `route_kwargs`, and execution appends an explicit unfiltered-results note
+
+### Starter / bench role
+
+Examples:
+
+- `LeBron as a starter stats`
+- `Brunson off the bench`
+
+Current behavior:
+
+- parser sets `role` for player-context queries only and appends an explicit unfiltered-results note until starter/bench filtering is wired through execution
+
+### Opponent-quality filter
+
+Examples:
+
+- `Jokic against contenders 2024-25`
+- `Lakers record against top-10 defenses 2024-25`
+
+Current behavior:
+
+- parser sets a structured `opponent_quality` slot containing the surface term and resolved bucket definition
+- execution resolves that bucket to a concrete opponent-team list on the supported single-entity summary/finder/record routes
+- unsupported routes append an explicit note and remain unfiltered
 
 ---
 

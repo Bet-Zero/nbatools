@@ -109,18 +109,18 @@ Primary class: `leaderboard` (season-high variant) or `occurrence`
 
 ### 2.5 Against good teams / top teams / contenders
 
-Primary class: `summary` or `record` with opponent-quality filter _(opponent-quality filter not yet shipped — see [`specification.md` §9](./specification.md#9-opponent-quality-filters))_
+Primary class: `summary` or `record` with opponent-quality filter _(shipped for the core single-entity summary/finder/record routes; unsupported routes carry an explicit note — see [`specification.md` §9](./specification.md#9-opponent-quality-filters))_
 
 1. Who scores the most against teams over .500 this season?
 2. Which team has the best record against contenders this year?
 3. What players have the highest true shooting percentage against top-10 defenses?
 4. How has Jayson Tatum played against good teams this season?
-5. What is the Celtics' record against teams above .600?
-6. Which players average the most assists against playoff teams?
-7. What team has the best defense against top-5 offenses this year?
-8. Who rebounds the best against elite frontcourts?
-9. Which scorers have the biggest drop-off against winning teams?
-10. What players have the most 30-point games against contenders this season?
+5. What is the Celtics' record against playoff teams?
+6. Which players average the most assists against teams over .500?
+7. What team has the best record against top teams this year?
+8. Who rebounds the best against contenders?
+9. Which scorers have the biggest drop-off against top-10 defenses?
+10. What players have the most 30-point games against good teams this season?
 
 ### 2.6 When a teammate didn't play / was out
 
@@ -245,15 +245,15 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 
 ### 3.5 Against good teams / contenders
 
-_Opponent-quality filters are not yet shipped — see [`specification.md` §9](./specification.md#9-opponent-quality-filters)._
+_Opponent-quality filters are shipped on the core single-entity summary/finder/record routes — see [`specification.md` §9](./specification.md#9-opponent-quality-filters)._
 
 | #   | Question form                                                  | Search / shorthand form            |
 | --- | -------------------------------------------------------------- | ---------------------------------- |
 | 21  | Who scores the most against teams over .500 this season?       | most points vs teams over .500     |
 | 22  | What team has the best record against contenders this year?    | best record vs contenders          |
 | 23  | Which players shoot the best against top-10 defenses?          | best shooting vs top 10 defenses   |
-| 24  | How has Jayson Tatum played against winning teams this season? | Tatum vs winning teams this season |
-| 25  | What is the Celtics' record against teams above .600?          | Celtics record vs teams above .600 |
+| 24  | How has Jayson Tatum played against good teams this season?    | Tatum against good teams this season |
+| 25  | What is the Celtics' record against playoff teams?             | Celtics record vs playoff teams    |
 
 ### 3.6 When a teammate didn't play
 
@@ -682,71 +682,83 @@ jokic last 10 games
 
 ---
 
-### 6.4 Worked example: ambiguous query with expansion target
+### 6.4 Worked example: shipped opponent-quality record query
 
-**Raw input:** `Celtics vs contenders`
-
-_Note: Opponent-quality filters (`contenders`, `good teams`, etc.) are not yet shipped. This trace shows the target state once Phase E of the expansion plan lands._
+**Raw input:** `Lakers record against top-10 defenses 2024-25`
 
 **Stage 1 — Normalized:**
 
 ```
-celtics against contenders
+lakers record against top-10 defenses 2024-25
 ```
 
 **Stage 2 — Resolved entities:**
 
-- `celtics` → team: Boston Celtics (id: `BOS`)
-- `contenders` → opponent quality (policy-resolved per [`specification.md` §18.2](./specification.md#182-opponent-quality-definitions-proposed--not-yet-shipped))
+- `lakers` → team: Los Angeles Lakers (id: `LAL`)
+- `top-10 defenses` → opponent-quality bucket resolved per [`specification.md` §9.1](./specification.md#91-product-policy-definitions)
 
 **Stage 3 — Intent flags / class:**
 
-- Team subject + opponent-quality filter + no explicit metric
-- Default rule matches: `<team> + <opponent-quality>` → `record`
-- `record_intent` set by default logic
-- Alternate parse: `summary` (team stats vs opponent group) — surfaced if confidence medium
+- Team subject + explicit `record` phrasing
+- `record_intent` is set directly from the surface form
+- Broad intent bucket: `summary`
 
 **Stage 4 — Slots extracted:**
 
-- team: `BOS`
-- record_intent: true (default)
-- opponent_quality filter: `{ surface_term: "contenders", definition: { metric: "net_rating_rank", operator: "top_n", value: 6 } }`
-- season: defaulted to current
+- team: `LAL`
+- season: `2024-25`
+- opponent_quality: `{ surface_term: "top-10 defenses", definition: { metric: "def_rating_rank", operator: "top_n", value: 10 } }`
 
-**Stage 5 — Defaults applied:**
+**Stage 5 — Route + execution notes:**
 
-- Missing timeframe → season default
-- Missing metric → record
-- Alternate surfaced (summary vs contenders)
+- Route selected: `team_record`
+- On supported routes, execution resolves `opponent_quality` to a concrete opponent-team list before running the command
+- Notes include: `opponent_quality: top-10 defenses -> top 10 by defensive rating`
 
-**Stage 6 — Parse state + route (target):**
+**Stage 6 — Parse state + route:**
 
 ```json
 {
-  "route": "team_record_vs_quality",
-  "normalized_query": "celtics against contenders",
-  "team": "BOS",
+  "route": "team_record",
+  "team": "LAL",
   "record_intent": true,
-  "opponent_quality_filter": {
-    "surface_term": "contenders",
+  "opponent_quality": {
+    "type": "opponent_quality",
+    "surface_term": "top-10 defenses",
     "definition": {
-      "metric": "net_rating_rank",
+      "metric": "def_rating_rank",
       "operator": "top_n",
-      "value": 6
+      "snapshot": "latest_regular_season",
+      "source": "team_season_advanced",
+      "value": 10
     }
   },
-  "season": "2025-26",
-  "confidence": 0.71,
-  "alternates": [
-    {
-      "route": "team_summary_vs_quality",
-      "confidence": 0.58
+  "season": "2024-25",
+  "confidence": 0.90,
+  "alternates": [],
+  "notes": [
+    "opponent_quality: top-10 defenses -> top 10 by defensive rating"
+  ],
+  "route_kwargs": {
+    "team": "LAL",
+    "season": "2024-25",
+    "season_type": "Regular Season",
+    "opponent_quality": {
+      "type": "opponent_quality",
+      "surface_term": "top-10 defenses",
+      "definition": {
+        "metric": "def_rating_rank",
+        "operator": "top_n",
+        "snapshot": "latest_regular_season",
+        "source": "team_season_advanced",
+        "value": 10
+      }
     }
-  ]
+  }
 }
 ```
 
-**Key point:** Medium-confidence parses execute the primary interpretation but surface the alternate so the user can pivot without re-typing. Confidence and alternates are proposed additions (see [`specification.md` §17.2](./specification.md#172-proposed-additions)).
+**Key point:** Core opponent-quality routes are no longer just a design target. The parser now carries a structured `opponent_quality` definition into supported summary/finder/record routes, and execution resolves that bucket to concrete opponent team lists.
 
 ---
 
@@ -801,19 +813,56 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `longest Jokic 30 point streak`
 - `Jokic consecutive 30 point games longest`
 
+### 7.7 Clutch recognition — Tatum clutch stats
+
+- `How has Tatum played in the clutch this season?`
+- `Tatum clutch stats`
+- `Tatum clutch time stats`
+- `late-game Tatum stats`
+- _Current execution note:_ all variants set `clutch=True`; results remain unfiltered until play-by-play clutch splits land._
+
+### 7.8 Period context — 4th quarter scoring leaders
+
+- `Which players score the most in the 4th quarter this season?`
+- `most 4th quarter points this season`
+- `4th quarter scoring leaders this season`
+- _Current execution note:_ all variants set `quarter="4"`; results remain unfiltered until period splits land._
+
+### 7.9 Schedule context — Lakers back-to-back record
+
+- `What is the Lakers' record on back-to-backs this season?`
+- `Lakers on back-to-backs record`
+- `Lakers b2b record`
+- `Lakers second of a back-to-back record`
+- _Current execution note:_ all variants set `back_to_back=True`; results remain unfiltered until schedule/context joins land._
+
+### 7.10 Role filter — LeBron as a starter
+
+- `How has LeBron played as a starter this season?`
+- `LeBron as a starter stats`
+- `LeBron starting stats`
+- _Current execution note:_ all variants set `role="starter"` for player-context queries; results remain unfiltered until role filtering is wired through execution._
+
+### 7.11 Opponent-quality — Jokic against contenders
+
+- `How has Jokic played against contenders this season?`
+- `Jokic against contenders this season`
+- `Jokic vs contenders this season`
+- _Execution note:_ all variants set the same structured `opponent_quality` definition and route through the supported single-entity summary path._
+
 ---
 
 ## 8. Next-wave patterns (future expansion)
 
 Patterns not required for the current shipped surface but flagged as targets in [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
 
-### 8.1 Opponent-quality buckets (Phase E)
+### 8.1 Additional opponent-quality buckets (future expansion)
 
-- `against good teams`
-- `against contenders`
-- `against top-10 defenses`
-- `best record vs winning teams`
-- _Requires policy definitions — see [`specification.md` §18.2](./specification.md#182-opponent-quality-definitions-proposed--not-yet-shipped)._
+- `against top-5 offenses`
+- `against elite frontcourts`
+- `against winning teams`
+- `best record vs teams above .600`
+- _Core opponent-quality buckets shipped in Phase E. These remaining variants need new glossary definitions or new data sources._
 
 ### 8.2 On/off and lineup queries (Phase E)
 
@@ -824,14 +873,13 @@ Patterns not required for the current shipped surface but flagged as targets in 
 - `best 3-man units with at least 200 minutes`
 - _See [`specification.md` §11](./specification.md#11-onoff-and-lineup-support)._
 
-### 8.3 Expanded context filters (Phase E)
+### 8.3 Execution-backed context filtering (future expansion)
 
-- `in clutch time`
-- `back-to-backs`
-- `as starter vs bench`
-- `nationally televised games`
-- `in overtime`
-- `in one-possession games`
+- `in clutch time` with true play-by-play clutch filtering
+- `back-to-backs` with joined schedule/context features
+- `as starter vs bench` with real starter/bench execution
+- `nationally televised games` once schedule pulls populate national-TV flags
+- `in overtime` with period-level splits rather than unfiltered game logs
 
 ### 8.4 Stretch / rolling-window queries (Phase E)
 
