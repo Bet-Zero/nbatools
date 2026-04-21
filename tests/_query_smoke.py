@@ -35,6 +35,7 @@ ONE_POSSESSION_NOTE_SUBSTRINGS = ("one_possession", "unfiltered")
 NATIONAL_TV_NOTE_SUBSTRINGS = ("national_tv", "unfiltered")
 STARTER_NOTE_SUBSTRINGS = ("starter", "unfiltered")
 BENCH_NOTE_SUBSTRINGS = ("bench", "unfiltered")
+OPPONENT_QUALITY_NOTE_SUBSTRINGS = ("opponent_quality",)
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
@@ -195,6 +196,20 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_query_class="summary",
         expected_intents=("summary",),
         expected_note_substrings=BENCH_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Jokic against contenders 2024-25",
+        expected_routes=("player_game_summary",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=OPPONENT_QUALITY_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Lakers record against top-10 defenses 2024-25",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=OPPONENT_QUALITY_NOTE_SUBSTRINGS,
     ),
 )
 

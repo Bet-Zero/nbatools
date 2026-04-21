@@ -205,7 +205,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 5. `[ ]` Define opponent-quality product policy and wire filter
+## 5. `[x]` Define opponent-quality product policy and wire filter
 
 **Why:** "Against good teams", "vs contenders", "against top-10 defenses" — the most requested filter family not yet shipped. Definitions were reserved in the glossary during Phase B; now they need real values.
 

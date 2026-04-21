@@ -4,6 +4,8 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    build_opponent_mask,
+    describe_opponent_filter,
     filter_by_opponent_player,
     filter_without_player,
     load_player_games_for_seasons,
@@ -60,7 +62,7 @@ def _apply_filters(
     df: pd.DataFrame,
     player: str | None = None,
     team: str | None = None,
-    opponent: str | None = None,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -97,11 +99,7 @@ def _apply_filters(
         ].copy()
 
     if opponent:
-        opp_upper = opponent.upper()
-        out = out[
-            out["opponent_team_abbr"].astype(str).str.upper().eq(opp_upper)
-            | out["opponent_team_name"].astype(str).str.upper().eq(opp_upper)
-        ].copy()
+        out = out[build_opponent_mask(out, opponent)].copy()
 
     if home_only:
         out = out[out["is_home"] == 1].copy()
@@ -317,7 +315,7 @@ def build_result(
             f"multi-season summary aggregated from game logs across {seasons[0]} to {seasons[-1]}"
         )
     if opponent:
-        caveats.append(f"filtered to games vs {opponent.upper()}")
+        caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
 
     return SummaryResult(
         summary=summary,

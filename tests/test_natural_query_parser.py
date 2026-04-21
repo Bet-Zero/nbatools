@@ -542,3 +542,53 @@ def test_role_note_appended():
     parsed = parse_query("Brunson off the bench")
     notes = parsed.get("notes", [])
     assert any("bench" in n and "unfiltered" in n for n in notes)
+
+
+# ---------------------------------------------------------------------------
+# Opponent-quality filters
+# ---------------------------------------------------------------------------
+
+
+def test_contenders_surface_form_sets_opponent_quality_slot():
+    parsed = parse_query("Jokic against contenders")
+    assert parsed["opponent_quality"]["surface_term"] == "contenders"
+    assert parsed["opponent_quality"]["definition"]["metric"] == "conference_rank"
+
+
+def test_good_teams_surface_form_sets_opponent_quality_slot():
+    parsed = parse_query("Jokic against good teams")
+    assert parsed["opponent_quality"]["surface_term"] == "good teams"
+
+
+def test_top_teams_surface_form_sets_opponent_quality_slot():
+    parsed = parse_query("Jokic vs top teams")
+    assert parsed["opponent_quality"]["surface_term"] == "top teams"
+
+
+def test_playoff_teams_surface_form_sets_opponent_quality_slot():
+    parsed = parse_query("Jokic against playoff teams")
+    assert parsed["opponent_quality"]["surface_term"] == "playoff teams"
+
+
+def test_teams_over_point_five_surface_form_sets_opponent_quality_slot():
+    parsed = parse_query("Jokic against teams over .500")
+    assert parsed["opponent_quality"]["surface_term"] == "teams over .500"
+    assert parsed["opponent_quality"]["definition"]["operator"] == ">"
+
+
+def test_top_ten_defenses_surface_form_sets_opponent_quality_slot():
+    parsed = parse_query("Jokic against top-10 defenses")
+    assert parsed["opponent_quality"]["surface_term"] == "top-10 defenses"
+    assert parsed["opponent_quality"]["definition"]["metric"] == "def_rating_rank"
+
+
+def test_specific_opponent_does_not_set_opponent_quality():
+    parsed = parse_query("Jokic vs Lakers")
+    assert parsed["opponent_quality"] is None
+
+
+def test_opponent_quality_definition_is_structured():
+    parsed = parse_query("Jokic against contenders")
+    definition = parsed["opponent_quality"]["definition"]
+    assert definition["source"] == "standings_snapshots"
+    assert definition["value"] == 6

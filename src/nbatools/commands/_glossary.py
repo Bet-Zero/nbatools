@@ -67,22 +67,124 @@ FUZZY_DATE_TERMS: list[DateRangeTerm] = [
 
 @dataclass(frozen=True, slots=True)
 class OpponentQualityTerm:
-    """A fuzzy opponent-quality bucket — reserved for Phase E."""
+    """A fuzzy opponent-quality bucket with concrete product policy."""
 
     definition: str
+    resolved_definition: dict[str, object]
     shipped: bool = False
 
 
 OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
-    "good teams": OpponentQualityTerm("Teams with win % >= .500"),
-    "winning teams": OpponentQualityTerm("Teams with win % >= .500"),
-    "top teams": OpponentQualityTerm("Top 8 by net rating"),
-    "contenders": OpponentQualityTerm("Top 6 by net rating"),
-    "playoff teams": OpponentQualityTerm("Teams currently in top 10 of conference"),
-    "top-10 defenses": OpponentQualityTerm("Top 10 by defensive rating"),
-    "top-10 offenses": OpponentQualityTerm("Top 10 by offensive rating"),
-    "elite defenses": OpponentQualityTerm("Top 5 by defensive rating"),
-    "bad teams": OpponentQualityTerm("Teams with win % < .400"),
+    "good teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct >= .500",
+        {
+            "metric": "win_pct",
+            "operator": ">=",
+            "value": 0.5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "winning teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct >= .500",
+        {
+            "metric": "win_pct",
+            "operator": ">=",
+            "value": 0.5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "top teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: conference_rank <= 6",
+        {
+            "metric": "conference_rank",
+            "operator": "<=",
+            "value": 6,
+            "scope": "conference",
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "contenders": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: conference_rank <= 6",
+        {
+            "metric": "conference_rank",
+            "operator": "<=",
+            "value": 6,
+            "scope": "conference",
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "playoff teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: conference_rank <= 10",
+        {
+            "metric": "conference_rank",
+            "operator": "<=",
+            "value": 10,
+            "scope": "conference",
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "teams over .500": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct > .500",
+        {
+            "metric": "win_pct",
+            "operator": ">",
+            "value": 0.5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "top-10 defenses": OpponentQualityTerm(
+        "Latest regular-season team advanced table: top 10 by defensive rating",
+        {
+            "metric": "def_rating_rank",
+            "operator": "top_n",
+            "value": 10,
+            "source": "team_season_advanced",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "top-10 offenses": OpponentQualityTerm(
+        "Latest regular-season team advanced table: top 10 by offensive rating",
+        {
+            "metric": "off_rating_rank",
+            "operator": "top_n",
+            "value": 10,
+            "source": "team_season_advanced",
+            "snapshot": "latest_regular_season",
+        },
+    ),
+    "elite defenses": OpponentQualityTerm(
+        "Latest regular-season team advanced table: top 5 by defensive rating",
+        {
+            "metric": "def_rating_rank",
+            "operator": "top_n",
+            "value": 5,
+            "source": "team_season_advanced",
+            "snapshot": "latest_regular_season",
+        },
+    ),
+    "bad teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct < .400",
+        {
+            "metric": "win_pct",
+            "operator": "<",
+            "value": 0.4,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+    ),
 }
 
 

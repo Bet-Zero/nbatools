@@ -2,6 +2,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    build_opponent_mask,
     filter_without_player,
     load_team_games_for_seasons,
 )
@@ -46,7 +47,7 @@ def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
 def _apply_filters(
     df: pd.DataFrame,
     team: str | None = None,
-    opponent: str | None = None,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -80,11 +81,7 @@ def _apply_filters(
         ].copy()
 
     if opponent:
-        opponent_upper = opponent.upper()
-        out = out[
-            out["opponent_team_abbr"].astype(str).str.upper().eq(opponent_upper)
-            | out["opponent_team_name"].astype(str).str.upper().eq(opponent_upper)
-        ].copy()
+        out = out[build_opponent_mask(out, opponent)].copy()
 
     if home_only:
         out = out[out["is_home"] == 1].copy()

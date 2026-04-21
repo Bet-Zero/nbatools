@@ -57,6 +57,9 @@ from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes as build_game_context_filter_notes,
 )
 from nbatools.commands._parse_helpers import (
+    build_opponent_quality_note as build_opponent_quality_note,
+)
+from nbatools.commands._parse_helpers import (
     build_period_filter_note as build_period_filter_note,
 )
 from nbatools.commands._parse_helpers import (
@@ -91,6 +94,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_one_possession as detect_one_possession,
+)
+from nbatools.commands._parse_helpers import (
+    detect_opponent_quality as detect_opponent_quality,
 )
 from nbatools.commands._parse_helpers import (
     detect_quarter as detect_quarter,
@@ -218,6 +224,7 @@ __all__ = [
     "detect_one_possession",
     "detect_nationally_televised",
     "detect_role",
+    "detect_opponent_quality",
     "detect_quarter",
     "detect_half",
     "detect_season_high_intent",
@@ -382,6 +389,7 @@ def _build_parse_state(query: str) -> dict:
             }
 
     opponent = None
+    opponent_quality = None
     opponent_player = None
     q_without_opponent = q
     team = None
@@ -398,6 +406,9 @@ def _build_parse_state(query: str) -> dict:
             if opp_player:
                 opponent_player = opp_player
                 q_without_opponent = q_cleaned
+
+        if opponent is None and opponent_player is None:
+            opponent_quality = detect_opponent_quality(q)
 
         if not (player_a and player_b):
             team_result = detect_team_resolved(q_without_opponent)
@@ -491,6 +502,7 @@ def _build_parse_state(query: str) -> dict:
         "team_a": team_a,
         "team_b": team_b,
         "opponent": opponent,
+        "opponent_quality": opponent_quality,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -575,6 +587,7 @@ def _finalize_route(parsed: dict) -> dict:
     team_a = parsed["team_a"]
     team_b = parsed["team_b"]
     opponent = parsed["opponent"]
+    opponent_quality = parsed.get("opponent_quality")
     min_value = parsed["min_value"]
     max_value = parsed["max_value"]
     last_n = parsed["last_n"]
@@ -1285,6 +1298,7 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["one_possession"] = one_possession
     route_kwargs["nationally_televised"] = nationally_televised
     route_kwargs["role"] = role
+    route_kwargs["opponent_quality"] = opponent_quality
     route_kwargs["quarter"] = quarter
     route_kwargs["half"] = half
     out["route"] = route
@@ -1308,6 +1322,8 @@ def _finalize_route(parsed: dict) -> dict:
     )
     if role_note := build_role_filter_note(role=role):
         notes.append(role_note)
+    if opponent_quality_note := build_opponent_quality_note(opponent_quality=opponent_quality):
+        notes.append(opponent_quality_note)
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
@@ -1351,6 +1367,7 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "team_a",
         "team_b",
         "opponent",
+        "opponent_quality",
         "last_n",
         "split_type",
         "role",
