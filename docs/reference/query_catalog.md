@@ -21,15 +21,17 @@
 This catalog is organized around three questions:
 
 1. **What kind of thing are you asking for?**
-   - finder
-   - count
-   - summary
-   - comparison
-   - split
-   - leaderboard
-   - streak
-   - record
-   - playoff history / era history
+  - finder
+  - count
+  - summary
+  - comparison
+  - split
+  - leaderboard
+  - streak
+  - on/off
+  - lineup
+  - record
+  - playoff history / era history
 
 2. **What entity is the query about?**
    - player
@@ -69,6 +71,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - last N seasons: `last 3 seasons`
 - career / all-time: `career`, `all-time`
 - last N games: `last 10 games`
+- rolling windows: `3-game stretch`, `5-game scoring stretch`, `rolling 10-game stretch`
 - month / date windows: `in March`, `since January`, `since All-Star break`, `last 30 days`
 - fuzzy time words: `lately`, `recently` (→ last 10 games), `past month`, `last month` (→ rolling 30 days), `last couple weeks`, `past 2 weeks` (→ rolling 14 days)
 - single-day: `last night`, `yesterday`, `today`, `tonight`
@@ -79,6 +82,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (team): `vs Lakers`, `against Celtics`
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
+- on/off presence: `on/off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
+- lineup membership: `lineups with LeBron and AD`, `with Tatum and Brown together`, `best 3-man units`
+- rolling-window phrasing: `hottest 3-game stretch`, `best 5-game stretch by Game Score`, `rolling 10-game stretch`
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
@@ -272,6 +278,31 @@ Common combinations:
 - playoff-only spans
 - date windows / recent form
 
+### On/off placeholder summaries
+
+Examples:
+
+- `Jokic on/off`
+- `Nuggets with and without Jokic`
+- `with Curry on the floor`
+- `without Giannis on the floor`
+
+Current behavior:
+
+- parser routes to `player_on_off`, preserves `lineup_members` and `presence_state`, and returns an explicit unsupported-data note until play-by-play or stint-level on/off tables are available
+
+### Specific lineup summaries
+
+Examples:
+
+- `lineups with LeBron and AD`
+- `lineup with Tatum and Brown together`
+- `2-man combos with Brunson and Hart`
+
+Current behavior:
+
+- parser routes to `lineup_summary`, preserves `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum`, and returns an explicit unsupported-data note until lineup tables are available
+
 ---
 
 ## 3.4 Comparison queries — compare two players or two teams
@@ -370,6 +401,33 @@ Examples:
 - `best ts% among centers this season`
 - `top scorers among guards since 2021`
 - `best rebounders among big men`
+
+### Stretch leaderboards
+
+Examples:
+
+- `hottest 3-game scoring stretch this year`
+- `best 5-game stretch by Game Score`
+- `most efficient 10-game rolling stretch`
+- `Booker hottest 4-game scoring stretch`
+
+Current behavior:
+
+- parser routes to `player_stretch_leaderboard`
+- `window_size` comes from the `N-game` or `rolling N games` phrase
+- named counting stats rank rolling per-game averages; shooting percentages use rolling makes/attempts; `game_score` ranks rolling average Game Score
+
+### Lineup leaderboards
+
+Examples:
+
+- `best 5-man lineups`
+- `best 3-man units with at least 200 minutes`
+- `top 2-man combos`
+
+Current behavior:
+
+- parser routes to `lineup_leaderboard`, preserves `unit_size` and `minute_minimum`, and returns an explicit unsupported-data note until lineup tables are available
 
 ### Ranking language
 
@@ -615,6 +673,10 @@ Representative structured routes include:
 - `top-team-games`
 - `season-leaders`
 - `season-team-leaders`
+- `player-on-off`
+- `lineup-summary`
+- `lineup-leaderboard`
+- `player-stretch-leaderboard`
 - `player-game-finder`
 - `game-finder`
 - `player-game-summary`

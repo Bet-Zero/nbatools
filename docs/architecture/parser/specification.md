@@ -18,7 +18,7 @@
 8. [Context filters](#8-context-filters)
 9. [Opponent-quality filters](#9-opponent-quality-filters)
 10. [Absence and with-without logic](#10-absence-and-with-without-logic)
-11. [On/off and lineup support](#11-onoff-and-lineup-support)
+11. [On/off, lineup, and stretch support](#11-onoff-lineup-and-stretch-support)
 12. [Occurrence queries](#12-occurrence-queries)
 13. [Streak queries](#13-streak-queries)
 14. [Playoff and historical queries](#14-playoff-and-historical-queries)
@@ -497,6 +497,8 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
+**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Clutch, period, schedule, and role filters are parser-recognized and route-propagated today, with explicit unfiltered-results notes where backing data is still missing.
+
 Define where or when within a game the stat applies.
 
 ### 8.1 Currently supported
@@ -507,11 +509,14 @@ Define where or when within a game the stat applies.
 - `clutch`, `in the clutch`, `clutch time`, `late-game` → `clutch`
   parse slot; current execution accepts the filter with an explicit
   unfiltered-results note because play-by-play clutch splits are not yet available
-- `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back`
+- `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back=True`
 - `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
-- `one-possession games` → `one_possession`
-- `nationally televised`, `on national TV` → `nationally_televised`
+  (`"advantage"`, `"disadvantage"`, or an integer day count)
+- `one-possession games` → `one_possession=True`
+- `nationally televised`, `on national TV` → `nationally_televised=True`
 - `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
+  for player-context queries only; team-only phrasing like `Celtics bench scoring`
+  is intentionally ignored
 - `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
   parse slots; current game-log data does not expose period splits, so the engine
   accepts these filters with an explicit unfiltered-results note
@@ -550,9 +555,11 @@ execution-level filtering rather than slot detection.
 
 ## 9. Opponent-quality filters
 
-**Status: shipped for the core single-entity summary/finder/record routes.**
-Opponent filters now accept the concrete quality buckets below; unsupported routes
-carry an explicit note when the bucket is recognized but not yet wired.
+**Status: shipped for the core single-entity summary/finder/record routes plus stretch leaderboards.**
+Opponent filters now accept the concrete quality buckets below. Execution-backed
+resolution currently applies on `player_game_summary`, `player_game_finder`,
+`game_summary`, `game_finder`, `team_record`, and `player_stretch_leaderboard`;
+unsupported routes carry an explicit note when the bucket is recognized but not yet wired.
 
 Supported surface forms:
 
@@ -609,7 +616,7 @@ Shipped via `detect_without_player`. Supports:
 
 The detected player ID is stored in `without_player`. If the same player is also detected as the primary subject, the subject is cleared so the query routes to the team path (e.g., `Lakers record without LeBron` → team path, not player path).
 
-Note: `X off` is deliberately **not** matched as absence — it is reserved for future on/off court analysis (§11).
+Note: `X off` is deliberately **not** matched as absence — it is reserved for on/off court analysis (§11).
 
 ### 10.1 Distinguish carefully between absence concepts
 
@@ -640,13 +647,13 @@ Remaining unsupported:
 
 ---
 
-## 11. On/off and lineup support
+## 11. On/off, lineup, and stretch support
 
-**Status: partially shipped.** Single-player on/off phrasing and lineup/unit phrasing now route to dedicated placeholder paths. Real on/off split execution and lineup-family results still depend on data the current repo does not have.
+**Status: mixed.** Single-player on/off phrasing and lineup/unit phrasing route to dedicated placeholder paths with honest unsupported-data notes. Stretch/rolling-window leaderboards are fully shipped on top of whole-game player logs.
 
 ### 11.0 Current shipped surface
 
-Shipped in Phase E items 8 and 9:
+Shipped in Phase E items 8, 9, and 10:
 
 - `on/off`
 - `with X on the floor`
@@ -659,8 +666,13 @@ Shipped in Phase E items 8 and 9:
 - `2-man combos`
 - `lineup with X and Y`
 - `with X and Y together`
+- `hottest 3-game scoring stretch`
+- `best 5-game stretch by Game Score`
+- `most efficient 10-game rolling stretch`
 
 These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`, and return an honest note explaining that real on/off splits and lineup-unit stats require play-by-play, stint, or lineup tables that are not yet available.
+
+Stretch queries populate `window_size` and `stretch_metric`, route to `player_stretch_leaderboard`, keep the intent in the `leaderboard` family, and return real rolling-window results over player game logs.
 
 ### 11.1 Target query types
 
@@ -671,6 +683,7 @@ These queries populate `lineup_members`, `presence_state`, `unit_size`, and `min
 | Specific lineup               | `lineups with LeBron and AD`                                    |
 | Ranked lineups                | `best 5-man lineups`, `best 3-man units with at least 200 mins` |
 | Multi-player net rating       | `net rating with Tatum and Brown together`                      |
+| Stretch leaderboard           | `hottest 3-game scoring stretch`, `best 5-game stretch by Game Score` |
 
 ### 11.2 New slots required
 
@@ -678,10 +691,18 @@ These queries populate `lineup_members`, `presence_state`, `unit_size`, and `min
 - `presence_state` — on-court / off-court / mixed
 - `minute_minimum` — from query or product-policy default
 - `unit_size` — 2-man, 3-man, 5-man
+- `window_size` — integer rolling-window length for stretch queries
+- `stretch_metric` — canonical metric ranked across the rolling window
 
-### 11.3 Treat as its own subsystem
+### 11.3 Route behavior
 
-Data access patterns, defaults, and minute thresholds all differ from basic player/team stat queries. Keep as its own intent family with dedicated routes.
+- `player_on_off`, `lineup_summary`, and `lineup_leaderboard` are shipped parser/route surfaces with honest unsupported-data notes because play-by-play, stint, and lineup tables are still missing
+- `player_stretch_leaderboard` is a shipped execution-backed route using full-game player logs
+- stretch queries default to rolling average `game_score` when no metric is named; `efficient` maps to rolling `ts_pct`, and named shooting percentages are computed from rolling makes/attempts
+
+### 11.4 Treat as dedicated subsystems
+
+On/off and lineup data access patterns, defaults, and minute thresholds differ from basic player/team stat queries, so they stay in dedicated intent families with dedicated routes. Stretch queries remain in the `leaderboard` intent family, but they still need dedicated routing because rolling-window aggregation is distinct from season-wide ranking.
 
 ---
 
@@ -978,8 +999,10 @@ The `QueryIntent` class in `_constants.py` defines these intent labels:
 | `FINDER`      | `"finder"`        | `player_game_finder`, `game_finder`                                     |
 | `COUNT`       | `"count"`         | `player_game_finder` (with `count_intent=True`)                         |
 | `SPLIT`       | `"split_summary"` | `player_split_summary`, `team_split_summary`                            |
-| `LEADERBOARD` | `"leaderboard"`   | `season_leaders`, `top_player_games`, `player_occurrence_leaders`       |
+| `LEADERBOARD` | `"leaderboard"`   | `season_leaders`, `top_player_games`, `player_occurrence_leaders`, `player_stretch_leaderboard` |
 | `STREAK`      | `"streak"`        | `player_streak_finder`, `team_streak_finder`                            |
+| `ON_OFF`      | `"on_off"`        | `player_on_off`                                                         |
+| `LINEUP`      | `"lineup"`        | `lineup_summary`, `lineup_leaderboard`                                  |
 | `UNSUPPORTED` | `"unsupported"`   | `None` route                                                            |
 
 The `ROUTE_TO_INTENT` dict in `_constants.py` maps every route name to its intent. `route_to_intent(route, count_intent=...)` is the public lookup function.
@@ -1084,34 +1107,34 @@ Consolidated reference for fuzzy terms, aliases, and defaults. The canonical sou
 | `career`            | All regular-season + playoff games to date | Supported     |
 | `last N`            | Last N **games** (not days)                | Supported     |
 
-### 18.2 Opponent-quality definitions (proposed — not yet shipped)
+### 18.2 Opponent-quality definitions
 
-| Term              | Proposed definition                                     | Shipped |
+| Term              | Definition                                              | Shipped |
 | ----------------- | ------------------------------------------------------- | ------- |
-| `good teams`      | Teams with win % ≥ .500                                 | No      |
-| `winning teams`   | Teams with win % ≥ .500                                 | No      |
-| `top teams`       | Top 8 by net rating                                     | No      |
-| `contenders`      | Top 6 by net rating (product-configurable label)        | No      |
-| `playoff teams`   | Teams currently in top 10 of conference (incl. play-in) | No      |
-| `top-10 defenses` | Top 10 by defensive rating at query time                | No      |
+| `good teams`      | Latest regular-season standings snapshot: win_pct ≥ .500 | Yes     |
+| `winning teams`   | Latest regular-season standings snapshot: win_pct ≥ .500 | Yes     |
+| `top teams`       | Latest regular-season standings snapshot: conference_rank ≤ 6 | Yes     |
+| `contenders`      | Latest regular-season standings snapshot: conference_rank ≤ 6 | Yes     |
+| `playoff teams`   | Latest regular-season standings snapshot: conference_rank ≤ 10 | Yes     |
+| `teams over .500` | Latest regular-season standings snapshot: win_pct > .500 | Yes     |
+| `top-10 defenses` | Latest regular-season team advanced table: top 10 by defensive rating | Yes     |
 | `top-10 offenses` | Top 10 by offensive rating at query time                | No      |
 | `elite defenses`  | Top 5 by defensive rating at query time                 | No      |
 | `bad teams`       | Teams with win % < .400                                 | No      |
 
 ### 18.3 Subjective-term definitions
 
-| Term                | Proposed definition                                    | Shipped |
+| Term                | Definition                                             | Shipped |
 | ------------------- | ------------------------------------------------------ | ------- |
 | `best games`        | Ranked by Game Score (default); by points if specified | No      |
 | `biggest games`     | Ranked by points scored                                | No      |
-| `hottest`           | Rolling average over last 5 games, ranked              | No      |
-| `efficient`         | Ranked by True Shooting %                              | No      |
+| `best stretch`      | Stretch queries default to rolling average Game Score unless an explicit metric is named | Yes     |
+| `hottest`           | Stretch queries rank the rolling per-game average of the requested stat; if no stat is named, they default to rolling average Game Score | Yes     |
+| `efficient`         | Stretch queries without an explicit stat rank rolling True Shooting % | Yes     |
 | `clutch`            | Last 5 min of 4th quarter or OT, score within 5        | No      |
 | `all-around games`  | Undefined — not yet shipped                            | No      |
 | `catch-and-shoot`   | Undefined — not yet shipped                            | No      |
 | `transition scorer` | Undefined — not yet shipped                            | No      |
-| `efficient`         | Ranked by True Shooting %                              |
-| `clutch`            | Last 5 min of 4th quarter or OT, score within 5        |
 
 ### 18.4 Metric aliases
 
@@ -1145,8 +1168,8 @@ Canonical examples:
 | `w/`, `with`                        | `with`               |
 | `w/o`, `without`, `minus`, `sans`   | `without`            |
 | `out`, `inactive`, `DNP`            | `did not play`       |
-| `on`, `on the floor`, `on court`    | `on court` (future)  |
-| `off`, `off the floor`, `off court` | `off court` (future) |
+| `on`, `on the floor`, `on court`    | `on court`           |
+| `off`, `off the floor`, `off court` | `off court`          |
 
 ### 18.6 Default-behavior table
 
@@ -1155,7 +1178,10 @@ Canonical examples:
 | `<player> + <timeframe>`      | `summary`                              |
 | `<team> + <opponent-quality>` | `record` vs that opponent group        |
 | `<player> + <threshold>`      | `occurrence` / `count`                 |
+| `<player> on/off`             | `player_on_off` (placeholder execution) |
+| `best <N>-man lineups`        | `lineup_leaderboard` (placeholder execution) |
 | `best <player> games`         | Ranked game logs by Game Score         |
+| `hottest <N>-game stretch`    | `player_stretch_leaderboard`           |
 | `<team> + recently`           | `summary` (team-level) + recent record |
 | `<metric>` only, no subject   | `leaderboard` (league-wide)            |
 | `<player> vs <team-quality>`  | `summary` filtered by opponent quality |

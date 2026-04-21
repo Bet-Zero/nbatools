@@ -850,11 +850,61 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Jokic vs contenders this season`
 - _Execution note:_ all variants set the same structured `opponent_quality` definition and route through the supported single-entity summary path._
 
+### 7.12 Rest filter — Jokic with rest advantage
+
+- `How has Jokic played with rest advantage this season?`
+- `Jokic with rest advantage this season`
+- `Jokic rest advantage stats`
+- _Current execution note:_ all variants set `rest_days="advantage"`; results remain unfiltered until schedule/context joins land._
+
+### 7.13 One-possession filter — Celtics one-possession record
+
+- `What is the Celtics' record in one-possession games this season?`
+- `Celtics one-possession record this season`
+- `Celtics record in one-possession games`
+- _Current execution note:_ all variants set `one_possession=True`; results remain unfiltered until schedule/context joins land._
+
+### 7.14 National-TV filter — Lakers national-TV record
+
+- `What is the Lakers' record on national TV this season?`
+- `Lakers national TV record`
+- `Lakers nationally televised record`
+- _Current execution note:_ all variants set `nationally_televised=True`; results remain unfiltered until schedule/context joins land._
+
+### 7.15 On/off placeholder — Jokic on/off
+
+- `Jokic on/off`
+- `Jokic on off`
+- `Nikola Jokic on-off`
+- _Current execution note:_ all variants route to `player_on_off` and return an honest unsupported-data note until on/off tables land._
+
+### 7.16 Lineup leaderboard — best 5-man lineups
+
+- `best 5-man lineups`
+- `best 5 man lineups`
+- `top 5-man units`
+- _Current execution note:_ all variants set `unit_size=5` and route to `lineup_leaderboard`, with an honest unsupported-data note until lineup tables land._
+
+### 7.17 Specific lineup — LeBron and AD together
+
+- `lineups with LeBron and AD`
+- `lineup with LeBron and AD`
+- `LeBron and AD together lineups`
+- _Current execution note:_ all variants route to `lineup_summary` with `lineup_members` populated; execution remains placeholder until lineup tables land._
+
+### 7.18 Stretch leaderboard — hottest 3-game scoring stretch
+
+- `Who has the hottest 3-game scoring stretch this year?`
+- `hottest 3-game scoring stretch this year`
+- `3-game scoring stretch leaders this year`
+- `top 3-game scoring stretches this year`
+- _Execution note:_ all variants route to `player_stretch_leaderboard` with `window_size=3` and `stretch_metric="pts"`._
+
 ---
 
-## 8. Next-wave patterns (future expansion)
+## 8. Expansion patterns and remaining frontier
 
-Patterns not required for the current shipped surface but flagged as targets in [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
+Patterns beyond the original core surface. Some now ship in Phase E; others remain future work from [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
 
 ### 8.1 Additional opponent-quality buckets (future expansion)
 
@@ -864,17 +914,18 @@ Patterns not required for the current shipped surface but flagged as targets in 
 - `best record vs teams above .600`
 - _Core opponent-quality buckets shipped in Phase E. These remaining variants need new glossary definitions or new data sources._
 
-### 8.2 On/off and lineup queries (Phase E)
+### 8.2 On/off and lineup queries (Phase E shipped surface)
 
 - `Jokic on/off`
 - `Nuggets with and without Jokic`
 - `best 5-man lineups`
 - `net rating with Tatum and Brown together`
 - `best 3-man units with at least 200 minutes`
+- _See equivalence groups §7.15-§7.17 for canonical paraphrase sets._
 - _Single-player on/off and lineup/unit phrasing currently route to placeholder paths with honest unsupported-data notes; real lineup-unit results remain future work._
-- _See [`specification.md` §11](./specification.md#11-onoff-and-lineup-support)._
+- _See [`specification.md` §11](./specification.md#11-onoff-lineup-and-stretch-support)._
 
-### 8.3 Execution-backed context filtering (future expansion)
+### 8.3 Execution-backed context filtering (partially shipped)
 
 - `in clutch time` with true play-by-play clutch filtering
 - `back-to-backs` with joined schedule/context features
@@ -882,11 +933,13 @@ Patterns not required for the current shipped surface but flagged as targets in 
 - `nationally televised games` once schedule pulls populate national-TV flags
 - `in overtime` with period-level splits rather than unfiltered game logs
 
-### 8.4 Stretch / rolling-window queries (Phase E)
+### 8.4 Stretch / rolling-window queries (Phase E shipped surface)
 
 - `hottest 3-game scoring stretch this year`
 - `best 5-game stretch by Game Score`
 - `most efficient 10-game rolling stretch`
+- _See equivalence group §7.18 for canonical paraphrase sets._
+- _These queries route to `player_stretch_leaderboard` with real rolling-window execution over player game logs._
 
 ### 8.5 Career / historical splits
 
