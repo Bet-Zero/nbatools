@@ -504,6 +504,9 @@ Define where or when within a game the stat applies.
 **Location / schedule**
 
 - `home`, `away` → `home_only` / `away_only`
+- `clutch`, `in the clutch`, `clutch time`, `late-game` → `clutch`
+  parse slot; current execution accepts the filter with an explicit
+  unfiltered-results note because play-by-play clutch splits are not yet available
 - `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back`
 - `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
 - `one-possession games` → `one_possession`
@@ -533,11 +536,15 @@ because schedule/context feature tables are not yet joined into route execution.
 
 - `finals`, `conference finals`, `second round`, etc. → `playoff_round_filter`
 
-### 8.2 Not yet shipped
+### 8.2 Not yet fully shipped at the execution layer
 
-- `clutch` (last 5 min, score within 5)
+- true clutch-filtered results backed by play-by-play data
+- true quarter / half / overtime split execution from period-level data
+- true schedule-context execution for `back_to_back`, `rest_days`, `one_possession`, and `nationally_televised`
+- true starter / bench execution for the `role` slot
 
-These are listed in the expansion plan as Phase E additions.
+Parser recognition for these filters is shipped. The remaining gap is honest,
+execution-level filtering rather than slot detection.
 
 ---
 
@@ -547,7 +554,7 @@ These are listed in the expansion plan as Phase E additions.
 Opponent filters now accept the concrete quality buckets below; unsupported routes
 carry an explicit note when the bucket is recognized but not yet wired.
 
-Target surface forms:
+Supported surface forms:
 
 - `against good teams`
 - `against top teams`
@@ -566,7 +573,7 @@ Shipped policy buckets:
 - `teams over .500` → latest regular-season standings snapshot, `win_pct > .500`
 - `top-10 defenses` → latest regular-season team advanced table, top 10 by `def_rating`
 
-### 9.2 Structured shape (when added)
+### 9.2 Structured shape
 
 Opponent-quality filters carry both the surface term and the resolved definition, so policy can change without re-parsing old queries:
 
@@ -574,7 +581,14 @@ Opponent-quality filters carry both the surface term and the resolved definition
 {
   "type": "opponent_quality",
   "surface_term": "contenders",
-  "definition": { "metric": "net_rating_rank", "operator": "top_n", "value": 6 }
+  "definition": {
+    "metric": "conference_rank",
+    "operator": "<=",
+    "scope": "conference",
+    "snapshot": "latest_regular_season",
+    "source": "standings_snapshots",
+    "value": 6
+  }
 }
 ```
 
