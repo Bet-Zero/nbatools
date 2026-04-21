@@ -290,7 +290,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 7. `[ ]` Reconnaissance: audit data layer for on/off and lineup support
+## 7. `[x]` Reconnaissance: audit data layer for on/off and lineup support
 
 **Why:** On/off and lineup queries require data that may not exist in the current dataset. Before building parser/routing, we need to know what data is available and what gaps exist.
 
