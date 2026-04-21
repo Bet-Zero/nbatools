@@ -83,16 +83,16 @@ If a feature is not reflected here, it should not be assumed shipped.
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
-   (parser-recognized and engine-accepted; current game-log data returns unfiltered
-   full-game results with an explicit note because period splits are not available yet)
+  (parser-recognized and engine-accepted; current game-log data returns unfiltered
+  full-game results with an explicit note because period splits are not available yet)
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
-   (parser-recognized and engine-accepted; current query engine returns unfiltered
-   results with an explicit note because schedule/context feature tables are not yet joined)
+  (parser-recognized and engine-accepted; current query engine returns unfiltered
+  results with an explicit note because schedule/context feature tables are not yet joined)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
-   (parser-recognized and engine-accepted for player queries; current query engine returns
-   unfiltered results with an explicit note because starter/bench filtering is not yet wired in)
+  (parser-recognized and engine-accepted for player queries; current query engine returns
+  unfiltered results with an explicit note because starter/bench filtering is not yet wired in)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against teams over .500`, `against top-10 defenses`
-   (resolved to concrete opponent buckets using the latest regular-season standings or team-advanced data for the selected season)
+  (resolved to concrete opponent buckets using the latest regular-season standings or team-advanced data for the selected season)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language

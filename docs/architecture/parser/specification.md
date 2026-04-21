@@ -788,42 +788,42 @@ Default rules are implemented as named functions in `_default_rules.py`. Each ta
 
 ### 15.1 Defaults in place
 
-| Pattern | Behavior | Named rule / implementation | `notes` prefix |
-| --- | --- | --- | --- |
-| No season + any stat/filter signal | `default_season_for_context(season_type)` → current season | `_build_parse_state` inline | — |
-| `recent form` / recent-form signals | `last_n = 10` | `_build_parse_state` inline | — |
-| Streak query without explicit time | Three-season window ending at current | `streak_default_window()` | `default:` |
-| Season-high without player | League-wide `top_player_games` | `_finalize_route` inline | `season_high:` |
-| Season-high with player | `player_game_finder` sorted by stat desc | `_finalize_route` inline | `season_high:` |
-| `<player> + <timeframe>` only | Summary (stat line for the window) | `player_timeframe_summary_default()` | `default:` |
-| `<metric>` only, no subject | League-wide leaderboard | `metric_only_leaderboard_default()` | `default:` |
-| `<player> + <threshold>` only | `player_game_finder` (list matching games) | `player_threshold_finder_default()` | `default:` |
-| `<team> + <threshold>` only | `game_finder` (list matching games) | `team_threshold_finder_default()` | `default:` |
-| Top player/team games (keyword) | `top_player_games` / `top_team_games` ranked by stat | `_finalize_route` inline | `default:` |
-| Stat fallback (season-advanced blocked) | Falls back to `pts` when stat unavailable in context | `_finalize_route` inline | `stat_fallback:` |
-| Leaderboard in date window | Game-log derived (excludes season-advanced stats) | `_finalize_route` inline | `leaderboard_source:` |
-| Player summary/compare/split | Sample-recomputed advanced metrics | `_finalize_route` inline | `sample_advanced_metrics:` |
+| Pattern                                 | Behavior                                                   | Named rule / implementation          | `notes` prefix             |
+| --------------------------------------- | ---------------------------------------------------------- | ------------------------------------ | -------------------------- |
+| No season + any stat/filter signal      | `default_season_for_context(season_type)` → current season | `_build_parse_state` inline          | —                          |
+| `recent form` / recent-form signals     | `last_n = 10`                                              | `_build_parse_state` inline          | —                          |
+| Streak query without explicit time      | Three-season window ending at current                      | `streak_default_window()`            | `default:`                 |
+| Season-high without player              | League-wide `top_player_games`                             | `_finalize_route` inline             | `season_high:`             |
+| Season-high with player                 | `player_game_finder` sorted by stat desc                   | `_finalize_route` inline             | `season_high:`             |
+| `<player> + <timeframe>` only           | Summary (stat line for the window)                         | `player_timeframe_summary_default()` | `default:`                 |
+| `<metric>` only, no subject             | League-wide leaderboard                                    | `metric_only_leaderboard_default()`  | `default:`                 |
+| `<player> + <threshold>` only           | `player_game_finder` (list matching games)                 | `player_threshold_finder_default()`  | `default:`                 |
+| `<team> + <threshold>` only             | `game_finder` (list matching games)                        | `team_threshold_finder_default()`    | `default:`                 |
+| Top player/team games (keyword)         | `top_player_games` / `top_team_games` ranked by stat       | `_finalize_route` inline             | `default:`                 |
+| Stat fallback (season-advanced blocked) | Falls back to `pts` when stat unavailable in context       | `_finalize_route` inline             | `stat_fallback:`           |
+| Leaderboard in date window              | Game-log derived (excludes season-advanced stats)          | `_finalize_route` inline             | `leaderboard_source:`      |
+| Player summary/compare/split            | Sample-recomputed advanced metrics                         | `_finalize_route` inline             | `sample_advanced_metrics:` |
 
 ### 15.2 Defaults not yet formalized
 
 These are recognized as desirable but not yet implemented:
 
-| Pattern | Target default behavior | Status |
-| --- | --- | --- |
-| `<team> + <opponent-quality>` only | `record` vs that opponent group | Not yet shipped (opponent-quality routing TBD) |
-| `"best games" + <subject>` | Ranked game logs by default metric | Partially covered by season-high routing |
-| `<player> + vs <team-quality>` | Stat line summary filtered by opponent quality | Not yet shipped |
+| Pattern                            | Target default behavior                        | Status                                         |
+| ---------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| `<team> + <opponent-quality>` only | `record` vs that opponent group                | Not yet shipped (opponent-quality routing TBD) |
+| `"best games" + <subject>`         | Ranked game logs by default metric             | Partially covered by season-high routing       |
+| `<player> + vs <team-quality>`     | Stat line summary filtered by opponent quality | Not yet shipped                                |
 
 ### 15.3 Worked examples
 
-| Query | Default parse | Named rule |
-| --- | --- | --- |
-| `Jokic last 10` | Summary for Jokic over his last 10 games | `player_timeframe_summary_default` |
-| `Curry 5+ threes` | Finder listing games Curry made 5+ threes | `player_threshold_finder_default` |
-| `points leaders` | League-wide points leaderboard | `metric_only_leaderboard_default` |
-| `Jokic 5 straight games with 20+ points` | Streak finder with three-season window | `streak_default_window` |
-| `Lakers over 120 points` | Game finder listing Lakers 120+ point games | `team_threshold_finder_default` |
-| `highest scoring games this season` | League-wide top single-game performances | season-high inline |
+| Query                                    | Default parse                               | Named rule                         |
+| ---------------------------------------- | ------------------------------------------- | ---------------------------------- |
+| `Jokic last 10`                          | Summary for Jokic over his last 10 games    | `player_timeframe_summary_default` |
+| `Curry 5+ threes`                        | Finder listing games Curry made 5+ threes   | `player_threshold_finder_default`  |
+| `points leaders`                         | League-wide points leaderboard              | `metric_only_leaderboard_default`  |
+| `Jokic 5 straight games with 20+ points` | Streak finder with three-season window      | `streak_default_window`            |
+| `Lakers over 120 points`                 | Game finder listing Lakers 120+ point games | `team_threshold_finder_default`    |
+| `highest scoring games this season`      | League-wide top single-game performances    | season-high inline                 |
 
 ### 15.4 Defaults are product policy
 
@@ -852,40 +852,40 @@ The parse state carries a parse-wide `confidence` score (0.0–1.0), computed by
 
 **Scoring formula** (base = 0.70, clamped to [0.0, 1.0]):
 
-| Signal                        | Effect                                         |
-| ----------------------------- | ---------------------------------------------- |
-| Route is `None` / unsupported | −0.40 (early return)                           |
-| Entity resolved (player/team) | +0.08                                          |
-| No entity, not a leaderboard  | −0.05                                          |
-| `entity_ambiguity` present    | −0.20                                          |
-| Explicit intent flag set      | +0.10                                          |
-| Default rule fired (`notes`)  | −0.08 per default                              |
-| Stat resolved (`confident`)   | +0.05                                          |
-| Stat not resolved             | −0.03                                          |
-| Team resolved (not in entity) | +0.04                                          |
-| Timeframe specified            | +0.05                                          |
-| No timeframe                  | −0.05                                          |
-| Threshold present             | +0.05                                          |
+| Signal                        | Effect               |
+| ----------------------------- | -------------------- |
+| Route is `None` / unsupported | −0.40 (early return) |
+| Entity resolved (player/team) | +0.08                |
+| No entity, not a leaderboard  | −0.05                |
+| `entity_ambiguity` present    | −0.20                |
+| Explicit intent flag set      | +0.10                |
+| Default rule fired (`notes`)  | −0.08 per default    |
+| Stat resolved (`confident`)   | +0.05                |
+| Stat not resolved             | −0.03                |
+| Team resolved (not in entity) | +0.04                |
+| Timeframe specified           | +0.05                |
+| No timeframe                  | −0.05                |
+| Threshold present             | +0.05                |
 
 **Confidence tiers:**
 
-| Confidence         | Example                                       | Behavior                                     |
-| ------------------ | --------------------------------------------- | -------------------------------------------- |
-| High (>0.85)       | `Jokic triple doubles` (0.90)                 | Execute directly                             |
-| Medium (0.60–0.85) | `Celtics recently` (0.80)                     | Execute with best parse; show alternates     |
-| Low (<0.60)        | No route / unresolvable entity                | Would prompt for clarification               |
+| Confidence         | Example                        | Behavior                                 |
+| ------------------ | ------------------------------ | ---------------------------------------- |
+| High (>0.85)       | `Jokic triple doubles` (0.90)  | Execute directly                         |
+| Medium (0.60–0.85) | `Celtics recently` (0.80)      | Execute with best parse; show alternates |
+| Low (<0.60)        | No route / unresolvable entity | Would prompt for clarification           |
 
 ### 16.3 Common ambiguous inputs
 
 Verified routing as of Phase D implementation:
 
-| Query                 | Route                    | Confidence | Alternates                                |
-| --------------------- | ------------------------ | ---------- | ----------------------------------------- |
-| `Celtics recently`    | `game_finder`            | 0.80       | —                                         |
-| `Tatum vs Knicks`     | `player_game_finder`     | 0.80       | `player_game_summary` (averages vs NYK)   |
-| `Jokic triple doubles`| `player_game_finder`     | 0.90       | — (high confidence, no alternates)        |
-| `best games Booker`   | `player_game_finder`     | 0.90       | — (high confidence, no alternates)        |
-| `Thunder clutch`      | `game_finder`            | 0.80       | — (clutch filter not yet shipped; Phase E)|
+| Query                  | Route                | Confidence | Alternates                                 |
+| ---------------------- | -------------------- | ---------- | ------------------------------------------ |
+| `Celtics recently`     | `game_finder`        | 0.80       | —                                          |
+| `Tatum vs Knicks`      | `player_game_finder` | 0.80       | `player_game_summary` (averages vs NYK)    |
+| `Jokic triple doubles` | `player_game_finder` | 0.90       | — (high confidence, no alternates)         |
+| `best games Booker`    | `player_game_finder` | 0.90       | — (high confidence, no alternates)         |
+| `Thunder clutch`       | `game_finder`        | 0.80       | — (clutch filter not yet shipped; Phase E) |
 
 ### 16.4 Disambiguation strategy
 
@@ -939,16 +939,16 @@ The state dict includes the slots described in §5 plus:
 
 The `QueryIntent` class in `_constants.py` defines these intent labels:
 
-| Intent         | Value              | Route examples                                                       |
-| -------------- | ------------------ | -------------------------------------------------------------------- |
-| `SUMMARY`      | `"summary"`        | `player_game_summary`, `game_summary`, `team_record`, `playoff_history` |
-| `COMPARISON`   | `"comparison"`     | `player_compare`, `team_compare`, `team_matchup_record`              |
-| `FINDER`       | `"finder"`         | `player_game_finder`, `game_finder`                                  |
-| `COUNT`        | `"count"`          | `player_game_finder` (with `count_intent=True`)                      |
-| `SPLIT`        | `"split_summary"`  | `player_split_summary`, `team_split_summary`                         |
-| `LEADERBOARD`  | `"leaderboard"`    | `season_leaders`, `top_player_games`, `player_occurrence_leaders`     |
-| `STREAK`       | `"streak"`         | `player_streak_finder`, `team_streak_finder`                         |
-| `UNSUPPORTED`  | `"unsupported"`    | `None` route                                                         |
+| Intent        | Value             | Route examples                                                          |
+| ------------- | ----------------- | ----------------------------------------------------------------------- |
+| `SUMMARY`     | `"summary"`       | `player_game_summary`, `game_summary`, `team_record`, `playoff_history` |
+| `COMPARISON`  | `"comparison"`    | `player_compare`, `team_compare`, `team_matchup_record`                 |
+| `FINDER`      | `"finder"`        | `player_game_finder`, `game_finder`                                     |
+| `COUNT`       | `"count"`         | `player_game_finder` (with `count_intent=True`)                         |
+| `SPLIT`       | `"split_summary"` | `player_split_summary`, `team_split_summary`                            |
+| `LEADERBOARD` | `"leaderboard"`   | `season_leaders`, `top_player_games`, `player_occurrence_leaders`       |
+| `STREAK`      | `"streak"`        | `player_streak_finder`, `team_streak_finder`                            |
+| `UNSUPPORTED` | `"unsupported"`   | `None` route                                                            |
 
 The `ROUTE_TO_INTENT` dict in `_constants.py` maps every route name to its intent. `route_to_intent(route, count_intent=...)` is the public lookup function.
 
@@ -966,11 +966,26 @@ The `ROUTE_TO_INTENT` dict in `_constants.py` maps every route name to its inten
   "min_value": 30.0,
   "max_value": null,
   "threshold_conditions": [
-    { "stat": "pts", "min_value": 30.0, "max_value": null, "text": "30+ points" },
-    { "stat": "reb", "min_value": 10.0, "max_value": null, "text": "10+ rebounds" }
+    {
+      "stat": "pts",
+      "min_value": 30.0,
+      "max_value": null,
+      "text": "30+ points"
+    },
+    {
+      "stat": "reb",
+      "min_value": 10.0,
+      "max_value": null,
+      "text": "10+ rebounds"
+    }
   ],
   "extra_conditions": [
-    { "stat": "reb", "min_value": 10.0, "max_value": null, "text": "10+ rebounds" }
+    {
+      "stat": "reb",
+      "min_value": 10.0,
+      "max_value": null,
+      "text": "10+ rebounds"
+    }
   ],
   "start_season": "2021-22",
   "end_season": "2025-26",
