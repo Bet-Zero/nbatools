@@ -332,6 +332,34 @@ class TestStructuredQueryExecution:
         assert qr.metadata["presence_state"] == "both"
         assert any("on_off" in note and "placeholder" in note for note in qr.result.notes)
 
+    def test_structured_query_accepts_lineup_summary_placeholder_route(self):
+        qr = execute_structured_query(
+            "lineup_summary",
+            season="1950-51",
+            lineup_members=["Jayson Tatum", "Jaylen Brown"],
+            unit_size=2,
+        )
+        assert qr.route == "lineup_summary"
+        assert isinstance(qr.result, NoResult)
+        assert qr.result_reason == "unsupported"
+        assert qr.metadata["lineup_members"] == ["Jayson Tatum", "Jaylen Brown"]
+        assert qr.metadata["unit_size"] == 2
+        assert any("lineup" in note and "placeholder" in note for note in qr.result.notes)
+
+    def test_structured_query_accepts_lineup_leaderboard_placeholder_route(self):
+        qr = execute_structured_query(
+            "lineup_leaderboard",
+            season="1950-51",
+            unit_size=5,
+            minute_minimum=200,
+        )
+        assert qr.route == "lineup_leaderboard"
+        assert isinstance(qr.result, NoResult)
+        assert qr.result_reason == "unsupported"
+        assert qr.metadata["unit_size"] == 5
+        assert qr.metadata["minute_minimum"] == 200
+        assert any("lineup" in note and "placeholder" in note for note in qr.result.notes)
+
 
 # ===================================================================
 # Metadata preservation

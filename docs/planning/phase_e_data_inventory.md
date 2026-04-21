@@ -70,11 +70,11 @@ This is a whole-game absence filter. It answers questions like "record when Gian
 
 - The repo still has no play-by-play, stint, rotation, or lineup tables that can execute real on/off or lineup splits.
 - A placeholder route such as `player_on_off` can exist without changing that underlying data reality.
-- Lineup-family routes such as `lineup_summary` and `lineup_leaderboard` still require new data ingestion or aggregation work.
+- Placeholder lineup-family routes such as `lineup_summary` and `lineup_leaderboard` can exist now, but real lineup execution still requires new data ingestion or aggregation work.
 
 ### The current honest-stub pattern already exists
 
-- [docs/architecture/parser/specification.md](../architecture/parser/specification.md#11-onoff-and-lineup-support) now distinguishes shipped single-player on/off parser/routing support from still-missing data-backed execution.
+- [docs/architecture/parser/specification.md](../architecture/parser/specification.md#11-onoff-and-lineup-support) now distinguishes shipped placeholder parser/routing support from still-missing data-backed execution for both on/off and lineup queries.
 - The current parser already uses honest execution notes for recognized-but-unavailable filters such as clutch, period splits, and schedule-context filters.
 - [src/nbatools/commands/natural_query.py](../../src/nbatools/commands/natural_query.py) appends a note when `clutch` is detected because play-by-play clutch splits are not available.
 

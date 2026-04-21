@@ -56,6 +56,7 @@ class TestRouteToQueryClass:
         assert route_to_query_class("player_game_summary") == "summary"
         assert route_to_query_class("game_summary") == "summary"
         assert route_to_query_class("player_on_off") == "summary"
+        assert route_to_query_class("lineup_summary") == "summary"
 
     def test_comparison_routes(self):
         assert route_to_query_class("player_compare") == "comparison"
@@ -65,6 +66,7 @@ class TestRouteToQueryClass:
         assert route_to_query_class("season_leaders") == "leaderboard"
         assert route_to_query_class("season_team_leaders") == "leaderboard"
         assert route_to_query_class("top_player_games") == "leaderboard"
+        assert route_to_query_class("lineup_leaderboard") == "leaderboard"
 
     def test_streak_routes(self):
         assert route_to_query_class("player_streak_finder") == "streak"

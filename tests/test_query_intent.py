@@ -61,6 +61,8 @@ class TestRouteToIntent:
             ("player_streak_finder", QueryIntent.STREAK),
             ("team_streak_finder", QueryIntent.STREAK),
             ("player_on_off", QueryIntent.ON_OFF),
+            ("lineup_summary", QueryIntent.LINEUP),
+            ("lineup_leaderboard", QueryIntent.LINEUP),
         ],
     )
     def test_all_routes_mapped(self, route, expected):
@@ -157,6 +159,11 @@ class TestParseQueryIntentField:
         assert result["intent"] == QueryIntent.ON_OFF
 
     @pytest.mark.parser
+    def test_lineup_intent(self):
+        result = parse_query("best 5-man lineups this season")
+        assert result["intent"] == QueryIntent.LINEUP
+
+    @pytest.mark.parser
     def test_intent_always_present(self):
         """Every parse result should have an intent field."""
         queries = [
@@ -178,5 +185,6 @@ class TestParseQueryIntentField:
                 QueryIntent.LEADERBOARD,
                 QueryIntent.STREAK,
                 QueryIntent.ON_OFF,
+                QueryIntent.LINEUP,
                 QueryIntent.UNSUPPORTED,
             }, f"Invalid intent '{result['intent']}' for query: {q}"

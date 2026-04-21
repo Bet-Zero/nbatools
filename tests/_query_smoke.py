@@ -37,6 +37,7 @@ STARTER_NOTE_SUBSTRINGS = ("starter", "unfiltered")
 BENCH_NOTE_SUBSTRINGS = ("bench", "unfiltered")
 OPPONENT_QUALITY_NOTE_SUBSTRINGS = ("opponent_quality",)
 ON_OFF_NOTE_SUBSTRINGS = ("on_off", "placeholder")
+LINEUP_NOTE_SUBSTRINGS = ("lineup", "placeholder")
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
@@ -227,6 +228,22 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_statuses=("no_result",),
         expected_intents=("on_off",),
         expected_note_substrings=ON_OFF_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="best 5-man lineups this season",
+        expected_routes=("lineup_leaderboard",),
+        expected_query_class="leaderboard",
+        expected_statuses=("no_result",),
+        expected_intents=("lineup",),
+        expected_note_substrings=LINEUP_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="lineup with Tatum and Jaylen Brown",
+        expected_routes=("lineup_summary",),
+        expected_query_class="summary",
+        expected_statuses=("no_result",),
+        expected_intents=("lineup",),
+        expected_note_substrings=LINEUP_NOTE_SUBSTRINGS,
     ),
 )
 
