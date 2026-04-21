@@ -92,6 +92,9 @@ from nbatools.commands.player_split_summary import (
 from nbatools.commands.player_streak_finder import (
     build_result as player_streak_finder_build_result,
 )
+from nbatools.commands.player_stretch_leaderboard import (
+    build_result as player_stretch_leaderboard_build_result,
+)
 from nbatools.commands.playoff_history import (
     build_matchup_by_decade_result,
     build_playoff_appearances_result,
@@ -161,6 +164,7 @@ _SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(TEAM_ALIASES.keys(), key=len, rever
 _SUPPORTED_OPPONENT_QUALITY_ROUTES = {
     "player_game_summary",
     "player_game_finder",
+    "player_stretch_leaderboard",
     "game_summary",
     "game_finder",
     "team_record",
@@ -178,6 +182,7 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "player_game_summary": player_game_summary_build_result,
                 "game_summary": game_summary_build_result,
                 "player_on_off": player_on_off_build_result,
+                "player_stretch_leaderboard": player_stretch_leaderboard_build_result,
                 "lineup_summary": lineup_summary_build_result,
                 "lineup_leaderboard": lineup_leaderboard_build_result,
                 "player_game_finder": player_game_finder_build_result,

@@ -204,8 +204,19 @@ class SubjectiveTerm:
 SUBJECTIVE_TERMS: dict[str, SubjectiveTerm] = {
     "best games": SubjectiveTerm("Ranked by Game Score (default); by points if specified"),
     "biggest games": SubjectiveTerm("Ranked by points scored"),
-    "hottest": SubjectiveTerm("Rolling average over last 5 games, ranked"),
-    "efficient": SubjectiveTerm("Ranked by True Shooting %"),
+    "best stretch": SubjectiveTerm(
+        "Stretch queries default to rolling average Game Score unless an explicit metric is named",
+        shipped=True,
+    ),
+    "hottest": SubjectiveTerm(
+        "Stretch queries rank the rolling per-game average of the requested stat; "
+        "if no stat is named, they default to rolling average Game Score",
+        shipped=True,
+    ),
+    "efficient": SubjectiveTerm(
+        "Stretch queries without an explicit stat rank rolling True Shooting %",
+        shipped=True,
+    ),
     "clutch": SubjectiveTerm("Last 5 min of 4th quarter or OT, score within 5"),
     "all-around games": SubjectiveTerm("Undefined — not yet shipped"),
     "catch-and-shoot": SubjectiveTerm("Undefined — not yet shipped"),

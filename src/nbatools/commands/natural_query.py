@@ -132,6 +132,9 @@ from nbatools.commands._parse_helpers import (
     detect_stat as detect_stat,
 )
 from nbatools.commands._parse_helpers import (
+    detect_stretch_query as detect_stretch_query,
+)
+from nbatools.commands._parse_helpers import (
     detect_wins_losses as detect_wins_losses,
 )
 from nbatools.commands._parse_helpers import (
@@ -238,6 +241,7 @@ __all__ = [
     "detect_lineup_query",
     "detect_on_off",
     "detect_role",
+    "detect_stretch_query",
     "detect_opponent_quality",
     "detect_quarter",
     "detect_half",
@@ -314,6 +318,17 @@ def _build_parse_state(query: str) -> dict:
     split_type = detect_split_type(q)
     leaderboard_intent = wants_leaderboard(q)
     team_leaderboard_intent = wants_team_leaderboard(q)
+    stretch_request = detect_stretch_query(q)
+    window_size = stretch_request["window_size"] if stretch_request else None
+    stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
+
+    if (
+        stretch_request
+        and top_n == window_size
+        and window_size is not None
+        and re.search(rf"\b(?:best|worst)\s+{window_size}\s*(?:-\s*|\s+)games?\b", q)
+    ):
+        top_n = None
 
     # Fallback: if no STAT_ALIASES hit but leaderboard intent is present,
     # promote a leaderboard-only alias (e.g. "scoring", "scorers") into the
@@ -379,6 +394,7 @@ def _build_parse_state(query: str) -> dict:
             or leaderboard_intent
             or team_leaderboard_intent
             or record_intent
+            or window_size is not None
         ):
             season = default_season_for_context(season_type)
 
@@ -532,6 +548,8 @@ def _build_parse_state(query: str) -> dict:
         "unit_size": unit_size,
         "minute_minimum": minute_minimum,
         "lineup_query_mode": lineup_query_mode,
+        "window_size": window_size,
+        "stretch_metric": stretch_metric,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -656,6 +674,8 @@ def _finalize_route(parsed: dict) -> dict:
     unit_size = parsed.get("unit_size")
     minute_minimum = parsed.get("minute_minimum")
     lineup_query_mode = parsed.get("lineup_query_mode")
+    window_size = parsed.get("window_size")
+    stretch_metric = parsed.get("stretch_metric")
 
     notes: list[str] = []
     route = None
@@ -747,6 +767,37 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": stat,
             "limit": top_n or 10,
             "last_n": last_n,
+        }
+    elif (
+        window_size is not None
+        and stretch_metric is not None
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and not (team and player is None)
+    ):
+        route = "player_stretch_leaderboard"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "player": player,
+            "team": team,
+            "opponent": opponent,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "window_size": window_size,
+            "stretch_metric": stretch_metric,
+            "limit": top_n or 10,
         }
 
     # ---------------------------------------------------------------------------
@@ -1476,6 +1527,8 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "presence_state",
         "unit_size",
         "minute_minimum",
+        "window_size",
+        "stretch_metric",
         "last_n",
         "split_type",
         "role",

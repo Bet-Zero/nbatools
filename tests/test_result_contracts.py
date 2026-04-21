@@ -65,6 +65,7 @@ class TestRouteToQueryClass:
     def test_leaderboard_routes(self):
         assert route_to_query_class("season_leaders") == "leaderboard"
         assert route_to_query_class("season_team_leaders") == "leaderboard"
+        assert route_to_query_class("player_stretch_leaderboard") == "leaderboard"
         assert route_to_query_class("top_player_games") == "leaderboard"
         assert route_to_query_class("lineup_leaderboard") == "leaderboard"
 

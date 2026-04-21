@@ -245,6 +245,18 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_intents=("lineup",),
         expected_note_substrings=LINEUP_NOTE_SUBSTRINGS,
     ),
+    QuerySmokeCase(
+        query="hottest 3-game scoring stretch this year",
+        expected_routes=("player_stretch_leaderboard",),
+        expected_query_class="leaderboard",
+        expected_intents=("leaderboard",),
+    ),
+    QuerySmokeCase(
+        query="best 5-game stretch by Game Score",
+        expected_routes=("player_stretch_leaderboard",),
+        expected_query_class="leaderboard",
+        expected_intents=("leaderboard",),
+    ),
 )
 
 PHASE_QUERY_SMOKE_CASES = PHASE_D_QUERY_SMOKE_CASES + PHASE_E_QUERY_SMOKE_CASES
