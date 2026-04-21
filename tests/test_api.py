@@ -429,6 +429,22 @@ class TestUI:
         assert "/assets/index-" in resp.text
         assert 'type="module"' in resp.text
 
+    def test_ui_falls_back_when_bundle_missing(self, tmp_path):
+        with patch("nbatools.api._UI_INDEX", tmp_path / "missing" / "index.html"):
+            resp = client.get("/")
+
+        assert resp.status_code == 200
+        assert "text/html" in resp.headers["content-type"]
+        assert "<title>nbatools</title>" in resp.text
+        assert 'id="root"' in resp.text
+        assert "/assets/index-fallback.js" in resp.text
+
+    def test_ui_fallback_asset_serves_js(self):
+        resp = client.get("/assets/index-fallback.js")
+        assert resp.status_code == 200
+        assert "application/javascript" in resp.headers["content-type"]
+        assert "UI bundle not built" in resp.text
+
 
 # ---------------------------------------------------------------------------
 # /freshness

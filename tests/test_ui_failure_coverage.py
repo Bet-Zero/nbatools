@@ -208,12 +208,14 @@ class TestWithoutPlayer:
         assert parsed["team"] == "GSW"
         assert parsed.get("without_player") == "Stephen Curry"
 
+    @pytest.mark.needs_data
     def test_record_without_player_wrong_team_returns_no_match(self):
         qr = execute_natural_query("Celtics record when Giannis out")
         assert qr.route == "team_record"
         assert qr.result.result_reason == "no_match"
         assert qr.result.notes == ["No games matched the specified filters"]
 
+    @pytest.mark.needs_data
     def test_record_leaderboard_without_player_returns_no_match(self):
         qr = execute_natural_query("best record without Stephen Curry")
         assert qr.route == "team_record_leaderboard"

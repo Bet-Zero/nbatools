@@ -270,6 +270,7 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestPlayoffHistoryBuildResult(unittest.TestCase):
     """Integration tests for playoff history build functions.
 
@@ -352,6 +353,7 @@ class TestPlayoffHistoryBuildResult(unittest.TestCase):
         assert isinstance(result, NoResult)
 
 
+@pytest.mark.needs_data
 class TestPlayoffAppearancesBuildResult(unittest.TestCase):
     """Integration tests for playoff appearances."""
 
@@ -428,6 +430,7 @@ class TestPlayoffAppearancesBuildResult(unittest.TestCase):
             assert "appearances" in result.summary.columns
 
 
+@pytest.mark.needs_data
 class TestRecordByDecadeBuildResult(unittest.TestCase):
     """Integration tests for record-by-decade."""
 
@@ -499,6 +502,7 @@ class TestRecordByDecadeBuildResult(unittest.TestCase):
         assert "decade" in result.leaders.columns
 
 
+@pytest.mark.needs_data
 class TestMatchupByDecadeBuildResult(unittest.TestCase):
     """Integration tests for matchup-by-decade."""
 
@@ -535,6 +539,7 @@ class TestMatchupByDecadeBuildResult(unittest.TestCase):
             assert "decade" in result.comparison.columns
 
 
+@pytest.mark.needs_data
 class TestPlayoffMatchupHistoryBuildResult(unittest.TestCase):
     """Integration tests for playoff matchup history."""
 
@@ -590,6 +595,7 @@ class TestPlayoffMatchupHistoryBuildResult(unittest.TestCase):
         assert isinstance(result, NoResult)
 
 
+@pytest.mark.needs_data
 class TestPlayoffRoundRecordBuildResult(unittest.TestCase):
     """Integration tests for round-specific record leaderboard."""
 
@@ -647,6 +653,7 @@ class TestPlayoffRoundRecordBuildResult(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestPlayoffHistoryQueryService(unittest.TestCase):
     """Test that the query service properly handles new routes."""
 
@@ -773,6 +780,7 @@ class TestPlayoffHistoryQueryService(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestPlayoffHistoryNaturalQueryEndToEnd(unittest.TestCase):
     """End-to-end tests: natural query → query service → result."""
 
@@ -849,6 +857,7 @@ class TestPlayoffHistoryNaturalQueryEndToEnd(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.needs_data
 class TestPlayoffHistoryResultContracts(unittest.TestCase):
     """Verify result objects have proper trust/status/caveat fields."""
 

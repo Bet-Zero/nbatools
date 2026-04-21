@@ -16,7 +16,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -49,6 +49,37 @@ app.add_middleware(
 
 # Path to the bundled single-page UI (Vite build output).
 _UI_DIR = Path(__file__).resolve().parent / "ui" / "dist"
+_UI_INDEX = _UI_DIR / "index.html"
+_UI_FALLBACK_ASSET = "/assets/index-fallback.js"
+_UI_FALLBACK_HTML = f"""<!doctype html>
+<html lang=\"en\">
+    <head>
+        <meta charset=\"utf-8\" />
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+        <title>nbatools</title>
+    </head>
+    <body>
+        <div id=\"root\"></div>
+        <script type=\"module\" src=\"{_UI_FALLBACK_ASSET}\"></script>
+    </body>
+</html>
+"""
+_UI_FALLBACK_SCRIPT = """
+const root = document.getElementById("root");
+if (root) {
+    root.innerHTML = `
+        <main style="font-family: ui-sans-serif, system-ui, sans-serif; max-width: 48rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5;">
+            <h1 style="margin-bottom: 0.5rem;">nbatools UI bundle not built</h1>
+            <p style="margin: 0; color: #4b5563;">
+                The API is available, but the frontend build output is missing from this checkout.
+            </p>
+            <p style="color: #4b5563;">
+                Run <code>npm install</code> and <code>npm run build</code> in <code>frontend/</code> to enable the bundled UI.
+            </p>
+        </main>
+    `;
+}
+""".strip()
 
 # ---------------------------------------------------------------------------
 # Request / response models
@@ -151,6 +182,13 @@ def _query_result_to_response(qr: QueryResult) -> QueryResponse:
     )
 
 
+def _load_ui_html() -> str:
+    """Return bundled UI HTML when present, else a minimal fallback shell."""
+    if _UI_INDEX.is_file():
+        return _UI_INDEX.read_text()
+    return _UI_FALLBACK_HTML
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -159,8 +197,13 @@ def _query_result_to_response(qr: QueryResult) -> QueryResponse:
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def ui() -> HTMLResponse:
     """Serve the single-page query UI (Vite build)."""
-    html = (_UI_DIR / "index.html").read_text()
-    return HTMLResponse(content=html)
+    return HTMLResponse(content=_load_ui_html())
+
+
+@app.get(_UI_FALLBACK_ASSET, include_in_schema=False)
+def ui_fallback_asset() -> Response:
+    """Serve a minimal JS module when the frontend bundle is unavailable."""
+    return Response(content=_UI_FALLBACK_SCRIPT, media_type="application/javascript")
 
 
 # Mount Vite static assets (JS/CSS bundles) *after* explicit routes so
