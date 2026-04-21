@@ -130,6 +130,8 @@ Dimension-by-dimension view of where the parser is vs. where [`parser/specificat
 
 Five phases. Earlier phases unblock later ones. Each phase is self-contained enough to ship independently and leave the repo in a cleaner state.
 
+Across every phase, real-query smoke coverage is part of the completion signal. When a phase adds or broadens parser/query behavior, it must add representative natural-language queries for that new capability or phrasing family to the active phase tuple in `tests/_query_smoke.py`, commit those queries to the repo, and run the matching smoke targets. New behavior is not considered phase-complete if the only proof lives in ad hoc terminal commands or chat history.
+
 The letters map to v1's phases for continuity — A/B/C align with the v1 plan, D is new, and E bundles what v1 called "Phase D — new capability families."
 
 ### 5.1 Phase A — Phrasing parity on shipped capabilities
@@ -401,7 +403,18 @@ Parser work uses pytest markers `parser` and `query`:
 
 Each phase should add at least a handful of explicit failure-mode test cases (from [`parser/examples.md §5`](../architecture/parser/examples.md#5-stress-test-inputs) and [`parser/specification.md §20`](../architecture/parser/specification.md#20-failure-modes)). These should test that the parser fails cleanly rather than guesses wrong.
 
-### 6.4 Logging-driven iteration
+### 6.4 Real-query smoke is required per phase
+
+Each phase must add or update representative real natural-language smoke cases in `tests/_query_smoke.py` for the capability families or phrasing families it just implemented. Those cases belong in the active phase tuple, are checked into the repo, and are part of the phase's done signal.
+
+Use the smoke harness to protect behavior at the product surface, not just parser internals:
+
+- phase smoke protects the active phase's new behavior and any honest temporary behavior that is part of the shipped user experience
+- stable smoke protects durable shipped behavior across phases and catches regressions through the shared CLI/API natural-query paths
+- for parser/query-surface work, the normal expectation is to run both `make test-phase-smoke` and `make test-smoke-queries`
+- for engine/API/output work, run the smoke targets whenever the change materially affects real natural-query behavior
+
+### 6.5 Logging-driven iteration
 
 After each phase ships, monitor real-user query logs for:
 
@@ -473,21 +486,34 @@ The plan stays stable — its scope and phases rarely change. Work queues change
 - **Worked** one item at a time. Each item has acceptance criteria and test commands; when done, the item is checked off in the queue file and committed.
 - **Closed** when every item is checked and the queue's final meta-task — drafting the next phase's queue — is complete.
 
-### 9.3 Self-propagation
+### 9.3 Required smoke content in queue items
+
+Work-queue items that change real natural-query behavior must say so explicitly. This is part of the queue-writing convention, not an optional reminder.
+
+For any item that adds or changes real parser/query behavior, the queue entry must:
+
+- identify representative real natural-language queries for the new capability or phrasing family
+- add or update those queries in the active phase tuple in `tests/_query_smoke.py`
+- include `make test-phase-smoke` in **Tests to run**
+- include `make test-smoke-queries` in **Tests to run** when the work touches parser/routing/shared natural-query execution or could regress durable shipped behavior
+
+Research-only, docs-only, and internal refactor items that do not materially affect real natural-query behavior should not add meaningless smoke commands.
+
+### 9.4 Self-propagation
 
 The **final task in every work queue is the same**: "verify all prior items are checked, then draft the next phase's work queue per this plan." This means the same "work the next item" command naturally produces the next phase's queue when it's time, with no separate invocation needed.
 
 The current phase is always "the most recent work queue that isn't fully checked off." An agent reading the planning directory can determine this by listing `phase_*_work_queue.md` files and finding the one with unchecked items.
 
-### 9.4 Reusable agent prompt
+### 9.5 Reusable agent prompt
 
 Any agent — Claude Code, Cursor, a repo-level Claude, etc. — can work a phase with this prompt:
 
-> Read `docs/planning/query_surface_expansion_plan.md` and the active work queue (the most recent `docs/planning/phase_*_work_queue.md` with unchecked items). Find the next unchecked item. Review the relevant reference docs in `docs/architecture/parser/`. Execute the item according to its acceptance criteria. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires.
+> Read `docs/planning/query_surface_expansion_plan.md` and the active work queue (the most recent `docs/planning/phase_*_work_queue.md` with unchecked items). Find the next unchecked item. Review the relevant reference docs in `docs/architecture/parser/`. Execute the item according to its acceptance criteria, including any required `tests/_query_smoke.py` updates. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires.
 
 No new prompt is needed for phase transitions — the final task of each queue handles it.
 
-### 9.5 When the plan itself needs updating
+### 9.6 When the plan itself needs updating
 
 If a phase's work uncovers a reason to change the plan's scope, priorities, or guardrails, update the plan in the same session that closes the relevant queue item. Don't let the plan drift silently from the actual direction.
 

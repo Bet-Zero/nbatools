@@ -4,6 +4,8 @@
 >
 > **How to work this file:** Find the first unchecked item below. Review the reference docs it cites. Execute per its acceptance criteria. Run the test commands. Check the item off, commit. Repeat. When every item above is checked, work the final meta-task.
 >
+> For any item here that changes real natural-query behavior, updating `PHASE_E_QUERY_SMOKE_CASES` in `tests/_query_smoke.py` and running the listed smoke targets is part of done.
+>
 > **Do not skip ahead** unless an earlier item is genuinely blocked. Items are ordered to minimize rework — later items assume earlier ones are done.
 >
 > **⚠️ Data-access caveat:** Items 5–10 (on/off, lineups, stretches) require new data sources or aggregation layers that may not exist yet. If the data layer is missing, scope the parser/routing work first and stub the engine call, then add a follow-up item to wire in the data. Do not block parser progress on data-layer decisions.
@@ -66,6 +68,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - A user-facing note explains that results are currently unfiltered because true clutch splits are not available yet
 - Glossary / queue wording does not claim true clutch filtering is fully shipped
 - At least 5 parser tests cover clutch detection and the unfiltered-results note
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative clutch queries that assert the current honest temporary behavior through the real query path
 
 **Remaining to reach `[x]`:**
 
@@ -76,6 +79,8 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 **Tests to run:**
 
 - `make test-parser`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -108,11 +113,14 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - `overtime` / `OT` surface forms set `quarter="OT"`
 - At least 6 parser tests covering quarter/half detection
 - Engine accepts the filter (even if data layer needs follow-up)
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative quarter/half queries for the newly supported surface forms
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -142,11 +150,14 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - `parse_query("Jokic with rest advantage")` includes relevant rest slot
 - At least 6 parser tests
 - No regressions in existing B2B handling
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative B2B, rest, one-possession, or national-TV queries for the new filters
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -175,11 +186,14 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - `parse_query("LeBron as a starter stats")` includes `role="starter"`
 - At least 4 parser tests
 - No confusion with team-level "bench" references
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative starter/bench queries for the shipped role filter behavior
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -221,12 +235,15 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - Glossary entries updated to `shipped=True` with concrete definitions
 - At least 8 parser tests
 - At least 2 end-to-end query tests showing filtered results
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative opponent-quality queries that cover the newly shipped filter family
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
 - `make test-engine`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -332,11 +349,14 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - `parse_query("Nuggets without Jokic on the floor")` sets `presence_state="off"`
 - At least 8 parser tests
 - Route exists (even if engine returns a placeholder)
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative on/off queries that assert the current shipped behavior or honest placeholder path
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -369,11 +389,14 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - `parse_query("3-man units with 200+ minutes")` sets `unit_size=3` and `minute_minimum=200`
 - At least 6 parser tests
 - Route exists (even if engine returns a placeholder)
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative lineup queries that assert the current shipped behavior or honest placeholder path
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 
@@ -410,12 +433,15 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 - `parse_query("best 5-game stretch by Game Score")` sets `stretch_metric="game_score"`
 - At least 4 parser tests
 - Product-policy decision on "hot" metric is documented in glossary
+- `PHASE_E_QUERY_SMOKE_CASES` adds or updates representative stretch queries that cover the new rolling-window behavior
 
 **Tests to run:**
 
 - `make test-parser`
 - `make test-query`
 - `make test-engine`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
 
 **Reference docs to consult:**
 

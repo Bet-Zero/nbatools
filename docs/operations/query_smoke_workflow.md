@@ -25,6 +25,8 @@ Stable regression smoke lives in `tests/test_query_smoke_stable.py` and covers a
 
 Phase-focused smoke lives in `tests/test_query_smoke_phase.py`.
 
+Each active parser/query-surface phase is expected to contribute representative real queries for the capability or phrasing families it ships. Those phase queries are checked into the repo in `tests/_query_smoke.py`; they are not meant to live only as ad hoc terminal commands or chat history.
+
 Current Phase D and current parser-surface checks:
 
 - `Celtics recently`
@@ -82,8 +84,8 @@ These tests require local processed data and are marked `needs_data`.
 
 ## When To Run Them
 
-- Run `make test-smoke-queries` after changes that affect real natural-query behavior and before closing a phase item.
-- Run `make test-phase-smoke` when working the active parser/query-surface phase or a feature family that still has honest temporary behavior.
+- Run `make test-phase-smoke` for phase items that add or change real natural-query behavior. A phase item is not complete until its representative phase queries are saved in `tests/_query_smoke.py` and this target passes.
+- Run `make test-smoke-queries` after changes that affect real natural-query behavior and before closing a phase item. This protects durable shipped behavior while the phase tuple protects the newly added behavior.
 - Keep using the normal parser, query, engine, API, and frontend test suites for subsystem correctness. These smoke tests are product-sanity checks, not replacements.
 
 ## Adding New Queries
@@ -94,6 +96,8 @@ Add new phase queries to the appropriate phase tuple in `tests/_query_smoke.py`:
 
 - `PHASE_D_QUERY_SMOKE_CASES`
 - `PHASE_E_QUERY_SMOKE_CASES`
+
+Every active phase should add or update representative real queries in its phase tuple as part of closing the corresponding queue items.
 
 If a future phase starts, add a new phase tuple there and let `tests/test_query_smoke_phase.py` inherit it.
 
