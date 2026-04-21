@@ -156,7 +156,7 @@ Identify the real-world subject(s) the query references. Implemented across `_ma
 - **player comparison pair** — `extract_player_comparison` → (`player_a`, `player_b`)
 - **team comparison pair** — `extract_team_comparison` → (`team_a`, `team_b`)
 - **position group** — `extract_position_filter`
-- **lineup / unit** — single-player on/off placeholder routing is supported; multi-player lineup queries are still future work (see §11)
+- **lineup / unit** — on/off and lineup placeholder routing are supported; real data-backed lineup execution is still future work (see §11)
 
 ### 3.2 Name reference styles
 
@@ -642,11 +642,11 @@ Remaining unsupported:
 
 ## 11. On/off and lineup support
 
-**Status: partially shipped.** Single-player on/off phrasing now routes to a dedicated placeholder path. Real on/off split execution and lineup-family queries still depend on data the current repo does not have.
+**Status: partially shipped.** Single-player on/off phrasing and lineup/unit phrasing now route to dedicated placeholder paths. Real on/off split execution and lineup-family results still depend on data the current repo does not have.
 
 ### 11.0 Current shipped surface
 
-Shipped in Phase E item 8:
+Shipped in Phase E items 8 and 9:
 
 - `on/off`
 - `with X on the floor`
@@ -654,8 +654,13 @@ Shipped in Phase E item 8:
 - `X on court`
 - `X off court`
 - `X sitting`
+- `best 5-man lineups`
+- `3-man units with 200+ minutes`
+- `2-man combos`
+- `lineup with X and Y`
+- `with X and Y together`
 
-These queries populate `lineup_members` and `presence_state`, route to `player_on_off`, and return an honest note explaining that real on/off splits require play-by-play or lineup-stint data that is not yet available.
+These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`, and return an honest note explaining that real on/off splits and lineup-unit stats require play-by-play, stint, or lineup tables that are not yet available.
 
 ### 11.1 Target query types
 

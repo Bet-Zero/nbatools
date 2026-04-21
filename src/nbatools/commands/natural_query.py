@@ -57,6 +57,9 @@ from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes as build_game_context_filter_notes,
 )
 from nbatools.commands._parse_helpers import (
+    build_lineup_note as build_lineup_note,
+)
+from nbatools.commands._parse_helpers import (
     build_on_off_note as build_on_off_note,
 )
 from nbatools.commands._parse_helpers import (
@@ -91,6 +94,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
+)
+from nbatools.commands._parse_helpers import (
+    detect_lineup_query as detect_lineup_query,
 )
 from nbatools.commands._parse_helpers import (
     detect_nationally_televised as detect_nationally_televised,
@@ -229,6 +235,7 @@ __all__ = [
     "detect_rest_days",
     "detect_one_possession",
     "detect_nationally_televised",
+    "detect_lineup_query",
     "detect_on_off",
     "detect_role",
     "detect_opponent_quality",
@@ -401,8 +408,14 @@ def _build_parse_state(query: str) -> dict:
     q_without_opponent = q
     team = None
     on_off_request = detect_on_off(q)
+    lineup_request = detect_lineup_query(q)
     lineup_members = on_off_request["lineup_members"] if on_off_request else []
     presence_state = on_off_request["presence_state"] if on_off_request else None
+    if not lineup_members and lineup_request:
+        lineup_members = lineup_request["lineup_members"]
+    unit_size = lineup_request["unit_size"] if lineup_request else None
+    minute_minimum = lineup_request["minute_minimum"] if lineup_request else None
+    lineup_query_mode = lineup_request["route"] if lineup_request else None
     without_player = None
 
     team_resolution_confidence = "none"
@@ -516,6 +529,9 @@ def _build_parse_state(query: str) -> dict:
         "opponent_quality": opponent_quality,
         "lineup_members": lineup_members,
         "presence_state": presence_state,
+        "unit_size": unit_size,
+        "minute_minimum": minute_minimum,
+        "lineup_query_mode": lineup_query_mode,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -637,6 +653,9 @@ def _finalize_route(parsed: dict) -> dict:
     without_player = parsed.get("without_player")
     lineup_members = parsed.get("lineup_members") or []
     presence_state = parsed.get("presence_state")
+    unit_size = parsed.get("unit_size")
+    minute_minimum = parsed.get("minute_minimum")
+    lineup_query_mode = parsed.get("lineup_query_mode")
 
     notes: list[str] = []
     route = None
@@ -656,7 +675,14 @@ def _finalize_route(parsed: dict) -> dict:
 
     # -- Entity ambiguity: short-circuit if we can't resolve a required entity --
     entity_ambiguity = parsed.get("entity_ambiguity")
-    if entity_ambiguity and not player and not player_a and not player_b and not team:
+    if (
+        entity_ambiguity
+        and not player
+        and not player_a
+        and not player_b
+        and not team
+        and not lineup_query_mode
+    ):
         out = dict(parsed)
         out["route"] = None
         out["route_kwargs"] = {}
@@ -685,6 +711,41 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
             "lineup_members": lineup_members,
             "presence_state": presence_state,
+            "last_n": last_n,
+        }
+    elif lineup_query_mode == "lineup_summary":
+        route = "lineup_summary"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "lineup_members": lineup_members,
+            "unit_size": unit_size,
+            "minute_minimum": minute_minimum,
+            "stat": stat,
+            "last_n": last_n,
+        }
+    elif lineup_query_mode == "lineup_leaderboard":
+        route = "lineup_leaderboard"
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "lineup_members": lineup_members,
+            "unit_size": unit_size,
+            "minute_minimum": minute_minimum,
+            "stat": stat,
+            "limit": top_n or 10,
             "last_n": last_n,
         }
 
@@ -1361,6 +1422,12 @@ def _finalize_route(parsed: dict) -> dict:
         presence_state=presence_state,
     ):
         notes.append(on_off_note)
+    if lineup_note := build_lineup_note(
+        lineup_members=lineup_members,
+        unit_size=unit_size,
+        minute_minimum=minute_minimum,
+    ):
+        notes.append(lineup_note)
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
@@ -1407,6 +1474,8 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "opponent_quality",
         "lineup_members",
         "presence_state",
+        "unit_size",
+        "minute_minimum",
         "last_n",
         "split_type",
         "role",

@@ -648,3 +648,47 @@ def test_on_off_note_appended():
     parsed = parse_query("Jokic on/off")
     notes = parsed.get("notes", [])
     assert any("on_off" in n and "placeholder" in n for n in notes)
+
+
+# ---------------------------------------------------------------------------
+# Lineup query intent and routing
+# ---------------------------------------------------------------------------
+
+
+def test_best_five_man_lineups_route_to_leaderboard_placeholder():
+    parsed = parse_query("best 5-man lineups this season")
+    assert parsed["route"] == "lineup_leaderboard"
+    assert parsed["intent"] == "lineup"
+    assert parsed["unit_size"] == 5
+
+
+def test_three_man_units_capture_minimum_minutes():
+    parsed = parse_query("3-man units with 200+ minutes")
+    assert parsed["route"] == "lineup_leaderboard"
+    assert parsed["unit_size"] == 3
+    assert parsed["minute_minimum"] == 200
+
+
+def test_two_man_combos_capture_unit_size():
+    parsed = parse_query("top 2-man combos this season")
+    assert parsed["route"] == "lineup_leaderboard"
+    assert parsed["unit_size"] == 2
+
+
+def test_lineup_with_two_players_routes_to_summary_placeholder():
+    parsed = parse_query("lineup with Tatum and Jaylen Brown")
+    assert parsed["route"] == "lineup_summary"
+    assert parsed["lineup_members"] == ["Jayson Tatum", "Jaylen Brown"]
+    assert parsed["unit_size"] == 2
+
+
+def test_together_phrase_routes_to_lineup_summary():
+    parsed = parse_query("net rating with Tatum and Jaylen Brown together")
+    assert parsed["route"] == "lineup_summary"
+    assert parsed["lineup_members"] == ["Jayson Tatum", "Jaylen Brown"]
+
+
+def test_lineup_note_appended():
+    parsed = parse_query("best 5-man lineups this season")
+    notes = parsed.get("notes", [])
+    assert any("lineup" in n and "placeholder" in n for n in notes)

@@ -85,7 +85,7 @@ A short orientation, not a full inventory. For capabilities see [`query_catalog.
 ### 3.4 What's not yet shipped
 
 - data-backed on/off split execution beyond the current placeholder route
-- lineup queries (2-man, 3-man, 5-man units)
+- data-backed lineup execution beyond the current placeholder routes
 - opponent-quality buckets (`contenders`, `good teams`, `top-10 defenses`)
 - expanded context filters (clutch, quarters, back-to-backs, starter/bench, overtime, one-possession)
 - stretch / rolling-window queries (`hottest 3-game stretch`)
@@ -111,7 +111,7 @@ Dimension-by-dimension view of where the parser is vs. where [`parser/specificat
 | Opponent-quality buckets          | Not shipped                                            | `contenders`, `good teams`, `top-10 defenses` with product definitions | Large  | E     |
 | Absence (`without X`)             | Shipped; clears player when it matches subject         | Broaden phrasing (`X out`, `X didn't play`, `no X`, `sans X`)          | Small  | A     |
 | On/off queries                    | Single-player placeholder routing shipped              | New intent family with `lineup_members`, `presence_state` slots        | Medium | E     |
-| Lineup queries                    | Not shipped                                            | New intent family with `unit_size`, `minute_minimum` slots             | Large  | E     |
+| Lineup queries                    | Placeholder routing shipped                            | New intent family with `unit_size`, `minute_minimum` slots             | Medium | E     |
 | Streak queries                    | Shipped: player + team, with defaults                  | No change needed                                                       | None   | —     |
 | Occurrence queries                | Shipped: single, compound, distinct-count              | No change needed                                                       | None   | —     |
 | Playoff / historical              | Shipped: history, appearances, rounds, decades         | No change needed                                                       | None   | —     |
@@ -346,7 +346,8 @@ Phase E is large and naturally breaks into independent sub-phases that can ship 
 - `best 5-man lineups`, `3-man units with 200+ minutes`, `net rating with Tatum and Brown together`
 - new slots: `unit_size`, minute thresholds
 - new route family: `lineup_leaderboard`, `lineup_summary`
-- data access: lineup data source
+- current shipped scope: parser/routing support with honest placeholder summary and leaderboard routes
+- data access: real execution still requires a lineup data source
 
 #### 5.5.4 Expanded context filters
 

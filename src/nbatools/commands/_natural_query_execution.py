@@ -56,6 +56,12 @@ from nbatools.commands.game_summary import (
 from nbatools.commands.game_summary import (
     resolve_seasons as resolve_team_summary_seasons,
 )
+from nbatools.commands.lineup_leaderboard import (
+    build_result as lineup_leaderboard_build_result,
+)
+from nbatools.commands.lineup_summary import (
+    build_result as lineup_summary_build_result,
+)
 from nbatools.commands.player_compare import (
     build_result as player_compare_build_result,
 )
@@ -172,6 +178,8 @@ def _get_build_result_map() -> dict[str, Callable]:
                 "player_game_summary": player_game_summary_build_result,
                 "game_summary": game_summary_build_result,
                 "player_on_off": player_on_off_build_result,
+                "lineup_summary": lineup_summary_build_result,
+                "lineup_leaderboard": lineup_leaderboard_build_result,
                 "player_game_finder": player_game_finder_build_result,
                 "game_finder": game_finder_build_result,
                 "player_compare": player_compare_build_result,

@@ -7,6 +7,7 @@ from nbatools.commands._leaderboard_utils import (
     detect_team_leaderboard_stat,
 )
 from nbatools.commands._matchup_utils import detect_player
+from nbatools.commands.entity_resolution import PLAYER_ALIASES
 
 
 def extract_top_n(text: str) -> int | None:
@@ -977,6 +978,92 @@ def build_on_off_note(
         return None
     return (
         "on_off: query recognized but on/off splits require play-by-play or lineup-stint "
+        "data that is not yet available in the current data layer; placeholder route returned"
+    )
+
+
+def _extract_player_mentions(text: str) -> list[str]:
+    matched_spans: list[tuple[int, int]] = []
+    ordered_matches: list[tuple[int, str]] = []
+    sorted_aliases = sorted(
+        PLAYER_ALIASES.items(),
+        key=lambda item: len(item[0]),
+        reverse=True,
+    )
+    for alias, canonical in sorted_aliases:
+        for match in re.finditer(rf"\b{re.escape(alias)}\b", text):
+            span = match.span()
+            if any(not (span[1] <= start or span[0] >= end) for start, end in matched_spans):
+                continue
+            matched_spans.append(span)
+            ordered_matches.append((span[0], canonical))
+            break
+
+    players: list[str] = []
+    seen: set[str] = set()
+    for _, canonical in sorted(ordered_matches, key=lambda item: item[0]):
+        if canonical in seen:
+            continue
+        players.append(canonical)
+        seen.add(canonical)
+    return players
+
+
+def detect_lineup_query(text: str) -> dict | None:
+    """Detect lineup and unit phrasing that should route to lineup placeholders."""
+    lineup_marker = bool(re.search(r"\b(?:lineups?|units?|combos?)\b", text))
+    together_marker = bool(re.search(r"\btogether\b", text))
+    leaderboard_marker = bool(re.search(r"\b(?:best|top|leaders?|highest|lowest)\b", text))
+    with_lineup_marker = bool(re.search(r"\blineup\s+with\b", text))
+
+    if not lineup_marker and not together_marker and not with_lineup_marker:
+        return None
+
+    unit_size_match = re.search(r"\b([235])\s*(?:-\s*|\s+)man\b", text)
+    unit_size = int(unit_size_match.group(1)) if unit_size_match else None
+
+    minute_patterns = (
+        r"\bat\s+least\s+(\d+)\+?\s+minutes\b",
+        r"\bwith\s+(\d+)\+?\s+minutes\b",
+        r"\b(\d+)\+\s+minutes\b",
+        r"\b(\d+)\s+minutes\b",
+    )
+    minute_minimum = None
+    for pattern in minute_patterns:
+        match = re.search(pattern, text)
+        if match:
+            minute_minimum = int(match.group(1))
+            break
+
+    lineup_members = _extract_player_mentions(text)
+    if not lineup_marker and not together_marker and len(lineup_members) < 2:
+        return None
+
+    route = "lineup_leaderboard"
+    if lineup_members and (with_lineup_marker or together_marker) and not leaderboard_marker:
+        route = "lineup_summary"
+
+    if unit_size is None and lineup_members:
+        unit_size = len(lineup_members)
+
+    return {
+        "route": route,
+        "lineup_members": lineup_members,
+        "unit_size": unit_size,
+        "minute_minimum": minute_minimum,
+    }
+
+
+def build_lineup_note(
+    lineup_members: list[str] | None = None,
+    unit_size: int | None = None,
+    minute_minimum: int | None = None,
+) -> str | None:
+    """Describe the current lineup placeholder behavior honestly."""
+    if not lineup_members and unit_size is None and minute_minimum is None:
+        return None
+    return (
+        "lineup: query recognized but lineup-unit stats require lineup tables or stint-level "
         "data that is not yet available in the current data layer; placeholder route returned"
     )
 

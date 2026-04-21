@@ -364,7 +364,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 9. `[ ]` Add lineup query intent and routing
+## 9. `[x]` Add lineup query intent and routing
 
 **Why:** "Best 5-man lineups", "3-man units with 200+ minutes" — a new intent family.
 
