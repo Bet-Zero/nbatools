@@ -209,7 +209,8 @@ SUBJECTIVE_TERMS: dict[str, SubjectiveTerm] = {
         shipped=True,
     ),
     "hottest": SubjectiveTerm(
-        "Stretch queries rank the rolling per-game average of the requested stat; if no stat is named, they default to rolling average Game Score",
+        "Stretch queries rank the rolling per-game average of the requested stat; "
+        "if no stat is named, they default to rolling average Game Score",
         shipped=True,
     ),
     "efficient": SubjectiveTerm(
