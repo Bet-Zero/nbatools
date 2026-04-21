@@ -763,6 +763,71 @@ def detect_clutch(text: str) -> bool:
     )
 
 
+def detect_back_to_back(text: str) -> bool:
+    """Detect back-to-back schedule context filters."""
+    return bool(
+        re.search(
+            r"\b(?:back[- ]to[- ]backs?|b2b)\b"
+            r"|\bsecond\s+of\s+(?:a\s+)?(?:back[- ]to[- ]back|b2b)\b",
+            text,
+        )
+    )
+
+
+def detect_rest_days(text: str) -> str | int | None:
+    """Detect rest-context filters.
+
+    Returns ``"advantage"`` / ``"disadvantage"`` for relative rest phrases,
+    or an integer for specific-day-rest phrases such as ``on 2 days rest``.
+    """
+    if re.search(r"\brest\s+advantage\b", text):
+        return "advantage"
+    if re.search(r"\brest\s+disadvantage\b", text):
+        return "disadvantage"
+    if re.search(r"\b(?:on|with|after)\s+no\s+rest\b", text):
+        return 0
+
+    number_words = {
+        "zero": 0,
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+    }
+    word_pattern = "|".join(number_words)
+
+    m = re.search(r"\b(?:on|with|after)\s+(\d+)\s+days?\s+rest\b", text)
+    if m:
+        return int(m.group(1))
+
+    m = re.search(rf"\b(?:on|with|after)\s+({word_pattern})\s+days?\s+rest\b", text)
+    if m:
+        return number_words[m.group(1)]
+
+    return None
+
+
+def detect_one_possession(text: str) -> bool:
+    """Detect one-possession game context filters."""
+    return bool(
+        re.search(
+            r"\bone[- ]possession(?:\s+games?)?\b|\bwithin\s+one\s+possession\b",
+            text,
+        )
+    )
+
+
+def detect_nationally_televised(text: str) -> bool:
+    """Detect national-TV context filters."""
+    return bool(
+        re.search(
+            r"\bnationally\s+televised\b|\bon\s+national\s+tv\b|\bnational\s+tv\b",
+            text,
+        )
+    )
+
+
 def detect_quarter(text: str) -> str | None:
     """Detect quarter-level context filters.
 
@@ -815,6 +880,45 @@ def build_period_filter_note(
             "in the current game-log data; results are unfiltered"
         )
     return None
+
+
+def build_game_context_filter_notes(
+    *,
+    back_to_back: bool = False,
+    rest_days: str | int | None = None,
+    one_possession: bool = False,
+    nationally_televised: bool = False,
+) -> list[str]:
+    """Describe current schedule-context limitations honestly.
+
+    The parser recognizes these surface forms, but the current query engine
+    does not yet join the needed schedule/context features into route
+    execution, so results remain unfiltered.
+    """
+    notes: list[str] = []
+
+    if back_to_back:
+        notes.append(
+            "back_to_back: filter detected but schedule/context feature tables are not yet "
+            "joined into the current query engine; results are unfiltered"
+        )
+    if rest_days is not None:
+        notes.append(
+            "rest: filter detected but schedule/context feature tables are not yet joined "
+            "into the current query engine; results are unfiltered"
+        )
+    if one_possession:
+        notes.append(
+            "one_possession: filter detected but schedule/context feature tables are not yet "
+            "joined into the current query engine; results are unfiltered"
+        )
+    if nationally_televised:
+        notes.append(
+            "national_tv: filter detected but national-TV schedule metadata is not yet joined "
+            "into the current query engine; results are unfiltered"
+        )
+
+    return notes
 
 
 def wants_summary(text: str) -> bool:

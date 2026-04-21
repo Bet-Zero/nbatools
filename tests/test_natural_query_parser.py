@@ -432,3 +432,77 @@ def test_half_note_appended():
     parsed = parse_query("Celtics first half stats")
     notes = parsed.get("notes", [])
     assert any("half" in n and "unfiltered" in n for n in notes)
+
+
+# ---------------------------------------------------------------------------
+# Game-context filters
+# ---------------------------------------------------------------------------
+
+
+def test_back_to_back_surface_form_sets_flag():
+    parsed = parse_query("Lakers on back-to-backs")
+    assert parsed["back_to_back"] is True
+
+
+def test_b2b_alias_sets_back_to_back_flag():
+    parsed = parse_query("Lakers b2b record")
+    assert parsed["back_to_back"] is True
+
+
+def test_second_of_back_to_back_sets_back_to_back_flag():
+    parsed = parse_query("Lakers second of a back-to-back record")
+    assert parsed["back_to_back"] is True
+
+
+def test_rest_advantage_surface_form_sets_rest_slot():
+    parsed = parse_query("Jokic with rest advantage")
+    assert parsed["rest_days"] == "advantage"
+
+
+def test_rest_disadvantage_surface_form_sets_rest_slot():
+    parsed = parse_query("Jokic with rest disadvantage")
+    assert parsed["rest_days"] == "disadvantage"
+
+
+def test_numeric_rest_days_surface_form_sets_rest_slot():
+    parsed = parse_query("Jokic on 2 days rest")
+    assert parsed["rest_days"] == 2
+
+
+def test_one_possession_surface_form_sets_flag():
+    parsed = parse_query("Celtics one-possession record")
+    assert parsed["one_possession"] is True
+
+
+def test_national_tv_surface_form_sets_flag():
+    parsed = parse_query("Knicks on national TV record")
+    assert parsed["nationally_televised"] is True
+
+
+def test_nationally_televised_surface_form_sets_flag():
+    parsed = parse_query("Knicks nationally televised record")
+    assert parsed["nationally_televised"] is True
+
+
+def test_back_to_back_note_appended():
+    parsed = parse_query("Lakers on back-to-backs")
+    notes = parsed.get("notes", [])
+    assert any("back_to_back" in n and "unfiltered" in n for n in notes)
+
+
+def test_rest_note_appended():
+    parsed = parse_query("Jokic with rest advantage")
+    notes = parsed.get("notes", [])
+    assert any("rest" in n and "unfiltered" in n for n in notes)
+
+
+def test_one_possession_note_appended():
+    parsed = parse_query("Celtics one-possession record")
+    notes = parsed.get("notes", [])
+    assert any("one_possession" in n and "unfiltered" in n for n in notes)
+
+
+def test_national_tv_note_appended():
+    parsed = parse_query("Knicks on national TV record")
+    notes = parsed.get("notes", [])
+    assert any("national_tv" in n and "unfiltered" in n for n in notes)

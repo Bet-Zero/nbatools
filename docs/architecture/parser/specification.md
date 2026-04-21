@@ -504,10 +504,17 @@ Define where or when within a game the stat applies.
 **Location / schedule**
 
 - `home`, `away` → `home_only` / `away_only`
-- `back-to-backs`, `b2b` — _partial_
+- `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back`
+- `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
+- `one-possession games` → `one_possession`
+- `nationally televised`, `on national TV` → `nationally_televised`
 - `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
   parse slots; current game-log data does not expose period splits, so the engine
   accepts these filters with an explicit unfiltered-results note
+
+Schedule-context slots above are parser-recognized and route-propagated; the
+current query engine accepts them with an explicit unfiltered-results note
+because schedule/context feature tables are not yet joined into route execution.
 
 **Outcome**
 
@@ -528,9 +535,6 @@ Define where or when within a game the stat applies.
 ### 8.2 Not yet shipped
 
 - `clutch` (last 5 min, score within 5)
-- `one-possession games`
-- `nationally televised`
-- `rest disadvantage`, `rest advantage`
 - `as starter`, `off the bench`
 
 These are listed in the expansion plan as Phase E additions.

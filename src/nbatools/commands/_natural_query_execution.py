@@ -26,6 +26,7 @@ import pandas as pd
 
 from nbatools.commands._constants import normalize_text
 from nbatools.commands._parse_helpers import (
+    build_game_context_filter_notes,
     build_period_filter_note,
 )
 from nbatools.commands.entity_resolution import PLAYER_ALIASES, TEAM_ALIASES
@@ -228,15 +229,27 @@ def _append_result_notes(result, notes: list[str]):
     return new_result
 
 
-def _sanitize_unavailable_period_filters(kwargs: dict) -> tuple[dict, list[str]]:
-    """Drop quarter/half kwargs until period-level splits exist in the data layer."""
+def _sanitize_unavailable_context_filters(kwargs: dict) -> tuple[dict, list[str]]:
+    """Drop context-filter kwargs until the relevant data joins exist."""
     sanitized = dict(kwargs)
     quarter = sanitized.pop("quarter", None)
     half = sanitized.pop("half", None)
+    back_to_back = sanitized.pop("back_to_back", False)
+    rest_days = sanitized.pop("rest_days", None)
+    one_possession = sanitized.pop("one_possession", False)
+    nationally_televised = sanitized.pop("nationally_televised", False)
 
     notes: list[str] = []
     if period_note := build_period_filter_note(quarter=quarter, half=half):
         notes.append(period_note)
+    notes.extend(
+        build_game_context_filter_notes(
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+    )
 
     return sanitized, notes
 
@@ -284,7 +297,7 @@ def _execute_build_result(
         extra_conditions = []
 
     build_fn = _get_build_result_map()[route]
-    sanitized_kwargs, notes = _sanitize_unavailable_period_filters(kwargs)
+    sanitized_kwargs, notes = _sanitize_unavailable_context_filters(kwargs)
     result = build_fn(**sanitized_kwargs)
     result = _append_result_notes(result, notes)
 

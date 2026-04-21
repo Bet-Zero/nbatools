@@ -54,10 +54,16 @@ from nbatools.commands._parse_helpers import (
     TEAM_STREAK_SPECIAL_PATTERNS as TEAM_STREAK_SPECIAL_PATTERNS,
 )
 from nbatools.commands._parse_helpers import (
+    build_game_context_filter_notes as build_game_context_filter_notes,
+)
+from nbatools.commands._parse_helpers import (
     build_period_filter_note as build_period_filter_note,
 )
 from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
+)
+from nbatools.commands._parse_helpers import (
+    detect_back_to_back as detect_back_to_back,
 )
 from nbatools.commands._parse_helpers import (
     detect_career_intent as detect_career_intent,
@@ -78,7 +84,16 @@ from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
 )
 from nbatools.commands._parse_helpers import (
+    detect_nationally_televised as detect_nationally_televised,
+)
+from nbatools.commands._parse_helpers import (
+    detect_one_possession as detect_one_possession,
+)
+from nbatools.commands._parse_helpers import (
     detect_quarter as detect_quarter,
+)
+from nbatools.commands._parse_helpers import (
+    detect_rest_days as detect_rest_days,
 )
 from nbatools.commands._parse_helpers import (
     detect_season_high_intent as detect_season_high_intent,
@@ -192,6 +207,10 @@ __all__ = [
     "detect_distinct_player_count",
     "detect_distinct_team_count",
     "detect_home_away",
+    "detect_back_to_back",
+    "detect_rest_days",
+    "detect_one_possession",
+    "detect_nationally_televised",
     "detect_quarter",
     "detect_half",
     "detect_season_high_intent",
@@ -392,6 +411,10 @@ def _build_parse_state(query: str) -> dict:
     home_only, away_only = detect_home_away(q)
     wins_only, losses_only = detect_wins_losses(q)
     clutch = detect_clutch(q)
+    back_to_back = detect_back_to_back(q)
+    rest_days = detect_rest_days(q)
+    one_possession = detect_one_possession(q)
+    nationally_televised = detect_nationally_televised(q)
     quarter = detect_quarter(q)
     half = detect_half(q)
 
@@ -469,6 +492,10 @@ def _build_parse_state(query: str) -> dict:
         "wins_only": wins_only,
         "losses_only": losses_only,
         "clutch": clutch,
+        "back_to_back": back_to_back,
+        "rest_days": rest_days,
+        "one_possession": one_possession,
+        "nationally_televised": nationally_televised,
         "quarter": quarter,
         "half": half,
         "summary_intent": summary_intent,
@@ -548,6 +575,10 @@ def _finalize_route(parsed: dict) -> dict:
     wins_only = parsed["wins_only"]
     losses_only = parsed["losses_only"]
     clutch = parsed.get("clutch", False)
+    back_to_back = parsed.get("back_to_back", False)
+    rest_days = parsed.get("rest_days")
+    one_possession = parsed.get("one_possession", False)
+    nationally_televised = parsed.get("nationally_televised", False)
     quarter = parsed.get("quarter")
     half = parsed.get("half")
     summary_intent = parsed["summary_intent"]
@@ -1238,6 +1269,10 @@ def _finalize_route(parsed: dict) -> dict:
         )
 
     out = dict(parsed)
+    route_kwargs["back_to_back"] = back_to_back
+    route_kwargs["rest_days"] = rest_days
+    route_kwargs["one_possession"] = one_possession
+    route_kwargs["nationally_televised"] = nationally_televised
     route_kwargs["quarter"] = quarter
     route_kwargs["half"] = half
     out["route"] = route
@@ -1251,6 +1286,14 @@ def _finalize_route(parsed: dict) -> dict:
         )
     if period_note := build_period_filter_note(quarter=quarter, half=half):
         notes.append(period_note)
+    notes.extend(
+        build_game_context_filter_notes(
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+    )
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
@@ -1296,6 +1339,7 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "opponent",
         "last_n",
         "split_type",
+        "rest_days",
         "quarter",
         "half",
         "head_to_head",
@@ -1314,6 +1358,12 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         out["wins_only"] = True
     if not out.get("losses_only") and base.get("losses_only"):
         out["losses_only"] = True
+    if not out.get("back_to_back") and base.get("back_to_back"):
+        out["back_to_back"] = True
+    if not out.get("one_possession") and base.get("one_possession"):
+        out["one_possession"] = True
+    if not out.get("nationally_televised") and base.get("nationally_televised"):
+        out["nationally_televised"] = True
     if not out.get("summary_intent") and base.get("summary_intent"):
         out["summary_intent"] = True
     if not out.get("finder_intent") and base.get("finder_intent"):
