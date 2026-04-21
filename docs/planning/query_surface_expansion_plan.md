@@ -521,7 +521,22 @@ If a phase's work uncovers a reason to change the plan's scope, priorities, or g
 
 ---
 
-## 10. Document relationships
+## 10. Closure after Phase E
+
+Phase E closes this parser/query-surface expansion plan. No Phase F work queue is being opened.
+
+That decision is deliberate. The remaining gaps exposed by Phase E are not primarily about parser phrasing, slot extraction, or route selection anymore. They are about **data-backed execution**:
+
+- true clutch filtering needs a play-by-play or equivalent clutch-capable split source
+- real on/off results need on-court/off-court split data or locally derived stint data
+- real lineup results need lineup-unit or rotation/stint data
+- richer schedule-context execution still needs better metadata joins for some filters
+
+If this work is prioritized later, it should be planned as a separate data/execution effort rather than as another phase of parser/query-surface expansion.
+
+---
+
+## 11. Document relationships
 
 This plan sits alongside:
 
