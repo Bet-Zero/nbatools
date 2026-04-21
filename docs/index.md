@@ -66,6 +66,7 @@ Roadmap and active plans.
 
 - `planning/roadmap.md` — planned and future capabilities
 - `planning/query_surface_expansion_plan.md` — parser/query-surface expansion plan synthesized from example and notes docs
+- `planning/phase_e_data_inventory.md` — on/off and lineup data-layer audit for Phase E item 7
 - `planning/phase_a_work_queue.md` — active Phase A work queue for the query-surface expansion plan
 - `planning/phase_a_gap_inventory.md` — reconnaissance of question/search parity gaps (Phase A item 2)
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
