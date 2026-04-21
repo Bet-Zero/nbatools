@@ -247,13 +247,13 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 
 _Opponent-quality filters are shipped on the core single-entity summary/finder/record routes — see [`specification.md` §9](./specification.md#9-opponent-quality-filters)._
 
-| #   | Question form                                                  | Search / shorthand form            |
-| --- | -------------------------------------------------------------- | ---------------------------------- |
-| 21  | Who scores the most against teams over .500 this season?       | most points vs teams over .500     |
-| 22  | What team has the best record against contenders this year?    | best record vs contenders          |
-| 23  | Which players shoot the best against top-10 defenses?          | best shooting vs top 10 defenses   |
-| 24  | How has Jayson Tatum played against good teams this season?    | Tatum against good teams this season |
-| 25  | What is the Celtics' record against playoff teams?             | Celtics record vs playoff teams    |
+| #   | Question form                                               | Search / shorthand form              |
+| --- | ----------------------------------------------------------- | ------------------------------------ |
+| 21  | Who scores the most against teams over .500 this season?    | most points vs teams over .500       |
+| 22  | What team has the best record against contenders this year? | best record vs contenders            |
+| 23  | Which players shoot the best against top-10 defenses?       | best shooting vs top 10 defenses     |
+| 24  | How has Jayson Tatum played against good teams this season? | Tatum against good teams this season |
+| 25  | What is the Celtics' record against playoff teams?          | Celtics record vs playoff teams      |
 
 ### 3.6 When a teammate didn't play
 
@@ -734,11 +734,9 @@ lakers record against top-10 defenses 2024-25
     }
   },
   "season": "2024-25",
-  "confidence": 0.90,
+  "confidence": 0.9,
   "alternates": [],
-  "notes": [
-    "opponent_quality: top-10 defenses -> top 10 by defensive rating"
-  ],
+  "notes": ["opponent_quality: top-10 defenses -> top 10 by defensive rating"],
   "route_kwargs": {
     "team": "LAL",
     "season": "2024-25",
@@ -819,14 +817,14 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Tatum clutch stats`
 - `Tatum clutch time stats`
 - `late-game Tatum stats`
-- _Current execution note:_ all variants set `clutch=True`; results remain unfiltered until play-by-play clutch splits land._
+- _Current execution note:_ all variants set `clutch=True`; results remain unfiltered until play-by-play clutch splits land.\_
 
 ### 7.8 Period context — 4th quarter scoring leaders
 
 - `Which players score the most in the 4th quarter this season?`
 - `most 4th quarter points this season`
 - `4th quarter scoring leaders this season`
-- _Current execution note:_ all variants set `quarter="4"`; results remain unfiltered until period splits land._
+- _Current execution note:_ all variants set `quarter="4"`; results remain unfiltered until period splits land.\_
 
 ### 7.9 Schedule context — Lakers back-to-back record
 
@@ -834,21 +832,21 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Lakers on back-to-backs record`
 - `Lakers b2b record`
 - `Lakers second of a back-to-back record`
-- _Current execution note:_ all variants set `back_to_back=True`; results remain unfiltered until schedule/context joins land._
+- _Current execution note:_ all variants set `back_to_back=True`; results remain unfiltered until schedule/context joins land.\_
 
 ### 7.10 Role filter — LeBron as a starter
 
 - `How has LeBron played as a starter this season?`
 - `LeBron as a starter stats`
 - `LeBron starting stats`
-- _Current execution note:_ all variants set `role="starter"` for player-context queries; results remain unfiltered until role filtering is wired through execution._
+- _Current execution note:_ all variants set `role="starter"` for player-context queries; results remain unfiltered until role filtering is wired through execution.\_
 
 ### 7.11 Opponent-quality — Jokic against contenders
 
 - `How has Jokic played against contenders this season?`
 - `Jokic against contenders this season`
 - `Jokic vs contenders this season`
-- _Execution note:_ all variants set the same structured `opponent_quality` definition and route through the supported single-entity summary path._
+- _Execution note:_ all variants set the same structured `opponent_quality` definition and route through the supported single-entity summary path.\_
 
 ---
 

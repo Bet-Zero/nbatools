@@ -273,20 +273,20 @@ This is deliberately different from a flat "one intent enum" model. The combinat
 
 ### 4.3 Class × modifier examples
 
-| Query                                   | Class                | Key modifiers                                  |
-| --------------------------------------- | -------------------- | ---------------------------------------------- |
-| `most points last 10`                   | `leaderboard`        | `leaderboard_intent`                           |
-| `Jokic last 10`                         | `summary`            | `summary_intent` (inferred)                    |
-| `biggest scoring games this season`     | `leaderboard`        | `season_high_intent` (league-wide)             |
-| `Curry 5+ threes this season`           | `count`/`occurrence` | `occurrence_event` populated                   |
-| `Mavericks record when Luka scores 35+` | `record`             | `record_intent` + threshold                    |
-| `Celtics vs contenders`                 | `record` (default)   | `record_intent` + opponent-quality (future)    |
-| `Edwards in wins vs losses`             | `split`              | `split_intent` + `split_type="wins_vs_losses"` |
-| `Suns when Booker out`                  | `summary`/`record`   | `without_player` filter                        |
+| Query                                   | Class                | Key modifiers                                                 |
+| --------------------------------------- | -------------------- | ------------------------------------------------------------- |
+| `most points last 10`                   | `leaderboard`        | `leaderboard_intent`                                          |
+| `Jokic last 10`                         | `summary`            | `summary_intent` (inferred)                                   |
+| `biggest scoring games this season`     | `leaderboard`        | `season_high_intent` (league-wide)                            |
+| `Curry 5+ threes this season`           | `count`/`occurrence` | `occurrence_event` populated                                  |
+| `Mavericks record when Luka scores 35+` | `record`             | `record_intent` + threshold                                   |
+| `Celtics vs contenders`                 | `record` (default)   | `record_intent` + opponent-quality (future)                   |
+| `Edwards in wins vs losses`             | `split`              | `split_intent` + `split_type="wins_vs_losses"`                |
+| `Suns when Booker out`                  | `summary`/`record`   | `without_player` filter                                       |
 | `Nuggets Jokic on off`                  | `summary`            | `lineup_members` + `presence_state`; placeholder on/off route |
-| `LeBron vs Durant career stats`         | `comparison`         | `career_intent` + player comparison            |
-| `Jokic longest 30-point streak`         | `streak`             | `streak_request` populated                     |
-| `Lakers vs Celtics playoff history`     | `playoff`            | `playoff_history_intent`                       |
+| `LeBron vs Durant career stats`         | `comparison`         | `career_intent` + player comparison                           |
+| `Jokic longest 30-point streak`         | `streak`             | `streak_request` populated                                    |
+| `Lakers vs Celtics playoff history`     | `playoff`            | `playoff_history_intent`                                      |
 
 ### 4.4 Decision signals
 
@@ -615,12 +615,12 @@ Note: `X off` is deliberately **not** matched as absence — it is reserved for 
 
 These are structurally different and should not be conflated:
 
-| Concept                             | Supported?                  |
-| ----------------------------------- | --------------------------- |
-| Player absent from game (DNP)       | ✅ via `without_player`     |
+| Concept                             | Supported?                                              |
+| ----------------------------------- | ------------------------------------------------------- |
+| Player absent from game (DNP)       | ✅ via `without_player`                                 |
 | Player off court during possessions | Parser/routing shipped; execution placeholder — see §11 |
-| Player did not start                | Not supported               |
-| Player played limited minutes       | Not supported               |
+| Player did not start                | Not supported                                           |
+| Player played limited minutes       | Not supported                                           |
 
 ### 10.2 Negation forms to handle
 
