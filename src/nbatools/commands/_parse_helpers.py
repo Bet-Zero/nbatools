@@ -828,6 +828,17 @@ def detect_nationally_televised(text: str) -> bool:
     )
 
 
+def detect_role(text: str) -> str | None:
+    """Detect starter/bench role filters for player-context queries."""
+    if re.search(r"\bas\s+(?:a\s+)?starter\b|\bstarting\b", text):
+        return "starter"
+    if re.search(r"\boff\s+the\s+bench\b|\bcoming\s+off\s+the\s+bench\b", text):
+        return "bench"
+    if re.search(r"\bbench\b|\breserve\b", text):
+        return "bench"
+    return None
+
+
 def detect_quarter(text: str) -> str | None:
     """Detect quarter-level context filters.
 
@@ -919,6 +930,16 @@ def build_game_context_filter_notes(
         )
 
     return notes
+
+
+def build_role_filter_note(role: str | None = None) -> str | None:
+    """Describe the current starter/bench role-filter limitation honestly."""
+    if role is None:
+        return None
+    return (
+        f"role: {role} filter detected but starter/bench filtering is not yet wired into "
+        "the current query engine; results are unfiltered"
+    )
 
 
 def wants_summary(text: str) -> bool:

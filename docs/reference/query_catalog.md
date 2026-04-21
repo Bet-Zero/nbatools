@@ -88,6 +88,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
    (parser-recognized and engine-accepted; current query engine returns unfiltered
    results with an explicit note because schedule/context feature tables are not yet joined)
+- role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
+   (parser-recognized and engine-accepted for player queries; current query engine returns
+   unfiltered results with an explicit note because starter/bench filtering is not yet wired in)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language

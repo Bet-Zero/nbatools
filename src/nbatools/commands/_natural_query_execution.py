@@ -28,6 +28,7 @@ from nbatools.commands._constants import normalize_text
 from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes,
     build_period_filter_note,
+    build_role_filter_note,
 )
 from nbatools.commands.entity_resolution import PLAYER_ALIASES, TEAM_ALIASES
 from nbatools.commands.format_output import (
@@ -238,6 +239,7 @@ def _sanitize_unavailable_context_filters(kwargs: dict) -> tuple[dict, list[str]
     rest_days = sanitized.pop("rest_days", None)
     one_possession = sanitized.pop("one_possession", False)
     nationally_televised = sanitized.pop("nationally_televised", False)
+    role = sanitized.pop("role", None)
 
     notes: list[str] = []
     if period_note := build_period_filter_note(quarter=quarter, half=half):
@@ -250,6 +252,8 @@ def _sanitize_unavailable_context_filters(kwargs: dict) -> tuple[dict, list[str]
             nationally_televised=nationally_televised,
         )
     )
+    if role_note := build_role_filter_note(role=role):
+        notes.append(role_note)
 
     return sanitized, notes
 

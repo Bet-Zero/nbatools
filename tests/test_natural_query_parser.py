@@ -506,3 +506,39 @@ def test_national_tv_note_appended():
     parsed = parse_query("Knicks on national TV record")
     notes = parsed.get("notes", [])
     assert any("national_tv" in n and "unfiltered" in n for n in notes)
+
+
+# ---------------------------------------------------------------------------
+# Starter / bench role filter
+# ---------------------------------------------------------------------------
+
+
+def test_off_the_bench_surface_form_sets_bench_role():
+    parsed = parse_query("Brunson off the bench")
+    assert parsed["role"] == "bench"
+
+
+def test_reserve_surface_form_sets_bench_role():
+    parsed = parse_query("Brunson reserve stats")
+    assert parsed["role"] == "bench"
+
+
+def test_as_a_starter_surface_form_sets_starter_role():
+    parsed = parse_query("LeBron as a starter stats")
+    assert parsed["role"] == "starter"
+
+
+def test_starting_surface_form_sets_starter_role():
+    parsed = parse_query("LeBron starting stats")
+    assert parsed["role"] == "starter"
+
+
+def test_team_bench_scoring_does_not_set_role():
+    parsed = parse_query("Celtics bench scoring")
+    assert parsed["role"] is None
+
+
+def test_role_note_appended():
+    parsed = parse_query("Brunson off the bench")
+    notes = parsed.get("notes", [])
+    assert any("bench" in n and "unfiltered" in n for n in notes)

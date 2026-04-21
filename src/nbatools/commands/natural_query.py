@@ -60,6 +60,9 @@ from nbatools.commands._parse_helpers import (
     build_period_filter_note as build_period_filter_note,
 )
 from nbatools.commands._parse_helpers import (
+    build_role_filter_note as build_role_filter_note,
+)
+from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
 )
 from nbatools.commands._parse_helpers import (
@@ -94,6 +97,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_rest_days as detect_rest_days,
+)
+from nbatools.commands._parse_helpers import (
+    detect_role as detect_role,
 )
 from nbatools.commands._parse_helpers import (
     detect_season_high_intent as detect_season_high_intent,
@@ -211,6 +217,7 @@ __all__ = [
     "detect_rest_days",
     "detect_one_possession",
     "detect_nationally_televised",
+    "detect_role",
     "detect_quarter",
     "detect_half",
     "detect_season_high_intent",
@@ -408,6 +415,8 @@ def _build_parse_state(query: str) -> dict:
     if without_player and player and without_player.upper() == player.upper():
         player = None
 
+    role = detect_role(q) if any([player, player_a, player_b]) else None
+
     home_only, away_only = detect_home_away(q)
     wins_only, losses_only = detect_wins_losses(q)
     clutch = detect_clutch(q)
@@ -496,6 +505,7 @@ def _build_parse_state(query: str) -> dict:
         "rest_days": rest_days,
         "one_possession": one_possession,
         "nationally_televised": nationally_televised,
+        "role": role,
         "quarter": quarter,
         "half": half,
         "summary_intent": summary_intent,
@@ -579,6 +589,7 @@ def _finalize_route(parsed: dict) -> dict:
     rest_days = parsed.get("rest_days")
     one_possession = parsed.get("one_possession", False)
     nationally_televised = parsed.get("nationally_televised", False)
+    role = parsed.get("role")
     quarter = parsed.get("quarter")
     half = parsed.get("half")
     summary_intent = parsed["summary_intent"]
@@ -1273,6 +1284,7 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["rest_days"] = rest_days
     route_kwargs["one_possession"] = one_possession
     route_kwargs["nationally_televised"] = nationally_televised
+    route_kwargs["role"] = role
     route_kwargs["quarter"] = quarter
     route_kwargs["half"] = half
     out["route"] = route
@@ -1294,6 +1306,8 @@ def _finalize_route(parsed: dict) -> dict:
             nationally_televised=nationally_televised,
         )
     )
+    if role_note := build_role_filter_note(role=role):
+        notes.append(role_note)
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
@@ -1339,6 +1353,7 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "opponent",
         "last_n",
         "split_type",
+        "role",
         "rest_days",
         "quarter",
         "half",
