@@ -27,6 +27,8 @@ class QuerySmokeCase:
 
 
 CLUTCH_NOTE_SUBSTRINGS = ("clutch", "unfiltered")
+QUARTER_NOTE_SUBSTRINGS = ("quarter", "unfiltered")
+HALF_NOTE_SUBSTRINGS = ("half", "unfiltered")
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
@@ -124,6 +126,27 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_query_class="finder",
         expected_intents=("finder",),
         expected_note_substrings=CLUTCH_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="LeBron 4th quarter scoring",
+        expected_routes=("player_game_finder",),
+        expected_query_class="finder",
+        expected_intents=("finder",),
+        expected_note_substrings=QUARTER_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Celtics first half record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=HALF_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Knicks OT record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=QUARTER_NOTE_SUBSTRINGS,
     ),
 )
 

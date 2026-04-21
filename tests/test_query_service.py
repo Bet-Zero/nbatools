@@ -233,6 +233,30 @@ class TestStructuredQueryExecution:
         assert not qr.is_ok
         assert qr.result_reason in ("no_data", "no_match")
 
+    def test_structured_query_accepts_quarter_filter_with_unfiltered_note(self):
+        qr = execute_structured_query(
+            "player_game_summary",
+            season="1950-51",
+            player="Nikola Jokić",
+            quarter="4",
+        )
+        assert qr.route == "player_game_summary"
+        assert isinstance(qr.result, NoResult)
+        assert qr.metadata["quarter"] == "4"
+        assert any("quarter" in note and "unfiltered" in note for note in qr.result.notes)
+
+    def test_structured_query_accepts_half_filter_with_unfiltered_note(self):
+        qr = execute_structured_query(
+            "game_summary",
+            season="1950-51",
+            team="BOS",
+            half="first",
+        )
+        assert qr.route == "game_summary"
+        assert isinstance(qr.result, NoResult)
+        assert qr.metadata["half"] == "first"
+        assert any("half" in note and "unfiltered" in note for note in qr.result.notes)
+
 
 # ===================================================================
 # Metadata preservation

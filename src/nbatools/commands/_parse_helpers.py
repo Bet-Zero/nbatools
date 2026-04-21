@@ -760,6 +760,60 @@ def detect_clutch(text: str) -> bool:
     )
 
 
+def detect_quarter(text: str) -> str | None:
+    """Detect quarter-level context filters.
+
+    Surface forms: ``1st quarter`` / ``first quarter`` through
+    ``4th quarter`` / ``fourth quarter``, plus ``overtime`` / ``OT``.
+    """
+    patterns = (
+        (r"\b(?:1st|first)\s+quarter\b|\bq1\b", "1"),
+        (r"\b(?:2nd|second)\s+quarter\b|\bq2\b", "2"),
+        (r"\b(?:3rd|third)\s+quarter\b|\bq3\b", "3"),
+        (r"\b(?:4th|fourth)\s+quarter\b|\bq4\b", "4"),
+        (r"\b(?:overtime|ot)\b", "OT"),
+    )
+    for pattern, value in patterns:
+        if re.search(pattern, text):
+            return value
+    return None
+
+
+def detect_half(text: str) -> str | None:
+    """Detect half-level context filters.
+
+    Surface forms: ``first half`` / ``1st half`` and
+    ``second half`` / ``2nd half``.
+    """
+    if re.search(r"\b(?:1st|first)\s+half\b", text):
+        return "first"
+    if re.search(r"\b(?:2nd|second)\s+half\b", text):
+        return "second"
+    return None
+
+
+def build_period_filter_note(
+    quarter: str | None = None,
+    half: str | None = None,
+) -> str | None:
+    """Describe the current quarter/half-filter limitation honestly.
+
+    The parser recognizes these surface forms, but the current game-log
+    layer does not expose period-level splits, so results remain unfiltered.
+    """
+    if quarter is not None:
+        return (
+            "quarter: filter detected but quarter/half splits are not yet available "
+            "in the current game-log data; results are unfiltered"
+        )
+    if half is not None:
+        return (
+            "half: filter detected but quarter/half splits are not yet available "
+            "in the current game-log data; results are unfiltered"
+        )
+    return None
+
+
 def wants_summary(text: str) -> bool:
     # Word-bounded so `record` does not match `recorded` etc.
     if re.search(

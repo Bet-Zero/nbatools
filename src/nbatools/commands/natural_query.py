@@ -54,6 +54,9 @@ from nbatools.commands._parse_helpers import (
     TEAM_STREAK_SPECIAL_PATTERNS as TEAM_STREAK_SPECIAL_PATTERNS,
 )
 from nbatools.commands._parse_helpers import (
+    build_period_filter_note as build_period_filter_note,
+)
+from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
 )
 from nbatools.commands._parse_helpers import (
@@ -69,7 +72,13 @@ from nbatools.commands._parse_helpers import (
     detect_distinct_team_count as detect_distinct_team_count,
 )
 from nbatools.commands._parse_helpers import (
+    detect_half as detect_half,
+)
+from nbatools.commands._parse_helpers import (
     detect_home_away as detect_home_away,
+)
+from nbatools.commands._parse_helpers import (
+    detect_quarter as detect_quarter,
 )
 from nbatools.commands._parse_helpers import (
     detect_season_high_intent as detect_season_high_intent,
@@ -183,6 +192,8 @@ __all__ = [
     "detect_distinct_player_count",
     "detect_distinct_team_count",
     "detect_home_away",
+    "detect_quarter",
+    "detect_half",
     "detect_season_high_intent",
     "detect_season_type",
     "detect_split_type",
@@ -381,6 +392,8 @@ def _build_parse_state(query: str) -> dict:
     home_only, away_only = detect_home_away(q)
     wins_only, losses_only = detect_wins_losses(q)
     clutch = detect_clutch(q)
+    quarter = detect_quarter(q)
+    half = detect_half(q)
 
     if season is None and start_season is None and end_season is None:
         if any(
@@ -456,6 +469,8 @@ def _build_parse_state(query: str) -> dict:
         "wins_only": wins_only,
         "losses_only": losses_only,
         "clutch": clutch,
+        "quarter": quarter,
+        "half": half,
         "summary_intent": summary_intent,
         "finder_intent": finder_intent,
         "count_intent": count_intent,
@@ -533,6 +548,8 @@ def _finalize_route(parsed: dict) -> dict:
     wins_only = parsed["wins_only"]
     losses_only = parsed["losses_only"]
     clutch = parsed.get("clutch", False)
+    quarter = parsed.get("quarter")
+    half = parsed.get("half")
     summary_intent = parsed["summary_intent"]
     finder_intent = parsed.get("finder_intent", False)
     count_intent = parsed.get("count_intent", False)
@@ -1222,6 +1239,8 @@ def _finalize_route(parsed: dict) -> dict:
         )
 
     out = dict(parsed)
+    route_kwargs["quarter"] = quarter
+    route_kwargs["half"] = half
     out["route"] = route
     out["route_kwargs"] = route_kwargs
     out["intent"] = route_to_intent(route, count_intent=count_intent)
@@ -1231,6 +1250,8 @@ def _finalize_route(parsed: dict) -> dict:
             "clutch: filter detected but play-by-play clutch splits not yet available; "
             "results are unfiltered"
         )
+    if period_note := build_period_filter_note(quarter=quarter, half=half):
+        notes.append(period_note)
 
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
@@ -1276,6 +1297,8 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "opponent",
         "last_n",
         "split_type",
+        "quarter",
+        "half",
         "head_to_head",
     ]
     for key in inherit_keys_if_missing:

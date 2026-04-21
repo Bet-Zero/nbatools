@@ -505,6 +505,9 @@ Define where or when within a game the stat applies.
 
 - `home`, `away` → `home_only` / `away_only`
 - `back-to-backs`, `b2b` — _partial_
+- `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
+  parse slots; current game-log data does not expose period splits, so the engine
+  accepts these filters with an explicit unfiltered-results note
 
 **Outcome**
 
@@ -525,8 +528,7 @@ Define where or when within a game the stat applies.
 ### 8.2 Not yet shipped
 
 - `clutch` (last 5 min, score within 5)
-- `1st/2nd/3rd/4th quarter`, `first half`, `second half`
-- `overtime`, `one-possession games`
+- `one-possession games`
 - `nationally televised`
 - `rest disadvantage`, `rest advantage`
 - `as starter`, `off the bench`
