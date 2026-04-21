@@ -3,7 +3,7 @@
 # Deterministic targets for running the test suite.
 # See CONTRIBUTING.md for when to use each.
 
-.PHONY: test test-impacted test-preflight test-unit test-parser test-query test-engine test-api test-output
+.PHONY: test test-impacted test-preflight test-unit test-parser test-query test-engine test-api test-output test-smoke-queries test-phase-smoke
 
 ## Full regression suite (parallel via xdist).
 ## Use before merging, in CI, or when you want complete confidence.
@@ -56,3 +56,11 @@ test-api:
 ## Formatting, result contracts, export.
 test-output:
 	pytest -m output
+
+## Stable natural-query smoke checks through the real CLI and API paths.
+test-smoke-queries:
+	pytest tests/test_query_smoke_stable.py -n0
+
+## Phase-focused natural-query smoke checks for active parser/query work.
+test-phase-smoke:
+	pytest tests/test_query_smoke_phase.py -n0

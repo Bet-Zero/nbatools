@@ -18,7 +18,7 @@ If you're new, start here and follow the order below.
 
 ## Directory Layout
 
-```
+```text
 docs/
   index.md                 ← you are here
   reference/               — current-state, verified behavior, data specs
@@ -57,6 +57,7 @@ Engineering conventions and internal layer design.
 Runbooks and operational guides.
 
 - `operations/pipeline_runbook.md` — data pipeline operations
+- `operations/query_smoke_workflow.md` — terminal-driven natural-query smoke workflow
 - `operations/ui_guide.md` — web UI setup, dev workflow, component reference
 
 ## Planning — `planning/`
@@ -138,19 +139,25 @@ Point-in-time audit snapshots and historical records.
 
 Main commands:
 
-    nbatools-cli ask
-    nbatools-cli query
+```bash
+nbatools-cli ask
+nbatools-cli query
+```
 
 Help:
 
-    nbatools-cli --help
-    nbatools-cli ask --help
-    nbatools-cli query --help
+```bash
+nbatools-cli --help
+nbatools-cli ask --help
+nbatools-cli query --help
+```
 
 Tests:
 
-    pytest
-    nbatools-cli test
+```bash
+pytest
+nbatools-cli test
+```
 
 ---
 
