@@ -508,6 +508,7 @@ Define where or when within a game the stat applies.
 - `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
 - `one-possession games` → `one_possession`
 - `nationally televised`, `on national TV` → `nationally_televised`
+- `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
 - `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
   parse slots; current game-log data does not expose period splits, so the engine
   accepts these filters with an explicit unfiltered-results note
@@ -535,7 +536,6 @@ because schedule/context feature tables are not yet joined into route execution.
 ### 8.2 Not yet shipped
 
 - `clutch` (last 5 min, score within 5)
-- `as starter`, `off the bench`
 
 These are listed in the expansion plan as Phase E additions.
 

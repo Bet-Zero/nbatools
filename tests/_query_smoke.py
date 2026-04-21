@@ -33,6 +33,8 @@ BACK_TO_BACK_NOTE_SUBSTRINGS = ("back_to_back", "unfiltered")
 REST_NOTE_SUBSTRINGS = ("rest", "unfiltered")
 ONE_POSSESSION_NOTE_SUBSTRINGS = ("one_possession", "unfiltered")
 NATIONAL_TV_NOTE_SUBSTRINGS = ("national_tv", "unfiltered")
+STARTER_NOTE_SUBSTRINGS = ("starter", "unfiltered")
+BENCH_NOTE_SUBSTRINGS = ("bench", "unfiltered")
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
@@ -179,6 +181,20 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_query_class="summary",
         expected_intents=("summary",),
         expected_note_substrings=NATIONAL_TV_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="LeBron as a starter stats",
+        expected_routes=("player_game_summary",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=STARTER_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Brunson off the bench",
+        expected_routes=("player_game_summary",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=BENCH_NOTE_SUBSTRINGS,
     ),
 )
 
