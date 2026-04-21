@@ -33,7 +33,6 @@ from nbatools.commands._natural_query_execution import (
     _execute_grouped_boolean_build_result,
     _execute_or_query_build_result,
     _extract_grouped_condition_text,
-    _get_build_result_map,
 )
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -131,6 +130,8 @@ def _build_query_metadata(
         "team": team,
         "opponent": parsed.get("opponent"),
         "split_type": parsed.get("split_type"),
+        "quarter": parsed.get("quarter"),
+        "half": parsed.get("half"),
         "position_filter": parsed.get("position_filter"),
         "grouped_boolean_used": grouped_boolean_used,
         "head_to_head_used": bool(parsed.get("head_to_head")),
@@ -576,9 +577,6 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
             route=route,
         )
 
-    build_map = _get_build_result_map()
-    build_fn = build_map[route]
-
     query_class = route_to_query_class(route)
 
     # Build metadata from kwargs
@@ -629,6 +627,8 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "team": team,
         "opponent": kwargs.get("opponent"),
         "split_type": kwargs.get("split"),
+        "quarter": kwargs.get("quarter"),
+        "half": kwargs.get("half"),
         "position_filter": kwargs.get("position"),
         "head_to_head_used": bool(kwargs.get("head_to_head")),
     }
@@ -638,7 +638,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     query_desc = f"structured:{route}"
 
     try:
-        result = build_fn(**kwargs)
+        result = _execute_build_result(route, kwargs)
     except FileNotFoundError:
         result = NoResult(query_class=query_class, reason="no_data")
         return QueryResult(
@@ -660,6 +660,9 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
             query=query_desc,
             route=route,
         )
+
+    if getattr(result, "notes", None):
+        metadata["notes"] = list(result.notes)
 
     return QueryResult(
         result=result,

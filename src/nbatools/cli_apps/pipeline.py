@@ -10,8 +10,10 @@ from nbatools.commands.pipeline.orchestrator import (
     PipelineResult,
     backfill_seasons,
     pipeline_status,
-    rebuild_season as rebuild_season_fn,
     refresh_current_season,
+)
+from nbatools.commands.pipeline.orchestrator import (
+    rebuild_season as rebuild_season_fn,
 )
 
 app = typer.Typer()

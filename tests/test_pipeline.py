@@ -234,7 +234,9 @@ class TestRefreshSeason:
     @patch("nbatools.commands.pipeline.build_player_game_features.run")
     @patch("nbatools.commands.pipeline.build_league_season_stats.run")
     @patch("nbatools.commands.ops.update_manifest.run")
-    @patch("nbatools.commands.pipeline.orchestrator.compute_current_through", return_value="2026-04-11")
+    @patch(
+        "nbatools.commands.pipeline.orchestrator.compute_current_through", return_value="2026-04-11"
+    )
     def test_full_success(self, mock_ct, *mocks):
         result = refresh_season("2025-26", "Regular Season")
         assert result.success
@@ -273,7 +275,9 @@ class TestRefreshSeason:
         assert val_stage.status == StageStatus.FAILED
 
     @patch("nbatools.commands.pipeline.backfill_season.outputs_exist", return_value=True)
-    @patch("nbatools.commands.pipeline.orchestrator.compute_current_through", return_value="2026-04-10")
+    @patch(
+        "nbatools.commands.pipeline.orchestrator.compute_current_through", return_value="2026-04-10"
+    )
     def test_skip_existing(self, mock_ct, mock_exists):
         result = refresh_season("2025-26", "Regular Season", skip_existing=True)
         assert result.success

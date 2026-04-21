@@ -25,6 +25,9 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._constants import normalize_text
+from nbatools.commands._parse_helpers import (
+    build_period_filter_note,
+)
 from nbatools.commands.entity_resolution import PLAYER_ALIASES, TEAM_ALIASES
 from nbatools.commands.format_output import (
     build_error_output,
@@ -138,12 +141,8 @@ _BUILD_RESULT_MAP: dict[str, Callable] = {}
 # Sorted once at import time so _extract_grouped_condition_text doesn't re-sort
 # on every call.
 
-_SORTED_PLAYER_ALIAS_NAMES: list[str] = sorted(
-    PLAYER_ALIASES.keys(), key=len, reverse=True
-)
-_SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(
-    TEAM_ALIASES.keys(), key=len, reverse=True
-)
+_SORTED_PLAYER_ALIAS_NAMES: list[str] = sorted(PLAYER_ALIASES.keys(), key=len, reverse=True)
+_SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(TEAM_ALIASES.keys(), key=len, reverse=True)
 
 
 def _get_build_result_map() -> dict[str, Callable]:
@@ -215,6 +214,33 @@ def _set_result_primary_df(result, df):
     return new_result
 
 
+def _append_result_notes(result, notes: list[str]):
+    """Append notes to a structured result without mutating the original."""
+    if not notes:
+        return result
+
+    new_result = copy.copy(result)
+    existing = list(getattr(new_result, "notes", []) or [])
+    for note in notes:
+        if note not in existing:
+            existing.append(note)
+    new_result.notes = existing
+    return new_result
+
+
+def _sanitize_unavailable_period_filters(kwargs: dict) -> tuple[dict, list[str]]:
+    """Drop quarter/half kwargs until period-level splits exist in the data layer."""
+    sanitized = dict(kwargs)
+    quarter = sanitized.pop("quarter", None)
+    half = sanitized.pop("half", None)
+
+    notes: list[str] = []
+    if period_note := build_period_filter_note(quarter=quarter, half=half):
+        notes.append(period_note)
+
+    return sanitized, notes
+
+
 def _apply_extra_conditions_to_result(result, extra_conditions: list[dict]):
     """Apply stat-threshold extra conditions directly to the result's DataFrame.
 
@@ -258,7 +284,9 @@ def _execute_build_result(
         extra_conditions = []
 
     build_fn = _get_build_result_map()[route]
-    result = build_fn(**kwargs)
+    sanitized_kwargs, notes = _sanitize_unavailable_period_filters(kwargs)
+    result = build_fn(**sanitized_kwargs)
+    result = _append_result_notes(result, notes)
 
     if extra_conditions:
         result = _apply_extra_conditions_to_result(result, extra_conditions)

@@ -1063,7 +1063,7 @@ class TestNotesSurfacedInRawOutput:
         assert "notes" in meta
         assert "sample_advanced_metrics" in meta["notes"]
 
-    def test_leaderboard_without_date_window_has_no_notes(self):
+    def test_leaderboard_without_date_window_has_default_note(self):
         out = _capture_output(
             natural_query_run,
             query="season leaders in assists for 2023-24 playoffs",
@@ -1071,9 +1071,10 @@ class TestNotesSurfacedInRawOutput:
         )
         sections = parse_labeled_sections(out)
         meta = parse_metadata_block(sections[METADATA_LABEL])
-        assert "notes" not in meta
+        assert "notes" in meta
+        assert "league-wide leaderboard" in meta["notes"]
 
-    def test_finder_has_no_notes(self):
+    def test_finder_has_default_note(self):
         out = _capture_output(
             natural_query_run,
             query="Jokic last 10 games over 25 points",
@@ -1081,9 +1082,10 @@ class TestNotesSurfacedInRawOutput:
         )
         sections = parse_labeled_sections(out)
         meta = parse_metadata_block(sections[METADATA_LABEL])
-        assert "notes" not in meta
+        assert "notes" in meta
+        assert "<player> + <threshold>" in meta["notes"]
 
-    def test_streak_has_no_notes(self):
+    def test_streak_has_default_window_note(self):
         out = _capture_output(
             natural_query_run,
             query="Jokic 5 straight games with 20+ points",
@@ -1091,7 +1093,8 @@ class TestNotesSurfacedInRawOutput:
         )
         sections = parse_labeled_sections(out)
         meta = parse_metadata_block(sections[METADATA_LABEL])
-        assert "notes" not in meta
+        assert "notes" in meta
+        assert "three-season window" in meta["notes"]
 
 
 class TestNotesInJsonExport:
@@ -1111,7 +1114,7 @@ class TestNotesInJsonExport:
         assert isinstance(notes, list)
         assert any("sample_advanced_metrics" in n for n in notes)
 
-    def test_json_export_leaderboard_no_date_window_no_notes(self, tmp_path):
+    def test_json_export_leaderboard_no_date_window_has_default_note(self, tmp_path):
         out_path = tmp_path / "leaders.json"
         _capture_output(
             natural_query_run,
@@ -1120,7 +1123,9 @@ class TestNotesInJsonExport:
             export_json_path=str(out_path),
         )
         payload = json.loads(out_path.read_text(encoding="utf-8"))
-        assert "notes" not in payload.get("metadata", {})
+        notes = payload.get("metadata", {}).get("notes")
+        assert isinstance(notes, list)
+        assert any("league-wide leaderboard" in note for note in notes)
 
 
 @pytest.mark.needs_data

@@ -2,12 +2,16 @@ import typer
 
 from nbatools.commands.pipeline.pull_games import run as pull_games_run
 from nbatools.commands.pipeline.pull_player_game_stats import run as pull_player_game_stats_run
-from nbatools.commands.pipeline.pull_player_season_advanced import run as pull_player_season_advanced_run
+from nbatools.commands.pipeline.pull_player_season_advanced import (
+    run as pull_player_season_advanced_run,
+)
 from nbatools.commands.pipeline.pull_rosters import run as pull_rosters_run
 from nbatools.commands.pipeline.pull_schedule import run as pull_schedule_run
 from nbatools.commands.pipeline.pull_standings_snapshots import run as pull_standings_snapshots_run
 from nbatools.commands.pipeline.pull_team_game_stats import run as pull_team_game_stats_run
-from nbatools.commands.pipeline.pull_team_season_advanced import run as pull_team_season_advanced_run
+from nbatools.commands.pipeline.pull_team_season_advanced import (
+    run as pull_team_season_advanced_run,
+)
 from nbatools.commands.pipeline.pull_teams import run as pull_teams_run
 
 app = typer.Typer()

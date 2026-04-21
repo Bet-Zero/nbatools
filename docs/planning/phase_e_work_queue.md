@@ -89,7 +89,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 2. `[ ]` Add quarter and half context filters
+## 2. `[x]` Add quarter and half context filters
 
 **Why:** "4th quarter scoring", "first half stats", "3rd quarter collapse" — quarter/half filters are commonly requested and straightforward to detect.
 

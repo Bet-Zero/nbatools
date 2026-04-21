@@ -82,6 +82,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
+- period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
+   (parser-recognized and engine-accepted; current game-log data returns unfiltered
+   full-game results with an explicit note because period splits are not available yet)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language

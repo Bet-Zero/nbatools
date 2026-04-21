@@ -15,7 +15,12 @@ from unittest.mock import patch
 import pytest
 
 from nbatools.commands.pipeline.auto_refresh import parse_interval, run_auto_refresh
-from nbatools.commands.pipeline.orchestrator import PipelineResult, SeasonResult, StageResult, StageStatus
+from nbatools.commands.pipeline.orchestrator import (
+    PipelineResult,
+    SeasonResult,
+    StageResult,
+    StageStatus,
+)
 
 pytestmark = pytest.mark.engine
 

@@ -155,12 +155,16 @@ def _raw_pull_stages(
     """
     from nbatools.commands.pipeline.pull_games import run as pull_games
     from nbatools.commands.pipeline.pull_player_game_stats import run as pull_player_game_stats
-    from nbatools.commands.pipeline.pull_player_season_advanced import run as pull_player_season_advanced
+    from nbatools.commands.pipeline.pull_player_season_advanced import (
+        run as pull_player_season_advanced,
+    )
     from nbatools.commands.pipeline.pull_rosters import run as pull_rosters
     from nbatools.commands.pipeline.pull_schedule import run as pull_schedule
     from nbatools.commands.pipeline.pull_standings_snapshots import run as pull_standings
     from nbatools.commands.pipeline.pull_team_game_stats import run as pull_team_game_stats
-    from nbatools.commands.pipeline.pull_team_season_advanced import run as pull_team_season_advanced
+    from nbatools.commands.pipeline.pull_team_season_advanced import (
+        run as pull_team_season_advanced,
+    )
 
     results: list[StageResult] = []
 
@@ -221,8 +225,12 @@ def _validate_stage(season: str, season_type: str) -> StageResult:
 
 def _build_stages(season: str, season_type: str) -> list[StageResult]:
     from nbatools.commands.pipeline.build_game_features import run as build_game_features
-    from nbatools.commands.pipeline.build_league_season_stats import run as build_league_season_stats
-    from nbatools.commands.pipeline.build_player_game_features import run as build_player_game_features
+    from nbatools.commands.pipeline.build_league_season_stats import (
+        run as build_league_season_stats,
+    )
+    from nbatools.commands.pipeline.build_player_game_features import (
+        run as build_player_game_features,
+    )
     from nbatools.commands.pipeline.build_team_game_features import run as build_team_game_features
 
     results: list[StageResult] = []

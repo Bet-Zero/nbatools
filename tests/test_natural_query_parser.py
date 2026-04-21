@@ -383,3 +383,52 @@ def test_clutch_note_appended():
     assert parsed["clutch"] is True
     notes = parsed.get("notes", [])
     assert any("clutch" in n for n in notes)
+
+
+# ---------------------------------------------------------------------------
+# Quarter / half context filters
+# ---------------------------------------------------------------------------
+
+
+def test_fourth_quarter_numeric_surface_form():
+    parsed = parse_query("LeBron 4th quarter scoring")
+    assert parsed["quarter"] == "4"
+    assert parsed["half"] is None
+
+
+def test_fourth_quarter_word_surface_form():
+    parsed = parse_query("LeBron fourth quarter scoring")
+    assert parsed["quarter"] == "4"
+
+
+def test_first_half_surface_form():
+    parsed = parse_query("Celtics first half stats")
+    assert parsed["half"] == "first"
+    assert parsed["quarter"] is None
+
+
+def test_second_half_surface_form():
+    parsed = parse_query("Celtics second half stats")
+    assert parsed["half"] == "second"
+
+
+def test_overtime_surface_form_sets_ot_quarter():
+    parsed = parse_query("Knicks overtime record")
+    assert parsed["quarter"] == "OT"
+
+
+def test_ot_surface_form_sets_ot_quarter():
+    parsed = parse_query("Knicks OT record")
+    assert parsed["quarter"] == "OT"
+
+
+def test_quarter_note_appended():
+    parsed = parse_query("LeBron 4th quarter scoring")
+    notes = parsed.get("notes", [])
+    assert any("quarter" in n and "unfiltered" in n for n in notes)
+
+
+def test_half_note_appended():
+    parsed = parse_query("Celtics first half stats")
+    notes = parsed.get("notes", [])
+    assert any("half" in n and "unfiltered" in n for n in notes)
