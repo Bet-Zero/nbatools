@@ -1,7 +1,7 @@
 import re
 
 from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
-from nbatools.commands._glossary import FUZZY_LAST_N_TERMS
+from nbatools.commands._glossary import FUZZY_LAST_N_TERMS, OPPONENT_QUALITY_TERMS
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
     detect_team_leaderboard_stat,
@@ -744,6 +744,46 @@ def detect_home_away(text: str) -> tuple[bool, bool]:
     home_only = bool(re.search(r"\bhome\b", text))
     away_only = bool(re.search(r"\baway\b|\broad\b", text))
     return home_only, away_only
+
+
+def detect_opponent_quality(text: str) -> dict | None:
+    patterns = [
+        (r"\b(?:against|vs\.?|versus)\s+contenders\b", "contenders"),
+        (r"\b(?:against|vs\.?|versus)\s+good\s+teams\b", "good teams"),
+        (r"\b(?:against|vs\.?|versus)\s+top\s+teams\b", "top teams"),
+        (r"\b(?:against|vs\.?|versus)\s+playoff\s+teams\b", "playoff teams"),
+        (r"\b(?:against|vs\.?|versus)\s+teams?\s+over\s+\.500\b", "teams over .500"),
+        (r"\b(?:against|vs\.?|versus)\s+top[- ]10\s+defenses\b", "top-10 defenses"),
+    ]
+    for pattern, term in patterns:
+        if re.search(pattern, text):
+            policy = OPPONENT_QUALITY_TERMS[term]
+            return {
+                "type": "opponent_quality",
+                "surface_term": term,
+                "definition": dict(policy.resolved_definition),
+            }
+    return None
+
+
+def build_opponent_quality_note(opponent_quality: dict | None = None) -> str | None:
+    if opponent_quality is None:
+        return None
+
+    surface_term = opponent_quality.get("surface_term", "opponent-quality bucket")
+    definition = opponent_quality.get("definition") or {}
+    metric = definition.get("metric")
+    value = definition.get("value")
+
+    if metric == "conference_rank":
+        return f"opponent_quality: {surface_term} -> conference rank <= {value}"
+    if metric == "win_pct":
+        return f"opponent_quality: {surface_term} -> win_pct {definition.get('operator')} {value}"
+    if metric == "def_rating_rank":
+        return f"opponent_quality: {surface_term} -> top {value} by defensive rating"
+    if metric == "off_rating_rank":
+        return f"opponent_quality: {surface_term} -> top {value} by offensive rating"
+    return f"opponent_quality: {surface_term}"
 
 
 def detect_wins_losses(text: str) -> tuple[bool, bool]:

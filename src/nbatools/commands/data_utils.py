@@ -54,6 +54,142 @@ def normalize_season_type(season_type: str) -> str:
     return season_type.lower().replace(" ", "_")
 
 
+def _normalize_opponent_values(
+    opponent: str | list[str] | tuple[str, ...] | set[str] | None,
+) -> set[str]:
+    if opponent is None:
+        return set()
+    if isinstance(opponent, (list, tuple, set, frozenset)):
+        values = opponent
+    else:
+        values = [opponent]
+    return {str(value).upper() for value in values if value}
+
+
+def build_opponent_mask(
+    df: pd.DataFrame,
+    opponent: str | list[str] | tuple[str, ...] | set[str] | None,
+) -> pd.Series:
+    values = _normalize_opponent_values(opponent)
+    mask = pd.Series(False, index=df.index)
+    if not values:
+        return mask
+    if "opponent_team_abbr" in df.columns:
+        mask = mask | df["opponent_team_abbr"].astype(str).str.upper().isin(values)
+    if "opponent_team_name" in df.columns:
+        mask = mask | df["opponent_team_name"].astype(str).str.upper().isin(values)
+    return mask
+
+
+def describe_opponent_filter(
+    opponent: str | list[str] | tuple[str, ...] | set[str] | None,
+) -> str:
+    values = sorted(_normalize_opponent_values(opponent))
+    if not values:
+        return ""
+    if len(values) == 1:
+        return values[0]
+    if len(values) <= 3:
+        return ", ".join(values)
+    preview = ", ".join(values[:3])
+    return f"{len(values)} opponents ({preview}, ...)"
+
+
+@cache
+def _load_latest_standings_snapshot_cached(season: str, data_root: str) -> pd.DataFrame:
+    path = Path(data_root) / f"data/raw/standings_snapshots/{season}_regular_season.csv"
+    if not path.exists():
+        raise FileNotFoundError(f"Missing standings snapshot file: {path}")
+    df = pd.read_csv(path)
+    if "snapshot_date" in df.columns:
+        df["_snapshot_date"] = pd.to_datetime(df["snapshot_date"], errors="coerce")
+        latest = df["_snapshot_date"].max()
+        if pd.notna(latest):
+            df = df[df["_snapshot_date"] == latest].copy()
+        df = df.drop(columns=["_snapshot_date"])
+    return df
+
+
+def load_latest_standings_snapshot(season: str) -> pd.DataFrame:
+    return _load_latest_standings_snapshot_cached(season, os.getcwd()).copy()
+
+
+@cache
+def _load_latest_team_advanced_cached(season: str, data_root: str) -> pd.DataFrame:
+    path = Path(data_root) / f"data/raw/team_season_advanced/{season}_regular_season.csv"
+    if not path.exists():
+        raise FileNotFoundError(f"Missing team season advanced file: {path}")
+    df = pd.read_csv(path)
+    if "as_of_date" in df.columns:
+        df["_as_of_date"] = pd.to_datetime(df["as_of_date"], errors="coerce")
+        latest = df["_as_of_date"].max()
+        if pd.notna(latest):
+            df = df[df["_as_of_date"] == latest].copy()
+        df = df.drop(columns=["_as_of_date"])
+    return df
+
+
+def load_latest_team_advanced(season: str) -> pd.DataFrame:
+    return _load_latest_team_advanced_cached(season, os.getcwd()).copy()
+
+
+def resolve_opponent_quality_teams(
+    opponent_quality: dict,
+    seasons: list[str],
+    season_type: str,
+) -> list[str]:
+    del season_type  # policy currently resolves via regular-season standings/ratings only
+
+    definition = opponent_quality.get("definition") or {}
+    metric = definition.get("metric")
+    operator = definition.get("operator")
+    value = definition.get("value")
+
+    resolved: set[str] = set()
+
+    for season in seasons:
+        if metric in {"conference_rank", "win_pct"}:
+            df = load_latest_standings_snapshot(season)
+        elif metric in {"def_rating_rank", "off_rating_rank"}:
+            df = load_latest_team_advanced(season)
+        else:
+            raise ValueError(f"Unsupported opponent_quality metric: {metric}")
+
+        if metric == "conference_rank":
+            ranks = pd.to_numeric(df.get("conference_rank"), errors="coerce")
+            mask = ranks <= float(value)
+            teams = df.loc[mask, "team_abbr"]
+        elif metric == "win_pct":
+            win_pct = pd.to_numeric(df.get("win_pct"), errors="coerce")
+            if operator == ">=":
+                mask = win_pct >= float(value)
+            elif operator == ">":
+                mask = win_pct > float(value)
+            elif operator == "<":
+                mask = win_pct < float(value)
+            else:
+                raise ValueError(f"Unsupported win_pct operator: {operator}")
+            teams = df.loc[mask, "team_abbr"]
+        elif metric == "def_rating_rank":
+            work = df.copy()
+            work["def_rating"] = pd.to_numeric(work.get("def_rating"), errors="coerce")
+            teams = work.sort_values(["def_rating", "team_abbr"], ascending=[True, True]).head(
+                int(value)
+            )["team_abbr"]
+        elif metric == "off_rating_rank":
+            work = df.copy()
+            work["off_rating"] = pd.to_numeric(work.get("off_rating"), errors="coerce")
+            teams = work.sort_values(["off_rating", "team_abbr"], ascending=[False, True]).head(
+                int(value)
+            )["team_abbr"]
+        else:
+            raise ValueError(f"Unsupported opponent_quality metric: {metric}")
+
+        resolved.update(teams.astype(str).str.upper())
+
+    return sorted(resolved)
+
+
 @cache
 def _load_team_games_cached(
     seasons: tuple[str, ...], season_type: str, data_root: str

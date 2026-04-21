@@ -91,6 +91,8 @@ If a feature is not reflected here, it should not be assumed shipped.
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
    (parser-recognized and engine-accepted for player queries; current query engine returns
    unfiltered results with an explicit note because starter/bench filtering is not yet wired in)
+- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against teams over .500`, `against top-10 defenses`
+   (resolved to concrete opponent buckets using the latest regular-season standings or team-advanced data for the selected season)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language

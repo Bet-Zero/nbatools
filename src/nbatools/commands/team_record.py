@@ -19,6 +19,8 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    build_opponent_mask,
+    describe_opponent_filter,
     filter_without_player,
     load_team_games_for_seasons,
 )
@@ -50,7 +52,7 @@ def _apply_game_filters(
     df: pd.DataFrame,
     *,
     team: str | None = None,
-    opponent: str | None = None,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -85,13 +87,7 @@ def _apply_game_filters(
         ].copy()
 
     if opponent:
-        o = opponent.upper()
-        mask = pd.Series(False, index=out.index)
-        if "opponent_team_abbr" in out.columns:
-            mask = mask | out["opponent_team_abbr"].astype(str).str.upper().eq(o)
-        if "opponent_team_name" in out.columns:
-            mask = mask | out["opponent_team_name"].astype(str).str.upper().eq(o)
-        out = out[mask].copy()
+        out = out[build_opponent_mask(out, opponent)].copy()
 
     if home_only and "is_home" in out.columns:
         out = out[out["is_home"] == 1].copy()
@@ -256,7 +252,7 @@ def build_team_record_result(
             f"multi-season record aggregated from game logs across {seasons[0]} to {seasons[-1]}"
         )
     if opponent:
-        caveats.append(f"record filtered to games vs {opponent.upper()}")
+        caveats.append(f"record filtered to games vs {describe_opponent_filter(opponent)}")
     if without_player:
         caveats.append(f"record filtered to games without {without_player}")
     if home_only:

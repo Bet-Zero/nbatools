@@ -27,9 +27,12 @@ import pandas as pd
 from nbatools.commands._constants import normalize_text
 from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes,
+    build_opponent_quality_note,
     build_period_filter_note,
     build_role_filter_note,
 )
+from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.data_utils import resolve_opponent_quality_teams
 from nbatools.commands.entity_resolution import PLAYER_ALIASES, TEAM_ALIASES
 from nbatools.commands.format_output import (
     build_error_output,
@@ -146,6 +149,14 @@ _BUILD_RESULT_MAP: dict[str, Callable] = {}
 _SORTED_PLAYER_ALIAS_NAMES: list[str] = sorted(PLAYER_ALIASES.keys(), key=len, reverse=True)
 _SORTED_TEAM_ALIAS_NAMES: list[str] = sorted(TEAM_ALIASES.keys(), key=len, reverse=True)
 
+_SUPPORTED_OPPONENT_QUALITY_ROUTES = {
+    "player_game_summary",
+    "player_game_finder",
+    "game_summary",
+    "game_finder",
+    "team_record",
+}
+
 
 def _get_build_result_map() -> dict[str, Callable]:
     if not _BUILD_RESULT_MAP:
@@ -258,6 +269,40 @@ def _sanitize_unavailable_context_filters(kwargs: dict) -> tuple[dict, list[str]
     return sanitized, notes
 
 
+def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, list[str]]:
+    sanitized = dict(kwargs)
+    opponent_quality = sanitized.pop("opponent_quality", None)
+
+    if opponent_quality is None:
+        return sanitized, []
+
+    if route not in _SUPPORTED_OPPONENT_QUALITY_ROUTES:
+        return sanitized, [
+            "opponent_quality: filter detected but opponent-quality filtering is not yet wired "
+            "into this route; results are unfiltered"
+        ]
+
+    season = sanitized.get("season")
+    start_season = sanitized.get("start_season")
+    end_season = sanitized.get("end_season")
+    season_type = sanitized.get("season_type") or "Regular Season"
+
+    seasons = resolve_seasons(season, start_season, end_season)
+    resolved_opponents = resolve_opponent_quality_teams(opponent_quality, seasons, season_type)
+    sanitized["opponent"] = resolved_opponents
+
+    notes = []
+    if opponent_quality_note := build_opponent_quality_note(opponent_quality):
+        notes.append(opponent_quality_note)
+    if len(seasons) > 1:
+        notes.append(
+            "opponent_quality: multi-season queries use the union of qualifying opponents "
+            "across selected seasons"
+        )
+
+    return sanitized, notes
+
+
 def _apply_extra_conditions_to_result(result, extra_conditions: list[dict]):
     """Apply stat-threshold extra conditions directly to the result's DataFrame.
 
@@ -301,7 +346,9 @@ def _execute_build_result(
         extra_conditions = []
 
     build_fn = _get_build_result_map()[route]
-    sanitized_kwargs, notes = _sanitize_unavailable_context_filters(kwargs)
+    sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
+    sanitized_kwargs, context_notes = _sanitize_unavailable_context_filters(sanitized_kwargs)
+    notes.extend(context_notes)
     result = build_fn(**sanitized_kwargs)
     result = _append_result_notes(result, notes)
 

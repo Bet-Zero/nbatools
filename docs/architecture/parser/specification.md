@@ -543,7 +543,9 @@ These are listed in the expansion plan as Phase E additions.
 
 ## 9. Opponent-quality filters
 
-**Status: not yet shipped.** Currently, opponent filters accept a specific team or a specific player, not a quality bucket.
+**Status: shipped for the core single-entity summary/finder/record routes.**
+Opponent filters now accept the concrete quality buckets below; unsupported routes
+carry an explicit note when the bucket is recognized but not yet wired.
 
 Target surface forms:
 
@@ -554,13 +556,19 @@ Target surface forms:
 - `against teams over .500`
 - `against top-10 defenses`
 
-### 9.1 Product-policy definitions required
+### 9.1 Product-policy definitions
 
-Each fuzzy term needs a pinned-down meaning before it can be shipped. See §18 (Glossary) for the consolidated policy table.
+Shipped policy buckets:
+
+- `good teams` → latest regular-season standings snapshot, `win_pct >= .500`
+- `top teams`, `contenders` → latest regular-season standings snapshot, `conference_rank <= 6`
+- `playoff teams` → latest regular-season standings snapshot, `conference_rank <= 10`
+- `teams over .500` → latest regular-season standings snapshot, `win_pct > .500`
+- `top-10 defenses` → latest regular-season team advanced table, top 10 by `def_rating`
 
 ### 9.2 Structured shape (when added)
 
-Opponent-quality filters should carry both the surface term and the resolved definition, so policy can change without re-parsing old queries:
+Opponent-quality filters carry both the surface term and the resolved definition, so policy can change without re-parsing old queries:
 
 ```json
 {
