@@ -29,6 +29,10 @@ class QuerySmokeCase:
 CLUTCH_NOTE_SUBSTRINGS = ("clutch", "unfiltered")
 QUARTER_NOTE_SUBSTRINGS = ("quarter", "unfiltered")
 HALF_NOTE_SUBSTRINGS = ("half", "unfiltered")
+BACK_TO_BACK_NOTE_SUBSTRINGS = ("back_to_back", "unfiltered")
+REST_NOTE_SUBSTRINGS = ("rest", "unfiltered")
+ONE_POSSESSION_NOTE_SUBSTRINGS = ("one_possession", "unfiltered")
+NATIONAL_TV_NOTE_SUBSTRINGS = ("national_tv", "unfiltered")
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
@@ -147,6 +151,34 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_query_class="summary",
         expected_intents=("summary",),
         expected_note_substrings=QUARTER_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Lakers on back-to-backs record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=BACK_TO_BACK_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Jokic summary with rest advantage",
+        expected_routes=("player_game_summary",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=REST_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Celtics one-possession record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=ONE_POSSESSION_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Knicks on national TV record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=NATIONAL_TV_NOTE_SUBSTRINGS,
     ),
 )
 

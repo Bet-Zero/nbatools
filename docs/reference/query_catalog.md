@@ -85,6 +85,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
    (parser-recognized and engine-accepted; current game-log data returns unfiltered
    full-game results with an explicit note because period splits are not available yet)
+- schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
+   (parser-recognized and engine-accepted; current query engine returns unfiltered
+   results with an explicit note because schedule/context feature tables are not yet joined)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language
