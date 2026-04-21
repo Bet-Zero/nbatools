@@ -982,6 +982,52 @@ def build_on_off_note(
     )
 
 
+def _extract_stretch_window_size(text: str) -> int | None:
+    patterns = (
+        r"\b(\d+)\s*(?:-\s*|\s+)games?(?:\s+[a-z0-9%.'/-]+){0,3}\s+stretch\b",
+        r"\brolling\s+(\d+)\s*(?:-\s*|\s+)games?\b",
+        r"\brolling\s+(\d+)\s+games?\b",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if not match:
+            continue
+        value = int(match.group(1))
+        return value if value > 0 else None
+    return None
+
+
+def detect_stretch_query(text: str) -> dict | None:
+    """Detect rolling-window stretch leaderboard queries."""
+    stretch_marker = bool(re.search(r"\bstretch\b", text))
+    rolling_marker = bool(re.search(r"\brolling\b", text))
+    if not stretch_marker and not rolling_marker:
+        return None
+
+    window_size = _extract_stretch_window_size(text)
+    if window_size is None:
+        return None
+
+    if re.search(r"\b(?:winning|losing)\s+streak\b", text):
+        return None
+
+    if re.search(r"\bgame\s+score\b", text):
+        stretch_metric = "game_score"
+    else:
+        explicit_stat = detect_stat(text)
+        if explicit_stat is not None:
+            stretch_metric = explicit_stat
+        elif re.search(r"\b(?:efficient|efficiency)\b", text):
+            stretch_metric = "ts_pct"
+        else:
+            stretch_metric = "game_score"
+
+    return {
+        "window_size": window_size,
+        "stretch_metric": stretch_metric,
+    }
+
+
 def _extract_player_mentions(text: str) -> list[str]:
     matched_spans: list[tuple[int, int]] = []
     ordered_matches: list[tuple[int, str]] = []

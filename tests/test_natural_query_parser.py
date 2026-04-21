@@ -692,3 +692,38 @@ def test_lineup_note_appended():
     parsed = parse_query("best 5-man lineups this season")
     notes = parsed.get("notes", [])
     assert any("lineup" in n and "placeholder" in n for n in notes)
+
+
+# ---------------------------------------------------------------------------
+# Stretch / rolling-window query intent and routing
+# ---------------------------------------------------------------------------
+
+
+def test_hottest_three_game_scoring_stretch_routes_to_stretch_leaderboard():
+    parsed = parse_query("hottest 3-game scoring stretch this year")
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert parsed["intent"] == "leaderboard"
+    assert parsed["window_size"] == 3
+    assert parsed["stretch_metric"] == "pts"
+
+
+def test_best_five_game_stretch_by_game_score_sets_metric_and_default_limit():
+    parsed = parse_query("best 5-game stretch by Game Score")
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert parsed["window_size"] == 5
+    assert parsed["stretch_metric"] == "game_score"
+    assert parsed["route_kwargs"]["limit"] == 10
+
+
+def test_most_efficient_rolling_stretch_defaults_to_true_shooting():
+    parsed = parse_query("most efficient 10-game rolling stretch")
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert parsed["window_size"] == 10
+    assert parsed["stretch_metric"] == "ts_pct"
+
+
+def test_player_specific_stretch_query_preserves_subject():
+    parsed = parse_query("Booker hottest 4-game scoring stretch")
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert parsed["player"] == "Devin Booker"
+    assert parsed["window_size"] == 4

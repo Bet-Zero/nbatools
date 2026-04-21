@@ -50,6 +50,7 @@ class TestRouteToIntent:
             ("team_split_summary", QueryIntent.SPLIT),
             ("season_leaders", QueryIntent.LEADERBOARD),
             ("season_team_leaders", QueryIntent.LEADERBOARD),
+            ("player_stretch_leaderboard", QueryIntent.LEADERBOARD),
             ("top_player_games", QueryIntent.LEADERBOARD),
             ("top_team_games", QueryIntent.LEADERBOARD),
             ("team_record_leaderboard", QueryIntent.LEADERBOARD),
@@ -162,6 +163,11 @@ class TestParseQueryIntentField:
     def test_lineup_intent(self):
         result = parse_query("best 5-man lineups this season")
         assert result["intent"] == QueryIntent.LINEUP
+
+    @pytest.mark.parser
+    def test_stretch_queries_use_leaderboard_intent(self):
+        result = parse_query("hottest 3-game scoring stretch this year")
+        assert result["intent"] == QueryIntent.LEADERBOARD
 
     @pytest.mark.parser
     def test_intent_always_present(self):

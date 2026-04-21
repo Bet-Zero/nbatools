@@ -408,7 +408,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 10. `[ ]` Add stretch / rolling-window query intent and routing
+## 10. `[x]` Add stretch / rolling-window query intent and routing
 
 **Why:** "Hottest 3-game scoring stretch", "best 5-game stretch by Game Score" — a new aggregation mode.
 

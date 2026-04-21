@@ -13,6 +13,7 @@ import json
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pandas as pd
 import pytest
 
 from nbatools.commands.structured_results import (
@@ -359,6 +360,156 @@ class TestStructuredQueryExecution:
         assert qr.metadata["unit_size"] == 5
         assert qr.metadata["minute_minimum"] == 200
         assert any("lineup" in note and "placeholder" in note for note in qr.result.notes)
+
+    def test_structured_query_accepts_player_stretch_leaderboard_route(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+
+        player_rows = [
+            {
+                "game_id": 1,
+                "season": "2099-00",
+                "season_type": "Regular Season",
+                "game_date": "2099-10-01",
+                "team_id": 1,
+                "team_abbr": "AAA",
+                "team_name": "Alpha",
+                "opponent_team_id": 2,
+                "opponent_team_abbr": "BBB",
+                "opponent_team_name": "Beta",
+                "is_home": 1,
+                "is_away": 0,
+                "player_id": 10,
+                "player_name": "Stretch Star",
+                "starter_flag": 1,
+                "start_position": "G",
+                "minutes": 35,
+                "pts": 20,
+                "fgm": 7,
+                "fga": 15,
+                "fg_pct": 0.467,
+                "fg3m": 2,
+                "fg3a": 6,
+                "fg3_pct": 0.333,
+                "ftm": 4,
+                "fta": 5,
+                "ft_pct": 0.8,
+                "oreb": 1,
+                "dreb": 4,
+                "reb": 5,
+                "ast": 6,
+                "stl": 1,
+                "blk": 0,
+                "tov": 2,
+                "pf": 2,
+                "plus_minus": 8,
+                "comment": "",
+            },
+            {
+                "game_id": 2,
+                "season": "2099-00",
+                "season_type": "Regular Season",
+                "game_date": "2099-10-03",
+                "team_id": 1,
+                "team_abbr": "AAA",
+                "team_name": "Alpha",
+                "opponent_team_id": 3,
+                "opponent_team_abbr": "CCC",
+                "opponent_team_name": "Gamma",
+                "is_home": 0,
+                "is_away": 1,
+                "player_id": 10,
+                "player_name": "Stretch Star",
+                "starter_flag": 1,
+                "start_position": "G",
+                "minutes": 34,
+                "pts": 24,
+                "fgm": 8,
+                "fga": 16,
+                "fg_pct": 0.5,
+                "fg3m": 3,
+                "fg3a": 7,
+                "fg3_pct": 0.429,
+                "ftm": 5,
+                "fta": 6,
+                "ft_pct": 0.833,
+                "oreb": 1,
+                "dreb": 5,
+                "reb": 6,
+                "ast": 7,
+                "stl": 2,
+                "blk": 1,
+                "tov": 2,
+                "pf": 2,
+                "plus_minus": 10,
+                "comment": "",
+            },
+            {
+                "game_id": 3,
+                "season": "2099-00",
+                "season_type": "Regular Season",
+                "game_date": "2099-10-05",
+                "team_id": 1,
+                "team_abbr": "AAA",
+                "team_name": "Alpha",
+                "opponent_team_id": 4,
+                "opponent_team_abbr": "DDD",
+                "opponent_team_name": "Delta",
+                "is_home": 1,
+                "is_away": 0,
+                "player_id": 10,
+                "player_name": "Stretch Star",
+                "starter_flag": 1,
+                "start_position": "G",
+                "minutes": 36,
+                "pts": 26,
+                "fgm": 9,
+                "fga": 17,
+                "fg_pct": 0.529,
+                "fg3m": 4,
+                "fg3a": 8,
+                "fg3_pct": 0.5,
+                "ftm": 4,
+                "fta": 5,
+                "ft_pct": 0.8,
+                "oreb": 2,
+                "dreb": 4,
+                "reb": 6,
+                "ast": 8,
+                "stl": 1,
+                "blk": 1,
+                "tov": 1,
+                "pf": 2,
+                "plus_minus": 12,
+                "comment": "",
+            },
+        ]
+        team_rows = [
+            {"game_id": 1, "team_id": 1, "wl": "W"},
+            {"game_id": 2, "team_id": 1, "wl": "W"},
+            {"game_id": 3, "team_id": 1, "wl": "W"},
+        ]
+
+        player_df = pd.DataFrame(player_rows)
+        team_df = pd.DataFrame(team_rows)
+        player_path = tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv"
+        team_path = tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv"
+        player_path.parent.mkdir(parents=True, exist_ok=True)
+        team_path.parent.mkdir(parents=True, exist_ok=True)
+        player_df.to_csv(player_path, index=False)
+        team_df.to_csv(team_path, index=False)
+
+        qr = execute_structured_query(
+            "player_stretch_leaderboard",
+            season="2099-00",
+            window_size=3,
+            stretch_metric="pts",
+        )
+
+        assert qr.route == "player_stretch_leaderboard"
+        assert qr.metadata["window_size"] == 3
+        assert qr.metadata["stretch_metric"] == "pts"
+        assert qr.result.query_class == "leaderboard"
+        assert qr.result.result_status == "ok"
 
 
 # ===================================================================
