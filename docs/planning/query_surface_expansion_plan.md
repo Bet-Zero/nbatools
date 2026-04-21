@@ -84,7 +84,7 @@ A short orientation, not a full inventory. For capabilities see [`query_catalog.
 
 ### 3.4 What's not yet shipped
 
-- on/off queries as a distinct intent family
+- data-backed on/off split execution beyond the current placeholder route
 - lineup queries (2-man, 3-man, 5-man units)
 - opponent-quality buckets (`contenders`, `good teams`, `top-10 defenses`)
 - expanded context filters (clutch, quarters, back-to-backs, starter/bench, overtime, one-possession)
@@ -110,7 +110,7 @@ Dimension-by-dimension view of where the parser is vs. where [`parser/specificat
 | Opponent filters (team, player)   | Shipped                                                | No change needed                                                       | None   | —     |
 | Opponent-quality buckets          | Not shipped                                            | `contenders`, `good teams`, `top-10 defenses` with product definitions | Large  | E     |
 | Absence (`without X`)             | Shipped; clears player when it matches subject         | Broaden phrasing (`X out`, `X didn't play`, `no X`, `sans X`)          | Small  | A     |
-| On/off queries                    | Not shipped                                            | New intent family with `lineup_members`, `presence_state` slots        | Large  | E     |
+| On/off queries                    | Single-player placeholder routing shipped              | New intent family with `lineup_members`, `presence_state` slots        | Medium | E     |
 | Lineup queries                    | Not shipped                                            | New intent family with `unit_size`, `minute_minimum` slots             | Large  | E     |
 | Streak queries                    | Shipped: player + team, with defaults                  | No change needed                                                       | None   | —     |
 | Occurrence queries                | Shipped: single, compound, distinct-count              | No change needed                                                       | None   | —     |
@@ -338,7 +338,8 @@ Phase E is large and naturally breaks into independent sub-phases that can ship 
 - `Jokic on/off`, `Nuggets with Jokic on the floor`, `without Giannis`
 - new slots: `lineup_members`, `presence_state`, `minute_minimum`
 - new route family: `player_on_off`, `team_with_without_player`
-- data access layer: may require new queries against on-off splits data
+- current shipped scope: single-player parser/routing support with an honest placeholder route
+- data access layer: real execution still requires on/off splits or lineup-stint data
 
 #### 5.5.3 Lineup queries
 

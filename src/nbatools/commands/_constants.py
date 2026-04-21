@@ -180,6 +180,7 @@ class QueryIntent:
     SPLIT = "split_summary"
     LEADERBOARD = "leaderboard"
     STREAK = "streak"
+    ON_OFF = "on_off"
     UNSUPPORTED = "unsupported"
 
 
@@ -216,6 +217,8 @@ ROUTE_TO_INTENT: dict[str, str] = {
     # Streak routes
     "player_streak_finder": QueryIntent.STREAK,
     "team_streak_finder": QueryIntent.STREAK,
+    # On/off routes
+    "player_on_off": QueryIntent.ON_OFF,
 }
 
 

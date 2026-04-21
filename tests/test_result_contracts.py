@@ -55,6 +55,7 @@ class TestRouteToQueryClass:
     def test_summary_routes(self):
         assert route_to_query_class("player_game_summary") == "summary"
         assert route_to_query_class("game_summary") == "summary"
+        assert route_to_query_class("player_on_off") == "summary"
 
     def test_comparison_routes(self):
         assert route_to_query_class("player_compare") == "comparison"

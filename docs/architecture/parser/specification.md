@@ -156,7 +156,7 @@ Identify the real-world subject(s) the query references. Implemented across `_ma
 - **player comparison pair** — `extract_player_comparison` → (`player_a`, `player_b`)
 - **team comparison pair** — `extract_team_comparison` → (`team_a`, `team_b`)
 - **position group** — `extract_position_filter`
-- **lineup / unit** — _not yet supported_ (see §11)
+- **lineup / unit** — single-player on/off placeholder routing is supported; multi-player lineup queries are still future work (see §11)
 
 ### 3.2 Name reference styles
 
@@ -283,7 +283,7 @@ This is deliberately different from a flat "one intent enum" model. The combinat
 | `Celtics vs contenders`                 | `record` (default)   | `record_intent` + opponent-quality (future)    |
 | `Edwards in wins vs losses`             | `split`              | `split_intent` + `split_type="wins_vs_losses"` |
 | `Suns when Booker out`                  | `summary`/`record`   | `without_player` filter                        |
-| `Nuggets Jokic on off`                  | _future_             | on/off (not yet implemented)                   |
+| `Nuggets Jokic on off`                  | `summary`            | `lineup_members` + `presence_state`; placeholder on/off route |
 | `LeBron vs Durant career stats`         | `comparison`         | `career_intent` + player comparison            |
 | `Jokic longest 30-point streak`         | `streak`             | `streak_request` populated                     |
 | `Lakers vs Celtics playoff history`     | `playoff`            | `playoff_history_intent`                       |
@@ -618,7 +618,7 @@ These are structurally different and should not be conflated:
 | Concept                             | Supported?                  |
 | ----------------------------------- | --------------------------- |
 | Player absent from game (DNP)       | ✅ via `without_player`     |
-| Player off court during possessions | _future_ — see §11 (on/off) |
+| Player off court during possessions | Parser/routing shipped; execution placeholder — see §11 |
 | Player did not start                | Not supported               |
 | Player played limited minutes       | Not supported               |
 
@@ -642,7 +642,20 @@ Remaining unsupported:
 
 ## 11. On/off and lineup support
 
-**Status: not yet shipped.** Flagged as Phase E in the expansion plan.
+**Status: partially shipped.** Single-player on/off phrasing now routes to a dedicated placeholder path. Real on/off split execution and lineup-family queries still depend on data the current repo does not have.
+
+### 11.0 Current shipped surface
+
+Shipped in Phase E item 8:
+
+- `on/off`
+- `with X on the floor`
+- `without X on the floor`
+- `X on court`
+- `X off court`
+- `X sitting`
+
+These queries populate `lineup_members` and `presence_state`, route to `player_on_off`, and return an honest note explaining that real on/off splits require play-by-play or lineup-stint data that is not yet available.
 
 ### 11.1 Target query types
 

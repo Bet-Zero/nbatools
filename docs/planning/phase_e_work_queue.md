@@ -324,7 +324,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 8. `[ ]` Add on/off query intent and routing
+## 8. `[x]` Add on/off query intent and routing
 
 **Why:** "Jokic on/off", "Nuggets with Jokic on the floor" — a new intent family. Parser work can proceed even if the data layer needs follow-up.
 
