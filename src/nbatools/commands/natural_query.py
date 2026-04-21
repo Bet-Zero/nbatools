@@ -565,7 +565,6 @@ def _finalize_route(parsed: dict) -> dict:
     team_streak_request = parsed.get("team_streak_request")
     season_high_intent = parsed.get("season_high_intent", False)
     distinct_player_count = parsed.get("distinct_player_count", False)
-    distinct_team_count = parsed.get("distinct_team_count", False)
     opponent_player = parsed.get("opponent_player")
     without_player = parsed.get("without_player")
 

@@ -14,6 +14,12 @@ import pandas as pd
 import pytest
 
 from nbatools.cli_apps.queries import _run_and_handle_exports
+from nbatools.commands._natural_query_execution import (
+    _apply_extra_conditions_to_result,
+    _combine_or_results,
+    _execute_build_result,
+    _get_build_result_map,
+)
 from nbatools.commands.format_output import (
     METADATA_LABEL,
     format_pretty_from_result,
@@ -21,12 +27,6 @@ from nbatools.commands.format_output import (
     parse_labeled_sections,
     write_csv_from_result,
     write_json_from_result,
-)
-from nbatools.commands._natural_query_execution import (
-    _apply_extra_conditions_to_result,
-    _combine_or_results,
-    _execute_build_result,
-    _get_build_result_map,
 )
 from nbatools.commands.natural_query import (
     run as natural_query_run,
