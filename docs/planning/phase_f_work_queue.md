@@ -17,7 +17,7 @@
 
 ---
 
-## 1. `[ ]` Audit all execution-partial capability families into one inventory
+## 1. `[x]` Audit all execution-partial capability families into one inventory
 
 **Why:** The repo currently knows these gaps through a mix of Phase E retrospective notes, parser spec status blocks, examples, and the query catalog. Phase F starts by consolidating that into one execution-oriented inventory so implementation phases are driven by a single source of truth.
 
