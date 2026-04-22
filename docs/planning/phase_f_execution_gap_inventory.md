@@ -174,6 +174,47 @@ execution-backed support on their documented route set.
   - no play-by-play, substitution, or rotation data exists to derive those units
   - roster snapshots set `stint = 1` and are not a usable substitute for lineup-level execution
 
+## Route and data ownership matrix
+
+### Shared execution path
+
+For the families in this inventory, the route handoff is currently:
+
+1. `parse_query()` / `_finalize_route()` decides the route and builds `route_kwargs`
+2. `query_service.execute_structured_query()` mirrors those kwargs into envelope metadata and forwards them to `_execute_build_result()`
+3. `_execute_build_result()` resolves opponent-quality filters first, then calls `_sanitize_unavailable_context_filters()` before dispatching to the owning `build_result()` function from `_get_build_result_map()`
+
+The one exception is `clutch`: it currently stays on the parse state and receives its honest fallback note in `_finalize_route()`, rather than flowing through the shared execution sanitizer.
+
+| Family | Route names | Query-service / execution path | Command owner(s) | Current table inputs | Missing table / join / aggregation |
+| --- | --- | --- | --- | --- | --- |
+| Clutch | `player_game_summary`, `team_record`, `season_leaders`, `player_game_finder` (verified in Phase E smoke) | `_finalize_route()` adds the clutch note directly; `query_service` never receives `clutch` in `route_kwargs`, so `_sanitize_unavailable_context_filters()` never sees it | `player_game_summary.build_result()`, `build_team_record_result()`, `season_leaders.build_result()`, `player_game_finder.build_result()` | Whole-game `data/raw/player_game_stats/*` and `data/raw/team_game_stats/*`; `season_leaders` reads player game logs directly and merges team W/L data when needed | `clutch` kwarg plumbing into execution, command signatures that can accept it, and a clutch-capable split source such as play-by-play or upstream clutch tables |
+| Quarter / half / overtime | `player_game_finder`, `team_record` (verified in Phase E smoke; same modifier pattern applies to the underlying base route) | `query_service` forwards `quarter` / `half`; `_sanitize_unavailable_context_filters()` `pop()`s them and appends `build_period_filter_note()` before command execution | `player_game_finder.build_result()`, `build_team_record_result()` | Whole-game `data/raw/player_game_stats/*` via `load_player_games_for_seasons()` and `data/raw/team_game_stats/*` via `load_team_games_for_seasons()` | Period-level split tables or play-by-play aggregates by quarter / half / OT, plus command-level filtering support |
+| Schedule-context filters | `team_record`, `player_game_summary` (verified in Phase E smoke; same modifier pattern applies to the underlying base route) | `query_service` forwards `back_to_back`, `rest_days`, `one_possession`, and `nationally_televised`; `_sanitize_unavailable_context_filters()` removes them and appends `build_game_context_filter_notes()` before command execution | `build_team_record_result()`, `player_game_summary.build_result()` | Whole-game `data/raw/team_game_stats/*`, `data/raw/player_game_stats/*`, plus raw schedule metadata that is not yet execution-joined | A joined schedule/context feature layer exposing B2B state, rest-day deltas, one-possession flags, and reliable national-TV flags to the command layer |
+| Starter / bench role | `player_game_summary` (verified in Phase E smoke; current supported scope is player-context only) | `query_service` forwards `role`; `_sanitize_unavailable_context_filters()` removes it and appends `build_role_filter_note()` before command execution | `player_game_summary.build_result()` | `data/raw/player_game_stats/*`, which already includes `starter_flag` derived from `start_position` during `pull_player_game_stats.py` | No new raw data is required; the gap is execution plumbing: preserve `role`, accept it in command signatures, and filter on `starter_flag` consistently |
+| On/off | `player_on_off` | `query_service` forwards `lineup_members` and `presence_state`; `_execute_build_result()` dispatches straight to the placeholder route without any real filtering step | `player_on_off.build_result()` | No usable on/off tables exist; only whole-game player/team logs are present today | On/off split tables or play-by-play plus substitution-derived stints, plus the computation layer to build on-court / off-court metrics |
+| Lineups | `lineup_summary`, `lineup_leaderboard` | `query_service` forwards `lineup_members`, `unit_size`, `minute_minimum`, and `presence_state`; `_execute_build_result()` dispatches straight to placeholder lineup routes | `lineup_summary.build_result()`, `lineup_leaderboard.build_result()` | No lineup-unit or stint tables exist; roster snapshots are season membership only | Lineup-unit tables or play-by-play plus substitution / rotation aggregation, including minutes-threshold support for unit queries |
+
+### Route ownership notes by family
+
+- Clutch:
+  - Route ownership is fragmented because clutch is a modifier layered onto existing routes instead of a dedicated route family.
+  - The owning implementation surfaces are the same command modules that already answer the unfiltered query.
+  - `season_leaders` is slightly different from the others because it loads player game logs directly rather than going through `data_utils.load_player_games_for_seasons()`.
+- Quarter / half / overtime:
+  - The ownership boundary is shared between `query_service`, `_natural_query_execution.py`, and the underlying game-log commands.
+  - The sanitizer already centralizes the honest fallback path, so the missing step is to replace that fallback with real period-aware filtering once period data exists.
+- Schedule-context filters:
+  - The execution gap is shared across four surface filters, which is why they should stay grouped as one family in planning.
+  - The raw schedule layer is not enough on its own; the commands need a joined feature table or an equivalent pre-merge step.
+- Starter / bench role:
+  - This is the only family in the current inventory where the relevant raw data already exists in the main game-log table.
+  - Because the parser intentionally ignores team-only bench phrasing today, the execution owner is currently the player-context command family rather than team routes.
+- On/off:
+  - The dedicated route isolates the unsupported state cleanly, but it also means the eventual owner will need a separate data subsystem rather than a small extension to current whole-game filters.
+- Lineups:
+  - Both dedicated lineup routes are placeholder-only, so the eventual execution owner needs a new lineup data path rather than a filter added to existing player/team logs.
+
 ## Families reviewed and intentionally excluded from the gap inventory
 
 - Opponent-quality filters:

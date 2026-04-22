@@ -57,7 +57,7 @@
 
 ---
 
-## 2. `[ ]` Map execution-partial families to concrete data and route ownership
+## 2. `[x]` Map execution-partial families to concrete data and route ownership
 
 **Why:** “Needs data work” is too vague to drive implementation. Each family needs a concrete owner surface: which route executes it, what `route_kwargs` matter, and what data table/join/aggregation is missing.
 
