@@ -14,6 +14,8 @@
 > **Maintenance rule:** when a meaningful shipped query capability is added,
 > expanded, renamed, or intentionally restricted, update this file in the same pass.
 
+When this catalog marks a family as parser-recognized but still unfiltered or placeholder-backed, that note reflects current shipped behavior only. The active execution/data continuation for those families is tracked in [parser_execution_completion_plan.md](../planning/parser_execution_completion_plan.md) and [phase_g_work_queue.md](../planning/phase_g_work_queue.md).
+
 ---
 
 ## 1. How to use this file
