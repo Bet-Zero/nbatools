@@ -152,6 +152,10 @@ def build_result(
     sort_by: str = "game_date",
     ascending: bool = False,
     last_n: int | None = None,
+    clutch: bool = False,
+    quarter: str | None = None,
+    half: str | None = None,
+    role: str | None = None,
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
 

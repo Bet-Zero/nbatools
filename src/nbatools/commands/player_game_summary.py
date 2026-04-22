@@ -158,6 +158,8 @@ def build_result(
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    clutch: bool = False,
+    role: str | None = None,
     df: pd.DataFrame | None = None,
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)

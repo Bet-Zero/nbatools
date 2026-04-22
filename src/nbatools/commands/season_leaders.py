@@ -621,6 +621,7 @@ def build_result(
     wins_only: bool = False,
     losses_only: bool = False,
     last_n: int | None = None,
+    clutch: bool = False,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 

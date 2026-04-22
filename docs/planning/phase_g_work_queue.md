@@ -34,7 +34,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 1. `[ ]` Replace the global context-filter drop sanitizer with capability-aware transport
+## 1. `[x]` Replace the global context-filter drop sanitizer with capability-aware transport
 
 **Why:** Phase F showed that context filters currently follow two inconsistent fallback paths: `clutch` stops at parse-state metadata while `quarter`, `half`, and `role` are preserved into execution and then sanitized away. Phase G needs one transport contract before any filter can become execution-backed.
 

@@ -170,6 +170,23 @@ _SUPPORTED_OPPONENT_QUALITY_ROUTES = {
     "team_record",
 }
 
+_PHASE_G_CLUTCH_TRANSPORT_ROUTES = {
+    "player_game_summary",
+    "player_game_finder",
+    "team_record",
+    "season_leaders",
+}
+
+_PHASE_G_PERIOD_TRANSPORT_ROUTES = {
+    "player_game_finder",
+    "team_record",
+}
+
+_PHASE_G_ROLE_TRANSPORT_ROUTES = {
+    "player_game_summary",
+    "player_game_finder",
+}
+
 
 def _get_build_result_map() -> dict[str, Callable]:
     if not _BUILD_RESULT_MAP:
@@ -258,20 +275,46 @@ def _append_result_notes(result, notes: list[str]):
     return new_result
 
 
-def _sanitize_unavailable_context_filters(kwargs: dict) -> tuple[dict, list[str]]:
-    """Drop context-filter kwargs until the relevant data joins exist."""
-    sanitized = dict(kwargs)
-    quarter = sanitized.pop("quarter", None)
-    half = sanitized.pop("half", None)
-    back_to_back = sanitized.pop("back_to_back", False)
-    rest_days = sanitized.pop("rest_days", None)
-    one_possession = sanitized.pop("one_possession", False)
-    nationally_televised = sanitized.pop("nationally_televised", False)
-    role = sanitized.pop("role", None)
+def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict, list[str]]:
+    """Route context-filter kwargs through capability-aware transport.
+
+    Phase G routes keep clutch / period / role kwargs so later execution-backed
+    work can happen on a single shared path. Unsupported families still append
+    the current honest fallback notes instead of silently pretending execution
+    exists.
+    """
+    routed = dict(kwargs)
+
+    clutch = routed.get("clutch", False)
+    quarter = routed.get("quarter")
+    half = routed.get("half")
+    role = routed.get("role")
+    back_to_back = routed.pop("back_to_back", False)
+    rest_days = routed.pop("rest_days", None)
+    one_possession = routed.pop("one_possession", False)
+    nationally_televised = routed.pop("nationally_televised", False)
 
     notes: list[str] = []
+
+    if route not in _PHASE_G_CLUTCH_TRANSPORT_ROUTES:
+        clutch = routed.pop("clutch", False)
+    if clutch:
+        notes.append(
+            "clutch: filter detected but play-by-play clutch splits not yet available; "
+            "results are unfiltered"
+        )
+
+    if route not in _PHASE_G_PERIOD_TRANSPORT_ROUTES:
+        quarter = routed.pop("quarter", None)
+        half = routed.pop("half", None)
     if period_note := build_period_filter_note(quarter=quarter, half=half):
         notes.append(period_note)
+
+    if route not in _PHASE_G_ROLE_TRANSPORT_ROUTES:
+        role = routed.pop("role", None)
+    if role_note := build_role_filter_note(role=role):
+        notes.append(role_note)
+
     notes.extend(
         build_game_context_filter_notes(
             back_to_back=back_to_back,
@@ -280,10 +323,8 @@ def _sanitize_unavailable_context_filters(kwargs: dict) -> tuple[dict, list[str]
             nationally_televised=nationally_televised,
         )
     )
-    if role_note := build_role_filter_note(role=role):
-        notes.append(role_note)
 
-    return sanitized, notes
+    return routed, notes
 
 
 def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, list[str]]:
@@ -364,7 +405,7 @@ def _execute_build_result(
 
     build_fn = _get_build_result_map()[route]
     sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
-    sanitized_kwargs, context_notes = _sanitize_unavailable_context_filters(sanitized_kwargs)
+    sanitized_kwargs, context_notes = _route_context_filters_for_execution(route, sanitized_kwargs)
     notes.extend(context_notes)
     result = build_fn(**sanitized_kwargs)
     result = _append_result_notes(result, notes)

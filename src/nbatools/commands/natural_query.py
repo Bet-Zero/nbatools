@@ -1441,6 +1441,7 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["rest_days"] = rest_days
     route_kwargs["one_possession"] = one_possession
     route_kwargs["nationally_televised"] = nationally_televised
+    route_kwargs["clutch"] = clutch
     route_kwargs["role"] = role
     route_kwargs["opponent_quality"] = opponent_quality
     route_kwargs["quarter"] = quarter

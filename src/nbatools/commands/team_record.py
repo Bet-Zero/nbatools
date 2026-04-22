@@ -161,6 +161,9 @@ def build_team_record_result(
     max_value: float | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    clutch: bool = False,
+    quarter: str | None = None,
+    half: str | None = None,
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
