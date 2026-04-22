@@ -199,10 +199,10 @@ These families are not allowed to disappear under a generic “plan complete” 
 
 The next step is explicit:
 
-- **Active queue:** [`phase_f_work_queue.md`](./phase_f_work_queue.md)
-- **Immediate action:** work the first unchecked item in Phase F
+- **Active queue:** [`phase_g_work_queue.md`](./phase_g_work_queue.md)
+- **Immediate action:** work the first unchecked item in Phase G
 
-If Phase F discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
+If Phase G discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
 
 ---
 

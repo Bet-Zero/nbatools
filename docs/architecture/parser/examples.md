@@ -2,6 +2,8 @@
 
 > **Purpose of this doc:** The example library. Use this for test inputs, equivalence verification, and to see how real user language maps to the parser's canonical parse state. For framing, see [`overview.md`](./overview.md). For component specs, see [`specification.md`](./specification.md). For the living inventory of currently-shipped query shapes, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
+When an example below carries an explicit unfiltered-results or placeholder execution note, that note describes current shipped behavior only. Active execution follow-up for those families is tracked in [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and the current [`phase_g_work_queue.md`](../../planning/phase_g_work_queue.md).
+
 ---
 
 ## Table of contents

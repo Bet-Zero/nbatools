@@ -4,6 +4,8 @@
 >
 > **Scope:** This doc describes the parser's _design_ — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
+Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters or placeholder on/off routes), the active continuation plan is [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and its current queue [`phase_g_work_queue.md`](../../planning/phase_g_work_queue.md). This file remains a current-state design reference, not a roadmap.
+
 ---
 
 ## Table of contents

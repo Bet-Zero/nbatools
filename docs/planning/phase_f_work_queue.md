@@ -121,7 +121,7 @@
 
 ---
 
-## 4. `[ ]` Reconcile current-state docs with Part 2 tracking
+## 4. `[x]` Reconcile current-state docs with Part 2 tracking
 
 **Why:** The reference docs are honest about placeholder and unfiltered behavior, but they should also point readers to the fact that these states are actively tracked in Part 2 rather than left behind after Phase E.
 
@@ -152,7 +152,7 @@
 
 ---
 
-## 5. `[ ]` Phase F retrospective and Phase G work queue draft
+## 5. `[x]` Phase F retrospective and Phase G work queue draft
 
 **Why:** Phase F should end with implementation-ready next steps, not another retrospective that admits meaningful work remains without a queue.
 
@@ -185,3 +185,30 @@
 
 - [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md)
 - This file as the Phase F record
+
+---
+
+## Phase F retrospective
+
+### What went well
+
+- **Execution-gap inventory consolidation** turned the Phase E residuals into one source of truth in `phase_f_execution_gap_inventory.md`, which removed the need to keep reconciling the same six families across multiple docs.
+- **Route and data ownership tracing** made the actual execution boundaries explicit: which kwargs survive, which routes own each family, and whether the blocker is data, plumbing, or both.
+- **Current-state doc cross-references** kept the catalog/spec/examples honest without turning them into roadmap docs; readers can now see that placeholder and unfiltered families are actively tracked in Part 2.
+
+### What was harder than expected
+
+- **Clutch transport is narrower than the docs implied.** The audit showed that `clutch` still stops at parse-state metadata plus a note, while the other context filters are preserved to execution and then sanitized away. That split had to be called out explicitly so Phase G starts from the real control path.
+- **Phase handoff accuracy spans multiple docs.** The active queue lives in the Part 2 plan, but `docs/index.md` also advertises the active planning entry point, so the handoff needed synchronized updates instead of a single queue-file change.
+
+### What Phase F did not cover
+
+- **No execution-backed behavior changed.** Phase F stayed within audit, contract, and documentation scope by design.
+- **Segment-level data for clutch / period execution still does not exist in-repo.** Phase G can now target that prerequisite directly, but it must either land a real segment source or explicitly defer those filters rather than approximating them from whole-game logs.
+- **Schedule-context execution remains Phase H.** The shared game-context feature join, national-TV data quality, and one-possession semantics are still grouped there and should not bleed into the context-filter phase.
+
+### Scope adjustments for Phase G and beyond
+
+1. Phase G should start with the shared execution-plumbing contract and the already-data-ready `role` filter before attempting clutch / period execution.
+2. Clutch and period work should stay grouped around one segment-split contract; they should not fork into separate ad hoc data paths.
+3. Phase H should reuse the same execution transport pattern from Phase G instead of inventing a second path for schedule-context filters.
