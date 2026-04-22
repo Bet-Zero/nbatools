@@ -89,7 +89,7 @@
 
 ---
 
-## 3. `[ ]` Define the shared execution prerequisites for context and schedule filters
+## 3. `[x]` Define the shared execution prerequisites for context and schedule filters
 
 **Why:** Clutch, period, rest, B2B, one-possession, national TV, and role filtering likely share feature-table or join prerequisites. Documenting the shared prerequisites avoids six one-off fixes.
 
