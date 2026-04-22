@@ -259,7 +259,40 @@ PHASE_E_QUERY_SMOKE_CASES = (
     ),
 )
 
-PHASE_QUERY_SMOKE_CASES = PHASE_D_QUERY_SMOKE_CASES + PHASE_E_QUERY_SMOKE_CASES
+PHASE_G_QUERY_SMOKE_CASES = (
+    QuerySmokeCase(
+        query="Jokic in the clutch this season",
+        expected_routes=("player_game_summary",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=CLUTCH_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Knicks OT record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=QUARTER_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="LeBron as a starter stats",
+        expected_routes=("player_game_summary",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=STARTER_NOTE_SUBSTRINGS,
+    ),
+    QuerySmokeCase(
+        query="Lakers on back-to-backs record",
+        expected_routes=("team_record",),
+        expected_query_class="summary",
+        expected_intents=("summary",),
+        expected_note_substrings=BACK_TO_BACK_NOTE_SUBSTRINGS,
+    ),
+)
+
+PHASE_QUERY_SMOKE_CASES = (
+    PHASE_D_QUERY_SMOKE_CASES + PHASE_E_QUERY_SMOKE_CASES + PHASE_G_QUERY_SMOKE_CASES
+)
 
 CLI_RUNNER = CliRunner()
 API_CLIENT = TestClient(api_app)
