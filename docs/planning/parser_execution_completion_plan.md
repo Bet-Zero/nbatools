@@ -71,7 +71,7 @@ This plan covers execution/data completion for capability families that are alre
 - true clutch execution
 - true quarter / half / overtime execution
 - schedule-context execution: back-to-back, rest, one-possession, national TV, and related joins
-- starter / bench execution for the `role` slot
+- starter / bench execution for the `role` slot, including the prerequisite starter-role source / derivation work
 - real on/off execution for `player_on_off`
 - real lineup execution for `lineup_summary` and `lineup_leaderboard`
 - closure audit for any remaining placeholder or unfiltered route surfaced by parser docs, examples, or query catalog entries
@@ -89,14 +89,14 @@ This plan covers execution/data completion for capability families that are alre
 
 These are the capability families that still require Part 2 work.
 
-| Capability family        | Parser / route status                  | Execution status                                         | Primary evidence                                                                             |
-| ------------------------ | -------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Clutch                   | Parser-recognized and route-propagated | Unfiltered note; no clutch-capable data source yet       | `parser/specification.md` §8, `parser/examples.md` §7.7                                      |
-| Quarter / half / OT      | Parser-recognized and route-propagated | Unfiltered note; no period split execution yet           | `parser/specification.md` §8, `parser/examples.md` §7.8                                      |
-| Schedule-context filters | Parser-recognized and route-propagated | Unfiltered note; joins/features incomplete               | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14                          |
-| Starter / bench role     | Parser-recognized for player context   | Unfiltered note; role filter not wired through execution | `parser/specification.md` §8, `parser/examples.md` §7.10                                     |
-| On/off                   | Dedicated route exists                 | Placeholder execution only                               | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`       |
-| Lineups                  | Dedicated routes exist                 | Placeholder execution only                               | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md` |
+| Capability family        | Parser / route status                  | Execution status                                                                                                 | Primary evidence                                                                                                     |
+| ------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Clutch                   | Parser-recognized and route-propagated | Unfiltered note; no clutch-capable data source yet                                                               | `parser/specification.md` §8, `parser/examples.md` §7.7                                                              |
+| Quarter / half / OT      | Parser-recognized and route-propagated | Unfiltered note; no period split execution yet                                                                   | `parser/specification.md` §8, `parser/examples.md` §7.8                                                              |
+| Schedule-context filters | Parser-recognized and route-propagated | Unfiltered note; joins/features incomplete                                                                       | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14                                                  |
+| Starter / bench role     | Parser-recognized for player context   | Unfiltered note; execution blocked because current player-game logs do not contain trustworthy starter-role data | `parser/specification.md` §8, `parser/examples.md` §7.10, `src/nbatools/commands/pipeline/pull_player_game_stats.py` |
+| On/off                   | Dedicated route exists                 | Placeholder execution only                                                                                       | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`                               |
+| Lineups                  | Dedicated routes exist                 | Placeholder execution only                                                                                       | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md`                         |
 
 These families are not allowed to disappear under a generic “plan complete” statement. Each one must either become execution-backed or be explicitly deferred.
 
@@ -129,7 +129,9 @@ These families are not allowed to disappear under a generic “plan complete” 
 
 - clutch
 - quarter / half / overtime
-- starter / bench role
+- starter / bench role, including the starter-role source / derivation prerequisite exposed by the current player-game-data blocker
+
+For starter / bench role specifically, the current `player_game_stats`-derived `starter_flag` is not a usable execution input. Phase G therefore has to land the starter-role source / contract path before route-level role filtering can ship honestly.
 
 **Definition of done:**
 

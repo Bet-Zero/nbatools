@@ -27,8 +27,8 @@ Phase F established the execution-oriented baseline for the remaining parser-shi
 
 - Consolidated the six execution-partial families into `phase_f_execution_gap_inventory.md`
 - Traced route ownership, kwarg transport, command ownership, and missing data/join requirements for each family
-- Defined four shared prerequisites instead of six one-off fixes: execution plumbing, segment-split data, role execution over existing logs, and schedule-context feature joins
-- Confirmed the Phase boundary: Phase G owns shared execution plumbing plus `role`, `clutch`, and `quarter / half / overtime`; Phase H owns whole-game schedule-context joins
+- Defined four shared prerequisites instead of six one-off fixes: execution plumbing, segment-split data, a starter-role source/data contract, and schedule-context feature joins
+- Confirmed the Phase boundary: Phase G owns shared execution plumbing plus the starter-role path, `clutch`, and `quarter / half / overtime`; Phase H owns whole-game schedule-context joins
 
 Phase G should use that inventory as its family list of record rather than reopening broad exploration.
 
@@ -77,47 +77,73 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 2. `[ ]` Ship starter / bench execution on player-context summary and finder routes
+## 2. `[-]` Ship starter / bench execution on player-context summary and finder routes — skipped: current player-game logs do not contain trustworthy starter-role data; follow item 2A first
 
-**Why:** `role` is the best data-ready Phase G slice. The raw player game logs already carry `starter_flag`; the gap is execution plumbing and route support, not missing ingestion.
+**Why it was skipped:** This item was written against a false assumption: that the current raw player-game corpus already carries usable starter-role data. Repo audit showed that assumption is false, so route-level role execution cannot ship honestly from the current logs.
 
-**Scope:**
+**Blocker confirmed in repo:**
 
-- Preserve `role` through execution on the currently supported player-context routes
-- Implement role filtering over the existing `starter_flag` field for:
-  - `player_game_summary`
-  - `player_game_finder`
-- Keep team-only bench semantics intentionally unsupported
-- Remove the unfiltered-results note on routes where role filtering becomes real, while preserving honest fallback behavior on routes that still do not support it
+- `src/nbatools/commands/pipeline/pull_player_game_stats.py` maps `START_POSITION` to `start_position`, fills missing `start_position` with `""`, and derives `starter_flag` from whether `start_position` is non-empty.
+- `src/nbatools/commands/data_utils.py` `load_player_games_for_seasons()` loads `data/raw/player_game_stats/*`, which is the dataset consumed by `player_game_summary` and `player_game_finder`.
+- The current `data/raw/player_game_stats/*.csv` corpus has `start_position` empty throughout and `starter_flag=0` throughout, so filtering those logs by `role="starter"` would turn valid starter queries into false `no_match` results.
+- An exploratory execution attempt to filter on the current derived `starter_flag` was correctly reverted after smoke validation exposed the false-no-match behavior.
 
-**Files likely touched:**
+**Required current behavior:**
 
-- `src/nbatools/commands/player_game_summary.py`
-- `src/nbatools/commands/player_game_finder.py`
-- `src/nbatools/commands/data_utils.py`
-- `src/nbatools/commands/_natural_query_execution.py`
-- `tests/` — role execution coverage
-- `tests/_query_smoke.py` — `PHASE_G_QUERY_SMOKE_CASES`
+- Keep team-only bench semantics intentionally unsupported.
+- Keep the current honest product surface unchanged until trustworthy starter-role data exists: parser recognition stays shipped, `role` continues to propagate through execution metadata, and supported player routes continue to append the explicit unfiltered-results note.
 
-**Acceptance criteria:**
+**Continuation path:**
 
-- Player-context `role="starter"` and `role="bench"` queries return actually filtered results on summary and finder routes
-- Supported routes no longer append the role fallback note once filtering is applied
-- Team-only bench phrasing remains unsupported and unchanged
-- At least 6 tests verify role filtering behavior, route coverage, and the supported/unsupported boundary
-- `PHASE_G_QUERY_SMOKE_CASES` includes representative starter and bench queries
-
-**Tests to run:**
-
-- `make test-query`
-- `make test-engine`
-- `make test-phase-smoke`
-- `make test-smoke-queries`
+- Work item 2A is now the required next step for this family. Do not reopen route-level role filtering until that item establishes a trustworthy starter-role source/contract.
 
 **Reference docs to consult:**
 
-- [`phase_f_execution_gap_inventory.md` §Role execution contract over existing player game logs](./phase_f_execution_gap_inventory.md#3-role-execution-contract-over-existing-player-game-logs)
+- [`phase_f_execution_gap_inventory.md` §Starter-role source and data contract](./phase_f_execution_gap_inventory.md#3-starter-role-source-and-data-contract)
 - [`docs/architecture/parser/specification.md` §8](../architecture/parser/specification.md#8-context-filters)
+- `src/nbatools/commands/pipeline/pull_player_game_stats.py`
+- `src/nbatools/commands/data_utils.py`
+
+---
+
+## 2A. `[ ]` Audit candidate starter-role sources and define the starter-role data contract
+
+**Why:** Starter / bench execution remains open, but the current player-game logs cannot support it honestly. The next concrete step is to choose and document a trustworthy starter-role source or derivation path instead of assuming the current derived `starter_flag` is usable.
+
+**Scope:**
+
+- Audit candidate starter-role sources for player-context role execution, including whether the existing upstream pull can expose a trustworthy starter field, whether a new upstream endpoint or join is required, and whether any reliable derivation path exists.
+- Lock the supported role semantics for the current product surface: whole-game `starter` vs `bench` for player-context summary/finder routes only.
+- Define the minimal starter-role data contract needed for execution-backed filtering: grain, join keys, required fields, coverage/backfill expectations, and failure behavior.
+- Leave a follow-on execution item that uses that contract instead of the false “existing logs are already sufficient” assumption. If no trustworthy source is available within current repo constraints, replace that execution item with an explicit handoff that names the missing upstream artifact and the immediate next action.
+
+**Files likely touched:**
+
+- `docs/planning/phase_f_execution_gap_inventory.md`
+- `docs/planning/parser_execution_completion_plan.md`
+- `docs/reference/data_contracts.md` or a dedicated companion planning doc if the contract is too large
+- `src/nbatools/commands/pipeline/pull_player_game_stats.py`
+- `src/nbatools/commands/data_utils.py`
+- `src/nbatools/commands/player_game_summary.py`
+- `src/nbatools/commands/player_game_finder.py`
+
+**Acceptance criteria:**
+
+- The repo names the exact blocker precisely: current `start_position` / derived `starter_flag` data is not trustworthy enough for honest role execution.
+- A concrete candidate path is chosen for starter-role data: ingest, derivation, or explicit upstream dependency review.
+- A starter-role data contract exists with explicit grain, join keys, required fields, and coverage expectations.
+- The follow-on execution item for starter / bench filtering references that contract instead of assuming the current player-game logs are already sufficient, or the queue contains an explicit review/handoff item if no trustworthy source can yet be landed.
+
+**Tests to run:**
+
+- None for a docs-only audit/contract item. If code or pipeline probes are committed as part of the audit, run the narrow relevant target (typically `make test-engine`).
+
+**Reference docs to consult:**
+
+- [`phase_f_execution_gap_inventory.md` §Starter-role source and data contract](./phase_f_execution_gap_inventory.md#3-starter-role-source-and-data-contract)
+- [`parser_execution_completion_plan.md` §5.2](./parser_execution_completion_plan.md#52-phase-g--execution-backed-context-filters)
+- `src/nbatools/commands/pipeline/pull_player_game_stats.py`
+- `src/nbatools/commands/data_utils.py`
 - `src/nbatools/commands/player_game_summary.py`
 - `src/nbatools/commands/player_game_finder.py`
 
