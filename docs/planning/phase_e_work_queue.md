@@ -486,7 +486,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ---
 
-## 12. `[x]` Phase E retrospective and Phase F work queue draft
+## 12. `[x]` Phase E retrospective and Part 2 handoff
 
 **Why:** Self-propagating final task. Ensures learnings are captured and the next phase (if any) is scoped.
 
@@ -506,7 +506,7 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 **Acceptance criteria:**
 
 - Retrospective captures outcomes, surprises, and residuals
-- Decision on Phase F is documented
+- Continuation path after Part 1 is documented
 - This item is checked off
 
 **Tests to run:**
@@ -544,17 +544,16 @@ Items 1–4 add context filters that extend existing routes. Items 2–4 are the
 
 ### Phase F decision
 
-- **No Phase F work queue is needed for the parser/query-surface expansion plan.** Phase E closes the planned parser-surface roadmap.
-- The remaining gaps are no longer parser-surface sequencing problems. They are **data and execution-subsystem** problems: clutch splits, true on/off, lineup-unit stats, and richer schedule-context joins.
-- If that work is prioritized later, it should live in a dedicated plan for new data ingestion and execution support rather than extending the parser phase series.
+- **Phase E closes Part 1, not the overall capability-completion effort.** Parser/query-surface expansion is complete, but full product completion still requires execution/data work.
+- The remaining gaps are now owned by [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md) and begin with [`phase_f_work_queue.md`](./phase_f_work_queue.md).
+- The immediate next step is to work Phase F item 1 from the Part 2 plan, not to treat the roadmap as finished.
 
 ---
 
 ## Appendix: progress tracking
 
-When item 12 is checked `[x]`, the planned parser/query-surface expansion sequence is complete. Item 1 remains `[~]` intentionally to record that clutch is parser-recognized but still lacks data-backed execution.
+When item 12 is checked `[x]`, Part 1 is complete and the continuation path must already exist. Item 1 remains `[~]` intentionally to record that clutch is parser-recognized but still lacks data-backed execution, and that gap is now carried by Part 2.
 
 ---
-
 
 If any item is skipped (`[-]`), note the reason inline so the reason survives in git history.

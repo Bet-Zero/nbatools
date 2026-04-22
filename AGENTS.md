@@ -84,7 +84,7 @@ For parser work, treat all of these as first-class input styles:
 - search-bar / fragment form
 - compressed shorthand form
 
-Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. See `docs/planning/query_surface_expansion_plan.md` for the active parser/query-surface expansion plan and the "Phase-based work queues" section below for how to pick up scheduled work on it.
+Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. See `docs/planning/query_surface_expansion_plan.md` for the completed Part 1 parser/query-surface plan, `docs/planning/parser_execution_completion_plan.md` for the active continuation plan, and the "Phase-based work queues" section below for how to pick up scheduled work.
 
 ### Frontend-layer rule
 
@@ -278,15 +278,25 @@ Some active plans in `docs/planning/` organize their work into phases with compa
 
 - The **plan doc** (e.g. `docs/planning/query_surface_expansion_plan.md`) defines phases, scope, guardrails, and direction. It stays stable across a phase.
 - The **active phase's work queue** (e.g. `docs/planning/phase_a_work_queue.md`) contains the current sequenced items, each with acceptance criteria and test commands. It changes continuously as items complete.
-- The **final item of each queue** is always to draft the next phase's queue. This makes phase transitions self-triggering — the same "work the next item" prompt naturally produces the next queue when the current one is done.
+- The **final item of each queue** must either draft the next queue/phase or write an explicit review-handoff that names the files/artifacts to review and the immediate next action after review.
+
+#### Completion-level rule
+
+Planning docs must distinguish between:
+
+- **parser/query-surface completion** — parser recognition, slot extraction, routing, and docs/tests for the surface are in place
+- **execution/data completion** — the user-facing query family returns execution-backed results, or is explicitly deferred/out of scope with a documented reason
+- **product/capability completion** — both of the above are true, or the capability is explicitly deferred
+
+Do **not** let a plan, phase, or queue imply product completion from parser/route/placeholder completion alone. If a plan only completes a subsystem, it must label itself as Part 1 (or equivalent) and link to the continuation path.
 
 #### Agent workflow
 
 To pick up scheduled work on a phase-based plan, use this prompt:
 
-> Read the plan doc and the active work queue (the most recent `phase_*_work_queue.md` in the plan's directory with unchecked items). Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires.
+> Read the relevant plan doc and the active work queue it explicitly identifies as next. Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires.
 
-The active queue is always the most recent `phase_*_work_queue.md` file in the plan's directory that still has unchecked items. No separate prompt is needed for phase transitions.
+The active queue is the queue named by the plan as the current continuation step. Do not infer global product completion from the absence of unchecked items in a subsystem-only queue. No separate prompt is needed for phase transitions as long as the current queue's final task drafts the next queue or writes the explicit review-handoff.
 
 #### Keeping plan and queue in sync
 

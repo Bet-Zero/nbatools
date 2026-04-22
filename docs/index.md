@@ -65,9 +65,11 @@ Runbooks and operational guides.
 Roadmap and active plans.
 
 - `planning/roadmap.md` — planned and future capabilities
-- `planning/query_surface_expansion_plan.md` — parser/query-surface expansion plan synthesized from example and notes docs
+- `planning/query_surface_expansion_plan.md` — Part 1 parser/query-surface expansion plan (closed as subsystem-complete only)
+- `planning/parser_execution_completion_plan.md` — Part 2 execution/data completion plan for parser-shipped capabilities
+- `planning/phase_f_work_queue.md` — active Phase F queue for execution-backed completion after Part 1
 - `planning/phase_e_data_inventory.md` — on/off and lineup data-layer audit for Phase E item 7
-- `planning/phase_a_work_queue.md` — active Phase A work queue for the query-surface expansion plan
+- `planning/phase_a_work_queue.md` through `planning/phase_e_work_queue.md` — historical Part 1 work-queue series for the query-surface expansion plan
 - `planning/phase_a_gap_inventory.md` — reconnaissance of question/search parity gaps (Phase A item 2)
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker

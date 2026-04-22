@@ -1,8 +1,10 @@
 # Query Surface Expansion Plan
 
-> **Role: active planning doc.**
+> **Role: Part 1 planning doc for parser/query-surface expansion.**
 >
-> This plan drives the next rounds of natural-query parser and surface expansion. It replaces the earlier attempt at this doc and is grounded in:
+> **Status:** Part 1 complete. This doc no longer represents end-to-end capability completion on its own. Continuation for execution/data completion now lives in [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md).
+>
+> This plan drove the natural-query parser/query-surface expansion effort. It replaces the earlier attempt at this doc and is grounded in:
 >
 > - the actual state of `src/nbatools/commands/natural_query.py` and its helper modules
 > - the living shipped inventory in [`docs/reference/query_catalog.md`](../reference/query_catalog.md)
@@ -52,6 +54,19 @@ See [`docs/architecture/parser/overview.md`](../architecture/parser/overview.md)
 - the spec of the parser's components — that's [`parser/specification.md`](../architecture/parser/specification.md)
 - verified behavior boundaries — that's [`current_state_guide.md`](../reference/current_state_guide.md)
 - implementation details inside any specific module
+
+### Completion model used by this repo
+
+The repo now distinguishes three completion levels for user-facing capability work:
+
+1. **Parser/query-surface complete**
+   The parser recognizes the phrasing family, extracts the needed slots, routes correctly, and the docs/tests for the parser surface are updated. This level may still return placeholder or unfiltered results.
+2. **Execution/data complete**
+   The intended user-facing query family returns execution-backed results using the required data source or aggregation layer. If that cannot ship yet, the capability must be explicitly deferred or marked partial with a linked continuation plan.
+3. **Product/capability complete**
+   The user-facing capability family is both parser/query-surface complete and execution/data complete, or it is explicitly deferred/out of scope with a documented reason. Current-state docs and catalogs may only imply full completion at this level.
+
+**Planning rule:** a top-level plan, phase, or queue may not imply product completion from parser/query-surface completion alone. If a plan only reaches level 1, it must label itself as **Part 1** (or equivalent) and point to the continuation path for level 2.
 
 ---
 
@@ -486,7 +501,11 @@ The plan stays stable — its scope and phases rarely change. Work queues change
 
 - **Drafted** when its phase activates — roughly when the prior phase is ~80% complete (so there's no dead time between phases, and learnings from the prior phase can inform the new queue's scope).
 - **Worked** one item at a time. Each item has acceptance criteria and test commands; when done, the item is checked off in the queue file and committed.
-- **Closed** when every item is checked and the queue's final meta-task — drafting the next phase's queue — is complete.
+- **Closed** when every item is checked and the queue's final meta-task has done one of the following:
+  - drafted the next queue/phase toward end-to-end completion, or
+  - written an explicit review-handoff instruction that names the files/artifacts to review, who should review them, and the immediate next action after review.
+
+A queue must not close while leaving partial, placeholder, or unfiltered capability families without an explicit continuation path.
 
 ### 9.3 Required smoke content in queue items
 
@@ -503,17 +522,20 @@ Research-only, docs-only, and internal refactor items that do not materially aff
 
 ### 9.4 Self-propagation
 
-The **final task in every work queue is the same**: "verify all prior items are checked, then draft the next phase's work queue per this plan." This means the same "work the next item" command naturally produces the next phase's queue when it's time, with no separate invocation needed.
+The **final task in every work queue** must do one of two things:
 
-The current phase is always "the most recent work queue that isn't fully checked off." An agent reading the planning directory can determine this by listing `phase_*_work_queue.md` files and finding the one with unchecked items.
+1. draft the next queue/phase toward end-to-end completion, or
+2. create an explicit review-handoff instruction for authoring that next queue, including the required files/artifacts and the immediate action after review.
+
+The active queue for a plan is the queue that the plan explicitly names as the next active continuation step. Do not infer global product completion from the absence of unchecked items inside a subsystem-only queue.
 
 ### 9.5 Reusable agent prompt
 
 Any agent — Claude Code, Cursor, a repo-level Claude, etc. — can work a phase with this prompt:
 
-> Read `docs/planning/query_surface_expansion_plan.md` and the active work queue (the most recent `docs/planning/phase_*_work_queue.md` with unchecked items). Find the next unchecked item. Review the relevant reference docs in `docs/architecture/parser/`. Execute the item according to its acceptance criteria, including any required `tests/_query_smoke.py` updates. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires.
+> Read the relevant plan doc and the active work queue that the plan explicitly identifies as next. Find the next unchecked item. Review the relevant reference docs it cites. Execute the item according to its acceptance criteria, including any required `tests/_query_smoke.py` updates. Run the specified test commands. When everything passes, check the item off in the work queue, update any docs the item requires.
 
-No new prompt is needed for phase transitions — the final task of each queue handles it.
+No new prompt is needed for phase transitions — the final task of each queue handles it, either by drafting the next queue or by producing the explicit review-handoff that immediately precedes the next queue.
 
 ### 9.6 When the plan itself needs updating
 
@@ -523,16 +545,21 @@ If a phase's work uncovers a reason to change the plan's scope, priorities, or g
 
 ## 10. Closure after Phase E
 
-Phase E closes this parser/query-surface expansion plan. No Phase F work queue is being opened.
+Phase E closes **Part 1 only**: parser/query-surface expansion.
 
-That decision is deliberate. The remaining gaps exposed by Phase E are not primarily about parser phrasing, slot extraction, or route selection anymore. They are about **data-backed execution**:
+This is not full product completion. The remaining gaps exposed by Phase E are not primarily about parser phrasing, slot extraction, or route selection anymore. They are about **execution/data completion**:
 
 - true clutch filtering needs a play-by-play or equivalent clutch-capable split source
 - real on/off results need on-court/off-court split data or locally derived stint data
 - real lineup results need lineup-unit or rotation/stint data
 - richer schedule-context execution still needs better metadata joins for some filters
 
-If this work is prioritized later, it should be planned as a separate data/execution effort rather than as another phase of parser/query-surface expansion.
+The continuation path is now explicit:
+
+- **Part 2 plan:** [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md)
+- **Next active queue:** [`phase_f_work_queue.md`](./phase_f_work_queue.md)
+
+This repo must treat Phase A-E as subsystem completion, not final completion.
 
 ---
 
@@ -540,21 +567,23 @@ If this work is prioritized later, it should be planned as a separate data/execu
 
 This plan sits alongside:
 
-| Doc                                                                                    | Role                                               |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **This file**                                                                          | Active planning doc for parser/surface expansion   |
-| [`docs/architecture/parser/overview.md`](../architecture/parser/overview.md)           | Parser design principles                           |
-| [`docs/architecture/parser/specification.md`](../architecture/parser/specification.md) | Parser component spec                              |
-| [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md)           | Parser example library + equivalence groups        |
-| [`docs/reference/query_catalog.md`](../reference/query_catalog.md)                     | Living shipped inventory (update with every phase) |
-| [`docs/reference/current_state_guide.md`](../reference/current_state_guide.md)         | Strict verified behavior                           |
-| [`docs/reference/query_guide.md`](../reference/query_guide.md)                         | Broader narrative reference                        |
-| [`AGENTS.md`](../../AGENTS.md)                                                         | Repo-wide conventions and testing policy           |
-| [`docs/planning/roadmap.md`](./roadmap.md)                                             | Broader repo roadmap (non-parser)                  |
+| Doc                                                                                          | Role                                               |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **This file**                                                                                | Part 1 plan for parser/query-surface expansion     |
+| [`docs/planning/parser_execution_completion_plan.md`](./parser_execution_completion_plan.md) | Part 2 plan for execution/data completion          |
+| [`docs/architecture/parser/overview.md`](../architecture/parser/overview.md)                 | Parser design principles                           |
+| [`docs/architecture/parser/specification.md`](../architecture/parser/specification.md)       | Parser component spec                              |
+| [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md)                 | Parser example library + equivalence groups        |
+| [`docs/reference/query_catalog.md`](../reference/query_catalog.md)                           | Living shipped inventory (update with every phase) |
+| [`docs/reference/current_state_guide.md`](../reference/current_state_guide.md)               | Strict verified behavior                           |
+| [`docs/reference/query_guide.md`](../reference/query_guide.md)                               | Broader narrative reference                        |
+| [`AGENTS.md`](../../AGENTS.md)                                                               | Repo-wide conventions and testing policy           |
+| [`docs/planning/roadmap.md`](./roadmap.md)                                                   | Broader repo roadmap (non-parser)                  |
 
 ### Update cadence
 
-- **This plan** — edited when phase scope changes, not phase-by-phase. Retire it when Phase E is substantially complete or supersede it with a successor plan.
+- **This plan** — Part 1 record. Keep it aligned with what Phase A-E actually accomplished and where it hands off next.
+- **`parser_execution_completion_plan.md`** — active continuation plan for execution/data completion after Part 1.
 - **`query_catalog.md`** — updated in the same session as any shipped capability change.
 - **Parser reference docs** — updated when component behavior changes or new capability families are designed.
 - **Current state guide** — updated when verified-behavior claims change.
