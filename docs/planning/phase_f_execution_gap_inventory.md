@@ -215,6 +215,100 @@ The one exception is `clutch`: it currently stays on the parse state and receive
 - Lineups:
   - Both dedicated lineup routes are placeholder-only, so the eventual execution owner needs a new lineup data path rather than a filter added to existing player/team logs.
 
+## Shared prerequisites for context and schedule filters
+
+The partial context families should not turn into six separate implementation tracks.
+The audit above reduces them to four shared prerequisites.
+
+### 1. Shared execution-plumbing contract
+
+Applies to: clutch, quarter / half / overtime, schedule-context filters, and role.
+
+Minimal contract:
+
+- parser-owned context slots must reach `route_kwargs` on every route that claims support
+- `query_service.execute_structured_query()` must expose those kwargs in metadata and forward them unchanged into `_execute_build_result()`
+- `_natural_query_execution.py` must stop using one global drop-on-sight sanitizer for supported routes; either route capability gating or route-specific adapters must decide whether a filter is supported
+- owning `build_result()` functions must accept the filter explicitly instead of relying on `**kwargs` swallowing or pre-execution sanitizing
+- smoke coverage must exercise at least one supported route per family end-to-end
+
+Why this is shared:
+
+- it removes the current split behavior where `clutch` is parse-note-only while the other context filters are kwarg-preserved-but-sanitized
+- it gives Phase G and Phase H one reusable execution contract instead of separate plumbing fixes for each filter
+
+### 2. Segment-split data contract
+
+Applies to: clutch, quarter / half / overtime.
+
+Phase owner: Phase G.
+
+Minimal contract:
+
+- a player-grain segment table and a team-grain segment table, or an equivalent joinable representation
+- keys sufficient to join back to existing routes: `season`, `season_type`, `game_id`, and entity identifiers (`player_id` / `team_id`, plus stable names or abbreviations already used by the command layer)
+- segment descriptors that can encode both period and clutch contexts, for example a `segment_family` / `segment_value` pair such as `quarter=4`, `half=first`, `period=OT`, `clutch=true`
+- the box-score columns already consumed by current summary / finder / leaderboard routes, so the command layer can reuse existing aggregations rather than inventing a separate result shape
+
+Why this is shared:
+
+- clutch and period filters both need intra-game slices; they differ in the slice definition, not in the execution pattern
+- one segment contract is cleaner than separate ad hoc clutch tables and quarter tables
+
+Phase-G implication:
+
+- if the segment tables do not exist yet, Phase G can still finish the role filter and must explicitly defer clutch / period execution rather than mixing those blockers into Phase H
+
+### 3. Role execution contract over existing player game logs
+
+Applies to: starter / bench role.
+
+Phase owner: Phase G.
+
+Minimal contract:
+
+- treat `starter_flag` in `data/raw/player_game_stats/*` as the authoritative whole-game starter / bench signal for currently supported player-context routes
+- preserve `role` through execution instead of sanitizing it away
+- add explicit role filtering to the player-route owners that currently answer the unfiltered query shape
+
+Why this stands alone:
+
+- no new ingestion is required
+- this is the one context family that is blocked by execution plumbing, not by missing raw data
+
+Phase-G implication:
+
+- role filtering is the best data-ready Phase G slice and should not wait on the new segment tables needed by clutch / period execution
+
+### 4. Schedule-context feature-join contract
+
+Applies to: back-to-back, rest advantage / disadvantage / day-count filters, one-possession, nationally televised.
+
+Phase owner: Phase H.
+
+Minimal contract:
+
+- one execution-grade game-context feature table, or equivalent derived join, keyed by at least `season`, `season_type`, `game_id`, and the team identity used by the command layer
+- fields for `back_to_back`, normalized `rest_days`, and a reliable `nationally_televised` flag
+- a stable one-possession indicator so commands do not derive game-margin semantics independently at query time
+- a documented join path into both player-game and team-game command execution
+
+Why this is shared:
+
+- the schedule filters all operate at the whole-game level and should ride on the same per-game feature join rather than bespoke logic in each command
+- the current blockers are data-contract and join issues, not parser issues
+
+Phase-H implication:
+
+- national-TV ingestion quality and one-possession semantics belong here, not in Phase G
+- once the shared game-context feature table exists, the schedule filters can be enabled route-by-route without reopening parser work
+
+## Phase boundary for later queues
+
+- Phase G should target the shared execution-plumbing contract, the role execution contract, and the segment-split contract for clutch / period filters.
+- Phase H should target the schedule-context feature-join contract and reuse the same execution-plumbing pattern instead of inventing a second transport path.
+- Later queues should schedule work by prerequisite, not by individual filter phrase. For example: "wire role filtering through player summary and finder" is a queue item; "support `as a starter`" is just the surface expression that rides on that prerequisite.
+
 ## Families reviewed and intentionally excluded from the gap inventory
 
 - Opponent-quality filters:
