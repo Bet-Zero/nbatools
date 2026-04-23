@@ -1455,7 +1455,9 @@ def _finalize_route(parsed: dict) -> dict:
             "clutch: filter detected but play-by-play clutch splits not yet available; "
             "results are unfiltered"
         )
-    if period_note := build_period_filter_note(quarter=quarter, half=half):
+    if route not in {"player_game_finder", "team_record"} and (
+        period_note := build_period_filter_note(quarter=quarter, half=half)
+    ):
         notes.append(period_note)
     notes.extend(
         build_game_context_filter_notes(

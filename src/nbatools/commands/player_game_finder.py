@@ -4,8 +4,11 @@ from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     apply_player_role_filter,
     build_opponent_mask,
+    build_period_filter_coverage_note,
     filter_by_opponent_player,
+    filter_period_rows,
     filter_without_player,
+    load_player_game_period_stats_for_seasons,
     load_player_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -185,10 +188,21 @@ def build_result(
             notes=["sort_by must be either 'game_date' or 'stat'"],
         )
 
+    period_filter_requested = quarter is not None or half is not None
+
     try:
-        df = load_player_games_for_seasons(seasons, season_type)
+        if period_filter_requested:
+            try:
+                df = load_player_game_period_stats_for_seasons(seasons, season_type)
+                df = filter_period_rows(df, quarter=quarter, half=half)
+            except FileNotFoundError:
+                df = load_player_games_for_seasons(seasons, season_type)
+                if period_note := build_period_filter_coverage_note(quarter=quarter, half=half):
+                    notes.append(period_note)
+        else:
+            df = load_player_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
-        return NoResult(query_class="finder", reason="no_data")
+        return NoResult(query_class="finder", reason="no_data", notes=notes)
 
     required = [
         "game_id",

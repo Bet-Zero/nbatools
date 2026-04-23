@@ -157,6 +157,7 @@ class TestRawPullStages:
     @patch("nbatools.commands.pipeline.pull_player_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_team_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_standings_snapshots.run")
+    @patch("nbatools.commands.pipeline.pull_game_period_stats.run")
     @patch("nbatools.commands.pipeline.pull_player_game_starter_roles.run")
     @patch("nbatools.commands.pipeline.pull_player_game_stats.run")
     @patch("nbatools.commands.pipeline.pull_team_game_stats.run")
@@ -165,7 +166,7 @@ class TestRawPullStages:
     @patch("nbatools.commands.pipeline.pull_games.run")
     def test_all_stages_run_in_order(self, *mocks):
         results = _raw_pull_stages("2025-26", "Regular Season")
-        assert len(results) == 9
+        assert len(results) == 10
         assert all(r.status == StageStatus.SUCCESS for r in results)
         assert results[0].name == "pull_games"
         assert results[1].name == "pull_schedule"
@@ -173,13 +174,15 @@ class TestRawPullStages:
         assert results[3].name == "pull_team_game_stats"
         assert results[4].name == "pull_player_game_stats"
         assert results[5].name == "pull_player_game_starter_roles"
-        assert results[6].name == "pull_standings_snapshots"
-        assert results[7].name == "pull_team_season_advanced"
-        assert results[8].name == "pull_player_season_advanced"
+        assert results[6].name == "pull_game_period_stats"
+        assert results[7].name == "pull_standings_snapshots"
+        assert results[8].name == "pull_team_season_advanced"
+        assert results[9].name == "pull_player_season_advanced"
 
     @patch("nbatools.commands.pipeline.pull_player_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_team_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_standings_snapshots.run")
+    @patch("nbatools.commands.pipeline.pull_game_period_stats.run")
     @patch("nbatools.commands.pipeline.pull_player_game_starter_roles.run")
     @patch("nbatools.commands.pipeline.pull_player_game_stats.run")
     @patch("nbatools.commands.pipeline.pull_team_game_stats.run")
@@ -188,7 +191,7 @@ class TestRawPullStages:
     @patch("nbatools.commands.pipeline.pull_games.run")
     def test_standings_skipped_for_playoffs(self, *mocks):
         results = _raw_pull_stages("2024-25", "Playoffs")
-        assert len(results) == 9
+        assert len(results) == 10
         standings = next(r for r in results if r.name == "pull_standings_snapshots")
         assert standings.status == StageStatus.SKIPPED
 
@@ -226,6 +229,7 @@ class TestRefreshSeason:
     @patch("nbatools.commands.pipeline.pull_player_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_team_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_standings_snapshots.run")
+    @patch("nbatools.commands.pipeline.pull_game_period_stats.run")
     @patch("nbatools.commands.pipeline.pull_player_game_starter_roles.run")
     @patch("nbatools.commands.pipeline.pull_player_game_stats.run")
     @patch("nbatools.commands.pipeline.pull_team_game_stats.run")
@@ -247,8 +251,8 @@ class TestRefreshSeason:
         assert result.current_through == "2026-04-11"
         assert result.started_at is not None
         assert result.finished_at is not None
-        # Should have: 9 raw + 1 validate + 4 build + 1 manifest = 15 stages
-        assert len(result.stages) == 15
+        # Should have: 10 raw + 1 validate + 4 build + 1 manifest = 16 stages
+        assert len(result.stages) == 16
 
     @patch("nbatools.commands.pipeline.pull_games.run")
     def test_games_failure_stops_early(self, mock_games):
@@ -263,6 +267,7 @@ class TestRefreshSeason:
     @patch("nbatools.commands.pipeline.pull_player_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_team_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_standings_snapshots.run")
+    @patch("nbatools.commands.pipeline.pull_game_period_stats.run")
     @patch("nbatools.commands.pipeline.pull_player_game_starter_roles.run")
     @patch("nbatools.commands.pipeline.pull_player_game_stats.run")
     @patch("nbatools.commands.pipeline.pull_team_game_stats.run")
@@ -274,8 +279,8 @@ class TestRefreshSeason:
         mock_val.side_effect = ValueError("schema mismatch")
         result = refresh_season("2025-26", "Regular Season")
         assert not result.success
-        # 9 raw + 1 validate = 10 stages (no build, no manifest)
-        assert len(result.stages) == 10
+        # 10 raw + 1 validate = 11 stages (no build, no manifest)
+        assert len(result.stages) == 11
         val_stage = next(s for s in result.stages if s.name == "validate_raw")
         assert val_stage.status == StageStatus.FAILED
 
@@ -292,7 +297,7 @@ class TestRefreshSeason:
 
     def test_dry_run(self):
         result = refresh_season("2025-26", "Regular Season", dry_run=True)
-        assert len(result.stages) == 15
+        assert len(result.stages) == 16
         assert all(s.status == StageStatus.SKIPPED for s in result.stages)
         assert all(s.error == "dry_run" for s in result.stages)
 
@@ -447,6 +452,7 @@ class TestStageOrdering:
         "pull_team_game_stats",
         "pull_player_game_stats",
         "pull_player_game_starter_roles",
+        "pull_game_period_stats",
         "pull_standings_snapshots",
         "pull_team_season_advanced",
         "pull_player_season_advanced",
@@ -577,6 +583,7 @@ class TestCurrentThroughIntegration:
     @patch("nbatools.commands.pipeline.pull_player_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_team_season_advanced.run")
     @patch("nbatools.commands.pipeline.pull_standings_snapshots.run")
+    @patch("nbatools.commands.pipeline.pull_game_period_stats.run")
     @patch("nbatools.commands.pipeline.pull_player_game_starter_roles.run")
     @patch("nbatools.commands.pipeline.pull_player_game_stats.run")
     @patch("nbatools.commands.pipeline.pull_team_game_stats.run")

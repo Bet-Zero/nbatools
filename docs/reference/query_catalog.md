@@ -14,7 +14,7 @@
 > **Maintenance rule:** when a meaningful shipped query capability is added,
 > expanded, renamed, or intentionally restricted, update this file in the same pass.
 
-When this catalog marks a family as parser-recognized but still unfiltered or placeholder-backed, that note reflects current shipped behavior only. The active execution/data continuation for those families is tracked in [parser_execution_completion_plan.md](../planning/parser_execution_completion_plan.md) and [phase_g_period_only_work_queue.md](../planning/phase_g_period_only_work_queue.md).
+When this catalog marks a family as parser-recognized but still unfiltered or placeholder-backed, that note reflects current shipped behavior only. The active execution/data continuation for those families is tracked in [parser_execution_completion_plan.md](../planning/parser_execution_completion_plan.md) and [phase_h_work_queue.md](../planning/phase_h_work_queue.md).
 
 ---
 
@@ -94,8 +94,10 @@ If a feature is not reflected here, it should not be assumed shipped.
   (parser-recognized and route-propagated; current query engine returns unfiltered
   results with an explicit note because play-by-play clutch splits are not available yet)
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
-  (parser-recognized and engine-accepted; current game-log data returns unfiltered
-  full-game results with an explicit note because period splits are not available yet)
+  (parser-recognized and engine-accepted; `player_game_finder` and `team_record`
+  execute these filters when `player_game_period_stats` / `team_game_period_stats`
+  coverage exists for the requested slice, otherwise they fall back with an
+  explicit unfiltered-results note. Other routes still remain unfiltered.)
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
   (parser-recognized and engine-accepted; current query engine returns unfiltered
   results with an explicit note because schedule/context feature tables are not yet joined)
@@ -592,7 +594,13 @@ Examples:
 
 Current behavior:
 
-- parser sets `quarter` / `half`, routes normally, and appends an explicit unfiltered-results note because current game-log data does not expose period splits
+- parser sets `quarter` / `half` and routes normally
+- `player_game_finder` and `team_record` execute period filters when trusted
+  `player_game_period_stats` / `team_game_period_stats` coverage exists for the
+  requested slice; otherwise they fall back with an explicit unfiltered-results note
+- other routes, such as period leaderboard phrasing, still append the explicit
+  unfiltered-results note because the current period-backed route boundary does
+  not extend beyond `player_game_finder` / `team_record`
 
 ### Back-to-back filter
 

@@ -27,6 +27,113 @@ PLAYER_GAME_STARTER_ROLE_OPTIONAL_COLUMNS = [
     "player_name",
 ]
 
+PLAYER_GAME_PERIOD_REQUIRED_COLUMNS = [
+    "game_id",
+    "season",
+    "season_type",
+    "game_date",
+    "period_family",
+    "period_value",
+    "source_start_period",
+    "source_end_period",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "wl",
+    "player_id",
+    "player_name",
+    "minutes",
+    "pts",
+    "fgm",
+    "fga",
+    "fg3m",
+    "fg3a",
+    "ftm",
+    "fta",
+    "oreb",
+    "dreb",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "pf",
+    "plus_minus",
+    "usg_pct",
+    "ast_pct",
+    "reb_pct",
+    "tov_pct",
+]
+
+PLAYER_GAME_PERIOD_OPTIONAL_COLUMNS = [
+    "fg_pct",
+    "fg3_pct",
+    "ft_pct",
+    "efg_pct",
+    "ts_pct",
+    "comment",
+]
+
+TEAM_GAME_PERIOD_REQUIRED_COLUMNS = [
+    "game_id",
+    "season",
+    "season_type",
+    "game_date",
+    "period_family",
+    "period_value",
+    "source_start_period",
+    "source_end_period",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "wl",
+    "minutes",
+    "pts",
+    "fgm",
+    "fga",
+    "fg3m",
+    "fg3a",
+    "ftm",
+    "fta",
+    "oreb",
+    "dreb",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "pf",
+    "plus_minus",
+]
+
+TEAM_GAME_PERIOD_OPTIONAL_COLUMNS = [
+    "fg_pct",
+    "fg3_pct",
+    "ft_pct",
+    "efg_pct",
+    "ts_pct",
+]
+
+PERIOD_DESCRIPTOR_LOOKUP = {
+    ("quarter", "1"): (1, 1),
+    ("quarter", "2"): (2, 2),
+    ("quarter", "3"): (3, 3),
+    ("quarter", "4"): (4, 4),
+    ("half", "first"): (1, 2),
+    ("half", "second"): (3, 4),
+    ("overtime", "ot"): (5, 14),
+}
+
 
 def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
     """Element-wise division that returns *fill* where *denom* is zero.
@@ -60,7 +167,7 @@ def add_advanced_pct_columns(df: pd.DataFrame) -> pd.DataFrame:
     if {"pts", "fga", "fta"}.issubset(out.columns):
         out["ts_pct"] = safe_divide(out["pts"], 2 * (out["fga"] + 0.44 * out["fta"]))
 
-    if {"tov", "fga", "fta"}.issubset(out.columns):
+    if {"tov", "fga", "fta"}.issubset(out.columns) and "tov_pct" not in out.columns:
         out["tov_pct"] = (
             safe_divide(out["tov"], out["fga"] + 0.44 * out["fta"] + out["tov"]) * 100.0
         )
@@ -71,6 +178,61 @@ def add_advanced_pct_columns(df: pd.DataFrame) -> pd.DataFrame:
 def normalize_season_type(season_type: str) -> str:
     """'Regular Season' -> 'regular_season'"""
     return season_type.lower().replace(" ", "_")
+
+
+def _normalize_period_request(
+    quarter: str | None = None,
+    half: str | None = None,
+) -> tuple[str, str] | None:
+    if quarter and half:
+        raise ValueError("quarter and half cannot both be set")
+    if quarter is not None:
+        quarter_value = str(quarter).strip().upper()
+        if quarter_value == "OT":
+            return ("overtime", "ot")
+        if quarter_value in {"1", "2", "3", "4"}:
+            return ("quarter", quarter_value)
+        raise ValueError(f"Unsupported quarter value: {quarter}")
+    if half is not None:
+        half_value = str(half).strip().lower()
+        if half_value in {"first", "second"}:
+            return ("half", half_value)
+        raise ValueError(f"Unsupported half value: {half}")
+    return None
+
+
+def filter_period_rows(
+    df: pd.DataFrame,
+    *,
+    quarter: str | None = None,
+    half: str | None = None,
+) -> pd.DataFrame:
+    descriptor = _normalize_period_request(quarter=quarter, half=half)
+    if descriptor is None:
+        return df.copy()
+
+    period_family, period_value = descriptor
+    work = df.copy()
+    family = work["period_family"].fillna("").astype(str).str.lower()
+    value = work["period_value"].fillna("").astype(str).str.lower()
+    return work.loc[family.eq(period_family) & value.eq(period_value)].copy()
+
+
+def build_period_filter_coverage_note(
+    quarter: str | None = None,
+    half: str | None = None,
+) -> str | None:
+    if quarter is not None:
+        return (
+            "quarter: filter detected but trustworthy period-window coverage is unavailable "
+            "for the requested slice; results are unfiltered"
+        )
+    if half is not None:
+        return (
+            "half: filter detected but trustworthy period-window coverage is unavailable "
+            "for the requested slice; results are unfiltered"
+        )
+    return None
 
 
 def _normalize_opponent_values(
@@ -282,6 +444,202 @@ def _load_player_games_cached(
 def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
     return _load_player_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def _empty_player_game_period_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        columns=[
+            *PLAYER_GAME_PERIOD_REQUIRED_COLUMNS,
+            *PLAYER_GAME_PERIOD_OPTIONAL_COLUMNS,
+        ]
+    )
+
+
+@cache
+def _load_player_game_period_stats_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/raw/player_game_period_stats/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path)
+        missing = [col for col in PLAYER_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
+        if missing:
+            raise ValueError(f"player_game_period_stats missing required columns: {missing}")
+        if df.duplicated(subset=["game_id", "player_id", "period_family", "period_value"]).any():
+            raise ValueError(
+                "Duplicate (game_id, player_id, period_family, period_value) "
+                "in player_game_period_stats"
+            )
+
+        numeric_cols = [
+            "game_id",
+            "team_id",
+            "opponent_team_id",
+            "player_id",
+            "source_start_period",
+            "source_end_period",
+            "minutes",
+            "pts",
+            "fgm",
+            "fga",
+            "fg3m",
+            "fg3a",
+            "ftm",
+            "fta",
+            "oreb",
+            "dreb",
+            "reb",
+            "ast",
+            "stl",
+            "blk",
+            "tov",
+            "pf",
+            "plus_minus",
+            "usg_pct",
+            "ast_pct",
+            "reb_pct",
+            "tov_pct",
+        ]
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        period_keys = list(
+            zip(
+                df["period_family"].fillna("").astype(str).str.lower(),
+                df["period_value"].fillna("").astype(str).str.lower(),
+            )
+        )
+        if not all(key in PERIOD_DESCRIPTOR_LOOKUP for key in period_keys):
+            raise ValueError(
+                "player_game_period_stats has unsupported period_family/period_value rows"
+            )
+        expected_windows = pd.Series(period_keys).map(PERIOD_DESCRIPTOR_LOOKUP)
+        expected_start = expected_windows.map(lambda pair: pair[0])
+        expected_end = expected_windows.map(lambda pair: pair[1])
+        if not df["source_start_period"].eq(expected_start).all():
+            raise ValueError("player_game_period_stats source_start_period mismatch")
+        if not df["source_end_period"].eq(expected_end).all():
+            raise ValueError("player_game_period_stats source_end_period mismatch")
+
+        df = add_advanced_pct_columns(df)
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing player_game_period_stats files for requested slice: "
+            + ", ".join(missing_paths)
+        )
+    if not frames:
+        return _empty_player_game_period_df()
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_player_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    return _load_player_game_period_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def _empty_team_game_period_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        columns=[
+            *TEAM_GAME_PERIOD_REQUIRED_COLUMNS,
+            *TEAM_GAME_PERIOD_OPTIONAL_COLUMNS,
+        ]
+    )
+
+
+@cache
+def _load_team_game_period_stats_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/raw/team_game_period_stats/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path)
+        missing = [col for col in TEAM_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
+        if missing:
+            raise ValueError(f"team_game_period_stats missing required columns: {missing}")
+        if df.duplicated(subset=["game_id", "team_id", "period_family", "period_value"]).any():
+            raise ValueError(
+                "Duplicate (game_id, team_id, period_family, period_value) "
+                "in team_game_period_stats"
+            )
+
+        numeric_cols = [
+            "game_id",
+            "team_id",
+            "opponent_team_id",
+            "source_start_period",
+            "source_end_period",
+            "minutes",
+            "pts",
+            "fgm",
+            "fga",
+            "fg3m",
+            "fg3a",
+            "ftm",
+            "fta",
+            "oreb",
+            "dreb",
+            "reb",
+            "ast",
+            "stl",
+            "blk",
+            "tov",
+            "pf",
+            "plus_minus",
+        ]
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        period_keys = list(
+            zip(
+                df["period_family"].fillna("").astype(str).str.lower(),
+                df["period_value"].fillna("").astype(str).str.lower(),
+            )
+        )
+        if not all(key in PERIOD_DESCRIPTOR_LOOKUP for key in period_keys):
+            raise ValueError(
+                "team_game_period_stats has unsupported period_family/period_value rows"
+            )
+        expected_windows = pd.Series(period_keys).map(PERIOD_DESCRIPTOR_LOOKUP)
+        expected_start = expected_windows.map(lambda pair: pair[0])
+        expected_end = expected_windows.map(lambda pair: pair[1])
+        if not df["source_start_period"].eq(expected_start).all():
+            raise ValueError("team_game_period_stats source_start_period mismatch")
+        if not df["source_end_period"].eq(expected_end).all():
+            raise ValueError("team_game_period_stats source_end_period mismatch")
+
+        df = add_advanced_pct_columns(df)
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing team_game_period_stats files for requested slice: " + ", ".join(missing_paths)
+        )
+    if not frames:
+        return _empty_team_game_period_df()
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_team_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    return _load_team_game_period_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
 
 
 def build_role_filter_coverage_note(role: str | None = None) -> str | None:

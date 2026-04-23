@@ -2,7 +2,7 @@
 
 > **Purpose of this doc:** The example library. Use this for test inputs, equivalence verification, and to see how real user language maps to the parser's canonical parse state. For framing, see [`overview.md`](./overview.md). For component specs, see [`specification.md`](./specification.md). For the living inventory of currently-shipped query shapes, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-When an example below carries an explicit unfiltered-results or placeholder execution note, that note describes current shipped behavior only. Active execution follow-up for those families is tracked in [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and the current [`phase_g_period_only_work_queue.md`](../../planning/phase_g_period_only_work_queue.md).
+When an example below carries an explicit unfiltered-results or placeholder execution note, that note describes current shipped behavior only. Active execution follow-up for those families is tracked in [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and the current [`phase_h_work_queue.md`](../../planning/phase_h_work_queue.md).
 
 ---
 
@@ -828,7 +828,10 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Which players score the most in the 4th quarter this season?`
 - `most 4th quarter points this season`
 - `4th quarter scoring leaders this season`
-- _Current execution note:_ all variants set `quarter="4"`; results remain unfiltered until period splits land._
+- _Current execution note:_ all variants set `quarter="4"`. Period execution is now
+  coverage-gated on `player_game_finder` / `team_record` when period backfills exist
+  for the requested slice, but these leaderboard variants still remain unfiltered
+  because the current period-backed route boundary does not include `season_leaders`._
 
 ### 7.9 Schedule context — Lakers back-to-back record
 

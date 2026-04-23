@@ -25,6 +25,11 @@ def test_overtime_filter_propagates_to_route_kwargs():
     assert parsed["route_kwargs"]["quarter"] == "OT"
 
 
-def test_period_filters_append_unfiltered_note():
+def test_supported_period_routes_no_longer_append_parser_note():
     parsed = parse_query("LeBron 4th quarter scoring")
+    assert not any("quarter" in note and "unfiltered" in note for note in parsed.get("notes", []))
+
+
+def test_unsupported_period_route_still_appends_unfiltered_note():
+    parsed = parse_query("most 4th quarter points this season")
     assert any("quarter" in note and "unfiltered" in note for note in parsed.get("notes", []))

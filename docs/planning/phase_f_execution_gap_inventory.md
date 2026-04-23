@@ -240,27 +240,53 @@ Why this is shared:
 - it keeps `clutch`, `quarter`, `half`, and `role` on one explicit transport path while leaving schedule-context filters honestly unsupported
 - it gives Phase G and Phase H one reusable execution contract instead of separate plumbing fixes for each filter
 
-### 2. Segment-split data contract
+### 2. Period-window data contract
 
-Applies to: clutch, quarter / half / overtime.
+Applies to: quarter / half / overtime.
 
-Phase owner: Phase G.
+Phase owner: the period-only continuation of Phase G.
 
-Minimal contract:
+Locked contract:
 
-- a player-grain segment table and a team-grain segment table, or an equivalent joinable representation
-- keys sufficient to join back to existing routes: `season`, `season_type`, `game_id`, and entity identifiers (`player_id` / `team_id`, plus stable names or abbreviations already used by the command layer)
-- segment descriptors that can encode both period and clutch contexts, for example a `segment_family` / `segment_value` pair such as `quarter=4`, `half=first`, `period=OT`, `clutch=true`
-- the box-score columns already consumed by current summary / finder / leaderboard routes, so the command layer can reuse existing aggregations rather than inventing a separate result shape
+- create dedicated `player_game_period_stats` and `team_game_period_stats` datasets
+  instead of trying to keep `clutch` and period execution on one shared unfinished
+  segment table
+- use `BoxScoreTraditionalV3` as the period-window source of record for both datasets
+  and for the period window boundaries themselves
+- enrich only `player_game_period_stats` with `BoxScoreAdvancedV3` rate fields needed by
+  the current `player_game_finder` stat surface (`usg_pct`, `ast_pct`, `reb_pct`,
+  `tov_pct`)
+- use join keys at least as strong as `season`, `season_type`, `game_id`, and the route
+  owner identity (`player_id` or `team_id`), plus the team/opponent/name context already
+  used by the current command layer
+- represent the supported period semantics with explicit `period_family` /
+  `period_value` pairs:
+  - `quarter` with `1`, `2`, `3`, `4`
+  - `half` with `first`, `second`
+  - `overtime` with `OT`
+- record the exact upstream window on each row via `source_start_period` /
+  `source_end_period`:
+  - quarters: `1-1`, `2-2`, `3-3`, `4-4`
+  - halves: `1-2`, `3-4`
+  - overtime: `5-14`, aggregated into one `OT` row only when real overtime activity is
+    returned
+- keep the initial route boundary explicit:
+  - `player_game_period_stats` owns period execution for `player_game_finder`
+  - `team_game_period_stats` owns period execution for `team_record`
 
-Why this is shared:
+Why this is now period-only:
 
-- clutch and period filters both need intra-game slices; they differ in the slice definition, not in the execution pattern
-- one segment contract is cleaner than separate ad hoc clutch tables and quarter tables
+- the segment-source review found no trustworthy clutch-capable game-grain source under
+  current repo constraints
+- period-only window execution still looks feasible from the `BoxScore*V3` window
+  endpoints and should not stay blocked behind the unresolved clutch prerequisite
 
 Phase-G implication:
 
-- if the segment tables do not exist yet, Phase G can still finish the role filter and must explicitly defer clutch / period execution rather than mixing those blockers into Phase H
+- the exact next implementation target is to materialize `player_game_period_stats` and
+  `team_game_period_stats`, validate them, and wire them into `player_game_finder` and
+  `team_record`
+- `clutch` stays explicitly deferred and is out of scope for this contract
 
 ### 3. Starter-role source and data contract
 

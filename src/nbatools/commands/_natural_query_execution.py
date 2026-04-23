@@ -307,8 +307,8 @@ def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict
     if route not in _PHASE_G_PERIOD_TRANSPORT_ROUTES:
         quarter = routed.pop("quarter", None)
         half = routed.pop("half", None)
-    if period_note := build_period_filter_note(quarter=quarter, half=half):
-        notes.append(period_note)
+        if period_note := build_period_filter_note(quarter=quarter, half=half):
+            notes.append(period_note)
 
     if route not in _PHASE_G_ROLE_TRANSPORT_ROUTES:
         role = routed.pop("role", None)

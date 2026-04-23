@@ -24,14 +24,14 @@ def test_supported_clutch_route_keeps_kwarg_and_note():
     assert any("clutch" in note and "unfiltered" in note for note in notes)
 
 
-def test_supported_period_route_keeps_kwarg_and_note():
+def test_supported_period_route_keeps_kwarg_without_transport_note():
     routed, notes = _route_context_filters_for_execution(
         "team_record",
         {"team": "NYK", "quarter": "OT"},
     )
 
     assert routed["quarter"] == "OT"
-    assert any("quarter" in note and "unfiltered" in note for note in notes)
+    assert not any("quarter" in note and "unfiltered" in note for note in notes)
 
 
 def test_supported_role_route_keeps_kwarg_without_note():

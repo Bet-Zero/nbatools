@@ -1,5 +1,6 @@
 import typer
 
+from nbatools.commands.pipeline.pull_game_period_stats import run as pull_game_period_stats_run
 from nbatools.commands.pipeline.pull_games import run as pull_games_run
 from nbatools.commands.pipeline.pull_player_game_starter_roles import (
     run as pull_player_game_starter_roles_run,
@@ -92,3 +93,11 @@ def pull_player_game_starter_roles(
     season_type: str = typer.Option(..., "--season-type"),
 ):
     pull_player_game_starter_roles_run(season, season_type)
+
+
+@app.command("pull-game-period-stats")
+def pull_game_period_stats(
+    season: str = typer.Option(...),
+    season_type: str = typer.Option(..., "--season-type"),
+):
+    pull_game_period_stats_run(season, season_type)

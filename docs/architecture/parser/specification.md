@@ -4,7 +4,7 @@
 >
 > **Scope:** This doc describes the parser's _design_ — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters or placeholder on/off routes), the active continuation plan is [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and its current queue [`phase_g_period_only_work_queue.md`](../../planning/phase_g_period_only_work_queue.md). This file remains a current-state design reference, not a roadmap.
+Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters or placeholder on/off routes), the active continuation plan is [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and its current queue [`phase_h_work_queue.md`](../../planning/phase_h_work_queue.md). This file remains a current-state design reference, not a roadmap.
 
 ---
 
@@ -499,7 +499,7 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
-**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Clutch, period, and schedule filters remain parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
+**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Period filters are execution-backed on `player_game_finder` and `team_record` when trusted `player_game_period_stats` / `team_game_period_stats` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Clutch and schedule filters remain parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
 
 Define where or when within a game the stat applies.
 
@@ -522,8 +522,11 @@ Define where or when within a game the stat applies.
   filter only when trusted `player_game_starter_roles` coverage exists for the
   requested slice; otherwise execution appends the explicit unfiltered-results note.
 - `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
-  parse slots; current game-log data does not expose period splits, so the engine
-  accepts these filters with an explicit unfiltered-results note
+  parse slots. `player_game_finder` and `team_record` execute these filters when
+  trusted period-window coverage exists for the requested slice via
+  `player_game_period_stats` / `team_game_period_stats`; otherwise execution
+  appends the explicit unfiltered-results note. Other routes still append the
+  explicit unfiltered-results note because period execution is not enabled there.
 
 Schedule-context slots above are parser-recognized and route-propagated; the
 current query engine accepts them with an explicit unfiltered-results note
@@ -548,7 +551,8 @@ because schedule/context feature tables are not yet joined into route execution.
 ### 8.2 Not yet fully shipped at the execution layer
 
 - true clutch-filtered results backed by play-by-play data
-- true quarter / half / overtime split execution from period-level data
+- period execution beyond the current coverage-gated `player_game_finder` /
+  `team_record` boundary
 - true schedule-context execution for `back_to_back`, `rest_days`, `one_possession`, and `nationally_televised`
 - full starter / bench backfill coverage beyond slices with trusted `player_game_starter_roles` data
 

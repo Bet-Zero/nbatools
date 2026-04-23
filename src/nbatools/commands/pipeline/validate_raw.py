@@ -2,11 +2,166 @@ from pathlib import Path
 
 import pandas as pd
 
+PERIOD_WINDOW_LOOKUP = {
+    ("quarter", "1"): (1, 1),
+    ("quarter", "2"): (2, 2),
+    ("quarter", "3"): (3, 3),
+    ("quarter", "4"): (4, 4),
+    ("half", "first"): (1, 2),
+    ("half", "second"): (3, 4),
+    ("overtime", "ot"): (5, 14),
+}
+
+PLAYER_PERIOD_REQUIRED_COLUMNS = [
+    "game_id",
+    "season",
+    "season_type",
+    "game_date",
+    "period_family",
+    "period_value",
+    "source_start_period",
+    "source_end_period",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "wl",
+    "player_id",
+    "player_name",
+    "minutes",
+    "pts",
+    "fgm",
+    "fga",
+    "fg3m",
+    "fg3a",
+    "ftm",
+    "fta",
+    "oreb",
+    "dreb",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "pf",
+    "plus_minus",
+    "usg_pct",
+    "ast_pct",
+    "reb_pct",
+    "tov_pct",
+]
+
+TEAM_PERIOD_REQUIRED_COLUMNS = [
+    "game_id",
+    "season",
+    "season_type",
+    "game_date",
+    "period_family",
+    "period_value",
+    "source_start_period",
+    "source_end_period",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "wl",
+    "minutes",
+    "pts",
+    "fgm",
+    "fga",
+    "fg3m",
+    "fg3a",
+    "ftm",
+    "fta",
+    "oreb",
+    "dreb",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "pf",
+    "plus_minus",
+]
+
 
 def require_columns(df, required, name):
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"{name} missing columns: {missing}")
+
+
+def _validate_period_window_columns(df: pd.DataFrame, name: str) -> pd.DataFrame:
+    validated = df.copy()
+    for col in (
+        "game_id",
+        "team_id",
+        "source_start_period",
+        "source_end_period",
+    ):
+        validated[col] = pd.to_numeric(validated[col], errors="coerce")
+
+    validated["period_family"] = validated["period_family"].fillna("").astype(str).str.lower()
+    validated["period_value"] = validated["period_value"].fillna("").astype(str).str.lower()
+
+    keys = list(zip(validated["period_family"], validated["period_value"]))
+    if not all(key in PERIOD_WINDOW_LOOKUP for key in keys):
+        raise ValueError(f"{name} has unsupported period_family/period_value rows")
+
+    expected = pd.Series(keys).map(PERIOD_WINDOW_LOOKUP)
+    expected_start = expected.map(lambda pair: pair[0])
+    expected_end = expected.map(lambda pair: pair[1])
+    if not validated["source_start_period"].eq(expected_start).all():
+        raise ValueError(f"{name} source_start_period mismatch")
+    if not validated["source_end_period"].eq(expected_end).all():
+        raise ValueError(f"{name} source_end_period mismatch")
+
+    return validated
+
+
+def validate_player_game_period_stats_df(df: pd.DataFrame) -> pd.DataFrame:
+    require_columns(df, PLAYER_PERIOD_REQUIRED_COLUMNS, "player_game_period_stats")
+    validated = _validate_period_window_columns(df, "player_game_period_stats")
+    validated["player_id"] = pd.to_numeric(validated["player_id"], errors="coerce")
+
+    if validated.duplicated(subset=["game_id", "player_id", "period_family", "period_value"]).any():
+        raise ValueError(
+            "Duplicate (game_id, player_id, period_family, period_value) "
+            "in player_game_period_stats"
+        )
+
+    for pct_col in ("usg_pct", "ast_pct", "reb_pct", "tov_pct"):
+        values = pd.to_numeric(validated[pct_col], errors="coerce")
+        if ((values < 0) | (values > 1)).any():
+            raise ValueError(f"player_game_period_stats {pct_col} out of bounds")
+
+    return validated
+
+
+def validate_team_game_period_stats_df(df: pd.DataFrame) -> pd.DataFrame:
+    require_columns(df, TEAM_PERIOD_REQUIRED_COLUMNS, "team_game_period_stats")
+    validated = _validate_period_window_columns(df, "team_game_period_stats")
+
+    if validated.duplicated(subset=["game_id", "team_id", "period_family", "period_value"]).any():
+        raise ValueError(
+            "Duplicate (game_id, team_id, period_family, period_value) in team_game_period_stats"
+        )
+
+    wl_expected = validated["plus_minus"].map(
+        lambda value: "W" if value > 0 else ("L" if value < 0 else "T")
+    )
+    if not validated["wl"].fillna("").eq(wl_expected).all():
+        raise ValueError("team_game_period_stats wl mismatch")
+
+    return validated
 
 
 def run(season: str, season_type: str):
@@ -18,6 +173,8 @@ def run(season: str, season_type: str):
         "team": Path(f"data/raw/team_game_stats/{season}_{safe}.csv"),
         "player": Path(f"data/raw/player_game_stats/{season}_{safe}.csv"),
         "player_roles": Path(f"data/raw/player_game_starter_roles/{season}_{safe}.csv"),
+        "player_period": Path(f"data/raw/player_game_period_stats/{season}_{safe}.csv"),
+        "team_period": Path(f"data/raw/team_game_period_stats/{season}_{safe}.csv"),
         "rosters": Path(f"data/raw/rosters/{season}.csv"),
         "standings": Path(f"data/raw/standings_snapshots/{season}_{safe}.csv"),
         "team_adv": Path(f"data/raw/team_season_advanced/{season}_{safe}.csv"),
@@ -35,6 +192,8 @@ def run(season: str, season_type: str):
     team = pd.read_csv(paths["team"])
     player = pd.read_csv(paths["player"])
     player_roles = pd.read_csv(paths["player_roles"])
+    player_period = pd.read_csv(paths["player_period"])
+    team_period = pd.read_csv(paths["team_period"])
     rosters = pd.read_csv(paths["rosters"])
     standings = None
     if paths["standings"].exists():
@@ -125,6 +284,15 @@ def run(season: str, season_type: str):
         raise ValueError("Trusted starter-role rows must have blank role_validation_reason")
     if not validated.loc[~trusted, "role_validation_reason"].fillna("").ne("").all():
         raise ValueError("Untrusted starter-role rows must explain role_validation_reason")
+
+    # --- PLAYER / TEAM GAME PERIOD STATS ---
+    player_period = validate_player_game_period_stats_df(player_period)
+    team_period = validate_team_game_period_stats_df(team_period)
+
+    if not set(player_period["game_id"]).issubset(set(player["game_id"])):
+        raise ValueError("player_game_period_stats contains unknown game_id values")
+    if not set(team_period["game_id"]).issubset(set(team["game_id"])):
+        raise ValueError("team_game_period_stats contains unknown game_id values")
 
     # --- ROSTERS ---
     require_columns(rosters, ["player_id", "team_id", "season", "stint"], "rosters")

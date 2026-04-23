@@ -20,8 +20,11 @@ import pandas as pd
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     build_opponent_mask,
+    build_period_filter_coverage_note,
     describe_opponent_filter,
+    filter_period_rows,
     filter_without_player,
+    load_team_game_period_stats_for_seasons,
     load_team_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -130,11 +133,13 @@ def _stat_averages(df: pd.DataFrame) -> dict:
     return avgs
 
 
-def _empty_sample_result(query_class: str) -> NoResult:
+def _empty_sample_result(query_class: str, *, notes: list[str] | None = None) -> NoResult:
+    combined_notes = list(notes or [])
+    combined_notes.append(_EMPTY_SAMPLE_NOTE)
     return NoResult(
         query_class=query_class,
         reason="no_match",
-        notes=[_EMPTY_SAMPLE_NOTE],
+        notes=combined_notes,
     )
 
 
@@ -175,11 +180,24 @@ def build_team_record_result(
         raise ValueError("Cannot use both wins_only and losses_only")
 
     seasons = resolve_seasons(season, start_season, end_season)
+    notes: list[str] = []
+    period_filter_requested = quarter is not None or half is not None
+    period_execution_backed = False
 
     try:
-        df = load_team_games_for_seasons(seasons, season_type)
+        if period_filter_requested:
+            try:
+                df = load_team_game_period_stats_for_seasons(seasons, season_type)
+                df = filter_period_rows(df, quarter=quarter, half=half)
+                period_execution_backed = True
+            except FileNotFoundError:
+                df = load_team_games_for_seasons(seasons, season_type)
+                if period_note := build_period_filter_coverage_note(quarter=quarter, half=half):
+                    notes.append(period_note)
+        else:
+            df = load_team_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
-        return NoResult(query_class="summary", reason="no_data")
+        return NoResult(query_class="summary", reason="no_data", notes=notes)
 
     df = _apply_game_filters(
         df,
@@ -206,8 +224,16 @@ def build_team_record_result(
             strict_team_match=True,
         )
 
+    tied_period_rows = 0
+    if period_execution_backed and not df.empty:
+        tied_period_rows = int(df["wl"].astype(str).str.upper().eq("T").sum())
+        if tied_period_rows:
+            df = df[df["wl"].astype(str).str.upper().isin({"W", "L"})].copy()
+
     if df.empty:
-        return _empty_sample_result("summary")
+        if tied_period_rows:
+            notes.append("period record excludes tied period windows from record totals")
+        return _empty_sample_result("summary", notes=notes)
 
     rec = _compute_record(df)
     avgs = _stat_averages(df)
@@ -280,11 +306,17 @@ def build_team_record_result(
         if end_date:
             dp.append(f"to {end_date}")
         caveats.append(f"date window: {' '.join(dp)}")
+    if period_execution_backed:
+        descriptor = quarter if quarter is not None else half
+        caveats.append(f"period record computed from {descriptor} windows")
+    if tied_period_rows:
+        caveats.append("tied period windows excluded from record totals")
 
     return SummaryResult(
         summary=summary,
         by_season=by_season,
         current_through=current_through,
+        notes=notes,
         caveats=caveats,
     )
 

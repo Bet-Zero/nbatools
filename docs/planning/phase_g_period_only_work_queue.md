@@ -43,7 +43,7 @@ unless a new reviewed source decision changes the constraint.
 
 ---
 
-## 1. `[ ]` Define the period-window data contract and route support boundary
+## 1. `[x]` Define the period-window data contract and route support boundary
 
 **Why:** The handoff established that period execution can likely use box-score
 window endpoints, but the repo still needs one explicit contract that says what
@@ -90,13 +90,13 @@ not claim clutch support.
 **Reference docs to consult:**
 
 - [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
-- [`phase_f_execution_gap_inventory.md` §2](./phase_f_execution_gap_inventory.md#2-segment-split-data-contract)
+- [`phase_f_execution_gap_inventory.md` §2](./phase_f_execution_gap_inventory.md#2-period-window-data-contract)
 - [`parser_execution_completion_plan.md` §5.2](./parser_execution_completion_plan.md#52-phase-g--execution-backed-context-filters)
 - [`docs/reference/data_contracts.md`](../reference/data_contracts.md)
 
 ---
 
-## 2. `[ ]` Build the period-window dataset and validation path
+## 2. `[x]` Build the period-window dataset and validation path
 
 **Why:** Route-level period execution should consume a reusable dataset, not
 ad hoc endpoint calls or route-specific one-off joins.
@@ -144,7 +144,7 @@ ad hoc endpoint calls or route-specific one-off joins.
 
 ---
 
-## 3. `[ ]` Ship quarter / half / overtime execution on `player_game_finder`
+## 3. `[x]` Ship quarter / half / overtime execution on `player_game_finder`
 
 **Why:** `player_game_finder` is one of the currently documented routes that
 already recognizes period filters but still returns full-game rows with an
@@ -194,7 +194,7 @@ explicit unfiltered-results note.
 
 ---
 
-## 4. `[ ]` Ship quarter / half / overtime execution on `team_record`
+## 4. `[x]` Ship quarter / half / overtime execution on `team_record`
 
 **Why:** `team_record` is the other currently documented route that should stop
 returning full-game results with a period note once a period dataset exists.
@@ -241,7 +241,7 @@ returning full-game results with a period note once a period dataset exists.
 
 ---
 
-## 5. `[ ]` Sync current-state docs and Phase G smoke inventory with the shipped period boundary
+## 5. `[x]` Sync current-state docs and Phase G smoke inventory with the shipped period boundary
 
 **Why:** Once period filters become execution-backed on the documented initial
 routes, the current-state docs and smoke inventory need to describe that exact
@@ -284,7 +284,7 @@ boundary without drifting into clutch claims or broader unsupported routes.
 
 ---
 
-## 6. `[ ]` Period-only retrospective, explicit clutch deferral note, and Phase H work queue draft
+## 6. `[x]` Period-only retrospective, explicit clutch deferral note, and Phase H work queue draft
 
 **Why:** This continuation queue should close by naming the next active queue
 cleanly, while keeping the unresolved clutch prerequisite explicit instead of

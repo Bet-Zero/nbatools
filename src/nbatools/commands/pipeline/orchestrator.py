@@ -13,8 +13,8 @@ can inspect exactly what happened.
 
 Rebuild order follows ``docs/planning/data_freshness_plan.md`` §4:
   1. Raw pulls (games → schedule → rosters → team_game_stats →
-     player_game_stats → player_game_starter_roles → standings_snapshots →
-     team_season_advanced → player_season_advanced)
+     player_game_stats → player_game_starter_roles → game_period_stats →
+     standings_snapshots → team_season_advanced → player_season_advanced)
   2. Validation (validate_raw)
   3. Processed builds (team_game_features → game_features →
      player_game_features → league_season_stats)
@@ -153,6 +153,7 @@ def _raw_pull_stages(
     ``pull_games`` raises a "No data returned" error, the remaining raw stages
     are skipped cleanly (useful for upcoming playoff seasons).
     """
+    from nbatools.commands.pipeline.pull_game_period_stats import run as pull_game_period_stats
     from nbatools.commands.pipeline.pull_games import run as pull_games
     from nbatools.commands.pipeline.pull_player_game_starter_roles import (
         run as pull_player_game_starter_roles,
@@ -211,18 +212,23 @@ def _raw_pull_stages(
         )
     )
 
-    # 7. pull-standings-snapshots (regular season only)
+    # 7. pull-game-period-stats
+    results.append(
+        _run_stage("pull_game_period_stats", pull_game_period_stats, season, season_type)
+    )
+
+    # 8. pull-standings-snapshots (regular season only)
     if season_type != "Playoffs":
         results.append(_run_stage("pull_standings_snapshots", pull_standings, season, season_type))
     else:
         results.append(StageResult(name="pull_standings_snapshots", status=StageStatus.SKIPPED))
 
-    # 8. pull-team-season-advanced
+    # 9. pull-team-season-advanced
     results.append(
         _run_stage("pull_team_season_advanced", pull_team_season_advanced, season, season_type)
     )
 
-    # 9. pull-player-season-advanced
+    # 10. pull-player-season-advanced
     results.append(
         _run_stage("pull_player_season_advanced", pull_player_season_advanced, season, season_type)
     )
@@ -325,6 +331,7 @@ def refresh_season(
             "pull_team_game_stats",
             "pull_player_game_stats",
             "pull_player_game_starter_roles",
+            "pull_game_period_stats",
             "pull_standings_snapshots",
             "pull_team_season_advanced",
             "pull_player_season_advanced",

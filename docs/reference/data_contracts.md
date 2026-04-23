@@ -205,6 +205,126 @@ Contract rules:
 
 ---
 
+## 1B. `player_game_period_stats`
+
+### Path pattern
+
+`data/raw/player_game_period_stats/{season}_{season_type_safe}.csv`
+
+Examples:
+
+- `data/raw/player_game_period_stats/2025-26_regular_season.csv`
+- `data/raw/player_game_period_stats/2024-25_playoffs.csv`
+
+### Grain
+
+One row per **player-game period window** for the supported period semantics.
+
+### Key fields
+
+- `game_id`
+- `player_id`
+- `period_family`
+- `period_value`
+
+Recommended uniqueness expectation:
+
+- unique on (`game_id`, `player_id`, `period_family`, `period_value`)
+
+### Required columns
+
+- `game_id`
+- `season`
+- `season_type`
+- `game_date`
+- `period_family`
+- `period_value`
+- `source_start_period`
+- `source_end_period`
+- `team_id`
+- `team_abbr`
+- `team_name`
+- `opponent_team_id`
+- `opponent_team_abbr`
+- `opponent_team_name`
+- `is_home`
+- `is_away`
+- `wl`
+- `player_id`
+- `player_name`
+- `minutes`
+- `pts`
+- `fgm`
+- `fga`
+- `fg3m`
+- `fg3a`
+- `ftm`
+- `fta`
+- `oreb`
+- `dreb`
+- `reb`
+- `ast`
+- `stl`
+- `blk`
+- `tov`
+- `pf`
+- `plus_minus`
+
+### Important derived/query fields
+
+- `fg_pct`
+- `fg3_pct`
+- `ft_pct`
+- `efg_pct`
+- `ts_pct`
+- `usg_pct`
+- `ast_pct`
+- `reb_pct`
+- `tov_pct`
+- `comment`
+
+### Producer(s)
+
+- `src/nbatools/commands/pipeline/pull_game_period_stats.py`, which fans out over
+  `data/raw/games/{season}_{season_type_safe}.csv`
+- `BoxScoreTraditionalV3` period-window requests for the traditional box-score totals
+- `BoxScoreAdvancedV3` period-window requests for the player-only rate fields needed by
+  `player_game_finder`
+
+### Primary consumer(s)
+
+- quarter / half / overtime execution on `player_game_finder`
+- future player-context routes that explicitly opt into the same period-window contract
+
+### Notes
+
+This dataset is the authoritative period-window source for the initial player route boundary.
+
+Contract rules:
+
+- `BoxScoreTraditionalV3` is the source of record for player-grain period windows and owns
+  the traditional box-score columns in this table
+- `BoxScoreAdvancedV3` is an explicit player-only enrichment path for `usg_pct`, `ast_pct`,
+  `reb_pct`, and `tov_pct`; the initial team route boundary does not depend on AdvancedV3
+- supported period semantics are represented as explicit `period_family` / `period_value`
+  pairs:
+  - `quarter` with values `1`, `2`, `3`, `4`
+  - `half` with values `first`, `second`
+  - `overtime` with value `OT`
+- `source_start_period` / `source_end_period` record the exact upstream window used to
+  materialize the row:
+  - quarters: `1-1`, `2-2`, `3-3`, `4-4`
+  - halves: `1-2`, `3-4`
+  - overtime: `5-14`, aggregated into one `OT` row only when the returned window shows real
+    overtime activity
+- this contract is period-only; it does not define `clutch`, and no consumer may treat these
+  rows as a clutch-capable substitute
+- commands should treat missing or incomplete season files for this dataset as a coverage
+  failure and fall back to the current honest unfiltered-results note instead of partially
+  mixing whole-game and period-window rows
+
+---
+
 ## 2. `team_game_stats`
 
 ### Path pattern
@@ -283,6 +403,109 @@ Recommended uniqueness expectation:
 ### Notes
 
 This is the core team query dataset. Team summary, split, and streak behaviors should be designed around this contract.
+
+---
+
+## 2A. `team_game_period_stats`
+
+### Path pattern
+
+`data/raw/team_game_period_stats/{season}_{season_type_safe}.csv`
+
+Examples:
+
+- `data/raw/team_game_period_stats/2025-26_regular_season.csv`
+- `data/raw/team_game_period_stats/2024-25_playoffs.csv`
+
+### Grain
+
+One row per **team-game period window** for the supported period semantics.
+
+### Key fields
+
+- `game_id`
+- `team_id`
+- `period_family`
+- `period_value`
+
+Recommended uniqueness expectation:
+
+- unique on (`game_id`, `team_id`, `period_family`, `period_value`)
+
+### Required columns
+
+- `game_id`
+- `season`
+- `season_type`
+- `game_date`
+- `period_family`
+- `period_value`
+- `source_start_period`
+- `source_end_period`
+- `team_id`
+- `team_abbr`
+- `team_name`
+- `opponent_team_id`
+- `opponent_team_abbr`
+- `opponent_team_name`
+- `is_home`
+- `is_away`
+- `wl`
+- `minutes`
+- `pts`
+- `fgm`
+- `fga`
+- `fg3m`
+- `fg3a`
+- `ftm`
+- `fta`
+- `oreb`
+- `dreb`
+- `reb`
+- `ast`
+- `stl`
+- `blk`
+- `tov`
+- `pf`
+- `plus_minus`
+
+### Important derived/query fields
+
+- `fg_pct`
+- `fg3_pct`
+- `ft_pct`
+- `efg_pct`
+- `ts_pct`
+
+### Producer(s)
+
+- `src/nbatools/commands/pipeline/pull_game_period_stats.py`, which fans out over
+  `data/raw/games/{season}_{season_type_safe}.csv`
+- `BoxScoreTraditionalV3` period-window requests for the team-grain period totals
+
+### Primary consumer(s)
+
+- quarter / half / overtime execution on `team_record`
+- future team-context routes that explicitly opt into the same period-window contract
+
+### Notes
+
+This dataset is the authoritative period-window source for the initial team route boundary.
+
+Contract rules:
+
+- `BoxScoreTraditionalV3` is the source of record for team-grain period windows
+- supported period semantics are represented with the same `period_family` / `period_value`
+  vocabulary as `player_game_period_stats`
+- `wl` is a period-window outcome derived from the period point differential:
+  `W` when `plus_minus > 0`, `L` when `plus_minus < 0`, and `T` when the selected period
+  ends tied
+- `team_record` owns the downstream handling of `T`; the raw dataset must preserve that state
+  instead of collapsing tied period windows into whole-game semantics
+- this contract is period-only; it does not power `clutch`
+- commands should treat missing or incomplete season files for this dataset as a coverage
+  failure and fall back to the current honest unfiltered-results note instead of partially
+  mixing whole-game and period-window rows
 
 ---
 
@@ -494,7 +717,7 @@ Do not silently substitute season-average values for filtered-sample outputs.
 
 ### Player query surface
 
-- `player_game_finder` -> `player_game_stats`
+- `player_game_finder` -> `player_game_stats`, or `player_game_period_stats` when a supported quarter / half / OT filter is execution-backed for the requested slice
 - `player_game_summary` -> `player_game_stats` + supporting advanced metric context
 - `player_compare` -> `player_game_stats` + supporting advanced metric context
 - `player_split_summary` -> `player_game_stats` + supporting advanced metric context
@@ -506,6 +729,7 @@ Do not silently substitute season-average values for filtered-sample outputs.
 - `game_finder` -> `team_game_stats`
 - `game_summary` -> `team_game_stats`
 - `team_compare` -> `team_game_stats`
+- `team_record` -> `team_game_stats`, or `team_game_period_stats` when a supported quarter / half / OT filter is execution-backed for the requested slice
 - `team_split_summary` -> `team_game_stats`
 - `team_streak_finder` -> `team_game_stats`
 - `season_team_leaders` -> `team_season_advanced` and/or `team_game_stats`

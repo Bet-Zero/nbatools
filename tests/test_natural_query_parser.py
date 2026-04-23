@@ -422,13 +422,13 @@ def test_ot_surface_form_sets_ot_quarter():
     assert parsed["quarter"] == "OT"
 
 
-def test_quarter_note_appended():
+def test_supported_quarter_route_no_longer_appends_parser_note():
     parsed = parse_query("LeBron 4th quarter scoring")
     notes = parsed.get("notes", [])
-    assert any("quarter" in n and "unfiltered" in n for n in notes)
+    assert not any("quarter" in n and "unfiltered" in n for n in notes)
 
 
-def test_half_note_appended():
+def test_unsupported_half_route_still_appends_parser_note():
     parsed = parse_query("Celtics first half stats")
     notes = parsed.get("notes", [])
     assert any("half" in n and "unfiltered" in n for n in notes)
