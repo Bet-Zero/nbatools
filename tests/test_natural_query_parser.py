@@ -538,10 +538,10 @@ def test_team_bench_scoring_does_not_set_role():
     assert parsed["role"] is None
 
 
-def test_role_note_appended():
+def test_role_note_not_appended_for_supported_role_route():
     parsed = parse_query("Brunson off the bench")
     notes = parsed.get("notes", [])
-    assert any("bench" in n and "unfiltered" in n for n in notes)
+    assert not any("bench" in n and "unfiltered" in n for n in notes)
 
 
 # ---------------------------------------------------------------------------

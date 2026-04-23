@@ -499,7 +499,7 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
-**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Clutch, period, schedule, and role filters are parser-recognized and route-propagated today, with explicit unfiltered-results notes where backing data is still missing.
+**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Clutch, period, and schedule filters remain parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
 
 Define where or when within a game the stat applies.
 
@@ -518,7 +518,9 @@ Define where or when within a game the stat applies.
 - `nationally televised`, `on national TV` → `nationally_televised=True`
 - `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
   for player-context queries only; team-only phrasing like `Celtics bench scoring`
-  is intentionally ignored
+  is intentionally ignored. `player_game_summary` and `player_game_finder` apply the
+  filter only when trusted `player_game_starter_roles` coverage exists for the
+  requested slice; otherwise execution appends the explicit unfiltered-results note.
 - `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
   parse slots; current game-log data does not expose period splits, so the engine
   accepts these filters with an explicit unfiltered-results note
@@ -548,7 +550,7 @@ because schedule/context feature tables are not yet joined into route execution.
 - true clutch-filtered results backed by play-by-play data
 - true quarter / half / overtime split execution from period-level data
 - true schedule-context execution for `back_to_back`, `rest_days`, `one_possession`, and `nationally_televised`
-- true starter / bench execution for the `role` slot
+- full starter / bench backfill coverage beyond slices with trusted `player_game_starter_roles` data
 
 Parser recognition for these filters is shipped. The remaining gap is honest,
 execution-level filtering rather than slot detection.

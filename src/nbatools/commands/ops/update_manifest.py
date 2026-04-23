@@ -8,6 +8,7 @@ RAW_REQUIRED = [
     "schedule",
     "team_game_stats",
     "player_game_stats",
+    "player_game_starter_roles",
     "team_season_advanced",
     "player_season_advanced",
 ]
@@ -27,6 +28,7 @@ def raw_paths(season: str, season_type: str) -> list[Path]:
         Path(f"data/raw/schedule/{season}_{safe}.csv"),
         Path(f"data/raw/team_game_stats/{season}_{safe}.csv"),
         Path(f"data/raw/player_game_stats/{season}_{safe}.csv"),
+        Path(f"data/raw/player_game_starter_roles/{season}_{safe}.csv"),
         Path(f"data/raw/team_season_advanced/{season}_{safe}.csv"),
         Path(f"data/raw/player_season_advanced/{season}_{safe}.csv"),
         Path(f"data/raw/rosters/{season}.csv"),

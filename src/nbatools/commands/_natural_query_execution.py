@@ -312,8 +312,8 @@ def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict
 
     if route not in _PHASE_G_ROLE_TRANSPORT_ROUTES:
         role = routed.pop("role", None)
-    if role_note := build_role_filter_note(role=role):
-        notes.append(role_note)
+        if role_note := build_role_filter_note(role=role):
+            notes.append(role_note)
 
     notes.extend(
         build_game_context_filter_notes(

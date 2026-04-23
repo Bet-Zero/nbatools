@@ -843,7 +843,7 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `How has LeBron played as a starter this season?`
 - `LeBron as a starter stats`
 - `LeBron starting stats`
-- _Current execution note:_ all variants set `role="starter"` for player-context queries; results remain unfiltered until role filtering is wired through execution._
+- _Current execution note:_ all variants set `role="starter"` for player-context queries; `player_game_summary` / `player_game_finder` apply the filter only when trusted `player_game_starter_roles` coverage exists for the requested slice, otherwise they keep the explicit unfiltered-results note._
 
 ### 7.11 Opponent-quality — Jokic against contenders
 

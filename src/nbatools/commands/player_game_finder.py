@@ -2,6 +2,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    apply_player_role_filter,
     build_opponent_mask,
     filter_by_opponent_player,
     filter_without_player,
@@ -158,6 +159,7 @@ def build_result(
     role: str | None = None,
 ) -> FinderResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
+    notes: list[str] = []
 
     if home_only and away_only:
         return NoResult(
@@ -233,8 +235,12 @@ def build_result(
     if without_player and not df.empty:
         df = filter_without_player(df, without_player, seasons, season_type, team=team)
 
+    df, role_note = apply_player_role_filter(df, seasons, season_type, role)
+    if role_note:
+        notes.append(role_note)
+
     if df.empty:
-        return NoResult(query_class="finder")
+        return NoResult(query_class="finder", notes=notes)
 
     stat_col = None
     if stat:
@@ -292,6 +298,7 @@ def build_result(
     return FinderResult(
         games=df[output_cols].copy(),
         current_through=current_through,
+        notes=notes,
     )
 
 

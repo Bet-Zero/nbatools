@@ -8,6 +8,25 @@ from pathlib import Path
 
 import pandas as pd
 
+PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS = [
+    "game_id",
+    "season",
+    "season_type",
+    "team_id",
+    "player_id",
+    "starter_position_raw",
+    "starter_flag",
+    "role_source",
+    "role_source_trusted",
+    "starter_count_for_team_game",
+    "role_validation_reason",
+]
+
+PLAYER_GAME_STARTER_ROLE_OPTIONAL_COLUMNS = [
+    "team_abbr",
+    "player_name",
+]
+
 
 def safe_divide(numer: pd.Series, denom: pd.Series, fill: float | None = 0.0) -> pd.Series:
     """Element-wise division that returns *fill* where *denom* is zero.
@@ -263,6 +282,120 @@ def _load_player_games_cached(
 def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
     return _load_player_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def build_role_filter_coverage_note(role: str | None = None) -> str | None:
+    if role is None:
+        return None
+    return (
+        f"role: {role} filter detected but trustworthy starter-role coverage is unavailable "
+        "for the requested slice; results are unfiltered"
+    )
+
+
+def _empty_player_game_starter_roles_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        columns=[
+            *PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS,
+            *PLAYER_GAME_STARTER_ROLE_OPTIONAL_COLUMNS,
+        ]
+    )
+
+
+@cache
+def _load_player_game_starter_roles_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+
+    for season in seasons:
+        path = root / f"data/raw/player_game_starter_roles/{season}_{safe}.csv"
+        if not path.exists():
+            continue
+
+        df = pd.read_csv(path)
+        missing = [
+            col for col in PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS if col not in df.columns
+        ]
+        if missing:
+            raise ValueError(f"player_game_starter_roles missing required columns: {missing}")
+        if df.duplicated(subset=["game_id", "player_id"]).any():
+            raise ValueError("Duplicate (game_id, player_id) in player_game_starter_roles")
+
+        for col in (
+            "game_id",
+            "team_id",
+            "player_id",
+            "starter_flag",
+            "role_source_trusted",
+            "starter_count_for_team_game",
+        ):
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        frames.append(df)
+
+    if not frames:
+        return _empty_player_game_starter_roles_df()
+
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_player_game_starter_roles_for_seasons(
+    seasons: list[str], season_type: str
+) -> pd.DataFrame:
+    """Load the optional starter-role dataset for the given seasons."""
+    return _load_player_game_starter_roles_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def apply_player_role_filter(
+    df: pd.DataFrame,
+    seasons: list[str],
+    season_type: str,
+    role: str | None,
+) -> tuple[pd.DataFrame, str | None]:
+    if role is None or df.empty:
+        return df.copy(), None
+
+    role_normalized = str(role).strip().lower()
+    if role_normalized not in {"starter", "bench"}:
+        raise ValueError(f"Unsupported role: {role}")
+
+    required_join_cols = ["game_id", "team_id", "player_id"]
+    missing = [col for col in required_join_cols if col not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns for role filter: {missing}")
+
+    roles = load_player_game_starter_roles_for_seasons(seasons, season_type)
+    if roles.empty:
+        return df.copy(), build_role_filter_coverage_note(role_normalized)
+
+    join_cols = required_join_cols
+    role_cols = join_cols + ["starter_flag", "role_source_trusted"]
+    role_lookup = roles[role_cols].drop_duplicates(subset=join_cols)
+    work = df.merge(
+        role_lookup.rename(
+            columns={
+                "starter_flag": "_role_starter_flag",
+                "role_source_trusted": "_role_source_trusted",
+            }
+        ),
+        on=join_cols,
+        how="left",
+        validate="one_to_one",
+    )
+
+    trusted_mask = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
+    if not trusted_mask.all():
+        return df.copy(), build_role_filter_coverage_note(role_normalized)
+
+    expected_flag = 1 if role_normalized == "starter" else 0
+    filtered = work.loc[
+        pd.to_numeric(work["_role_starter_flag"], errors="coerce").fillna(-1).eq(expected_flag)
+    ].copy()
+    filtered = filtered.drop(columns=["_role_starter_flag", "_role_source_trusted"])
+    return filtered, None
 
 
 def get_game_ids_for_player(player_name: str, seasons: list[str], season_type: str) -> set:

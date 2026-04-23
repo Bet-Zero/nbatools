@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    apply_player_role_filter,
     build_opponent_mask,
     describe_opponent_filter,
     filter_by_opponent_player,
@@ -163,6 +164,7 @@ def build_result(
     df: pd.DataFrame | None = None,
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
+    notes: list[str] = []
 
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
@@ -225,8 +227,12 @@ def build_result(
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
 
+    df, role_note = apply_player_role_filter(df, seasons, season_type, role)
+    if role_note:
+        notes.append(role_note)
+
     if df.empty:
-        return NoResult(query_class="summary")
+        return NoResult(query_class="summary", notes=notes)
 
     team_df = load_team_games_for_seasons(seasons, season_type)
     context_df = build_player_team_context(df, team_df)
@@ -323,6 +329,7 @@ def build_result(
         summary=summary,
         by_season=by_season,
         current_through=current_through,
+        notes=notes,
         caveats=caveats,
     )
 

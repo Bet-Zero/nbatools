@@ -151,7 +151,9 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 2B. `[ ]` Build the validated starter-role dataset and ship player-context role execution
+## 2B. `[x]` Build the validated starter-role dataset and ship player-context role execution
+
+**Completion note:** Landed `pull_player_game_starter_roles.py` as the dedicated `BoxScoreTraditionalV3.PlayerStats.position` backfill path, made the dataset part of the raw-pipeline validation/manifest contract, and wired `player_game_summary` / `player_game_finder` to apply `role` only when every row in the requested slice has trusted starter-role coverage. If coverage is missing or untrusted for any requested row, execution now keeps the explicit unfiltered-results note instead of partially filtering. Because the repo does not currently commit trusted starter-role backfill slices under `data/raw/player_game_starter_roles/`, `PHASE_G_QUERY_SMOKE_CASES` now omits starter/bench smoke cases until a real trusted slice is present in-repo.
 
 **Why:** Item 2A identified the real source path: a per-game starter-role backfill sourced from `BoxScoreTraditionalV3.PlayerStats.position`, not the unusable legacy `LeagueGameFinder`-derived `starter_flag` in `player_game_stats`. The next step is to materialize that source as a dedicated dataset, validate which rows are trustworthy, and use only trusted coverage to power role execution.
 
@@ -202,7 +204,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 3. `[ ]` Build the segment-split contract and ingestion path for clutch / period execution
+## 3. `[-]` Build the segment-split contract and ingestion path for clutch / period execution — blocked: no trustworthy game-grain clutch source was found under current repo constraints; see [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
 
 **Why:** Clutch and quarter / half / overtime are blocked on the same missing prerequisite: execution-grade intra-game segment data. Phase G should solve that once, not separately for each surface phrase.
 
@@ -243,7 +245,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 4. `[ ]` Ship quarter / half / overtime execution on the initial supported routes
+## 4. `[-]` Ship quarter / half / overtime execution on the initial supported routes — blocked behind item 3’s shared segment-contract review; do not ship an ad hoc period-only path until the handoff decision is made
 
 **Why:** Once the segment contract exists, period filters should stop returning full-game results with a note and start using real intra-game slices.
 
@@ -286,7 +288,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 5. `[ ]` Ship clutch execution on the initial supported routes
+## 5. `[-]` Ship clutch execution on the initial supported routes — blocked: the required clutch-capable game-grain source is the unresolved review target in [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
 
 **Why:** Clutch is still the most user-visible unfiltered context family. After the shared transport and segment contract land, Phase G should close the gap on the routes that already claim support.
 
@@ -333,7 +335,9 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 6. `[ ]` Sync current-state docs and Phase G smoke inventory with the shipped execution boundary
+## 6. `[x]` Sync current-state docs and Phase G smoke inventory with the shipped execution boundary
+
+**Completion note:** Updated the current-state parser/query docs to reflect the actual shipped boundary: player-context `role` execution is now coverage-gated by trusted `player_game_starter_roles` data, while clutch / period filters remain deferred. `PHASE_G_QUERY_SMOKE_CASES` now excludes role smoke cases until a real trusted role slice exists in-repo.
 
 **Why:** Once any Phase G route stops being unfiltered, the reference docs and smoke inventory must stop describing it as parser-only behavior.
 
@@ -367,7 +371,9 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 7. `[ ]` Phase G retrospective and Phase H work queue draft
+## 7. `[x]` Phase G retrospective and Phase H work queue draft
+
+**Completion note:** Phase G closed with an explicit review handoff instead of a Phase H queue draft because items 3–5 could not land responsibly without a reviewed clutch-capable game-grain source. The required handoff artifact is [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md).
 
 **Why:** Phase G should end with a concrete handoff into schedule-context execution, or an explicit review-handoff if segment-data blockers prevent a clean close.
 

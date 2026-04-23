@@ -34,14 +34,14 @@ def test_supported_period_route_keeps_kwarg_and_note():
     assert any("quarter" in note and "unfiltered" in note for note in notes)
 
 
-def test_supported_role_route_keeps_kwarg_and_note():
+def test_supported_role_route_keeps_kwarg_without_note():
     routed, notes = _route_context_filters_for_execution(
         "player_game_finder",
         {"player": "Jalen Brunson", "role": "bench"},
     )
 
     assert routed["role"] == "bench"
-    assert any("role" in note and "unfiltered" in note for note in notes)
+    assert not any("role" in note and "unfiltered" in note for note in notes)
 
 
 def test_unsupported_period_route_drops_kwarg_and_keeps_note():

@@ -23,6 +23,6 @@ def test_team_bench_phrase_does_not_propagate_role():
     assert parsed["route_kwargs"]["role"] is None
 
 
-def test_role_filter_appends_unfiltered_note():
+def test_role_filter_does_not_append_parse_time_unfiltered_note_on_supported_route():
     parsed = parse_query("Brunson off the bench")
-    assert any("role" in note and "unfiltered" in note for note in parsed.get("notes", []))
+    assert not any("role" in note and "unfiltered" in note for note in parsed.get("notes", []))

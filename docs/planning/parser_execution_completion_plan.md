@@ -201,8 +201,8 @@ For starter / bench role specifically, the current `player_game_stats`-derived `
 
 The next step is explicit:
 
-- **Active queue:** [`phase_g_work_queue.md`](./phase_g_work_queue.md)
-- **Immediate action:** work the first unchecked item in Phase G
+- **Active handoff:** [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
+- **Immediate action:** review the clutch-source decision recorded there, then either draft a period-only continuation queue or approve a real clutch-capable game-grain source
 
 If Phase G discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
 

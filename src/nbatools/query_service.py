@@ -507,6 +507,8 @@ def execute_natural_query(query: str) -> QueryResult:
     # Override query_class in metadata when count intent is active
     if count_intent:
         metadata["query_class"] = "count"
+    if getattr(result, "notes", None):
+        metadata["notes"] = list(result.notes)
     return QueryResult(
         result=result,
         metadata=metadata,

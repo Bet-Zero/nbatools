@@ -306,7 +306,7 @@ class TestStructuredQueryExecution:
         assert qr.metadata["nationally_televised"] is True
         assert any("national_tv" in note and "unfiltered" in note for note in qr.result.notes)
 
-    def test_structured_query_accepts_role_filter_with_unfiltered_note(self):
+    def test_structured_query_accepts_role_filter_in_metadata(self):
         qr = execute_structured_query(
             "player_game_summary",
             season="1950-51",
@@ -316,7 +316,7 @@ class TestStructuredQueryExecution:
         assert qr.route == "player_game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["role"] == "bench"
-        assert any("role" in note and "unfiltered" in note for note in qr.result.notes)
+        assert not any("role" in note and "unfiltered" in note for note in qr.result.notes)
 
     def test_structured_query_accepts_on_off_placeholder_route(self):
         qr = execute_structured_query(

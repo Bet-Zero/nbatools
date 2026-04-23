@@ -100,9 +100,10 @@ If a feature is not reflected here, it should not be assumed shipped.
   (parser-recognized and engine-accepted; current query engine returns unfiltered
   results with an explicit note because schedule/context feature tables are not yet joined)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
-  (parser-recognized and engine-accepted for player queries; current query engine returns
-  unfiltered results with an explicit note because starter/bench filtering is not yet wired in;
-  team-only phrases like `Celtics bench scoring` are intentionally ignored)
+  (parser-recognized and engine-executed for player summary/finder queries when trusted
+  `player_game_starter_roles` coverage exists for the requested slice; otherwise execution
+  appends an explicit unfiltered-results note. Team-only phrases like `Celtics bench scoring`
+  are intentionally ignored)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against teams over .500`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
@@ -646,7 +647,9 @@ Examples:
 
 Current behavior:
 
-- parser sets `role` for player-context queries only and appends an explicit unfiltered-results note until starter/bench filtering is wired through execution
+- parser sets `role` for player-context queries only
+- `player_game_summary` and `player_game_finder` apply starter / bench filtering only when the requested slice has complete trusted coverage in `player_game_starter_roles`
+- if trusted starter-role coverage is missing or untrusted for any row in the requested slice, execution keeps the explicit unfiltered-results note instead of partially filtering
 
 ### Opponent-quality filter
 

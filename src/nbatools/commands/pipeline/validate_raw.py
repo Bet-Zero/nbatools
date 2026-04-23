@@ -17,6 +17,7 @@ def run(season: str, season_type: str):
         "schedule": Path(f"data/raw/schedule/{season}_{safe}.csv"),
         "team": Path(f"data/raw/team_game_stats/{season}_{safe}.csv"),
         "player": Path(f"data/raw/player_game_stats/{season}_{safe}.csv"),
+        "player_roles": Path(f"data/raw/player_game_starter_roles/{season}_{safe}.csv"),
         "rosters": Path(f"data/raw/rosters/{season}.csv"),
         "standings": Path(f"data/raw/standings_snapshots/{season}_{safe}.csv"),
         "team_adv": Path(f"data/raw/team_season_advanced/{season}_{safe}.csv"),
@@ -33,6 +34,7 @@ def run(season: str, season_type: str):
     schedule = pd.read_csv(paths["schedule"])
     team = pd.read_csv(paths["team"])
     player = pd.read_csv(paths["player"])
+    player_roles = pd.read_csv(paths["player_roles"])
     rosters = pd.read_csv(paths["rosters"])
     standings = None
     if paths["standings"].exists():
@@ -80,6 +82,49 @@ def run(season: str, season_type: str):
         raise ValueError("player_game_stats invalid fg3m > fg3a")
     if (player["ftm"] > player["fta"]).any():
         raise ValueError("player_game_stats invalid ftm > fta")
+
+    # --- PLAYER GAME STARTER ROLES ---
+    require_columns(
+        player_roles,
+        [
+            "game_id",
+            "team_id",
+            "player_id",
+            "starter_position_raw",
+            "starter_flag",
+            "role_source",
+            "role_source_trusted",
+            "starter_count_for_team_game",
+            "role_validation_reason",
+        ],
+        "player_game_starter_roles",
+    )
+    if player_roles.duplicated(subset=["game_id", "player_id"]).any():
+        raise ValueError("Duplicate (game_id, player_id) in player_game_starter_roles")
+
+    starter_counts = (
+        player_roles.groupby(["game_id", "team_id"], as_index=False)["starter_flag"]
+        .sum()
+        .rename(columns={"starter_flag": "_starter_count"})
+    )
+    validated = player_roles.merge(
+        starter_counts,
+        on=["game_id", "team_id"],
+        how="left",
+        validate="many_to_one",
+    )
+    if not validated["starter_count_for_team_game"].eq(validated["_starter_count"]).all():
+        raise ValueError("player_game_starter_roles starter_count_for_team_game mismatch")
+
+    trusted_expected = validated["_starter_count"].eq(5).astype(int)
+    if not validated["role_source_trusted"].eq(trusted_expected).all():
+        raise ValueError("player_game_starter_roles role_source_trusted mismatch")
+
+    trusted = validated["role_source_trusted"].eq(1)
+    if not validated.loc[trusted, "role_validation_reason"].fillna("").eq("").all():
+        raise ValueError("Trusted starter-role rows must have blank role_validation_reason")
+    if not validated.loc[~trusted, "role_validation_reason"].fillna("").ne("").all():
+        raise ValueError("Untrusted starter-role rows must explain role_validation_reason")
 
     # --- ROSTERS ---
     require_columns(rosters, ["player_id", "team_id", "season", "stint"], "rosters")

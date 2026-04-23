@@ -179,7 +179,7 @@ These are convenience fields only. Commands should join the role dataset back to
 
 ### Producer(s)
 
-- a dedicated backfill command that fans out over `data/raw/games/{season}_{season_type_safe}.csv`
+- `src/nbatools/commands/pipeline/pull_player_game_starter_roles.py`, a dedicated backfill command that fans out over `data/raw/games/{season}_{season_type_safe}.csv`
 - the upstream NBA per-game box score endpoint `BoxScoreTraditionalV3.PlayerStats.position`
 - any future compatibility layer that normalizes an alternate upstream source into this same contract
 
@@ -201,6 +201,7 @@ Contract rules:
 - at minimum, trust requires exactly 5 starter-marked players in the row's `(game_id, team_id)` group
 - if trust fails, `role_validation_reason` must explain why, such as `starter_count_not_five`
 - if a requested role-filtered slice depends on rows that are missing or untrusted in this dataset, commands must keep the current honest fallback note instead of partially filtering or fabricating bench assignments
+- refreshed seasons treat this dataset as part of the required raw pipeline contract alongside `player_game_stats`
 
 ---
 
