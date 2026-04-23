@@ -14,7 +14,10 @@
 > **Maintenance rule:** when a meaningful shipped query capability is added,
 > expanded, renamed, or intentionally restricted, update this file in the same pass.
 
-When this catalog marks a family as parser-recognized but still unfiltered or placeholder-backed, that note reflects current shipped behavior only. The active execution/data continuation for those families is tracked in [parser_execution_completion_plan.md](../planning/parser_execution_completion_plan.md) and [phase_h_work_queue.md](../planning/phase_h_work_queue.md).
+When this catalog marks a family as parser-recognized but still unfiltered,
+placeholder-backed, or explicitly deferred, that note reflects current shipped
+behavior only. Part 2 execution/data closure is tracked in
+[parser_execution_completion_plan.md](../planning/parser_execution_completion_plan.md).
 
 ---
 
@@ -99,8 +102,10 @@ If a feature is not reflected here, it should not be assumed shipped.
   coverage exists for the requested slice, otherwise they fall back with an
   explicit unfiltered-results note. Other routes still remain unfiltered.)
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
-  (parser-recognized and engine-accepted; current query engine returns unfiltered
-  results with an explicit note because schedule/context feature tables are not yet joined)
+  (parser-recognized and engine-accepted; `team_record` and `player_game_summary`
+  execute these filters when trusted `schedule_context_features` coverage exists
+  for the requested slice, otherwise they fall back with an explicit
+  unfiltered-results note. Other routes still remain unfiltered.)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
   (parser-recognized and engine-executed for player summary/finder queries when trusted
   `player_game_starter_roles` coverage exists for the requested slice; otherwise execution
@@ -294,7 +299,9 @@ Examples:
 
 Current behavior:
 
-- parser routes to `player_on_off`, preserves `lineup_members` and `presence_state`, and returns an explicit unsupported-data note until play-by-play or stint-level on/off tables are available
+- parser routes to `player_on_off`, preserves `lineup_members` and `presence_state`, and returns an explicit unsupported-data note
+- Phase I explicitly deferred real execution until a trustworthy on/off split table, play-by-play plus substitutions, or stint-level source is approved
+- whole-game `without_player` absence is not an on/off substitute
 
 ### Specific lineup summaries
 
@@ -306,7 +313,9 @@ Examples:
 
 Current behavior:
 
-- parser routes to `lineup_summary`, preserves `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum`, and returns an explicit unsupported-data note until lineup tables are available
+- parser routes to `lineup_summary`, preserves `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum`, and returns an explicit unsupported-data note
+- Phase J explicitly deferred real execution until a trustworthy lineup-unit table, play-by-play plus substitutions, or stint-level source is approved
+- roster membership is not a lineup-unit substitute
 
 ---
 
@@ -432,7 +441,8 @@ Examples:
 
 Current behavior:
 
-- parser routes to `lineup_leaderboard`, preserves `unit_size` and `minute_minimum`, and returns an explicit unsupported-data note until lineup tables are available
+- parser routes to `lineup_leaderboard`, preserves `unit_size` and `minute_minimum`, and returns an explicit unsupported-data note
+- Phase J explicitly deferred real execution until a trustworthy lineup-unit table, play-by-play plus substitutions, or stint-level source is approved
 
 ### Ranking language
 
@@ -611,7 +621,9 @@ Examples:
 
 Current behavior:
 
-- parser sets `back_to_back=True`, preserves the filter in `route_kwargs`, and execution appends an explicit unfiltered-results note until schedule/context joins land
+- parser sets `back_to_back=True` and preserves the filter in `route_kwargs`
+- `team_record` and `player_game_summary` execute the filter through `schedule_context_features` when coverage exists
+- unsupported routes or missing coverage keep an explicit unfiltered-results note
 
 ### Rest filter
 
@@ -622,7 +634,9 @@ Examples:
 
 Current behavior:
 
-- parser sets `rest_days` to `advantage`, `disadvantage`, or an integer day count, preserves it in `route_kwargs`, and execution appends an explicit unfiltered-results note
+- parser sets `rest_days` to `advantage`, `disadvantage`, or an integer day count and preserves it in `route_kwargs`
+- `team_record` and `player_game_summary` execute the filter through normalized `schedule_context_features.rest_days` / `rest_advantage` when coverage exists
+- unsupported routes or missing coverage keep an explicit unfiltered-results note
 
 ### One-possession filter
 
@@ -633,7 +647,9 @@ Examples:
 
 Current behavior:
 
-- parser sets `one_possession=True`, preserves the filter in `route_kwargs`, and execution appends an explicit unfiltered-results note
+- parser sets `one_possession=True` and preserves the filter in `route_kwargs`
+- `team_record` and `player_game_summary` execute the filter through `schedule_context_features.one_possession` when coverage exists
+- unsupported routes or missing coverage keep an explicit unfiltered-results note
 
 ### National-TV filter
 
@@ -644,7 +660,9 @@ Examples:
 
 Current behavior:
 
-- parser sets `nationally_televised=True`, preserves the filter in `route_kwargs`, and execution appends an explicit unfiltered-results note
+- parser sets `nationally_televised=True` and preserves the filter in `route_kwargs`
+- `team_record` and `player_game_summary` execute the filter only when `schedule_context_features.national_tv_source_trusted=1`
+- current placeholder schedule pulls can still leave national-TV coverage untrusted; in that case execution falls back with an explicit unfiltered-results note
 
 ### Starter / bench role
 

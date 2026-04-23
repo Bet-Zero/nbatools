@@ -2,7 +2,7 @@
 
 > **Purpose of this doc:** The example library. Use this for test inputs, equivalence verification, and to see how real user language maps to the parser's canonical parse state. For framing, see [`overview.md`](./overview.md). For component specs, see [`specification.md`](./specification.md). For the living inventory of currently-shipped query shapes, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-When an example below carries an explicit unfiltered-results or placeholder execution note, that note describes current shipped behavior only. Active execution follow-up for those families is tracked in [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and the current [`phase_h_work_queue.md`](../../planning/phase_h_work_queue.md).
+When an example below carries an explicit unfiltered-results, coverage-gated, placeholder, or deferral note, that note describes current shipped behavior only. Part 2 execution/data closure is tracked in [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md).
 
 ---
 
@@ -839,7 +839,7 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Lakers on back-to-backs record`
 - `Lakers b2b record`
 - `Lakers second of a back-to-back record`
-- _Current execution note:_ all variants set `back_to_back=True`; results remain unfiltered until schedule/context joins land._
+- _Execution note:_ all variants set `back_to_back=True`; `team_record` executes the filter when trusted `schedule_context_features` coverage exists, otherwise it keeps the explicit unfiltered-results note._
 
 ### 7.10 Role filter — LeBron as a starter
 
@@ -860,42 +860,42 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `How has Jokic played with rest advantage this season?`
 - `Jokic with rest advantage this season`
 - `Jokic rest advantage stats`
-- _Current execution note:_ all variants set `rest_days="advantage"`; results remain unfiltered until schedule/context joins land._
+- _Execution note:_ all variants set `rest_days="advantage"`; `player_game_summary` executes the filter when trusted `schedule_context_features` coverage exists, otherwise it keeps the explicit unfiltered-results note._
 
 ### 7.13 One-possession filter — Celtics one-possession record
 
 - `What is the Celtics' record in one-possession games this season?`
 - `Celtics one-possession record this season`
 - `Celtics record in one-possession games`
-- _Current execution note:_ all variants set `one_possession=True`; results remain unfiltered until schedule/context joins land._
+- _Execution note:_ all variants set `one_possession=True`; `team_record` executes the filter when trusted `schedule_context_features` coverage exists, otherwise it keeps the explicit unfiltered-results note._
 
 ### 7.14 National-TV filter — Lakers national-TV record
 
 - `What is the Lakers' record on national TV this season?`
 - `Lakers national TV record`
 - `Lakers nationally televised record`
-- _Current execution note:_ all variants set `nationally_televised=True`; results remain unfiltered until schedule/context joins land._
+- _Execution note:_ all variants set `nationally_televised=True`; `team_record` executes the filter only when trusted national-TV source coverage exists. Placeholder schedule pulls keep the explicit unfiltered-results note for this filter._
 
 ### 7.15 On/off placeholder — Jokic on/off
 
 - `Jokic on/off`
 - `Jokic on off`
 - `Nikola Jokic on-off`
-- _Current execution note:_ all variants route to `player_on_off` and return an honest unsupported-data note until on/off tables land._
+- _Current execution note:_ all variants route to `player_on_off` and return an honest unsupported-data note. Phase I explicitly deferred real execution until a trustworthy on/off split, play-by-play plus substitutions, or stint source is approved._
 
 ### 7.16 Lineup leaderboard — best 5-man lineups
 
 - `best 5-man lineups`
 - `best 5 man lineups`
 - `top 5-man units`
-- _Current execution note:_ all variants set `unit_size=5` and route to `lineup_leaderboard`, with an honest unsupported-data note until lineup tables land._
+- _Current execution note:_ all variants set `unit_size=5` and route to `lineup_leaderboard`, with an honest unsupported-data note. Phase J explicitly deferred real execution until a trustworthy lineup-unit, play-by-play plus substitutions, or stint source is approved._
 
 ### 7.17 Specific lineup — LeBron and AD together
 
 - `lineups with LeBron and AD`
 - `lineup with LeBron and AD`
 - `LeBron and AD together lineups`
-- _Current execution note:_ all variants route to `lineup_summary` with `lineup_members` populated; execution remains placeholder until lineup tables land._
+- _Current execution note:_ all variants route to `lineup_summary` with `lineup_members` populated; execution remains placeholder by explicit Phase J deferral until a trustworthy lineup source is approved._
 
 ### 7.18 Stretch leaderboard — hottest 3-game scoring stretch
 
@@ -927,15 +927,15 @@ Patterns beyond the original core surface. Some now ship in Phase E; others rema
 - `net rating with Tatum and Brown together`
 - `best 3-man units with at least 200 minutes`
 - _See equivalence groups §7.15-§7.17 for canonical paraphrase sets._
-- _Single-player on/off and lineup/unit phrasing currently route to placeholder paths with honest unsupported-data notes; real lineup-unit results remain future work._
+- _Single-player on/off and lineup/unit phrasing currently route to placeholder paths with honest unsupported-data notes; Phase I and Phase J explicitly defer real execution until trustworthy on/off and lineup sources are approved._
 - _See [`specification.md` §11](./specification.md#11-onoff-lineup-and-stretch-support)._
 
 ### 8.3 Execution-backed context filtering (partially shipped)
 
 - `in clutch time` with true play-by-play clutch filtering
-- `back-to-backs` with joined schedule/context features
+- schedule-context route expansion beyond `team_record` / `player_game_summary`
 - `as starter vs bench` with real starter/bench execution
-- `nationally televised games` once schedule pulls populate national-TV flags
+- broader trusted national-TV source coverage where schedule pulls still carry placeholder flags
 - `in overtime` with period-level splits rather than unfiltered game logs
 
 ### 8.4 Stretch / rolling-window queries (Phase E shipped surface)

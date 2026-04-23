@@ -9,6 +9,7 @@ def outputs_exist(season: str, season_type: str) -> bool:
     paths = [
         Path(f"data/processed/team_game_features/{season}_{safe}.csv"),
         Path(f"data/processed/game_features/{season}_{safe}.csv"),
+        Path(f"data/processed/schedule_context_features/{season}_{safe}.csv"),
         Path(f"data/processed/player_game_features/{season}_{safe}.csv"),
         Path(f"data/processed/league_season_stats/{season}_{safe}.csv"),
     ]
@@ -84,6 +85,10 @@ def run(season: str, season_type: str, skip_existing: bool = False):
     )
     run_command(
         base_cmd + ["build-game-features", "--season", season, "--season-type", season_type]
+    )
+    run_command(
+        base_cmd
+        + ["build-schedule-context-features", "--season", season, "--season-type", season_type]
     )
     run_command(
         base_cmd + ["build-player-game-features", "--season", season, "--season-type", season_type]

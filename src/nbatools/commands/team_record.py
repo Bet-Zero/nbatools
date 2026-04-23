@@ -19,8 +19,10 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    apply_schedule_context_filters,
     build_opponent_mask,
     build_period_filter_coverage_note,
+    build_schedule_context_filter_coverage_notes,
     describe_opponent_filter,
     filter_period_rows,
     filter_without_player,
@@ -169,6 +171,10 @@ def build_team_record_result(
     clutch: bool = False,
     quarter: str | None = None,
     half: str | None = None,
+    back_to_back: bool = False,
+    rest_days: str | int | None = None,
+    one_possession: bool = False,
+    nationally_televised: bool = False,
 ) -> SummaryResult | NoResult:
     """Build a record-focused summary for a single team.
 
@@ -197,6 +203,14 @@ def build_team_record_result(
         else:
             df = load_team_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
+        notes.extend(
+            build_schedule_context_filter_coverage_notes(
+                back_to_back=back_to_back,
+                rest_days=rest_days,
+                one_possession=one_possession,
+                nationally_televised=nationally_televised,
+            )
+        )
         return NoResult(query_class="summary", reason="no_data", notes=notes)
 
     df = _apply_game_filters(
@@ -223,6 +237,17 @@ def build_team_record_result(
             team=team,
             strict_team_match=True,
         )
+
+    df, schedule_notes = apply_schedule_context_filters(
+        df,
+        seasons,
+        season_type,
+        back_to_back=back_to_back,
+        rest_days=rest_days,
+        one_possession=one_possession,
+        nationally_televised=nationally_televised,
+    )
+    notes.extend(schedule_notes)
 
     tied_period_rows = 0
     if period_execution_backed and not df.empty:
@@ -311,6 +336,15 @@ def build_team_record_result(
         caveats.append(f"period record computed from {descriptor} windows")
     if tied_period_rows:
         caveats.append("tied period windows excluded from record totals")
+    note_text = "\n".join(notes)
+    if back_to_back and "back_to_back:" not in note_text:
+        caveats.append("schedule-context filter: back-to-back games")
+    if rest_days is not None and "rest:" not in note_text:
+        caveats.append(f"schedule-context filter: rest_days={rest_days}")
+    if one_possession and "one_possession:" not in note_text:
+        caveats.append("schedule-context filter: one-possession games")
+    if nationally_televised and "national_tv:" not in note_text:
+        caveats.append("schedule-context filter: nationally televised games")
 
     return SummaryResult(
         summary=summary,

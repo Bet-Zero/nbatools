@@ -18,6 +18,7 @@ RAW_REQUIRED = [
 PROCESSED_REQUIRED = [
     "team_game_features",
     "game_features",
+    "schedule_context_features",
     "player_game_features",
     "league_season_stats",
 ]
@@ -49,6 +50,7 @@ def processed_paths(season: str, season_type: str) -> list[Path]:
     return [
         Path(f"data/processed/team_game_features/{season}_{safe}.csv"),
         Path(f"data/processed/game_features/{season}_{safe}.csv"),
+        Path(f"data/processed/schedule_context_features/{season}_{safe}.csv"),
         Path(f"data/processed/player_game_features/{season}_{safe}.csv"),
         Path(f"data/processed/league_season_stats/{season}_{safe}.csv"),
     ]

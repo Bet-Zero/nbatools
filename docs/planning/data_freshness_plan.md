@@ -50,7 +50,7 @@ The refresh story uses only commands that already exist:
 
 - raw pulls: `pull-games`, `pull-schedule`, `pull-rosters`, `pull-team-game-stats`, `pull-player-game-stats`, `pull-standings-snapshots`, `pull-team-season-advanced`, `pull-player-season-advanced`
 - validation: `validate-raw`
-- processed builds: `build-team-game-features`, `build-game-features`, `build-player-game-features`, `build-league-season-stats`
+- processed builds: `build-team-game-features`, `build-game-features`, `build-schedule-context-features`, `build-player-game-features`, `build-league-season-stats`
 - metadata: `update-manifest`
 - orchestration: `backfill-season`, `backfill-range`
 - verification: `inventory`, `show-manifest`
@@ -80,6 +80,7 @@ Processed tables that depend on Tier 1 and must be rebuilt after Tier 1 changes.
 
 - `team_game_features`
 - `game_features`
+- `schedule_context_features`
 - `player_game_features`
 - `league_season_stats`
 
@@ -114,8 +115,9 @@ Refreshes must follow the same dependency order the pipeline already enforces. B
 3. **Processed builds**
    1. `build-team-game-features`
    2. `build-game-features`
-   3. `build-player-game-features`
-   4. `build-league-season-stats`
+   3. `build-schedule-context-features`
+   4. `build-player-game-features`
+   5. `build-league-season-stats`
 4. **Metadata** — `update-manifest`
 5. **Verification** — `inventory` and `show-manifest`
 

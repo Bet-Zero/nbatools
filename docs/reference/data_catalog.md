@@ -32,6 +32,7 @@ Processed tables live in:
 
 - `data/processed/team_game_features/`
 - `data/processed/game_features/`
+- `data/processed/schedule_context_features/`
 - `data/processed/player_game_features/`
 - `data/processed/league_season_stats/`
 
@@ -474,6 +475,45 @@ Merged matchup-level feature table for home vs away comparisons.
 - `away_tov_last_5`
 - `tov_last_5_diff`
 - `tov_battle_winner`
+
+---
+
+## schedule_context_features
+
+### Path
+`data/processed/schedule_context_features/<season>_<season_type>.csv`
+
+### Grain
+One row per team per game
+
+### Purpose
+Execution-grade whole-game schedule context for natural-query filters.
+
+### Important columns
+- `game_id`
+- `game_date`
+- `season`
+- `season_type`
+- `team_id`
+- `team_abbr`
+- `opponent_team_id`
+- `opponent_team_abbr`
+- `rest_days`
+- `opponent_rest_days`
+- `back_to_back`
+- `rest_advantage`
+- `score_margin`
+- `one_possession`
+- `nationally_televised`
+- `national_tv_source`
+- `national_tv_source_trusted`
+- `schedule_context_source_trusted`
+
+### Notes
+`rest_days` is normalized to full off days, so the second game of a back-to-back
+has `rest_days=0`. National-TV filtering only executes when
+`national_tv_source_trusted=1`; current placeholder schedule pulls may leave this
+untrusted.
 
 ---
 

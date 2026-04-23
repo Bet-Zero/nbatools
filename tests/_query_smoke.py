@@ -141,28 +141,24 @@ PHASE_E_QUERY_SMOKE_CASES = (
         expected_routes=("team_record",),
         expected_query_class="summary",
         expected_intents=("summary",),
-        expected_note_substrings=BACK_TO_BACK_NOTE_SUBSTRINGS,
     ),
     QuerySmokeCase(
         query="Jokic summary with rest advantage",
         expected_routes=("player_game_summary",),
         expected_query_class="summary",
         expected_intents=("summary",),
-        expected_note_substrings=REST_NOTE_SUBSTRINGS,
     ),
     QuerySmokeCase(
         query="Celtics one-possession record",
         expected_routes=("team_record",),
         expected_query_class="summary",
         expected_intents=("summary",),
-        expected_note_substrings=ONE_POSSESSION_NOTE_SUBSTRINGS,
     ),
     QuerySmokeCase(
         query="Knicks on national TV record",
         expected_routes=("team_record",),
         expected_query_class="summary",
         expected_intents=("summary",),
-        expected_note_substrings=NATIONAL_TV_NOTE_SUBSTRINGS,
     ),
     QuerySmokeCase(
         query="Jokic against contenders 2024-25",
@@ -258,7 +254,6 @@ PHASE_G_QUERY_SMOKE_CASES = (
         expected_routes=("team_record",),
         expected_query_class="summary",
         expected_intents=("summary",),
-        expected_note_substrings=BACK_TO_BACK_NOTE_SUBSTRINGS,
     ),
 )
 

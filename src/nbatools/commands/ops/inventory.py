@@ -17,6 +17,7 @@ RAW_TABLE_DIRS = [
 PROCESSED_TABLE_DIRS = [
     "team_game_features",
     "game_features",
+    "schedule_context_features",
     "player_game_features",
     "league_season_stats",
 ]

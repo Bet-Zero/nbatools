@@ -187,6 +187,11 @@ _PHASE_G_ROLE_TRANSPORT_ROUTES = {
     "player_game_finder",
 }
 
+_PHASE_H_SCHEDULE_CONTEXT_ROUTES = {
+    "player_game_summary",
+    "team_record",
+}
+
 
 def _get_build_result_map() -> dict[str, Callable]:
     if not _BUILD_RESULT_MAP:
@@ -289,10 +294,10 @@ def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict
     quarter = routed.get("quarter")
     half = routed.get("half")
     role = routed.get("role")
-    back_to_back = routed.pop("back_to_back", False)
-    rest_days = routed.pop("rest_days", None)
-    one_possession = routed.pop("one_possession", False)
-    nationally_televised = routed.pop("nationally_televised", False)
+    back_to_back = routed.get("back_to_back", False)
+    rest_days = routed.get("rest_days")
+    one_possession = routed.get("one_possession", False)
+    nationally_televised = routed.get("nationally_televised", False)
 
     notes: list[str] = []
 
@@ -315,14 +320,19 @@ def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict
         if role_note := build_role_filter_note(role=role):
             notes.append(role_note)
 
-    notes.extend(
-        build_game_context_filter_notes(
-            back_to_back=back_to_back,
-            rest_days=rest_days,
-            one_possession=one_possession,
-            nationally_televised=nationally_televised,
+    if route not in _PHASE_H_SCHEDULE_CONTEXT_ROUTES:
+        back_to_back = routed.pop("back_to_back", False)
+        rest_days = routed.pop("rest_days", None)
+        one_possession = routed.pop("one_possession", False)
+        nationally_televised = routed.pop("nationally_televised", False)
+        notes.extend(
+            build_game_context_filter_notes(
+                back_to_back=back_to_back,
+                rest_days=rest_days,
+                one_possession=one_possession,
+                nationally_televised=nationally_televised,
+            )
         )
-    )
 
     return routed, notes
 

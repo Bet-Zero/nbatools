@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands.data_utils import SCHEDULE_CONTEXT_REQUIRED_COLUMNS
+
 PERIOD_WINDOW_LOOKUP = {
     ("quarter", "1"): (1, 1),
     ("quarter", "2"): (2, 2),
@@ -164,6 +166,57 @@ def validate_team_game_period_stats_df(df: pd.DataFrame) -> pd.DataFrame:
     return validated
 
 
+def validate_schedule_context_features_df(df: pd.DataFrame) -> pd.DataFrame:
+    require_columns(df, SCHEDULE_CONTEXT_REQUIRED_COLUMNS, "schedule_context_features")
+    validated = df.copy()
+
+    if validated.duplicated(subset=["game_id", "team_id"]).any():
+        raise ValueError("Duplicate (game_id, team_id) in schedule_context_features")
+
+    for col in (
+        "game_id",
+        "team_id",
+        "opponent_team_id",
+        "is_home",
+        "is_away",
+        "rest_days",
+        "opponent_rest_days",
+        "back_to_back",
+        "score_margin",
+        "one_possession",
+        "nationally_televised",
+        "national_tv_source_trusted",
+        "schedule_context_source_trusted",
+    ):
+        validated[col] = pd.to_numeric(validated[col], errors="coerce")
+
+    for flag_col in (
+        "back_to_back",
+        "one_possession",
+        "nationally_televised",
+        "national_tv_source_trusted",
+        "schedule_context_source_trusted",
+    ):
+        values = validated[flag_col].dropna()
+        if not values.isin([0, 1]).all():
+            raise ValueError(f"schedule_context_features {flag_col} must be 0/1")
+
+    valid_rest_states = {"advantage", "disadvantage", "even", "unknown"}
+    if not validated["rest_advantage"].fillna("unknown").isin(valid_rest_states).all():
+        raise ValueError("schedule_context_features rest_advantage has unsupported values")
+
+    national_source = validated["national_tv_source"].fillna("").astype(str).str.strip()
+    trusted = validated["national_tv_source_trusted"].eq(1)
+    if trusted.any() and not trusted.all():
+        raise ValueError("schedule_context_features national_tv_source_trusted must be file-wide")
+    if trusted.all() and national_source.eq("").all():
+        raise ValueError(
+            "schedule_context_features cannot mark national-TV source trusted with no source tags"
+        )
+
+    return validated
+
+
 def run(season: str, season_type: str):
     safe = season_type.lower().replace(" ", "_")
 
@@ -175,6 +228,7 @@ def run(season: str, season_type: str):
         "player_roles": Path(f"data/raw/player_game_starter_roles/{season}_{safe}.csv"),
         "player_period": Path(f"data/raw/player_game_period_stats/{season}_{safe}.csv"),
         "team_period": Path(f"data/raw/team_game_period_stats/{season}_{safe}.csv"),
+        "schedule_context": Path(f"data/processed/schedule_context_features/{season}_{safe}.csv"),
         "rosters": Path(f"data/raw/rosters/{season}.csv"),
         "standings": Path(f"data/raw/standings_snapshots/{season}_{safe}.csv"),
         "team_adv": Path(f"data/raw/team_season_advanced/{season}_{safe}.csv"),
@@ -182,6 +236,8 @@ def run(season: str, season_type: str):
     }
 
     for name, p in paths.items():
+        if name == "schedule_context" and not p.exists():
+            continue
         if name == "standings" and season_type == "Playoffs":
             continue
         if not p.exists():
@@ -194,6 +250,9 @@ def run(season: str, season_type: str):
     player_roles = pd.read_csv(paths["player_roles"])
     player_period = pd.read_csv(paths["player_period"])
     team_period = pd.read_csv(paths["team_period"])
+    schedule_context = (
+        pd.read_csv(paths["schedule_context"]) if paths["schedule_context"].exists() else None
+    )
     rosters = pd.read_csv(paths["rosters"])
     standings = None
     if paths["standings"].exists():
@@ -293,6 +352,11 @@ def run(season: str, season_type: str):
         raise ValueError("player_game_period_stats contains unknown game_id values")
     if not set(team_period["game_id"]).issubset(set(team["game_id"])):
         raise ValueError("team_game_period_stats contains unknown game_id values")
+
+    if schedule_context is not None:
+        schedule_context = validate_schedule_context_features_df(schedule_context)
+        if not set(schedule_context["game_id"]).issubset(set(team["game_id"])):
+            raise ValueError("schedule_context_features contains unknown game_id values")
 
     # --- ROSTERS ---
     require_columns(rosters, ["player_id", "team_id", "season", "stint"], "rosters")

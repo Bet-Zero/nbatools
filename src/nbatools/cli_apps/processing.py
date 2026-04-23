@@ -8,6 +8,9 @@ from nbatools.commands.pipeline.build_league_season_stats import (
 from nbatools.commands.pipeline.build_player_game_features import (
     run as build_player_game_features_run,
 )
+from nbatools.commands.pipeline.build_schedule_context_features import (
+    run as build_schedule_context_features_run,
+)
 from nbatools.commands.pipeline.build_team_game_features import run as build_team_game_features_run
 from nbatools.commands.pipeline.validate_raw import run as validate_raw_run
 
@@ -36,6 +39,14 @@ def build_game_features(
     season_type: str = typer.Option(..., "--season-type"),
 ):
     build_game_features_run(season, season_type)
+
+
+@app.command("build-schedule-context-features")
+def build_schedule_context_features(
+    season: str = typer.Option(...),
+    season_type: str = typer.Option(..., "--season-type"),
+):
+    build_schedule_context_features_run(season, season_type)
 
 
 @app.command("build-player-game-features")

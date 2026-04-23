@@ -4,7 +4,7 @@
 >
 > **Scope:** This doc describes the parser's _design_ — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters or placeholder on/off routes), the active continuation plan is [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md) and its current queue [`phase_h_work_queue.md`](../../planning/phase_h_work_queue.md). This file remains a current-state design reference, not a roadmap.
+Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters, coverage-gated filters, or placeholder routes), the Part 2 closure record is [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md). This file remains a current-state design reference, not a roadmap.
 
 ---
 
@@ -499,7 +499,7 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
-**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Period filters are execution-backed on `player_game_finder` and `team_record` when trusted `player_game_period_stats` / `team_game_period_stats` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Clutch and schedule filters remain parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
+**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Period filters are execution-backed on `player_game_finder` and `team_record` when trusted `player_game_period_stats` / `team_game_period_stats` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Schedule-context filters are execution-backed on `team_record` and `player_game_summary` when trusted `schedule_context_features` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Clutch remains parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
 
 Define where or when within a game the stat applies.
 
@@ -528,9 +528,12 @@ Define where or when within a game the stat applies.
   appends the explicit unfiltered-results note. Other routes still append the
   explicit unfiltered-results note because period execution is not enabled there.
 
-Schedule-context slots above are parser-recognized and route-propagated; the
-current query engine accepts them with an explicit unfiltered-results note
-because schedule/context feature tables are not yet joined into route execution.
+Schedule-context slots above are execution-backed on `team_record` and
+`player_game_summary` through the team-game-grain `schedule_context_features`
+contract. Missing feature coverage still produces an explicit unfiltered-results
+note. `nationally_televised` additionally requires trusted national-TV source
+coverage; current placeholder schedule pulls can leave that filter untrusted
+even when the other schedule-context filters execute.
 
 **Outcome**
 
@@ -553,7 +556,9 @@ because schedule/context feature tables are not yet joined into route execution.
 - true clutch-filtered results backed by play-by-play data
 - period execution beyond the current coverage-gated `player_game_finder` /
   `team_record` boundary
-- true schedule-context execution for `back_to_back`, `rest_days`, `one_possession`, and `nationally_televised`
+- schedule-context execution beyond the current coverage-gated `team_record` /
+  `player_game_summary` boundary, plus improved national-TV source coverage where
+  raw schedule pulls remain placeholder-only
 - full starter / bench backfill coverage beyond slices with trusted `player_game_starter_roles` data
 
 Parser recognition for these filters is shipped. The remaining gap is honest,
@@ -657,7 +662,7 @@ Remaining unsupported:
 
 ## 11. On/off, lineup, and stretch support
 
-**Status: mixed.** Single-player on/off phrasing and lineup/unit phrasing route to dedicated placeholder paths with honest unsupported-data notes. Stretch/rolling-window leaderboards are fully shipped on top of whole-game player logs.
+**Status: mixed.** Single-player on/off phrasing and lineup/unit phrasing route to dedicated placeholder paths with honest unsupported-data notes. Phase I explicitly deferred real on/off execution until a trustworthy split, play-by-play + substitution, or stint source is approved. Phase J explicitly deferred real lineup execution until a trustworthy lineup-unit, play-by-play + substitution, or stint source is approved. Stretch/rolling-window leaderboards are fully shipped on top of whole-game player logs.
 
 ### 11.0 Current shipped surface
 
@@ -678,7 +683,7 @@ Shipped in Phase E items 8, 9, and 10:
 - `best 5-game stretch by Game Score`
 - `most efficient 10-game rolling stretch`
 
-These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`, and return an honest note explaining that real on/off splits and lineup-unit stats require play-by-play, stint, or lineup tables that are not yet available.
+These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`, and return an honest note explaining that real on/off splits and lineup-unit stats require play-by-play, substitution/stint, or lineup tables that are not yet available. Whole-game `without_player` absence is explicitly not an on/off source, and roster membership is explicitly not a lineup-unit source.
 
 Stretch queries populate `window_size` and `stretch_metric`, route to `player_stretch_leaderboard`, keep the intent in the `leaderboard` family, and return real rolling-window results over player game logs.
 

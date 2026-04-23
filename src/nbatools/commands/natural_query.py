@@ -1459,14 +1459,15 @@ def _finalize_route(parsed: dict) -> dict:
         period_note := build_period_filter_note(quarter=quarter, half=half)
     ):
         notes.append(period_note)
-    notes.extend(
-        build_game_context_filter_notes(
-            back_to_back=back_to_back,
-            rest_days=rest_days,
-            one_possession=one_possession,
-            nationally_televised=nationally_televised,
+    if route not in {"player_game_summary", "team_record"}:
+        notes.extend(
+            build_game_context_filter_notes(
+                back_to_back=back_to_back,
+                rest_days=rest_days,
+                one_possession=one_possession,
+                nationally_televised=nationally_televised,
+            )
         )
-    )
     if route not in {"player_game_summary", "player_game_finder"}:
         if role_note := build_role_filter_note(role=role):
             notes.append(role_note)

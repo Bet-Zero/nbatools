@@ -5,7 +5,9 @@ import pandas as pd
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     apply_player_role_filter,
+    apply_schedule_context_filters,
     build_opponent_mask,
+    build_schedule_context_filter_coverage_notes,
     describe_opponent_filter,
     filter_by_opponent_player,
     filter_without_player,
@@ -161,6 +163,10 @@ def build_result(
     end_date: str | None = None,
     clutch: bool = False,
     role: str | None = None,
+    back_to_back: bool = False,
+    rest_days: str | int | None = None,
+    one_possession: bool = False,
+    nationally_televised: bool = False,
     df: pd.DataFrame | None = None,
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
@@ -176,7 +182,15 @@ def build_result(
         try:
             df = load_player_games_for_seasons(seasons, season_type)
         except FileNotFoundError:
-            return NoResult(query_class="summary", reason="no_data")
+            notes.extend(
+                build_schedule_context_filter_coverage_notes(
+                    back_to_back=back_to_back,
+                    rest_days=rest_days,
+                    one_possession=one_possession,
+                    nationally_televised=nationally_televised,
+                )
+            )
+            return NoResult(query_class="summary", reason="no_data", notes=notes)
 
         required = [
             "game_id",
@@ -226,6 +240,17 @@ def build_result(
         df = df.copy()
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
+
+    df, schedule_notes = apply_schedule_context_filters(
+        df,
+        seasons,
+        season_type,
+        back_to_back=back_to_back,
+        rest_days=rest_days,
+        one_possession=one_possession,
+        nationally_televised=nationally_televised,
+    )
+    notes.extend(schedule_notes)
 
     df, role_note = apply_player_role_filter(df, seasons, season_type, role)
     if role_note:
@@ -324,6 +349,15 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
+    note_text = "\n".join(notes)
+    if back_to_back and "back_to_back:" not in note_text:
+        caveats.append("schedule-context filter: back-to-back games")
+    if rest_days is not None and "rest:" not in note_text:
+        caveats.append(f"schedule-context filter: rest_days={rest_days}")
+    if one_possession and "one_possession:" not in note_text:
+        caveats.append("schedule-context filter: one-possession games")
+    if nationally_televised and "national_tv:" not in note_text:
+        caveats.append("schedule-context filter: nationally televised games")
 
     return SummaryResult(
         summary=summary,

@@ -54,14 +54,14 @@ def test_unsupported_period_route_drops_kwarg_and_keeps_note():
     assert any("quarter" in note and "unfiltered" in note for note in notes)
 
 
-def test_schedule_filter_still_drops_with_note():
+def test_supported_schedule_filter_keeps_kwarg_without_transport_note():
     routed, notes = _route_context_filters_for_execution(
         "player_game_summary",
         {"player": "Nikola Jokić", "back_to_back": True},
     )
 
-    assert "back_to_back" not in routed
-    assert any("back_to_back" in note and "unfiltered" in note for note in notes)
+    assert routed["back_to_back"] is True
+    assert not any("back_to_back" in note and "unfiltered" in note for note in notes)
 
 
 def test_execute_natural_query_carries_clutch_in_metadata():

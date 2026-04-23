@@ -583,7 +583,7 @@ This plan sits alongside:
 ### Update cadence
 
 - **This plan** — Part 1 record. Keep it aligned with what Phase A-E actually accomplished and where it hands off next.
-- **`parser_execution_completion_plan.md`** — active continuation plan for execution/data completion after Part 1.
+- **`parser_execution_completion_plan.md`** — Part 2 execution/data closure record after Part 1.
 - **`query_catalog.md`** — updated in the same session as any shipped capability change.
 - **Parser reference docs** — updated when component behavior changes or new capability families are designed.
 - **Current state guide** — updated when verified-behavior claims change.

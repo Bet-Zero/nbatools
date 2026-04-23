@@ -1,6 +1,6 @@
 # Parser Execution Completion Plan
 
-> **Role: active Part 2 planning doc.**
+> **Role: closed Part 2 planning / closure record.**
 >
 > **Purpose:** carry parser-shipped capabilities to true end-to-end completion. This plan continues where [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) stops.
 
@@ -85,20 +85,25 @@ This plan covers execution/data completion for capability families that are alre
 
 ---
 
-## 4. Current open capability gaps
+## 4. Capability closure status
 
-These are the capability families that still require Part 2 work.
+These are the capability families Part 2 tracked from parser-shipped surface to
+execution/data closure. At closure, each family is either coverage-gated
+execution-backed on a documented route boundary or explicitly deferred with a
+named source prerequisite.
 
 | Capability family        | Parser / route status                  | Execution status                                                                                                                                                                  | Primary evidence                                                                                                                                         |
 | ------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Clutch                   | Parser-recognized and route-propagated | Unfiltered note; explicitly deferred until a trustworthy game-grain clutch source or play-by-play derivation path is approved                                                    | `parser/specification.md` §8, `parser/examples.md` §7.7, `phase_g_segment_data_review_handoff.md`                                                       |
 | Quarter / half / OT      | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` / `team_record` via period-window backfills; other routes still remain unfiltered                                                | `parser/specification.md` §8, `parser/examples.md` §7.8, `phase_g_period_only_work_queue.md`                                                            |
-| Schedule-context filters | Parser-recognized and route-propagated | Unfiltered note; joins/features incomplete                                                                                                                                        | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14                                                                                      |
+| Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` / `player_game_summary` via `schedule_context_features`; unsupported routes and missing/untrusted coverage still fall back with explicit notes | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14, `docs/reference/data_contracts.md`                                                   |
 | Starter / bench role     | Parser-recognized for player context   | Coverage-gated execution on `player_game_summary` / `player_game_finder` when trusted `player_game_starter_roles` rows exist; explicit unfiltered note otherwise                 | `parser/specification.md` §8, `parser/examples.md` §7.10, `docs/reference/data_contracts.md`                                                             |
-| On/off                   | Dedicated route exists                 | Placeholder execution only                                                                                                                                                        | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`                                                                   |
-| Lineups                  | Dedicated routes exist                 | Placeholder execution only                                                                                                                                                        | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md`                                                             |
+| On/off                   | Dedicated route exists                 | Explicitly deferred by Phase I; placeholder remains because no trustworthy on/off split, play-by-play + substitution, or stint source exists                                      | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`, `phase_i_on_off_source_boundary.md`                               |
+| Lineups                  | Dedicated routes exist                 | Explicitly deferred by Phase J; placeholders remain because no trustworthy lineup-unit, play-by-play + substitution, or stint source exists                                       | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md`, `phase_j_lineup_source_boundary.md`                         |
 
-These families are not allowed to disappear under a generic “plan complete” statement. Each one must either become execution-backed or be explicitly deferred.
+These families are not allowed to disappear under a generic “plan complete”
+statement. Each remaining deferral names the missing source artifact required to
+resume implementation.
 
 ---
 
@@ -176,6 +181,19 @@ for that remaining scope:
 
 - supported schedule-context queries return execution-backed results rather than unfiltered notes
 
+**Post-queue status:** Phase H shipped the shared `schedule_context_features`
+table and route execution boundary:
+
+- `schedule_context_features` is a processed team-game table keyed by
+  `game_id` + `team_id`
+- it centralizes `back_to_back`, normalized `rest_days` / rest advantage,
+  one-possession final-margin semantics, and national-TV source trust
+- `team_record` and `player_game_summary` execute schedule-context filters when
+  trusted feature coverage exists for the requested slice
+- unsupported routes, missing feature coverage, and untrusted national-TV source
+  coverage still produce explicit unfiltered-results notes
+- `clutch` remains explicitly deferred and was not changed by Phase H
+
 ### 5.4 Phase I — Real on/off execution
 
 **Goal:** replace placeholder on/off execution with data-backed results.
@@ -189,6 +207,13 @@ for that remaining scope:
 **Definition of done:**
 
 - supported on/off queries return real results rather than placeholder notes, or the capability is explicitly deferred with a documented reason
+
+**Post-queue status:** Phase I explicitly deferred real on/off execution in
+[`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md).
+The current `player_on_off` route remains an honest placeholder because the repo
+has no on/off split table, play-by-play plus substitutions, or trusted stint
+source. Whole-game `without_player` remains explicitly separate and is not an
+on/off substitute.
 
 ### 5.5 Phase J — Real lineup execution and closure audit
 
@@ -207,6 +232,31 @@ for that remaining scope:
 - the final closure audit names any remaining deferrals explicitly
 - no parser-shipped family remains in an implicit “we’ll get to that later” state
 
+**Post-queue status:** Phase J explicitly deferred real lineup execution in
+[`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md).
+The current `lineup_summary` and `lineup_leaderboard` routes remain honest
+placeholders because the repo has no lineup-unit table, play-by-play plus
+substitutions, or trusted stint source. Roster membership remains explicitly
+separate and is not a lineup-unit substitute.
+
+**Part 2 closure status:** closed with explicit boundaries. Remaining deferred
+capabilities are named rather than implicit:
+
+- `clutch` — deferred pending a trustworthy game-grain clutch source or
+  play-by-play derivation path
+- `player_on_off` — deferred pending a trustworthy on/off split,
+  play-by-play + substitution, or stint source
+- `lineup_summary` / `lineup_leaderboard` — deferred pending a trustworthy
+  lineup-unit, play-by-play + substitution, or stint source
+
+Coverage-gated execution-backed boundaries are:
+
+- quarter / half / OT on `player_game_finder` and `team_record`
+- starter / bench role on player summary/finder routes when trusted
+  `player_game_starter_roles` rows exist
+- schedule-context filters on `team_record` and `player_game_summary` when
+  trusted `schedule_context_features` coverage exists
+
 ---
 
 ## 6. Queue and continuation rules for Part 2
@@ -224,11 +274,12 @@ for that remaining scope:
 
 The next step is explicit:
 
-- **Completed queue:** [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md)
-- **Active queue:** [`phase_h_work_queue.md`](./phase_h_work_queue.md)
-- **Immediate action:** work the first unchecked item in the Phase H queue and
-  keep `clutch` explicitly deferred unless a trustworthy game-grain clutch
-  source is later approved
+- **Completed queue:** [`phase_j_work_queue.md`](./phase_j_work_queue.md)
+- **Active queue:** none; Part 2 is closed with explicit deferrals and
+  coverage-gated execution boundaries
+- **Immediate action:** no implicit continuation remains. Future work requires a
+  new source-approval queue for clutch, on/off, or lineups, or a route-expansion
+  queue for an already coverage-gated dataset.
 
 If Phase G discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
 

@@ -239,6 +239,7 @@ class TestRefreshSeason:
     @patch("nbatools.commands.pipeline.validate_raw.run")
     @patch("nbatools.commands.pipeline.build_team_game_features.run")
     @patch("nbatools.commands.pipeline.build_game_features.run")
+    @patch("nbatools.commands.pipeline.build_schedule_context_features.run")
     @patch("nbatools.commands.pipeline.build_player_game_features.run")
     @patch("nbatools.commands.pipeline.build_league_season_stats.run")
     @patch("nbatools.commands.ops.update_manifest.run")
@@ -251,8 +252,8 @@ class TestRefreshSeason:
         assert result.current_through == "2026-04-11"
         assert result.started_at is not None
         assert result.finished_at is not None
-        # Should have: 10 raw + 1 validate + 4 build + 1 manifest = 16 stages
-        assert len(result.stages) == 16
+        # Should have: 10 raw + 1 validate + 5 build + 1 manifest = 17 stages
+        assert len(result.stages) == 17
 
     @patch("nbatools.commands.pipeline.pull_games.run")
     def test_games_failure_stops_early(self, mock_games):
@@ -297,7 +298,7 @@ class TestRefreshSeason:
 
     def test_dry_run(self):
         result = refresh_season("2025-26", "Regular Season", dry_run=True)
-        assert len(result.stages) == 16
+        assert len(result.stages) == 17
         assert all(s.status == StageStatus.SKIPPED for s in result.stages)
         assert all(s.error == "dry_run" for s in result.stages)
 
@@ -459,6 +460,7 @@ class TestStageOrdering:
         "validate_raw",
         "build_team_game_features",
         "build_game_features",
+        "build_schedule_context_features",
         "build_player_game_features",
         "build_league_season_stats",
         "update_manifest",
@@ -593,6 +595,7 @@ class TestCurrentThroughIntegration:
     @patch("nbatools.commands.pipeline.validate_raw.run")
     @patch("nbatools.commands.pipeline.build_team_game_features.run")
     @patch("nbatools.commands.pipeline.build_game_features.run")
+    @patch("nbatools.commands.pipeline.build_schedule_context_features.run")
     @patch("nbatools.commands.pipeline.build_player_game_features.run")
     @patch("nbatools.commands.pipeline.build_league_season_stats.run")
     @patch("nbatools.commands.ops.update_manifest.run")

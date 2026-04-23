@@ -490,22 +490,22 @@ def test_back_to_back_note_appended():
     assert any("back_to_back" in n and "unfiltered" in n for n in notes)
 
 
-def test_rest_note_appended():
+def test_supported_rest_route_no_parse_time_unfiltered_note():
     parsed = parse_query("Jokic with rest advantage")
     notes = parsed.get("notes", [])
-    assert any("rest" in n and "unfiltered" in n for n in notes)
+    assert not any("rest" in n and "unfiltered" in n for n in notes)
 
 
-def test_one_possession_note_appended():
+def test_supported_one_possession_route_no_parse_time_unfiltered_note():
     parsed = parse_query("Celtics one-possession record")
     notes = parsed.get("notes", [])
-    assert any("one_possession" in n and "unfiltered" in n for n in notes)
+    assert not any("one_possession" in n and "unfiltered" in n for n in notes)
 
 
-def test_national_tv_note_appended():
+def test_supported_national_tv_route_no_parse_time_unfiltered_note():
     parsed = parse_query("Knicks on national TV record")
     notes = parsed.get("notes", [])
-    assert any("national_tv" in n and "unfiltered" in n for n in notes)
+    assert not any("national_tv" in n and "unfiltered" in n for n in notes)
 
 
 # ---------------------------------------------------------------------------

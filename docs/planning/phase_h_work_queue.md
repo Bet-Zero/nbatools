@@ -29,7 +29,7 @@
 
 ---
 
-## 1. `[ ]` Lock the schedule-context feature contract and source boundary
+## 1. `[x]` Lock the schedule-context feature contract and source boundary
 
 **Why:** Phase F identified the shared feature-join contract, but Phase H still
 needs one execution-oriented source decision covering `back_to_back`,
@@ -77,7 +77,7 @@ needs one execution-oriented source decision covering `back_to_back`,
 
 ---
 
-## 2. `[ ]` Build the schedule-context dataset, validation path, and loaders
+## 2. `[x]` Build the schedule-context dataset, validation path, and loaders
 
 **Why:** Route owners should consume one validated whole-game context layer, not
   derive rest, B2B, one-possession, or national-TV state independently.
@@ -120,7 +120,7 @@ needs one execution-oriented source decision covering `back_to_back`,
 
 ---
 
-## 3. `[ ]` Ship `back_to_back` and `rest_days` execution on the initial routes
+## 3. `[x]` Ship `back_to_back` and `rest_days` execution on the initial routes
 
 **Why:** These two filters share the same schedule-derivation path and are the
 lowest-risk whole-game schedule-context items once the feature table exists.
@@ -163,7 +163,7 @@ lowest-risk whole-game schedule-context items once the feature table exists.
 
 ---
 
-## 4. `[ ]` Ship `one_possession` and `nationally_televised` execution on the initial routes
+## 4. `[x]` Ship `one_possession` and `nationally_televised` execution on the initial routes
 
 **Why:** These are the remaining Phase H filters, but they depend on the shared
 feature table and need explicit semantics rather than one-off route logic.
@@ -207,7 +207,7 @@ feature table and need explicit semantics rather than one-off route logic.
 
 ---
 
-## 5. `[ ]` Sync current-state docs and smoke inventory with the shipped Phase H boundary
+## 5. `[x]` Sync current-state docs and smoke inventory with the shipped Phase H boundary
 
 **Why:** Once schedule-context filters become execution-backed, the repo needs
 the docs and smoke inventory to describe the exact route and coverage boundary
@@ -240,7 +240,56 @@ without overstating national-TV reliability or implying clutch progress.
 
 ---
 
-## 6. `[ ]` Phase H retrospective, explicit clutch deferral check, and Phase I queue draft
+## Phase H retrospective
+
+### Shipped boundary
+
+- `schedule_context_features` is now the shared execution-grade team-game table
+  for Phase H schedule filters.
+- `team_record` and `player_game_summary` execute `back_to_back`, normalized
+  `rest_days` / rest advantage, `one_possession`, and `nationally_televised`
+  when trusted feature coverage exists for the requested slice.
+- `nationally_televised` remains source-quality gated: current placeholder
+  schedule pulls can still make national-TV coverage untrusted, in which case
+  execution falls back with an explicit unfiltered-results note for that filter.
+- Unsupported routes still use the explicit unfiltered-results note instead of
+  silently claiming schedule-context execution.
+
+### Implementation notes
+
+- The feature table is built from `team_game_stats` plus `schedule`, keyed by
+  `game_id` + `team_id`, so team-relative rest and back-to-back state remain
+  unambiguous.
+- `rest_days` is normalized to full off days since the previous team game; the
+  second game of a back-to-back has `rest_days=0`.
+- One-possession semantics are centralized as `abs(score_margin) <= 3` in the
+  feature table, not recomputed independently inside route owners.
+- Manifest/processed inventory paths include `schedule_context_features` so a
+  season is not considered fully processed without the Phase H dataset.
+
+### Remaining blockers
+
+- `clutch` is still explicitly deferred pending a trustworthy game-grain clutch
+  source or play-by-play derivation path. Phase H did not change clutch status.
+- Later route expansion can reuse `schedule_context_features`, but Phase H only
+  shipped the documented initial boundary: `team_record` and
+  `player_game_summary`.
+- On/off remains placeholder-backed and is now owned by
+  [`phase_i_work_queue.md`](./phase_i_work_queue.md).
+
+### Validation
+
+- `make test-query`
+- `make test-engine`
+
+The initial `make test-impacted` run selected 1,370 tests because shared files
+changed. It exposed the Phase H compatibility issues fixed in this queue pass,
+plus unrelated local-data/stale-expectation failures outside the schedule-context
+change set.
+
+---
+
+## 6. `[x]` Phase H retrospective, explicit clutch deferral check, and Phase I queue draft
 
 **Why:** Phase H should close by naming the next active queue cleanly while
 keeping the unresolved `clutch` prerequisite visible.

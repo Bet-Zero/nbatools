@@ -17,7 +17,7 @@ Rebuild order follows ``docs/planning/data_freshness_plan.md`` §4:
      standings_snapshots → team_season_advanced → player_season_advanced)
   2. Validation (validate_raw)
   3. Processed builds (team_game_features → game_features →
-     player_game_features → league_season_stats)
+     schedule_context_features → player_game_features → league_season_stats)
   4. Manifest update
 """
 
@@ -250,6 +250,9 @@ def _build_stages(season: str, season_type: str) -> list[StageResult]:
     from nbatools.commands.pipeline.build_player_game_features import (
         run as build_player_game_features,
     )
+    from nbatools.commands.pipeline.build_schedule_context_features import (
+        run as build_schedule_context_features,
+    )
     from nbatools.commands.pipeline.build_team_game_features import run as build_team_game_features
 
     results: list[StageResult] = []
@@ -257,6 +260,14 @@ def _build_stages(season: str, season_type: str) -> list[StageResult]:
         _run_stage("build_team_game_features", build_team_game_features, season, season_type)
     )
     results.append(_run_stage("build_game_features", build_game_features, season, season_type))
+    results.append(
+        _run_stage(
+            "build_schedule_context_features",
+            build_schedule_context_features,
+            season,
+            season_type,
+        )
+    )
     results.append(
         _run_stage("build_player_game_features", build_player_game_features, season, season_type)
     )
@@ -338,6 +349,7 @@ def refresh_season(
             "validate_raw",
             "build_team_game_features",
             "build_game_features",
+            "build_schedule_context_features",
             "build_player_game_features",
             "build_league_season_stats",
             "update_manifest",

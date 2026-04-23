@@ -66,6 +66,7 @@ For a given season and season_type, `backfill-season` runs:
 ## Processed builds
 - `build-team-game-features`
 - `build-game-features`
+- `build-schedule-context-features`
 - `build-player-game-features`
 - `build-league-season-stats`
 

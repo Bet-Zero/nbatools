@@ -683,6 +683,98 @@ A processed table should be added to this document once either of the following 
 
 ---
 
+## 6A. `schedule_context_features`
+
+### Path pattern
+
+`data/processed/schedule_context_features/{season}_{season_type_safe}.csv`
+
+Examples:
+
+- `data/processed/schedule_context_features/2025-26_regular_season.csv`
+- `data/processed/schedule_context_features/2024-25_playoffs.csv`
+
+### Grain
+
+One row per **team-game**.
+
+### Key fields
+
+- `game_id`
+- `team_id`
+
+Recommended uniqueness expectation:
+
+- unique on (`game_id`, `team_id`)
+
+### Required columns
+
+- `game_id`
+- `season`
+- `season_type`
+- `game_date`
+- `team_id`
+- `team_abbr`
+- `team_name`
+- `opponent_team_id`
+- `opponent_team_abbr`
+- `opponent_team_name`
+- `is_home`
+- `is_away`
+- `rest_days`
+- `opponent_rest_days`
+- `back_to_back`
+- `rest_advantage`
+- `score_margin`
+- `one_possession`
+- `nationally_televised`
+- `national_tv_source`
+- `national_tv_source_trusted`
+- `schedule_context_source`
+- `schedule_context_source_trusted`
+
+### Important derived/query fields
+
+- `rest_days` is normalized to full off days since the team's previous game;
+  the second game of a back-to-back has `rest_days=0`.
+- `back_to_back` is `1` only when the previous team game was the previous
+  calendar day.
+- `rest_advantage` is one of `advantage`, `disadvantage`, `even`, or `unknown`
+  relative to the opponent's normalized rest for the same game.
+- `one_possession` is `1` when the final absolute scoring margin is `<= 3`.
+- `nationally_televised` is `1` only when the schedule source carries a
+  non-empty national-TV marker.
+
+### Producer(s)
+
+- `src/nbatools/commands/pipeline/build_schedule_context_features.py`
+- inputs: `team_game_stats` plus `schedule`
+
+### Primary consumer(s)
+
+- schedule-context execution on `team_record`
+- schedule-context execution on `player_game_summary`
+
+### Notes
+
+This is the execution-grade owner for whole-game schedule-context filters in the
+initial Phase H route boundary.
+
+Contract rules:
+
+- command owners must join by (`game_id`, `team_id`) so team-relative rest and
+  back-to-back state is not confused with game-level state
+- `schedule_context_source_trusted=0` means commands must fall back with an
+  explicit unfiltered-results note instead of partially filtering
+- `national_tv_source_trusted=0` means the raw schedule source is still acting
+  as the historical placeholder; commands may execute other schedule-context
+  filters but must fall back for `nationally_televised`
+- current raw `pull_schedule` output can still produce blank `national_tv`
+  values; a season file is considered national-TV trusted only when at least
+  one non-empty national-TV marker is present
+
+---
+
 ## 7. Sample-aware metric contract
 
 Player sample-aware advanced metrics currently include:
@@ -718,7 +810,7 @@ Do not silently substitute season-average values for filtered-sample outputs.
 ### Player query surface
 
 - `player_game_finder` -> `player_game_stats`, or `player_game_period_stats` when a supported quarter / half / OT filter is execution-backed for the requested slice
-- `player_game_summary` -> `player_game_stats` + supporting advanced metric context
+- `player_game_summary` -> `player_game_stats` + supporting advanced metric context, plus `schedule_context_features` for supported schedule-context filters
 - `player_compare` -> `player_game_stats` + supporting advanced metric context
 - `player_split_summary` -> `player_game_stats` + supporting advanced metric context
 - `player_streak_finder` -> `player_game_stats`
@@ -729,7 +821,7 @@ Do not silently substitute season-average values for filtered-sample outputs.
 - `game_finder` -> `team_game_stats`
 - `game_summary` -> `team_game_stats`
 - `team_compare` -> `team_game_stats`
-- `team_record` -> `team_game_stats`, or `team_game_period_stats` when a supported quarter / half / OT filter is execution-backed for the requested slice
+- `team_record` -> `team_game_stats`, or `team_game_period_stats` when a supported quarter / half / OT filter is execution-backed for the requested slice, plus `schedule_context_features` for supported schedule-context filters
 - `team_split_summary` -> `team_game_stats`
 - `team_streak_finder` -> `team_game_stats`
 - `season_team_leaders` -> `team_season_advanced` and/or `team_game_stats`
@@ -747,3 +839,16 @@ As the repo evolves toward a UI-based search app, these data contracts should he
 - clearer migration paths if storage evolves beyond CSV
 
 When adding a new core dataset, add it here before making it an implicit dependency.
+
+### Explicitly deferred source boundaries
+
+- `player_on_off` has no current execution dataset. Whole-game
+  `without_player` absence is not an on/off source because it has no
+  substitution, stint, possession, or on-court/off-court sample boundary. See
+  `docs/planning/phase_i_on_off_source_boundary.md` for the required future
+  source contract before on/off execution can replace the placeholder.
+- `lineup_summary` and `lineup_leaderboard` have no current execution dataset.
+  Roster membership is not a lineup-unit source because it has no shared-court,
+  stint, possession, or unit-level sample boundary. See
+  `docs/planning/phase_j_lineup_source_boundary.md` for the required future
+  source contract before lineup execution can replace the placeholders.

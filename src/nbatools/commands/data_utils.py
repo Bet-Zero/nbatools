@@ -124,6 +124,32 @@ TEAM_GAME_PERIOD_OPTIONAL_COLUMNS = [
     "ts_pct",
 ]
 
+SCHEDULE_CONTEXT_REQUIRED_COLUMNS = [
+    "game_id",
+    "season",
+    "season_type",
+    "game_date",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "rest_days",
+    "opponent_rest_days",
+    "back_to_back",
+    "rest_advantage",
+    "score_margin",
+    "one_possession",
+    "nationally_televised",
+    "national_tv_source",
+    "national_tv_source_trusted",
+    "schedule_context_source",
+    "schedule_context_source_trusted",
+]
+
 PERIOD_DESCRIPTOR_LOOKUP = {
     ("quarter", "1"): (1, 1),
     ("quarter", "2"): (2, 2),
@@ -640,6 +666,257 @@ def _load_team_game_period_stats_cached(
 
 def load_team_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     return _load_team_game_period_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def _empty_schedule_context_features_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=SCHEDULE_CONTEXT_REQUIRED_COLUMNS)
+
+
+@cache
+def _load_schedule_context_features_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/processed/schedule_context_features/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path)
+        missing = [col for col in SCHEDULE_CONTEXT_REQUIRED_COLUMNS if col not in df.columns]
+        if missing:
+            raise ValueError(f"schedule_context_features missing required columns: {missing}")
+        if df.duplicated(subset=["game_id", "team_id"]).any():
+            raise ValueError("Duplicate (game_id, team_id) in schedule_context_features")
+
+        for col in (
+            "game_id",
+            "team_id",
+            "opponent_team_id",
+            "is_home",
+            "is_away",
+            "rest_days",
+            "opponent_rest_days",
+            "back_to_back",
+            "score_margin",
+            "one_possession",
+            "nationally_televised",
+            "national_tv_source_trusted",
+            "schedule_context_source_trusted",
+        ):
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        for flag_col in (
+            "back_to_back",
+            "one_possession",
+            "nationally_televised",
+            "national_tv_source_trusted",
+            "schedule_context_source_trusted",
+        ):
+            values = df[flag_col].dropna()
+            if not values.isin([0, 1]).all():
+                raise ValueError(f"schedule_context_features {flag_col} must be 0/1")
+
+        rest_states = {"advantage", "disadvantage", "even", "unknown"}
+        if not df["rest_advantage"].fillna("unknown").isin(rest_states).all():
+            raise ValueError("schedule_context_features rest_advantage has unsupported values")
+
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing schedule_context_features files for requested slice: "
+            + ", ".join(missing_paths)
+        )
+    if not frames:
+        return _empty_schedule_context_features_df()
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_schedule_context_features_for_seasons(
+    seasons: list[str], season_type: str
+) -> pd.DataFrame:
+    """Load validated team-game schedule-context features for the given seasons."""
+    return _load_schedule_context_features_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def build_schedule_context_filter_coverage_notes(
+    *,
+    back_to_back: bool = False,
+    rest_days: str | int | None = None,
+    one_possession: bool = False,
+    nationally_televised: bool = False,
+) -> list[str]:
+    notes: list[str] = []
+    if back_to_back:
+        notes.append(
+            "back_to_back: filter detected but trustworthy schedule-context coverage is "
+            "unavailable for the requested slice; results are unfiltered for this filter"
+        )
+    if rest_days is not None:
+        notes.append(
+            "rest: filter detected but trustworthy schedule-context coverage is unavailable "
+            "for the requested slice; results are unfiltered for this filter"
+        )
+    if one_possession:
+        notes.append(
+            "one_possession: filter detected but trustworthy schedule-context coverage is "
+            "unavailable for the requested slice; results are unfiltered for this filter"
+        )
+    if nationally_televised:
+        notes.append(
+            "national_tv: filter detected but trustworthy national-TV coverage is unavailable "
+            "for the requested slice; results are unfiltered for this filter"
+        )
+    return notes
+
+
+def _drop_schedule_context_helper_columns(df: pd.DataFrame) -> pd.DataFrame:
+    helper_cols = [
+        col
+        for col in df.columns
+        if col.startswith("_schedule_context_") or col.startswith("_national_tv_")
+    ]
+    return df.drop(columns=helper_cols) if helper_cols else df
+
+
+def apply_schedule_context_filters(
+    df: pd.DataFrame,
+    seasons: list[str],
+    season_type: str,
+    *,
+    back_to_back: bool = False,
+    rest_days: str | int | None = None,
+    one_possession: bool = False,
+    nationally_televised: bool = False,
+) -> tuple[pd.DataFrame, list[str]]:
+    requested = any(
+        [
+            back_to_back,
+            rest_days is not None,
+            one_possession,
+            nationally_televised,
+        ]
+    )
+    if not requested or df.empty:
+        return df.copy(), []
+
+    join_cols = ["game_id", "team_id"]
+    missing = [col for col in join_cols if col not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns for schedule-context filters: {missing}")
+
+    try:
+        features = load_schedule_context_features_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return df.copy(), build_schedule_context_filter_coverage_notes(
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+
+    if features.empty:
+        return df.copy(), build_schedule_context_filter_coverage_notes(
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+
+    feature_cols = [
+        "game_id",
+        "team_id",
+        "rest_days",
+        "back_to_back",
+        "rest_advantage",
+        "one_possession",
+        "nationally_televised",
+        "national_tv_source_trusted",
+        "schedule_context_source_trusted",
+    ]
+    lookup = features[feature_cols].drop_duplicates(subset=join_cols)
+    work = df.merge(
+        lookup.rename(
+            columns={
+                "rest_days": "_schedule_context_rest_days",
+                "back_to_back": "_schedule_context_back_to_back",
+                "rest_advantage": "_schedule_context_rest_advantage",
+                "one_possession": "_schedule_context_one_possession",
+                "nationally_televised": "_schedule_context_nationally_televised",
+                "national_tv_source_trusted": "_national_tv_source_trusted",
+                "schedule_context_source_trusted": "_schedule_context_source_trusted",
+            }
+        ),
+        on=join_cols,
+        how="left",
+        validate="many_to_one",
+    )
+
+    context_trusted = (
+        pd.to_numeric(work["_schedule_context_source_trusted"], errors="coerce").fillna(0).eq(1)
+    )
+    if not context_trusted.all():
+        return df.copy(), build_schedule_context_filter_coverage_notes(
+            back_to_back=back_to_back,
+            rest_days=rest_days,
+            one_possession=one_possession,
+            nationally_televised=nationally_televised,
+        )
+
+    notes: list[str] = []
+    filtered = work
+
+    if back_to_back:
+        filtered = filtered[
+            pd.to_numeric(filtered["_schedule_context_back_to_back"], errors="coerce")
+            .fillna(0)
+            .eq(1)
+        ].copy()
+
+    if rest_days is not None:
+        if isinstance(rest_days, str) and rest_days in {"advantage", "disadvantage"}:
+            filtered = filtered[
+                filtered["_schedule_context_rest_advantage"]
+                .fillna("unknown")
+                .astype(str)
+                .str.lower()
+                .eq(rest_days)
+            ].copy()
+        else:
+            requested_rest = int(rest_days)
+            filtered = filtered[
+                pd.to_numeric(filtered["_schedule_context_rest_days"], errors="coerce").eq(
+                    requested_rest
+                )
+            ].copy()
+
+    if one_possession:
+        filtered = filtered[
+            pd.to_numeric(filtered["_schedule_context_one_possession"], errors="coerce")
+            .fillna(0)
+            .eq(1)
+        ].copy()
+
+    if nationally_televised:
+        national_tv_trusted = (
+            pd.to_numeric(work["_national_tv_source_trusted"], errors="coerce").fillna(0).eq(1)
+        )
+        if national_tv_trusted.all():
+            filtered = filtered[
+                pd.to_numeric(filtered["_schedule_context_nationally_televised"], errors="coerce")
+                .fillna(0)
+                .eq(1)
+            ].copy()
+        else:
+            notes.extend(build_schedule_context_filter_coverage_notes(nationally_televised=True))
+
+    return _drop_schedule_context_helper_columns(filtered), notes
 
 
 def build_role_filter_coverage_note(role: str | None = None) -> str | None:
