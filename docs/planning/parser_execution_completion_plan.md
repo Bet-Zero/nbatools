@@ -91,10 +91,10 @@ These are the capability families that still require Part 2 work.
 
 | Capability family        | Parser / route status                  | Execution status                                                                                                                                                                  | Primary evidence                                                                                                                                         |
 | ------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Clutch                   | Parser-recognized and route-propagated | Unfiltered note; no clutch-capable data source yet                                                                                                                                | `parser/specification.md` §8, `parser/examples.md` §7.7                                                                                                  |
-| Quarter / half / OT      | Parser-recognized and route-propagated | Unfiltered note; no period split execution yet                                                                                                                                    | `parser/specification.md` §8, `parser/examples.md` §7.8                                                                                                  |
+| Clutch                   | Parser-recognized and route-propagated | Unfiltered note; explicitly deferred until a trustworthy game-grain clutch source or play-by-play derivation path is approved                                                    | `parser/specification.md` §8, `parser/examples.md` §7.7, `phase_g_segment_data_review_handoff.md`                                                       |
+| Quarter / half / OT      | Parser-recognized and route-propagated | Unfiltered note today; active period-only continuation queue targets execution via box-score window backfills                                                                     | `parser/specification.md` §8, `parser/examples.md` §7.8, `phase_g_period_only_work_queue.md`                                                            |
 | Schedule-context filters | Parser-recognized and route-propagated | Unfiltered note; joins/features incomplete                                                                                                                                        | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14                                                                                      |
-| Starter / bench role     | Parser-recognized for player context   | Unfiltered note; candidate source path identified as a validated per-game starter-role backfill from `BoxScoreTraditionalV3`, but the dataset and trust gating are not yet landed | `parser/specification.md` §8, `parser/examples.md` §7.10, `src/nbatools/commands/pipeline/pull_player_game_stats.py`, `docs/reference/data_contracts.md` |
+| Starter / bench role     | Parser-recognized for player context   | Coverage-gated execution on `player_game_summary` / `player_game_finder` when trusted `player_game_starter_roles` rows exist; explicit unfiltered note otherwise                 | `parser/specification.md` §8, `parser/examples.md` §7.10, `docs/reference/data_contracts.md`                                                             |
 | On/off                   | Dedicated route exists                 | Placeholder execution only                                                                                                                                                        | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`                                                                   |
 | Lineups                  | Dedicated routes exist                 | Placeholder execution only                                                                                                                                                        | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md`                                                             |
 
@@ -136,6 +136,16 @@ For starter / bench role specifically, the current `player_game_stats`-derived `
 **Definition of done:**
 
 - these filters no longer rely on unfiltered fallback behavior for their supported routes, or are explicitly deferred with a documented reason
+
+**Post-queue status:** The original Phase G queue landed the shared transport
+work and the trusted starter-role path. The follow-up segment review recorded in
+[`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
+then split the remaining segment-backed scope:
+
+- quarter / half / OT continue in the active
+  [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md)
+- `clutch` remains explicitly deferred until a trustworthy game-grain source or
+  play-by-play derivation path is approved
 
 ### 5.3 Phase H — Schedule-context execution
 
@@ -201,8 +211,9 @@ For starter / bench role specifically, the current `player_game_stats`-derived `
 
 The next step is explicit:
 
-- **Active handoff:** [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
-- **Immediate action:** review the clutch-source decision recorded there, then either draft a period-only continuation queue or approve a real clutch-capable game-grain source
+- **Resolved handoff:** [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
+- **Active queue:** [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md)
+- **Immediate action:** work the first unchecked item in the period-only queue, and keep `clutch` explicitly deferred unless a trustworthy game-grain clutch source is later approved
 
 If Phase G discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
 

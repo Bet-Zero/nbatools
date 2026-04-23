@@ -1,5 +1,12 @@
 # Phase G Segment-Data Review Handoff
 
+> **Review outcome (April 23, 2026):** No trustworthy clutch-capable game-grain
+> source was approved under current repo constraints. The repo now continues
+> quarter / half / OT work in
+> [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md) and
+> keeps `clutch` explicitly deferred pending a play-by-play or equivalent
+> game-grain source.
+
 ## Why This Exists
 
 Phase G item 3 asked for one shared segment-split contract that could back

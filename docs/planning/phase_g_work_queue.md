@@ -204,7 +204,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 3. `[-]` Build the segment-split contract and ingestion path for clutch / period execution — blocked: no trustworthy game-grain clutch source was found under current repo constraints; see [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
+## 3. `[-]` Build the segment-split contract and ingestion path for clutch / period execution — blocked under the original shared-scope assumption: no trustworthy game-grain clutch source was found under current repo constraints; the follow-on split is recorded in [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md) and continues period-only work in [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md)
 
 **Why:** Clutch and quarter / half / overtime are blocked on the same missing prerequisite: execution-grade intra-game segment data. Phase G should solve that once, not separately for each surface phrase.
 
@@ -245,7 +245,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 4. `[-]` Ship quarter / half / overtime execution on the initial supported routes — blocked behind item 3’s shared segment-contract review; do not ship an ad hoc period-only path until the handoff decision is made
+## 4. `[-]` Ship quarter / half / overtime execution on the initial supported routes — blocked in the original Phase G queue behind item 3’s shared segment-contract review; the reviewed continuation path is now [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md)
 
 **Why:** Once the segment contract exists, period filters should stop returning full-game results with a note and start using real intra-game slices.
 
@@ -288,7 +288,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 5. `[-]` Ship clutch execution on the initial supported routes — blocked: the required clutch-capable game-grain source is the unresolved review target in [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
+## 5. `[-]` Ship clutch execution on the initial supported routes — blocked: no trustworthy clutch-capable game-grain source was approved; `clutch` remains explicitly deferred per [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md)
 
 **Why:** Clutch is still the most user-visible unfiltered context family. After the shared transport and segment contract land, Phase G should close the gap on the routes that already claim support.
 
@@ -373,7 +373,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ## 7. `[x]` Phase G retrospective and Phase H work queue draft
 
-**Completion note:** Phase G closed with an explicit review handoff instead of a Phase H queue draft because items 3–5 could not land responsibly without a reviewed clutch-capable game-grain source. The required handoff artifact is [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md).
+**Completion note:** Phase G closed with an explicit review handoff instead of a Phase H queue draft because items 3–5 could not land responsibly without a reviewed clutch-capable game-grain source. That handoff later resolved to the period-only continuation queue [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md) for quarter / half / OT, while `clutch` remained explicitly deferred. The original handoff artifact remains [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md).
 
 **Why:** Phase G should end with a concrete handoff into schedule-context execution, or an explicit review-handoff if segment-data blockers prevent a clean close.
 

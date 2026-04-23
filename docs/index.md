@@ -67,8 +67,9 @@ Roadmap and active plans.
 - `planning/roadmap.md` — planned and future capabilities
 - `planning/query_surface_expansion_plan.md` — Part 1 parser/query-surface expansion plan (closed as subsystem-complete only)
 - `planning/parser_execution_completion_plan.md` — Part 2 execution/data completion plan for parser-shipped capabilities
-- `planning/phase_g_work_queue.md` — completed Phase G queue for execution-backed context filters
-- `planning/phase_g_segment_data_review_handoff.md` — explicit Phase G handoff for the unresolved clutch/segment data source decision
+- `planning/phase_g_work_queue.md` — completed original Phase G queue for execution-backed context filters
+- `planning/phase_g_period_only_work_queue.md` — active continuation queue for quarter / half / OT execution after the Phase G segment-data review
+- `planning/phase_g_segment_data_review_handoff.md` — resolved Phase G handoff that split period-only continuation from clutch deferral
 - `planning/phase_f_work_queue.md` — completed Phase F audit queue and handoff into Phase G
 - `planning/phase_f_execution_gap_inventory.md` — consolidated inventory of parser-shipped but execution-partial capability families
 - `planning/phase_e_data_inventory.md` — on/off and lineup data-layer audit for Phase E item 7
