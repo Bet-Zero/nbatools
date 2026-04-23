@@ -95,7 +95,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 **Continuation path:**
 
-- Work item 2A is now the required next step for this family. Do not reopen route-level role filtering until that item establishes a trustworthy starter-role source/contract.
+- Work item 2A established the source/contract for this family. Do not reopen route-level role filtering until item 2B lands the validated starter-role dataset and execution wiring.
 
 **Reference docs to consult:**
 
@@ -106,7 +106,9 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ---
 
-## 2A. `[ ]` Audit candidate starter-role sources and define the starter-role data contract
+## 2A. `[x]` Audit candidate starter-role sources and define the starter-role data contract
+
+**Completion note:** Repo and upstream audit established a real source path. `LeagueGameFinder` does not expose starter-role fields in the current pull shape, but `BoxScoreTraditionalV3.PlayerStats.position` does expose a per-player game position field that behaves like a starter marker on recent sample games. The chosen path is a dedicated starter-role dataset backfilled by `game_id` from the existing raw games inventory, with strict trust validation before any route can execute against it. The same audit also showed why the contract needs trust gating: a 2025-26 sample game and a 2024-25 sample game both returned exactly 5 starter-marked players per team, while a 1996-97 sample game over-labeled starters, so historical coverage cannot be assumed clean without validation.
 
 **Why:** Starter / bench execution remains open, but the current player-game logs cannot support it honestly. The next concrete step is to choose and document a trustworthy starter-role source or derivation path instead of assuming the current derived `starter_flag` is usable.
 
@@ -142,6 +144,57 @@ Phase G should use that inventory as its family list of record rather than reope
 
 - [`phase_f_execution_gap_inventory.md` §Starter-role source and data contract](./phase_f_execution_gap_inventory.md#3-starter-role-source-and-data-contract)
 - [`parser_execution_completion_plan.md` §5.2](./parser_execution_completion_plan.md#52-phase-g--execution-backed-context-filters)
+- `src/nbatools/commands/pipeline/pull_player_game_stats.py`
+- `src/nbatools/commands/data_utils.py`
+- `src/nbatools/commands/player_game_summary.py`
+- `src/nbatools/commands/player_game_finder.py`
+
+---
+
+## 2B. `[ ]` Build the validated starter-role dataset and ship player-context role execution
+
+**Why:** Item 2A identified the real source path: a per-game starter-role backfill sourced from `BoxScoreTraditionalV3.PlayerStats.position`, not the unusable legacy `LeagueGameFinder`-derived `starter_flag` in `player_game_stats`. The next step is to materialize that source as a dedicated dataset, validate which rows are trustworthy, and use only trusted coverage to power role execution.
+
+**Scope:**
+
+- Backfill a dedicated raw starter-role dataset by fan-out over the existing `data/raw/games/*` inventory, normalizing `BoxScoreTraditionalV3.PlayerStats.position` into the documented role contract.
+- Derive `starter_flag` only inside that dedicated dataset; do not reuse the legacy all-zero `player_game_stats.starter_flag` as an execution input.
+- Enforce trust validation before execution can use a row, at minimum requiring exactly 5 starter-marked players per `(game_id, team_id)` and recording why a row/game is untrusted when validation fails.
+- Join the trusted starter-role dataset into `player_game_summary` and `player_game_finder` execution.
+- Keep team-only bench semantics unsupported and preserve honest fallback notes whenever a requested slice lacks trusted starter-role coverage.
+
+**Files likely touched:**
+
+- `src/nbatools/commands/pipeline/` — starter-role backfill command(s)
+- `src/nbatools/commands/pipeline/validate_raw.py`
+- `src/nbatools/commands/ops/update_manifest.py`
+- `src/nbatools/commands/data_utils.py`
+- `src/nbatools/commands/player_game_summary.py`
+- `src/nbatools/commands/player_game_finder.py`
+- `src/nbatools/commands/_natural_query_execution.py`
+- `docs/reference/data_contracts.md`
+- `tests/` — role source / execution coverage
+- `tests/_query_smoke.py` — `PHASE_G_QUERY_SMOKE_CASES`
+
+**Acceptance criteria:**
+
+- A documented starter-role raw dataset exists and can be backfilled from current repo inputs plus the chosen upstream endpoint.
+- Role execution on player summary/finder uses only trusted starter-role coverage; it does not rely on the legacy all-zero `player_game_stats.starter_flag`.
+- Queries with unsupported or untrusted role coverage keep the honest fallback note instead of partially filtering.
+- At least 6 tests cover starter/bench filtering, trust gating, and fallback behavior.
+- `PHASE_G_QUERY_SMOKE_CASES` includes representative starter and bench queries only if their slices are backed by trusted coverage.
+
+**Tests to run:**
+
+- `make test-query`
+- `make test-engine`
+- `make test-phase-smoke`
+- `make test-smoke-queries`
+
+**Reference docs to consult:**
+
+- [`phase_f_execution_gap_inventory.md` §Starter-role source and data contract](./phase_f_execution_gap_inventory.md#3-starter-role-source-and-data-contract)
+- [`docs/reference/data_contracts.md` §1A](../reference/data_contracts.md#1a-player_game_starter_roles)
 - `src/nbatools/commands/pipeline/pull_player_game_stats.py`
 - `src/nbatools/commands/data_utils.py`
 - `src/nbatools/commands/player_game_summary.py`

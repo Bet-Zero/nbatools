@@ -120,6 +120,8 @@ Some commands may also rely on these fields if they are present or built during 
 
 This is one of the most important datasets in the repo.
 
+Legacy `start_position` and `starter_flag` columns may appear in the current raw file because the historical `LeagueGameFinder` pull shape exposed a `START_POSITION` column name. They are not authoritative for starter / bench execution and must not be treated as a role contract.
+
 Player sample-aware metrics such as:
 
 - USG%
@@ -127,6 +129,78 @@ Player sample-aware metrics such as:
 - REB%
 
 ultimately depend on filtered player-game samples built from this contract and season-level supporting context.
+
+---
+
+## 1A. `player_game_starter_roles`
+
+### Path pattern
+
+`data/raw/player_game_starter_roles/{season}_{season_type_safe}.csv`
+
+Examples:
+
+- `data/raw/player_game_starter_roles/2025-26_regular_season.csv`
+- `data/raw/player_game_starter_roles/2024-25_playoffs.csv`
+
+### Grain
+
+One row per **player-game role observation**.
+
+### Key fields
+
+- `game_id`
+- `player_id`
+
+Recommended uniqueness expectation:
+
+- unique on (`game_id`, `player_id`)
+
+### Required columns
+
+- `game_id`
+- `season`
+- `season_type`
+- `team_id`
+- `player_id`
+- `starter_position_raw`
+- `starter_flag`
+- `role_source`
+- `role_source_trusted`
+- `starter_count_for_team_game`
+- `role_validation_reason`
+
+### Important derived/query fields
+
+- `team_abbr`
+- `player_name`
+
+These are convenience fields only. Commands should join the role dataset back to `player_game_stats` for the rest of the player/game context.
+
+### Producer(s)
+
+- a dedicated backfill command that fans out over `data/raw/games/{season}_{season_type_safe}.csv`
+- the upstream NBA per-game box score endpoint `BoxScoreTraditionalV3.PlayerStats.position`
+- any future compatibility layer that normalizes an alternate upstream source into this same contract
+
+### Primary consumer(s)
+
+- starter / bench execution for `player_game_summary`
+- starter / bench execution for `player_game_finder`
+- future role-aware player routes that explicitly opt into the same contract
+
+### Notes
+
+This dataset is the authoritative starter / bench source for player-context natural-query execution.
+
+Contract rules:
+
+- `role_source` should identify the normalized upstream source, currently `boxscore_traditional_v3.position`
+- `starter_flag` is derived from non-empty `starter_position_raw`
+- rows may only be used for execution when `role_source_trusted=1`
+- at minimum, trust requires exactly 5 starter-marked players in the row's `(game_id, team_id)` group
+- if trust fails, `role_validation_reason` must explain why, such as `starter_count_not_five`
+- if a requested role-filtered slice depends on rows that are missing or untrusted in this dataset, commands must keep the current honest fallback note instead of partially filtering or fabricating bench assignments
 
 ---
 
