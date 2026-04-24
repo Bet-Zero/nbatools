@@ -24,18 +24,22 @@ execution-backed support on their documented route set.
 ## Classification legend
 
 - `execution-backed` — real execution exists for the documented supported routes
+- `execution-backed with coverage gate` — real execution exists on the
+  documented route boundary when trusted source coverage exists for the
+  requested slice; missing coverage or unsupported routes keep an explicit
+  fallback note
 - `unfiltered` — parser and routing accept the filter, but execution drops or ignores it and appends an explicit note
 - `placeholder` — parser and routing reach a dedicated route, but that route returns an honest unsupported-data response instead of real stats
 - `explicitly deferred` — intentionally not shipping now, with a documented boundary
 
 ## Summary table
 
-| Family                    | Classification | Current parser surface / routes                                                                                                                                                                                                     | Required data source or aggregation layer                                                                                                                                              | Primary blocker                                                                                                                                                                                                                                                 | Authoritative docs                                                                                                                     |
+| Family                    | Classification | Current parser surface / routes                                                                                                                                                                                                     | Required data source or aggregation layer                                                                                                                                              | Primary blocker / boundary                                                                                                                                                                                                                                      | Authoritative docs                                                                                                                     |
 | ------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Clutch                    | `unfiltered`   | Surface forms: `clutch`, `in the clutch`, `clutch time`, `late-game`. Verified route shapes in smoke: `player_game_summary`, `team_record`, `season_leaders`, `player_game_finder`.                                                 | Play-by-play clutch possessions or an upstream clutch-split table keyed by NBA's official clutch definition.                                                                           | No play-by-play or clutch split tables exist under `data/`; transport now preserves `clutch` on the initial Phase G routes, but execution still appends the honest unfiltered note.                                                                             | Part 2 plan §4; Phase E item 1; parser spec §8; parser examples §7.7; query catalog §3.11                                              |
-| Quarter / half / overtime | `unfiltered`   | Surface forms: `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT`. Verified route shapes in smoke: `player_game_finder`, `team_record`.                                                                               | Period-level split tables or play-by-play aggregated to quarter / half / OT slices.                                                                                                    | Current raw and processed tables are whole-game only; transport now preserves `quarter` / `half` on the initial Phase G routes, but execution still appends the explicit unfiltered note.                                                                       | Part 2 plan §4; parser spec §8; parser examples §7.8; query catalog §3.11                                                              |
+| Quarter / half / overtime | `execution-backed with coverage gate` | Surface forms: `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT`. Verified route shapes in smoke: `player_game_finder`, `team_record`.                                                                               | `player_game_period_stats` / `team_game_period_stats`, built from `BoxScoreTraditionalV3` period windows and enriched for the documented player-grain rate fields.                    | Execution now works on `player_game_finder` / `team_record` when trusted period coverage exists for the requested slice. Unsupported routes or missing period coverage still keep the explicit unfiltered-results note.                                        | Part 2 plan §4; parser spec §8; parser examples §7.8; query catalog §3.11; data contracts §§1B, 2A                                     |
 | Schedule-context filters  | `execution-backed with coverage gate` | Surface forms: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`. Verified route shapes in smoke: `team_record`, `player_game_summary`. | `schedule_context_features` keyed by `game_id` + `team_id`, covering B2B state, normalized rest days, one-possession flags, and trusted national-TV flags.                              | Execution now works on `team_record` / `player_game_summary` when trusted feature coverage exists. Missing feature coverage, unsupported routes, or untrusted national-TV source coverage still produce explicit unfiltered-results notes.                    | Part 2 plan §4; parser spec §8; parser examples §§7.9, 7.12-7.14; query catalog §3.11; data contracts §6A                              |
-| Starter / bench role      | `unfiltered`   | Surface forms: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`. Player-context only; team-only bench phrasing is intentionally ignored. Verified route shape in smoke: `player_game_summary`.                       | A dedicated `player_game_starter_roles` backfill sourced by `game_id` from `BoxScoreTraditionalV3.PlayerStats.position`, joined to the player-summary / player-finder execution paths. | The current player-game corpus does not contain trustworthy starter-role data: `start_position` is empty throughout and the derived `starter_flag` stays `0`, while sampled historical box-score position data is not uniformly trustworthy without validation. | Part 2 plan §4; parser spec §8; parser examples §7.10; query catalog §3.11; `src/nbatools/commands/pipeline/pull_player_game_stats.py` |
+| Starter / bench role      | `execution-backed with coverage gate` | Surface forms: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`. Player-context only; team-only bench phrasing is intentionally ignored. Verified route shapes in docs: `player_game_summary`, `player_game_finder`. | A dedicated `player_game_starter_roles` backfill sourced by `game_id` from `BoxScoreTraditionalV3.PlayerStats.position`, joined to the player-summary / player-finder execution paths. | Execution now works on the player summary / finder routes when trusted `player_game_starter_roles` coverage exists for the requested slice. Missing or untrusted role rows still keep the explicit unfiltered-results note, and team-level role semantics remain unsupported. | Part 2 plan §4; parser spec §8; parser examples §7.10; query catalog §3.11; data contracts §1A                                         |
 | On/off                    | `explicitly deferred` | Surface forms: `on/off`, `with X on the floor`, `without X on the floor`, `X on court`, `X off court`, `X sitting`. Dedicated route: `player_on_off`.                                                                               | Play-by-play with substitutions, stint tables, or upstream on/off split tables.                                                                                                        | Phase I confirmed no trustworthy on/off-capable source exists in the repo. `player_on_off` remains an honest placeholder; `without_player` is a whole-game absence filter, not an on/off mechanism.                                                            | Part 2 plan §4; parser spec §11; parser examples §7.15; query catalog §2.3 / §3.3; Phase E data inventory; Phase I source boundary      |
 | Lineups                   | `explicitly deferred` | Surface forms: `best 5-man lineups`, `3-man units`, `2-man combos`, `lineup with X and Y`, `with X and Y together`. Dedicated routes: `lineup_summary`, `lineup_leaderboard`.                                                       | Lineup-unit tables or play-by-play plus substitution / rotation data aggregated into 2-man / 3-man / 5-man units with minutes thresholds.                                              | Phase J confirmed no trustworthy lineup-unit source exists in the repo. Placeholder routes remain honest; roster snapshots are season membership only and cannot reconstruct unit-level stints.                                                                 | Part 2 plan §4; parser spec §11; parser examples §§7.16-7.17; query catalog §2.3 / §3.3; Phase E data inventory; Phase J source boundary |
 
@@ -43,7 +47,7 @@ execution-backed support on their documented route set.
 
 ### 1. Clutch
 
-- Classification: `execution-backed with coverage gate`
+- Classification: `unfiltered`
 - Parser surface:
   - `clutch`
   - `in the clutch`
@@ -58,13 +62,14 @@ execution-backed support on their documented route set.
   - `query_service` forwards `clutch`, and `_route_context_filters_for_execution()` preserves it on the initial Phase G routes while keeping the explicit unfiltered-results note in place
 - Required data / aggregation:
   - play-by-play or a clutch split table keyed to the NBA definition: last 5 minutes of the 4th quarter or OT, score within 5
-- Current blockers:
+- Current blockers / deferral boundary:
   - no play-by-play or clutch split tables in `data/`
   - no command-level clutch filtering hook exists yet in the owning build-result functions
+  - the Phase G segment review explicitly deferred real clutch execution until a trustworthy game-grain clutch source or play-by-play derivation path is approved
 
 ### 2. Quarter / half / overtime
 
-- Classification: `unfiltered`
+- Classification: `execution-backed with coverage gate`
 - Parser surface:
   - `1st quarter`, `2nd quarter`, `3rd quarter`, `4th quarter`
   - `first half`, `second half`
@@ -73,17 +78,21 @@ execution-backed support on their documented route set.
   - Verified in Phase E smoke on `player_game_finder` and `team_record`
   - `quarter` / `half` are preserved in `route_kwargs`
 - Current execution behavior:
-  - `query_service` forwards `quarter` / `half`, and `_route_context_filters_for_execution()` preserves them on the initial Phase G routes before appending the explicit unfiltered note
-  - execution still returns full-game results because no period-aware filtering layer exists yet
+  - `query_service` forwards `quarter` / `half`, and `_route_context_filters_for_execution()` preserves them on the supported Phase G routes
+  - `player_game_finder` executes period filters through `player_game_period_stats` when trusted coverage exists for the requested slice
+  - `team_record` executes period filters through `team_game_period_stats` when trusted coverage exists for the requested slice
+  - unsupported routes or missing period coverage keep the explicit unfiltered-results note and return the underlying unfiltered result
 - Required data / aggregation:
-  - period-level split tables, or play-by-play aggregated by quarter / half / OT before query execution
-- Current blockers:
-  - raw player/team logs are whole-game tables
-  - processed feature tables are also game-level only
+  - `data/raw/player_game_period_stats/{season}_{season_type_safe}.csv`
+  - `data/raw/team_game_period_stats/{season}_{season_type_safe}.csv`
+  - player and team period rows normalized from `BoxScoreTraditionalV3` window endpoints, with the documented player-grain rate-field enrichment
+- Current blockers / boundary:
+  - the documented execution-backed boundary is still limited to `player_game_finder` / `team_record`
+  - slices missing trusted period coverage still keep the explicit fallback note instead of partially filtering
 
 ### 3. Schedule-context filters
 
-- Classification: `unfiltered`
+- Classification: `execution-backed with coverage gate`
 - Parser surface:
   - back-to-back: `back-to-back`, `b2b`, `second of a back-to-back`
   - rest: `rest advantage`, `rest disadvantage`, `on 2 days rest`
@@ -101,13 +110,13 @@ execution-backed support on their documented route set.
   - `data/processed/schedule_context_features/{season}_{season_type_safe}.csv`
   - one row per team-game keyed by `game_id` + `team_id`
   - fields for `back_to_back`, normalized `rest_days`, `rest_advantage`, `one_possession`, and national-TV trust/source flags
-- Current blockers:
+- Current blockers / boundary:
   - no remaining blocker for the documented initial route boundary
   - national-TV execution remains coverage-gated because current raw schedule pulls may still contain placeholder blank `national_tv` values
 
 ### 4. Starter / bench role
 
-- Classification: `unfiltered`
+- Classification: `execution-backed with coverage gate`
 - Parser surface:
   - `as a starter`
   - `starting`
@@ -116,22 +125,19 @@ execution-backed support on their documented route set.
   - `reserve`
 - Current route behavior:
   - Player-context only; team-only phrases such as `Celtics bench scoring` are intentionally ignored
-  - Verified in Phase E smoke on `player_game_summary`
+  - Current-state docs cover `player_game_summary` and `player_game_finder` as the supported execution-backed route boundary
   - `role` is preserved in `route_kwargs`
 - Current execution behavior:
-  - `_route_context_filters_for_execution()` preserves `role` on the initial Phase G player routes and appends the explicit unfiltered note
-  - no command-level role filtering is enabled yet because the current starter-role field is not trustworthy enough to ship against
+  - `_route_context_filters_for_execution()` preserves `role` on the Phase G player routes
+  - `player_game_summary` and `player_game_finder` apply starter / bench filtering when trusted `player_game_starter_roles` coverage exists for the requested slice
+  - slices missing or failing trusted role coverage keep the explicit unfiltered-results note instead of partially filtering
 - Required data / aggregation:
-  - a dedicated `player_game_starter_roles` dataset keyed to the player game logs used by `player_game_summary` and `player_game_finder`
-  - the dataset should be backfilled by `game_id` from `data/raw/games/*` using `BoxScoreTraditionalV3.PlayerStats.position`, normalized into a starter-role contract instead of overloading the current `player_game_stats` pull
-  - command-level support for the player-summary / player-finder family to honor that trusted signal consistently once it exists
-- Current blockers:
-  - `pull_player_game_stats.py` maps `START_POSITION` to `start_position`, fills missing `start_position` with `""`, and derives `starter_flag` from whether `start_position` is non-empty
-  - corpus audit of `data/raw/player_game_stats/*.csv` found `start_position` empty throughout and `starter_flag=0` throughout the current raw player-game dataset
-  - direct upstream audit showed that `LeagueGameFinder` still does not expose starter-role fields, so the existing player-game pull cannot be repaired by a small rename or loader tweak
-  - direct upstream audit also identified the viable source path: `BoxScoreTraditionalV3.PlayerStats.position` returns clean 5-starter-per-team data on sampled 2024-25 and 2025-26 games, but a sampled 1996-97 game over-labeled starters, so trust validation is required before execution can use the source
-  - the dedicated backfill dataset and trust-gating layer have not been implemented yet
-  - an exploratory role-filter execution attempt was correctly reverted after smoke validation showed that starter queries would collapse into false `no_match` results
+  - `data/raw/player_game_starter_roles/{season}_{season_type_safe}.csv`
+  - a dedicated player-game-grain role dataset keyed for joins back to the player summary / finder command families
+  - trust-gated starter markers normalized from `BoxScoreTraditionalV3.PlayerStats.position`
+- Current blockers / boundary:
+  - the legacy `player_game_stats.start_position` / `starter_flag` fields remain unusable for execution and are not the source of record
+  - only slices with trusted `player_game_starter_roles` coverage can be filtered honestly; missing or untrusted rows keep the explicit fallback note
   - team-level role semantics remain intentionally unsupported
 
 ### 5. On/off
@@ -199,12 +205,12 @@ For the families in this inventory, the route handoff is currently:
 2. `query_service.execute_structured_query()` mirrors those kwargs into envelope metadata and forwards them to `_execute_build_result()`
 3. `_execute_build_result()` resolves opponent-quality filters first, then calls `_route_context_filters_for_execution()` before dispatching to the owning `build_result()` function from `_get_build_result_map()`
 
-| Family                    | Route names                                                                                                                   | Query-service / execution path                                                                                                                                                                                                           | Command owner(s)                                                                                                                         | Current table inputs                                                                                                                                                                                          | Missing table / join / aggregation                                                                                                                                         |
+| Family                    | Route names                                                                                                                   | Query-service / execution path                                                                                                                                                                                                           | Command owner(s)                                                                                                                         | Current table inputs                                                                                                                                                                                          | Remaining gap / boundary                                                                                                                                                  |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Clutch                    | `player_game_summary`, `team_record`, `season_leaders`, `player_game_finder` (verified in Phase E and Phase G smoke)          | `query_service` now forwards `clutch`; `_route_context_filters_for_execution()` preserves it on the initial Phase G routes and appends the current honest unfiltered note before command execution                                       | `player_game_summary.build_result()`, `build_team_record_result()`, `season_leaders.build_result()`, `player_game_finder.build_result()` | Whole-game `data/raw/player_game_stats/*` and `data/raw/team_game_stats/*`; `season_leaders` reads player game logs directly and merges team W/L data when needed                                             | A clutch-capable split source such as play-by-play or upstream clutch tables, plus command-level filtering support                                                         |
-| Quarter / half / overtime | `player_game_finder`, `team_record` (verified in Phase E and Phase G smoke; same modifier pattern applies to the base route)  | `query_service` forwards `quarter` / `half`; `_route_context_filters_for_execution()` preserves them on the initial Phase G routes and appends `build_period_filter_note()` before command execution                                     | `player_game_finder.build_result()`, `build_team_record_result()`                                                                        | Whole-game `data/raw/player_game_stats/*` via `load_player_games_for_seasons()` and `data/raw/team_game_stats/*` via `load_team_games_for_seasons()`                                                          | Period-level split tables or play-by-play aggregates by quarter / half / OT, plus command-level filtering support                                                          |
+| Quarter / half / overtime | `player_game_finder`, `team_record` (verified in Phase E and Phase G smoke; same modifier pattern applies to the base route)  | `query_service` forwards `quarter` / `half`; `_route_context_filters_for_execution()` preserves them on the supported Phase G routes. `player_game_finder` / `team_record` then execute against the period datasets when trusted coverage exists, and keep `build_period_filter_note()` only for unsupported routes or missing coverage. | `player_game_finder.build_result()`, `build_team_record_result()`                                                                        | `data/raw/player_game_period_stats/*` for `player_game_finder`, `data/raw/team_game_period_stats/*` for `team_record`, plus the existing whole-game logs for the surrounding route context                                                               | Future route expansion beyond `player_game_finder` / `team_record`, plus coverage improvements for requested slices that still lack trusted period rows                    |
 | Schedule-context filters  | `team_record`, `player_game_summary` (verified in Phase E / G / H smoke; same modifier pattern applies to the base route) | `query_service` forwards `back_to_back`, `rest_days`, `one_possession`, and `nationally_televised`; `_route_context_filters_for_execution()` preserves them on the Phase H routes and leaves unsupported routes on the explicit-note fallback path | `build_team_record_result()`, `player_game_summary.build_result()`                                                                       | Whole-game `data/raw/team_game_stats/*`, `data/raw/player_game_stats/*`, plus `data/processed/schedule_context_features/*`                                                                                   | Future route expansion beyond `team_record` / `player_game_summary`, plus national-TV source improvement where raw schedule coverage remains placeholder-only              |
-| Starter / bench role      | `player_game_summary`, `player_game_finder` (player-context only; natural-query smoke currently verifies the summary path)    | `query_service` forwards `role`; `_route_context_filters_for_execution()` preserves it on the initial Phase G player routes and appends `build_role_filter_note()` before command execution                                              | `player_game_summary.build_result()`, `player_game_finder.build_result()`                                                                | `data/raw/player_game_stats/*` for the base sample plus `data/raw/games/*` as the backfill key inventory; the legacy `player_game_stats.start_position` / `starter_flag` fields remain unusable for execution | A dedicated `player_game_starter_roles` backfill sourced from `BoxScoreTraditionalV3.PlayerStats.position`, normalized with trust validation and joined into player routes |
+| Starter / bench role      | `player_game_summary`, `player_game_finder` (player-context only; natural-query smoke currently verifies the summary path)    | `query_service` forwards `role`; `_route_context_filters_for_execution()` preserves it on the supported Phase G player routes. `player_game_summary` / `player_game_finder` apply the filter when trusted `player_game_starter_roles` rows cover the requested slice, and otherwise keep `build_role_filter_note()`. | `player_game_summary.build_result()`, `player_game_finder.build_result()`                                                                | `data/raw/player_game_stats/*` for the base player-game sample plus `data/raw/player_game_starter_roles/*` as the authoritative trusted role source; the legacy `player_game_stats.start_position` / `starter_flag` fields remain unusable for execution | Future coverage improvements for `player_game_starter_roles`, plus any route expansion beyond the current player summary / finder boundary                                 |
 | On/off                    | `player_on_off`                                                                                                               | `query_service` forwards `lineup_members` and `presence_state`; `_execute_build_result()` dispatches straight to the placeholder route because Phase I explicitly deferred real execution until a trustworthy source exists              | `player_on_off.build_result()`                                                                                                           | No usable on/off tables exist; only whole-game player/team logs are present today                                                                                                                             | On/off split tables or play-by-play plus substitution-derived stints, plus the computation layer to build on-court / off-court metrics                                     |
 | Lineups                   | `lineup_summary`, `lineup_leaderboard`                                                                                        | `query_service` forwards `lineup_members`, `unit_size`, `minute_minimum`, and `presence_state`; `_execute_build_result()` dispatches straight to placeholder lineup routes because Phase J explicitly deferred real execution until a trustworthy source exists | `lineup_summary.build_result()`, `lineup_leaderboard.build_result()`                                                                     | No lineup-unit or stint tables exist; roster snapshots are season membership only                                                                                                                             | Lineup-unit tables or play-by-play plus substitution / rotation aggregation, including minutes-threshold support for unit queries                                          |
 
@@ -216,14 +222,14 @@ For the families in this inventory, the route handoff is currently:
   - `season_leaders` is slightly different from the others because it loads player game logs directly rather than going through `data_utils.load_player_games_for_seasons()`.
 - Quarter / half / overtime:
   - The ownership boundary is shared between `query_service`, `_natural_query_execution.py`, and the underlying game-log commands.
-  - The sanitizer already centralizes the honest fallback path, so the missing step is to replace that fallback with real period-aware filtering once period data exists.
+  - `player_game_finder` and `team_record` now execute the supported filters through the dedicated period datasets, while the central fallback still keeps unsupported routes and missing-coverage slices honest.
 - Schedule-context filters:
   - The execution-backed path is shared across four surface filters, which is why they stay grouped as one family in planning.
   - The raw schedule layer is not enough on its own; command execution depends on the processed team-game `schedule_context_features` contract.
   - National-TV remains source-quality gated separately from the rest/B2B/one-possession fields.
 - Starter / bench role:
-  - The player routes and transport path are already identified, but the current raw role signal in `player_game_stats` is not trustworthy enough to execute against.
-  - The viable upstream path is a game-level fan-out over `BoxScoreTraditionalV3.PlayerStats.position`, backed by trust validation because sampled historical coverage is not uniformly clean.
+  - The player routes and transport path are already identified, and trusted execution now depends on the dedicated `player_game_starter_roles` dataset rather than the unusable raw `player_game_stats` starter fields.
+  - The upstream role path remains a game-level fan-out over `BoxScoreTraditionalV3.PlayerStats.position`, backed by trust validation because historical coverage is not uniformly clean.
   - Because the parser intentionally ignores team-only bench phrasing today, the execution owner is currently the player-context command family rather than team routes.
 - On/off:
   - The dedicated route isolates the unsupported state cleanly, but it also means the eventual owner will need a separate data subsystem rather than a small extension to current whole-game filters.
@@ -293,11 +299,12 @@ Why this is now period-only:
 - period-only window execution still looks feasible from the `BoxScore*V3` window
   endpoints and should not stay blocked behind the unresolved clutch prerequisite
 
-Phase-G implication:
+Phase-G outcome:
 
-- the exact next implementation target is to materialize `player_game_period_stats` and
-  `team_game_period_stats`, validate them, and wire them into `player_game_finder` and
-  `team_record`
+- `player_game_period_stats` and `team_game_period_stats` now exist as the period
+  execution datasets for the documented route boundary
+- `player_game_finder` and `team_record` execute quarter / half / OT filters when
+  trusted coverage exists for the requested slice
 - `clutch` stays explicitly deferred and is out of scope for this contract
 
 ### 3. Starter-role source and data contract
@@ -321,10 +328,13 @@ Why this stands alone:
 - the chosen upstream path exists, but sampled historical data shows that raw starter markers still need validation before they can become an execution contract
 - starter / bench execution is now a dedicated-source + validation problem first and an execution-plumbing problem second
 
-Phase-G implication:
+Phase-G outcome:
 
-- item 2A completes the source audit by choosing the `BoxScoreTraditionalV3` backfill path and defining this contract
-- the next role item has to materialize the dataset, enforce trust gating, and then wire role filtering through player summary / finder without guessing at the data source
+- `player_game_starter_roles` now exists as the authoritative starter / bench source
+  for player-context execution
+- `player_game_summary` and `player_game_finder` apply the role filter only when
+  trusted role coverage exists for the requested slice
+- team-level role semantics remain intentionally unsupported
 
 ### 4. Schedule-context feature-join contract
 

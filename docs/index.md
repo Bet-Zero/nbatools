@@ -62,11 +62,11 @@ Runbooks and operational guides.
 
 ## Planning — `planning/`
 
-Roadmap and active plans.
+Roadmap, active plans, and closed closure records.
 
 - `planning/roadmap.md` — planned and future capabilities
-- `planning/query_surface_expansion_plan.md` — Part 1 parser/query-surface expansion plan (closed as subsystem-complete only)
-- `planning/parser_execution_completion_plan.md` — Part 2 execution/data completion plan for parser-shipped capabilities
+- `planning/query_surface_expansion_plan.md` — closed Part 1 parser/query-surface expansion plan (subsystem-complete only)
+- `planning/parser_execution_completion_plan.md` — closed Part 2 execution/data closure record for parser-shipped capabilities
 - `planning/phase_g_work_queue.md` — completed original Phase G queue for execution-backed context filters
 - `planning/phase_g_period_only_work_queue.md` — completed period-only continuation queue for quarter / half / OT execution after the Phase G segment-data review
 - `planning/phase_g_segment_data_review_handoff.md` — resolved Phase G handoff that split period-only continuation from clutch deferral

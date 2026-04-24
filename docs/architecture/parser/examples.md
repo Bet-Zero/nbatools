@@ -934,9 +934,11 @@ Patterns beyond the original core surface. Some now ship in Phase E; others rema
 
 - `in clutch time` with true play-by-play clutch filtering
 - schedule-context route expansion beyond `team_record` / `player_game_summary`
-- `as starter vs bench` with real starter/bench execution
+- starter / bench coverage beyond the current `player_game_summary` /
+  `player_game_finder` trusted-role boundary
 - broader trusted national-TV source coverage where schedule pulls still carry placeholder flags
-- `in overtime` with period-level splits rather than unfiltered game logs
+- period execution beyond the current `player_game_finder` / `team_record`
+  boundary
 
 ### 8.4 Stretch / rolling-window queries (Phase E shipped surface)
 
