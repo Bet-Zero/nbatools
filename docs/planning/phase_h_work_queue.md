@@ -15,8 +15,14 @@
 > `tests/_query_smoke.py` and running the listed smoke targets is part of done.
 >
 > **Guardrail:** This queue is whole-game schedule-context work only. Do not
-> fold `clutch` back into Phase H. `clutch` remains explicitly deferred pending
-> a trustworthy game-grain clutch source or play-by-play derivation path.
+> fold `clutch` back into Phase H. At queue closure, `clutch` remained
+> explicitly deferred pending a trustworthy game-grain clutch source or
+> play-by-play derivation path.
+>
+> **Follow-up (April 24, 2026):** The later master-plan source-approval queue
+> approved official `PlayByPlayV3` plus local score-state derivation for future
+> clutch work. This Phase H queue remains historical and did not ship clutch
+> execution.
 
 ---
 
@@ -269,8 +275,9 @@ without overstating national-TV reliability or implying clutch progress.
 
 ### Remaining blockers
 
-- `clutch` is still explicitly deferred pending a trustworthy game-grain clutch
-  source or play-by-play derivation path. Phase H did not change clutch status.
+- At Phase H closure, `clutch` was still explicitly deferred pending a
+  trustworthy game-grain clutch source or play-by-play derivation path. Phase H
+  did not change clutch status.
 - Later route expansion can reuse `schedule_context_features`, but Phase H only
   shipped the documented initial boundary: `team_record` and
   `player_game_summary`.
@@ -299,8 +306,8 @@ keeping the unresolved `clutch` prerequisite visible.
 - Review the schedule-context outcomes and any remaining blockers.
 - Draft `phase_i_work_queue.md` for real on/off execution.
 - Re-state the current clutch position explicitly:
-  - still deferred pending a trustworthy game-grain clutch source or
-    play-by-play derivation path
+  - at Phase H closure, still deferred pending a trustworthy game-grain clutch
+    source or play-by-play derivation path
   - not completed by Phase G or Phase H
 
 **Files likely touched:**

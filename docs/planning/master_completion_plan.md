@@ -67,14 +67,14 @@ The active continuation queue is
 [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md).
 
 **Current required action:** work the first unchecked item in that queue:
-`Approve or reject the clutch source path`.
+`Approve or reject the on/off source path`.
 
-That queue records the next product path: pursue source approval for `clutch`,
-`on/off`, and `lineups`; do not pursue broader route expansion for quarter /
-half / OT, schedule-context, or starter / bench role as part of the core finish
-line. Product feature implementation should resume only after the relevant
-source decision item approves a trustworthy source and the queue drafts the next
-implementation queue.
+That queue records the next product path: the `clutch` source path is approved,
+source approval remains open for `on/off` and `lineups`, and broader route
+expansion for quarter / half / OT, schedule-context, or starter / bench role is
+not part of the core finish line. Product feature implementation should resume
+only after the relevant source decision item approves a trustworthy source and
+the queue drafts the next implementation queue.
 
 ---
 
@@ -82,7 +82,7 @@ implementation queue.
 
 | Capability family | Parser/query-surface status | Execution/data status | Product/capability status | Done state | Active continuation if not done |
 | --- | --- | --- | --- | --- | --- |
-| Clutch | Parser-recognized and route-propagated | Deferred; current behavior is unfiltered with explicit notes because no trustworthy game-grain clutch source or play-by-play derivation path is approved | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 2: approve or reject the clutch source path |
+| Clutch | Parser-recognized and route-propagated | Source path approved: official `PlayByPlayV3` plus local score-state derivation, documented in [`clutch_source_boundary.md`](./clutch_source_boundary.md). Current behavior remains unfiltered with explicit notes until derived clutch datasets and coverage-gated route execution are implemented. | Not product complete | Source approved, implementation not yet done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 5: draft the next implementation queue after on/off and lineup source decisions |
 | On/off | Dedicated `player_on_off` route and parser surface exist | Deferred; placeholder remains because no trustworthy on/off split, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 3: approve or reject the on/off source path |
 | Lineups | Dedicated `lineup_summary` and `lineup_leaderboard` routes and parser surface exist | Deferred; placeholders remain because no trustworthy lineup-unit, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 4: approve or reject the lineup source path |
 | Quarter / half / OT | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it | Done for core finish line | None |
@@ -103,6 +103,9 @@ implementation queue.
 - [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md)
   is the active master-plan continuation queue for the remaining source
   approvals and route-expansion product decisions.
+- [`clutch_source_boundary.md`](./clutch_source_boundary.md) records the
+  approved clutch source path and future dataset boundary; it does not mark
+  clutch execution as shipped.
 - [`roadmap.md`](./roadmap.md) remains the broad product direction. It should
   treat this master plan as the authority for core capability completion status.
 

@@ -325,6 +325,42 @@ Contract rules:
 
 ---
 
+## 1C. Future clutch play-by-play and derived clutch stats
+
+The approved future source path for clutch execution is official
+`PlayByPlayV3` event data plus local score-state derivation. This is documented
+in [`docs/planning/clutch_source_boundary.md`](../planning/clutch_source_boundary.md).
+
+This section is a future-source boundary, not a shipped execution dependency.
+Current clutch queries remain unfiltered with an explicit note until the
+ingestion, validation, derived datasets, and route execution are implemented.
+
+Minimum future contracts:
+
+- `data/raw/play_by_play_events/{season}_{season_type_safe}.csv`, at one row
+  per event keyed by `season`, `season_type`, `game_id`, and `action_number`
+- `data/processed/player_game_clutch_stats/{season}_{season_type_safe}.csv`,
+  at one row per player-game clutch sample keyed by `season`, `season_type`,
+  `game_id`, `team_id`, and `player_id`
+- `data/processed/team_game_clutch_stats/{season}_{season_type_safe}.csv`, at
+  one row per team-game clutch sample keyed by `season`, `season_type`,
+  `game_id`, and `team_id`
+
+Contract rules:
+
+- clutch means last five minutes of the fourth quarter or overtime with the
+  score within five points
+- whole-game logs and period-only box-score windows must not be used as clutch
+  substitutes
+- route execution may only use derived clutch rows when source trust and
+  score-state validation pass for the requested slice
+- missing or untrusted coverage must keep the current honest
+  unfiltered-results note rather than partially filtering results
+- rate and efficiency metrics may only ship after their sample denominators are
+  validated against the play-by-play derivation
+
+---
+
 ## 2. `team_game_stats`
 
 ### Path pattern
@@ -842,6 +878,12 @@ When adding a new core dataset, add it here before making it an implicit depende
 
 ### Explicitly deferred source boundaries
 
+- `clutch` now has an approved future source path: official `PlayByPlayV3`
+  plus local score-state derivation. It is still not a current execution
+  dataset; until `play_by_play_events`, `player_game_clutch_stats`, and
+  `team_game_clutch_stats` are built and validated, clutch queries must keep the
+  explicit unfiltered-results note. Whole-game logs and period-only box-score
+  windows remain rejected as clutch substitutes.
 - `player_on_off` has no current execution dataset. Whole-game
   `without_player` absence is not an on/off source because it has no
   substitution, stint, possession, or on-court/off-court sample boundary. See

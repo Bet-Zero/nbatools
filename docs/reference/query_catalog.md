@@ -95,7 +95,8 @@ If a feature is not reflected here, it should not be assumed shipped.
 - wins / losses: `wins`, `losses`, `won`, `lost`
 - clutch context: `clutch`, `in the clutch`, `clutch time`, `late-game`
   (parser-recognized and route-propagated; current query engine returns unfiltered
-  results with an explicit note because play-by-play clutch splits are not available yet)
+  results with an explicit note. A future `PlayByPlayV3` plus score-state source
+  path is approved, but execution is not shipped yet.)
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
   (parser-recognized and engine-accepted; `player_game_finder` and `team_record`
   execute these filters when `player_game_period_stats` / `team_game_period_stats`
@@ -598,7 +599,12 @@ Examples:
 
 Current behavior:
 
-- parser sets `clutch=True`, routes normally, and appends an explicit unfiltered-results note because play-by-play clutch splits are not available yet
+- parser sets `clutch=True`, routes normally, and appends an explicit
+  unfiltered-results note because play-by-play-derived clutch splits are not
+  built or wired into execution yet
+- the approved future source path is official `PlayByPlayV3` plus local
+  score-state derivation; whole-game logs, period-only box-score windows, and
+  season-level clutch dashboard aggregates remain rejected as substitutes
 
 ### Quarter / half / overtime context
 

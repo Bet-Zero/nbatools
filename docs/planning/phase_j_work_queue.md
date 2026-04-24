@@ -218,8 +218,10 @@ deferral explicitly.
 
 ### Final Part 2 closure audit
 
-- `clutch` remains explicitly deferred pending a trustworthy game-grain clutch
-  source or play-by-play derivation path.
+- At Part 2 closure, `clutch` remained explicitly deferred pending a
+  trustworthy game-grain clutch source or play-by-play derivation path. The
+  later master-plan source-approval queue approved official `PlayByPlayV3` plus
+  local score-state derivation, but clutch execution is still not shipped.
 - quarter / half / OT execution is coverage-gated on `player_game_finder` and
   `team_record`.
 - starter / bench execution is coverage-gated on player summary/finder routes

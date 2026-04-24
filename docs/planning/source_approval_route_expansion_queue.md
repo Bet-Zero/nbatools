@@ -31,7 +31,7 @@ resumes:
 
 | Capability family | Product path for this queue | Product decision |
 | --- | --- | --- |
-| Clutch | Pursue a source-approval decision before implementation. A source may be an official game-grain clutch split keyed for route joins, or a play-by-play derivation path that can apply the NBA clutch definition honestly. | In scope for source approval. Do not approximate clutch from whole-game logs or period-only box scores. |
+| Clutch | Source path approved before implementation: official `PlayByPlayV3` plus local score-state derivation. | Approved for future implementation via [`clutch_source_boundary.md`](./clutch_source_boundary.md). Do not approximate clutch from whole-game logs, period-only box scores, or season-level clutch dashboard aggregates. |
 | On/off | Pursue a source-approval decision before implementation. Prefer a shared play-by-play plus substitution / stint path if it can also support lineups, but an upstream on/off split table can be approved if it satisfies the route contract. | In scope for source approval. Whole-game `without_player` remains out of scope as an on/off substitute. |
 | Lineups | Pursue a source-approval decision before implementation. Prefer a shared play-by-play plus substitution / lineup-stint path if it can also support on/off, but an upstream lineup-unit table can be approved if it satisfies the route contract. | In scope for source approval. Roster membership remains out of scope as a lineup-unit substitute. |
 | Quarter / half / OT | Do not pursue route expansion beyond the current coverage-gated boundary as part of the core finish line. | Current boundary is final for core completion: `player_game_finder` and `team_record` only, with trusted period coverage required. Other routes remain out of scope unless a future product queue reopens them. |
@@ -113,11 +113,11 @@ decision explicitly.
 
 ---
 
-## 2. `[ ]` Approve or reject the clutch source path
+## 2. `[x]` Approve or reject the clutch source path
 
-**Why:** Clutch remains unfiltered because no trustworthy source is approved.
-The product needs either a source-backed implementation path or a product
-out-of-scope decision.
+**Why:** Clutch remains unfiltered until the approved source path is implemented.
+The product needed either a source-backed implementation path or a product
+out-of-scope decision; this item approved the source-backed path.
 
 **Scope:**
 
@@ -165,6 +165,14 @@ out-of-scope decision.
 - [`phase_f_execution_gap_inventory.md`](./phase_f_execution_gap_inventory.md)
 - [`docs/reference/data_contracts.md`](../reference/data_contracts.md)
 - [`docs/architecture/parser/specification.md`](../architecture/parser/specification.md)
+
+**Completion note:** Approved the official `PlayByPlayV3` plus local
+score-state derivation path in
+[`clutch_source_boundary.md`](./clutch_source_boundary.md). Whole-game logs,
+period-only box-score windows, and season-level clutch dashboard aggregates
+remain rejected as clutch substitutes. Current query execution is unchanged and
+must keep the explicit unfiltered-results note until a later implementation
+queue builds and validates the play-by-play-derived clutch datasets.
 
 ---
 

@@ -8,7 +8,12 @@
 >
 > **Do not skip ahead** unless an earlier item is genuinely blocked. Items are ordered to minimize rework — later items assume earlier ones are done.
 >
-> **⚠️ Guardrail:** This queue is period-only on purpose. Do not approximate `clutch` from whole-game logs, and do not quietly stretch period-window box scores into clutch semantics. `clutch` remains explicitly deferred until a trustworthy game-grain clutch source or play-by-play derivation path is approved.
+> **⚠️ Guardrail:** This queue is period-only on purpose. Do not approximate `clutch` from whole-game logs, and do not quietly stretch period-window box scores into clutch semantics. At queue closure, `clutch` remained explicitly deferred until a trustworthy game-grain clutch source or play-by-play derivation path was approved.
+>
+> **Follow-up (April 24, 2026):** The later master-plan source-approval queue
+> approved official `PlayByPlayV3` plus local score-state derivation for future
+> clutch work. This period-only queue remains historical and did not ship clutch
+> execution.
 
 ---
 
@@ -77,8 +82,9 @@ not claim clutch support.
 - A documented period-window contract exists with explicit grain, join keys,
   required fields, and route ownership for the initial route set.
 - The contract states exactly how `quarter`, `half`, and `OT` are represented.
-- The contract explicitly says that `clutch` remains out of scope because no
-  trustworthy game-grain clutch source is currently approved.
+- The contract explicitly says that `clutch` remains out of scope for this
+  period-only queue because no trustworthy game-grain clutch source was
+  approved when the queue ran.
 - The repo names the exact next implementation target from this contract rather
   than leaving “use `BoxScore*V3` somehow” as an informal note.
 
@@ -296,8 +302,8 @@ letting it disappear behind the period-only progress.
 - Draft `phase_h_work_queue.md` for schedule-context execution using the shared
   feature-join contract from Phase F.
 - Record the post-review clutch state explicitly:
-  - still deferred pending a trustworthy game-grain clutch source or
-    play-by-play derivation path
+  - at queue closure, still deferred pending a trustworthy game-grain clutch
+    source or play-by-play derivation path
   - not completed by the period-only queue
 
 **Files likely touched:**

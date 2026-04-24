@@ -107,7 +107,7 @@ named source prerequisite.
 
 | Capability family        | Parser / route status                  | Execution status                                                                                                                                                                  | Primary evidence                                                                                                                                         |
 | ------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Clutch                   | Parser-recognized and route-propagated | Unfiltered note; explicitly deferred until a trustworthy game-grain clutch source or play-by-play derivation path is approved                                                    | `parser/specification.md` §8, `parser/examples.md` §7.7, `phase_g_segment_data_review_handoff.md`                                                       |
+| Clutch                   | Parser-recognized and route-propagated | Source path approved after Part 2 closure: official `PlayByPlayV3` plus local score-state derivation. Execution still returns the unfiltered note until the derived clutch datasets and route execution are implemented. | `parser/specification.md` §8, `parser/examples.md` §7.7, `phase_g_segment_data_review_handoff.md`, `clutch_source_boundary.md` |
 | Quarter / half / OT      | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` / `team_record` via period-window backfills; other routes still remain unfiltered                                                | `parser/specification.md` §8, `parser/examples.md` §7.8, `phase_g_period_only_work_queue.md`                                                            |
 | Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` / `player_game_summary` via `schedule_context_features`; unsupported routes and missing/untrusted coverage still fall back with explicit notes | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14, `docs/reference/data_contracts.md`                                                   |
 | Starter / bench role     | Parser-recognized for player context   | Coverage-gated execution on `player_game_summary` / `player_game_finder` when trusted `player_game_starter_roles` rows exist; explicit unfiltered note otherwise                 | `parser/specification.md` §8, `parser/examples.md` §7.10, `docs/reference/data_contracts.md`                                                             |
@@ -162,8 +162,11 @@ then split the remaining segment-backed scope:
 
 - quarter / half / OT continue in the active
   [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md)
-- `clutch` remains explicitly deferred until a trustworthy game-grain source or
-  play-by-play derivation path is approved
+- `clutch` remained explicitly deferred at Phase G closure; the later
+  master-plan continuation approved official `PlayByPlayV3` plus local
+  score-state derivation in
+  [`clutch_source_boundary.md`](./clutch_source_boundary.md), but execution is
+  still not shipped
 
 The period-only continuation has now landed the initial implementation boundary
 for that remaining scope:
@@ -255,8 +258,9 @@ separate and is not a lineup-unit substitute.
 **Part 2 closure status:** closed with explicit boundaries. Remaining deferred
 capabilities are named rather than implicit:
 
-- `clutch` — deferred pending a trustworthy game-grain clutch source or
-  play-by-play derivation path
+- `clutch` — source path approved in
+  [`clutch_source_boundary.md`](./clutch_source_boundary.md), but execution
+  still not shipped
 - `player_on_off` — deferred pending a trustworthy on/off split,
   play-by-play + substitution, or stint source
 - `lineup_summary` / `lineup_leaderboard` — deferred pending a trustworthy

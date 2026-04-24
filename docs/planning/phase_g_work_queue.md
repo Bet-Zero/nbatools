@@ -373,7 +373,7 @@ Phase G should use that inventory as its family list of record rather than reope
 
 ## 7. `[x]` Phase G retrospective and Phase H work queue draft
 
-**Completion note:** Phase G closed with an explicit review handoff instead of a Phase H queue draft because items 3–5 could not land responsibly without a reviewed clutch-capable game-grain source. That handoff later resolved to the period-only continuation queue [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md) for quarter / half / OT, while `clutch` remained explicitly deferred. The original handoff artifact remains [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md).
+**Completion note:** Phase G closed with an explicit review handoff instead of a Phase H queue draft because items 3–5 could not land responsibly without a reviewed clutch-capable game-grain source. That handoff later resolved to the period-only continuation queue [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md) for quarter / half / OT. A later master-plan source-approval queue approved official `PlayByPlayV3` plus local score-state derivation for future clutch work; Phase G itself did not ship clutch execution. The original handoff artifact remains [`phase_g_segment_data_review_handoff.md`](./phase_g_segment_data_review_handoff.md).
 
 **Why:** Phase G should end with a concrete handoff into schedule-context execution, or an explicit review-handoff if segment-data blockers prevent a clean close.
 

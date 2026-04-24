@@ -6,6 +6,12 @@
 > [`phase_g_period_only_work_queue.md`](./phase_g_period_only_work_queue.md) and
 > keeps `clutch` explicitly deferred pending a play-by-play or equivalent
 > game-grain source.
+>
+> **Follow-up (April 24, 2026):** The master-plan source-approval queue later
+> approved official `PlayByPlayV3` plus local score-state derivation as the
+> future clutch source path. See
+> [`clutch_source_boundary.md`](./clutch_source_boundary.md). This follow-up
+> does not change the Phase G historical outcome or ship clutch execution.
 
 ## Why This Exists
 
