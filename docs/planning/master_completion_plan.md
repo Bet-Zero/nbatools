@@ -63,23 +63,18 @@ done.
 
 ### Current Active Continuation
 
-No active implementation queue exists right now.
+The active continuation queue is
+[`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md).
 
-**Exact next required action:** author a new source-approval / route-expansion
-work queue under `docs/planning/` before product feature implementation resumes.
-That queue must decide the next product path for the open core families below:
+**Current required action:** work the first unchecked item in that queue:
+`Sync route-expansion out-of-scope decisions`.
 
-- approve or reject trustworthy data sources / derivation paths for `clutch`,
-  `on/off`, and `lineups`
-- decide whether quarter / half / OT, schedule-context, and starter / bench role
-  should expand beyond their current coverage-gated route boundaries
-- for any family not pursued, record a product out-of-scope decision rather than
-  another open-ended deferral
-
-Until that queue exists and is worked, the active continuation is:
-
-> Draft the next source-approval / route-expansion queue for the open core
-> capability families named in this master plan.
+That queue records the next product path: pursue source approval for `clutch`,
+`on/off`, and `lineups`; do not pursue broader route expansion for quarter /
+half / OT, schedule-context, or starter / bench role as part of the core finish
+line. Product feature implementation should resume only after the relevant
+source decision item approves a trustworthy source and the queue drafts the next
+implementation queue.
 
 ---
 
@@ -87,12 +82,12 @@ Until that queue exists and is worked, the active continuation is:
 
 | Capability family | Parser/query-surface status | Execution/data status | Product/capability status | Done state | Active continuation if not done |
 | --- | --- | --- | --- | --- | --- |
-| Clutch | Parser-recognized and route-propagated | Deferred; current behavior is unfiltered with explicit notes because no trustworthy game-grain clutch source or play-by-play derivation path is approved | Not product complete | Deferred, not fully done | Source-approval queue for a clutch-capable data source or documented product out-of-scope decision |
-| On/off | Dedicated `player_on_off` route and parser surface exist | Deferred; placeholder remains because no trustworthy on/off split, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | Source-approval queue for on/off splits, stint data, or documented product out-of-scope decision |
-| Lineups | Dedicated `lineup_summary` and `lineup_leaderboard` routes and parser surface exist | Deferred; placeholders remain because no trustworthy lineup-unit, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | Source-approval queue for lineup-unit / stint data or documented product out-of-scope decision |
-| Quarter / half / OT | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes | Partially product complete within documented route boundary | Partially done | Route-expansion decision queue, or product decision that current supported route boundary is final |
-| Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes | Partially product complete within documented route boundary | Partially done | Route-expansion decision queue, or product decision that current supported route boundary is final |
-| Starter / bench role | Parser-recognized for player context | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist | Partially product complete within documented player-route boundary | Partially done | Route-expansion / coverage decision queue, or product decision that current supported route boundary is final |
+| Clutch | Parser-recognized and route-propagated | Deferred; current behavior is unfiltered with explicit notes because no trustworthy game-grain clutch source or play-by-play derivation path is approved | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 2: approve or reject the clutch source path |
+| On/off | Dedicated `player_on_off` route and parser surface exist | Deferred; placeholder remains because no trustworthy on/off split, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 3: approve or reject the on/off source path |
+| Lineups | Dedicated `lineup_summary` and `lineup_leaderboard` routes and parser surface exist | Deferred; placeholders remain because no trustworthy lineup-unit, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 4: approve or reject the lineup source path |
+| Quarter / half / OT | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes | Partially product complete within documented route boundary | Partially done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 1: sync the product decision that current supported route boundary is final for the core finish line |
+| Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes | Partially product complete within documented route boundary | Partially done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 1: sync the product decision that current supported route boundary is final for the core finish line |
+| Starter / bench role | Parser-recognized for player context | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist | Partially product complete within documented player-route boundary | Partially done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 1: sync the product decision that current supported player-route boundary is final for the core finish line |
 
 ---
 
@@ -105,6 +100,9 @@ Until that queue exists and is worked, the active continuation is:
   is the closed Part 2 execution/data closure record for parser-shipped
   families. It records explicit boundaries and deferrals. It cannot answer
   whole-plan completion.
+- [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md)
+  is the active master-plan continuation queue for the remaining source
+  approvals and route-expansion product decisions.
 - [`roadmap.md`](./roadmap.md) remains the broad product direction. It should
   treat this master plan as the authority for core capability completion status.
 

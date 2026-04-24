@@ -65,6 +65,7 @@ Runbooks and operational guides.
 Roadmap, active plans, and closed closure records.
 
 - `planning/master_completion_plan.md` — single top-level authority for whole-plan completion status, active continuation, and open core capability families
+- `planning/source_approval_route_expansion_queue.md` — active master-plan continuation queue for source approvals and route-expansion product decisions
 - `planning/roadmap.md` — planned and future capabilities
 - `planning/query_surface_expansion_plan.md` — closed Part 1 parser/query-surface expansion plan (subsystem-complete only)
 - `planning/parser_execution_completion_plan.md` — closed Part 2 execution/data closure record for parser-shipped capabilities

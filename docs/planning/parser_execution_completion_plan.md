@@ -291,10 +291,14 @@ The next step for this closed Part 2 plan is explicit:
 - **Active queue:** none; Part 2 is closed with explicit deferrals and
   coverage-gated execution boundaries
 - **Master-plan continuation:** [`master_completion_plan.md`](./master_completion_plan.md)
-  remains open and requires a new source-approval / route-expansion queue before
-  product feature implementation resumes.
+  remains open. The active continuation queue is
+  [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md),
+  which owns the remaining source approvals and route-expansion product
+  decisions before product feature implementation resumes.
 
-If Phase G discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
+If the active master-plan continuation discovers that a later implementation
+queue cannot responsibly be authored without additional review, it must create
+the explicit review-handoff rather than closing with an informal residual list.
 
 ---
 
