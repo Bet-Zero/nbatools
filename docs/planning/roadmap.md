@@ -4,6 +4,11 @@ This roadmap describes how `nbatools` should evolve from its current state into 
 
 It is intentionally phased. The goal is to expand **answerable NBA questions**, improve trustworthiness and maintainability, and strengthen the engine that powers both the CLI and the web UI.
 
+For the authoritative answer to "is the whole plan done?", what core capability
+families remain open, and what continuation must happen next, use
+[`master_completion_plan.md`](./master_completion_plan.md). This roadmap is
+directional; it is not the master completion authority.
+
 ---
 
 ## Product direction
@@ -57,6 +62,11 @@ The repo has a substantial shipped base.
 ## Current phase: hardening + remaining coverage gaps
 
 The repo has shipped a broad query surface, a working API, and a functional UI. The current priority is **hardening, coverage gaps, and trustworthiness** — not greenfield feature work.
+
+The master completion plan currently says the whole plan is **not done** because
+core capability families remain partial or deferred. Roadmap work should not
+describe those families as complete unless the master plan is updated with
+execution-backed completion or a documented product out-of-scope decision.
 
 Current work should focus on:
 

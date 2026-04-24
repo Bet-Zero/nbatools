@@ -2,7 +2,7 @@
 
 > **Role: Part 1 planning doc for parser/query-surface expansion.**
 >
-> **Status:** Part 1 complete. This doc no longer represents end-to-end capability completion on its own. Continuation for execution/data completion now lives in [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md).
+> **Status:** Part 1 complete. This doc no longer represents end-to-end capability completion on its own. The whole-plan completion authority is [`master_completion_plan.md`](./master_completion_plan.md). Part 1's execution/data continuation record is [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md).
 >
 > This plan drove the natural-query parser/query-surface expansion effort. It replaces the earlier attempt at this doc and is grounded in:
 >
@@ -57,16 +57,21 @@ See [`docs/architecture/parser/overview.md`](../architecture/parser/overview.md)
 
 ### Completion model used by this repo
 
+For the overall product answer to "is the plan done?", use
+[`master_completion_plan.md`](./master_completion_plan.md). The definitions
+below describe this Part 1 plan's local completion model and roll up into that
+master doc.
+
 The repo now distinguishes three completion levels for user-facing capability work:
 
 1. **Parser/query-surface complete**
    The parser recognizes the phrasing family, extracts the needed slots, routes correctly, and the docs/tests for the parser surface are updated. This level may still return placeholder or unfiltered results.
 2. **Execution/data complete**
-   The intended user-facing query family returns execution-backed results using the required data source or aggregation layer. If that cannot ship yet, the capability must be explicitly deferred or marked partial with a linked continuation plan.
+   The intended user-facing query family returns execution-backed results using the required data source or aggregation layer. If that cannot ship yet, the capability must be explicitly deferred or marked partial with a linked continuation plan, but that deferral remains an open master-plan state unless a product out-of-scope decision is recorded.
 3. **Product/capability complete**
-   The user-facing capability family is both parser/query-surface complete and execution/data complete, or it is explicitly deferred/out of scope with a documented reason. Current-state docs and catalogs may only imply full completion at this level.
+   The user-facing capability family is both parser/query-surface complete and execution/data complete, or it is explicitly out of scope by documented product decision. Current-state docs and catalogs may only imply full completion at this level.
 
-**Planning rule:** a top-level plan, phase, or queue may not imply product completion from parser/query-surface completion alone. If a plan only reaches level 1, it must label itself as **Part 1** (or equivalent) and point to the continuation path for level 2.
+**Planning rule:** a subplan, phase, or queue may not imply product completion from parser/query-surface completion alone. If a plan only reaches level 1, it must label itself as **Part 1** (or equivalent) and point to the continuation path for level 2. Whole-plan completion is answered only by [`master_completion_plan.md`](./master_completion_plan.md).
 
 ---
 

@@ -84,7 +84,7 @@ For parser work, treat all of these as first-class input styles:
 - search-bar / fragment form
 - compressed shorthand form
 
-Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. See `docs/planning/query_surface_expansion_plan.md` for the completed Part 1 parser/query-surface plan, `docs/planning/parser_execution_completion_plan.md` for the active continuation plan, and the "Phase-based work queues" section below for how to pick up scheduled work.
+Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. See `docs/planning/master_completion_plan.md` for the top-level completion authority and active continuation, `docs/planning/query_surface_expansion_plan.md` for the completed Part 1 parser/query-surface plan, `docs/planning/parser_execution_completion_plan.md` for the closed Part 2 execution/data closure record, and the "Phase-based work queues" section below for how to pick up scheduled work.
 
 ### Frontend-layer rule
 
@@ -274,6 +274,13 @@ In particular:
 
 Some active plans in `docs/planning/` organize their work into phases with companion **work queue** files — sequenced, PR-sized task lists that live alongside the plan. The parser/surface expansion plan uses this pattern; other large, multi-phase efforts may adopt it.
 
+`docs/planning/master_completion_plan.md` is the top-level completion authority.
+When asked whether "the plan" is done, agents must interpret that as the whole
+master plan unless the user explicitly names a narrower subplan. Closed
+subplans, completed queues, explicit deferrals, placeholders, and parser-only
+completion do not answer overall completion. If the master plan says the whole
+plan is not done, follow the active continuation path named there.
+
 #### How it works
 
 - The **plan doc** (e.g. `docs/planning/query_surface_expansion_plan.md`) defines phases, scope, guardrails, and direction. It stays stable across a phase.
@@ -285,10 +292,10 @@ Some active plans in `docs/planning/` organize their work into phases with compa
 Planning docs must distinguish between:
 
 - **parser/query-surface completion** — parser recognition, slot extraction, routing, and docs/tests for the surface are in place
-- **execution/data completion** — the user-facing query family returns execution-backed results, or is explicitly deferred/out of scope with a documented reason
-- **product/capability completion** — both of the above are true, or the capability is explicitly deferred
+- **execution/data completion** — the user-facing query family returns execution-backed results for the documented product boundary, or the family is explicitly out of scope by documented product decision
+- **product/capability completion** — parser/query-surface completion and execution/data completion are both true, or the capability is explicitly out of scope by documented product decision
 
-Do **not** let a plan, phase, or queue imply product completion from parser/route/placeholder completion alone. If a plan only completes a subsystem, it must label itself as Part 1 (or equivalent) and link to the continuation path.
+Do **not** let a plan, phase, or queue imply product completion from parser/route/placeholder completion alone. Explicit deferral is a tracked open state for the master plan unless a documented product decision marks the family out of scope. If a plan only completes a subsystem, it must label itself as Part 1 (or equivalent) and link to the continuation path.
 
 #### Agent workflow
 

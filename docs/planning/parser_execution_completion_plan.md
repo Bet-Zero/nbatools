@@ -3,6 +3,11 @@
 > **Role: closed Part 2 planning / closure record.**
 >
 > **Purpose:** carry parser-shipped capabilities to true end-to-end completion. This plan continues where [`query_surface_expansion_plan.md`](./query_surface_expansion_plan.md) stops.
+>
+> **Master rollup:** this document does not answer whether the whole product
+> plan is done. Use [`master_completion_plan.md`](./master_completion_plan.md)
+> as the single authority for whole-plan completion, active continuation, and
+> remaining core capability families.
 
 ---
 
@@ -24,6 +29,11 @@ This plan exists so the repo does not mistake subsystem completion for product c
 
 ## 2. Completion model
 
+For the overall product answer to "is the plan done?", use
+[`master_completion_plan.md`](./master_completion_plan.md). The definitions in
+this section apply to Part 2's scoped execution/data closure record and roll up
+into the master completion plan.
+
 Use these terms precisely across planning docs, work queues, retrospectives, and current-state claims.
 
 ### 2.1 Parser/query-surface complete
@@ -39,12 +49,15 @@ This level can still be placeholder-backed or unfiltered.
 
 ### 2.2 Execution/data complete
 
-At least one of the following is true:
+At least one of the following is true for the documented product boundary:
 
 1. the intended user-facing query family returns execution-backed results using the required data source or aggregation layer
-2. the capability is explicitly deferred/out of scope with a documented reason and boundary
+2. the capability is explicitly out of scope by documented product decision
 
-Placeholder notes or unfiltered fallbacks do **not** satisfy this level.
+Placeholder notes, explicit deferrals, or unfiltered fallbacks do **not**
+satisfy this level for the master plan. A Part 2 queue may close with an
+explicit deferral only because the source boundary is documented; that does not
+make the family product/capability complete.
 
 ### 2.3 Product/capability complete
 
@@ -52,7 +65,7 @@ The capability family is both parser/query-surface complete and execution/data c
 
 ### 2.4 Planning rule
 
-A top-level plan, phase, or queue may not declare product/capability completion from parser/query-surface completion alone.
+A subplan, phase, or queue may not declare product/capability completion from parser/query-surface completion alone. Whole-plan completion is answered only by [`master_completion_plan.md`](./master_completion_plan.md).
 
 If a plan only completes parser/query-surface work, it must:
 
@@ -272,14 +285,14 @@ Coverage-gated execution-backed boundaries are:
 
 ## 7. Active continuation step
 
-The next step is explicit:
+The next step for this closed Part 2 plan is explicit:
 
 - **Completed queue:** [`phase_j_work_queue.md`](./phase_j_work_queue.md)
 - **Active queue:** none; Part 2 is closed with explicit deferrals and
   coverage-gated execution boundaries
-- **Immediate action:** no implicit continuation remains. Future work requires a
-  new source-approval queue for clutch, on/off, or lineups, or a route-expansion
-  queue for an already coverage-gated dataset.
+- **Master-plan continuation:** [`master_completion_plan.md`](./master_completion_plan.md)
+  remains open and requires a new source-approval / route-expansion queue before
+  product feature implementation resumes.
 
 If Phase G discovers that a later queue cannot responsibly be authored without additional review, the queue must create the explicit review-handoff rather than closing with an informal residual list.
 
