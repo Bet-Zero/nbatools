@@ -15,7 +15,7 @@ When an example below carries an explicit unfiltered-results, coverage-gated, pl
 5. [Stress test inputs](#5-stress-test-inputs)
 6. [End-to-end worked examples](#6-end-to-end-worked-examples)
 7. [Equivalence groups](#7-equivalence-groups)
-8. [Next-wave patterns (future expansion)](#8-next-wave-patterns-future-expansion)
+8. [Expansion patterns and explicit boundaries](#8-expansion-patterns-and-explicit-boundaries)
 
 ---
 
@@ -907,9 +907,11 @@ Queries within a group must produce identical parse states (modulo confidence). 
 
 ---
 
-## 8. Expansion patterns and remaining frontier
+## 8. Expansion patterns and explicit boundaries
 
-Patterns beyond the original core surface. Some now ship in Phase E; others remain future work from [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
+Patterns beyond the original core surface. Some now ship in Phase E; others
+remain future work or are explicitly outside the core finish line unless a
+future product queue reopens them.
 
 ### 8.1 Additional opponent-quality buckets (future expansion)
 
@@ -930,15 +932,20 @@ Patterns beyond the original core surface. Some now ship in Phase E; others rema
 - _Single-player on/off and lineup/unit phrasing currently route to placeholder paths with honest unsupported-data notes; Phase I and Phase J explicitly defer real execution until trustworthy on/off and lineup sources are approved._
 - _See [`specification.md` §11](./specification.md#11-onoff-lineup-and-stretch-support)._
 
-### 8.3 Execution-backed context filtering (partially shipped)
+### 8.3 Context filtering boundaries
 
 - `in clutch time` with true play-by-play clutch filtering
 - schedule-context route expansion beyond `team_record` / `player_game_summary`
-- starter / bench coverage beyond the current `player_game_summary` /
-  `player_game_finder` trusted-role boundary
-- broader trusted national-TV source coverage where schedule pulls still carry placeholder flags
+  is out of scope for the core finish line unless a future product queue reopens it
+- starter / bench route expansion beyond the current `player_game_summary` /
+  `player_game_finder` trusted-role boundary, including team-level bench
+  semantics, is out of scope for the core finish line unless a future product
+  queue reopens it
+- broader trusted national-TV source coverage remains part of the
+  schedule-context coverage gate, not a reason to silently filter untrusted data
 - period execution beyond the current `player_game_finder` / `team_record`
-  boundary
+  boundary is out of scope for the core finish line unless a future product queue
+  reopens it
 
 ### 8.4 Stretch / rolling-window queries (Phase E shipped surface)
 

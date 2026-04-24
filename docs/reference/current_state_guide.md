@@ -253,6 +253,28 @@ Grouped boolean logic currently works across:
 - player split summaries
 - team split summaries
 
+### Coverage-gated context boundaries
+
+Some parser-recognized context filters are execution-backed only on their
+documented route boundaries. Unsupported routes keep explicit unfiltered-results
+notes rather than silently pretending the filter ran.
+
+- Quarter / half / OT filters execute on `player_game_finder` and
+  `team_record` when trusted `player_game_period_stats` /
+  `team_game_period_stats` coverage exists for the requested slice. Broader
+  route expansion is out of scope for the core finish line unless a future
+  product queue reopens it.
+- Schedule-context filters execute on `team_record` and
+  `player_game_summary` when trusted `schedule_context_features` coverage
+  exists. `nationally_televised` also requires trusted national-TV source
+  coverage. Broader route expansion is out of scope for the core finish line
+  unless a future product queue reopens it.
+- Starter / bench role filters execute on `player_game_summary` and
+  `player_game_finder` when trusted `player_game_starter_roles` rows cover the
+  requested slice. Team-level bench semantics and broader route expansion are
+  out of scope for the core finish line unless a future product queue reopens
+  them.
+
 ### Date and window support
 
 | Pattern           | Examples               |

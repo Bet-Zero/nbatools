@@ -100,17 +100,22 @@ If a feature is not reflected here, it should not be assumed shipped.
   (parser-recognized and engine-accepted; `player_game_finder` and `team_record`
   execute these filters when `player_game_period_stats` / `team_game_period_stats`
   coverage exists for the requested slice, otherwise they fall back with an
-  explicit unfiltered-results note. Other routes still remain unfiltered.)
+  explicit unfiltered-results note. Other routes still remain unfiltered and are
+  out of scope for the core finish line unless a future product queue reopens
+  period route expansion.)
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
   (parser-recognized and engine-accepted; `team_record` and `player_game_summary`
   execute these filters when trusted `schedule_context_features` coverage exists
   for the requested slice, otherwise they fall back with an explicit
-  unfiltered-results note. Other routes still remain unfiltered.)
+  unfiltered-results note. Other routes still remain unfiltered and are out of
+  scope for the core finish line unless a future product queue reopens
+  schedule-context route expansion.)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
   (parser-recognized and engine-executed for player summary/finder queries when trusted
   `player_game_starter_roles` coverage exists for the requested slice; otherwise execution
   appends an explicit unfiltered-results note. Team-only phrases like `Celtics bench scoring`
-  are intentionally ignored)
+  are intentionally ignored and broader role route expansion is out of scope for
+  the core finish line unless a future product queue reopens it)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against teams over .500`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
@@ -611,6 +616,8 @@ Current behavior:
 - other routes, such as period leaderboard phrasing, still append the explicit
   unfiltered-results note because the current period-backed route boundary does
   not extend beyond `player_game_finder` / `team_record`
+- broader period route expansion is out of scope for the core finish line unless
+  a future product queue reopens it
 
 ### Back-to-back filter
 
@@ -624,6 +631,8 @@ Current behavior:
 - parser sets `back_to_back=True` and preserves the filter in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter through `schedule_context_features` when coverage exists
 - unsupported routes or missing coverage keep an explicit unfiltered-results note
+- broader schedule-context route expansion is out of scope for the core finish
+  line unless a future product queue reopens it
 
 ### Rest filter
 
@@ -637,6 +646,8 @@ Current behavior:
 - parser sets `rest_days` to `advantage`, `disadvantage`, or an integer day count and preserves it in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter through normalized `schedule_context_features.rest_days` / `rest_advantage` when coverage exists
 - unsupported routes or missing coverage keep an explicit unfiltered-results note
+- broader schedule-context route expansion is out of scope for the core finish
+  line unless a future product queue reopens it
 
 ### One-possession filter
 
@@ -650,6 +661,8 @@ Current behavior:
 - parser sets `one_possession=True` and preserves the filter in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter through `schedule_context_features.one_possession` when coverage exists
 - unsupported routes or missing coverage keep an explicit unfiltered-results note
+- broader schedule-context route expansion is out of scope for the core finish
+  line unless a future product queue reopens it
 
 ### National-TV filter
 
@@ -663,6 +676,8 @@ Current behavior:
 - parser sets `nationally_televised=True` and preserves the filter in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter only when `schedule_context_features.national_tv_source_trusted=1`
 - current placeholder schedule pulls can still leave national-TV coverage untrusted; in that case execution falls back with an explicit unfiltered-results note
+- broader schedule-context route expansion is out of scope for the core finish
+  line unless a future product queue reopens it
 
 ### Starter / bench role
 
@@ -676,6 +691,8 @@ Current behavior:
 - parser sets `role` for player-context queries only
 - `player_game_summary` and `player_game_finder` apply starter / bench filtering only when the requested slice has complete trusted coverage in `player_game_starter_roles`
 - if trusted starter-role coverage is missing or untrusted for any row in the requested slice, execution keeps the explicit unfiltered-results note instead of partially filtering
+- team-level bench semantics and broader role route expansion are out of scope
+  for the core finish line unless a future product queue reopens them
 
 ### Opponent-quality filter
 

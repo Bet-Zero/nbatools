@@ -67,7 +67,7 @@ The active continuation queue is
 [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md).
 
 **Current required action:** work the first unchecked item in that queue:
-`Sync route-expansion out-of-scope decisions`.
+`Approve or reject the clutch source path`.
 
 That queue records the next product path: pursue source approval for `clutch`,
 `on/off`, and `lineups`; do not pursue broader route expansion for quarter /
@@ -85,9 +85,9 @@ implementation queue.
 | Clutch | Parser-recognized and route-propagated | Deferred; current behavior is unfiltered with explicit notes because no trustworthy game-grain clutch source or play-by-play derivation path is approved | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 2: approve or reject the clutch source path |
 | On/off | Dedicated `player_on_off` route and parser surface exist | Deferred; placeholder remains because no trustworthy on/off split, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 3: approve or reject the on/off source path |
 | Lineups | Dedicated `lineup_summary` and `lineup_leaderboard` routes and parser surface exist | Deferred; placeholders remain because no trustworthy lineup-unit, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 4: approve or reject the lineup source path |
-| Quarter / half / OT | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes | Partially product complete within documented route boundary | Partially done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 1: sync the product decision that current supported route boundary is final for the core finish line |
-| Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes | Partially product complete within documented route boundary | Partially done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 1: sync the product decision that current supported route boundary is final for the core finish line |
-| Starter / bench role | Parser-recognized for player context | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist | Partially product complete within documented player-route boundary | Partially done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 1: sync the product decision that current supported player-route boundary is final for the core finish line |
+| Quarter / half / OT | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it | Done for core finish line | None |
+| Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it | Done for core finish line | None |
+| Starter / bench role | Parser-recognized for player context | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist | Product complete for the core finish-line player-route boundary; team-level bench semantics and broader route expansion are explicitly out of scope unless a future product queue reopens them | Done for core finish line | None |
 
 ---
 

@@ -499,7 +499,7 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
-**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Period filters are execution-backed on `player_game_finder` and `team_record` when trusted `player_game_period_stats` / `team_game_period_stats` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Schedule-context filters are execution-backed on `team_record` and `player_game_summary` when trusted `schedule_context_features` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Clutch remains parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
+**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Period filters are execution-backed on `player_game_finder` and `team_record` when trusted `player_game_period_stats` / `team_game_period_stats` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Schedule-context filters are execution-backed on `team_record` and `player_game_summary` when trusted `schedule_context_features` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Those three coverage-gated boundaries are final for the core finish line; broader route expansion is out of scope unless a future product queue reopens it. Clutch remains parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
 
 Define where or when within a game the stat applies.
 
@@ -551,18 +551,26 @@ even when the other schedule-context filters execute.
 
 - `finals`, `conference finals`, `second round`, etc. → `playoff_round_filter`
 
-### 8.2 Not yet fully shipped at the execution layer
+### 8.2 Core boundary and explicit non-goals
 
 - true clutch-filtered results backed by play-by-play data
-- period execution beyond the current coverage-gated `player_game_finder` /
-  `team_record` boundary
-- schedule-context execution beyond the current coverage-gated `team_record` /
-  `player_game_summary` boundary, plus improved national-TV source coverage where
-  raw schedule pulls remain placeholder-only
-- full starter / bench backfill coverage beyond slices with trusted `player_game_starter_roles` data
+- period route expansion beyond the current coverage-gated `player_game_finder` /
+  `team_record` boundary is out of scope for the core finish line unless a
+  future product queue reopens it
+- schedule-context route expansion beyond the current coverage-gated
+  `team_record` / `player_game_summary` boundary is out of scope for the core
+  finish line unless a future product queue reopens it; trusted national-TV
+  source coverage remains part of the documented execution gate
+- starter / bench route expansion beyond the current `player_game_summary` /
+  `player_game_finder` trusted-role boundary, including team-level bench
+  semantics, is out of scope for the core finish line unless a future product
+  queue reopens it
 
-Parser recognition for these filters is shipped. The remaining gap is honest,
-execution-level filtering rather than slot detection.
+Parser recognition for these filters is shipped. For `clutch`, the remaining gap
+is honest execution-level filtering rather than slot detection. For the
+coverage-gated period, schedule-context, and role families, unsupported routes
+and untrusted coverage remain explicit fallback-note behavior, not open core
+blockers.
 
 ---
 

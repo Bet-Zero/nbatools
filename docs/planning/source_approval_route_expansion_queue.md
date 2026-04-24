@@ -61,7 +61,7 @@ than implying broader route coverage.
 
 ---
 
-## 1. `[ ]` Sync route-expansion out-of-scope decisions
+## 1. `[x]` Sync route-expansion out-of-scope decisions
 
 **Why:** Quarter / half / OT, schedule-context, and starter / bench role are
 execution-backed only inside documented coverage-gated route boundaries. The
