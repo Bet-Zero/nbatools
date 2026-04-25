@@ -959,7 +959,7 @@ def detect_on_off(text: str) -> dict | None:
                 "presence_state": presence_state,
             }
 
-    if re.search(r"\bon/off\b", text):
+    if re.search(r"\bon\s*(?:/|-|\s)\s*off\b", text):
         player = detect_player(text)
         if player:
             return {

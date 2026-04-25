@@ -273,6 +273,27 @@ class TestWithoutPlayer:
         assert parsed["player"] == "Tyrese Maxey"
         assert parsed["without_player"] == "Joel Embiid"
 
+    def test_summary_when_other_player_is_out_resolves_primary_player(self):
+        parsed = parse_query("How does Jamal Murray score when Nikola Jokić is out?")
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["player"] == "Jamal Murray"
+        assert parsed["without_player"] == "Nikola Jokić"
+        assert parsed["stat"] == "pts"
+
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "What is the Lakers' record when LeBron James and Anthony Davis both play?",
+            "Lakers record when LeBron and AD both play",
+        ],
+    )
+    def test_multi_player_availability_record_is_broad_unsupported_boundary(self, query):
+        parsed = parse_query(query)
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "LAL"
+        assert parsed["route_kwargs"]["without_player"] is None
+        assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
     @pytest.mark.needs_data
     def test_record_without_player_wrong_team_returns_no_match(self):
         qr = execute_natural_query("Celtics record when Giannis out")

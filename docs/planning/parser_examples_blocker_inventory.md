@@ -38,10 +38,10 @@ Delta against the prior Phase K baseline:
 | Phrasing-pair mismatches | 12 | 4 | -8 |
 | Equivalence-group mismatches | 7 | 1 | -6 |
 
-The latest sweep resolved 61 previously failing case IDs and introduced one
-new failing classification: `S2_2_6_06` ("How does Jamal Murray score when
-Nikola Jokić is out?"), which is now treated as `supported_exact` but remains
-unrouted.
+The latest full sweep resolved 61 previously failing case IDs and introduced
+one new failing classification: `S2_2_6_06` ("How does Jamal Murray score when
+Nikola Jokić is out?"). Phase L targeted validation has since resolved that
+case without a full-sweep rerun.
 
 Failure reasons from the latest `results.csv`:
 
@@ -54,14 +54,15 @@ Failure reasons from the latest `results.csv`:
 | Supported behavior routed to no-data | 2 | Data/support-boundary decision |
 | Supported behavior routed to unsupported/no-result | 1 | Code fix or honest reclassification |
 
-Targeted validation after Phase L item 1 resolved 8 failing case IDs and 2
-pair mismatches without a full-sweep rerun. Active unresolved status is now:
+Targeted validation after Phase L items 1 and 2 resolved 9 failing case IDs, 3
+pair mismatches, and the remaining equivalence mismatch without a full-sweep
+rerun. Active unresolved status is now:
 
 | Metric | Active unresolved count |
 | --- | ---: |
-| Failing cases | 10 |
-| Phrasing-pair mismatches | 2 |
-| Equivalence-group mismatches | 1 |
+| Failing cases | 9 |
+| Phrasing-pair mismatches | 1 |
+| Equivalence-group mismatches | 0 |
 
 ## Resolution Labels
 
@@ -76,12 +77,11 @@ pair mismatches without a full-sweep rerun. Active unresolved status is now:
 
 ## 1. Remaining Failing Cases
 
-After Phase L item 1 targeted validation, 10 failing cases remain across
-Section 2, Section 3, Section 4, and Section 8.
+After Phase L item 2 targeted validation, 9 failing cases remain across
+Section 3, Section 4, and Section 8.
 
 | Case ID | Query | Actual behavior | Likely resolution |
 | --- | --- | --- | --- |
-| `S2_2_6_06` | "How does Jamal Murray score when Nikola Jokić is out?" | `error/unrouted` | Implementation blocker for player summary with teammate absence. |
 | `S3_3_3_12_S` | "best net rating last 15 games" | `no_result/unsupported` on `season_team_leaders` | Boundary decision: team net-rating leaderboard support vs honest reclassification. |
 | `S4_4_2_10` | "how many players scored 40 points this season" | `error/error` on `player_occurrence_leaders` | Implementation blocker in occurrence count execution. |
 | `S4_4_2_11` | "number of players with 10 assists this season" | `error/error` on `player_occurrence_leaders` | Implementation blocker in occurrence count execution. |
@@ -96,28 +96,27 @@ Section 2, Section 3, Section 4, and Section 8.
 
 ## 2. Remaining Pair Mismatches
 
-After Phase L item 1 targeted validation, 2 Section 3 pair-level mismatches
-remain.
+After Phase L item 2 targeted validation, 1 Section 3 pair-level mismatch
+remains.
 
 | Pair | Mismatch | Question form | Search form | Likely resolution |
 | --- | --- | --- | --- | --- |
 | `S3_3_3_12` | pass/fail divergence | "Which team has the best net rating in its last 15 games?" | "best net rating last 15 games" | Decide and align team net-rating rolling-window support. |
-| `S3_3_9_45` | result status | "What is the Lakers' record when LeBron James and Anthony Davis both play?" | "Lakers record when LeBron and AD both play" | Tighten multi-player availability boundary or document support. |
 
 Resolved pair mismatches from the prior baseline include period leaderboard,
 recent scorer, shooting percentage with minimum attempts, absence summaries,
 frequency phrasing, player-threshold team-record pairs, hottest-from-three
-shorthand, and double-double rolling-average reclassification.
+shorthand, double-double rolling-average reclassification, and multi-player
+availability record fallbacks.
 
 ---
 
-## 3. Remaining Equivalence-Group Mismatch
+## 3. Remaining Equivalence-Group Mismatches
 
-The latest report identifies 1 Section 7 equivalence mismatch.
-
-| Group | Members / representative queries | Evidence pattern | Likely resolution |
-| --- | --- | --- | --- |
-| `S7_7_15` | `Jokic on/off`; `Jokic on off`; `Nikola Jokic on-off` | Routes diverge between `player_on_off` unsupported and `player_game_summary` ok. | Implementation blocker for on/off token normalization, or documented non-equivalence if plain "on off" means generic player summary. |
+No equivalence-group mismatches remain after Phase L item 2 targeted
+validation. `S7_7_15` now routes `Jokic on/off`, `Jokic on off`, and
+`Nikola Jokic on-off` consistently to the coverage-gated `player_on_off`
+route.
 
 Resolved equivalence mismatches from the prior baseline include lineup-with-player
 phrasing, stretch leaderboards, count-frequency groups, Bucks-without-Giannis
@@ -154,10 +153,9 @@ behavior instead of returning a confident supported result.
 Use this inventory as the source of truth for the remaining Phase L closure
 decision:
 
-1. Fix or honestly reclassify the 10 remaining failing cases in Section 1.
-2. Align the 2 remaining Section 3 pair mismatches.
-3. Resolve or explicitly document the `S7_7_15` on/off equivalence mismatch.
-4. Decide whether the 3 remaining documentation-boundary mismatches represent
+1. Fix or honestly reclassify the 9 remaining failing cases in Section 1.
+2. Align the 1 remaining Section 3 pair mismatch.
+3. Decide whether the 3 remaining documentation-boundary mismatches represent
    real support or should fail more honestly.
 
 Do not remove a blocker from this file unless the corresponding behavior is
