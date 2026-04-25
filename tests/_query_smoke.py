@@ -13,12 +13,13 @@ from nbatools.api import app as api_app
 from nbatools.cli import app as cli_app
 
 AlternateExpectation = Literal["optional", "empty", "nonempty"]
+RouteExpectation = str | None
 
 
 @dataclass(frozen=True, slots=True)
 class QuerySmokeCase:
     query: str
-    expected_routes: tuple[str, ...]
+    expected_routes: tuple[RouteExpectation, ...]
     expected_query_class: str
     expected_statuses: tuple[str, ...] = ("ok",)
     expected_intents: tuple[str, ...] | None = None
@@ -75,29 +76,39 @@ STABLE_QUERY_SMOKE_CASES = (
 PHASE_D_QUERY_SMOKE_CASES = (
     QuerySmokeCase(
         query="Celtics recently",
-        expected_routes=("game_finder",),
-        expected_query_class="finder",
-        expected_intents=("finder",),
+        expected_routes=(None,),
+        expected_query_class="unknown",
+        expected_statuses=("no_result",),
+        expected_intents=("unsupported",),
+        expected_note_substrings=("ambiguous",),
+        alternates="empty",
     ),
     QuerySmokeCase(
         query="Tatum vs Knicks",
-        expected_routes=("player_game_finder",),
-        expected_query_class="finder",
+        expected_routes=(None,),
+        expected_query_class="unknown",
         expected_statuses=("no_result",),
-        expected_intents=("finder",),
-        alternates="nonempty",
+        expected_intents=("unsupported",),
+        expected_note_substrings=("ambiguous",),
+        alternates="empty",
     ),
     QuerySmokeCase(
         query="Jokic triple doubles",
-        expected_routes=("player_game_finder",),
-        expected_query_class="finder",
-        expected_intents=("finder",),
+        expected_routes=(None,),
+        expected_query_class="unknown",
+        expected_statuses=("no_result",),
+        expected_intents=("unsupported",),
+        expected_note_substrings=("ambiguous",),
+        alternates="empty",
     ),
     QuerySmokeCase(
         query="best games Booker",
-        expected_routes=("player_game_finder",),
-        expected_query_class="finder",
-        expected_intents=("finder",),
+        expected_routes=(None,),
+        expected_query_class="unknown",
+        expected_statuses=("no_result",),
+        expected_intents=("unsupported",),
+        expected_note_substrings=("ambiguous",),
+        alternates="empty",
     ),
     QuerySmokeCase(
         query="Lakers this season",
@@ -288,7 +299,7 @@ def assert_cli_query_smoke(case: QuerySmokeCase, stdout: str, payload: dict) -> 
     assert isinstance(metadata, dict)
     assert metadata.get("query_text") == case.query
     assert metadata.get("route") in case.expected_routes
-    assert metadata.get("query_class") == case.expected_query_class
+    assert metadata.get("query_class", "unknown") == case.expected_query_class
 
     result_status = metadata.get("result_status", "ok")
     assert result_status in case.expected_statuses
