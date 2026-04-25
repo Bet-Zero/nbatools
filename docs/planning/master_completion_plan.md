@@ -15,15 +15,13 @@
 
 ## Current Whole-Plan Status
 
-**Whole plan status: not done.**
+**Whole plan status: done.**
 
 The parser/query-surface expansion plan is closed. The parser execution
-completion plan is closed. Those closures only mean their scoped planning chains
-finished with explicit boundaries. They do not mean the core product finish line
-has been reached.
-
-The whole plan remains open because core capability families are still partial
-or explicitly deferred at the product level.
+completion plan is closed. The source-approval and source-backed execution
+queues are closed. Every required core capability family is now
+product/capability complete for its documented core finish-line boundary, or
+has broader semantics explicitly out of scope by documented product decision.
 
 ---
 
@@ -85,16 +83,8 @@ done.
 
 ### Current Active Continuation
 
-The active continuation queue is
-[`source_backed_execution_queue.md`](./source_backed_execution_queue.md).
-
-**Current required action:** work the first unchecked item in that queue:
-`Close the master-plan implementation blockers`.
-
-That queue records the next product path: source-backed implementation for the
-approved `clutch`, `on/off`, and `lineups` source paths. Broader route
-expansion for quarter / half / OT, schedule-context, or starter / bench role is
-not part of the core finish line.
+The whole plan is done. There is no active continuation queue for the core
+finish line.
 
 ---
 
@@ -124,11 +114,10 @@ not part of the core finish line.
   is the closed master-plan continuation queue that resolved the remaining
   source approvals and route-expansion product decisions.
 - [`source_backed_execution_queue.md`](./source_backed_execution_queue.md) is
-  the active master-plan continuation queue for implementing the approved
+  the closed master-plan continuation queue that implemented the approved
   source-backed clutch, on/off, and lineup paths.
 - [`clutch_source_boundary.md`](./clutch_source_boundary.md) records the
-  approved clutch source path and future dataset boundary; it does not mark
-  clutch execution as shipped.
+  approved clutch source path used by shipped source-backed clutch execution.
 - [`roadmap.md`](./roadmap.md) remains the broad product direction. It should
   treat this master plan as the authority for core capability completion status.
 

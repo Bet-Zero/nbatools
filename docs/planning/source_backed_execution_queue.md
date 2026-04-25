@@ -1,6 +1,6 @@
 # Source-Backed Execution Queue
 
-> **Role:** Active master-plan continuation after
+> **Role:** Closed master-plan continuation after
 > [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md).
 >
 > This queue turns the approved source paths for the remaining core capability
@@ -422,7 +422,7 @@ the shipped clutch boundary.
 
 ---
 
-## 8. `[ ]` Close the master-plan implementation blockers
+## 8. `[x]` Close the master-plan implementation blockers
 
 **Why:** Once clutch, on/off, and lineups are execution-backed or explicitly
 out of scope by documented product decision, the master plan needs a single
@@ -456,3 +456,12 @@ truthful completion answer.
 - [`master_completion_plan.md`](./master_completion_plan.md)
 - [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md)
 - [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md)
+
+**Completion note:** Audited the master plan rollup after source-backed
+clutch, on/off, and lineup execution shipped. Every required core capability
+family is now product/capability complete for its documented core finish-line
+boundary, with broader route/semantic expansion explicitly out of scope unless
+a future product queue reopens it. Updated
+[`master_completion_plan.md`](./master_completion_plan.md) to state that the
+whole plan is done and updated [`docs/index.md`](../index.md) so this queue is
+listed as closed.

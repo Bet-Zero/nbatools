@@ -65,9 +65,9 @@ Runbooks and operational guides.
 Roadmap, active plans, and closed closure records.
 
 - `planning/master_completion_plan.md` — single top-level authority for whole-plan completion status, active continuation, and open core capability families
-- `planning/source_backed_execution_queue.md` — active master-plan continuation queue for implementing approved clutch, on/off, and lineup source paths
+- `planning/source_backed_execution_queue.md` — closed master-plan continuation queue that implemented approved clutch, on/off, and lineup source paths
 - `planning/source_approval_route_expansion_queue.md` — closed master-plan continuation queue for source approvals and route-expansion product decisions
-- `planning/clutch_source_boundary.md` — approved future clutch source path and dataset boundary; current execution remains unfiltered until implementation lands
+- `planning/clutch_source_boundary.md` — approved clutch source path and dataset boundary used by shipped source-backed clutch execution
 - `planning/roadmap.md` — planned and future capabilities
 - `planning/query_surface_expansion_plan.md` — closed Part 1 parser/query-surface expansion plan (subsystem-complete only)
 - `planning/parser_execution_completion_plan.md` — closed Part 2 execution/data closure record for parser-shipped capabilities
