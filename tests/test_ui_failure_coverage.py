@@ -121,6 +121,16 @@ class TestSeasonHighQueries:
         # Should route to top_player_games, not ppg leaderboard
         assert parsed["route"] == "top_player_games"
 
+    def test_route_biggest_scoring_games(self):
+        parsed = parse_query("biggest scoring games this season")
+        assert parsed["route"] == "top_player_games"
+        assert parsed["route_kwargs"]["stat"] == "pts"
+
+    def test_route_most_dominant_plus_minus_games(self):
+        parsed = parse_query("most dominant games by plus-minus this season")
+        assert parsed["route"] == "top_player_games"
+        assert parsed["route_kwargs"]["stat"] == "plus_minus"
+
 
 # ---------------------------------------------------------------------------
 # 3. Stat phrase expansion
@@ -173,6 +183,22 @@ class TestStatPhraseExpansion:
         assert parsed["route"] == "season_team_leaders"
         assert parsed["stat"] == "fg3_pct"
 
+    def test_route_hottest_from_three_recently(self):
+        parsed = parse_query("hottest from three lately")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "fg3_pct"
+        assert parsed["route_kwargs"]["last_n"] == 10
+
+    def test_route_best_rim_protector_past_month(self):
+        parsed = parse_query("best rim protector over the past month")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "blk"
+
+    def test_route_best_offensive_rebounder_lately(self):
+        parsed = parse_query("best offensive rebounder lately")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "oreb"
+
 
 # ---------------------------------------------------------------------------
 # 4. With/without player
@@ -208,6 +234,14 @@ class TestWithoutPlayer:
         assert parsed["team"] == "GSW"
         assert parsed.get("without_player") == "Stephen Curry"
 
+    def test_route_full_name_player_without_teammate(self):
+        parsed = parse_query(
+            "How has Tyrese Maxey played when Joel Embiid didn't play this season?"
+        )
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["player"] == "Tyrese Maxey"
+        assert parsed["without_player"] == "Joel Embiid"
+
     @pytest.mark.needs_data
     def test_record_without_player_wrong_team_returns_no_match(self):
         qr = execute_natural_query("Celtics record when Giannis out")
@@ -221,6 +255,18 @@ class TestWithoutPlayer:
         assert qr.route == "team_record_leaderboard"
         assert qr.result.result_reason == "no_match"
         assert qr.result.notes == ["No games matched the specified filters"]
+
+    @pytest.mark.needs_data
+    def test_or_more_threshold_does_not_trigger_top_level_or(self):
+        qr = execute_natural_query("How often has Stephen Curry made 5 or more threes this year?")
+        notes = qr.metadata.get("notes", []) + getattr(qr.result, "notes", [])
+        assert qr.route in {"player_game_finder", "player_occurrence_leaders"}
+        assert not any("Top-level OR" in note for note in notes)
+
+    def test_unsupported_boundary_note_for_semantic_fallback(self):
+        parsed = parse_query("Which scorers have the biggest drop-off against top-10 defenses?")
+        assert parsed["route"] == "season_leaders"
+        assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
 
 # ---------------------------------------------------------------------------

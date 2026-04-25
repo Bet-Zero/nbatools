@@ -231,6 +231,9 @@ The parser recognizes natural-language stat phrasings beyond the standard shorth
 - `field goal percentage`, `fg%` → fg_pct
 - `3 point percentage`, `3-point percentage`, `three point percentage`, `3pt%` → fg3_pct
 - `free throw percentage`, `ft%` → ft_pct
+- leaderboard skill phrases such as `hottest from three`, `rim protector`,
+  `playmaker`, and `offensive rebounder` map to supported box-score or
+  percentage stats
 
 These aliases work in both player and team leaderboard queries.
 

@@ -79,6 +79,12 @@ Primary class: `leaderboard` or `summary` with fuzzy timeframe
 9. Which scorers have cooled off over their last 10 games?
 10. What players have the most double-doubles recently?
 
+_Current boundary note:_ fuzzy recent/lately player leaderboards over supported
+box-score and percentage stats route through `season_leaders`. Rolling team
+advanced-rating leaderboards and subjective trend concepts such as "cooled off"
+are outside the shipped support boundary and must carry an explicit unsupported
+boundary note if they route through a broad fallback.
+
 ### 2.3 Last N games / since date / over span
 
 Primary class: `leaderboard` or `summary` with explicit windowed timeframe
@@ -94,6 +100,11 @@ Primary class: `leaderboard` or `summary` with explicit windowed timeframe
 9. What team has allowed the fewest paint points in its last 12 games?
 10. Who has the most blocks since March 1?
 
+_Current boundary note:_ last-N and since-date player leaderboards over supported
+stats route through `season_leaders`. Rolling team advanced ratings, double-double
+averages, paint-points filters, and per-game attempt minimums are not execution-backed
+yet and are classified as unsupported boundary examples.
+
 ### 2.4 Best games / biggest games / most efficient
 
 Primary class: `leaderboard` (season-high variant) or `occurrence`
@@ -108,6 +119,11 @@ Primary class: `leaderboard` (season-high variant) or `occurrence`
 8. Who has the best shooting games with at least 25 points this year?
 9. What are the most dominant games by plus-minus this season?
 10. Which players have had the best two-way games this season?
+
+_Current boundary note:_ biggest/highest scoring games and plus-minus games route
+to `top_player_games`. Game Score, triple-double game ranking, and subjective
+"two-way" game ranking require additional definitions or data and remain unsupported
+boundary examples.
 
 ### 2.5 Against good teams / top teams / contenders
 
@@ -139,6 +155,11 @@ Primary class: `summary` or `record` with `without_player` filter
 9. How has Tyrese Maxey played when Joel Embiid didn't play this season?
 10. What team has stayed afloat best when its leading scorer was out?
 
+_Current boundary note:_ named-player absence filters route through
+`without_player` on the supported single-player and team record/summary paths.
+Role phrases such as "co-star", "star teammate", and "leading scorer", and team
+offensive-rating-while-absent requests, are not execution-backed yet.
+
 ### 2.7 "Who's been the best at **_ over _**"
 
 Primary class: `leaderboard` with timeframe + skill filter
@@ -153,6 +174,12 @@ Primary class: `leaderboard` with timeframe + skill filter
 8. Who's been the best isolation defender over the past month?
 9. Who's been the best shot creator in clutch time this season?
 10. Who's been the best offensive rebounder lately?
+
+_Current boundary note:_ scorer, rebounder, rim-protector, playmaker, and
+offensive-rebounder phrasings map to supported leaderboard stats. Catch-and-shoot,
+drawing fouls, transition scoring, isolation defense, shot creation, and other
+role/skill composites remain unsupported until those concepts have explicit data
+contracts.
 
 ### 2.8 Frequency / how often
 
@@ -169,6 +196,11 @@ Primary class: `count` or `occurrence`
 9. How often has Jalen Brunson scored 30+ in his last 20 games?
 10. How often has a road team won by 20+ this season?
 
+_Current boundary note:_ single-player threshold frequency/count forms such as
+"5 or more threes" and "40 or more points" are supported. Team state/margin
+frequency, trailing-after-quarter, and compound zero-turnover event shapes are
+unsupported boundary examples unless a dedicated occurrence route exists.
+
 ### 2.9 Record when \_\_\_
 
 Primary class: `record` with conditional filter
@@ -183,6 +215,12 @@ Primary class: `record` with conditional filter
 8. What's the Warriors' record when Stephen Curry makes at least 6 threes?
 9. What is the Suns' record when Kevin Durant leads the team in scoring?
 10. What's the Cavaliers' record when they score fewer than 105 points?
+
+_Current boundary note:_ team records with direct team box-score conditions are
+supported. Player-threshold team-record phrasings currently route as player
+summary/finder fallbacks rather than true team record slices, while rebounding
+battle, "both play", and "leads the team in scoring" are unsupported boundary
+concepts.
 
 ### 2.10 Splits and context filters
 

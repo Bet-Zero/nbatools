@@ -28,6 +28,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from nbatools.commands._constants import contains_boolean_or
 from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
@@ -320,7 +321,7 @@ def execute_natural_query(query: str) -> QueryResult:
         )
 
     # -- OR query path --
-    if " or " in normalized:
+    if contains_boolean_or(normalized):
         try:
             result, parsed = _execute_or_query_build_result(query)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:

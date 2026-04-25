@@ -27,6 +27,16 @@ ALLOWED_STATS = {
     "rpg": "reb_per_game",
     "rebounds per game": "reb_per_game",
     "reb_per_game": "reb_per_game",
+    "oreb": "oreb_per_game",
+    "offensive rebound": "oreb_per_game",
+    "offensive rebounds": "oreb_per_game",
+    "offensive rebounds per game": "oreb_per_game",
+    "oreb_per_game": "oreb_per_game",
+    "dreb": "dreb_per_game",
+    "defensive rebound": "dreb_per_game",
+    "defensive rebounds": "dreb_per_game",
+    "defensive rebounds per game": "dreb_per_game",
+    "dreb_per_game": "dreb_per_game",
     "ast": "ast_per_game",
     "assist": "ast_per_game",
     "assists": "ast_per_game",
@@ -244,7 +254,7 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         "games_10a": ("ast", lambda s: int((s >= 10).sum())),
     }
     # Only aggregate optional columns when they exist in the data
-    for col in ("stl", "blk", "tov", "plus_minus"):
+    for col in ("oreb", "dreb", "stl", "blk", "tov", "plus_minus"):
         if col in basic.columns:
             agg_spec[f"{col}_total"] = (col, "sum")
 
@@ -253,7 +263,7 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
     grouped["pts_per_game"] = grouped["pts_total"] / grouped["games_played"]
     grouped["reb_per_game"] = grouped["reb_total"] / grouped["games_played"]
     grouped["ast_per_game"] = grouped["ast_total"] / grouped["games_played"]
-    for col in ("stl", "blk", "tov", "plus_minus"):
+    for col in ("oreb", "dreb", "stl", "blk", "tov", "plus_minus"):
         total_col = f"{col}_total"
         if total_col in grouped.columns:
             grouped[f"{col}_per_game"] = grouped[total_col] / grouped["games_played"]

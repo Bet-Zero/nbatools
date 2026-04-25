@@ -12,7 +12,21 @@ STOP_WORDS = r"(?:from|to|in|on|at|with|home|away|road|wins?|loss(?:es)?|summary
 
 
 def normalize_text(text: str) -> str:
-    return " ".join(text.lower().strip().split())
+    normalized = (
+        text.replace("\u2018", "'")
+        .replace("\u2019", "'")
+        .replace("\u201c", '"')
+        .replace("\u201d", '"')
+        .lower()
+    )
+    return " ".join(normalized.strip().split())
+
+
+BOOLEAN_OR_PATTERN = re.compile(r"\s+or\s+(?!more\b)", flags=re.IGNORECASE)
+
+
+def contains_boolean_or(text: str) -> bool:
+    return bool(BOOLEAN_OR_PATTERN.search(normalize_text(text)))
 
 
 # ---------------------------------------------------------------------------
@@ -31,6 +45,12 @@ STAT_ALIASES: dict[str, str] = {
     "rebounding": "reb",
     "boards": "reb",
     "reb": "reb",
+    "offensive rebounds": "oreb",
+    "offensive rebound": "oreb",
+    "oreb": "oreb",
+    "defensive rebounds": "dreb",
+    "defensive rebound": "dreb",
+    "dreb": "dreb",
     # Assists
     "assists": "ast",
     "assist": "ast",
@@ -41,6 +61,7 @@ STAT_ALIASES: dict[str, str] = {
     # Scoring (verbal forms — noun "points" already above)
     "scored": "pts",
     "scoring": "pts",
+    "score": "pts",
     "scores": "pts",
     # Steals
     "steals": "stl",
@@ -107,6 +128,7 @@ STAT_ALIASES: dict[str, str] = {
     "ts%": "ts_pct",
     "ts_pct": "ts_pct",
     # Plus/minus
+    "plus-minus": "plus_minus",
     "plus minus": "plus_minus",
     "plus/minus": "plus_minus",
     "plus_minus": "plus_minus",

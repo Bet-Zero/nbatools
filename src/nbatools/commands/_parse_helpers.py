@@ -61,7 +61,7 @@ def wants_leaderboard(text: str) -> bool:
 
     return bool(
         re.search(
-            r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b|\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom(?:\s+\d+)?\b",
+            r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b|\bhottest\b|\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom(?:\s+\d+)?\b",
             text,
         )
     )
@@ -1229,12 +1229,16 @@ def detect_season_high_intent(text: str) -> bool:
     - 'game high' / 'game-high'
     - 'best scoring game(s)'
     - 'highest scoring game(s)'
+    - 'biggest scoring game(s)'
+    - 'most dominant game(s)'
     """
     return bool(
         re.search(
             r"\bseason[- ]?high\b"
             r"|\bbest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
             r"|\bhighest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
+            r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"
+            r"|\bmost\s+dominant\s+(?:single\s+)?games?\b"
             r"|\bgame[- ]?high\b"
             r"|\bsingle[- ]?game\s+(?:high|best|record)\b",
             text,

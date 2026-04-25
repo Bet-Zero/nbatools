@@ -132,6 +132,7 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "fox": "De'Aaron Fox",
     "herb": "Herbert Jones",
     "maxey": "Tyrese Maxey",
+    "tyrese maxey": "Tyrese Maxey",
     "halliburton": "Tyrese Haliburton",
     "hali": "Tyrese Haliburton",
     "paolo": "Paolo Banchero",

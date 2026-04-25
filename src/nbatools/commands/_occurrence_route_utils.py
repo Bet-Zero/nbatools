@@ -272,6 +272,9 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
     occurrence_leaderboard_intent = parsed.get("occurrence_leaderboard_intent", False)
     count_intent = parsed.get("count_intent", False)
     team_leaderboard_intent = parsed.get("team_leaderboard_intent", False)
+    stat = parsed.get("stat")
+    min_value = parsed.get("min_value")
+    max_value = parsed.get("max_value")
     season = parsed["season"]
     start_season = parsed["start_season"]
     end_season = parsed["end_season"]
@@ -292,6 +295,46 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
     team_b = parsed["team_b"]
 
     from nbatools.commands._leaderboard_utils import detect_player_leaderboard_stat
+
+    team_how_often_threshold = bool(
+        re.search(r"\bhow\s+often\b", q)
+        and re.search(r"\bteams?\b", q)
+        and not re.search(r"\bplayers?\b", q)
+    )
+
+    if (
+        (count_intent or team_how_often_threshold)
+        and not occurrence_event
+        and stat
+        and min_value is not None
+        and max_value is None
+        and not player
+        and not player_a
+        and not player_b
+        and re.search(r"\bteams?\b", q)
+    ):
+        occ_season = season
+        occ_start = start_season
+        occ_end = end_season
+        if not occ_season and not occ_start and not occ_end:
+            occ_season = default_end_season(season_type)
+
+        return "team_occurrence_leaders", {
+            "stat": stat,
+            "min_value": min_value,
+            "season": occ_season,
+            "start_season": occ_start,
+            "end_season": occ_end,
+            "season_type": season_type,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "start_date": start_date,
+            "end_date": end_date,
+            "limit": top_n or 10,
+        }
 
     # -----------------------------------------------------------------------
     # Compound occurrence routing

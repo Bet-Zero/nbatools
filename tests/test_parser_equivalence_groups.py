@@ -135,19 +135,13 @@ def test_summary_team_when_player_out():
 
 
 def test_summary_player_when_other_player_out_this_season():
-    """examples.md §3.6 #30 — Q form detects without_player correctly.
-
-    S form "Maxey when Embiid out this season" now correctly detects
-    without_player='Joel Embiid', but entity resolution picks Embiid
-    as the primary player (not Maxey), subject-clearing fires, and the
-    query has no routable entity left. Full parity is blocked by the
-    entity-resolution anomaly (§6).
-    """
+    """examples.md §3.6 #30 — Q form routes to player summary with absence filter."""
     from nbatools.commands.natural_query import parse_query
 
     q = parse_query("How has Tyrese Maxey played when Joel Embiid was out this season?")
     assert q["without_player"] == "Joel Embiid"
-    assert q["route"] == "game_summary"
+    assert q["player"] == "Tyrese Maxey"
+    assert q["route"] == "player_game_summary"
 
 
 def test_summary_shorthand_jokic_last_10():

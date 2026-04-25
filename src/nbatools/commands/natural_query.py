@@ -202,6 +202,59 @@ from nbatools.commands.entity_resolution import format_ambiguity_message, resolv
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops  # noqa: F401
 
+_UNSUPPORTED_BOUNDARY_PHRASES = (
+    "cooled off",
+    "double-double over",
+    "averaged a double-double",
+    "paint points",
+    "biggest triple-double",
+    "drop-off",
+    "co-star",
+    "star teammate",
+    "leading scorer",
+    "catch-and-shoot",
+    "catch and shoot",
+    "drawing fouls",
+    "transition scorer",
+    "isolation defender",
+    "shot creator",
+    "two-way",
+    "all-around",
+    "all around",
+    "rebounding battle",
+    "trailing after 3 quarters",
+    "both play",
+    "leads the team in scoring",
+    "offensive rating when",
+    "10+ assists and 0 turnovers",
+    "attempts per game",
+    "road by 20",
+    "road team won by 20",
+)
+
+
+def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | None:
+    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES):
+        return (
+            "unsupported_boundary: this phrase is outside the shipped support boundary; "
+            "returned results, when present, are broad fallbacks and not execution-backed "
+            "for the unsupported concept"
+        )
+
+    if route == "season_team_leaders":
+        stat = route_kwargs.get("stat")
+        rolling_window = route_kwargs.get("last_n") is not None or bool(
+            route_kwargs.get("start_date") or route_kwargs.get("end_date")
+        )
+        if rolling_window and stat in {"off_rating", "def_rating", "net_rating", "pace"}:
+            return (
+                "unsupported_boundary: rolling/date-window team advanced rating leaderboards "
+                "are outside the shipped support boundary"
+            )
+
+    return None
+
+
 __all__ = [
     # Core public API
     "parse_query",
@@ -1486,6 +1539,8 @@ def _finalize_route(parsed: dict) -> dict:
             "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct"
             " recomputed from filtered sample"
         )
+    if boundary_note := _unsupported_boundary_note(q, route, route_kwargs):
+        notes.append(boundary_note)
 
     if notes:
         out["notes"] = notes

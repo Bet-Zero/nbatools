@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
+from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN, contains_boolean_or
 
 
 @dataclass(frozen=True)
@@ -338,7 +338,7 @@ def expression_contains_boolean_ops(text: str) -> bool:
     normalized = normalize_condition_text(text)
     return (
         (" and " in normalized)
-        or (" or " in normalized)
+        or contains_boolean_or(normalized)
         or ("(" in normalized)
         or (")" in normalized)
     )
