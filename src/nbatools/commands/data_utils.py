@@ -1292,6 +1292,124 @@ def select_trusted_clutch_stats(df: pd.DataFrame) -> tuple[pd.DataFrame, list[st
     return trusted.reset_index(drop=True), coverage_failures
 
 
+def build_clutch_filter_coverage_note(reason: str | None = None) -> str:
+    detail = f" ({reason})" if reason else ""
+    return (
+        "clutch: trusted play-by-play-derived clutch coverage is unavailable "
+        f"for the requested slice{detail}; results are unfiltered"
+    )
+
+
+def _normalize_game_key_columns(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    if "game_id" in out.columns:
+        out["game_id"] = out["game_id"].astype(str)
+    for col in ("team_id", "player_id"):
+        if col in out.columns:
+            out[col] = pd.to_numeric(out[col], errors="coerce").astype("Int64")
+    return out
+
+
+def _filter_clutch_rows_to_base(
+    clutch: pd.DataFrame, base: pd.DataFrame, key_columns: list[str]
+) -> pd.DataFrame:
+    if clutch.empty or base.empty:
+        return clutch.iloc[0:0].copy()
+
+    clutch = _normalize_game_key_columns(clutch)
+    base_keys = _normalize_game_key_columns(base)[key_columns].drop_duplicates()
+    return clutch.merge(base_keys, on=key_columns, how="inner")
+
+
+def _clutch_coverage_note_for_failures(failures: list[str]) -> str:
+    reason = "; ".join(failures) if failures else None
+    return build_clutch_filter_coverage_note(reason)
+
+
+def apply_player_clutch_filter(
+    df: pd.DataFrame, seasons: list[str], season_type: str
+) -> tuple[pd.DataFrame, str | None]:
+    """Replace player game-log rows with trusted player-game clutch rows."""
+    key_columns = ["season", "season_type", "game_id", "team_id", "player_id"]
+    try:
+        clutch = load_player_game_clutch_stats_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return df.copy(), build_clutch_filter_coverage_note("missing player clutch dataset")
+
+    scoped = _filter_clutch_rows_to_base(clutch, df, key_columns)
+    trusted, failures = select_trusted_clutch_stats(scoped)
+    if failures:
+        return df.copy(), _clutch_coverage_note_for_failures(failures)
+    if trusted.empty:
+        return df.iloc[0:0].copy(), None
+
+    base_cols = [
+        "game_id",
+        "game_date",
+        "season",
+        "season_type",
+        "player_id",
+        "player_name",
+        "team_id",
+        "team_abbr",
+        "team_name",
+        "opponent_team_id",
+        "opponent_team_abbr",
+        "opponent_team_name",
+        "is_home",
+        "is_away",
+        "wl",
+    ]
+    base = _normalize_game_key_columns(df[[c for c in base_cols if c in df.columns]])
+    trusted = _normalize_game_key_columns(trusted)
+    metrics = trusted[key_columns + ["clutch_events", "clutch_seconds", "pts"]].drop_duplicates(
+        key_columns
+    )
+    out = base.merge(metrics, on=key_columns, how="inner")
+    return out.reset_index(drop=True), None
+
+
+def apply_team_clutch_filter(
+    df: pd.DataFrame, seasons: list[str], season_type: str
+) -> tuple[pd.DataFrame, str | None]:
+    """Replace team game-log rows with trusted team-game clutch rows."""
+    key_columns = ["season", "season_type", "game_id", "team_id"]
+    try:
+        clutch = load_team_game_clutch_stats_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return df.copy(), build_clutch_filter_coverage_note("missing team clutch dataset")
+
+    scoped = _filter_clutch_rows_to_base(clutch, df, key_columns)
+    trusted, failures = select_trusted_clutch_stats(scoped)
+    if failures:
+        return df.copy(), _clutch_coverage_note_for_failures(failures)
+    if trusted.empty:
+        return df.iloc[0:0].copy(), None
+
+    base_cols = [
+        "game_id",
+        "game_date",
+        "season",
+        "season_type",
+        "team_id",
+        "team_abbr",
+        "team_name",
+        "opponent_team_id",
+        "opponent_team_abbr",
+        "opponent_team_name",
+        "is_home",
+        "is_away",
+        "wl",
+    ]
+    base = _normalize_game_key_columns(df[[c for c in base_cols if c in df.columns]])
+    trusted = _normalize_game_key_columns(trusted)
+    metrics = trusted[key_columns + ["clutch_events", "clutch_seconds", "pts"]].drop_duplicates(
+        key_columns
+    )
+    out = base.merge(metrics, on=key_columns, how="inner")
+    return out.reset_index(drop=True), None
+
+
 def build_schedule_context_filter_coverage_notes(
     *,
     back_to_back: bool = False,

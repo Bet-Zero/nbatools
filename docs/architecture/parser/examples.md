@@ -821,7 +821,9 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Tatum clutch stats`
 - `Tatum clutch time stats`
 - `late-game Tatum stats`
-- _Current execution note:_ all variants set `clutch=True`; results remain unfiltered until play-by-play clutch splits land._
+- _Current execution note:_ all variants set `clutch=True`; supported routes
+  execute against trusted play-by-play-derived clutch rows and keep an
+  unfiltered-results note when coverage is missing or untrusted._
 
 ### 7.8 Period context — 4th quarter scoring leaders
 

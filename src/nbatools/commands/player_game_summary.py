@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    apply_player_clutch_filter,
     apply_player_role_filter,
     apply_schedule_context_filters,
     build_opponent_mask,
@@ -182,6 +183,11 @@ def build_result(
         try:
             df = load_player_games_for_seasons(seasons, season_type)
         except FileNotFoundError:
+            if clutch:
+                notes.append(
+                    "clutch: trusted play-by-play-derived clutch coverage is unavailable "
+                    "for the requested slice (missing player game dataset); results are unfiltered"
+                )
             notes.extend(
                 build_schedule_context_filter_coverage_notes(
                     back_to_back=back_to_back,
@@ -241,6 +247,14 @@ def build_result(
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
 
+    clutch_executed = False
+    if clutch:
+        df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)
+        if clutch_note:
+            notes.append(clutch_note)
+        else:
+            clutch_executed = True
+
     df, schedule_notes = apply_schedule_context_filters(
         df,
         seasons,
@@ -285,6 +299,8 @@ def build_result(
         "plus_minus",
         "efg_pct",
         "ts_pct",
+        "clutch_events",
+        "clutch_seconds",
     ]
     numeric_cols = [c for c in numeric_cols if c in df.columns]
 
@@ -349,6 +365,8 @@ def build_result(
         )
     if opponent:
         caveats.append(f"filtered to games vs {describe_opponent_filter(opponent)}")
+    if clutch_executed:
+        caveats.append("clutch filter: last five minutes of 4Q/OT, score within five")
     note_text = "\n".join(notes)
     if back_to_back and "back_to_back:" not in note_text:
         caveats.append("schedule-context filter: back-to-back games")

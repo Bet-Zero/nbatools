@@ -259,6 +259,13 @@ Some parser-recognized context filters are execution-backed only on their
 documented route boundaries. Unsupported routes keep explicit unfiltered-results
 notes rather than silently pretending the filter ran.
 
+- Clutch filters execute on `player_game_summary`, `player_game_finder`,
+  `team_record`, and `season_leaders` when trusted `player_game_clutch_stats`
+  / `team_game_clutch_stats` rows cover the requested slice. The definition is
+  last five minutes of the fourth quarter or overtime, score within five.
+  Missing or untrusted coverage keeps an explicit unfiltered-results note.
+  Whole-game logs, period-only box-score rows, and season-level clutch
+  dashboard aggregates are not used as clutch substitutes.
 - Quarter / half / OT filters execute on `player_game_finder` and
   `team_record` when trusted `player_game_period_stats` /
   `team_game_period_stats` coverage exists for the requested slice. Broader

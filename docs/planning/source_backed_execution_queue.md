@@ -363,7 +363,7 @@ coverage-gated route execution.
 
 ---
 
-## 7. `[ ]` Wire coverage-gated clutch execution
+## 7. `[x]` Wire coverage-gated clutch execution
 
 **Why:** After clutch aggregates exist, transported clutch routes should stop
 returning unfiltered results only where trusted clutch coverage exists.
@@ -410,6 +410,15 @@ returning unfiltered results only where trusted clutch coverage exists.
 - [`clutch_source_boundary.md`](./clutch_source_boundary.md)
 - [`docs/architecture/parser/specification.md`](../architecture/parser/specification.md)
 - [`docs/reference/query_catalog.md`](../reference/query_catalog.md)
+
+**Completion note:** Wired the supported clutch route boundary to trusted
+derived clutch rows: `player_game_summary`, `player_game_finder`,
+`team_record`, and `season_leaders` now consume `player_game_clutch_stats` /
+`team_game_clutch_stats` when coverage exists. Missing or untrusted clutch
+coverage keeps the explicit unfiltered-results note, and unsupported routes
+still do not fabricate clutch filtering from whole-game or period-only data.
+Updated current-state/query/parser docs and the master-plan rollup to reflect
+the shipped clutch boundary.
 
 ---
 

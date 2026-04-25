@@ -608,12 +608,16 @@ Examples:
 
 Current behavior:
 
-- parser sets `clutch=True`, routes normally, and appends an explicit
-  unfiltered-results note because play-by-play-derived clutch splits are not
-  built or wired into execution yet
-- the approved future source path is official `PlayByPlayV3` plus local
-  score-state derivation; whole-game logs, period-only box-score windows, and
-  season-level clutch dashboard aggregates remain rejected as substitutes
+- parser sets `clutch=True` and routes to the supported execution boundary:
+  `player_game_summary`, `player_game_finder`, `team_record`, and
+  `season_leaders`
+- those routes use trusted `player_game_clutch_stats` /
+  `team_game_clutch_stats` rows derived from official `PlayByPlayV3` events
+  when coverage exists for the requested slice
+- missing or untrusted clutch coverage keeps the explicit unfiltered-results
+  note rather than fabricating clutch output
+- whole-game logs, period-only box-score windows, and season-level clutch
+  dashboard aggregates remain rejected as clutch substitutes
 
 ### Quarter / half / overtime context
 

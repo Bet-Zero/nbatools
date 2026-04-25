@@ -337,8 +337,9 @@ data plus local score-state derivation. This is documented in
 
 The raw `play_by_play_events` dataset path, validation, and loader exist. The
 processed `player_game_clutch_stats` and `team_game_clutch_stats` derivation
-paths, validation, and loaders also exist. Current clutch queries remain
-unfiltered with an explicit note until route execution is implemented.
+paths, validation, loaders, and coverage-gated route execution also exist for
+`player_game_summary`, `player_game_finder`, `team_record`, and
+`season_leaders`.
 
 ### Raw path
 
@@ -1123,14 +1124,14 @@ As the repo evolves toward a UI-based search app, these data contracts should he
 
 When adding a new core dataset, add it here before making it an implicit dependency.
 
-### Explicitly deferred source boundaries
+### Source-backed boundaries
 
-- `clutch` now has an approved future source path: official `PlayByPlayV3`
-  plus local score-state derivation. The raw `play_by_play_events` dataset
-  path and processed `player_game_clutch_stats` / `team_game_clutch_stats`
-  derivations exist with validation and loaders. Until route execution is wired,
-  clutch queries must keep the explicit unfiltered-results note. Whole-game logs
-  and period-only box-score windows remain rejected as clutch substitutes.
+- `clutch` uses official `PlayByPlayV3` plus local score-state derivation. The
+  raw `play_by_play_events` dataset path and processed
+  `player_game_clutch_stats` / `team_game_clutch_stats` derivations exist with
+  validation, loaders, and coverage-gated route execution. Missing or untrusted
+  coverage keeps the explicit unfiltered-results note. Whole-game logs and
+  period-only box-score windows remain rejected as clutch substitutes.
 - `player_on_off` now has an approved future source path: upstream
   `teamplayeronoffsummary` via
   `nba_api.stats.endpoints.TeamPlayerOnOffSummary`. The source dataset path,

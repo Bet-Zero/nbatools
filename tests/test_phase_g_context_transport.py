@@ -14,14 +14,14 @@ def test_clutch_filter_propagates_to_route_kwargs():
     assert parsed["route_kwargs"]["clutch"] is True
 
 
-def test_supported_clutch_route_keeps_kwarg_and_note():
+def test_supported_clutch_route_keeps_kwarg_without_transport_note():
     routed, notes = _route_context_filters_for_execution(
         "player_game_summary",
         {"player": "Nikola Jokić", "clutch": True},
     )
 
     assert routed["clutch"] is True
-    assert any("clutch" in note and "unfiltered" in note for note in notes)
+    assert not any("clutch" in note and "unfiltered" in note for note in notes)
 
 
 def test_supported_period_route_keeps_kwarg_without_transport_note():
@@ -64,7 +64,7 @@ def test_supported_schedule_filter_keeps_kwarg_without_transport_note():
     assert not any("back_to_back" in note and "unfiltered" in note for note in notes)
 
 
-def test_execute_natural_query_carries_clutch_in_metadata():
+def test_execute_natural_query_reports_missing_clutch_coverage():
     qr = execute_natural_query("Jokic clutch stats 1950-51")
 
     assert qr.route == "player_game_summary"
@@ -72,7 +72,7 @@ def test_execute_natural_query_carries_clutch_in_metadata():
     assert any("clutch" in note and "unfiltered" in note for note in qr.result.notes)
 
 
-def test_execute_structured_query_carries_clutch_in_metadata():
+def test_execute_structured_query_reports_missing_clutch_coverage():
     qr = execute_structured_query(
         "player_game_summary",
         season="1950-51",

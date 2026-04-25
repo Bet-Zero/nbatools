@@ -5,7 +5,12 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands.data_utils import safe_divide
+from nbatools.commands.data_utils import (
+    build_clutch_filter_coverage_note,
+    load_player_game_clutch_stats_for_seasons,
+    safe_divide,
+    select_trusted_clutch_stats,
+)
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
 
@@ -266,6 +271,21 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         fill=None,
     )
 
+    return grouped
+
+
+def _build_from_clutch_rows(clutch: pd.DataFrame) -> pd.DataFrame:
+    grouped = (
+        clutch.groupby(["player_id", "player_name"], as_index=False)
+        .agg(
+            games_played=("game_id", "nunique"),
+            pts_total=("pts", "sum"),
+            clutch_events=("clutch_events", "sum"),
+            clutch_seconds=("clutch_seconds", "sum"),
+        )
+        .reset_index(drop=True)
+    )
+    grouped["pts_per_game"] = grouped["pts_total"] / grouped["games_played"]
     return grouped
 
 
@@ -631,6 +651,7 @@ def build_result(
     except ValueError:
         return NoResult(query_class="leaderboard", reason="no_data")
 
+    notes: list[str] = []
     multi_season = len(seasons) > 1
 
     # Validate params
@@ -757,7 +778,30 @@ def build_result(
         if basic.empty:
             return NoResult(query_class="leaderboard", reason="no_match")
 
-    df = _build_from_game_logs(basic)
+    clutch_executed = False
+    if clutch:
+        try:
+            clutch_rows = load_player_game_clutch_stats_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            notes.append(build_clutch_filter_coverage_note("missing player clutch dataset"))
+        else:
+            keys = ["season", "season_type", "game_id", "team_id", "player_id"]
+            basic_keys = basic[keys].drop_duplicates().copy()
+            basic_keys["game_id"] = basic_keys["game_id"].astype(str)
+            clutch_rows = clutch_rows.copy()
+            clutch_rows["game_id"] = clutch_rows["game_id"].astype(str)
+            scoped = clutch_rows.merge(basic_keys, on=keys, how="inner")
+            trusted, failures = select_trusted_clutch_stats(scoped)
+            if failures:
+                notes.append(build_clutch_filter_coverage_note("; ".join(failures)))
+            elif trusted.empty:
+                return NoResult(query_class="leaderboard", reason="no_match")
+            else:
+                df = _build_from_clutch_rows(trusted)
+                clutch_executed = True
+
+    if not clutch_executed:
+        df = _build_from_game_logs(basic)
 
     # Compute game-log-derived advanced metrics (USG%, AST%, REB%, TOV%)
     # These work in any context (multi-season, date-window, opponent-filtered).
@@ -809,19 +853,29 @@ def build_result(
     if "games_played" not in df.columns:
         raise ValueError("games_played column required")
 
+    if clutch_executed and target_col not in df.columns:
+        return NoResult(
+            query_class="leaderboard",
+            reason="unsupported",
+            notes=[f"clutch leaderboard does not support '{target_col}' yet"],
+        )
+
     if target_col not in df.columns:
         raise ValueError(f"Column '{target_col}' not available for season leaders output")
 
     game_filter_active = home_only or away_only or wins_only or losses_only or last_n is not None
 
-    df = _apply_default_guardrails(
-        df,
-        target_col,
-        min_games,
-        date_window_active=date_window_active or game_filter_active,
-        opponent_active=bool(opponent),
-        num_seasons=len(seasons),
-    )
+    if clutch_executed:
+        df = df[df["games_played"] >= min_games].copy()
+    else:
+        df = _apply_default_guardrails(
+            df,
+            target_col,
+            min_games,
+            date_window_active=date_window_active or game_filter_active,
+            opponent_active=bool(opponent),
+            num_seasons=len(seasons),
+        )
 
     if df.empty:
         return NoResult(
@@ -834,6 +888,10 @@ def build_result(
     if "team_abbr" in df.columns:
         out_cols.append("team_abbr")
     out_cols.extend(["games_played", target_col])
+    if clutch_executed:
+        out_cols.extend(
+            [c for c in ["pts_total", "clutch_events", "clutch_seconds"] if c != target_col]
+        )
 
     result = (
         df[out_cols]
@@ -886,10 +944,13 @@ def build_result(
             caveats.append(f"{target_col} recomputed from filtered game-log sample")
     if position_filtered:
         caveats.append(f"filtered to position group: {position}")
+    if clutch_executed:
+        caveats.append("clutch filter: last five minutes of 4Q/OT, score within five")
 
     return LeaderboardResult(
         leaders=result,
         current_through=current_through,
+        notes=notes,
         caveats=caveats,
     )
 

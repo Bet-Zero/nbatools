@@ -20,6 +20,8 @@ import pandas as pd
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     apply_schedule_context_filters,
+    apply_team_clutch_filter,
+    build_clutch_filter_coverage_note,
     build_opponent_mask,
     build_period_filter_coverage_note,
     build_schedule_context_filter_coverage_notes,
@@ -203,6 +205,8 @@ def build_team_record_result(
         else:
             df = load_team_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
+        if clutch:
+            notes.append(build_clutch_filter_coverage_note("missing team game dataset"))
         notes.extend(
             build_schedule_context_filter_coverage_notes(
                 back_to_back=back_to_back,
@@ -227,6 +231,14 @@ def build_team_record_result(
         start_date=start_date,
         end_date=end_date,
     )
+
+    clutch_executed = False
+    if clutch:
+        df, clutch_note = apply_team_clutch_filter(df, seasons, season_type)
+        if clutch_note:
+            notes.append(clutch_note)
+        else:
+            clutch_executed = True
 
     if without_player and not df.empty:
         df = filter_without_player(
@@ -334,6 +346,8 @@ def build_team_record_result(
     if period_execution_backed:
         descriptor = quarter if quarter is not None else half
         caveats.append(f"period record computed from {descriptor} windows")
+    if clutch_executed:
+        caveats.append("clutch filter: last five minutes of 4Q/OT, score within five")
     if tied_period_rows:
         caveats.append("tied period windows excluded from record totals")
     note_text = "\n".join(notes)

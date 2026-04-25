@@ -23,6 +23,10 @@ from nbatools.commands.pipeline.validate_raw import (
     validate_play_by_play_events_df,
     validate_player_game_clutch_stats_df,
 )
+from nbatools.commands.player_game_finder import build_result as build_player_finder
+from nbatools.commands.player_game_summary import build_result as build_player_summary
+from nbatools.commands.season_leaders import build_result as build_season_leaders
+from nbatools.commands.team_record import build_team_record_result
 
 pytestmark = pytest.mark.engine
 
@@ -92,6 +96,159 @@ def _clutch_source_events_df() -> pd.DataFrame:
         season="2099-00",
         season_type="Regular Season",
         source_pull_date="2099-01-01",
+    )
+
+
+def _route_source_events_df() -> pd.DataFrame:
+    return normalize_play_by_play_events(
+        pd.DataFrame(
+            [
+                _source_row(
+                    game_id="G1",
+                    action_number=1,
+                    clock="PT04M59.00S",
+                    score_home=100,
+                    score_away=98,
+                ),
+                _source_row(
+                    game_id="G1",
+                    action_number=2,
+                    clock="PT04M30.00S",
+                    score_home=102,
+                    score_away=98,
+                ),
+                _source_row(
+                    game_id="G2",
+                    action_number=1,
+                    clock="PT04M59.00S",
+                    score_home=110,
+                    score_away=103,
+                ),
+            ]
+        ),
+        season="2099-00",
+        season_type="Regular Season",
+        source_pull_date="2099-01-01",
+    )
+
+
+def _write_route_source_files(tmp_path) -> None:
+    player_dir = tmp_path / "data/raw/player_game_stats"
+    team_dir = tmp_path / "data/raw/team_game_stats"
+    clutch_player_dir = tmp_path / "data/processed/player_game_clutch_stats"
+    clutch_team_dir = tmp_path / "data/processed/team_game_clutch_stats"
+    player_dir.mkdir(parents=True)
+    team_dir.mkdir(parents=True)
+    clutch_player_dir.mkdir(parents=True)
+    clutch_team_dir.mkdir(parents=True)
+
+    common_player = {
+        "season": "2099-00",
+        "season_type": "Regular Season",
+        "player_id": 1628369,
+        "player_name": "Jayson Tatum",
+        "team_id": 1610612738,
+        "team_abbr": "BOS",
+        "team_name": "Boston Celtics",
+        "minutes": 35,
+        "fgm": 12,
+        "fga": 24,
+        "fg3m": 4,
+        "fg3a": 9,
+        "ftm": 12,
+        "fta": 13,
+        "oreb": 1,
+        "dreb": 7,
+        "reb": 8,
+        "ast": 5,
+        "stl": 1,
+        "blk": 0,
+        "tov": 2,
+        "pf": 2,
+        "plus_minus": 6,
+    }
+    player_rows = [
+        {
+            **common_player,
+            "game_id": "G1",
+            "game_date": "2099-01-01",
+            "opponent_team_id": 1610612743,
+            "opponent_team_abbr": "DEN",
+            "opponent_team_name": "Denver Nuggets",
+            "is_home": 1,
+            "is_away": 0,
+            "wl": "W",
+            "pts": 40,
+        },
+        {
+            **common_player,
+            "game_id": "G2",
+            "game_date": "2099-01-03",
+            "opponent_team_id": 1610612747,
+            "opponent_team_abbr": "LAL",
+            "opponent_team_name": "Los Angeles Lakers",
+            "is_home": 0,
+            "is_away": 1,
+            "wl": "L",
+            "pts": 31,
+        },
+    ]
+    common_team = {
+        "season": "2099-00",
+        "season_type": "Regular Season",
+        "team_id": 1610612738,
+        "team_abbr": "BOS",
+        "team_name": "Boston Celtics",
+        "minutes": 240,
+        "fgm": 44,
+        "fga": 90,
+        "fg3m": 13,
+        "fg3a": 35,
+        "ftm": 17,
+        "fta": 20,
+        "oreb": 9,
+        "dreb": 33,
+        "reb": 42,
+        "ast": 27,
+        "stl": 7,
+        "blk": 5,
+        "tov": 11,
+        "pf": 18,
+        "plus_minus": 5,
+    }
+    team_rows = [
+        {
+            **common_team,
+            "game_id": "G1",
+            "game_date": "2099-01-01",
+            "opponent_team_id": 1610612743,
+            "opponent_team_abbr": "DEN",
+            "opponent_team_name": "Denver Nuggets",
+            "is_home": 1,
+            "is_away": 0,
+            "wl": "W",
+            "pts": 118,
+        },
+        {
+            **common_team,
+            "game_id": "G2",
+            "game_date": "2099-01-03",
+            "opponent_team_id": 1610612747,
+            "opponent_team_abbr": "LAL",
+            "opponent_team_name": "Los Angeles Lakers",
+            "is_home": 0,
+            "is_away": 1,
+            "wl": "L",
+            "pts": 110,
+        },
+    ]
+    pd.DataFrame(player_rows).to_csv(player_dir / "2099-00_regular_season.csv", index=False)
+    pd.DataFrame(team_rows).to_csv(team_dir / "2099-00_regular_season.csv", index=False)
+    derive_player_game_clutch_stats(_route_source_events_df()).to_csv(
+        clutch_player_dir / "2099-00_regular_season.csv", index=False
+    )
+    derive_team_game_clutch_stats(_route_source_events_df()).to_csv(
+        clutch_team_dir / "2099-00_regular_season.csv", index=False
     )
 
 
@@ -234,3 +391,88 @@ def test_build_clutch_stats_for_season_uses_trusted_raw_events(tmp_path, monkeyp
 
     assert player["pts"].sum() == 5
     assert team["pts"].sum() == 5
+
+
+def test_clutch_player_summary_uses_derived_clutch_rows(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path)
+
+    result = build_player_summary(
+        season="2099-00",
+        season_type="Regular Season",
+        player="Jayson Tatum",
+        clutch=True,
+    )
+
+    assert result.notes == []
+    assert result.summary.loc[0, "games"] == 1
+    assert result.summary.loc[0, "pts_sum"] == 2
+    assert result.summary.loc[0, "clutch_events_sum"] == 2
+
+
+def test_clutch_player_finder_filters_to_trusted_clutch_games(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path)
+
+    result = build_player_finder(
+        season="2099-00",
+        season_type="Regular Season",
+        player="Jayson Tatum",
+        clutch=True,
+    )
+
+    assert result.notes == []
+    assert result.games["game_id"].tolist() == ["G1"]
+    assert result.games["pts"].tolist() == [2]
+
+
+def test_clutch_team_record_uses_derived_team_clutch_rows(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path)
+
+    result = build_team_record_result(
+        season="2099-00",
+        season_type="Regular Season",
+        team="BOS",
+        clutch=True,
+    )
+
+    assert result.notes == []
+    assert result.summary.loc[0, "games"] == 1
+    assert result.summary.loc[0, "wins"] == 1
+    assert result.summary.loc[0, "pts_avg"] == 2
+
+
+def test_clutch_season_leaders_uses_derived_clutch_rows(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path)
+
+    result = build_season_leaders(
+        season="2099-00",
+        season_type="Regular Season",
+        stat="pts",
+        clutch=True,
+        min_games=1,
+    )
+
+    assert result.notes == []
+    assert result.leaders.loc[0, "player_name"] == "Jayson Tatum"
+    assert result.leaders.loc[0, "pts_per_game"] == 2
+    assert result.leaders.loc[0, "clutch_events"] == 2
+
+
+def test_clutch_route_falls_back_unfiltered_when_coverage_missing(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path)
+    for path in (tmp_path / "data/processed/player_game_clutch_stats").glob("*.csv"):
+        path.unlink()
+
+    result = build_player_finder(
+        season="2099-00",
+        season_type="Regular Season",
+        player="Jayson Tatum",
+        clutch=True,
+    )
+
+    assert len(result.games) == 2
+    assert any("clutch" in note and "unfiltered" in note for note in result.notes)

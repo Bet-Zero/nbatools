@@ -303,7 +303,7 @@ def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict
 
     if route not in _PHASE_G_CLUTCH_TRANSPORT_ROUTES:
         clutch = routed.pop("clutch", False)
-    if clutch:
+    if clutch and route not in _PHASE_G_CLUTCH_TRANSPORT_ROUTES:
         notes.append(
             "clutch: filter detected but play-by-play clutch splits not yet available; "
             "results are unfiltered"

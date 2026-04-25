@@ -509,8 +509,9 @@ Define where or when within a game the stat applies.
 
 - `home`, `away` → `home_only` / `away_only`
 - `clutch`, `in the clutch`, `clutch time`, `late-game` → `clutch`
-  parse slot; current execution accepts the filter with an explicit
-  unfiltered-results note because play-by-play clutch splits are not yet available
+  parse slot; supported routes execute against trusted play-by-play-derived
+  clutch rows and keep an explicit unfiltered-results note when coverage is
+  missing or untrusted
 - `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back=True`
 - `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
   (`"advantage"`, `"disadvantage"`, or an integer day count)

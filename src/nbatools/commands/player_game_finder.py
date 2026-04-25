@@ -2,7 +2,9 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
+    apply_player_clutch_filter,
     apply_player_role_filter,
+    build_clutch_filter_coverage_note,
     build_opponent_mask,
     build_period_filter_coverage_note,
     filter_by_opponent_player,
@@ -202,6 +204,8 @@ def build_result(
         else:
             df = load_player_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
+        if clutch:
+            notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
         return NoResult(query_class="finder", reason="no_data", notes=notes)
 
     required = [
@@ -248,6 +252,11 @@ def build_result(
 
     if without_player and not df.empty:
         df = filter_without_player(df, without_player, seasons, season_type, team=team)
+
+    if clutch:
+        df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)
+        if clutch_note:
+            notes.append(clutch_note)
 
     df, role_note = apply_player_role_filter(df, seasons, season_type, role)
     if role_note:
@@ -300,6 +309,8 @@ def build_result(
         "plus_minus",
         "efg_pct",
         "ts_pct",
+        "clutch_events",
+        "clutch_seconds",
         "usg_pct",
         "ast_pct",
         "reb_pct",
