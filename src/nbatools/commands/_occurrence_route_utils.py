@@ -336,6 +336,17 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
             "limit": top_n or 10,
         }
 
+    if count_intent and player and not compound_occurrence_conditions:
+        points_rebounds_match = re.search(
+            r"\b30\+?\s*(?:points?|pts)?\s+10\+?\s*(?:rebounds?|reb)?\b",
+            q,
+        )
+        if points_rebounds_match:
+            compound_occurrence_conditions = [
+                {"stat": "pts", "min_value": 30.0},
+                {"stat": "reb", "min_value": 10.0},
+            ]
+
     # -----------------------------------------------------------------------
     # Compound occurrence routing
     # -----------------------------------------------------------------------

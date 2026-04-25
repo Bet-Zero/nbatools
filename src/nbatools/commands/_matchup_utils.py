@@ -273,6 +273,8 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
         r"\bwhen\s+([\w .&'\-]+?)\s+(?:is|was)\s+out\b",
         # `when PLAYER out` (no copula)
         r"\bwhen\s+([\w .&'\-]+?)\s+out\b",
+        # `record PLAYER out`
+        r"\brecord\s+([\w .&'\-]+?)\s+out\b",
         # `no PLAYER` / `sans PLAYER` / `minus PLAYER`
         rf"\b(?:no|sans|minus)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
     ]

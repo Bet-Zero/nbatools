@@ -984,7 +984,7 @@ def build_on_off_note(
 
 def _extract_stretch_window_size(text: str) -> int | None:
     patterns = (
-        r"\b(\d+)\s*(?:-\s*|\s+)games?(?:\s+[a-z0-9%.'/-]+){0,3}\s+stretch\b",
+        r"\b(\d+)\s*(?:-\s*|\s+)games?(?:\s+[a-z0-9%.'/-]+){0,3}\s+stretch(?:es)?\b",
         r"\brolling\s+(\d+)\s*(?:-\s*|\s+)games?\b",
         r"\brolling\s+(\d+)\s+games?\b",
     )
@@ -999,7 +999,7 @@ def _extract_stretch_window_size(text: str) -> int | None:
 
 def detect_stretch_query(text: str) -> dict | None:
     """Detect rolling-window stretch leaderboard queries."""
-    stretch_marker = bool(re.search(r"\bstretch\b", text))
+    stretch_marker = bool(re.search(r"\bstretch(?:es)?\b", text))
     rolling_marker = bool(re.search(r"\brolling\b", text))
     if not stretch_marker and not rolling_marker:
         return None
@@ -1060,7 +1060,7 @@ def detect_lineup_query(text: str) -> dict | None:
     lineup_marker = bool(re.search(r"\b(?:lineups?|units?|combos?)\b", text))
     together_marker = bool(re.search(r"\btogether\b", text))
     leaderboard_marker = bool(re.search(r"\b(?:best|top|leaders?|highest|lowest)\b", text))
-    with_lineup_marker = bool(re.search(r"\blineup\s+with\b", text))
+    with_lineup_marker = bool(re.search(r"\blineups?\s+with\b", text))
 
     if not lineup_marker and not together_marker and not with_lineup_marker:
         return None

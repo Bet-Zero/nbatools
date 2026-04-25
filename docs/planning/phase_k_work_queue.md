@@ -142,7 +142,7 @@ with 24/24 cases passing and no remaining pair signature mismatches.
 
 ---
 
-## 4. `[ ]` Repair equivalence-group and ambiguity-handling failures
+## 4. `[x]` Repair equivalence-group and ambiguity-handling failures
 
 **Why:** The examples sweep found cases where intended-equivalent phrasings diverged and ambiguous inputs did not behave honestly.
 
@@ -170,6 +170,10 @@ with 24/24 cases passing and no remaining pair signature mismatches.
 - blocker inventory from item 1
 - `outputs/parser_examples_full_sweep/report.md`
 - `outputs/parser_examples_full_sweep/results.csv`
+
+**Completed validation:** targeted rerun of the listed Section 7 equivalence
+groups and Section 5.8 ambiguity cases passed with no failed cases and no
+remaining equivalence signature mismatches.
 
 ---
 
