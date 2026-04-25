@@ -107,7 +107,7 @@
 
 ---
 
-## 3. `[ ]` Repair question/search pair mismatches from section 3
+## 3. `[x]` Repair question/search pair mismatches from section 3
 
 **Why:** Phrasing parity is one of the main promises of the parser surface. Pairs that diverge in route, query class, or status are direct evidence that the surface is still inconsistent.
 
@@ -136,6 +136,9 @@
 - blocker inventory from item 1
 - `outputs/parser_examples_full_sweep/report.md`
 - `outputs/parser_examples_full_sweep/results.csv`
+
+**Completed validation:** targeted rerun of the 12 listed Section 3 pairs passed
+with 24/24 cases passing and no remaining pair signature mismatches.
 
 ---
 

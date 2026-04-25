@@ -425,8 +425,8 @@ Leaderboard no-match behavior:
 - if data exists but the requested date/context/sample filters leave no games in scope, leaderboard routes return `no_match` rather than falling back to a broader leaderboard
 - rolling/date-window team advanced rating leaderboards and undefined skill concepts
   such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
-  and shot creation are unsupported boundaries; routed fallbacks include an
-  explicit `unsupported_boundary` note
+  shot creation, and per-game attempt minimums are unsupported boundaries; routed
+  fallbacks include an explicit `unsupported_boundary` note
 
 ### Position-filtered leaderboards
 
