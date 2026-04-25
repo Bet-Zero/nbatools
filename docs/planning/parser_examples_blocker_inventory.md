@@ -54,13 +54,13 @@ Failure reasons from the latest `results.csv`:
 | Supported behavior routed to no-data | 2 | Data/support-boundary decision |
 | Supported behavior routed to unsupported/no-result | 1 | Code fix or honest reclassification |
 
-Targeted validation after Phase L items 1 and 2 resolved 9 failing case IDs, 3
-pair mismatches, and the remaining equivalence mismatch without a full-sweep
-rerun. Active unresolved status is now:
+Targeted validation after Phase L items 1 through 3 resolved 14 failing case
+IDs, 3 pair mismatches, and the remaining equivalence mismatch without a
+full-sweep rerun. Active unresolved status is now:
 
 | Metric | Active unresolved count |
 | --- | ---: |
-| Failing cases | 9 |
+| Failing cases | 4 |
 | Phrasing-pair mismatches | 1 |
 | Equivalence-group mismatches | 0 |
 
@@ -77,17 +77,12 @@ rerun. Active unresolved status is now:
 
 ## 1. Remaining Failing Cases
 
-After Phase L item 2 targeted validation, 9 failing cases remain across
-Section 3, Section 4, and Section 8.
+After Phase L item 3 targeted validation, 4 failing cases remain across
+Section 3 and Section 8.
 
 | Case ID | Query | Actual behavior | Likely resolution |
 | --- | --- | --- | --- |
 | `S3_3_3_12_S` | "best net rating last 15 games" | `no_result/unsupported` on `season_team_leaders` | Boundary decision: team net-rating leaderboard support vs honest reclassification. |
-| `S4_4_2_10` | "how many players scored 40 points this season" | `error/error` on `player_occurrence_leaders` | Implementation blocker in occurrence count execution. |
-| `S4_4_2_11` | "number of players with 10 assists this season" | `error/error` on `player_occurrence_leaders` | Implementation blocker in occurrence count execution. |
-| `S4_4_4_06` | "Warriors conference finals appearances" | `no_result/no_data` on `playoff_appearances` | Data/support-boundary blocker for playoff appearances. |
-| `S4_4_4_09` | "best second round record" | `no_result/no_data` on `playoff_round_record` | Data/support-boundary blocker for playoff round records. |
-| `S4_4_4_12` | "winningest team of the 2010s" | `error/unrouted` | Implementation or scope blocker for historical decade records. |
 | `S8_8_1_04` | "best record vs teams above .600" | `ok` on `team_record_leaderboard` | Documentation-truth blocker for above-.600 opponent-quality boundary. |
 | `S8_8_5_02` | "Who has the most ___ since becoming a starter?" | `ok` on `season_leaders` | Documentation-truth blocker for placeholder/fill-in templates. |
 | `S8_8_5_04` | "What is ___ record in overtime games this season?" | `ok` on `team_record_leaderboard` | Documentation-truth blocker for placeholder/fill-in templates. |
@@ -153,7 +148,7 @@ behavior instead of returning a confident supported result.
 Use this inventory as the source of truth for the remaining Phase L closure
 decision:
 
-1. Fix or honestly reclassify the 9 remaining failing cases in Section 1.
+1. Fix or honestly reclassify the 4 remaining failing cases in Section 1.
 2. Align the 1 remaining Section 3 pair mismatch.
 3. Decide whether the 3 remaining documentation-boundary mismatches represent
    real support or should fail more honestly.

@@ -306,9 +306,10 @@ def build_result(
     losses_only: bool = False,
     start_date: str | None = None,
     end_date: str | None = None,
-    limit: int = 10,
+    limit: int | None = 10,
     min_games: int = DEFAULT_MIN_GAMES,
     player: str | None = None,
+    **_context_filters: Any,
 ) -> LeaderboardResult | NoResult:
     """Build a player occurrence leaderboard.
 
@@ -344,8 +345,8 @@ def build_result(
         Standard game-level filters.
     start_date, end_date : str or None
         Date-window filters.
-    limit : int
-        Number of leaders to return.
+    limit : int or None
+        Number of leaders to return. If None, return all qualifying players.
     min_games : int
         Minimum total games played for a player to be eligible.
     player : str or None
@@ -392,7 +393,7 @@ def build_result(
         raise ValueError(
             f"Unsupported special_event: {special_event}. Allowed: {sorted(SPECIAL_EVENT_STATS)}"
         )
-    if limit <= 0:
+    if limit is not None and limit <= 0:
         raise ValueError("limit must be greater than 0")
 
     # Resolve seasons
@@ -472,14 +473,12 @@ def build_result(
         grouped = grouped.merge(latest_team, on="player_id", how="left")
 
     # Sort and rank
-    grouped = (
-        grouped.sort_values(
-            by=["occurrence_count", "games_played", "player_name"],
-            ascending=[False, False, True],
-        )
-        .head(limit)
-        .reset_index(drop=True)
-    )
+    grouped = grouped.sort_values(
+        by=["occurrence_count", "games_played", "player_name"],
+        ascending=[False, False, True],
+    ).reset_index(drop=True)
+    if limit is not None:
+        grouped = grouped.head(limit).reset_index(drop=True)
 
     grouped.insert(0, "rank", range(1, len(grouped) + 1))
 

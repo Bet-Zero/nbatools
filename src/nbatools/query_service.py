@@ -427,8 +427,10 @@ def execute_natural_query(query: str) -> QueryResult:
         entity_count = 0
 
         if not result.leaders.empty:
+            if parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
+                entity_count = len(result.leaders)
             # Try player first
-            if player_name and "player_name" in result.leaders.columns:
+            elif player_name and "player_name" in result.leaders.columns:
                 match = result.leaders[
                     result.leaders["player_name"].str.upper() == player_name.upper()
                 ]

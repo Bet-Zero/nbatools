@@ -409,6 +409,19 @@ class TestPlayerOccurrenceLeadersBuild:
         if isinstance(result, LeaderboardResult):
             assert any("seasons" in c.lower() or "aggregated" in c.lower() for c in result.caveats)
 
+    def test_limit_none_returns_all_qualifying_players(self):
+        """Distinct-player count routing uses limit=None to avoid truncation."""
+        result = player_occurrence_build_result(
+            stat="pts",
+            min_value=40,
+            season="2024-25",
+            season_type="Regular Season",
+            limit=None,
+        )
+        assert isinstance(result, (LeaderboardResult, NoResult))
+        if isinstance(result, LeaderboardResult):
+            assert len(result.leaders) >= 10
+
     def test_validation_no_stat_no_event(self):
         """Should raise if neither stat nor special_event is provided."""
         with pytest.raises(ValueError, match="Either stat"):
@@ -567,6 +580,35 @@ class TestServiceCompatibility:
             d = qr.result.to_dict()
             assert d["query_class"] == "count"
             assert "count" in d["sections"]
+
+    def test_distinct_player_count_natural(self):
+        qr = execute_natural_query("how many players scored 40 points this season")
+        assert qr.route == "player_occurrence_leaders"
+        assert isinstance(qr.result, CountResult)
+        assert qr.result.result_status == "ok"
+        assert qr.result.count >= 0
+
+    def test_distinct_player_count_postprocess_counts_leaderboard_rows(self, monkeypatch):
+        import nbatools.query_service as query_service
+
+        parsed = parse_query("how many players scored 40 points this season")
+        leaders = pd.DataFrame(
+            [
+                {"rank": 1, "player_name": "A", "games_played": 2, "40+ pts games": 2},
+                {"rank": 2, "player_name": "B", "games_played": 1, "40+ pts games": 1},
+            ]
+        )
+
+        monkeypatch.setattr(query_service, "parse_query", lambda _query: parsed)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda _route, _kwargs, _extra_conditions: LeaderboardResult(leaders=leaders),
+        )
+
+        qr = query_service.execute_natural_query("how many players scored 40 points this season")
+        assert isinstance(qr.result, CountResult)
+        assert qr.result.count == 2
 
     def test_triple_double_leaderboard_natural(self):
         qr = execute_natural_query("most triple doubles this season")
