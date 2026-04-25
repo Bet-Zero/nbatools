@@ -215,7 +215,7 @@ only the remaining unresolved issues from this fresh sweep.
 
 ---
 
-## 6. `[ ]` Draft the next queue or close the whole plan
+## 6. `[x]` Draft the next queue or close the whole plan
 
 **Why:** This queue cannot end with another vague “much better now” state. It must either continue the plan explicitly or close it honestly.
 
@@ -241,3 +241,9 @@ only the remaining unresolved issues from this fresh sweep.
 - `docs/planning/master_completion_plan.md`
 - `docs/planning/parser_examples_completion_plan.md`
 - the latest blocker inventory and sweep outputs
+
+**Completed artifact:** [`phase_l_work_queue.md`](./phase_l_work_queue.md)
+is the active continuation queue for the 18 remaining failures, 4 remaining
+pair mismatches, and 1 remaining equivalence-group mismatch from the fresh
+Phase K full sweep. `master_completion_plan.md` now names Phase L as the active
+continuation.

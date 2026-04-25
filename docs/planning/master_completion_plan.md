@@ -92,11 +92,11 @@ The active continuation plan is
 [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md).
 
 The active continuation queue is
-[`phase_k_work_queue.md`](./phase_k_work_queue.md).
+[`phase_l_work_queue.md`](./phase_l_work_queue.md).
 
 The current required action is to work the first unchecked item in
-[`phase_k_work_queue.md`](./phase_k_work_queue.md): build the evidence-based
-blocker inventory from the latest full parser-examples sweep.
+[`phase_l_work_queue.md`](./phase_l_work_queue.md): resolve remaining shorthand
+leaderboard and fallback parser misses from the fresh Phase K sweep.
 
 Working one queue item to completion does not mean the whole plan is done: once
 an item's required local tests pass, ship it as its own PR-sized unit, wait for
@@ -115,7 +115,7 @@ the queue explicitly requires review-handoff/blocker escalation.
 | Quarter / half / OT      | Parser-recognized and route-propagated                                              | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes                                                                                                                                                                                           | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it                                          | Done for core finish line | None                                                                                                                              |
 | Schedule-context filters | Parser-recognized and route-propagated                                              | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes                                                                                                                                                                      | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it                                          | Done for core finish line | None                                                                                                                              |
 | Starter / bench role     | Parser-recognized for player context                                                | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist                                                                                                                                                                                 | Product complete for the core finish-line player-route boundary; team-level bench semantics and broader route expansion are explicitly out of scope unless a future product queue reopens them | Done for core finish line | None                                                                                                                              |
-| Examples-library surface | Full-sweep audit exists for `docs/architecture/parser/examples.md`                  | Latest sweep shows material mismatches in canonical examples, supported examples, phrasing pairs, equivalence groups, ambiguity handling, and docs/support boundaries                                                                                                                                          | Not complete until failures are fixed in behavior or honestly reclassified in docs, and the full-sweep protocol shows no unresolved canonical/example-library blockers                         | Not done                  | [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md) / [`phase_k_work_queue.md`](./phase_k_work_queue.md) |
+| Examples-library surface | Full-sweep audit exists for `docs/architecture/parser/examples.md`                  | Latest sweep shows 18 remaining failures, 4 phrasing-pair mismatches, 1 equivalence-group mismatch, and 3 docs/support-boundary mismatches after Phase K reduced the baseline from 78 failures to 18                                                                                                            | Not complete until failures are fixed in behavior or honestly reclassified in docs, and the full-sweep protocol shows no unresolved canonical/example-library blockers                         | Not done                  | [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md) / [`phase_l_work_queue.md`](./phase_l_work_queue.md) |
 
 ---
 
@@ -138,9 +138,13 @@ the queue explicitly requires review-handoff/blocker escalation.
   is the active continuation plan for closing the examples-library surface
   mismatches found by the full parser-examples sweep. It reopens the whole-plan
   status until the examples library is behaviorally honest and documented.
-- [`phase_k_work_queue.md`](./phase_k_work_queue.md) is the active queue for
-  the parser examples completion plan. Agents must work the first unchecked
-  item there before moving to later Phase K items.
+- [`phase_k_work_queue.md`](./phase_k_work_queue.md) is the completed queue
+  that built the blocker inventory, repaired the largest mismatch families,
+  reran the full sweep, and drafted the Phase L continuation.
+- [`phase_l_work_queue.md`](./phase_l_work_queue.md) is the active queue for
+  the remaining parser-examples blockers from the fresh 384/18 sweep. Agents
+  must work the first unchecked item there before moving to later Phase L
+  items.
 - [`clutch_source_boundary.md`](./clutch_source_boundary.md) records the
   approved clutch source path used by shipped source-backed clutch execution.
 - [`roadmap.md`](./roadmap.md) remains the broad product direction. It should

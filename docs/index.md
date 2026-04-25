@@ -67,7 +67,8 @@ Roadmap, active plans, and closed closure records.
 - `planning/master_completion_plan.md` — single top-level authority for whole-plan completion status, active continuation, and open core capability families
 - `planning/parser_examples_completion_plan.md` — active continuation plan for resolving full-sweep examples-library mismatches
 - `planning/parser_examples_blocker_inventory.md` — Phase K blocker inventory derived from the latest full parser-examples sweep
-- `planning/phase_k_work_queue.md` — active queue for the parser examples completion plan
+- `planning/phase_l_work_queue.md` — active queue for the remaining parser examples completion blockers from the fresh Phase K sweep
+- `planning/phase_k_work_queue.md` — completed queue that built the parser examples blocker inventory and drafted the Phase L continuation
 - `planning/source_backed_execution_queue.md` — closed master-plan continuation queue that implemented approved clutch, on/off, and lineup source paths
 - `planning/source_approval_route_expansion_queue.md` — closed master-plan continuation queue for source approvals and route-expansion product decisions
 - `planning/clutch_source_boundary.md` — approved clutch source path and dataset boundary used by shipped source-backed clutch execution

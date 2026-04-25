@@ -189,13 +189,16 @@ A queue item that changes the examples-library behavior is not complete until it
 
 ---
 
-## 10. First continuation
+## 10. Current continuation
 
-The first queue for this plan is:
+The active queue for this plan is:
 
-- `docs/planning/phase_k_work_queue.md`
+- `docs/planning/phase_l_work_queue.md`
 
-That queue starts with the evidence-based blocker inventory from the latest full-sweep audit and works from the highest-value failures first.
+Phase K is complete. It built the evidence-based blocker inventory, repaired
+the largest canonical/pair/equivalence/ambiguity blocker families, reran the
+full sweep, and reduced the baseline from 78 failures to 18. Phase L now works
+the remaining blocker groups from that fresh 384/18 sweep.
 
 ---
 
