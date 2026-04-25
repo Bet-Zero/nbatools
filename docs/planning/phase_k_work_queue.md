@@ -28,7 +28,7 @@
 
 ---
 
-## 1. `[ ]` Build the evidence-based blocker inventory from the latest full sweep
+## 1. `[x]` Build the evidence-based blocker inventory from the latest full sweep
 
 **Why:** Work should not proceed from vague impressions. The latest full sweep identified failures across canonical examples, supported examples, pairs, equivalence groups, and ambiguity handling. The repo needs one explicit blocker inventory derived from the sweep artifacts.
 
@@ -66,6 +66,8 @@
 - `outputs/parser_examples_full_sweep/report.md`
 - `outputs/parser_examples_full_sweep/results.csv`
 - `docs/operations/parser_examples_full_sweep_protocol.md`
+
+**Completed artifact:** [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
 
 ---
 

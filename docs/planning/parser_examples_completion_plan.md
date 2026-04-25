@@ -30,6 +30,7 @@ This plan is grounded in the latest full-sweep audit artifacts:
 - `outputs/parser_examples_full_sweep/results.csv`
 - optional `outputs/parser_examples_full_sweep/manifest.json`
 - raw JSON captures under `outputs/parser_examples_full_sweep/raw/`
+- `docs/planning/parser_examples_blocker_inventory.md`
 
 These artifacts are the evidence base for deciding what is actually broken.
 
