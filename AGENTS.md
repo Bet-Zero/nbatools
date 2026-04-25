@@ -118,6 +118,28 @@ Do not knowingly leave behind:
 - one-off compatibility hacks with no comment or cleanup plan
 - silent behavior forks between player/team paths unless justified
 
+### Data placement and dataset-structure rule
+
+Data changes must preserve the repo's intentional dataset structure.
+
+- New saved data is allowed only when it cleanly fits the lifecycle model (`raw`, `processed`, `derived`) and has a documented contract.
+- Do not overwrite, silently repurpose, or quietly broaden canonical datasets to carry unrelated semantics.
+- Do not mix lifecycle layers (for example, play-by-play-derived outputs into canonical raw game-log tables).
+- Do not blur grains inside existing tables (for example, game-level, period-level, stint-level, and play-by-play-derived rows in one contract without an explicit approved design).
+- Do not add ad hoc files or one-off tables without defined consumers and contract coverage.
+
+If a new source is approved, implementation must document before broad rollout:
+
+- dataset name
+- lifecycle layer (`raw`, `processed`, or `derived`)
+- grain
+- join keys
+- trust fields and coverage semantics
+- fallback behavior when coverage/trust is missing
+- why the chosen placement is structurally correct
+
+Prefer a dedicated dataset and backfill path over mutating unrelated existing tables unless there is a strong documented reason approved in planning docs.
+
 ## Testing expectations
 
 Every meaningful feature change should include appropriate tests.
