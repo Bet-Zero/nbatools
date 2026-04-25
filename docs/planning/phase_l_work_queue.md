@@ -86,7 +86,7 @@ failing cases and 2 active pair mismatches.
 
 ---
 
-## 2. `[ ]` Resolve absence, multi-player availability, and on/off equivalence blockers
+## 2. `[x]` Resolve absence, multi-player availability, and on/off equivalence blockers
 
 **Why:** The remaining availability-style blockers mix true teammate-absence
 summary support, intentionally unsupported multi-player availability, and on/off
@@ -125,6 +125,13 @@ library is not ambiguous.
 - [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
 - [`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md)
 - `outputs/parser_examples_full_sweep/results.csv`
+
+**Completed validation:** targeted rerun of `S2_2_6_06`, the `S3_3_9_45`
+pair, and the `S7_7_15` equivalence group passed with no pair or equivalence
+mismatches. `S2_2_6_06` now routes to `player_game_summary`, the Lakers
+multi-player availability pair now shares the same broad `team_record`
+unsupported-boundary fallback, and all `S7_7_15` spellings route to
+`player_on_off`.
 
 ---
 

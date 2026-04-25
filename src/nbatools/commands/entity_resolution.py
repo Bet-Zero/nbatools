@@ -173,6 +173,8 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "nikola": "Nikola Jokić",  # Jokić is the dominant "Nikola" in modern NBA
     "lebron": "LeBron James",
     "kyrie": "Kyrie Irving",
+    "jamal": "Jamal Murray",
+    "jamal murray": "Jamal Murray",
     "jaylen": "Jaylen Brown",
     "jayson": "Jayson Tatum",
     "demar": "DeMar DeRozan",

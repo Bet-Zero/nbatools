@@ -87,7 +87,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (team): `vs Lakers`, `against Celtics`
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
-- on/off presence: `on/off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
+- on/off presence: `on/off`, `on off`, `on-off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
   (routes to `player_on_off`; executes against trusted `team_player_on_off_summary`
   rows when coverage exists, otherwise returns an explicit unsupported-data
   response. Whole-game `without_player` absence remains separate.)
@@ -305,6 +305,8 @@ Common combinations:
 Examples:
 
 - `Jokic on/off`
+- `Jokic on off`
+- `Nikola Jokic on-off`
 - `Nuggets with and without Jokic`
 - `with Curry on the floor`
 - `without Giannis on the floor`
@@ -315,6 +317,7 @@ Current behavior:
 - execution uses trusted `team_player_on_off_summary` rows when both `on` and `off` coverage exists for the requested single-player slice
 - missing or untrusted coverage, unsupported multi-player on/off, and slices outside the source contract return explicit unsupported/no-result responses
 - whole-game `without_player` absence is not an on/off substitute
+- multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` is outside the current lineup/availability boundary and returns a broad team-record fallback with an explicit unsupported-boundary note
 
 ### Specific lineup summaries
 

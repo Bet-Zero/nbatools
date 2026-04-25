@@ -258,6 +258,11 @@ def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | 
     return None
 
 
+def _multi_player_availability_boundary(q: str) -> bool:
+    """Detect unsupported multi-player availability phrasing."""
+    return bool(re.search(r"\b(?:both\s+play|play\s+together)\b", q))
+
+
 _AMBIGUOUS_FRAGMENT_PATTERNS = (
     (r"^celtics recently$", "team + recent fragment needs summary, finder, or record intent"),
     (r"^tatum vs knicks$", "player/team matchup fragment needs summary or game-list intent"),
@@ -1413,6 +1418,26 @@ def _finalize_route(parsed: dict) -> dict:
             "sort_by": "stat" if stat else "game_date",
             "ascending": False,
             "last_n": last_n,
+        }
+    elif team and record_intent and _multi_player_availability_boundary(q):
+        route = "team_record"
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
         }
     elif player and (
         summary_intent

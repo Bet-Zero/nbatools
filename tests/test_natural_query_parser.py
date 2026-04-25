@@ -607,6 +607,15 @@ def test_jokic_on_off_routes_to_placeholder_route():
     assert parsed["presence_state"] == "both"
 
 
+@pytest.mark.parametrize("query", ["Jokic on off", "Nikola Jokic on-off"])
+def test_on_off_token_variants_route_to_placeholder_route(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_on_off"
+    assert parsed["intent"] == "on_off"
+    assert parsed["lineup_members"] == ["Nikola Jokić"]
+    assert parsed["presence_state"] == "both"
+
+
 def test_with_player_on_floor_sets_on_presence_state():
     parsed = parse_query("Nuggets with Jokic on the floor")
     assert parsed["route"] == "player_on_off"

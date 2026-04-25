@@ -95,8 +95,8 @@ The active continuation queue is
 [`phase_l_work_queue.md`](./phase_l_work_queue.md).
 
 The current required action is to work the first unchecked item in
-[`phase_l_work_queue.md`](./phase_l_work_queue.md): resolve absence,
-multi-player availability, and on/off equivalence blockers.
+[`phase_l_work_queue.md`](./phase_l_work_queue.md): resolve occurrence-count
+and historical execution blockers.
 
 Working one queue item to completion does not mean the whole plan is done: once
 an item's required local tests pass, ship it as its own PR-sized unit, wait for

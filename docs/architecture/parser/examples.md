@@ -345,6 +345,10 @@ boundary and should return aligned unsupported/no-result behavior.
 | 44  | What is the Warriors' record when Stephen Curry makes at least 6 threes?  | Warriors record when Curry makes 6+ threes |
 | 45  | What is the Lakers' record when LeBron James and Anthony Davis both play? | Lakers record when LeBron and AD both play |
 
+_Current boundary note:_ multi-player availability record phrasing such as
+"both play" is outside the current lineup/availability execution boundary and
+returns an aligned broad team-record fallback with an explicit unsupported note.
+
 ### 3.10 Splits / context / shorthand search style
 
 | #   | Question form                                                                        | Search / shorthand form                    |
