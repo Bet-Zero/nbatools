@@ -64,13 +64,14 @@ execution-backed support on their documented route set.
   - approved source path: official `PlayByPlayV3` plus local score-state
     derivation keyed to the NBA definition: last 5 minutes of the 4th quarter
     or OT, score within 5
-- Current blockers / deferral boundary:
-  - no normalized play-by-play event table or derived clutch stats tables in
-    `data/`
-  - no command-level clutch filtering hook exists yet in the owning build-result functions
-  - the master-plan source approval now records the future source path, but
-    real clutch execution remains unshipped until that path is implemented and
-    coverage-gated
+- Historical blockers / deferral boundary:
+  - at Phase F, there was no normalized play-by-play event table or derived
+    clutch stats table in `data/`
+  - at Phase F, no command-level clutch filtering hook existed yet in the
+    owning build-result functions
+  - later master-plan queues implemented coverage-gated clutch execution for
+    the approved PlayByPlayV3-derived source path; current whole-plan status is
+    controlled by [`master_completion_plan.md`](./master_completion_plan.md)
 
 ### 2. Quarter / half / overtime
 

@@ -118,7 +118,7 @@ whole-game logs.
 
 ---
 
-## 3. `[-]` Replace `player_on_off` placeholder execution when data exists — skipped at Phase I closure because no trustworthy source was then approved; a later master-plan queue approved `teamplayeronoffsummary`, but implementation is still pending
+## 3. `[-]` Replace `player_on_off` placeholder execution when data exists — skipped at Phase I closure because no trustworthy source was then approved; later master-plan queues approved and implemented `teamplayeronoffsummary`
 
 **Why:** The dedicated route already exists. Once a trustworthy dataset exists,
 the placeholder should become execution-backed without changing parser

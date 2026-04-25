@@ -15,6 +15,12 @@
 > test commands. Check the item off, commit. Repeat. The final item must update
 > [`master_completion_plan.md`](./master_completion_plan.md) to either name the
 > next active continuation or state that the whole plan is done.
+>
+> **Current status note:** This queue's closure made the core capability
+> source-backed execution work done at that time. The current whole-plan status
+> is superseded by [`master_completion_plan.md`](./master_completion_plan.md),
+> which now names the parser examples completion plan as the active
+> continuation.
 
 ---
 
@@ -457,11 +463,12 @@ truthful completion answer.
 - [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md)
 - [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md)
 
-**Completion note:** Audited the master plan rollup after source-backed
+**Historical completion note:** Audited the master plan rollup after source-backed
 clutch, on/off, and lineup execution shipped. Every required core capability
-family is now product/capability complete for its documented core finish-line
+family was product/capability complete for its documented core finish-line
 boundary, with broader route/semantic expansion explicitly out of scope unless
 a future product queue reopens it. Updated
 [`master_completion_plan.md`](./master_completion_plan.md) to state that the
-whole plan is done and updated [`docs/index.md`](../index.md) so this queue is
-listed as closed.
+whole plan was done at that time and updated [`docs/index.md`](../index.md) so
+this queue is listed as closed. Current completion status is controlled only by
+[`master_completion_plan.md`](./master_completion_plan.md).

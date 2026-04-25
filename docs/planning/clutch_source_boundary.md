@@ -125,15 +125,18 @@ If the first implementation queue narrows that route list for risk control, it
 must document the narrower boundary in the queue and current-state docs before
 removing fallback notes on any route.
 
-## Immediate next action after source approval
+## Historical next action after source approval
 
-The active implementation path is
+The implementation path after source approval was
 [`source_backed_execution_queue.md`](./source_backed_execution_queue.md), which
-includes clutch items that start with:
+included clutch items that started with:
 
 1. documenting the final data contracts in `docs/reference/data_contracts.md`
 2. adding a `PlayByPlayV3` ingestion/backfill path
 3. validating score-state and trust coverage
+
+Current whole-plan status and active continuation are controlled only by
+[`master_completion_plan.md`](./master_completion_plan.md).
 4. deriving player-game and team-game clutch aggregates
 5. wiring coverage-gated execution into the supported route boundary
 6. replacing the unfiltered clutch note only on routes that truly execute the

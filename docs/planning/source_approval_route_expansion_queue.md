@@ -351,10 +351,11 @@ active continuation or a master-plan completion statement.
 - [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md)
 - [`docs/index.md`](../index.md)
 
-**Completion note:** Drafted
+**Historical completion note:** Drafted
 [`source_backed_execution_queue.md`](./source_backed_execution_queue.md) as the
 next active implementation queue because `clutch`, `on/off`, and `lineups` all
 now have approved source paths. Updated
 [`master_completion_plan.md`](./master_completion_plan.md) to name that queue as
 the active continuation and updated [`docs/index.md`](../index.md) to list the
-new queue.
+new queue. Current whole-plan status and active continuation are now controlled
+only by [`master_completion_plan.md`](./master_completion_plan.md).

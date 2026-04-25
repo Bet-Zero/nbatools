@@ -5,19 +5,18 @@
 
 ## Decision
 
-The future `player_on_off` source path is approved:
+The `player_on_off` source path is approved:
 `nba_api.stats.endpoints.TeamPlayerOnOffSummary`, normalized from the upstream
 `teamplayeronoffsummary` endpoint.
 
-This is a source approval only. Real `player_on_off` execution remains
-unshipped until a later implementation queue builds the ingestion, validation,
-loader, and coverage-gated route execution path. The current placeholder route
-must stay in place until that work lands.
+This artifact was originally a source approval only. The later
+[`source_backed_execution_queue.md`](./source_backed_execution_queue.md)
+implemented the ingestion, validation, loader, and coverage-gated route
+execution path for the approved source boundary.
 
-The repo still does not contain an on/off execution dataset under `data/`, and
-it still does not contain play-by-play, substitution, rotation, or local stint
-tables. Because of that, current route behavior must not change in this source
-decision item.
+The repo still does not contain play-by-play, substitution, rotation, or local
+stint tables. On/off execution is limited to the approved upstream
+TeamPlayerOnOffSummary boundary.
 
 The approved upstream split table is a better fit for the current route
 contract than whole-game absence because it already exposes one row per
@@ -78,19 +77,21 @@ the current on/off route requires rating-style split metrics.
 
 - `parse_query()` and structured query execution keep routing on/off phrasing to
   `player_on_off`.
-- `player_on_off.build_result()` remains a placeholder and returns a
-  `NoResult(reason="unsupported")` with an explicit on/off data note.
+- `player_on_off.build_result()` returns coverage-gated source-backed results
+  when trusted `team_player_on_off_summary` rows exist, and otherwise returns
+  the explicit unsupported-data response.
 - `without_player` remains a whole-game absence filter and must not be reused as
   an on/off substitute.
 
-## Immediate next action after source approval
+## Historical next action after source approval
 
-The next implementation queue should reopen Phase I implementation work by:
+The implementation queue after source approval reopened Phase I implementation
+work by:
 
 1. adding the raw/processed data contract to `docs/reference/data_contracts.md`
 2. building the ingestion or derivation path
 3. adding validation and loader helpers
 4. replacing `player_on_off` placeholder execution with coverage-gated results
 
-Until then, on/off is source-approved but not execution-backed or product
-complete.
+Current whole-plan status and active continuation are controlled only by
+[`master_completion_plan.md`](./master_completion_plan.md).

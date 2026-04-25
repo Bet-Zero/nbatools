@@ -110,7 +110,7 @@ that explicitly instead of leaving a placeholder in informal limbo.
 
 ---
 
-## 3. `[-]` Replace lineup placeholder routes when data exists — skipped at Phase J closure because no trustworthy source was then approved; a later master-plan queue approved `leaguelineupviz`, but implementation is still pending
+## 3. `[-]` Replace lineup placeholder routes when data exists — skipped at Phase J closure because no trustworthy source was then approved; later master-plan queues approved and implemented `leaguelineupviz`
 
 **Why:** The parser already routes lineup queries. Once a trustworthy dataset
 exists, `lineup_summary` and `lineup_leaderboard` should return real structured
@@ -197,25 +197,25 @@ deferral explicitly.
 
 ---
 
-## Phase J retrospective
+## Historical Phase J retrospective
 
 ### Outcome
 
-- Real lineup execution remains unshipped.
+- At Phase J closure, real lineup execution remained unshipped.
 - [`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md)
-  records the source decision, required future artifacts, and the immediate next
-  action after source approval. A later master-plan source-approval queue
-  approved upstream `leaguelineupviz` via
-  `nba_api.stats.endpoints.LeagueLineupViz` for future implementation.
-- `lineup_summary` and `lineup_leaderboard` remain honest placeholders returning
-  `NoResult(reason="unsupported")` with explicit lineup data notes.
+  recorded the source decision and required future artifacts. Later
+  master-plan queues approved upstream `leaguelineupviz` via
+  `nba_api.stats.endpoints.LeagueLineupViz` and implemented coverage-gated
+  lineup execution.
+- Current whole-plan status and active continuation are controlled only by
+  [`master_completion_plan.md`](./master_completion_plan.md).
 
 ### Key boundary
 
 - Roster membership is not lineup execution. It identifies season/team
   membership but has no shared-court, stint, possession, or unit-level sample
   boundary.
-- The approved future implementation path is the upstream `leaguelineupviz`
+- The approved implementation path is the upstream `leaguelineupviz`
   lineup-unit table; roster membership remains rejected as a substitute.
 
 ### Final Part 2 closure audit

@@ -253,21 +253,20 @@ dataset path and coverage-gated `player_on_off` route execution. Whole-game
 **Post-queue status:** Phase J originally deferred real lineup execution in
 [`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md). The
 later master-plan source-approval queue approved upstream `leaguelineupviz` via
-`nba_api.stats.endpoints.LeagueLineupViz` for future implementation. The current
-`lineup_summary` and `lineup_leaderboard` routes remain honest placeholders
-until that source is ingested, validated, and wired into coverage-gated route
+`nba_api.stats.endpoints.LeagueLineupViz`; the later source-backed execution
+queue ingested, validated, and wired that source into coverage-gated route
 execution. Roster membership remains explicitly separate and is not a
 lineup-unit substitute.
 
-**Part 2 closure status:** closed with explicit boundaries. Remaining deferred
-capabilities are named rather than implicit:
+**Part 2 closure status:** closed with explicit boundaries. Deferred
+capabilities were named rather than implicit:
 
 - `clutch` — source path approved in
-  [`clutch_source_boundary.md`](./clutch_source_boundary.md), but execution
-  still not shipped
+  [`clutch_source_boundary.md`](./clutch_source_boundary.md); coverage-gated
+  execution shipped after Part 2 closure
 - `player_on_off` — coverage-gated execution shipped after Part 2 closure
 - `lineup_summary` / `lineup_leaderboard` — source path approved after Part 2
-  closure, but execution still not shipped
+  closure; coverage-gated execution shipped after Part 2 closure
 
 Coverage-gated execution-backed boundaries are:
 
@@ -298,10 +297,10 @@ The next step for this closed Part 2 plan is explicit:
 - **Active queue:** none; Part 2 is closed with explicit deferrals and
   coverage-gated execution boundaries
 - **Master-plan continuation:** [`master_completion_plan.md`](./master_completion_plan.md)
-  remains open. The active continuation queue is
-  [`source_backed_execution_queue.md`](./source_backed_execution_queue.md),
-  which owns implementation of the approved source-backed clutch, on/off, and
-  lineup paths.
+  is the single authority for current whole-plan status. It now names
+  [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md)
+  and [`phase_k_work_queue.md`](./phase_k_work_queue.md) as the active
+  continuation for the examples-library surface.
 
 If the active master-plan continuation discovers that a later implementation
 queue cannot responsibly be authored without additional review, it must create
