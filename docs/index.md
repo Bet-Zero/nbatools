@@ -65,7 +65,8 @@ Runbooks and operational guides.
 Roadmap, active plans, and closed closure records.
 
 - `planning/master_completion_plan.md` — single top-level authority for whole-plan completion status, active continuation, and open core capability families
-- `planning/source_approval_route_expansion_queue.md` — active master-plan continuation queue for source approvals and route-expansion product decisions
+- `planning/source_backed_execution_queue.md` — active master-plan continuation queue for implementing approved clutch, on/off, and lineup source paths
+- `planning/source_approval_route_expansion_queue.md` — closed master-plan continuation queue for source approvals and route-expansion product decisions
 - `planning/clutch_source_boundary.md` — approved future clutch source path and dataset boundary; current execution remains unfiltered until implementation lands
 - `planning/roadmap.md` — planned and future capabilities
 - `planning/query_surface_expansion_plan.md` — closed Part 1 parser/query-surface expansion plan (subsystem-complete only)
@@ -74,10 +75,10 @@ Roadmap, active plans, and closed closure records.
 - `planning/phase_g_period_only_work_queue.md` — completed period-only continuation queue for quarter / half / OT execution after the Phase G segment-data review
 - `planning/phase_g_segment_data_review_handoff.md` — resolved Phase G handoff that split period-only continuation from clutch deferral
 - `planning/phase_h_work_queue.md` — completed queue for schedule-context execution after the Phase G period-only continuation
-- `planning/phase_i_work_queue.md` — completed queue for real on/off execution / explicit deferral
-- `planning/phase_i_on_off_source_boundary.md` — explicit on/off source deferral and future-source requirements
-- `planning/phase_j_work_queue.md` — completed queue for lineup execution / explicit deferral and final Part 2 closure audit
-- `planning/phase_j_lineup_source_boundary.md` — explicit lineup source deferral and future-source requirements
+- `planning/phase_i_work_queue.md` — completed queue for real on/off execution / source-boundary deferral
+- `planning/phase_i_on_off_source_boundary.md` — approved future on/off source path and implementation requirements
+- `planning/phase_j_work_queue.md` — completed queue for lineup execution / source-boundary deferral and final Part 2 closure audit
+- `planning/phase_j_lineup_source_boundary.md` — approved future lineup source path and implementation requirements
 - `planning/phase_f_work_queue.md` — completed Phase F audit queue and handoff into Phase G
 - `planning/phase_f_execution_gap_inventory.md` — consolidated inventory of parser-shipped but execution-partial capability families
 - `planning/phase_e_data_inventory.md` — on/off and lineup data-layer audit for Phase E item 7

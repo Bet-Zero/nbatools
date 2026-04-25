@@ -78,6 +78,10 @@ class TestBuildResultMap:
             "team_streak_finder",
             "player_occurrence_leaders",
             "team_occurrence_leaders",
+            "player_on_off",
+            "lineup_summary",
+            "lineup_leaderboard",
+            "player_stretch_leaderboard",
             "playoff_history",
             "playoff_appearances",
             "playoff_matchup_history",
@@ -564,7 +568,7 @@ class TestNaturalQueryStructuredFirst:
     def test_leaderboard_pretty_output(self):
         out = _capture_output(
             natural_query_run,
-            query="top 5 scoring games in 2005-06",
+            query="highest scoring games in 2005-06",
             pretty=True,
         )
         assert "Kobe Bryant" in out

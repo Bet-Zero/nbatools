@@ -333,7 +333,7 @@ class TestStructuredQueryExecution:
         assert qr.metadata["presence_state"] == "both"
         assert any("on_off" in note and "placeholder" in note for note in qr.result.notes)
 
-    def test_structured_query_accepts_lineup_summary_placeholder_route(self):
+    def test_structured_query_accepts_lineup_summary_route_without_coverage(self):
         qr = execute_structured_query(
             "lineup_summary",
             season="1950-51",
@@ -345,9 +345,9 @@ class TestStructuredQueryExecution:
         assert qr.result_reason == "unsupported"
         assert qr.metadata["lineup_members"] == ["Jayson Tatum", "Jaylen Brown"]
         assert qr.metadata["unit_size"] == 2
-        assert any("lineup" in note and "placeholder" in note for note in qr.result.notes)
+        assert any("lineup" in note and "coverage" in note for note in qr.result.notes)
 
-    def test_structured_query_accepts_lineup_leaderboard_placeholder_route(self):
+    def test_structured_query_accepts_lineup_leaderboard_route_without_coverage(self):
         qr = execute_structured_query(
             "lineup_leaderboard",
             season="1950-51",
@@ -359,7 +359,7 @@ class TestStructuredQueryExecution:
         assert qr.result_reason == "unsupported"
         assert qr.metadata["unit_size"] == 5
         assert qr.metadata["minute_minimum"] == 200
-        assert any("lineup" in note and "placeholder" in note for note in qr.result.notes)
+        assert any("lineup" in note and "coverage" in note for note in qr.result.notes)
 
     def test_structured_query_accepts_player_stretch_leaderboard_route(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)

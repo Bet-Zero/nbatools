@@ -5,19 +5,24 @@
 
 ## Decision
 
-Real lineup execution is explicitly deferred under current repo constraints.
+The future lineup-unit source path is approved:
+`nba_api.stats.endpoints.LeagueLineupViz`, normalized from the upstream
+`leaguelineupviz` endpoint.
 
-The repo still does not contain a trustworthy lineup-capable source:
+This artifact was originally a source approval only. The later
+[`source_backed_execution_queue.md`](./source_backed_execution_queue.md)
+implemented the ingestion, validation, loader, and coverage-gated route
+execution path for the approved source boundary.
 
-- no lineup-unit table
-- no play-by-play event table
-- no substitution table
-- no rotation/stint table
-- no possession-level lineup membership table
+The repo still does not contain play-by-play, substitution, rotation, or local
+stint tables. Lineup execution is limited to the approved upstream
+`LeagueLineupViz` source boundary.
 
-Because of that, Phase J must not replace `lineup_summary` or
-`lineup_leaderboard` placeholders with approximations derived from roster
-membership.
+The approved upstream lineup table is a better fit for the current route
+contract than roster membership because it exposes lineup-unit identity
+(`GROUP_ID` / `GROUP_NAME`), team identity, unit minutes, efficiency metrics
+including `OFF_RATING`, `DEF_RATING`, and `NET_RATING`, and a source-level
+`MinutesMin` parameter for minimum-minute thresholds.
 
 ## Why roster membership is not lineup execution
 
@@ -29,56 +34,60 @@ Lineup queries ask for unit-level performance for 2-man, 3-man, 5-man, or
 specific-player groups. Roster membership cannot reconstruct those groups or
 their sample sizes.
 
-## Required future source
+## Approved source contract
 
-A future lineup implementation needs one of these approved inputs:
+The raw future dataset should be documented as
+`data/raw/league_lineup_viz/{season}_{season_type_safe}.csv` before
+implementation changes route behavior.
 
-- stable upstream lineup-unit tables with unit membership, minutes/possessions,
-  and metrics
-- play-by-play plus substitutions sufficient to derive stint-level lineup
-  membership
-- an already-derived local lineup-unit/stint table with possession/minute and
-  scoring context
+Minimum contract:
 
-Until one of those exists, the only honest execution behavior is the current
-placeholder route family with unsupported-data notes.
+- source endpoint: `leaguelineupviz`, called through
+  `nba_api.stats.endpoints.LeagueLineupViz`
+- source grain: lineup-unit rows for a requested unit size and minimum-minute
+  threshold
+- normalized grain: one row per `season`, `season_type`, `team_id`,
+  `unit_size`, `lineup_id`, and `minute_minimum`
+- keys: `season`, `season_type`, `team_id`, `unit_size`, `lineup_id`,
+  `minute_minimum`
+- membership fields: source `GROUP_ID` and `GROUP_NAME`, normalized into
+  `lineup_id`, `lineup_name`, `player_ids`, and `player_names`
+- sample-size fields: `minutes`; possessions and games represented are not
+  exposed by the approved minimum source and must remain unavailable unless a
+  later implementation adds a separately approved enrichment source
+- threshold field: `minute_minimum`, backed by the source `MinutesMin`
+  parameter
+- result metrics: `off_rating`, `def_rating`, `net_rating`, `pace`, `ts_pct`,
+  and the additional rate fields exposed by the source
+- trust fields: `source_endpoint`, `source_pull_date`, `source_schema_version`,
+  `coverage_trusted`, and `coverage_validation_reason`
 
-## Future dataset contract, once a source is approved
+Route execution may only use a season/unit-size/minimum-minute slice when the
+source schema matches the documented contract, lineup membership parses into the
+expected `unit_size`, and coverage validation passes. Missing or untrusted
+coverage must keep the current unsupported-data response instead of mixing
+source-backed and placeholder behavior.
 
-If a source is approved later, the dataset should be documented before route
-execution changes. A viable contract should include at minimum:
-
-- grain: one row per lineup unit/team/season/sample, or one row per stint if
-  execution derives units dynamically
-- keys: `season`, `season_type`, `team_id`, `unit_size`, and a stable lineup
-  membership key
-- membership fields: ordered or normalized player IDs/names for the unit
-- sample-size fields: minutes and/or possessions, plus games represented where
-  available
-- thresholds: explicit handling for `minute_minimum`
-- result metrics: at least minutes, possessions where available, offensive and
-  defensive efficiency or net rating, and any exposed counting/rate fields
-- trust fields: source name, source version or pull date, and coverage flags so
-  route execution can fall back honestly for missing slices
+`LeagueDashLineups` may be evaluated later as a counting-stat or games-played
+enrichment source, but it is not the approved minimum source for the current
+route contract because `LeagueLineupViz` directly exposes the rating metrics and
+minimum-minute filter needed by the lineup query surface.
 
 ## Current route boundary
 
 - `parse_query()` and structured query execution keep routing lineup phrasing to
   `lineup_summary` or `lineup_leaderboard`.
-- `lineup_summary.build_result()` and `lineup_leaderboard.build_result()` remain
-  placeholders returning `NoResult(reason="unsupported")` with explicit lineup
-  data notes.
+- `lineup_summary.build_result()` and `lineup_leaderboard.build_result()` return
+  trusted `league_lineup_viz` rows when coverage exists for the requested slice.
+  Missing or untrusted coverage returns `NoResult(reason="unsupported")` with
+  explicit lineup data notes.
 - roster membership remains an identity/enrichment source only and must not be
   reused as a lineup-unit substitute.
 
-## Immediate next action after source approval
+## Implementation status
 
-If a trustworthy source is approved, reopen lineup implementation work by:
-
-1. adding the raw/processed data contract to `docs/reference/data_contracts.md`
-2. building the ingestion or derivation path
-3. adding validation and loader helpers
-4. replacing lineup placeholder execution with coverage-gated structured results
-
-Until then, Phase J is execution/data complete by explicit deferral rather than
-by shipped lineup-unit computation.
+The source-backed implementation queue added the raw data contract, ingestion
+path, validation, loader helpers, and coverage-gated route execution. Lineups
+are now execution-backed for the approved source boundary. Any future
+play-by-play, substitution, rotation, or stint-table expansion requires a new
+source decision.

@@ -5,19 +5,25 @@
 
 ## Decision
 
-Real `player_on_off` execution is explicitly deferred under current repo
-constraints.
+The future `player_on_off` source path is approved:
+`nba_api.stats.endpoints.TeamPlayerOnOffSummary`, normalized from the upstream
+`teamplayeronoffsummary` endpoint.
 
-The repo still does not contain a trustworthy on/off-capable source:
+This is a source approval only. Real `player_on_off` execution remains
+unshipped until a later implementation queue builds the ingestion, validation,
+loader, and coverage-gated route execution path. The current placeholder route
+must stay in place until that work lands.
 
-- no play-by-play event table
-- no substitution table
-- no rotation/stint table
-- no upstream on/off split table
-- no possession-level on-court/off-court sample table
+The repo still does not contain an on/off execution dataset under `data/`, and
+it still does not contain play-by-play, substitution, rotation, or local stint
+tables. Because of that, current route behavior must not change in this source
+decision item.
 
-Because of that, Phase I must not replace the existing `player_on_off`
-placeholder with an approximation derived from whole-game logs.
+The approved upstream split table is a better fit for the current route
+contract than whole-game absence because it already exposes one row per
+team/player/court-status split with the queried player identity, `COURT_STATUS`,
+games represented, minutes, plus-minus, and `OFF_RATING`, `DEF_RATING`, and
+`NET_RATING`.
 
 ## Why whole-game absence is not on/off
 
@@ -30,34 +36,43 @@ floor versus off the floor within the relevant sample. Whole-game absence cannot
 recover that boundary because a game log row has no substitution times, stint
 membership, possession counts, or on-court lineup state.
 
-## Required future source
+## Approved source contract
 
-A future on/off implementation needs one of these approved inputs:
+The raw future dataset should be documented as
+`data/raw/team_player_on_off_summary/{season}_{season_type_safe}.csv` before
+implementation changes route behavior.
 
-- a stable upstream on/off split table with on-court/off-court metrics
-- play-by-play plus substitution events sufficient to derive stint membership
-- an already-derived local stint table with possession/minute and team scoring
-  context
+Minimum contract:
 
-Until one of those exists, the only honest execution behavior is the current
-placeholder route with an unsupported-data note.
+- source endpoint: `teamplayeronoffsummary`, called through
+  `nba_api.stats.endpoints.TeamPlayerOnOffSummary`
+- source grain: team-season split rows for players on court and off court
+- normalized grain: one row per `season`, `season_type`, `team_id`,
+  queried `player_id`, and `presence_state`
+- source row groups:
+  - `PlayersOnCourtTeamPlayerOnOffSummary`
+  - `PlayersOffCourtTeamPlayerOnOffSummary`
+- keys: `season`, `season_type`, `team_id`, `player_id`, `presence_state`
+- queried player identity: source `VS_PLAYER_ID` / `VS_PLAYER_NAME`, normalized
+  to `player_id` / `player_name`
+- split field: source `COURT_STATUS`, normalized to `presence_state` values
+  `on` and `off`
+- sample-size fields: `gp` and `minutes`; possessions are not exposed by the
+  approved source and must remain unavailable unless a later implementation
+  adds a separately approved possession source
+- result metrics: `plus_minus`, `off_rating`, `def_rating`, `net_rating`
+- trust fields: `source_endpoint`, `source_pull_date`, `source_schema_version`,
+  `coverage_trusted`, and `coverage_validation_reason`
 
-## Future dataset contract, once a source is approved
+Route execution may only use a player/team/season slice when both on-court and
+off-court rows are present, the source schema matches the documented contract,
+and coverage validation passes. Missing or untrusted coverage must keep the
+current unsupported-data response instead of mixing source-backed and placeholder
+behavior.
 
-If a source is approved later, the dataset should be documented before route
-execution changes. A viable contract should include at minimum:
-
-- grain: one row per player/team/season/sample split, or one row per stint if
-  execution derives splits dynamically
-- keys: `season`, `season_type`, `team_id`, `player_id`, and the source's sample
-  identity fields
-- split fields: `presence_state` (`on` / `off`) and the queried player identity
-- sample-size fields: possessions and/or minutes, plus games represented where
-  available
-- result metrics: at least `off_rating`, `def_rating`, `net_rating`, and any
-  counting/rate fields exposed in structured output
-- trust fields: source name, source version or pull date, and coverage flags so
-  route execution can fall back honestly for missing slices
+`TeamPlayerOnOffDetails` may be evaluated later as a counting-stat enrichment
+source, but it is not the approved minimum source for the route contract because
+the current on/off route requires rating-style split metrics.
 
 ## Current route boundary
 
@@ -70,12 +85,12 @@ execution changes. A viable contract should include at minimum:
 
 ## Immediate next action after source approval
 
-If a trustworthy source is approved, reopen Phase I implementation work by:
+The next implementation queue should reopen Phase I implementation work by:
 
 1. adding the raw/processed data contract to `docs/reference/data_contracts.md`
 2. building the ingestion or derivation path
 3. adding validation and loader helpers
 4. replacing `player_on_off` placeholder execution with coverage-gated results
 
-Until then, Phase I is execution/data complete by explicit deferral rather than
-by shipped on/off computation.
+Until then, on/off is source-approved but not execution-backed or product
+complete.

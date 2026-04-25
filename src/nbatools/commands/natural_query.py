@@ -57,9 +57,6 @@ from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes as build_game_context_filter_notes,
 )
 from nbatools.commands._parse_helpers import (
-    build_lineup_note as build_lineup_note,
-)
-from nbatools.commands._parse_helpers import (
     build_on_off_note as build_on_off_note,
 )
 from nbatools.commands._parse_helpers import (
@@ -1478,13 +1475,6 @@ def _finalize_route(parsed: dict) -> dict:
         presence_state=presence_state,
     ):
         notes.append(on_off_note)
-    if lineup_note := build_lineup_note(
-        lineup_members=lineup_members,
-        unit_size=unit_size,
-        minute_minimum=minute_minimum,
-    ):
-        notes.append(lineup_note)
-
     date_window_active = start_date is not None or end_date is not None
     if date_window_active and route in ("season_leaders", "season_team_leaders"):
         notes.append(

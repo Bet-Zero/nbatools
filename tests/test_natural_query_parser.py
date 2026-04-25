@@ -655,7 +655,7 @@ def test_on_off_note_appended():
 # ---------------------------------------------------------------------------
 
 
-def test_best_five_man_lineups_route_to_leaderboard_placeholder():
+def test_best_five_man_lineups_route_to_leaderboard():
     parsed = parse_query("best 5-man lineups this season")
     assert parsed["route"] == "lineup_leaderboard"
     assert parsed["intent"] == "lineup"
@@ -675,7 +675,7 @@ def test_two_man_combos_capture_unit_size():
     assert parsed["unit_size"] == 2
 
 
-def test_lineup_with_two_players_routes_to_summary_placeholder():
+def test_lineup_with_two_players_routes_to_summary():
     parsed = parse_query("lineup with Tatum and Jaylen Brown")
     assert parsed["route"] == "lineup_summary"
     assert parsed["lineup_members"] == ["Jayson Tatum", "Jaylen Brown"]
@@ -688,10 +688,10 @@ def test_together_phrase_routes_to_lineup_summary():
     assert parsed["lineup_members"] == ["Jayson Tatum", "Jaylen Brown"]
 
 
-def test_lineup_note_appended():
+def test_lineup_parser_does_not_add_placeholder_note_after_source_backed_execution():
     parsed = parse_query("best 5-man lineups this season")
     notes = parsed.get("notes", [])
-    assert any("lineup" in n and "placeholder" in n for n in notes)
+    assert not any("lineup" in n and "placeholder" in n for n in notes)
 
 
 # ---------------------------------------------------------------------------

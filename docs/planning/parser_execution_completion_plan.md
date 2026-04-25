@@ -111,8 +111,8 @@ named source prerequisite.
 | Quarter / half / OT      | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` / `team_record` via period-window backfills; other routes still remain unfiltered                                                | `parser/specification.md` §8, `parser/examples.md` §7.8, `phase_g_period_only_work_queue.md`                                                            |
 | Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` / `player_game_summary` via `schedule_context_features`; unsupported routes and missing/untrusted coverage still fall back with explicit notes | `parser/specification.md` §8, `parser/examples.md` §§7.9, 7.12-7.14, `docs/reference/data_contracts.md`                                                   |
 | Starter / bench role     | Parser-recognized for player context   | Coverage-gated execution on `player_game_summary` / `player_game_finder` when trusted `player_game_starter_roles` rows exist; explicit unfiltered note otherwise                 | `parser/specification.md` §8, `parser/examples.md` §7.10, `docs/reference/data_contracts.md`                                                             |
-| On/off                   | Dedicated route exists                 | Explicitly deferred by Phase I; placeholder remains because no trustworthy on/off split, play-by-play + substitution, or stint source exists                                      | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`, `phase_i_on_off_source_boundary.md`                               |
-| Lineups                  | Dedicated routes exist                 | Explicitly deferred by Phase J; placeholders remain because no trustworthy lineup-unit, play-by-play + substitution, or stint source exists                                       | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md`, `phase_j_lineup_source_boundary.md`                         |
+| On/off                   | Dedicated route exists                 | Coverage-gated execution implemented after Part 2 closure via `team_player_on_off_summary`, normalized from upstream `teamplayeronoffsummary` through `nba_api.stats.endpoints.TeamPlayerOnOffSummary`. Missing/untrusted coverage keeps the unsupported-data response. | `parser/specification.md` §11, `parser/examples.md` §7.15, `phase_e_data_inventory.md`, `phase_i_on_off_source_boundary.md`, `docs/reference/data_contracts.md` |
+| Lineups                  | Dedicated routes exist                 | Source path approved after Part 2 closure: upstream `leaguelineupviz` via `nba_api.stats.endpoints.LeagueLineupViz`. Execution still returns unsupported-data placeholders until the lineup dataset and route execution are implemented. | `parser/specification.md` §11, `parser/examples.md` §§7.16-7.17, `phase_e_data_inventory.md`, `phase_j_lineup_source_boundary.md`, `docs/reference/data_contracts.md` |
 
 These families are not allowed to disappear under a generic “plan complete”
 statement. Each remaining deferral names the missing source artifact required to
@@ -224,12 +224,14 @@ table and route execution boundary:
 
 - supported on/off queries return real results rather than placeholder notes, or the capability is explicitly deferred with a documented reason
 
-**Post-queue status:** Phase I explicitly deferred real on/off execution in
-[`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md).
-The current `player_on_off` route remains an honest placeholder because the repo
-has no on/off split table, play-by-play plus substitutions, or trusted stint
-source. Whole-game `without_player` remains explicitly separate and is not an
-on/off substitute.
+**Post-queue status:** Phase I originally deferred real on/off execution in
+[`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md). The
+later master-plan source-approval queue approved upstream
+`teamplayeronoffsummary` via
+`nba_api.stats.endpoints.TeamPlayerOnOffSummary` for future implementation. The
+later source-backed execution queue added the `team_player_on_off_summary`
+dataset path and coverage-gated `player_on_off` route execution. Whole-game
+`without_player` remains explicitly separate and is not an on/off substitute.
 
 ### 5.5 Phase J — Real lineup execution and closure audit
 
@@ -248,12 +250,14 @@ on/off substitute.
 - the final closure audit names any remaining deferrals explicitly
 - no parser-shipped family remains in an implicit “we’ll get to that later” state
 
-**Post-queue status:** Phase J explicitly deferred real lineup execution in
-[`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md).
-The current `lineup_summary` and `lineup_leaderboard` routes remain honest
-placeholders because the repo has no lineup-unit table, play-by-play plus
-substitutions, or trusted stint source. Roster membership remains explicitly
-separate and is not a lineup-unit substitute.
+**Post-queue status:** Phase J originally deferred real lineup execution in
+[`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md). The
+later master-plan source-approval queue approved upstream `leaguelineupviz` via
+`nba_api.stats.endpoints.LeagueLineupViz` for future implementation. The current
+`lineup_summary` and `lineup_leaderboard` routes remain honest placeholders
+until that source is ingested, validated, and wired into coverage-gated route
+execution. Roster membership remains explicitly separate and is not a
+lineup-unit substitute.
 
 **Part 2 closure status:** closed with explicit boundaries. Remaining deferred
 capabilities are named rather than implicit:
@@ -261,10 +265,9 @@ capabilities are named rather than implicit:
 - `clutch` — source path approved in
   [`clutch_source_boundary.md`](./clutch_source_boundary.md), but execution
   still not shipped
-- `player_on_off` — deferred pending a trustworthy on/off split,
-  play-by-play + substitution, or stint source
-- `lineup_summary` / `lineup_leaderboard` — deferred pending a trustworthy
-  lineup-unit, play-by-play + substitution, or stint source
+- `player_on_off` — coverage-gated execution shipped after Part 2 closure
+- `lineup_summary` / `lineup_leaderboard` — source path approved after Part 2
+  closure, but execution still not shipped
 
 Coverage-gated execution-backed boundaries are:
 
@@ -296,9 +299,9 @@ The next step for this closed Part 2 plan is explicit:
   coverage-gated execution boundaries
 - **Master-plan continuation:** [`master_completion_plan.md`](./master_completion_plan.md)
   remains open. The active continuation queue is
-  [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md),
-  which owns the remaining source approvals and route-expansion product
-  decisions before product feature implementation resumes.
+  [`source_backed_execution_queue.md`](./source_backed_execution_queue.md),
+  which owns implementation of the approved source-backed clutch, on/off, and
+  lineup paths.
 
 If the active master-plan continuation discovers that a later implementation
 queue cannot responsibly be authored without additional review, it must create

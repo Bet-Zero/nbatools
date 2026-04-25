@@ -1,6 +1,7 @@
 import typer
 
 from nbatools.commands.analysis.analyze_3pt_battles import run as analyze_3pt_battles_run
+from nbatools.commands.pipeline.build_clutch_stats import run as build_clutch_stats_run
 from nbatools.commands.pipeline.build_game_features import run as build_game_features_run
 from nbatools.commands.pipeline.build_league_season_stats import (
     run as build_league_season_stats_run,
@@ -55,6 +56,14 @@ def build_player_game_features(
     season_type: str = typer.Option(..., "--season-type"),
 ):
     build_player_game_features_run(season, season_type)
+
+
+@app.command("build-clutch-stats")
+def build_clutch_stats(
+    season: str = typer.Option(...),
+    season_type: str = typer.Option(..., "--season-type"),
+):
+    build_clutch_stats_run(season, season_type)
 
 
 @app.command("build-league-season-stats")

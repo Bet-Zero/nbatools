@@ -881,21 +881,21 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Jokic on/off`
 - `Jokic on off`
 - `Nikola Jokic on-off`
-- _Current execution note:_ all variants route to `player_on_off` and return an honest unsupported-data note. Phase I explicitly deferred real execution until a trustworthy on/off split, play-by-play plus substitutions, or stint source is approved._
+- _Current execution note:_ all variants route to `player_on_off`. Execution returns trusted `team_player_on_off_summary` rows when coverage exists for the requested single-player slice; missing or untrusted coverage keeps the honest unsupported-data response._
 
 ### 7.16 Lineup leaderboard — best 5-man lineups
 
 - `best 5-man lineups`
 - `best 5 man lineups`
 - `top 5-man units`
-- _Current execution note:_ all variants set `unit_size=5` and route to `lineup_leaderboard`, with an honest unsupported-data note. Phase J explicitly deferred real execution until a trustworthy lineup-unit, play-by-play plus substitutions, or stint source is approved._
+- _Execution note:_ all variants set `unit_size=5` and route to `lineup_leaderboard`. Execution uses trusted `league_lineup_viz` rows when coverage exists; missing or untrusted coverage returns an honest unsupported/no-result response._
 
 ### 7.17 Specific lineup — LeBron and AD together
 
 - `lineups with LeBron and AD`
 - `lineup with LeBron and AD`
 - `LeBron and AD together lineups`
-- _Current execution note:_ all variants route to `lineup_summary` with `lineup_members` populated; execution remains placeholder by explicit Phase J deferral until a trustworthy lineup source is approved._
+- _Execution note:_ all variants route to `lineup_summary` with `lineup_members` populated. Execution uses trusted `league_lineup_viz` rows when coverage exists; missing or untrusted coverage returns an honest unsupported/no-result response._
 
 ### 7.18 Stretch leaderboard — hottest 3-game scoring stretch
 
@@ -929,7 +929,7 @@ future product queue reopens them.
 - `net rating with Tatum and Brown together`
 - `best 3-man units with at least 200 minutes`
 - _See equivalence groups §7.15-§7.17 for canonical paraphrase sets._
-- _Single-player on/off and lineup/unit phrasing currently route to placeholder paths with honest unsupported-data notes; Phase I and Phase J explicitly defer real execution until trustworthy on/off and lineup sources are approved._
+- _Single-player on/off phrasing routes to coverage-gated `player_on_off` execution. Lineup/unit phrasing routes to coverage-gated `lineup_summary` or `lineup_leaderboard` execution backed by trusted `league_lineup_viz` rows._
 - _See [`specification.md` §11](./specification.md#11-onoff-lineup-and-stretch-support)._
 
 ### 8.3 Context filtering boundaries

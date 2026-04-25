@@ -110,7 +110,7 @@ that explicitly instead of leaving a placeholder in informal limbo.
 
 ---
 
-## 3. `[-]` Replace lineup placeholder routes when data exists — skipped because [`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md) explicitly defers real lineup execution until a trustworthy lineup-unit, play-by-play + substitution, or stint source is approved
+## 3. `[-]` Replace lineup placeholder routes when data exists — skipped at Phase J closure because no trustworthy source was then approved; a later master-plan queue approved `leaguelineupviz`, but implementation is still pending
 
 **Why:** The parser already routes lineup queries. Once a trustworthy dataset
 exists, `lineup_summary` and `lineup_leaderboard` should return real structured
@@ -201,10 +201,12 @@ deferral explicitly.
 
 ### Outcome
 
-- Real lineup execution is explicitly deferred under current repo constraints.
+- Real lineup execution remains unshipped.
 - [`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md)
   records the source decision, required future artifacts, and the immediate next
-  action after source approval.
+  action after source approval. A later master-plan source-approval queue
+  approved upstream `leaguelineupviz` via
+  `nba_api.stats.endpoints.LeagueLineupViz` for future implementation.
 - `lineup_summary` and `lineup_leaderboard` remain honest placeholders returning
   `NoResult(reason="unsupported")` with explicit lineup data notes.
 
@@ -213,8 +215,8 @@ deferral explicitly.
 - Roster membership is not lineup execution. It identifies season/team
   membership but has no shared-court, stint, possession, or unit-level sample
   boundary.
-- A future implementation needs stable lineup-unit tables, play-by-play plus
-  substitutions, or a trusted lineup-unit/stint table.
+- The approved future implementation path is the upstream `leaguelineupviz`
+  lineup-unit table; roster membership remains rejected as a substitute.
 
 ### Final Part 2 closure audit
 
@@ -228,8 +230,10 @@ deferral explicitly.
   when trusted starter-role rows exist.
 - schedule-context execution is coverage-gated on `team_record` and
   `player_game_summary`.
-- on/off is explicitly deferred by Phase I.
-- lineups are explicitly deferred by Phase J.
+- on/off has an approved upstream `teamplayeronoffsummary` source path after
+  Part 2 closure, but execution remains placeholder-backed until implementation.
+- lineups have an approved upstream `leaguelineupviz` source path after Part 2
+  closure, but execution remains placeholder-backed until implementation.
 
 No parser-shipped Part 2 family remains in an implicit “later” state.
 

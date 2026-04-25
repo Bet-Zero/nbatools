@@ -118,7 +118,7 @@ whole-game logs.
 
 ---
 
-## 3. `[-]` Replace `player_on_off` placeholder execution when data exists — skipped because [`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md) explicitly defers real on/off execution until a trustworthy split, play-by-play + substitution, or stint source is approved
+## 3. `[-]` Replace `player_on_off` placeholder execution when data exists — skipped at Phase I closure because no trustworthy source was then approved; a later master-plan queue approved `teamplayeronoffsummary`, but implementation is still pending
 
 **Why:** The dedicated route already exists. Once a trustworthy dataset exists,
 the placeholder should become execution-backed without changing parser
@@ -234,11 +234,12 @@ whether on/off execution shipped or was explicitly deferred.
 
 ### Outcome
 
-- Real `player_on_off` execution is explicitly deferred under current repo
-  constraints.
+- Real `player_on_off` execution was unshipped at Phase I closure.
 - [`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md)
   records the source decision, required future artifacts, and the immediate next
-  action after source approval.
+  action after source approval. A later master-plan source-approval queue
+  approved upstream `teamplayeronoffsummary` via
+  `nba_api.stats.endpoints.TeamPlayerOnOffSummary` for future implementation.
 - The existing `player_on_off` route remains an honest placeholder returning
   `NoResult(reason="unsupported")` with the on/off data note.
 
@@ -246,12 +247,16 @@ whether on/off execution shipped or was explicitly deferred.
 
 - Whole-game `without_player` absence is not on/off. It excludes entire games
   and cannot recover on-court/off-court possession or stint boundaries.
-- A future implementation needs a stable upstream on/off split table,
-  play-by-play plus substitutions, or a trusted local stint table.
+- The approved future implementation path is the upstream
+  `teamplayeronoffsummary` split table; whole-game absence remains rejected as a
+  substitute.
 
 ### Remaining blockers
 
-- No on/off split, play-by-play, substitution, or stint source exists in the repo.
+- No `team_player_on_off_summary` dataset, validation path, loader, or
+  coverage-gated route execution existed at Phase I closure. A later
+  source-backed execution queue added those pieces for the approved
+  `teamplayeronoffsummary` boundary.
 - Lineups remain placeholder-backed and are now owned by
   [`phase_j_work_queue.md`](./phase_j_work_queue.md).
 

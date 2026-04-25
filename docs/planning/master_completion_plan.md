@@ -48,6 +48,28 @@ the family is no longer required for the core product finish line.
 
 ---
 
+## Source and Saved-Dataset Structure Invariant
+
+Any newly approved source path or saved dataset work under this master plan
+must preserve the repo's data lifecycle structure and contractual clarity.
+
+Required guardrails for continuation queues and implementation work:
+
+- keep placement explicit across `raw`, `processed`, and `derived`
+- avoid silently broadening, overwriting, or repurposing canonical datasets
+- keep dataset grain explicit; do not hide mixed-grain semantics in old tables
+- define the dataset contract before broad implementation (dataset name,
+  lifecycle layer, grain, join keys, trust/coverage fields, fallback behavior,
+  and placement rationale)
+- prefer additive datasets with dedicated backfill paths over mutating
+  unrelated existing tables unless there is a strong documented reason
+
+Queue completion, source approval, and product-capability status must be read
+with these structure rules in force; an approved source is not a license to
+degrade dataset boundaries.
+
+---
+
 ## Active Continuation Rule
 
 This document must always name exactly one of these:
@@ -64,30 +86,28 @@ done.
 ### Current Active Continuation
 
 The active continuation queue is
-[`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md).
+[`source_backed_execution_queue.md`](./source_backed_execution_queue.md).
 
 **Current required action:** work the first unchecked item in that queue:
-`Approve or reject the on/off source path`.
+`Wire coverage-gated clutch execution`.
 
-That queue records the next product path: the `clutch` source path is approved,
-source approval remains open for `on/off` and `lineups`, and broader route
+That queue records the next product path: source-backed implementation for the
+approved `clutch`, `on/off`, and `lineups` source paths. Broader route
 expansion for quarter / half / OT, schedule-context, or starter / bench role is
-not part of the core finish line. Product feature implementation should resume
-only after the relevant source decision item approves a trustworthy source and
-the queue drafts the next implementation queue.
+not part of the core finish line.
 
 ---
 
 ## Core Capability Status
 
-| Capability family | Parser/query-surface status | Execution/data status | Product/capability status | Done state | Active continuation if not done |
-| --- | --- | --- | --- | --- | --- |
-| Clutch | Parser-recognized and route-propagated | Source path approved: official `PlayByPlayV3` plus local score-state derivation, documented in [`clutch_source_boundary.md`](./clutch_source_boundary.md). Current behavior remains unfiltered with explicit notes until derived clutch datasets and coverage-gated route execution are implemented. | Not product complete | Source approved, implementation not yet done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 5: draft the next implementation queue after on/off and lineup source decisions |
-| On/off | Dedicated `player_on_off` route and parser surface exist | Deferred; placeholder remains because no trustworthy on/off split, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 3: approve or reject the on/off source path |
-| Lineups | Dedicated `lineup_summary` and `lineup_leaderboard` routes and parser surface exist | Deferred; placeholders remain because no trustworthy lineup-unit, play-by-play plus substitutions, or stint source exists | Not product complete | Deferred, not fully done | [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md) item 4: approve or reject the lineup source path |
-| Quarter / half / OT | Parser-recognized and route-propagated | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it | Done for core finish line | None |
-| Schedule-context filters | Parser-recognized and route-propagated | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it | Done for core finish line | None |
-| Starter / bench role | Parser-recognized for player context | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist | Product complete for the core finish-line player-route boundary; team-level bench semantics and broader route expansion are explicitly out of scope unless a future product queue reopens them | Done for core finish line | None |
+| Capability family        | Parser/query-surface status                                                         | Execution/data status                                                                                                                                                                                                                                                                                                                                 | Product/capability status                                                                                                                                                                      | Done state                                   | Active continuation if not done                                                    |
+| ------------------------ | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Clutch                   | Parser-recognized and route-propagated                                              | Source path approved: official `PlayByPlayV3` plus local score-state derivation, documented in [`clutch_source_boundary.md`](./clutch_source_boundary.md). Current behavior remains unfiltered with explicit notes until derived clutch datasets and coverage-gated route execution are implemented.                                                  | Not product complete                                                                                                                                                                           | Source approved, implementation not yet done | [`source_backed_execution_queue.md`](./source_backed_execution_queue.md) items 5-7 |
+| On/off                   | Dedicated `player_on_off` route and parser surface exist                            | Coverage-gated execution path exists via trusted `team_player_on_off_summary` rows normalized from upstream `teamplayeronoffsummary`, documented in [`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md). Missing or untrusted coverage keeps the explicit unsupported-data response.                                           | Product complete for the approved single-player source boundary; broader multi-player/stint semantics remain out of scope unless a future queue reopens them                                   | Done for core finish line                    | None                                                                               |
+| Lineups                  | Dedicated `lineup_summary` and `lineup_leaderboard` routes and parser surface exist | Coverage-gated execution path exists via trusted `league_lineup_viz` rows normalized from upstream `leaguelineupviz`, documented in [`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md). Missing or untrusted coverage keeps the explicit unsupported-data response.                                                                                 | Product complete for the approved lineup-unit source boundary; roster membership remains out of scope as a lineup-unit substitute unless a future queue reopens it                            | Done for core finish line                    | None                                                                               |
+| Quarter / half / OT      | Parser-recognized and route-propagated                                              | Coverage-gated execution on `player_game_finder` and `team_record`; other routes still use explicit unfiltered notes                                                                                                                                                                                                                                  | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it                                          | Done for core finish line                    | None                                                                               |
+| Schedule-context filters | Parser-recognized and route-propagated                                              | Coverage-gated execution on `team_record` and `player_game_summary`; unsupported routes and missing/untrusted coverage use explicit notes                                                                                                                                                                                                             | Product complete for the core finish-line route boundary; broader route expansion is explicitly out of scope unless a future product queue reopens it                                          | Done for core finish line                    | None                                                                               |
+| Starter / bench role     | Parser-recognized for player context                                                | Coverage-gated execution on `player_game_summary` and `player_game_finder` when trusted `player_game_starter_roles` rows exist                                                                                                                                                                                                                        | Product complete for the core finish-line player-route boundary; team-level bench semantics and broader route expansion are explicitly out of scope unless a future product queue reopens them | Done for core finish line                    | None                                                                               |
 
 ---
 
@@ -101,8 +121,11 @@ the queue drafts the next implementation queue.
   families. It records explicit boundaries and deferrals. It cannot answer
   whole-plan completion.
 - [`source_approval_route_expansion_queue.md`](./source_approval_route_expansion_queue.md)
-  is the active master-plan continuation queue for the remaining source
-  approvals and route-expansion product decisions.
+  is the closed master-plan continuation queue that resolved the remaining
+  source approvals and route-expansion product decisions.
+- [`source_backed_execution_queue.md`](./source_backed_execution_queue.md) is
+  the active master-plan continuation queue for implementing the approved
+  source-backed clutch, on/off, and lineup paths.
 - [`clutch_source_boundary.md`](./clutch_source_boundary.md) records the
   approved clutch source path and future dataset boundary; it does not mark
   clutch execution as shipped.

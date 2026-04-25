@@ -37,7 +37,7 @@ STARTER_NOTE_SUBSTRINGS = ("starter", "unfiltered")
 BENCH_NOTE_SUBSTRINGS = ("bench", "unfiltered")
 OPPONENT_QUALITY_NOTE_SUBSTRINGS = ("opponent_quality",)
 ON_OFF_NOTE_SUBSTRINGS = ("on_off", "placeholder")
-LINEUP_NOTE_SUBSTRINGS = ("lineup", "placeholder")
+LINEUP_NOTE_SUBSTRINGS = ("lineup", "coverage")
 
 STABLE_QUERY_SMOKE_CASES = (
     QuerySmokeCase(

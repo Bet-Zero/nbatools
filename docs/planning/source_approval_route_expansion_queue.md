@@ -1,6 +1,6 @@
 # Source Approval and Route Expansion Queue
 
-> **Role:** Active master-plan continuation for
+> **Role:** Closed master-plan continuation for
 > [`master_completion_plan.md`](./master_completion_plan.md).
 >
 > This queue decides the next product path for the open core capability
@@ -29,14 +29,14 @@
 This queue makes these product path decisions before feature implementation
 resumes:
 
-| Capability family | Product path for this queue | Product decision |
-| --- | --- | --- |
-| Clutch | Source path approved before implementation: official `PlayByPlayV3` plus local score-state derivation. | Approved for future implementation via [`clutch_source_boundary.md`](./clutch_source_boundary.md). Do not approximate clutch from whole-game logs, period-only box scores, or season-level clutch dashboard aggregates. |
-| On/off | Pursue a source-approval decision before implementation. Prefer a shared play-by-play plus substitution / stint path if it can also support lineups, but an upstream on/off split table can be approved if it satisfies the route contract. | In scope for source approval. Whole-game `without_player` remains out of scope as an on/off substitute. |
-| Lineups | Pursue a source-approval decision before implementation. Prefer a shared play-by-play plus substitution / lineup-stint path if it can also support on/off, but an upstream lineup-unit table can be approved if it satisfies the route contract. | In scope for source approval. Roster membership remains out of scope as a lineup-unit substitute. |
-| Quarter / half / OT | Do not pursue route expansion beyond the current coverage-gated boundary as part of the core finish line. | Current boundary is final for core completion: `player_game_finder` and `team_record` only, with trusted period coverage required. Other routes remain out of scope unless a future product queue reopens them. |
-| Schedule-context filters | Do not pursue route expansion beyond the current coverage-gated boundary as part of the core finish line. | Current boundary is final for core completion: `team_record` and `player_game_summary` only, with trusted `schedule_context_features` coverage required. Other routes remain out of scope unless a future product queue reopens them. |
-| Starter / bench role | Do not pursue route expansion beyond the current coverage-gated player-route boundary as part of the core finish line. | Current boundary is final for core completion: `player_game_summary` and `player_game_finder` only, with trusted `player_game_starter_roles` rows required. Team-level bench semantics are out of scope for the core finish line. |
+| Capability family        | Product path for this queue                                                                                                         | Product decision                                                                                                                                                                                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Clutch                   | Source path approved before implementation: official `PlayByPlayV3` plus local score-state derivation.                              | Approved for future implementation via [`clutch_source_boundary.md`](./clutch_source_boundary.md). Do not approximate clutch from whole-game logs, period-only box scores, or season-level clutch dashboard aggregates.               |
+| On/off                   | Source path approved before implementation: upstream `teamplayeronoffsummary` via `nba_api.stats.endpoints.TeamPlayerOnOffSummary`. | Approved for future implementation via [`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md). Whole-game `without_player` remains out of scope as an on/off substitute.                                          |
+| Lineups                  | Source path approved before implementation: upstream `leaguelineupviz` via `nba_api.stats.endpoints.LeagueLineupViz`.               | Approved for future implementation via [`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md). Roster membership remains out of scope as a lineup-unit substitute.                                                |
+| Quarter / half / OT      | Do not pursue route expansion beyond the current coverage-gated boundary as part of the core finish line.                           | Current boundary is final for core completion: `player_game_finder` and `team_record` only, with trusted period coverage required. Other routes remain out of scope unless a future product queue reopens them.                       |
+| Schedule-context filters | Do not pursue route expansion beyond the current coverage-gated boundary as part of the core finish line.                           | Current boundary is final for core completion: `team_record` and `player_game_summary` only, with trusted `schedule_context_features` coverage required. Other routes remain out of scope unless a future product queue reopens them. |
+| Starter / bench role     | Do not pursue route expansion beyond the current coverage-gated player-route boundary as part of the core finish line.              | Current boundary is final for core completion: `player_game_summary` and `player_game_finder` only, with trusted `player_game_starter_roles` rows required. Team-level bench semantics are out of scope for the core finish line.     |
 
 The out-of-scope route-expansion decisions above are product decisions, not
 implementation gaps. Unsupported routes should keep honest notes or unsupported
@@ -52,6 +52,19 @@ than implying broader route coverage.
   points to an implementation queue.
 - Do not approve a source unless it has clear grain, join keys, coverage
   semantics, trust fields, and enough sample fields to support route execution.
+- Any approved source that introduces saved data must preserve lifecycle
+  placement (`raw`, `processed`, `derived`) and document why that placement is
+  structurally correct.
+- Do not overwrite, silently repurpose, or quietly broaden canonical datasets
+  when onboarding a new source; prefer additive datasets and dedicated backfill
+  paths unless a strong documented reason justifies extending an existing
+  contract.
+- Do not hide mixed-grain semantics in legacy tables (for example, game-level,
+  period-level, stint-level, and play-by-play-derived rows blended without an
+  explicit approved contract).
+- Before broad implementation, require a documented dataset contract naming at
+  least: dataset name, lifecycle layer, grain, join keys, trust/coverage
+  fields, fallback behavior, and placement rationale.
 - Do not replace possession-level features with whole-game approximations.
 - Do not broaden coverage-gated filters to routes whose command output cannot
   apply the filter honestly.
@@ -176,7 +189,7 @@ queue builds and validates the play-by-play-derived clutch datasets.
 
 ---
 
-## 3. `[ ]` Approve or reject the on/off source path
+## 3. `[x]` Approve or reject the on/off source path
 
 **Why:** `player_on_off` is a placeholder by explicit Phase I deferral. The
 product needs either a trustworthy on/off source path or an out-of-scope
@@ -225,9 +238,18 @@ decision for the core finish line.
 - [`phase_f_execution_gap_inventory.md`](./phase_f_execution_gap_inventory.md)
 - [`docs/reference/data_contracts.md`](../reference/data_contracts.md)
 
+**Completion note:** Approved the upstream `teamplayeronoffsummary` source path
+through `nba_api.stats.endpoints.TeamPlayerOnOffSummary`, documented in
+[`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md) and
+[`docs/reference/data_contracts.md`](../reference/data_contracts.md). Current
+`player_on_off` execution is unchanged and remains a placeholder with an
+explicit unsupported-data response until a later implementation queue builds
+the ingestion, validation, loader, and coverage-gated route execution path.
+Whole-game `without_player` absence remains rejected as an on/off substitute.
+
 ---
 
-## 4. `[ ]` Approve or reject the lineup source path
+## 4. `[x]` Approve or reject the lineup source path
 
 **Why:** `lineup_summary` and `lineup_leaderboard` are placeholders by explicit
 Phase J deferral. The product needs either a trustworthy lineup source path or
@@ -278,9 +300,19 @@ an out-of-scope decision for the core finish line.
 - [`phase_f_execution_gap_inventory.md`](./phase_f_execution_gap_inventory.md)
 - [`docs/reference/data_contracts.md`](../reference/data_contracts.md)
 
+**Completion note:** Approved the upstream `leaguelineupviz` source path through
+`nba_api.stats.endpoints.LeagueLineupViz`, documented in
+[`phase_j_lineup_source_boundary.md`](./phase_j_lineup_source_boundary.md) and
+[`docs/reference/data_contracts.md`](../reference/data_contracts.md). Current
+`lineup_summary` and `lineup_leaderboard` execution is unchanged and remains
+placeholder-backed with explicit unsupported-data responses until a later
+implementation queue builds the ingestion, validation, loader, and
+coverage-gated route execution path. Roster membership remains rejected as a
+lineup-unit substitute.
+
 ---
 
-## 5. `[ ]` Draft the next implementation queue or close the master blockers
+## 5. `[x]` Draft the next implementation queue or close the master blockers
 
 **Why:** This queue should not close with another informal residual list. After
 the source and route-scope decisions are complete, the repo needs exactly one
@@ -318,3 +350,11 @@ active continuation or a master-plan completion statement.
 - [`master_completion_plan.md`](./master_completion_plan.md)
 - [`parser_execution_completion_plan.md`](./parser_execution_completion_plan.md)
 - [`docs/index.md`](../index.md)
+
+**Completion note:** Drafted
+[`source_backed_execution_queue.md`](./source_backed_execution_queue.md) as the
+next active implementation queue because `clutch`, `on/off`, and `lineups` all
+now have approved source paths. Updated
+[`master_completion_plan.md`](./master_completion_plan.md) to name that queue as
+the active continuation and updated [`docs/index.md`](../index.md) to list the
+new queue.

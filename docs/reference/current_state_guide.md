@@ -274,6 +274,17 @@ notes rather than silently pretending the filter ran.
   requested slice. Team-level bench semantics and broader route expansion are
   out of scope for the core finish line unless a future product queue reopens
   them.
+- On/off queries execute on `player_on_off` when trusted
+  `team_player_on_off_summary` rows cover the requested single-player slice.
+  Missing or untrusted coverage, multi-player on/off requests, and slices
+  outside the source contract return explicit unsupported/no-result responses.
+  Whole-game `without_player` absence remains a separate game-log filter.
+- Lineup queries execute on `lineup_summary` and `lineup_leaderboard` when
+  trusted `league_lineup_viz` rows cover the requested season, season type,
+  unit size, minimum-minute threshold, and lineup members. Missing or untrusted
+  coverage, unsupported unit sizes, and slices outside the source contract
+  return explicit unsupported/no-result responses. Roster membership remains an
+  identity/enrichment source only, not lineup-unit execution.
 
 ### Date and window support
 

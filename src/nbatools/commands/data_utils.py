@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import unicodedata
 from functools import cache
 from pathlib import Path
 
@@ -25,6 +26,111 @@ PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS = [
 PLAYER_GAME_STARTER_ROLE_OPTIONAL_COLUMNS = [
     "team_abbr",
     "player_name",
+]
+
+TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS = [
+    "season",
+    "season_type",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "player_id",
+    "player_name",
+    "presence_state",
+    "court_status_raw",
+    "gp",
+    "minutes",
+    "plus_minus",
+    "off_rating",
+    "def_rating",
+    "net_rating",
+    "source_endpoint",
+    "source_pull_date",
+    "source_schema_version",
+    "coverage_trusted",
+    "coverage_validation_reason",
+]
+
+LEAGUE_LINEUP_VIZ_REQUIRED_COLUMNS = [
+    "season",
+    "season_type",
+    "team_id",
+    "team_abbr",
+    "unit_size",
+    "lineup_id",
+    "lineup_name",
+    "player_ids",
+    "player_names",
+    "minute_minimum",
+    "minutes",
+    "off_rating",
+    "def_rating",
+    "net_rating",
+    "pace",
+    "ts_pct",
+    "source_endpoint",
+    "source_pull_date",
+    "source_schema_version",
+    "coverage_trusted",
+    "coverage_validation_reason",
+]
+
+PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS = [
+    "season",
+    "season_type",
+    "game_id",
+    "action_number",
+    "period",
+    "clock",
+    "clock_seconds_remaining",
+    "team_id",
+    "team_abbr",
+    "player_id",
+    "player_name",
+    "action_type",
+    "sub_type",
+    "description",
+    "score_home",
+    "score_away",
+    "pbp_source",
+    "pbp_source_trusted",
+    "pbp_validation_reason",
+]
+
+PLAYER_GAME_CLUTCH_REQUIRED_COLUMNS = [
+    "season",
+    "season_type",
+    "game_id",
+    "team_id",
+    "team_abbr",
+    "player_id",
+    "player_name",
+    "clutch_window",
+    "clutch_time_remaining_start",
+    "clutch_score_margin_max",
+    "clutch_events",
+    "clutch_seconds",
+    "pts",
+    "clutch_source",
+    "clutch_source_trusted",
+    "clutch_validation_reason",
+]
+
+TEAM_GAME_CLUTCH_REQUIRED_COLUMNS = [
+    "season",
+    "season_type",
+    "game_id",
+    "team_id",
+    "team_abbr",
+    "clutch_window",
+    "clutch_time_remaining_start",
+    "clutch_score_margin_max",
+    "clutch_events",
+    "clutch_seconds",
+    "pts",
+    "clutch_source",
+    "clutch_source_trusted",
+    "clutch_validation_reason",
 ]
 
 PLAYER_GAME_PERIOD_REQUIRED_COLUMNS = [
@@ -743,6 +849,447 @@ def load_schedule_context_features_for_seasons(
 ) -> pd.DataFrame:
     """Load validated team-game schedule-context features for the given seasons."""
     return _load_schedule_context_features_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def _empty_team_player_on_off_summary_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS)
+
+
+@cache
+def _load_team_player_on_off_summary_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/raw/team_player_on_off_summary/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path)
+        missing = [col for col in TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS if col not in df.columns]
+        if missing:
+            raise ValueError(f"team_player_on_off_summary missing required columns: {missing}")
+        if df.duplicated(
+            subset=["season", "season_type", "team_id", "player_id", "presence_state"]
+        ).any():
+            raise ValueError(
+                "Duplicate (season, season_type, team_id, player_id, presence_state) "
+                "in team_player_on_off_summary"
+            )
+
+        df["presence_state"] = df["presence_state"].fillna("").astype(str).str.lower()
+        if not df["presence_state"].isin(["on", "off"]).all():
+            raise ValueError("team_player_on_off_summary presence_state must be on/off")
+
+        numeric_cols = [
+            "team_id",
+            "player_id",
+            "gp",
+            "minutes",
+            "plus_minus",
+            "off_rating",
+            "def_rating",
+            "net_rating",
+            "coverage_trusted",
+        ]
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        if not df["coverage_trusted"].dropna().isin([0, 1]).all():
+            raise ValueError("team_player_on_off_summary coverage_trusted must be 0/1")
+
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing team_player_on_off_summary files for requested slice: "
+            + ", ".join(missing_paths)
+        )
+    if not frames:
+        return _empty_team_player_on_off_summary_df()
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_team_player_on_off_summary_for_seasons(
+    seasons: list[str], season_type: str
+) -> pd.DataFrame:
+    """Load validated team/player on-off summary rows for the given seasons."""
+    return _load_team_player_on_off_summary_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def _empty_league_lineup_viz_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=LEAGUE_LINEUP_VIZ_REQUIRED_COLUMNS)
+
+
+def _split_pipe_values(value: object) -> list[str]:
+    return [part.strip() for part in str(value or "").split("|") if part.strip()]
+
+
+def _normalize_lineup_member(value: object) -> str:
+    text = " ".join(str(value or "").strip().lower().split())
+    return "".join(
+        char for char in unicodedata.normalize("NFKD", text) if not unicodedata.combining(char)
+    )
+
+
+@cache
+def _load_league_lineup_viz_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/raw/league_lineup_viz/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path)
+        missing = [col for col in LEAGUE_LINEUP_VIZ_REQUIRED_COLUMNS if col not in df.columns]
+        if missing:
+            raise ValueError(f"league_lineup_viz missing required columns: {missing}")
+        if df.duplicated(
+            subset=["season", "season_type", "team_id", "unit_size", "lineup_id", "minute_minimum"]
+        ).any():
+            raise ValueError(
+                "Duplicate (season, season_type, team_id, unit_size, lineup_id, "
+                "minute_minimum) in league_lineup_viz"
+            )
+
+        numeric_cols = [
+            "team_id",
+            "unit_size",
+            "minute_minimum",
+            "minutes",
+            "off_rating",
+            "def_rating",
+            "net_rating",
+            "pace",
+            "ts_pct",
+            "coverage_trusted",
+        ]
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        if not df["coverage_trusted"].dropna().isin([0, 1]).all():
+            raise ValueError("league_lineup_viz coverage_trusted must be 0/1")
+
+        id_counts = df["player_ids"].map(lambda value: len(_split_pipe_values(value)))
+        name_counts = df["player_names"].map(lambda value: len(_split_pipe_values(value)))
+        expected_trusted = (
+            id_counts.eq(df["unit_size"]) & (name_counts.eq(0) | name_counts.eq(df["unit_size"]))
+        ).astype(int)
+        if not df["coverage_trusted"].eq(expected_trusted).all():
+            raise ValueError("league_lineup_viz coverage_trusted mismatch")
+
+        trusted = df["coverage_trusted"].eq(1)
+        if not df.loc[trusted, "coverage_validation_reason"].fillna("").eq("").all():
+            raise ValueError("Trusted lineup rows must have blank coverage_validation_reason")
+        if not df.loc[~trusted, "coverage_validation_reason"].fillna("").ne("").all():
+            raise ValueError("Untrusted lineup rows must explain coverage_validation_reason")
+
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing league_lineup_viz files for requested slice: " + ", ".join(missing_paths)
+        )
+    if not frames:
+        return _empty_league_lineup_viz_df()
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_league_lineup_viz_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    """Load validated lineup-unit rows for the given seasons."""
+    return _load_league_lineup_viz_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def select_trusted_league_lineup_viz_rows(
+    df: pd.DataFrame,
+    *,
+    unit_size: int | None = None,
+    minute_minimum: int | None = None,
+    lineup_members: list[str] | None = None,
+    limit: int | None = None,
+    sort_by: str = "net_rating",
+) -> tuple[pd.DataFrame, list[str]]:
+    """Return trusted lineup-viz rows plus coverage failures for the requested slice."""
+    work = df.copy()
+
+    if unit_size is not None:
+        work = work[work["unit_size"].eq(int(unit_size))]
+    if minute_minimum is not None:
+        work = work[work["minute_minimum"].eq(int(minute_minimum))]
+
+    if lineup_members:
+        target_ids = {
+            str(member).strip() for member in lineup_members if str(member).strip().isdigit()
+        }
+        target_names = {
+            _normalize_lineup_member(member)
+            for member in lineup_members
+            if not str(member).strip().isdigit()
+        }
+
+        def has_members(row: pd.Series) -> bool:
+            row_ids = set(_split_pipe_values(row.get("player_ids")))
+            row_names = {
+                _normalize_lineup_member(name)
+                for name in _split_pipe_values(row.get("player_names"))
+            }
+            return target_ids.issubset(row_ids) and target_names.issubset(row_names)
+
+        work = work[work.apply(has_members, axis=1)]
+
+    coverage_failures = sorted(
+        {
+            reason
+            for reason in work.loc[~work["coverage_trusted"].eq(1), "coverage_validation_reason"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+            if reason
+        }
+    )
+
+    trusted = work[work["coverage_trusted"].eq(1)].copy()
+    if sort_by in trusted.columns:
+        trusted = trusted.sort_values(sort_by, ascending=False)
+    if limit is not None:
+        trusted = trusted.head(int(limit))
+
+    return trusted.reset_index(drop=True), coverage_failures
+
+
+def _empty_play_by_play_events_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS)
+
+
+@cache
+def _load_play_by_play_events_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/raw/play_by_play_events/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path, dtype={"game_id": str})
+        missing = [col for col in PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS if col not in df.columns]
+        if missing:
+            raise ValueError(f"play_by_play_events missing required columns: {missing}")
+        event_key = ["season", "season_type", "game_id", "action_number"]
+        if df.duplicated(subset=event_key).any():
+            raise ValueError(
+                "Duplicate (season, season_type, game_id, action_number) in play_by_play_events"
+            )
+
+        numeric_cols = [
+            "action_number",
+            "period",
+            "clock_seconds_remaining",
+            "score_home",
+            "score_away",
+            "pbp_source_trusted",
+        ]
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        for col in (
+            "action_number",
+            "period",
+            "clock_seconds_remaining",
+            "score_home",
+            "score_away",
+        ):
+            if df[col].isna().any():
+                raise ValueError(f"play_by_play_events {col} has invalid numeric values")
+
+        if not df["pbp_source_trusted"].dropna().isin([0, 1]).all():
+            raise ValueError("play_by_play_events pbp_source_trusted must be 0/1")
+
+        trusted = df["pbp_source_trusted"].eq(1)
+        if not df.loc[trusted, "pbp_validation_reason"].fillna("").eq("").all():
+            raise ValueError("Trusted play-by-play rows must have blank pbp_validation_reason")
+        if not df.loc[~trusted, "pbp_validation_reason"].fillna("").ne("").all():
+            raise ValueError("Untrusted play-by-play rows must explain pbp_validation_reason")
+
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            "Missing play_by_play_events files for requested slice: " + ", ".join(missing_paths)
+        )
+    if not frames:
+        return _empty_play_by_play_events_df()
+    return pd.concat(frames, ignore_index=True)
+
+
+def load_play_by_play_events_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    """Load validated play-by-play event rows for the given seasons."""
+    return _load_play_by_play_events_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def select_trusted_play_by_play_events(
+    df: pd.DataFrame,
+    *,
+    game_ids: list[str] | set[str] | None = None,
+) -> tuple[pd.DataFrame, list[str]]:
+    """Return trusted play-by-play rows plus coverage failures for matching games."""
+    work = df.copy()
+    if game_ids is not None:
+        requested = {str(game_id) for game_id in game_ids}
+        work = work[work["game_id"].astype(str).isin(requested)]
+
+    coverage_failures = sorted(
+        {
+            reason
+            for reason in work.loc[~work["pbp_source_trusted"].eq(1), "pbp_validation_reason"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+            if reason
+        }
+    )
+    trusted = work[work["pbp_source_trusted"].eq(1)].copy()
+    return trusted.reset_index(drop=True), coverage_failures
+
+
+def _empty_player_game_clutch_stats_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=PLAYER_GAME_CLUTCH_REQUIRED_COLUMNS)
+
+
+def _empty_team_game_clutch_stats_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=TEAM_GAME_CLUTCH_REQUIRED_COLUMNS)
+
+
+def _load_clutch_stats_files(
+    *,
+    seasons: tuple[str, ...],
+    season_type: str,
+    data_root: str,
+    dataset: str,
+    required_columns: list[str],
+    key_columns: list[str],
+) -> pd.DataFrame:
+    safe = normalize_season_type(season_type)
+    frames: list[pd.DataFrame] = []
+    root = Path(data_root)
+    missing_paths: list[str] = []
+
+    for season in seasons:
+        path = root / f"data/processed/{dataset}/{season}_{safe}.csv"
+        if not path.exists():
+            missing_paths.append(str(path))
+            continue
+
+        df = pd.read_csv(path, dtype={"game_id": str})
+        missing = [col for col in required_columns if col not in df.columns]
+        if missing:
+            raise ValueError(f"{dataset} missing required columns: {missing}")
+        if df.duplicated(subset=key_columns).any():
+            raise ValueError(f"Duplicate {tuple(key_columns)} in {dataset}")
+
+        numeric_cols = [
+            "team_id",
+            "clutch_window",
+            "clutch_time_remaining_start",
+            "clutch_score_margin_max",
+            "clutch_events",
+            "clutch_seconds",
+            "pts",
+            "clutch_source_trusted",
+        ]
+        if "player_id" in df.columns:
+            numeric_cols.append("player_id")
+        for col in numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        if not df["clutch_source_trusted"].dropna().isin([0, 1]).all():
+            raise ValueError(f"{dataset} clutch_source_trusted must be 0/1")
+        trusted = df["clutch_source_trusted"].eq(1)
+        if not df.loc[trusted, "clutch_validation_reason"].fillna("").eq("").all():
+            raise ValueError(f"Trusted {dataset} rows must have blank clutch_validation_reason")
+        if not df.loc[~trusted, "clutch_validation_reason"].fillna("").ne("").all():
+            raise ValueError(f"Untrusted {dataset} rows must explain clutch_validation_reason")
+
+        frames.append(df)
+
+    if missing_paths:
+        raise FileNotFoundError(
+            f"Missing {dataset} files for requested slice: " + ", ".join(missing_paths)
+        )
+    return (
+        pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=required_columns)
+    )
+
+
+@cache
+def _load_player_game_clutch_stats_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    return _load_clutch_stats_files(
+        seasons=seasons,
+        season_type=season_type,
+        data_root=data_root,
+        dataset="player_game_clutch_stats",
+        required_columns=PLAYER_GAME_CLUTCH_REQUIRED_COLUMNS,
+        key_columns=["season", "season_type", "game_id", "team_id", "player_id"],
+    )
+
+
+def load_player_game_clutch_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    """Load validated player-game clutch stats for the given seasons."""
+    return _load_player_game_clutch_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+@cache
+def _load_team_game_clutch_stats_cached(
+    seasons: tuple[str, ...], season_type: str, data_root: str
+) -> pd.DataFrame:
+    return _load_clutch_stats_files(
+        seasons=seasons,
+        season_type=season_type,
+        data_root=data_root,
+        dataset="team_game_clutch_stats",
+        required_columns=TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
+        key_columns=["season", "season_type", "game_id", "team_id"],
+    )
+
+
+def load_team_game_clutch_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
+    """Load validated team-game clutch stats for the given seasons."""
+    return _load_team_game_clutch_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+
+
+def select_trusted_clutch_stats(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """Return trusted clutch stat rows plus coverage failures."""
+    coverage_failures = sorted(
+        {
+            reason
+            for reason in df.loc[~df["clutch_source_trusted"].eq(1), "clutch_validation_reason"]
+            .fillna("")
+            .astype(str)
+            .str.strip()
+            if reason
+        }
+    )
+    trusted = df[df["clutch_source_trusted"].eq(1)].copy()
+    return trusted.reset_index(drop=True), coverage_failures
 
 
 def build_schedule_context_filter_coverage_notes(

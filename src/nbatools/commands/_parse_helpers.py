@@ -1056,7 +1056,7 @@ def _extract_player_mentions(text: str) -> list[str]:
 
 
 def detect_lineup_query(text: str) -> dict | None:
-    """Detect lineup and unit phrasing that should route to lineup placeholders."""
+    """Detect lineup and unit phrasing that should route to lineup routes."""
     lineup_marker = bool(re.search(r"\b(?:lineups?|units?|combos?)\b", text))
     together_marker = bool(re.search(r"\btogether\b", text))
     leaderboard_marker = bool(re.search(r"\b(?:best|top|leaders?|highest|lowest)\b", text))
@@ -1105,12 +1105,12 @@ def build_lineup_note(
     unit_size: int | None = None,
     minute_minimum: int | None = None,
 ) -> str | None:
-    """Describe the current lineup placeholder behavior honestly."""
+    """Describe missing lineup coverage honestly."""
     if not lineup_members and unit_size is None and minute_minimum is None:
         return None
     return (
-        "lineup: query recognized but lineup-unit stats require lineup tables or stint-level "
-        "data that is not yet available in the current data layer; placeholder route returned"
+        "lineup: trusted league_lineup_viz coverage is unavailable for the requested slice; "
+        "unsupported route response returned"
     )
 
 

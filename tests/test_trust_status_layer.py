@@ -1117,7 +1117,7 @@ class TestMetadataInRawOutputFinderLeaderboardStreak:
 
         buf = StringIO()
         with redirect_stdout(buf):
-            run("Jokic 2024-25", pretty=False)
+            run("show me Jokic games with 30 points 2024-25", pretty=False)
         output = buf.getvalue()
 
         sections = parse_labeled_sections(output)

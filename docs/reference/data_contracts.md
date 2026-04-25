@@ -31,6 +31,10 @@ For each dataset, this document should define:
 - optional columns should be treated as optional, never assumed
 - sample-aware metrics must document their source dataset
 - new derived datasets should be added here before they become widely depended on
+- new datasets should be additive, clearly scoped, and placed in the correct lifecycle layer (`raw`, `processed`, or `derived`)
+- extending an existing canonical dataset requires explicit rationale and must not silently repurpose the table's contract
+- trust and coverage fields are required for partially supported or gated execution paths
+- mixed-grain semantics (for example, game-level with stint-level or play-by-play-derived rows) must not be hidden inside legacy tables without an explicit approved contract
 
 ---
 
@@ -325,20 +329,56 @@ Contract rules:
 
 ---
 
-## 1C. Future clutch play-by-play and derived clutch stats
+## 1C. `play_by_play_events` and derived clutch stats
 
-The approved future source path for clutch execution is official
-`PlayByPlayV3` event data plus local score-state derivation. This is documented
-in [`docs/planning/clutch_source_boundary.md`](../planning/clutch_source_boundary.md).
+The approved source path for clutch execution is official `PlayByPlayV3` event
+data plus local score-state derivation. This is documented in
+[`docs/planning/clutch_source_boundary.md`](../planning/clutch_source_boundary.md).
 
-This section is a future-source boundary, not a shipped execution dependency.
-Current clutch queries remain unfiltered with an explicit note until the
-ingestion, validation, derived datasets, and route execution are implemented.
+The raw `play_by_play_events` dataset path, validation, and loader exist. The
+processed `player_game_clutch_stats` and `team_game_clutch_stats` derivation
+paths, validation, and loaders also exist. Current clutch queries remain
+unfiltered with an explicit note until route execution is implemented.
 
-Minimum future contracts:
+### Raw path
 
-- `data/raw/play_by_play_events/{season}_{season_type_safe}.csv`, at one row
-  per event keyed by `season`, `season_type`, `game_id`, and `action_number`
+`data/raw/play_by_play_events/{season}_{season_type_safe}.csv`
+
+### Raw grain
+
+One row per NBA play-by-play event.
+
+### Raw key fields
+
+- `season`
+- `season_type`
+- `game_id`
+- `action_number`
+
+### Raw required columns
+
+- `season`
+- `season_type`
+- `game_id`
+- `action_number`
+- `period`
+- `clock`
+- `clock_seconds_remaining`
+- `team_id`
+- `team_abbr`
+- `player_id`
+- `player_name`
+- `action_type`
+- `sub_type`
+- `description`
+- `score_home`
+- `score_away`
+- `pbp_source`
+- `pbp_source_trusted`
+- `pbp_validation_reason`
+
+### Derived paths
+
 - `data/processed/player_game_clutch_stats/{season}_{season_type_safe}.csv`,
   at one row per player-game clutch sample keyed by `season`, `season_type`,
   `game_id`, `team_id`, and `player_id`
@@ -346,10 +386,17 @@ Minimum future contracts:
   one row per team-game clutch sample keyed by `season`, `season_type`,
   `game_id`, and `team_id`
 
+Derived clutch rows include `clutch_window`,
+`clutch_time_remaining_start`, `clutch_score_margin_max`, `clutch_events`,
+`clutch_seconds`, event-derived `pts`, `clutch_source`,
+`clutch_source_trusted`, and `clutch_validation_reason`.
+
 Contract rules:
 
 - clutch means last five minutes of the fourth quarter or overtime with the
   score within five points
+- raw play-by-play rows must have parseable clocks, parseable home/away score
+  state, unique event keys, and trusted event ordering
 - whole-game logs and period-only box-score windows must not be used as clutch
   substitutes
 - route execution may only use derived clutch rows when source trust and
@@ -358,6 +405,206 @@ Contract rules:
   unfiltered-results note rather than partially filtering results
 - rate and efficiency metrics may only ship after their sample denominators are
   validated against the play-by-play derivation
+
+---
+
+## 1D. `team_player_on_off_summary`
+
+The approved future source path for `player_on_off` execution is the upstream
+`teamplayeronoffsummary` split table, called through
+`nba_api.stats.endpoints.TeamPlayerOnOffSummary`. This is documented in
+[`docs/planning/phase_i_on_off_source_boundary.md`](../planning/phase_i_on_off_source_boundary.md).
+
+This section defines the approved raw source dataset for `player_on_off`
+execution. The route may only use rows when validation marks the requested
+single-player slice trusted; missing or untrusted coverage keeps the explicit
+unsupported/no-result response.
+
+### Path pattern
+
+`data/raw/team_player_on_off_summary/{season}_{season_type_safe}.csv`
+
+Examples:
+
+- `data/raw/team_player_on_off_summary/2025-26_regular_season.csv`
+- `data/raw/team_player_on_off_summary/2024-25_playoffs.csv`
+
+### Grain
+
+One row per **team / queried player / presence-state season split**.
+
+The upstream source exposes separate on-court and off-court row groups. The
+normalized dataset should combine them into one table with explicit
+`presence_state` values.
+
+### Key fields
+
+- `season`
+- `season_type`
+- `team_id`
+- `player_id`
+- `presence_state`
+
+Recommended uniqueness expectation:
+
+- unique on (`season`, `season_type`, `team_id`, `player_id`, `presence_state`)
+
+### Required columns
+
+- `season`
+- `season_type`
+- `team_id`
+- `team_abbr`
+- `team_name`
+- `player_id`
+- `player_name`
+- `presence_state`
+- `court_status_raw`
+- `gp`
+- `minutes`
+- `plus_minus`
+- `off_rating`
+- `def_rating`
+- `net_rating`
+- `source_endpoint`
+- `source_pull_date`
+- `source_schema_version`
+- `coverage_trusted`
+- `coverage_validation_reason`
+
+### Producer(s)
+
+- `src/nbatools/commands/pipeline/pull_team_player_on_off_summary.py`,
+  wrapping
+  `nba_api.stats.endpoints.TeamPlayerOnOffSummary`
+- any future compatibility layer that normalizes an alternate upstream on/off
+  split source into this same contract
+
+### Primary consumer(s)
+
+- future `player_on_off` execution
+
+### Notes
+
+Contract rules:
+
+- `PlayersOnCourtTeamPlayerOnOffSummary` rows should normalize to
+  `presence_state=on`
+- `PlayersOffCourtTeamPlayerOnOffSummary` rows should normalize to
+  `presence_state=off`
+- source `VS_PLAYER_ID` / `VS_PLAYER_NAME` should normalize to `player_id` /
+  `player_name`
+- possessions are not exposed by the approved minimum source; route execution
+  should use `minutes` and `gp` as the sample-size fields unless a later
+  approved source adds possessions
+- route execution may only use rows when both `on` and `off` states exist for
+  the requested player/team/season slice and `coverage_trusted=1`
+- missing or untrusted coverage must keep the existing honest unsupported-data
+  response instead of fabricating or partially filtering on/off splits
+- whole-game `without_player` absence remains a separate team/game-log filter
+  and must not be treated as on/off execution
+
+---
+
+## 1E. `league_lineup_viz`
+
+The approved source path for `lineup_summary` and `lineup_leaderboard`
+execution is the upstream `leaguelineupviz` lineup-unit table, called through
+`nba_api.stats.endpoints.LeagueLineupViz`. This is documented in
+[`docs/planning/phase_j_lineup_source_boundary.md`](../planning/phase_j_lineup_source_boundary.md).
+
+This raw source dataset path, validation, loader, and coverage-gated route
+execution exist. Missing or untrusted coverage returns an explicit
+unsupported/no-result response.
+
+### Path pattern
+
+`data/raw/league_lineup_viz/{season}_{season_type_safe}.csv`
+
+Examples:
+
+- `data/raw/league_lineup_viz/2025-26_regular_season.csv`
+- `data/raw/league_lineup_viz/2024-25_playoffs.csv`
+
+### Grain
+
+One row per **team lineup unit / unit size / minimum-minute threshold season
+split**.
+
+### Key fields
+
+- `season`
+- `season_type`
+- `team_id`
+- `unit_size`
+- `lineup_id`
+- `minute_minimum`
+
+Recommended uniqueness expectation:
+
+- unique on (`season`, `season_type`, `team_id`, `unit_size`, `lineup_id`,
+  `minute_minimum`)
+
+### Required columns
+
+- `season`
+- `season_type`
+- `team_id`
+- `team_abbr`
+- `unit_size`
+- `lineup_id`
+- `lineup_name`
+- `player_ids`
+- `player_names`
+- `minute_minimum`
+- `minutes`
+- `off_rating`
+- `def_rating`
+- `net_rating`
+- `pace`
+- `ts_pct`
+- `source_endpoint`
+- `source_pull_date`
+- `source_schema_version`
+- `coverage_trusted`
+- `coverage_validation_reason`
+
+### Important derived/query fields
+
+- `player_ids` should be a normalized, deterministic membership list parsed
+  from source `GROUP_ID`
+- `player_names` should be a normalized membership list parsed from source
+  `GROUP_NAME`
+- `lineup_id` should preserve the stable source membership key so specific
+  lineup queries and leaderboard rows agree
+
+### Producer(s)
+
+- `src/nbatools/commands/pipeline/pull_league_lineup_viz.py`, wrapping
+  `nba_api.stats.endpoints.LeagueLineupViz`
+- any future compatibility layer that normalizes an alternate upstream
+  lineup-unit source into this same contract
+
+### Primary consumer(s)
+
+- `lineup_summary` execution
+- `lineup_leaderboard` execution
+
+### Notes
+
+Contract rules:
+
+- source `GROUP_ID` / `GROUP_NAME` are the lineup membership source of record
+- source `MinutesMin` should normalize to `minute_minimum`
+- route execution may only use rows when the parsed membership count matches
+  `unit_size` and `coverage_trusted=1`
+- possessions and games represented are not exposed by the approved minimum
+  source; route execution should use `minutes` as the sample-size field unless a
+  later approved enrichment source adds possessions or games
+- missing or untrusted coverage must keep the existing honest unsupported-data
+  response instead of fabricating or partially filtering lineup-unit results
+- roster membership remains an identity/enrichment source only and must not be
+  treated as lineup-unit execution
 
 ---
 
@@ -879,18 +1126,22 @@ When adding a new core dataset, add it here before making it an implicit depende
 ### Explicitly deferred source boundaries
 
 - `clutch` now has an approved future source path: official `PlayByPlayV3`
-  plus local score-state derivation. It is still not a current execution
-  dataset; until `play_by_play_events`, `player_game_clutch_stats`, and
-  `team_game_clutch_stats` are built and validated, clutch queries must keep the
-  explicit unfiltered-results note. Whole-game logs and period-only box-score
-  windows remain rejected as clutch substitutes.
-- `player_on_off` has no current execution dataset. Whole-game
-  `without_player` absence is not an on/off source because it has no
-  substitution, stint, possession, or on-court/off-court sample boundary. See
-  `docs/planning/phase_i_on_off_source_boundary.md` for the required future
-  source contract before on/off execution can replace the placeholder.
-- `lineup_summary` and `lineup_leaderboard` have no current execution dataset.
-  Roster membership is not a lineup-unit source because it has no shared-court,
-  stint, possession, or unit-level sample boundary. See
-  `docs/planning/phase_j_lineup_source_boundary.md` for the required future
-  source contract before lineup execution can replace the placeholders.
+  plus local score-state derivation. The raw `play_by_play_events` dataset
+  path and processed `player_game_clutch_stats` / `team_game_clutch_stats`
+  derivations exist with validation and loaders. Until route execution is wired,
+  clutch queries must keep the explicit unfiltered-results note. Whole-game logs
+  and period-only box-score windows remain rejected as clutch substitutes.
+- `player_on_off` now has an approved future source path: upstream
+  `teamplayeronoffsummary` via
+  `nba_api.stats.endpoints.TeamPlayerOnOffSummary`. The source dataset path,
+  validation, loader, and coverage-gated `player_on_off` execution exist.
+  Missing or untrusted coverage keeps the explicit unsupported-data response.
+  Whole-game `without_player` absence remains rejected as an on/off substitute
+  because it has no on-court/off-court sample boundary.
+- `lineup_summary` and `lineup_leaderboard` now have an approved future source
+  path: upstream `leaguelineupviz` via
+  `nba_api.stats.endpoints.LeagueLineupViz`. The raw source dataset path,
+  validation, loader, and coverage-gated route execution exist. Missing or
+  untrusted coverage keeps the explicit unsupported-data response. Roster
+  membership remains rejected as a lineup-unit substitute because it has no
+  shared-court, possession, or unit-level sample boundary.

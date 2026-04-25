@@ -88,7 +88,13 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
 - on/off presence: `on/off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
+  (routes to `player_on_off`; executes against trusted `team_player_on_off_summary`
+  rows when coverage exists, otherwise returns an explicit unsupported-data
+  response. Whole-game `without_player` absence remains separate.)
 - lineup membership: `lineups with LeBron and AD`, `with Tatum and Brown together`, `best 3-man units`
+  (routes to `lineup_summary` / `lineup_leaderboard`; executes against trusted
+  `league_lineup_viz` rows when coverage exists, otherwise returns an explicit
+  unsupported-data response. Roster membership remains separate.)
 - rolling-window phrasing: `hottest 3-game stretch`, `best 5-game stretch by Game Score`, `rolling 10-game stretch`
 - head-to-head: `head-to-head`, `h2h`
 - home / away: `home`, `away`, `road`
@@ -294,7 +300,7 @@ Common combinations:
 - playoff-only spans
 - date windows / recent form
 
-### On/off placeholder summaries
+### On/off summaries
 
 Examples:
 
@@ -305,8 +311,9 @@ Examples:
 
 Current behavior:
 
-- parser routes to `player_on_off`, preserves `lineup_members` and `presence_state`, and returns an explicit unsupported-data note
-- Phase I explicitly deferred real execution until a trustworthy on/off split table, play-by-play plus substitutions, or stint-level source is approved
+- parser routes to `player_on_off` and preserves `lineup_members` and `presence_state`
+- execution uses trusted `team_player_on_off_summary` rows when both `on` and `off` coverage exists for the requested single-player slice
+- missing or untrusted coverage, unsupported multi-player on/off, and slices outside the source contract return explicit unsupported/no-result responses
 - whole-game `without_player` absence is not an on/off substitute
 
 ### Specific lineup summaries
@@ -319,8 +326,9 @@ Examples:
 
 Current behavior:
 
-- parser routes to `lineup_summary`, preserves `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum`, and returns an explicit unsupported-data note
-- Phase J explicitly deferred real execution until a trustworthy lineup-unit table, play-by-play plus substitutions, or stint-level source is approved
+- parser routes to `lineup_summary` and preserves `lineup_members`, `unit_size`, and `minute_minimum`
+- execution uses trusted `league_lineup_viz` rows normalized from upstream `leaguelineupviz` via `nba_api.stats.endpoints.LeagueLineupViz`
+- missing or untrusted coverage, unsupported unit sizes, and slices outside the source contract return explicit unsupported/no-result responses
 - roster membership is not a lineup-unit substitute
 
 ---
@@ -447,8 +455,9 @@ Examples:
 
 Current behavior:
 
-- parser routes to `lineup_leaderboard`, preserves `unit_size` and `minute_minimum`, and returns an explicit unsupported-data note
-- Phase J explicitly deferred real execution until a trustworthy lineup-unit table, play-by-play plus substitutions, or stint-level source is approved
+- parser routes to `lineup_leaderboard` and preserves `lineup_members`, `unit_size`, and `minute_minimum`
+- execution uses trusted `league_lineup_viz` rows normalized from upstream `leaguelineupviz` via `nba_api.stats.endpoints.LeagueLineupViz`
+- missing or untrusted coverage, unsupported unit sizes, and slices outside the source contract return explicit unsupported/no-result responses
 
 ### Ranking language
 

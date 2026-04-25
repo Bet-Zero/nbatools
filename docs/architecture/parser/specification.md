@@ -158,7 +158,7 @@ Identify the real-world subject(s) the query references. Implemented across `_ma
 - **player comparison pair** — `extract_player_comparison` → (`player_a`, `player_b`)
 - **team comparison pair** — `extract_team_comparison` → (`team_a`, `team_b`)
 - **position group** — `extract_position_filter`
-- **lineup / unit** — on/off and lineup placeholder routing are supported; real data-backed lineup execution is still future work (see §11)
+- **lineup / unit** — on/off and lineup routing are supported with coverage-gated source-backed execution where trusted source rows exist (see §11)
 
 ### 3.2 Name reference styles
 
@@ -285,7 +285,7 @@ This is deliberately different from a flat "one intent enum" model. The combinat
 | `Celtics vs contenders`                 | `record` (default)   | `record_intent` + opponent-quality (future)    |
 | `Edwards in wins vs losses`             | `split`              | `split_intent` + `split_type="wins_vs_losses"` |
 | `Suns when Booker out`                  | `summary`/`record`   | `without_player` filter                        |
-| `Nuggets Jokic on off`                  | `summary`            | `lineup_members` + `presence_state`; placeholder on/off route |
+| `Nuggets Jokic on off`                  | `summary`            | `lineup_members` + `presence_state`; coverage-gated on/off route |
 | `LeBron vs Durant career stats`         | `comparison`         | `career_intent` + player comparison            |
 | `Jokic longest 30-point streak`         | `streak`             | `streak_request` populated                     |
 | `Lakers vs Celtics playoff history`     | `playoff`            | `playoff_history_intent`                       |
@@ -670,7 +670,7 @@ Remaining unsupported:
 
 ## 11. On/off, lineup, and stretch support
 
-**Status: mixed.** Single-player on/off phrasing and lineup/unit phrasing route to dedicated placeholder paths with honest unsupported-data notes. Phase I explicitly deferred real on/off execution until a trustworthy split, play-by-play + substitution, or stint source is approved. Phase J explicitly deferred real lineup execution until a trustworthy lineup-unit, play-by-play + substitution, or stint source is approved. Stretch/rolling-window leaderboards are fully shipped on top of whole-game player logs.
+**Status: mixed.** Single-player on/off phrasing routes to `player_on_off` and executes against trusted `team_player_on_off_summary` rows when coverage exists. Lineup/unit phrasing routes to `lineup_summary` or `lineup_leaderboard` and executes against trusted `league_lineup_viz` rows when coverage exists. Missing or untrusted source coverage returns honest unsupported/no-result responses. Stretch/rolling-window leaderboards are fully shipped on top of whole-game player logs.
 
 ### 11.0 Current shipped surface
 
@@ -691,7 +691,7 @@ Shipped in Phase E items 8, 9, and 10:
 - `best 5-game stretch by Game Score`
 - `most efficient 10-game rolling stretch`
 
-These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`, and return an honest note explaining that real on/off splits and lineup-unit stats require play-by-play, substitution/stint, or lineup tables that are not yet available. Whole-game `without_player` absence is explicitly not an on/off source, and roster membership is explicitly not a lineup-unit source.
+These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`. `player_on_off` is coverage-gated on trusted `team_player_on_off_summary` rows. Lineup routes are coverage-gated on trusted `league_lineup_viz` rows. Whole-game `without_player` absence is explicitly not an on/off source, and roster membership is explicitly not a lineup-unit source.
 
 Stretch queries populate `window_size` and `stretch_metric`, route to `player_stretch_leaderboard`, keep the intent in the `leaderboard` family, and return real rolling-window results over player game logs.
 
@@ -717,7 +717,8 @@ Stretch queries populate `window_size` and `stretch_metric`, route to `player_st
 
 ### 11.3 Route behavior
 
-- `player_on_off`, `lineup_summary`, and `lineup_leaderboard` are shipped parser/route surfaces with honest unsupported-data notes because play-by-play, stint, and lineup tables are still missing
+- `player_on_off` is a shipped coverage-gated route backed by trusted `team_player_on_off_summary` rows for supported single-player slices
+- `lineup_summary` and `lineup_leaderboard` are shipped coverage-gated routes backed by trusted `league_lineup_viz` rows for supported lineup-unit slices
 - `player_stretch_leaderboard` is a shipped execution-backed route using full-game player logs
 - stretch queries default to rolling average `game_score` when no metric is named; `efficient` maps to rolling `ts_pct`, and named shooting percentages are computed from rolling makes/attempts
 
@@ -1199,8 +1200,8 @@ Canonical examples:
 | `<player> + <timeframe>`      | `summary`                              |
 | `<team> + <opponent-quality>` | `record` vs that opponent group        |
 | `<player> + <threshold>`      | `occurrence` / `count`                 |
-| `<player> on/off`             | `player_on_off` (placeholder execution) |
-| `best <N>-man lineups`        | `lineup_leaderboard` (placeholder execution) |
+| `<player> on/off`             | `player_on_off` (coverage-gated execution) |
+| `best <N>-man lineups`        | `lineup_leaderboard` (coverage-gated execution) |
 | `best <player> games`         | Ranked game logs by Game Score         |
 | `hottest <N>-game stretch`    | `player_stretch_leaderboard`           |
 | `<team> + recently`           | `summary` (team-level) + recent record |

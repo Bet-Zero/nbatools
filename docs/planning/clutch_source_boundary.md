@@ -127,8 +127,9 @@ removing fallback notes on any route.
 
 ## Immediate next action after source approval
 
-After the remaining source-approval queue items are resolved, draft a clutch or
-shared play-by-play implementation queue that starts with:
+The active implementation path is
+[`source_backed_execution_queue.md`](./source_backed_execution_queue.md), which
+includes clutch items that start with:
 
 1. documenting the final data contracts in `docs/reference/data_contracts.md`
 2. adding a `PlayByPlayV3` ingestion/backfill path
