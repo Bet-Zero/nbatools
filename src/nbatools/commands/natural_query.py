@@ -258,6 +258,22 @@ def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | 
     return None
 
 
+_AMBIGUOUS_FRAGMENT_PATTERNS = (
+    (r"^celtics recently$", "team + recent fragment needs summary, finder, or record intent"),
+    (r"^tatum vs knicks$", "player/team matchup fragment needs summary or game-list intent"),
+    (r"^jokic triple doubles$", "achievement fragment needs count, list, or leaderboard intent"),
+    (r"^best games booker$", "best-games fragment needs a stat or clearer player-game intent"),
+    (r"^thunder clutch$", "team + clutch fragment needs record, summary, or game-list intent"),
+)
+
+
+def _ambiguous_fragment_note(q: str) -> str | None:
+    for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
+        if re.search(pattern, q):
+            return f"ambiguous: {reason}"
+    return None
+
+
 __all__ = [
     # Core public API
     "parse_query",
@@ -379,7 +395,7 @@ def _build_parse_state(query: str) -> dict:
         stretch_request
         and top_n == window_size
         and window_size is not None
-        and re.search(rf"\b(?:best|worst)\s+{window_size}\s*(?:-\s*|\s+)games?\b", q)
+        and re.search(rf"\b(?:best|top|worst)\s+{window_size}\s*(?:-\s*|\s+)games?\b", q)
     ):
         top_n = None
 
@@ -777,6 +793,22 @@ def _finalize_route(parsed: dict) -> dict:
             entity_ambiguity.get("type", "player"),
         )
         out["notes"] = [msg]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if ambiguous_note := _ambiguous_fragment_note(q):
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {}
+        out["intent"] = "unsupported"
+        out["entity_ambiguity"] = {
+            "type": "intent",
+            "input": q,
+            "candidates": [],
+            "source": "ambiguous_fragment",
+        }
+        out["notes"] = [ambiguous_note]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out
@@ -1384,7 +1416,15 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     # Record-oriented routing: single team record
     # ---------------------------------------------------------------------------
-    elif team and record_intent and not team_a and not team_b:
+    elif (
+        team
+        and not team_a
+        and not team_b
+        and (
+            record_intent
+            or (without_player and stat is None and re.search(r"\b(?:without|w/o)\b", q))
+        )
+    ):
         route = "team_record"
         route_kwargs = {
             "team": team,
