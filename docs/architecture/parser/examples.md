@@ -270,12 +270,14 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 | 11  | Who is averaging the most points in his last 5 games?                                      | most points last 5 games                      |
 | 12  | Which team has the best net rating in its last 15 games?                                   | best net rating last 15 games                 |
 | 13  | Who has made the most threes since January 1?                                              | most threes since January 1                   |
-| 14  | Which players have averaged a double-double over their last 10 games?                      | double double average last 10 games           |
+| 14  | Which players have averaged a double-double over their last 10 games?                      | averaged a double-double last 10 games        |
 | 15  | Who is shooting the best from three over the last month with at least 5 attempts per game? | best 3pt percentage last month min 5 attempts |
 
-_Current boundary note:_ per-game attempt minimums are not execution-backed yet;
-both forms route as broad leaderboard fallbacks with an explicit unsupported
-boundary note.
+_Current boundary note:_ rolling team advanced ratings, double-double averages,
+and per-game attempt minimums are not execution-backed yet. Per-game attempt
+minimum examples route as broad leaderboard fallbacks with an explicit
+unsupported boundary note; rolling team advanced ratings and double-double
+averages remain unsupported boundary examples.
 
 ### 3.4 Best games / biggest games / most efficient
 
@@ -967,7 +969,10 @@ future product queue reopens them.
 - `against elite frontcourts`
 - `against winning teams`
 - `best record vs teams above .600`
-- _Core opponent-quality buckets shipped in Phase E. These remaining variants need new glossary definitions or new data sources._
+- _Core opponent-quality buckets shipped in Phase E. `against winning teams`
+  is recognized as `win_pct >= .500` and can route as a broad fallback when
+  entered as a context-only fragment. The remaining variants need new glossary
+  definitions or new data sources._
 
 ### 8.2 On/off and lineup queries (Phase E shipped surface)
 

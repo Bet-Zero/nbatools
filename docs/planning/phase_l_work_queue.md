@@ -34,7 +34,7 @@
 
 ---
 
-## 1. `[ ]` Resolve remaining shorthand leaderboard and fallback parser misses
+## 1. `[x]` Resolve remaining shorthand leaderboard and fallback parser misses
 
 **Why:** Most remaining failures are ordinary parser/routing coverage gaps in
 search-bar style phrasing. These should be fixed before deeper execution or
@@ -78,6 +78,11 @@ boundary decisions.
 - [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
 - `outputs/parser_examples_full_sweep/results.csv`
 - `outputs/parser_examples_full_sweep/report.md`
+
+**Completed validation:** targeted rerun of the 10 scoped full-sweep cases
+passed with no failures and no remaining mismatches for the affected
+`S3_3_2_07` and `S3_3_3_14` pairs. The blocker inventory now tracks 10 active
+failing cases and 2 active pair mismatches.
 
 ---
 

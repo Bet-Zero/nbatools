@@ -403,7 +403,7 @@ Examples:
 - `who leads the NBA in points per game` / `who leads the league in assists` (question form; routes to leaderboard)
 - `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
 - `Who scores the most at home this season?` / `most points at home this season` (leaderboard + home filter)
-- `hottest from three lately`, `best rim protector over the past month`, `best offensive rebounder lately` (skill phrasing mapped to supported leaderboard stats)
+- `hottest from three lately`, `hottest from 3 lately`, `best shot blocker last 10 games`, `best rim protector over the past month`, `best offensive rebounder lately` (skill phrasing mapped to supported leaderboard stats)
 
 ### Team leaderboards
 

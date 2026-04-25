@@ -189,6 +189,37 @@ class TestStatPhraseExpansion:
         assert parsed["route_kwargs"]["stat"] == "fg3_pct"
         assert parsed["route_kwargs"]["last_n"] == 10
 
+    def test_route_hottest_from_3_recently(self):
+        parsed = parse_query("hottest from 3 lately")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "fg3_pct"
+        assert parsed["route_kwargs"]["last_n"] == 10
+
+    def test_route_best_shot_blocker_last_10(self):
+        parsed = parse_query("best shot blocker last 10 games")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "blk"
+        assert parsed["route_kwargs"]["last_n"] == 10
+
+    def test_route_best_shooting_against_top_10_defenses(self):
+        parsed = parse_query("best shooting vs top 10 defenses")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "fg_pct"
+        assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "top-10 defenses"
+
+    def test_route_context_only_boundary_fragment_with_fallback_note(self):
+        parsed = parse_query("in clutch time")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "pts"
+        assert any("boundary_fragment" in note for note in parsed.get("notes", []))
+
+    def test_route_opponent_quality_boundary_fragment_with_fallback_note(self):
+        parsed = parse_query("against winning teams")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"]["stat"] == "pts"
+        assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "winning teams"
+        assert any("boundary_fragment" in note for note in parsed.get("notes", []))
+
     def test_route_best_rim_protector_past_month(self):
         parsed = parse_query("best rim protector over the past month")
         assert parsed["route"] == "season_leaders"
