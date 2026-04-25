@@ -83,6 +83,7 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "kd": "Kevin Durant",
     "cp3": "Chris Paul",
     "ad": "Anthony Davis",
+    "anthony davis": "Anthony Davis",
     "pg": "Paul George",
     "rj": "RJ Barrett",
     "cj": "CJ McCollum",

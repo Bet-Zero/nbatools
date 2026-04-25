@@ -99,6 +99,8 @@ STAT_ALIASES: dict[str, str] = {
     # Three-point percentage
     "three point percentage": "fg3_pct",
     "three-point percentage": "fg3_pct",
+    "3pt percentage": "fg3_pct",
+    "3pt pct": "fg3_pct",
     "3 point percentage": "fg3_pct",
     "3-point percentage": "fg3_pct",
     "three point %": "fg3_pct",

@@ -226,6 +226,7 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "both play",
     "leads the team in scoring",
     "offensive rating when",
+    "offensive rating without",
     "10+ assists and 0 turnovers",
     "attempts per game",
     "road by 20",
@@ -234,7 +235,9 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
 
 
 def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | None:
-    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES):
+    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or re.search(
+        r"\bmin(?:imum)?\s+\d+\s+attempts\b", q
+    ):
         return (
             "unsupported_boundary: this phrase is outside the shipped support boundary; "
             "returned results, when present, are broad fallbacks and not execution-backed "
@@ -509,12 +512,23 @@ def _build_parse_state(query: str) -> dict:
 
     # Detect game-absence only when the query is not an on/off-court request.
     if on_off_request is None:
-        without_player, _ = detect_without_player(q)
+        without_player, q_without_absence = detect_without_player(q)
+        if without_player and (not player or player.upper() == without_player.upper()):
+            player_without_absence = detect_player_resolved(q_without_absence)
+            if player_without_absence.is_confident:
+                player = player_without_absence.resolved
 
     # If without_player is the same as the detected player, clear player so the
     # query routes to the team path (e.g., "Lakers record without LeBron")
     if without_player and player and without_player.upper() == player.upper():
         player = None
+
+    if team == "MIN" and re.search(r"\bmin(?:imum)?\s+\d+", q):
+        team = None
+        team_resolution_confidence = "none"
+    if team == "WAS" and re.search(r"\bwas\s+out\b", q):
+        team = None
+        team_resolution_confidence = "none"
 
     role = detect_role(q) if any([player, player_a, player_b]) else None
 
@@ -1339,6 +1353,7 @@ def _finalize_route(parsed: dict) -> dict:
         or bool(re.search(r"\brecord\b", q))
         or ("averages" in q)
         or ("average" in q)
+        or without_player
         or player_timeframe_summary_default(parsed)[0]
     ):
         route = "player_game_summary"
@@ -1396,6 +1411,7 @@ def _finalize_route(parsed: dict) -> dict:
         or bool(re.search(r"\brecord\b", q))
         or ("averages" in q)
         or ("average" in q)
+        or without_player
     ):
         route = "game_summary"
         route_kwargs = {

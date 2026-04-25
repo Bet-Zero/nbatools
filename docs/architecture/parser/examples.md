@@ -273,6 +273,10 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 | 14  | Which players have averaged a double-double over their last 10 games?                      | double double average last 10 games           |
 | 15  | Who is shooting the best from three over the last month with at least 5 attempts per game? | best 3pt percentage last month min 5 attempts |
 
+_Current boundary note:_ per-game attempt minimums are not execution-backed yet;
+both forms route as broad leaderboard fallbacks with an explicit unsupported
+boundary note.
+
 ### 3.4 Best games / biggest games / most efficient
 
 | #   | Question form                                                       | Search / shorthand form                 |
@@ -304,6 +308,10 @@ _Opponent-quality filters are shipped on the core single-entity summary/finder/r
 | 28  | How has Anthony Davis rebounded when LeBron James didn't play?        | Anthony Davis rebounds when LeBron out  |
 | 29  | What is the Mavericks' offensive rating when Luka Dončić didn't play? | Mavericks offensive rating without Luka |
 | 30  | How has Tyrese Maxey played when Joel Embiid was out this season?     | Maxey when Embiid out this season       |
+
+_Current boundary note:_ named-player absence summary/record forms are supported.
+Team offensive-rating-while-absent forms are paired examples for an unsupported
+boundary and should return aligned unsupported/no-result behavior.
 
 ### 3.7 "Who's been the best at **_ over _**"
 

@@ -266,15 +266,15 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     # Ordered most-specific first to avoid partial matches.
     absence_patterns = [
         # `without PLAYER` / `w/o PLAYER`
-        rf"\b(?:without|w/o)\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
         # `when PLAYER didn't play` / `when PLAYER did not play`
-        r"\bwhen\s+([a-z0-9 .&'\-]+?)\s+(?:didn'?t|did\s+not)\s+play\b",
+        r"\bwhen\s+([\w .&'\-]+?)\s+(?:didn'?t|did\s+not)\s+play\b",
         # `when PLAYER is/was out`
-        r"\bwhen\s+([a-z0-9 .&'\-]+?)\s+(?:is|was)\s+out\b",
+        r"\bwhen\s+([\w .&'\-]+?)\s+(?:is|was)\s+out\b",
         # `when PLAYER out` (no copula)
-        r"\bwhen\s+([a-z0-9 .&'\-]+?)\s+out\b",
+        r"\bwhen\s+([\w .&'\-]+?)\s+out\b",
         # `no PLAYER` / `sans PLAYER` / `minus PLAYER`
-        rf"\b(?:no|sans|minus)\s+([a-z0-9 .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        rf"\b(?:no|sans|minus)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
     ]
 
     for pattern in absence_patterns:
