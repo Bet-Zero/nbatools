@@ -4,7 +4,7 @@
 >
 > This queue turns the latest full-sweep audit into a real blocker inventory and works it down until the examples-library surface is honest and consistent.
 >
-> **How to work this file:** Find the first unchecked item below. Review the cited sweep evidence and docs. Execute the item per acceptance criteria. Run the listed tests. Check the item off, commit, and continue immediately to the next unchecked item.
+> **How to work this file:** Find the first unchecked item below. Review the cited sweep evidence and docs. Execute the item per acceptance criteria. Run the listed tests. Check the item off, commit as its own PR-sized unit, push/open the PR immediately, wait for CI, merge as soon as CI is green, and continue immediately to the next unchecked item.
 
 ---
 

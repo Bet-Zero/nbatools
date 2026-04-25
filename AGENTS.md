@@ -258,6 +258,14 @@ This is a solo-developer repo. PRs are used for CI gating and atomic per-change 
 2. Wait for CI (`lint` + `test-fast`) to pass
 3. Merge immediately once CI is green — no review wait
 
+Permanent execution rule for queue-driven work:
+
+1. A queue item is complete only when its acceptance criteria are met and required local tests pass.
+2. As soon as that queue item is complete, commit it as its own PR-sized unit, push, and open the PR immediately.
+3. Wait for CI (`lint` + `test-fast`) on that PR, then merge immediately once CI is green.
+4. After merge, immediately continue to the next unchecked item in the active queue.
+5. Do not treat one merged item as whole-plan completion; stop only when `master_completion_plan.md` says the whole plan is done, or when the queue's current step explicitly requires review-handoff/blocker escalation.
+
 This gives us atomic per-item git history, keeps `main` green via CI, and avoids ceremony that doesn't apply to solo work. Do not leave PRs open waiting for review. Do not skip PRs in favor of direct-to-main commits unless explicitly told to.
 
 ## Documentation expectations
@@ -323,7 +331,7 @@ Do **not** let a plan, phase, or queue imply product completion from parser/rout
 
 To pick up scheduled work on a phase-based plan, use this prompt:
 
-> Read the relevant plan doc and the active work queue it explicitly identifies as next. Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires.
+> Read the relevant plan doc and the active work queue it explicitly identifies as next. Find the next unchecked item. Review the reference docs it cites. Execute the item per its acceptance criteria. Run the specified test commands. When everything passes, check the item off, update any docs the item requires, commit as a PR-sized unit, open the PR immediately, wait for CI, merge once green, then continue to the next unchecked item.
 
 The active queue is the queue named by the plan as the current continuation step. Do not infer global product completion from the absence of unchecked items in a subsystem-only queue. No separate prompt is needed for phase transitions as long as the current queue's final task drafts the next queue or writes the explicit review-handoff.
 

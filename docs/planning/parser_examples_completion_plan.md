@@ -156,6 +156,8 @@ Agents working this plan must:
 - check it off only when truly complete
 - then immediately repeat the process
 
+Operational cadence for each completed item: commit it as its own PR-sized unit, open the PR immediately, wait for CI, merge immediately when green, then continue to the next unchecked item.
+
 Do **not** stop after one item, one commit, one PR-sized task, or one queue unless:
 
 - the active queue explicitly requires a review-handoff because a true blocker prevents responsible continuation, or
