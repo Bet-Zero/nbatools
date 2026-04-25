@@ -22,6 +22,7 @@ def test_expression_contains_boolean_ops_detects_and_or_parens():
     assert expression_contains_boolean_ops("over 25 points or over 10 rebounds") is True
     assert expression_contains_boolean_ops("(over 25 points)") is True
     assert expression_contains_boolean_ops("over 25 points") is False
+    assert expression_contains_boolean_ops("5 or more threes") is False
 
 
 def test_tokenize_single_condition():

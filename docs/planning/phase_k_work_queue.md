@@ -71,7 +71,7 @@
 
 ---
 
-## 2. `[ ]` Fix or honestly reclassify canonical section 2 failures
+## 2. `[x]` Fix or honestly reclassify canonical section 2 failures
 
 **Why:** Section 2 is the canonical 100-example set. If those examples fail, the examples library is not meaningfully aligned with the product.
 
@@ -101,6 +101,9 @@
 - blocker inventory from item 1
 - `outputs/parser_examples_full_sweep/report.md`
 - `outputs/parser_examples_full_sweep/results.csv`
+
+**Completed validation:** targeted rerun of the 31 affected Section 2 cases passed
+31/31 using `outputs/parser_examples_full_sweep/sweep_runner.py` scoring logic.
 
 ---
 

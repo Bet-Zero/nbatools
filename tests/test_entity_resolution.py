@@ -483,6 +483,12 @@ class TestParseQueryEntityResolution:
         assert p["player"] == "Stephen Curry"
         assert p["last_n"] == 5
 
+    def test_tyrese_maxey_without_embiid(self):
+        p = parse_query("How has Tyrese Maxey played when Joel Embiid didn't play?")
+        assert p["player"] == "Tyrese Maxey"
+        assert p["without_player"] == "Joel Embiid"
+        assert p["route"] == "player_game_summary"
+
     # -- Team alias resolution in queries --
 
     def test_sixers_vs_celtics(self):

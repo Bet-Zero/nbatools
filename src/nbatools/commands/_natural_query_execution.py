@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.commands._constants import normalize_text
+from nbatools.commands._constants import BOOLEAN_OR_PATTERN, contains_boolean_or, normalize_text
 from nbatools.commands._parse_helpers import (
     build_game_context_filter_notes,
     build_opponent_quality_note,
@@ -346,8 +346,8 @@ def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, li
 
     if route not in _SUPPORTED_OPPONENT_QUALITY_ROUTES:
         return sanitized, [
-            "opponent_quality: filter detected but opponent-quality filtering is not yet wired "
-            "into this route; results are unfiltered"
+            "opponent_quality: filter detected but opponent-quality filtering is unsupported "
+            "on this route; results are unfiltered"
         ]
 
     season = sanitized.get("season")
@@ -486,10 +486,10 @@ def _combine_or_results(results: list):
 
 def _split_or_clauses(text: str) -> list[str]:
     text = normalize_text(text)
-    if " or " not in text:
+    if not contains_boolean_or(text):
         return [text]
 
-    raw_parts = re.split(r"\s+or\s+", text, flags=re.IGNORECASE)
+    raw_parts = BOOLEAN_OR_PATTERN.split(text)
     parts = [normalize_text(p) for p in raw_parts if normalize_text(p)]
     return parts if parts else [text]
 

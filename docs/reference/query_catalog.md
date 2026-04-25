@@ -399,9 +399,11 @@ Examples:
 - `best field goal percentage` (recognized stat alias → fg_pct)
 - `best free throw percentage` (recognized stat alias → ft_pct)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
+- `biggest scoring games this season` / `most dominant games by plus-minus this season` (single-game leaderboard variants)
 - `who leads the NBA in points per game` / `who leads the league in assists` (question form; routes to leaderboard)
 - `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
 - `Who scores the most at home this season?` / `most points at home this season` (leaderboard + home filter)
+- `hottest from three lately`, `best rim protector over the past month`, `best offensive rebounder lately` (skill phrasing mapped to supported leaderboard stats)
 
 ### Team leaderboards
 
@@ -421,6 +423,10 @@ Examples:
 Leaderboard no-match behavior:
 
 - if data exists but the requested date/context/sample filters leave no games in scope, leaderboard routes return `no_match` rather than falling back to a broader leaderboard
+- rolling/date-window team advanced rating leaderboards and undefined skill concepts
+  such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
+  and shot creation are unsupported boundaries; routed fallbacks include an
+  explicit `unsupported_boundary` note
 
 ### Position-filtered leaderboards
 
