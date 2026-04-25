@@ -135,7 +135,7 @@ unsupported-boundary fallback, and all `S7_7_15` spellings route to
 
 ---
 
-## 3. `[ ]` Resolve occurrence-count and historical execution blockers
+## 3. `[x]` Resolve occurrence-count and historical execution blockers
 
 **Why:** Five remaining failures are execution or data-support issues rather
 than basic phrase recognition. These should be fixed in command modules when
@@ -175,6 +175,12 @@ does not have the required historical/playoff data contract.
 - [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
 - [`docs/reference/data_contracts.md`](../reference/data_contracts.md)
 - `outputs/parser_examples_full_sweep/results.csv`
+
+**Completed validation:** targeted rerun of `S4_4_2_10`, `S4_4_2_11`,
+`S4_4_4_06`, `S4_4_4_09`, and `S4_4_4_12` passed with no pair or equivalence
+mismatches. Distinct-player occurrence counts now execute with unbounded
+leaderboards, playoff round/appearance routes default to career playoff spans,
+and `winningest team of the 2010s` routes to the decade leaderboard.
 
 ---
 

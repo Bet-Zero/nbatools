@@ -145,10 +145,18 @@ class TestPlayoffIntentDetection(unittest.TestCase):
     """Test new intent detection functions."""
 
     def test_detect_by_decade_intent(self):
-        from nbatools.commands.natural_query import detect_by_decade_intent
+        from nbatools.commands.natural_query import (
+            detect_by_decade_intent,
+            extract_decade_season_range,
+        )
 
         assert detect_by_decade_intent("lakers vs celtics by decade") is True
         assert detect_by_decade_intent("most wins by decade since 1980") is True
+        assert detect_by_decade_intent("winningest team of the 2010s") is True
+        assert extract_decade_season_range("winningest team of the 2010s") == (
+            "2010-11",
+            "2019-20",
+        )
         assert detect_by_decade_intent("lakers playoff record") is False
 
     def test_detect_playoff_appearance_intent(self):
@@ -253,6 +261,12 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         result = self._parse("most wins by decade since 1980")
         assert result["route"] == "record_by_decade_leaderboard", result["route"]
 
+    def test_winningest_team_of_decade_routes(self):
+        result = self._parse("winningest team of the 2010s")
+        assert result["route"] == "record_by_decade_leaderboard", result["route"]
+        assert result["route_kwargs"]["start_season"] == "2010-11"
+        assert result["route_kwargs"]["end_season"] == "2019-20"
+
     def test_best_playoff_record_by_decade_routes(self):
         """'Best playoff record by decade since 1980'."""
         result = self._parse("best playoff record by decade since 1980")
@@ -263,6 +277,20 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         result = self._parse("most conference finals appearances since 2000")
         assert result["route"] == "playoff_appearances", result["route"]
         assert result["route_kwargs"].get("playoff_round") == "03"
+
+    def test_team_conference_finals_appearances_defaults_to_career(self):
+        result = self._parse("Warriors conference finals appearances")
+        assert result["route"] == "playoff_appearances", result["route"]
+        assert result["route_kwargs"]["season"] is None
+        assert result["route_kwargs"]["start_season"] is not None
+        assert result["route_kwargs"]["playoff_round"] == "03"
+
+    def test_best_second_round_record_defaults_to_career(self):
+        result = self._parse("best second round record")
+        assert result["route"] == "playoff_round_record", result["route"]
+        assert result["route_kwargs"]["season"] is None
+        assert result["route_kwargs"]["start_season"] is not None
+        assert result["route_kwargs"]["playoff_round"] == "02"
 
 
 # ---------------------------------------------------------------------------

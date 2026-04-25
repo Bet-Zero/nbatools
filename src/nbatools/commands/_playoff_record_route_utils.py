@@ -10,7 +10,7 @@ import re
 
 from nbatools.commands._leaderboard_utils import wants_ascending_leaderboard
 from nbatools.commands._seasons import default_end_season, resolve_career
-from nbatools.commands.playoff_history import ROUND_ALIASES
+from nbatools.commands.playoff_history import ROUND_ALIASES, decade_season_range
 
 # ---------------------------------------------------------------------------
 # Intent detection helpers
@@ -37,6 +37,7 @@ def detect_record_intent(text: str) -> bool:
             r"|best\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
             r"|worst\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
             r"|highest\s+win|lowest\s+win"
+            r"|winningest"
             r"|home\s+record|away\s+record"
             r"|playoff\s+record|postseason\s+record"
             r"|matchup\s+record|all[- ]?time\s+record)\b",
@@ -47,7 +48,15 @@ def detect_record_intent(text: str) -> bool:
 
 def detect_by_decade_intent(text: str) -> bool:
     """Detect 'by decade' bucketing intent."""
-    return bool(re.search(r"\bby\s+decade\b", text))
+    return bool(re.search(r"\bby\s+decade\b|\b(?:19|20)\d0s\b", text))
+
+
+def extract_decade_season_range(text: str) -> tuple[str | None, str | None]:
+    """Extract a decade phrase such as ``2010s`` into season bounds."""
+    match = re.search(r"\b((?:19|20)\d0s)\b", text)
+    if not match:
+        return None, None
+    return decade_season_range(match.group(1))
 
 
 def detect_playoff_appearance_intent(text: str) -> bool:
@@ -367,7 +376,7 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
     lb_season = season
     lb_start = start_season
     lb_end = end_season
-    if not lb_season and not lb_start and not lb_end:
+    if not playoff_round_filter and not lb_season and not lb_start and not lb_end:
         lb_season = default_end_season(season_type)
 
     # Determine the sort stat from query phrasing

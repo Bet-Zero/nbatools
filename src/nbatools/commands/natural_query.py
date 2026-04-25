@@ -195,6 +195,7 @@ from nbatools.commands._playoff_record_route_utils import (
     detect_playoff_history_intent,
     detect_playoff_round_filter,
     detect_record_intent,
+    extract_decade_season_range,
     try_playoff_record_route,
     try_record_leaderboard_route,
 )
@@ -300,6 +301,7 @@ __all__ = [
     "detect_playoff_history_intent",
     "detect_playoff_round_filter",
     "detect_record_intent",
+    "extract_decade_season_range",
     # Parsing helpers (from _parse_helpers)
     "STREAK_SPECIAL_PATTERNS",
     "TEAM_STREAK_SPECIAL_PATTERNS",
@@ -354,6 +356,11 @@ def _build_parse_state(query: str) -> dict:
     # -- Historical span detection (must run before single-season extraction) --
     start_season, end_season = extract_season_range(q)
     career_intent = False
+
+    if not (start_season and end_season):
+        decade_start, decade_end = extract_decade_season_range(q)
+        if decade_start and decade_end:
+            start_season, end_season = decade_start, decade_end
 
     if not (start_season and end_season):
         # Try "since SEASON/YEAR"
@@ -428,6 +435,13 @@ def _build_parse_state(query: str) -> dict:
     playoff_history_intent = detect_playoff_history_intent(q)
     playoff_round_filter = detect_playoff_round_filter(q)
     by_round_intent = detect_by_round_intent(q)
+    historical_route_intent = bool(
+        by_decade_intent
+        or playoff_appearance_intent
+        or playoff_history_intent
+        or playoff_round_filter
+        or by_round_intent
+    )
 
     threshold_conditions = extract_threshold_conditions(q)
 
@@ -469,7 +483,7 @@ def _build_parse_state(query: str) -> dict:
             or team_leaderboard_intent
             or record_intent
             or window_size is not None
-        ):
+        ) and not historical_route_intent:
             season = default_season_for_context(season_type)
 
     player_a, player_b = extract_player_comparison(q)
@@ -564,16 +578,19 @@ def _build_parse_state(query: str) -> dict:
     half = detect_half(q)
 
     if season is None and start_season is None and end_season is None:
-        if any(
-            [
-                player,
-                team,
-                opponent,
-                player_a,
-                player_b,
-                team_a,
-                team_b,
-            ]
+        if (
+            any(
+                [
+                    player,
+                    team,
+                    opponent,
+                    player_a,
+                    player_b,
+                    team_a,
+                    team_b,
+                ]
+            )
+            and not historical_route_intent
         ):
             season = default_season_for_context(season_type)
 
