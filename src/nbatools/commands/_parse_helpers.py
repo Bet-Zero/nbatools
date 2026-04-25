@@ -754,6 +754,7 @@ def detect_opponent_quality(text: str) -> dict | None:
         (r"\b(?:against|vs\.?|versus)\s+good\s+teams\b", "good teams"),
         (r"\b(?:against|vs\.?|versus)\s+top\s+teams\b", "top teams"),
         (r"\b(?:against|vs\.?|versus)\s+playoff\s+teams\b", "playoff teams"),
+        (r"\b(?:against|vs\.?|versus)\s+winning\s+teams\b", "winning teams"),
         (r"\b(?:against|vs\.?|versus)\s+teams?\s+over\s+\.500\b", "teams over .500"),
         (r"\b(?:against|vs\.?|versus)\s+top[- ]10\s+defenses\b", "top-10 defenses"),
     ]

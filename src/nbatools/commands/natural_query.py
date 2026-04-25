@@ -1185,6 +1185,42 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
+    elif (
+        not player
+        and not team
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and not stat
+        and not leaderboard_intent
+        and not team_leaderboard_intent
+        and (opponent_quality or clutch)
+    ):
+        route = "season_leaders"
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+            "position": position_filter,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+        }
+        notes.append(
+            "boundary_fragment: context detected without a player, team, or stat; "
+            "returning a broad points leaderboard fallback"
+        )
     elif (_lb := metric_only_leaderboard_default(parsed))[0]:
         # No subject entity → league-wide leaderboard default (spec §15.2)
         notes.append(_lb[1])
