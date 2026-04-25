@@ -177,7 +177,7 @@ remaining equivalence signature mismatches.
 
 ---
 
-## 5. `[ ]` Run the full parser-examples sweep again and compare deltas
+## 5. `[x]` Run the full parser-examples sweep again and compare deltas
 
 **Why:** This queue should not close on local spot checks alone. The blocker inventory must be validated against a fresh full sweep.
 
@@ -204,6 +204,14 @@ remaining equivalence signature mismatches.
 
 - prior sweep outputs in `outputs/parser_examples_full_sweep/`
 - `docs/operations/parser_examples_full_sweep_protocol.md`
+
+**Completed validation:** full sweep rerun at
+`2026-04-25T15:42:59Z` on commit
+`8cd6441fadcba3e14ac0d095dc43e5cd9a16cb44` produced 402 cases,
+384 passing and 18 failing. This improves the prior Phase K baseline from
+324/78 to 384/18, reduces pair mismatches from 12 to 4, and reduces
+equivalence-group mismatches from 7 to 1. The blocker inventory now reflects
+only the remaining unresolved issues from this fresh sweep.
 
 ---
 
