@@ -299,7 +299,7 @@ The next step for this closed Part 2 plan is explicit:
 - **Master-plan continuation:** [`master_completion_plan.md`](./master_completion_plan.md)
   is the single authority for current whole-plan status. It now names
   [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md)
-  and [`phase_k_work_queue.md`](./phase_k_work_queue.md) as the active
+  and [`phase_l_work_queue.md`](./phase_l_work_queue.md) as the active
   continuation for the examples-library surface.
 
 If the active master-plan continuation discovers that a later implementation
