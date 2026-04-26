@@ -234,7 +234,7 @@ fallback note, and fill-in placeholder templates fail cleanly.
 
 ---
 
-## 5. `[ ]` Rerun the full parser-examples sweep and refresh the blocker inventory
+## 5. `[x]` Rerun the full parser-examples sweep and refresh the blocker inventory
 
 **Why:** Phase L must prove that targeted fixes removed the remaining blocker
 families rather than only improving spot checks.
@@ -264,6 +264,15 @@ families rather than only improving spot checks.
 - `outputs/parser_examples_full_sweep/results.csv`
 - `outputs/parser_examples_full_sweep/report.md`
 - [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
+
+**Completed validation:** full parser-examples sweep rerun completed with 402
+fresh cases, 399 passing cases, 3 failing cases, 1 phrasing-pair mismatch, and
+0 equivalence-group mismatches. This improves the Phase K 384/18 baseline by
+15 additional passing cases, 15 fewer failing cases, 3 fewer pair mismatches,
+and 1 fewer equivalence mismatch. The blocker inventory now lists the remaining
+closure blockers: `S2_2_7_09`, `S4_4_4_02`, `S4_4_4_10`, and the
+`S3_3_10_50` pair mismatch. Required smoke validation passed with
+`make PYTEST="python3 -m pytest" test-smoke-all`.
 
 ---
 
