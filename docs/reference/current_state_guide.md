@@ -188,10 +188,18 @@ Playoff history, appearances, round records, and decade buckets.
 - single team playoff history/summary
 - team playoff appearance counts
 - team vs team playoff matchup history
-- round-specific records (first round, conference finals, finals)
+- league-wide round-specific record leaderboards (first round, conference finals, finals)
 - record by decade for a team
 - record by decade leaderboard (league-wide)
 - matchup by decade
+
+Outside the current shipped boundary:
+
+- entity-specific Finals record splits such as `Celtics finals record`
+- player Finals record splits such as `LeBron record in the Finals`
+
+Those forms require an approved playoff-round record data contract for the
+requested entity grain before they should be documented as supported.
 
 Examples:
 

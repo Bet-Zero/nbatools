@@ -139,7 +139,7 @@ passed with `make PYTEST="python3 -m pytest" test-parser`,
 
 ---
 
-## 3. `[ ]` Bundled closure: resolve remaining Finals failures, rerun the full sweep, and close the plan
+## 3. `[x]` Bundled closure: resolve remaining Finals failures, rerun the full sweep, and close the plan
 
 **Why:** Two remaining failures (`S4_4_4_02`, `S4_4_4_10`) are the only thing
 between Phase M and whole-plan closure. With the queue tail this short, the
@@ -198,3 +198,14 @@ adds CI/wait overhead without changing the outcome.
 - [`docs/reference/current_state_guide.md`](../reference/current_state_guide.md)
 - `outputs/parser_examples_full_sweep/results.csv`
 - `outputs/parser_examples_full_sweep/report.md`
+
+**Completed validation:** applied the §12 default reclassification path for
+`S4_4_4_02` and `S4_4_4_10` because Finals-specific team/player records do not
+have an approved entity-grain playoff-round record data contract. Targeted CLI
+reruns of both original queries returned clean `no_result` / `unsupported`
+responses. Required local validation passed with
+`make PYTEST="python3 -m pytest" test-impacted` (2544 passed, 1 xpassed; the
+local testmon cache invalidated and reselected the full serial suite). The
+closure sweep passed with `make PYTHON=python3 parser-examples-sweep`: 402
+total cases, 402 passing cases, 0 failing cases, 0 phrasing-pair mismatches,
+and 0 equivalence-group mismatches.
