@@ -29,8 +29,8 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install ruff
-      - run: ruff check src/ tests/
-      - run: ruff format --check src/ tests/
+      - run: ruff check src/ tests/ tools/
+      - run: ruff format --check src/ tests/ tools/
 
   # ── Fast feedback ────────────────────────────────────────────────
   # Runs on every trigger.  Uses `make test-unit` which excludes

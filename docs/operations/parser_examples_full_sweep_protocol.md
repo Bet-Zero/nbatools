@@ -152,6 +152,16 @@ The exact naming scheme may differ, but IDs must be:
 
 ## Execution method
 
+Run the tracked sweep runner from the repo root:
+
+```bash
+make parser-examples-sweep
+```
+
+The runner executes every extracted case through the real CLI path and writes
+`results.csv`, raw JSON captures, `manifest.json`, and `report.md` under
+`outputs/parser_examples_full_sweep/`.
+
 ### Primary execution path
 
 Run each case through the **real CLI path** using structured JSON export.
@@ -333,6 +343,11 @@ This protocol is complete only when:
 ## Recommended execution note
 
 This full sweep is large enough that it should usually be run as a dedicated audit pass, not casually during ordinary feature work.
+
+For sweep-only closure items, run this protocol plus the smoke targets required
+by the active queue. Do not add `make test-impacted` by default unless the item
+also changes code; testmon is serial and can select a large suite when shared
+natural-query files have changed.
 
 It complements:
 

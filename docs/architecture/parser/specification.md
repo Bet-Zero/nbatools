@@ -1275,6 +1275,10 @@ Align with the existing repo conventions (see [`AGENTS.md`](../../../AGENTS.md) 
 | Parser helper change              | `make test-impacted`, then `make test-parser` |
 | Routing logic change              | `make test-impacted`, then `make test-query`  |
 | Core computation change           | `make test-impacted`, then `make test-engine` |
+| Tight parser iteration            | `make test-impacted-parser`                   |
+| Tight routing iteration           | `make test-impacted-query`                    |
+| Parser examples full sweep        | `make parser-examples-sweep`                  |
+| Parser/query smoke closure        | `make test-smoke-all`                         |
 | Broad / cross-cutting change      | `make test-preflight`                         |
 | Before merge / maximum confidence | `make test`                                   |
 
