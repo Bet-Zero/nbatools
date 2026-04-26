@@ -169,6 +169,18 @@ def _build_query_metadata(
     return meta
 
 
+def _merge_metadata_notes(metadata: dict[str, Any], result_notes: list[str]) -> None:
+    """Merge parse-time and execution-time notes without duplicating text."""
+    if not result_notes:
+        return
+    merged = list(metadata.get("notes") or [])
+    for note in result_notes:
+        if note not in merged:
+            merged.append(note)
+    if merged:
+        metadata["notes"] = merged
+
+
 # ---------------------------------------------------------------------------
 # Query envelope
 # ---------------------------------------------------------------------------
@@ -511,7 +523,7 @@ def execute_natural_query(query: str) -> QueryResult:
     if count_intent:
         metadata["query_class"] = "count"
     if getattr(result, "notes", None):
-        metadata["notes"] = list(result.notes)
+        _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
         result=result,
         metadata=metadata,
@@ -697,7 +709,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         )
 
     if getattr(result, "notes", None):
-        metadata["notes"] = list(result.notes)
+        _merge_metadata_notes(metadata, list(result.notes))
 
     return QueryResult(
         result=result,

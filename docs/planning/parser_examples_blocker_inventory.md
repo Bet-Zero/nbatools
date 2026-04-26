@@ -41,8 +41,9 @@ Delta against the Phase K 384/18 baseline:
 The Phase L item 5 full sweep confirmed that targeted fixes from items 1
 through 4 removed most remaining blocker families. Three failing case IDs and
 one phrasing-pair mismatch remained after that full sweep. Phase M item 1
-targeted validation has since resolved the active pair mismatch without a
-full-sweep rerun.
+targeted validation resolved the active pair mismatch, and Phase M item 2
+targeted validation resolved the active shot-creator support-boundary mismatch,
+without a full-sweep rerun.
 
 Failure reasons from the latest `results.csv`:
 
@@ -51,11 +52,11 @@ Failure reasons from the latest `results.csv`:
 | Supported behavior routed to unsupported/no-result | 2 | Code fix, source-backed execution, or honest reclassification |
 | Unsupported/future boundary returned a supported result | 1 | Documentation-truth decision or stricter unsupported handling |
 
-Active unresolved status after Phase M item 1 targeted validation:
+Active unresolved status after Phase M item 2 targeted validation:
 
 | Metric | Active unresolved count |
 | --- | ---: |
-| Failing cases | 3 |
+| Failing cases | 2 |
 | Phrasing-pair mismatches | 0 |
 | Equivalence-group mismatches | 0 |
 
@@ -74,7 +75,6 @@ Active unresolved status after Phase M item 1 targeted validation:
 
 | Case | Query | Expected category | Actual status / route | Blocker label | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `S2_2_7_09` | "Who's been the best shot creator in clutch time this season?" | `unsupported_expected` | `ok` / `season_leaders` | Documentation-truth blocker | The docs mark this shot-creator/clutch boundary unsupported/future, but the product returned a supported leaderboard with only a clutch fallback note. Resolve by stricter unsupported handling or honest reclassification if this broad fallback is intended. |
 | `S4_4_4_02` | "Celtics finals record" | `supported_exact` | `no_result` (`unsupported`) / `team_record` | Data/support-boundary blocker | The examples classify Finals team record as supported, but the current route returns unsupported. Resolve with documented Finals/playoff-round execution support or reclassify the example boundary. |
 | `S4_4_4_10` | "LeBron record in the Finals" | `supported_exact` | `no_result` (`unsupported`) / `player_game_summary` | Data/support-boundary blocker | The examples classify player Finals record as supported, but the current route returns unsupported. Resolve with documented Finals/playoff-round execution support or reclassify the example boundary. |
 
@@ -108,10 +108,10 @@ record variants, Curry threes frequency, and fourth-quarter leaderboard groups.
 
 ## 4. Remaining Documentation / Support-Boundary Mismatches
 
-`S2_2_7_09` remains an active documentation/support-boundary mismatch: the
-example boundary says shot-creator/clutch support is unsupported or future, but
-the product returns a supported `season_leaders` result with an unfiltered
-clutch note.
+No active documentation/support-boundary mismatches remain after Phase M item 2
+targeted validation. `S2_2_7_09` now carries the explicit
+`unsupported_boundary` note through the CLI JSON metadata even when execution
+also appends clutch fallback notes.
 
 Prior documentation-boundary mismatches in Section 2 and `S3_3_9_45_S` are no
 longer failing in the latest sweep.
@@ -131,8 +131,8 @@ behavior instead of returning a confident supported result.
 Use this inventory as the source of truth for the remaining Phase M closure
 decision:
 
-1. Resolve or explicitly reclassify the three remaining failing case IDs:
-   `S2_2_7_09`, `S4_4_4_02`, and `S4_4_4_10`.
+1. Resolve or explicitly reclassify the two remaining failing case IDs:
+   `S4_4_4_02` and `S4_4_4_10`.
 2. Continue through Phase M until a fresh full sweep confirms whether those
    blockers are fully closed or require another explicit continuation.
 3. Keep `master_completion_plan.md` pointed at exactly one active continuation

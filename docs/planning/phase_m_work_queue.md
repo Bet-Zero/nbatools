@@ -86,7 +86,7 @@ explicit on/off unsupported-data note. Required local tests passed with
 
 ---
 
-## 2. `[ ]` Resolve the shot-creator clutch support-boundary mismatch
+## 2. `[x]` Resolve the shot-creator clutch support-boundary mismatch
 
 **Why:** `S2_2_7_09` is documented as unsupported/future behavior, but the
 product currently returns a supported `season_leaders` result with only an
@@ -123,6 +123,15 @@ unfiltered clutch note. That makes the examples-library boundary dishonest.
 - [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md)
 - [`docs/reference/query_catalog.md`](../reference/query_catalog.md)
 - `outputs/parser_examples_full_sweep/results.csv`
+
+**Completed validation:** targeted sweep-style CLI rerun of `S2_2_7_09`
+passed as `unsupported_expected`: the query still returns the broad
+`season_leaders` fallback, but CLI JSON metadata now preserves the explicit
+`unsupported_boundary` note alongside clutch fallback notes, so it no longer
+silently claims execution-backed shot-creator support. Required local tests
+passed with `make PYTEST="python3 -m pytest" test-parser`,
+`make PYTEST="python3 -m pytest" test-query`, and
+`make PYTEST="python3 -m pytest" test-smoke-queries`.
 
 ---
 
