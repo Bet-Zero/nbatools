@@ -16,6 +16,7 @@ from io import StringIO
 import pandas as pd
 import pytest
 
+import nbatools.query_service as query_service
 from nbatools.commands.structured_results import (
     ComparisonResult,
     FinderResult,
@@ -550,6 +551,28 @@ class TestMetadataPreservation:
         # Player summary queries should have sample_advanced_metrics note
         notes = meta.get("notes", [])
         assert any("sample_advanced_metrics" in n for n in notes)
+
+    @pytest.mark.query
+    def test_natural_query_metadata_merges_parse_and_result_notes(self, monkeypatch):
+        class DummyResult:
+            current_through = None
+            notes = ["engine_note: execution fallback"]
+            result_reason = None
+            result_status = "ok"
+
+            def to_dict(self):
+                return {}
+
+        def fake_execute_build_result(route, kwargs, extra_conditions=None):
+            assert route == "season_leaders"
+            return DummyResult()
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute_build_result)
+
+        qr = execute_natural_query("Who's been the best shot creator in clutch time this season?")
+        notes = qr.metadata.get("notes", [])
+        assert any("unsupported_boundary" in note for note in notes)
+        assert any("engine_note" in note for note in notes)
 
 
 # ===================================================================
