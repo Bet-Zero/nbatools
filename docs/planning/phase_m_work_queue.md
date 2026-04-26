@@ -34,6 +34,10 @@
   names either the next continuation or whole-plan completion.
 - As each item completes, commit it as a PR-sized unit, open the PR, wait for
   CI, merge when green, and continue to the next unchecked item.
+- **Closure-pass exception:** when the remaining unchecked items are only the
+  final fix/reclassification, the full-sweep rerun, and the master-plan closure
+  step, bundle them into a single PR. The per-item PR ceremony is intended for
+  larger phases; it is overhead when only the tail of the queue remains.
 
 ---
 
@@ -135,112 +139,62 @@ passed with `make PYTEST="python3 -m pytest" test-parser`,
 
 ---
 
-## 3. `[ ]` Resolve Finals record execution or reclassification blockers
+## 3. `[ ]` Bundled closure: resolve remaining Finals failures, rerun the full sweep, and close the plan
 
-**Why:** Two remaining failures are Finals-specific record examples classified
-as supported, while current execution returns unsupported. These need either
-documented execution support or honest reclassification.
+**Why:** Two remaining failures (`S4_4_4_02`, `S4_4_4_10`) are the only thing
+between Phase M and whole-plan closure. With the queue tail this short, the
+fix, the proof rerun, and the closure update belong in one PR — splitting them
+adds CI/wait overhead without changing the outcome.
 
 **Scope:**
 
-- Resolve or honestly reclassify:
+- Resolve both Finals failures, in the same PR:
   - `S4_4_4_02` - "Celtics finals record"
   - `S4_4_4_10` - "LeBron record in the Finals"
-- If implementing execution, keep the logic in command/helper modules and use
-  documented data contracts.
-- If not implementing execution, update examples/catalog/current-state docs so
-  Finals-specific team and player records are not advertised as shipped.
+- Decide fix vs reclassify using the default rule in
+  [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md)
+  §12 (reclassify when no documented source path exists; route the parser when
+  the route exists but isn't being matched). Do not re-litigate the choice
+  beyond applying the default.
+- If reclassifying, move the affected lines in
+  [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md),
+  [`docs/reference/query_catalog.md`](../reference/query_catalog.md), and
+  [`docs/reference/current_state_guide.md`](../reference/current_state_guide.md)
+  to honest unsupported/out-of-scope wording in a single doc-sync pass.
+- If implementing execution, keep logic in existing command/helper modules and
+  reuse documented data contracts; do not introduce a new historical/playoff
+  dataset under this queue.
+- Rerun the full parser-examples sweep once, at the end of the same PR.
+- Refresh [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
+  with the fresh counts.
+- Update [`master_completion_plan.md`](./master_completion_plan.md) to either
+  declare the whole plan done (preferred path if the sweep is clean) or, only
+  if a true unresolved blocker family remains, name the next continuation.
 
 **Acceptance criteria:**
 
-- Both Finals examples pass in targeted reruns, either as execution-backed
-  supported behavior or as honestly documented unsupported/out-of-scope
-  behavior.
-- No new historical/playoff dataset is introduced without a documented
-  lifecycle layer, grain, join keys, trust fields, coverage semantics, fallback
-  behavior, and placement rationale.
+- Both Finals cases pass in the fresh full sweep (as supported behavior or as
+  honestly documented unsupported/out-of-scope behavior).
+- Fresh sweep artifacts exist under `outputs/parser_examples_full_sweep/`.
+- The blocker inventory is empty or lists only explicitly resolved items.
+- `master_completion_plan.md` names exactly one active continuation or states
+  the whole plan is done, citing the latest sweep counts.
 - CLI/API structured output contracts remain stable.
 
 **Tests to run:**
 
-- `make test-engine` if command execution changes
-- `make test-query`
-- `make test-output` if structured output changes
-- `make test-smoke-queries`
-- targeted rerun of `S4_4_4_02` and `S4_4_4_10`
+- `make test-impacted` for narrowly-scoped doc/parser-only changes; promote to
+  `make test-parser` / `make test-query` / `make test-engine` /
+  `make test-output` only if the corresponding code layer actually changes.
+- `make parser-examples-sweep` (one rerun, at end).
+- `make test-smoke-queries` (full smoke is only required if execution changes).
 
 **Reference artifacts:**
 
 - [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
 - [`docs/reference/data_contracts.md`](../reference/data_contracts.md)
 - [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md)
-- `outputs/parser_examples_full_sweep/results.csv`
-
----
-
-## 4. `[ ]` Rerun the full parser-examples sweep after Phase M fixes
-
-**Why:** Phase M must prove that remaining targeted fixes removed the closure
-blockers rather than only improving spot checks.
-
-**Scope:**
-
-- Rerun [`parser_examples_full_sweep_protocol.md`](../operations/parser_examples_full_sweep_protocol.md).
-- Produce fresh ignored artifacts under `outputs/parser_examples_full_sweep/`.
-- Update [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
-  to reflect only unresolved issues from the fresh sweep.
-- Compare the new counts against the Phase L 399/3 baseline.
-
-**Acceptance criteria:**
-
-- Fresh sweep artifacts exist.
-- The inventory either becomes empty or lists only explicitly unresolved
-  closure blockers.
-- The improvement or remaining blocker state is documented with exact counts.
-
-**Tests to run:**
-
-- `make parser-examples-sweep`
-- `make test-smoke-all`
-
-**Reference artifacts:**
-
+- [`docs/reference/query_catalog.md`](../reference/query_catalog.md)
+- [`docs/reference/current_state_guide.md`](../reference/current_state_guide.md)
 - `outputs/parser_examples_full_sweep/results.csv`
 - `outputs/parser_examples_full_sweep/report.md`
-- [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
-
----
-
-## 5. `[ ]` Close the whole plan or draft the next explicit continuation
-
-**Why:** The repo must continue to give one truthful answer about whether the
-whole plan is done.
-
-**Scope:**
-
-- If the blocker inventory is empty or all remaining items are explicitly
-  resolved by product decisions, update
-  [`master_completion_plan.md`](./master_completion_plan.md) to close the whole
-  plan.
-- If unresolved blocker groups remain, draft the next queue and make it the
-  active continuation in `master_completion_plan.md`.
-- Update [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md)
-  and [`docs/index.md`](../index.md) so the active queue references are not
-  stale.
-
-**Acceptance criteria:**
-
-- `master_completion_plan.md` names exactly one active continuation, or states
-  that the whole plan is done.
-- There is no open-ended examples-library blocker state undocumented.
-- The latest full-sweep result is cited in the closure or continuation record.
-
-**Tests to run:**
-
-- None for docs-only closure / queue drafting.
-
-**Reference docs:**
-
-- [`master_completion_plan.md`](./master_completion_plan.md)
-- [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md)
-- [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)

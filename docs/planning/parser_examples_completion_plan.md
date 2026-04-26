@@ -213,7 +213,61 @@ blockers or records explicit product decisions for them.
 
 ---
 
-## 11. Closure condition
+## 11. Closure-pass efficiency rules
+
+These rules apply once the active queue's blocker inventory is small enough
+that the planning ceremony costs more than the remaining work. They exist to
+prevent the per-item PR cycle, repeated full-sweep reruns, and successor-phase
+scaffolding from outweighing two or three trivial fixes at the tail of a phase.
+
+**Bundling rule.** When the only unchecked items in the active queue are (a)
+the final fix/reclassification(s), (b) the proof full-sweep rerun, and (c) the
+master-plan closure step, those items must be bundled into a single PR. The
+per-item PR cycle is for substantive work, not closure scaffolding.
+
+**No-successor-phase rule.** Do not draft a Phase N successor queue when the
+remaining blocker inventory is ≤ 3 cases of the same family and a default
+resolution rule (see §12) applies. Inline-finish the current phase instead.
+Drafting a successor queue is required only when a genuinely new blocker
+family appears or a true product decision must be escalated.
+
+**Single-sweep rule.** Run `make parser-examples-sweep` once per phase, at
+closure, as the proof rerun. Do not rerun the full sweep mid-phase to confirm
+spot fixes; targeted CLI reruns of the affected case IDs are sufficient until
+the closure rerun.
+
+**Test-target proportionality.** For doc-only or narrowly-scoped parser-only
+changes, prefer `make test-impacted` (or `make test-impacted-parser` /
+`make test-impacted-query`) over the full matrix in §9. Promote to the full
+target list only when the corresponding code layer actually changes. The §9
+list is the maximum, not the default.
+
+---
+
+## 12. Default resolution rule for fix-vs-reclassify
+
+When a queue item asks "fix execution or reclassify as unsupported," apply the
+following default before opening a debate:
+
+- If the parser **route exists** but the example isn't being matched to it
+  (route mismatch, phrasing miss, missing alias), the default is a **parser
+  fix**. Reclassification is not honest if the route already supports the
+  intent.
+- If the parser route exists but the **underlying data contract does not**
+  (no documented source path, no approved dataset, no coverage semantics for
+  the boundary), the default is **honest reclassification** to
+  unsupported/out-of-scope in `examples.md`, `query_catalog.md`, and
+  `current_state_guide.md`. Do not introduce a new dataset under this plan;
+  dataset work is governed by the master-plan structure invariant.
+- If neither holds, escalate as a true product decision in the queue rather
+  than picking arbitrarily.
+
+This rule prevents the same fix-vs-reclassify discussion from being relitigated
+on every Finals/playoff/round case the queue touches.
+
+---
+
+## 13. Closure condition
 
 This plan may close only when:
 

@@ -198,7 +198,8 @@ Examples:
     nbatools-cli ask "Lakers playoff history"
     nbatools-cli ask "most finals appearances"
     nbatools-cli ask "Lakers vs Celtics playoff history"
-    nbatools-cli ask "best first r    nbatools-cli ask "best first  "Lakers record by decade"
+    nbatools-cli ask "best first round record"
+    nbatools-cli ask "Lakers record by decade"
 
 ---
 
