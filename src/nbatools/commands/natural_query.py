@@ -232,6 +232,7 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "attempts per game",
     "road by 20",
     "road team won by 20",
+    "above .600",
 )
 
 
@@ -277,6 +278,15 @@ def _ambiguous_fragment_note(q: str) -> str | None:
     for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
         if re.search(pattern, q):
             return f"ambiguous: {reason}"
+    return None
+
+
+def _placeholder_template_note(q: str) -> str | None:
+    if re.search(r"_{2,}", q):
+        return (
+            "unsupported_boundary: fill-in placeholder templates are documentation examples, "
+            "not runnable shipped queries; replace the placeholder with a player, team, or stat"
+        )
     return None
 
 
@@ -831,6 +841,22 @@ def _finalize_route(parsed: dict) -> dict:
             "source": "ambiguous_fragment",
         }
         out["notes"] = [ambiguous_note]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if placeholder_note := _placeholder_template_note(q):
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {}
+        out["intent"] = "unsupported"
+        out["entity_ambiguity"] = {
+            "type": "intent",
+            "input": q,
+            "candidates": [],
+            "source": "placeholder_template",
+        }
+        out["notes"] = [placeholder_note]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out

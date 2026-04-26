@@ -184,7 +184,7 @@ and `winningest team of the 2010s` routes to the decade leaderboard.
 
 ---
 
-## 4. `[ ]` Resolve remaining net-rating and placeholder boundary mismatches
+## 4. `[x]` Resolve remaining net-rating and placeholder boundary mismatches
 
 **Why:** The last unresolved boundary cases are places where examples either
 imply support that may not exist or placeholder templates route as if they were
@@ -224,6 +224,13 @@ real user queries.
 - `outputs/parser_examples_full_sweep/results.csv`
 - [`docs/architecture/parser/examples.md`](../architecture/parser/examples.md)
 - [`docs/reference/query_catalog.md`](../reference/query_catalog.md)
+
+**Completed validation:** targeted rerun of the `S3_3_3_12` pair plus
+`S8_8_1_04`, `S8_8_5_02`, and `S8_8_5_04` passed with no pair or equivalence
+mismatches. The net-rating shorthand is now classified as the same unsupported
+rolling team-advanced-rating boundary as its paired question, `.600`
+opponent-quality bucket phrasing carries an explicit unsupported-boundary
+fallback note, and fill-in placeholder templates fail cleanly.
 
 ---
 

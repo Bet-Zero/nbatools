@@ -54,14 +54,14 @@ Failure reasons from the latest `results.csv`:
 | Supported behavior routed to no-data | 2 | Data/support-boundary decision |
 | Supported behavior routed to unsupported/no-result | 1 | Code fix or honest reclassification |
 
-Targeted validation after Phase L items 1 through 3 resolved 14 failing case
-IDs, 3 pair mismatches, and the remaining equivalence mismatch without a
+Targeted validation after Phase L items 1 through 4 resolved all known active
+failing case IDs, pair mismatches, and equivalence mismatches without a
 full-sweep rerun. Active unresolved status is now:
 
 | Metric | Active unresolved count |
 | --- | ---: |
-| Failing cases | 4 |
-| Phrasing-pair mismatches | 1 |
+| Failing cases | 0 |
+| Phrasing-pair mismatches | 0 |
 | Equivalence-group mismatches | 0 |
 
 ## Resolution Labels
@@ -77,26 +77,13 @@ full-sweep rerun. Active unresolved status is now:
 
 ## 1. Remaining Failing Cases
 
-After Phase L item 3 targeted validation, 4 failing cases remain across
-Section 3 and Section 8.
-
-| Case ID | Query | Actual behavior | Likely resolution |
-| --- | --- | --- | --- |
-| `S3_3_3_12_S` | "best net rating last 15 games" | `no_result/unsupported` on `season_team_leaders` | Boundary decision: team net-rating leaderboard support vs honest reclassification. |
-| `S8_8_1_04` | "best record vs teams above .600" | `ok` on `team_record_leaderboard` | Documentation-truth blocker for above-.600 opponent-quality boundary. |
-| `S8_8_5_02` | "Who has the most ___ since becoming a starter?" | `ok` on `season_leaders` | Documentation-truth blocker for placeholder/fill-in templates. |
-| `S8_8_5_04` | "What is ___ record in overtime games this season?" | `ok` on `team_record_leaderboard` | Documentation-truth blocker for placeholder/fill-in templates. |
+No active failing cases remain after Phase L item 4 targeted validation.
 
 ---
 
 ## 2. Remaining Pair Mismatches
 
-After Phase L item 2 targeted validation, 1 Section 3 pair-level mismatch
-remains.
-
-| Pair | Mismatch | Question form | Search form | Likely resolution |
-| --- | --- | --- | --- | --- |
-| `S3_3_3_12` | pass/fail divergence | "Which team has the best net rating in its last 15 games?" | "best net rating last 15 games" | Decide and align team net-rating rolling-window support. |
+No active pair mismatches remain after Phase L item 4 targeted validation.
 
 Resolved pair mismatches from the prior baseline include period leaderboard,
 recent scorer, shooting percentage with minimum attempts, absence summaries,
@@ -121,14 +108,8 @@ record variants, Curry threes frequency, and fourth-quarter leaderboard groups.
 
 ## 4. Remaining Documentation / Support-Boundary Mismatches
 
-These cases are marked unsupported or future by the sweep classification, but
-the product returned a supported result.
-
-| Case | Query | Actual route | Likely resolution |
-| --- | --- | --- | --- |
-| `S8_8_1_04` | "best record vs teams above .600" | `team_record_leaderboard` | Documentation-truth blocker for above-.600 opponent-quality bucket. |
-| `S8_8_5_02` | "Who has the most ___ since becoming a starter?" | `season_leaders` | Documentation-truth blocker for placeholder/fill-in query templates. |
-| `S8_8_5_04` | "What is ___ record in overtime games this season?" | `team_record_leaderboard` | Documentation-truth blocker for placeholder/fill-in query templates. |
+No active documentation/support-boundary mismatches remain after Phase L item 4
+targeted validation.
 
 Prior documentation-boundary mismatches in Section 2 and `S3_3_9_45_S` are no
 longer failing in the latest sweep.
@@ -148,10 +129,10 @@ behavior instead of returning a confident supported result.
 Use this inventory as the source of truth for the remaining Phase L closure
 decision:
 
-1. Fix or honestly reclassify the 4 remaining failing cases in Section 1.
-2. Align the 1 remaining Section 3 pair mismatch.
-3. Decide whether the 3 remaining documentation-boundary mismatches represent
-   real support or should fail more honestly.
+1. Rerun the full parser-examples sweep.
+2. Refresh this inventory from the full-sweep artifacts.
+3. Decide whole-plan completion or draft the next continuation from that fresh
+   evidence.
 
 Do not remove a blocker from this file unless the corresponding behavior is
 fixed, honestly reclassified, or superseded by a fresh full-sweep inventory.

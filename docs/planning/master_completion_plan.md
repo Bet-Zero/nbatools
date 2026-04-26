@@ -95,8 +95,8 @@ The active continuation queue is
 [`phase_l_work_queue.md`](./phase_l_work_queue.md).
 
 The current required action is to work the first unchecked item in
-[`phase_l_work_queue.md`](./phase_l_work_queue.md): resolve remaining
-net-rating and placeholder boundary mismatches.
+[`phase_l_work_queue.md`](./phase_l_work_queue.md): rerun the full
+parser-examples sweep and refresh the blocker inventory.
 
 Working one queue item to completion does not mean the whole plan is done: once
 an item's required local tests pass, ship it as its own PR-sized unit, wait for

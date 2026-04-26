@@ -320,6 +320,29 @@ class TestWithoutPlayer:
         assert parsed["route"] == "season_leaders"
         assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
+    def test_unsupported_boundary_note_for_above_point_six_hundred_record_bucket(self):
+        parsed = parse_query("best record vs teams above .600")
+        assert parsed["route"] == "team_record_leaderboard"
+        assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "Who has the most ___ since becoming a starter?",
+            "What is ___ record in overtime games this season?",
+        ],
+    )
+    def test_placeholder_templates_fail_cleanly(self, query):
+        parsed = parse_query(query)
+        assert parsed["route"] is None
+        assert parsed["intent"] == "unsupported"
+        assert parsed["entity_ambiguity"]["source"] == "placeholder_template"
+        assert any("placeholder templates" in note for note in parsed.get("notes", []))
+
+        qr = execute_natural_query(query)
+        assert qr.route is None
+        assert qr.result.result_status == "no_result"
+
 
 # ---------------------------------------------------------------------------
 # 5. Distinct entity count
