@@ -256,9 +256,8 @@ families rather than only improving spot checks.
 
 **Tests to run:**
 
-- Full parser-examples sweep protocol
-- `make test-smoke-queries`
-- `make test-phase-smoke`
+- `make parser-examples-sweep`
+- `make test-smoke-all`
 
 **Reference artifacts:**
 

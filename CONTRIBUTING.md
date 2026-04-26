@@ -17,17 +17,23 @@ Makefile targets provide deterministic test commands:
 
 ```bash
 make test-impacted    # Default: only tests affected by recent code changes (pytest-testmon, serial)
+make test-ci-fast     # Local equivalent of the PR CI fast gate
+make test-smoke-all   # Stable + phase natural-query smoke suites
 make test             # Full regression suite (parallel via xdist)
 make test-preflight   # All tests except slow — for broad, cross-cutting, or higher-risk changes only
 ```
 
 You can still invoke `pytest` directly with any flags you like.
+If your shell does not have the virtualenv first on `PATH`, pass tool paths
+explicitly, for example `make PYTEST=.venv/bin/pytest test-smoke-all`.
 
 ### When to use each
 
 | Command               | When                                                                                       |
 | --------------------- | ------------------------------------------------------------------------------------------ |
 | `make test-impacted`  | **Default** — during active development and as the normal finishing step for ordinary work |
+| `make test-ci-fast`   | Match the PR `test-fast` gate locally without using testmon                         |
+| `make test-smoke-all` | Parser/query phase closure when the queue asks for both smoke suites                |
 | `make test`           | Before merging, in CI, or when you want full confidence                                    |
 | `make test-preflight` | Broad, cross-cutting, or higher-risk changes only — not the default finishing step         |
 
@@ -37,6 +43,8 @@ Run a specific subsystem slice when you know which area your change affects:
 
 ```bash
 make test-unit        # Fast tests only — excludes slow and data-dependent tests
+make test-impacted-parser # Impacted parser-marked tests only
+make test-impacted-query  # Impacted query-marked tests only
 make test-parser      # Parsing helpers, boolean parser, entity resolution
 make test-query       # Natural query routing, intent detection, orchestration
 make test-engine      # Core command computation, metrics, records, streaks, pipeline
@@ -78,14 +86,32 @@ It may miss tests affected by:
 
 When in doubt, run `make test`.
 
+`make test-impacted` is serial by design (`-n0`). When a shared file such as
+`src/nbatools/commands/natural_query.py` changes, testmon can still select a
+large number of tests, so pytest progress percentages may advance slowly. For
+tight iteration, use `make test-impacted-parser` or `make test-impacted-query`
+first, then run the full required target once before finishing.
+
+### Parser examples sweep
+
+Run the full parser examples audit with:
+
+```bash
+make parser-examples-sweep
+```
+
+This writes ignored artifacts under `outputs/parser_examples_full_sweep/`.
+Sweep-only queue items should run the sweep plus the smoke targets named by the
+queue; they do not need `make test-impacted` unless code changed.
+
 ## Code Style
 
 This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
 Pre-commit hooks run automatically, or you can run manually:
 
 ```bash
-ruff check src/ tests/
-ruff format src/ tests/
+ruff check src/ tests/ tools/
+ruff format src/ tests/ tools/
 ```
 
 ## Continuous Integration

@@ -173,6 +173,8 @@ Do **not** stop after one item, one commit, one PR-sized task, or one queue unle
 Normal implementation work under this plan should use the existing repo commands:
 
 - `make test-impacted`
+- `make test-impacted-parser` or `make test-impacted-query` for tight iteration
+  on a known parser/query slice before running the full required target
 - `make test-parser`
 - `make test-query`
 - `make test-engine`
@@ -183,9 +185,14 @@ Normal implementation work under this plan should use the existing repo commands
 
 This plan also requires recurring reruns of:
 
+- `make parser-examples-sweep`
 - `docs/operations/parser_examples_full_sweep_protocol.md`
 
 A queue item that changes the examples-library behavior is not complete until its targeted failures are verified and the sweep-based blocker inventory is updated.
+
+Sweep-only inventory-refresh items should run the full sweep and the smoke
+targets named by the queue. They should not add `make test-impacted` unless the
+item also changes code.
 
 ---
 
