@@ -268,7 +268,7 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 | #   | Question form                                                                              | Search / shorthand form                       |
 | --- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
 | 11  | Who is averaging the most points in his last 5 games?                                      | most points last 5 games                      |
-| 12  | Which team has the best net rating in its last 15 games?                                   | best net rating last 15 games                 |
+| 12  | Which team has the best net rating in its last 15 games?                                   | best net rating in its last 15 games          |
 | 13  | Who has made the most threes since January 1?                                              | most threes since January 1                   |
 | 14  | Which players have averaged a double-double over their last 10 games?                      | averaged a double-double last 10 games        |
 | 15  | Who is shooting the best from three over the last month with at least 5 attempts per game? | best 3pt percentage last month min 5 attempts |
