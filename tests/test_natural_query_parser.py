@@ -623,6 +623,18 @@ def test_with_player_on_floor_sets_on_presence_state():
     assert parsed["presence_state"] == "on"
 
 
+def test_on_floor_versus_off_floor_routes_to_on_off_comparison():
+    parsed = parse_query(
+        "What is the Nuggets' net rating with Nikola Jokić on the floor versus off the floor?"
+    )
+    assert parsed["route"] == "player_on_off"
+    assert parsed["intent"] == "on_off"
+    assert parsed["team"] == "DEN"
+    assert parsed["lineup_members"] == ["Nikola Jokić"]
+    assert parsed["presence_state"] == "both"
+    assert parsed["stat"] == "net_rating"
+
+
 def test_without_player_on_floor_sets_off_presence_state():
     parsed = parse_query("Nuggets without Jokic on the floor")
     assert parsed["route"] == "player_on_off"

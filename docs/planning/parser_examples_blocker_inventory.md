@@ -1,10 +1,10 @@
 # Parser Examples Blocker Inventory
 
-> **Role:** Evidence inventory for Phase K / Phase L of
+> **Role:** Evidence inventory for Phase K / Phase L / Phase M of
 > [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md).
 >
 > This file reflects the latest full parser-examples sweep plus targeted
-> Phase L validation and lists only unresolved blocker groups.
+> Phase L / Phase M validation and lists only unresolved blocker groups.
 
 ---
 
@@ -38,10 +38,11 @@ Delta against the Phase K 384/18 baseline:
 | Phrasing-pair mismatches | 4 | 1 | -3 |
 | Equivalence-group mismatches | 1 | 0 | -1 |
 
-The Phase L item 5 full sweep confirms that targeted fixes from items 1
+The Phase L item 5 full sweep confirmed that targeted fixes from items 1
 through 4 removed most remaining blocker families. Three failing case IDs and
-one phrasing-pair mismatch remain as closure blockers for the next continuation
-decision.
+one phrasing-pair mismatch remained after that full sweep. Phase M item 1
+targeted validation has since resolved the active pair mismatch without a
+full-sweep rerun.
 
 Failure reasons from the latest `results.csv`:
 
@@ -50,12 +51,12 @@ Failure reasons from the latest `results.csv`:
 | Supported behavior routed to unsupported/no-result | 2 | Code fix, source-backed execution, or honest reclassification |
 | Unsupported/future boundary returned a supported result | 1 | Documentation-truth decision or stricter unsupported handling |
 
-Active unresolved status from the latest full sweep:
+Active unresolved status after Phase M item 1 targeted validation:
 
 | Metric | Active unresolved count |
 | --- | ---: |
 | Failing cases | 3 |
-| Phrasing-pair mismatches | 1 |
+| Phrasing-pair mismatches | 0 |
 | Equivalence-group mismatches | 0 |
 
 ## Resolution Labels
@@ -81,15 +82,15 @@ Active unresolved status from the latest full sweep:
 
 ## 2. Remaining Pair Mismatches
 
-| Pair | Question form | Search form | Mismatch | Notes |
-| --- | --- | --- | --- | --- |
-| `S3_3_10_50` | "What is the Nuggets' net rating with Nikola Jokić on the floor versus off the floor?" -> `player_game_finder` / `finder` / `no_result` | "Nuggets net rating Jokic on off" -> `player_on_off` / `summary` / `no_result` | route, query class | Both forms fail honestly as unsupported/fallback behavior, but intended-equivalent phrasing still diverges by route and query class. Normalize to the same on/off boundary or document intentional non-equivalence. |
+No active pair mismatches remain after Phase M item 1 targeted validation.
+`S3_3_10_50_Q` and `S3_3_10_50_S` now both return `player_on_off` /
+`summary` / `no_result` with the explicit on/off unsupported-data note.
 
 Resolved pair mismatches from the prior baseline include period leaderboard,
 recent scorer, shooting percentage with minimum attempts, absence summaries,
 frequency phrasing, player-threshold team-record pairs, hottest-from-three
-shorthand, double-double rolling-average reclassification, and multi-player
-availability record fallbacks.
+shorthand, double-double rolling-average reclassification, multi-player
+availability record fallbacks, and the Nuggets/Jokic on/off net-rating pair.
 
 ---
 
@@ -127,13 +128,13 @@ behavior instead of returning a confident supported result.
 
 ## 6. Follow-Up Order
 
-Use this inventory as the source of truth for the remaining Phase L closure
+Use this inventory as the source of truth for the remaining Phase M closure
 decision:
 
-1. Resolve or explicitly reclassify the three remaining failing case IDs and
-   the `S3_3_10_50` phrasing-pair mismatch.
-2. Decide in Phase L item 6 whether these blockers require a new continuation
-   queue or can be closed by documented product decisions.
+1. Resolve or explicitly reclassify the three remaining failing case IDs:
+   `S2_2_7_09`, `S4_4_4_02`, and `S4_4_4_10`.
+2. Continue through Phase M until a fresh full sweep confirms whether those
+   blockers are fully closed or require another explicit continuation.
 3. Keep `master_completion_plan.md` pointed at exactly one active continuation
    until the full examples-library surface is closed.
 

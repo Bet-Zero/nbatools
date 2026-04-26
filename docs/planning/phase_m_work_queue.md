@@ -37,7 +37,7 @@
 
 ---
 
-## 1. `[ ]` Resolve the remaining on/off net-rating phrasing mismatch
+## 1. `[x]` Resolve the remaining on/off net-rating phrasing mismatch
 
 **Why:** `S3_3_10_50` is no longer a failing case, but the intended-equivalent
 question and search forms still diverge by route and query class. The examples
@@ -76,6 +76,13 @@ library cannot close with unexplained pair divergence.
 - `outputs/parser_examples_full_sweep/results.csv`
 - `outputs/parser_examples_full_sweep/report.md`
 - [`phase_i_on_off_source_boundary.md`](./phase_i_on_off_source_boundary.md)
+
+**Completed validation:** targeted CLI rerun of the `S3_3_10_50` pair passed
+the route/query-class/status parity checks. Both `S3_3_10_50_Q` and
+`S3_3_10_50_S` now return `player_on_off` / `summary` / `no_result` with the
+explicit on/off unsupported-data note. Required local tests passed with
+`make PYTEST="python3 -m pytest" test-parser` and
+`make PYTEST="python3 -m pytest" test-query`.
 
 ---
 
