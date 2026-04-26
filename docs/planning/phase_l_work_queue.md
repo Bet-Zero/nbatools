@@ -276,7 +276,7 @@ closure blockers: `S2_2_7_09`, `S4_4_4_02`, `S4_4_4_10`, and the
 
 ---
 
-## 6. `[ ]` Close the whole plan or draft the next explicit continuation
+## 6. `[x]` Close the whole plan or draft the next explicit continuation
 
 **Why:** The repo must continue to give one truthful answer about whether the
 whole plan is done.
@@ -309,3 +309,11 @@ whole plan is done.
 - [`master_completion_plan.md`](./master_completion_plan.md)
 - [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md)
 - [`parser_examples_blocker_inventory.md`](./parser_examples_blocker_inventory.md)
+
+**Completed validation:** the refreshed blocker inventory still lists three
+failing case IDs (`S2_2_7_09`, `S4_4_4_02`, `S4_4_4_10`) and one
+phrasing-pair mismatch (`S3_3_10_50`), so the whole plan cannot honestly close.
+[`phase_m_work_queue.md`](./phase_m_work_queue.md) now carries those residual
+blockers, and `master_completion_plan.md`,
+`parser_examples_completion_plan.md`, and `docs/index.md` point to Phase M as
+the active continuation.

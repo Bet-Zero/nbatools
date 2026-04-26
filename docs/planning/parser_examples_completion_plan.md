@@ -200,12 +200,16 @@ item also changes code.
 
 The active queue for this plan is:
 
-- `docs/planning/phase_l_work_queue.md`
+- `docs/planning/phase_m_work_queue.md`
 
 Phase K is complete. It built the evidence-based blocker inventory, repaired
 the largest canonical/pair/equivalence/ambiguity blocker families, reran the
-full sweep, and reduced the baseline from 78 failures to 18. Phase L now works
-the remaining blocker groups from that fresh 384/18 sweep.
+full sweep, and reduced the baseline from 78 failures to 18. Phase L is
+complete: it worked the remaining blocker groups from that fresh 384/18 sweep,
+reran the full parser-examples sweep, and refreshed the blocker inventory to
+399 passing cases, 3 failing cases, 1 phrasing-pair mismatch, and 0
+equivalence-group mismatches. Phase M now resolves those remaining closure
+blockers or records explicit product decisions for them.
 
 ---
 
