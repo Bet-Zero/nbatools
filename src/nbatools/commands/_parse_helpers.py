@@ -938,14 +938,15 @@ def build_period_filter_note(
 
 def detect_on_off(text: str) -> dict | None:
     """Detect single-player on/off phrasing."""
+    player_fragment = r"[\w .&'\-]+?"
     phrase_patterns = (
-        (r"\bwith\s+([a-z0-9 .&'\-]+?)\s+on\s+(?:the\s+)?floor\b", "on"),
-        (r"\bwith\s+([a-z0-9 .&'\-]+?)\s+on\s+court\b", "on"),
-        (r"\bwithout\s+([a-z0-9 .&'\-]+?)\s+on\s+(?:the\s+)?floor\b", "off"),
-        (r"\bwithout\s+([a-z0-9 .&'\-]+?)\s+on\s+court\b", "off"),
-        (r"\b([a-z0-9 .&'\-]+?)\s+on\s+court\b", "on"),
-        (r"\b([a-z0-9 .&'\-]+?)\s+off\s+court\b", "off"),
-        (r"\b([a-z0-9 .&'\-]+?)\s+sitting\b", "off"),
+        (rf"\bwith\s+({player_fragment})\s+on\s+(?:the\s+)?floor\b", "on"),
+        (rf"\bwith\s+({player_fragment})\s+on\s+court\b", "on"),
+        (rf"\bwithout\s+({player_fragment})\s+on\s+(?:the\s+)?floor\b", "off"),
+        (rf"\bwithout\s+({player_fragment})\s+on\s+court\b", "off"),
+        (rf"\b({player_fragment})\s+on\s+court\b", "on"),
+        (rf"\b({player_fragment})\s+off\s+court\b", "off"),
+        (rf"\b({player_fragment})\s+sitting\b", "off"),
     )
 
     for pattern, presence_state in phrase_patterns:
@@ -954,6 +955,10 @@ def detect_on_off(text: str) -> dict | None:
             continue
         player = detect_player(match.group(1).strip())
         if player:
+            if presence_state == "on" and re.search(
+                r"\b(?:vs\.?|versus)\s+off\s+(?:the\s+)?(?:floor|court)\b", text
+            ):
+                presence_state = "both"
             return {
                 "lineup_members": [player],
                 "presence_state": presence_state,
