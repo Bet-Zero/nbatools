@@ -556,7 +556,6 @@ Record no-match behavior:
 Examples:
 
 - `Lakers playoff history`
-- `Celtics finals record`
 - `Heat vs Knicks playoff history`
 - `Lakers playoff series record vs Celtics`
 
@@ -570,7 +569,6 @@ Examples:
 - `most conference finals appearances since 2000`
 - `best finals record since 1980`
 - `best second round record`
-- `LeBron record in the Finals`
 
 ### By-decade / era-bucket queries
 
@@ -579,6 +577,19 @@ Examples:
 - `Warriors record by decade`
 - `winningest team of the 2010s`
 - `Lakers vs Celtics by decade`
+
+### Historical split boundaries
+
+Examples outside the shipped playoff/era-history surface:
+
+- `Celtics finals record`
+- `LeBron record in the Finals`
+
+Finals-specific team/player records require an approved playoff-round record
+data contract for the requested entity grain. Current shipped support covers
+single-team playoff history, playoff appearances, playoff matchup history, and
+league-wide playoff-round record leaderboards; it does not claim entity-specific
+Finals record splits.
 
 ---
 

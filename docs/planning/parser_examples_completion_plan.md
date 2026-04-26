@@ -198,9 +198,16 @@ item also changes code.
 
 ## 10. Current continuation
 
-The active queue for this plan is:
+This plan is closed.
 
-- `docs/planning/phase_m_work_queue.md`
+Latest closure evidence:
+
+- full sweep timestamp: `2026-04-26T10:08:40.940353+00:00`
+- total cases: 402
+- passing cases: 402
+- failing cases: 0
+- phrasing-pair mismatches: 0
+- equivalence-group mismatches: 0
 
 Phase K is complete. It built the evidence-based blocker inventory, repaired
 the largest canonical/pair/equivalence/ambiguity blocker families, reran the
@@ -208,8 +215,9 @@ full sweep, and reduced the baseline from 78 failures to 18. Phase L is
 complete: it worked the remaining blocker groups from that fresh 384/18 sweep,
 reran the full parser-examples sweep, and refreshed the blocker inventory to
 399 passing cases, 3 failing cases, 1 phrasing-pair mismatch, and 0
-equivalence-group mismatches. Phase M now resolves those remaining closure
-blockers or records explicit product decisions for them.
+equivalence-group mismatches. Phase M is complete: it resolved the remaining
+closure blockers, reran the full sweep, and closed the examples-library
+surface.
 
 ---
 

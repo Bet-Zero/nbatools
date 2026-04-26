@@ -183,12 +183,12 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
             "Stress input; clean routed result, ambiguity, no-result, or unsupported response is acceptable.",
         )
 
-    if section.startswith("8.1"):
+    if section.startswith("8.1") or subsection.startswith("8.1"):
         return (
             "unsupported_expected",
             "Section 8.1 marks these as future expansion requiring new definitions or sources.",
         )
-    if section.startswith("8.5"):
+    if section.startswith("8.5") or subsection.startswith("8.5"):
         return "unsupported_expected", "Section 8.5 is a future expansion-pattern boundary."
 
     if any(term in q for term in future_or_unsupported):
@@ -231,7 +231,12 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
         )
     if section.startswith("7.16") or section.startswith("7.17"):
         return "supported_with_fallback", "Lineup equivalence group is source-coverage gated."
-    if section.startswith("8.2") or section.startswith("8.3"):
+    if (
+        section.startswith("8.2")
+        or section.startswith("8.3")
+        or subsection.startswith("8.2")
+        or subsection.startswith("8.3")
+    ):
         return (
             "supported_with_fallback",
             "Expansion boundary is shipped only inside documented coverage-gated route boundaries.",

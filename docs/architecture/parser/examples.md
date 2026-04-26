@@ -427,7 +427,6 @@ Class: `playoff`
 Playoff history:
 
 - `Lakers playoff history`
-- `Celtics finals record`
 - `Heat vs Knicks playoff history`
 - `Lakers playoff series record vs Celtics`
 
@@ -438,7 +437,6 @@ Appearances / rounds:
 - `most Finals appearances since 1980`
 - `best finals record since 1980`
 - `best second round record`
-- `LeBron record in the Finals`
 
 By decade:
 
@@ -1018,6 +1016,11 @@ future product queue reopens them.
 - `Who has the most ___ since becoming a starter?`
 - `How has ___ played against the Lakers in his career?`
 - `What is ___ record in overtime games this season?`
+- `Celtics finals record`
+- `LeBron record in the Finals`
+- _Finals-specific team/player records require an explicit playoff-round record
+  data contract for the requested entity grain. Until that contract is approved,
+  these remain outside the shipped examples surface._
 
 ### 8.6 Triplet dataset pattern (for robustness testing)
 

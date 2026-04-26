@@ -3,8 +3,8 @@
 > **Role:** Evidence inventory for Phase K / Phase L / Phase M of
 > [`parser_examples_completion_plan.md`](./parser_examples_completion_plan.md).
 >
-> This file reflects the latest full parser-examples sweep plus targeted
-> Phase L / Phase M validation and lists only unresolved blocker groups.
+> This file reflects the latest full parser-examples sweep and records that no
+> unresolved blocker groups remain.
 
 ---
 
@@ -21,42 +21,40 @@ Latest full sweep:
 
 | Metric | Count |
 | --- | ---: |
-| Run timestamp | 2026-04-26T06:28:49.829488+00:00 |
-| Git commit SHA | `4c23bf73d3b91e7de52354b96bd94482435a67d7` |
+| Run timestamp | 2026-04-26T10:08:40.940353+00:00 |
+| Git commit SHA | `aebd18328f09ca27ee96035ce26a192a22bc5d55` |
 | Total cases | 402 |
-| Passing cases | 399 |
-| Failing cases | 3 |
-| Phrasing-pair mismatches | 1 |
+| Passing cases | 402 |
+| Failing cases | 0 |
+| Phrasing-pair mismatches | 0 |
 | Equivalence-group mismatches | 0 |
 
 Delta against the Phase K 384/18 baseline:
 
 | Metric | Prior | Latest | Delta |
 | --- | ---: | ---: | ---: |
-| Passing cases | 384 | 399 | +15 |
-| Failing cases | 18 | 3 | -15 |
-| Phrasing-pair mismatches | 4 | 1 | -3 |
+| Passing cases | 384 | 402 | +18 |
+| Failing cases | 18 | 0 | -18 |
+| Phrasing-pair mismatches | 4 | 0 | -4 |
 | Equivalence-group mismatches | 1 | 0 | -1 |
 
-The Phase L item 5 full sweep confirmed that targeted fixes from items 1
-through 4 removed most remaining blocker families. Three failing case IDs and
-one phrasing-pair mismatch remained after that full sweep. Phase M item 1
-targeted validation resolved the active pair mismatch, and Phase M item 2
-targeted validation resolved the active shot-creator support-boundary mismatch,
-without a full-sweep rerun.
+The Phase M closure sweep confirmed that all remaining blocker families have
+been fixed or honestly reclassified. The two Finals-specific record examples
+were moved from the supported playoff cluster to the explicit historical-splits
+boundary because no approved Finals-specific team/player record data contract
+exists for that entity grain.
 
 Failure reasons from the latest `results.csv`:
 
 | Failure reason | Count | Primary resolution type |
 | --- | ---: | --- |
-| Supported behavior routed to unsupported/no-result | 2 | Code fix, source-backed execution, or honest reclassification |
-| Unsupported/future boundary returned a supported result | 1 | Documentation-truth decision or stricter unsupported handling |
+| None | 0 | Closed |
 
-Active unresolved status after Phase M item 2 targeted validation:
+Active unresolved status after the Phase M closure sweep:
 
 | Metric | Active unresolved count |
 | --- | ---: |
-| Failing cases | 2 |
+| Failing cases | 0 |
 | Phrasing-pair mismatches | 0 |
 | Equivalence-group mismatches | 0 |
 
@@ -73,10 +71,14 @@ Active unresolved status after Phase M item 2 targeted validation:
 
 ## 1. Remaining Failing Cases
 
-| Case | Query | Expected category | Actual status / route | Blocker label | Notes |
-| --- | --- | --- | --- | --- | --- |
-| `S4_4_4_02` | "Celtics finals record" | `supported_exact` | `no_result` (`unsupported`) / `team_record` | Data/support-boundary blocker | The examples classify Finals team record as supported, but the current route returns unsupported. Resolve with documented Finals/playoff-round execution support or reclassify the example boundary. |
-| `S4_4_4_10` | "LeBron record in the Finals" | `supported_exact` | `no_result` (`unsupported`) / `player_game_summary` | Data/support-boundary blocker | The examples classify player Finals record as supported, but the current route returns unsupported. Resolve with documented Finals/playoff-round execution support or reclassify the example boundary. |
+No remaining failing cases.
+
+Resolved in Phase M closure:
+
+| Prior case | Current case | Query | Resolution |
+| --- | --- | --- | --- |
+| `S4_4_4_02` | `S8_8_5_05` | "Celtics finals record" | Reclassified from supported playoff history to the explicit historical-splits boundary. Latest sweep returns `no_result` (`unsupported`) / `team_record` and passes as `unsupported_expected`. |
+| `S4_4_4_10` | `S8_8_5_06` | "LeBron record in the Finals" | Reclassified from supported playoff history to the explicit historical-splits boundary. Latest sweep returns `no_result` (`unsupported`) / `player_game_summary` and passes as `unsupported_expected`. |
 
 ---
 
@@ -128,15 +130,12 @@ behavior instead of returning a confident supported result.
 
 ## 6. Follow-Up Order
 
-Use this inventory as the source of truth for the remaining Phase M closure
-decision:
+No follow-up order remains. The latest full sweep is clean:
 
-1. Resolve or explicitly reclassify the two remaining failing case IDs:
-   `S4_4_4_02` and `S4_4_4_10`.
-2. Continue through Phase M until a fresh full sweep confirms whether those
-   blockers are fully closed or require another explicit continuation.
-3. Keep `master_completion_plan.md` pointed at exactly one active continuation
-   until the full examples-library surface is closed.
+- 402 total cases
+- 402 passing cases
+- 0 failing cases
+- 0 phrasing-pair mismatches
+- 0 equivalence-group mismatches
 
-Do not remove a blocker from this file unless the corresponding behavior is
-fixed, honestly reclassified, or superseded by a fresh full-sweep inventory.
+This inventory is closed unless a future sweep introduces a new blocker.
