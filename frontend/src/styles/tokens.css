@@ -1,0 +1,94 @@
+:root {
+  /* Backgrounds */
+  --bg-page: #1A1A1A;
+  --bg-elevated: #222222;
+  --bg-card: #2A2A2A;
+  --bg-input: #141414;
+
+  /* Borders */
+  --border-subtle: #2F2F2F;
+  --border-default: #3D3D3D;
+  --border-strong: #525252;
+
+  /* Text */
+  --text-primary: #F5F5F5;
+  --text-secondary: #A1A1A1;
+  --text-tertiary: #737373;
+  --text-on-accent: #1A1A1A;
+
+  /* Accent */
+  --accent: #F97316;
+  --accent-hover: #FB923C;
+  --accent-muted: rgba(249, 115, 22, 0.13);
+  --accent-glow: rgba(249, 115, 22, 0.25);
+
+  /* Status */
+  --success: #3FB950;
+  --danger: #F85149;
+  --warning: #D29922;
+  --info: #58A6FF;
+
+  /* Win / Loss (for game outcomes) */
+  --win: #3FB950;
+  --loss: #F85149;
+
+  /* Team colors — populated dynamically via inline style or
+     CSS custom property override based on resolved team.
+     Defaults to neutral when no team context is present. */
+  --team-primary: var(--accent);
+  --team-secondary: var(--text-secondary);
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+
+  /* Typography — sizes */
+  --font-stat-hero: 56px;
+  --font-display: 48px;
+  --font-h1: 32px;
+  --font-h2: 24px;
+  --font-stat-md: 24px;
+  --font-h3: 18px;
+  --font-body: 15px;
+  --font-small: 13px;
+  --font-micro: 11px;
+
+  /* Typography — weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Typography — families */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-display: -0.03em;
+  --tracking-uppercase: 0.08em;
+
+  /* Transitions */
+  --transition-fast: 120ms ease-out;
+  --transition-default: 200ms ease-out;
+  --transition-slow: 320ms ease-out;
+}
