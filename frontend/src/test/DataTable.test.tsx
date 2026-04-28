@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import DataTable from "../components/DataTable";
+import styles from "../components/DataTable.module.css";
 
 describe("DataTable", () => {
   it("renders nothing for empty rows", () => {
@@ -44,9 +45,9 @@ describe("DataTable", () => {
   it("applies rank-cell class for rank column", () => {
     const rows = [{ rank: 1, player_name: "Jokic", PTS: 25 }];
     const { container } = render(<DataTable rows={rows} />);
-    const rankTh = container.querySelector("th.rank-cell");
+    const rankTh = container.getElementsByClassName(styles.rankCell)[0];
     expect(rankTh).not.toBeNull();
-    const entityTh = container.querySelector("th.entity-cell");
+    const entityTh = container.getElementsByClassName(styles.entityCell)[0];
     expect(entityTh).not.toBeNull();
   });
 
@@ -54,6 +55,6 @@ describe("DataTable", () => {
     const rows = [{ a: 1 }];
     const { container } = render(<DataTable rows={rows} highlight />);
     const table = container.querySelector("table");
-    expect(table?.classList.contains("data-table-highlight")).toBe(true);
+    expect(table?.classList.contains(styles.highlight)).toBe(true);
   });
 });

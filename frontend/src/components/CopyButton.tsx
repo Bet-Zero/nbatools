@@ -1,15 +1,18 @@
 import { useCallback, useState } from "react";
+import styles from "./CopyButton.module.css";
 
 interface Props {
   text: string;
   label?: string;
   className?: string;
+  variant?: "default" | "share";
 }
 
 export default function CopyButton({
   text,
   label = "Copy",
   className = "",
+  variant = "default",
 }: Props) {
   const [copied, setCopied] = useState(false);
 
@@ -36,7 +39,13 @@ export default function CopyButton({
   return (
     <button
       type="button"
-      className={`copy-btn ${className}`}
+      className={[
+        styles.button,
+        variant === "share" ? styles.share : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onClick={handleCopy}
       title={copied ? "Copied!" : label}
     >

@@ -1,3 +1,5 @@
+import styles from "./EmptyState.module.css";
+
 const TIPS = [
   'Try: "Jokic last 10 games"',
   'Try: "top 10 scorers 2024-25"',
@@ -8,16 +10,16 @@ const TIPS = [
 
 export default function EmptyState() {
   return (
-    <div className="empty-state">
-      <div className="empty-icon">🏀</div>
-      <h2 className="empty-title">Search the NBA</h2>
-      <p className="empty-desc">
+    <div className={styles.emptyState}>
+      <div className={styles.icon}>🏀</div>
+      <h2 className={styles.title}>Search the NBA</h2>
+      <p className={styles.description}>
         Type a natural language query above to explore player stats, team
         performance, matchups, streaks, and leaderboards.
       </p>
-      <div className="empty-tips">
+      <div className={styles.tips}>
         {TIPS.map((tip) => (
-          <div key={tip} className="empty-tip">
+          <div key={tip} className={styles.tip}>
             {tip}
           </div>
         ))}

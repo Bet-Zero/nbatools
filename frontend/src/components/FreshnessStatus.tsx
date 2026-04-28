@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
 import { fetchFreshness } from "../api/client";
 import type { FreshnessResponse, FreshnessStatusValue } from "../api/types";
+import styles from "./FreshnessStatus.module.css";
 
 const STATUS_CONFIG: Record<
   FreshnessStatusValue,
   { dot: string; label: string; className: string }
 > = {
-  fresh: { dot: "●", label: "Data is current", className: "freshness-fresh" },
-  stale: { dot: "●", label: "Data may be stale", className: "freshness-stale" },
+  fresh: { dot: "●", label: "Data is current", className: styles.fresh },
+  stale: { dot: "●", label: "Data may be stale", className: styles.stale },
   unknown: {
     dot: "○",
     label: "Freshness unknown",
-    className: "freshness-unknown",
+    className: styles.unknown,
   },
   failed: {
     dot: "●",
     label: "Last refresh failed",
-    className: "freshness-failed",
+    className: styles.failed,
   },
+};
+
+const BADGE_STYLES: Record<FreshnessStatusValue, string> = {
+  fresh: styles.badgeFresh,
+  stale: styles.badgeStale,
+  unknown: styles.badgeUnknown,
+  failed: styles.badgeFailed,
 };
 
 interface Props {
@@ -62,52 +70,57 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.unknown;
 
   return (
-    <div className={`freshness-panel ${cfg.className}`}>
+    <div className={[styles.panel, cfg.className].join(" ")}>
       <button
         type="button"
-        className="freshness-summary"
+        className={styles.summary}
         onClick={() => setExpanded((e) => !e)}
         aria-expanded={expanded}
         title={cfg.label}
       >
-        <span className="freshness-dot">{cfg.dot}</span>
-        <span className="freshness-label">
+        <span className={styles.dot}>{cfg.dot}</span>
+        <span className={styles.label}>
           {info.current_through
             ? `Data through ${info.current_through}`
             : cfg.label}
         </span>
-        <span className={`freshness-badge freshness-badge-${status}`}>
+        <span className={[styles.badge, BADGE_STYLES[status]].join(" ")}>
           {status}
         </span>
-        <span className="freshness-expand">{expanded ? "▾" : "▸"}</span>
+        <span className={styles.expand}>{expanded ? "▾" : "▸"}</span>
       </button>
 
       {expanded && (
-        <div className="freshness-details">
+        <div className={styles.details}>
           {info.seasons.map((s) => (
             <div
               key={`${s.season}-${s.season_type}`}
-              className="freshness-season-row"
+              className={styles.seasonRow}
             >
-              <span className="freshness-season-label">
+              <span className={styles.seasonLabel}>
                 {s.season} {s.season_type}
               </span>
-              <span className={`freshness-badge freshness-badge-${s.status}`}>
+              <span
+                className={[
+                  styles.badge,
+                  BADGE_STYLES[s.status as FreshnessStatusValue],
+                ].join(" ")}
+              >
                 {s.status}
               </span>
-              <span className="freshness-season-ct">
+              <span className={styles.seasonCurrentThrough}>
                 {s.current_through ? `through ${s.current_through}` : "—"}
               </span>
             </div>
           ))}
 
           {info.last_refresh_at && (
-            <div className="freshness-refresh-row">
+            <div className={styles.refreshRow}>
               Last refresh: {info.last_refresh_ok ? "✅" : "❌"}{" "}
               {info.last_refresh_at}
               {info.last_refresh_error && (
                 <span
-                  className="freshness-error"
+                  className={styles.error}
                   title={info.last_refresh_error}
                 >
                   {" "}

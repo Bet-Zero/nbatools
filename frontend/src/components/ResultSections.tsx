@@ -7,6 +7,7 @@ import NoResultDisplay from "./NoResultDisplay";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
+import styles from "./ResultSections.module.css";
 
 interface Props {
   data: QueryResponse;
@@ -59,8 +60,8 @@ function renderFallback(
   return (
     <>
       {keys.map((key) => (
-        <div className="section" key={key}>
-          <div className="section-title">{sectionLabel(key)}</div>
+        <div className={styles.section} key={key}>
+          <div className={styles.title}>{sectionLabel(key)}</div>
           <DataTable rows={sections[key]} />
         </div>
       ))}

@@ -1,5 +1,6 @@
 import type { SectionRow } from "../api/types";
 import DataTable from "./DataTable";
+import styles from "./SummarySection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
@@ -12,14 +13,14 @@ export default function SummarySection({ sections }: Props) {
   return (
     <>
       {summary && summary.length > 0 && (
-        <div className="section">
-          <div className="section-title">Summary</div>
+        <div className={styles.section}>
+          <div className={styles.title}>Summary</div>
           <DataTable rows={summary} />
         </div>
       )}
       {bySeason && bySeason.length > 0 && (
-        <div className="section">
-          <div className="section-title">By Season</div>
+        <div className={styles.section}>
+          <div className={styles.title}>By Season</div>
           <DataTable rows={bySeason} />
         </div>
       )}

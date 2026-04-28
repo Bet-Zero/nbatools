@@ -1,5 +1,6 @@
 import type { SectionRow } from "../api/types";
 import DataTable from "./DataTable";
+import styles from "./LeaderboardSection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
@@ -10,10 +11,10 @@ export default function LeaderboardSection({ sections }: Props) {
   if (!leaderboard || leaderboard.length === 0) return null;
 
   return (
-    <div className="section">
-      <div className="section-title">
+    <div className={styles.section}>
+      <div className={styles.title}>
         Leaderboard
-        <span className="section-count">{leaderboard.length} entries</span>
+        <span className={styles.count}>{leaderboard.length} entries</span>
       </div>
       <DataTable rows={leaderboard} highlight />
     </div>

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import type { SavedQuery, SavedQueryInput } from "../api/savedQueryTypes";
 import SaveQueryDialog from "./SaveQueryDialog";
+import styles from "./SavedQueries.module.css";
 
 interface Props {
   queries: SavedQuery[];
@@ -93,18 +94,18 @@ export default function SavedQueries({
   }
 
   return (
-    <div className="saved-queries">
-      <div className="saved-header">
-        <span className="saved-label">
+    <div className={styles.savedQueries}>
+      <div className={styles.header}>
+        <span className={styles.label}>
           Saved Queries
-          <span className="section-count section-count-inline">
+          <span className={[styles.count, styles.countInline].join(" ")}>
             {queries.length} {queries.length === 1 ? "query" : "queries"}
           </span>
         </span>
-        <span className="saved-header-actions">
+        <span className={styles.headerActions}>
           <button
             type="button"
-            className="saved-action-sm"
+            className={styles.actionSmall}
             onClick={handleImportClick}
             title="Import saved queries from JSON"
           >
@@ -114,14 +115,14 @@ export default function SavedQueries({
             ref={importRef}
             type="file"
             accept=".json"
-            style={{ display: "none" }}
+            className={styles.importInput}
             onChange={handleImportFile}
           />
           {queries.length > 0 && (
             <>
               <button
                 type="button"
-                className="saved-action-sm"
+                className={styles.actionSmall}
                 onClick={handleExport}
                 title="Export saved queries as JSON"
               >
@@ -129,7 +130,10 @@ export default function SavedQueries({
               </button>
               <button
                 type="button"
-                className="saved-action-sm saved-action-danger"
+                className={[
+                  styles.actionSmall,
+                  styles.actionDanger,
+                ].join(" ")}
                 onClick={handleClearAll}
                 title="Delete all saved queries"
               >
@@ -142,10 +146,15 @@ export default function SavedQueries({
 
       {/* Tag filter bar */}
       {allTags.length > 0 && (
-        <div className="saved-tags-bar">
+        <div className={styles.tagsBar}>
           <button
             type="button"
-            className={`saved-tag-filter ${filterTag === null ? "active" : ""}`}
+            className={[
+              styles.tagFilter,
+              filterTag === null ? styles.active : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             onClick={() => setFilterTag(null)}
           >
             All
@@ -154,7 +163,12 @@ export default function SavedQueries({
             <button
               key={tag}
               type="button"
-              className={`saved-tag-filter ${filterTag === tag ? "active" : ""}`}
+              className={[
+                styles.tagFilter,
+                filterTag === tag ? styles.active : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               onClick={() => setFilterTag(filterTag === tag ? null : tag)}
             >
               {tag}
@@ -165,10 +179,10 @@ export default function SavedQueries({
 
       {/* Empty state */}
       {queries.length === 0 && (
-        <div className="saved-empty">
-          <div className="saved-empty-icon">📌</div>
-          <div className="saved-empty-text">No saved queries yet</div>
-          <div className="saved-empty-hint">
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>📌</div>
+          <div className={styles.emptyText}>No saved queries yet</div>
+          <div className={styles.emptyHint}>
             Save queries you use often for quick access.
           </div>
         </div>
@@ -176,21 +190,23 @@ export default function SavedQueries({
 
       {/* Query list */}
       {visible.length > 0 && (
-        <div className="saved-list">
+        <div className={styles.list}>
           {visible.map((sq) => (
             <div
               key={sq.id}
-              className={`saved-item ${sq.pinned ? "saved-item-pinned" : ""}`}
+              className={[styles.item, sq.pinned ? styles.pinnedItem : ""]
+                .filter(Boolean)
+                .join(" ")}
             >
-              <div className="saved-item-main">
+              <div className={styles.itemMain}>
                 {sq.pinned && (
-                  <span className="saved-pin-icon" title="Pinned">
+                  <span className={styles.pinIcon} title="Pinned">
                     📌
                   </span>
                 )}
-                <div className="saved-item-info">
+                <div className={styles.itemInfo}>
                   <span
-                    className="saved-item-label"
+                    className={styles.itemLabel}
                     onClick={() => onRun(sq.query)}
                     role="button"
                     tabIndex={0}
@@ -201,24 +217,24 @@ export default function SavedQueries({
                   >
                     {sq.label}
                   </span>
-                  <span className="saved-item-query">{sq.query}</span>
+                  <span className={styles.itemQuery}>{sq.query}</span>
                 </div>
               </div>
 
-              <div className="saved-item-meta">
+              <div className={styles.itemMeta}>
                 {sq.tags.map((tag) => (
-                  <span key={tag} className="saved-tag">
+                  <span key={tag} className={styles.tag}>
                     {tag}
                   </span>
                 ))}
-                {sq.route && <span className="saved-route">{sq.route}</span>}
-                <span className="saved-date">{timeLabel(sq.updatedAt)}</span>
+                {sq.route && <span className={styles.route}>{sq.route}</span>}
+                <span className={styles.date}>{timeLabel(sq.updatedAt)}</span>
               </div>
 
-              <div className="saved-item-actions">
+              <div className={styles.itemActions}>
                 <button
                   type="button"
-                  className="history-action-btn"
+                  className={styles.itemActionButton}
                   onClick={() => onRun(sq.query)}
                   title="Run query"
                 >
@@ -226,7 +242,7 @@ export default function SavedQueries({
                 </button>
                 <button
                   type="button"
-                  className="history-action-btn"
+                  className={styles.itemActionButton}
                   onClick={() => onEdit(sq.query)}
                   title="Load into query bar"
                 >
@@ -234,7 +250,7 @@ export default function SavedQueries({
                 </button>
                 <button
                   type="button"
-                  className="history-action-btn"
+                  className={styles.itemActionButton}
                   onClick={() => onPin(sq.id)}
                   title={sq.pinned ? "Unpin" : "Pin"}
                 >
@@ -242,7 +258,7 @@ export default function SavedQueries({
                 </button>
                 <button
                   type="button"
-                  className="history-action-btn"
+                  className={styles.itemActionButton}
                   onClick={() => setEditingId(sq.id)}
                   title="Edit saved query"
                 >
@@ -250,7 +266,10 @@ export default function SavedQueries({
                 </button>
                 <button
                   type="button"
-                  className="history-action-btn saved-delete-btn"
+                  className={[
+                    styles.itemActionButton,
+                    styles.deleteButton,
+                  ].join(" ")}
                   onClick={() => onDelete(sq.id)}
                   title="Delete saved query"
                 >
@@ -264,8 +283,8 @@ export default function SavedQueries({
 
       {/* No results for filter */}
       {queries.length > 0 && visible.length === 0 && filterTag && (
-        <div className="saved-empty">
-          <div className="saved-empty-text">
+        <div className={styles.empty}>
+          <div className={styles.emptyText}>
             No queries tagged "{filterTag}"
           </div>
         </div>

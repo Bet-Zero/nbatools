@@ -1,0 +1,66 @@
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-small);
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.table th {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-weight: var(--weight-semibold);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+  font-size: var(--font-small);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+}
+
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background: color-mix(in srgb, var(--text-primary) 2%, transparent);
+}
+
+.num {
+  text-align: right;
+}
+
+.highlight tr:nth-child(odd) td {
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
+}
+
+.highlight tr:nth-child(odd):hover td {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.rankCell {
+  font-weight: var(--weight-bold);
+  color: var(--accent);
+  text-align: center;
+}
+
+.entityCell {
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}

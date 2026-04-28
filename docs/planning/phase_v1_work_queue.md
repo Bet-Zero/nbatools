@@ -227,7 +227,7 @@ references should all flow from the type scale.
 
 ---
 
-## 5. `[ ]` Establish CSS architecture: scoped component styles
+## 5. `[x]` Establish CSS architecture: scoped component styles
 
 **Why:** Right now most styles live in one big `App.css`. As the app grows,
 this gets unwieldy. Component-scoped CSS makes it easier to find styles

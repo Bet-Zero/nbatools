@@ -1,3 +1,5 @@
+import styles from "./NoResultDisplay.module.css";
+
 interface Props {
   reason?: string | null;
   status: string;
@@ -43,21 +45,25 @@ export default function NoResultDisplay({ reason, status, notes }: Props) {
         : "No Results";
 
   return (
-    <div className={`no-result-display ${isError ? "no-result-error" : ""}`}>
-      <div className="no-result-icon">{icon}</div>
-      <div className="no-result-title">{title}</div>
-      <div className="no-result-message">{friendlyReason(reason)}</div>
+    <div
+      className={[styles.display, isError ? styles.error : ""]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className={styles.icon}>{icon}</div>
+      <div className={styles.title}>{title}</div>
+      <div className={styles.message}>{friendlyReason(reason)}</div>
       {notes && notes.length > 0 && (
-        <div className="no-result-notes">
+        <div className={styles.notes}>
           {notes.map((note, i) => (
-            <div key={i} className="no-result-note">
+            <div key={i} className={styles.note}>
               &bull; {note}
             </div>
           ))}
         </div>
       )}
       {!isError && !isUnsupported && (
-        <div className="no-result-suggestions">
+        <div className={styles.suggestions}>
           <strong>Suggestions</strong>
           {SUGGESTIONS.map((s, i) => (
             <div key={i}>&bull; {s}</div>

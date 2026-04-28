@@ -13,6 +13,7 @@ import {
 } from "../storage/savedQueryStorage";
 
 import SaveQueryDialog from "../components/SaveQueryDialog";
+import dialogStyles from "../components/SaveQueryDialog.module.css";
 function makeSavedQuery(overrides: Partial<SavedQuery> = {}): SavedQuery {
   return {
     id: "test-1",
@@ -291,7 +292,7 @@ describe("SaveQueryDialog", () => {
       <SaveQueryDialog defaultQuery="" onSave={vi.fn()} onCancel={onCancel} />,
     );
     // Click the overlay (outermost div)
-    const overlay = document.querySelector(".save-dialog-overlay");
+    const overlay = document.getElementsByClassName(dialogStyles.overlay)[0];
     fireEvent.click(overlay!);
     expect(onCancel).toHaveBeenCalled();
   });
