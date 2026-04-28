@@ -30,7 +30,7 @@ Required:
 - `docs/reference/query_catalog.md`
 - `docs/reference/current_state_guide.md`
 - `docs/architecture/parser/specification.md`
-- `docs/planning/master_completion_plan.md`
+- `docs/archive/completed-plans/master_completion_plan.md`
 - `docs/operations/query_smoke_workflow.md`
 
 Use those docs to classify whether each example is:

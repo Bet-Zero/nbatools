@@ -27,7 +27,7 @@ Out of scope: anything that only matters for a multi-tenant paid product
 **Whole plan status: in progress.**
 
 Engine and parser are complete (see
-[`master_completion_plan.md`](./master_completion_plan.md)). This plan begins
+[`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
 the product polish work. Track A Part 1 Phase V1 is complete; the active
 continuation is Phase V2.
 
@@ -67,7 +67,7 @@ parts.
 #### Part 1 — Visual Foundation
 
 **Plan doc:** [`visual_foundation_plan.md`](./visual_foundation_plan.md)
-**First queue:** [`phase_v1_work_queue.md`](./phase_v1_work_queue.md)
+**First queue:** [`phase_v1_work_queue.md`](../archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
 
 Build the design system into a usable primitives library. Tokens become live
 across the app, fonts are wired in, player headshots and team logos render

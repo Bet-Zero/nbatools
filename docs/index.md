@@ -24,7 +24,8 @@ docs/
   reference/               — current-state, verified behavior, data specs
   architecture/            — design docs, conventions, internal layers
   operations/              — runbooks, pipeline ops, UI dev guide
-  planning/                — roadmap, active plans
+  planning/                — active plans and active work queues
+  archive/                 — completed/superseded planning artifacts
   audits/                  — audit snapshots, historical docs
 ```
 
@@ -63,41 +64,56 @@ Runbooks and operational guides.
 
 ## Planning — `planning/`
 
-Roadmap, active plans, and closed closure records.
+Active master plans, active queues, and near-future planning docs.
 
-- `planning/master_completion_plan.md` — single top-level authority for whole-plan completion status, active continuation, and open core capability families
 - `planning/product_polish_master_plan.md` — single top-level authority for the product polish push from engineering-complete to friends-tier-production-grade
 - `planning/visual_foundation_plan.md` — Track A Part 1 plan for design tokens, primitives, app shell, imagery, and team theming foundations
-- `planning/phase_v1_work_queue.md` — completed Track A visual-foundation queue for tokens audit and CSS architecture
-- `planning/phase_v1_css_inventory.md` — CSS hardcoded-value inventory produced by Phase V1 item 1
 - `planning/phase_v2_work_queue.md` — active Track A visual-foundation queue for the primitives library
 - `planning/phase_v2_primitives_inventory.md` — primitive needs inventory and API-boundary record produced by Phase V2 item 1
-- `planning/parser_examples_completion_plan.md` — active continuation plan for resolving full-sweep examples-library mismatches
-- `planning/parser_examples_blocker_inventory.md` — blocker inventory derived from the latest full parser-examples sweep
-- `planning/phase_m_work_queue.md` — active queue for the remaining parser examples completion blockers from the fresh Phase L sweep
-- `planning/phase_l_work_queue.md` — completed queue that reran the parser examples sweep, refreshed the blocker inventory, and drafted the Phase M continuation
-- `planning/phase_k_work_queue.md` — completed queue that built the parser examples blocker inventory and drafted the Phase L continuation
-- `planning/source_backed_execution_queue.md` — closed master-plan continuation queue that implemented approved clutch, on/off, and lineup source paths
-- `planning/source_approval_route_expansion_queue.md` — closed master-plan continuation queue for source approvals and route-expansion product decisions
-- `planning/clutch_source_boundary.md` — approved clutch source path and dataset boundary used by shipped source-backed clutch execution
-- `planning/roadmap.md` — planned and future capabilities
-- `planning/query_surface_expansion_plan.md` — closed Part 1 parser/query-surface expansion plan (subsystem-complete only)
-- `planning/parser_execution_completion_plan.md` — closed Part 2 execution/data closure record for parser-shipped capabilities
-- `planning/phase_g_work_queue.md` — completed original Phase G queue for execution-backed context filters
-- `planning/phase_g_period_only_work_queue.md` — completed period-only continuation queue for quarter / half / OT execution after the Phase G segment-data review
-- `planning/phase_g_segment_data_review_handoff.md` — resolved Phase G handoff that split period-only continuation from clutch deferral
-- `planning/phase_h_work_queue.md` — completed queue for schedule-context execution after the Phase G period-only continuation
-- `planning/phase_i_work_queue.md` — completed queue for real on/off execution / source-boundary deferral
-- `planning/phase_i_on_off_source_boundary.md` — approved future on/off source path and implementation requirements
-- `planning/phase_j_work_queue.md` — completed queue for lineup execution / source-boundary deferral and final Part 2 closure audit
-- `planning/phase_j_lineup_source_boundary.md` — approved future lineup source path and implementation requirements
-- `planning/phase_f_work_queue.md` — completed Phase F audit queue and handoff into Phase G
-- `planning/phase_f_execution_gap_inventory.md` — consolidated inventory of parser-shipped but execution-partial capability families
-- `planning/phase_e_data_inventory.md` — on/off and lineup data-layer audit for Phase E item 7
-- `planning/phase_a_work_queue.md` through `planning/phase_e_work_queue.md` — historical Part 1 work-queue series for the query-surface expansion plan
-- `planning/phase_a_gap_inventory.md` — reconnaissance of question/search parity gaps (Phase A item 2)
+- `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
+- `planning/roadmap.md` — planned and future capabilities
+
+## Archive — `archive/`
+
+Completed or superseded planning artifacts preserved for historical reference.
+
+- `archive/completed-plans/` — closed planning authorities and completion plans
+- `archive/completed-work-queues/` — historical phase/work queue series
+- `archive/handoffs-and-boundaries/` — closed source-boundary docs and handoffs
+- `archive/inventories/` — historical inventory/recon docs tied to closed phases
+- `archive/product-polish/` — completed product-polish queues and inventories
+
+## Documentation Category Rules
+
+### Reference
+
+Stable, current truth about product behavior. Keep current; archive only when replaced by a newer reference doc.
+
+### Architecture
+
+Long-lived design/convention docs. Archive only when implementation is removed or replaced by a newer architecture decision.
+
+### Operations
+
+Runbooks and workflows. Keep active while workflow exists; archive when workflow is retired.
+
+### Planning
+
+Active master plans and active queues only. Completed queues and superseded plans should move to `archive/`.
+
+### Archive
+
+Historical planning artifacts. Preserved for history and context, but not active continuation authority.
+
+### Audits / Reviews / Verdicts
+
+Point-in-time assessments that can remain in `audits/` (and repo-level verdict docs) unless clearly superseded.
+
+### Working / Temporary Inventories
+
+May live near active plans while a phase is open; once phase closes, move them under `archive/.../inventories/`.
 
 ## Audits — `audits/`
 
@@ -157,7 +173,7 @@ Point-in-time audit snapshots and historical records.
 ### Extending the system
 
 1. `architecture/project_conventions.md`
-2. `planning/master_completion_plan.md`
+2. `archive/completed-plans/master_completion_plan.md`
 3. `reference/system_conventions.md`
 4. `../CHANGELOG.md`
 
