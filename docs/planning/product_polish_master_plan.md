@@ -8,22 +8,17 @@
 > - Is the polish plan done?
 > - What is the active continuation?
 > - What stage of the product transition are we in?
->
-> Subplans, phase queues, and retrospectives roll up here. They do not
-> independently answer overall plan completion.
 
 ---
 
 ## Goal
 
 Take nbatools from "works locally for the developer" to "looks, acts, and
-functions like a professional product, deployed at a real URL, used by a small
-private user base (developer + invited friends)."
+functions like a professional product, deployed at a real URL, used by a
+small private user base (developer plus invited friends)."
 
-This plan deliberately scopes out anything that only matters for a true
-multi-tenant paid product (auth, billing, marketing, legal). Those are
-reachable from this plan's endpoint by adding a follow-on plan; they are not
-in this plan's scope.
+Out of scope: anything that only matters for a multi-tenant paid product
+(auth, billing, marketing, legal). Reachable via a follow-on plan.
 
 ---
 
@@ -31,185 +26,191 @@ in this plan's scope.
 
 **Whole plan status: not started.**
 
-The parser/query engine and underlying data pipeline are complete (see
-[`master_completion_plan.md`](./master_completion_plan.md)). This plan
-begins where that one ended.
+Engine and parser are complete (see
+[`master_completion_plan.md`](./master_completion_plan.md)). This plan begins
+the product polish work.
 
 ---
 
 ## Whole-Project Completion Rule
 
-The polish plan is **not done** unless all of the following are true:
+Not done unless all of the following are true:
 
 1. The product is deployed to a real URL with a custom domain
-2. Data refreshes via a documented sync mechanism with monitoring
-3. Every shipped query class has an opinionated, designed layout (not a
-   generic table dump)
-4. The visual design system is consistent across all surfaces
+2. Data refreshes via documented sync mechanism with monitoring
+3. A real design system is in place across all surfaces
+4. Every shipped query class has an opinionated, designed layout
 5. First-run experience explains the product in under 30 seconds
-6. Mobile experience is functional and not visibly broken
+6. Mobile experience is functional and visually clean
 7. The product can be sent to a friend without caveats about rough edges
-
-Closed subplans, deployed code, partial component redesigns, or "looks better
-than before" do **not** by themselves equal whole-plan completion.
-
----
-
-## Active Continuation Rule
-
-This document must always name exactly one of:
-
-- the current active continuation plan or queue, if the polish plan is not
-  done
-- the exact next required action, if no active queue exists yet
-- an explicit statement that the polish plan is done
-
-### Current Active Continuation
-
-The polish plan has not started. The active continuation is
-[`production_deployment_plan.md`](./production_deployment_plan.md), starting
-with [`phase_n1_work_queue.md`](./phase_n1_work_queue.md).
 
 ---
 
 ## Plan Structure
 
-Three sequential subplans plus a closing phase.
+Four subplans, organized as two parallel tracks plus two sequential closing
+phases.
 
-### Part 1 — Production Deployment
+The product polish work is split into deployment work (which lives in the
+backend and infrastructure) and visual work (which lives in the frontend).
+Because these touch different parts of the codebase, they can run in
+parallel without conflict. The agent picks up whichever has executable work
+at any given time.
+
+### Track A — Visual Build (priority, agent-runnable continuously)
+
+The visual track does the actual product polish — the work that makes the
+product look and feel like a real product. It splits into three sequential
+parts.
+
+#### Part 1 — Visual Foundation
+
+**Plan doc:** [`visual_foundation_plan.md`](./visual_foundation_plan.md)
+**First queue:** [`phase_v1_work_queue.md`](./phase_v1_work_queue.md)
+
+Build the design system into a usable primitives library. Tokens become live
+across the app, fonts are wired in, player headshots and team logos render
+consistently, the app shell has a real layout. The frame Part 2 builds inside.
+
+Roughly 2-3 weeks part-time.
+
+#### Part 2 — Component Experience
+
+**Plan doc:** [`component_experience_plan.md`](./component_experience_plan.md)
+**First queue:** drafted at the end of Part 1's final queue.
+
+Every query class — summary, leaderboard, comparison, finder, streak,
+record, split, playoff, occurrence, count — gets a real designed layout.
+Hero stat treatments, charts and sparklines where they aid comprehension,
+card-based results, mobile responsive throughout.
+
+Roughly 4-6 weeks part-time.
+
+#### Part 3 — First-Run and Polish
+
+**Plan doc:** [`first_run_and_polish_plan.md`](./first_run_and_polish_plan.md)
+**First queue:** drafted at the end of Part 2's final queue.
+
+Landing experience, starter queries, freshness banner, mobile verification
+pass, keyboard shortcuts, copy buttons, share links, transitions, error
+states, loading skeletons. The 50 small things that separate "looks
+finished" from "feels finished."
+
+Roughly 2 weeks part-time.
+
+### Track B — Production Deployment (parallel, developer-gated)
 
 **Plan doc:** [`production_deployment_plan.md`](./production_deployment_plan.md)
+**First queue:** [`phase_n1_work_queue.md`](./phase_n1_work_queue.md)
 
-**Goal:** The current product (UI as-is) is deployed to a real URL with custom
-domain, HTTPS, automated data sync from local pipeline to cloud storage, and
-basic error monitoring.
+Vercel + Cloudflare R2 + custom domain. Refactors the FastAPI app into
+Vercel Functions. Sets up the laptop-to-R2 data sync mechanism.
 
-**Done definition:** Friends can reach the deployed product. Data updates
-within hours of the developer running the local refresh. Developer no longer
-runs production manually.
+This track has items that require the developer (R2 signup, Vercel env
+configuration, domain purchase). Those items block the track until the
+developer completes them. The agent can pick up Track B's other items once
+the human-required ones are done.
 
-**Estimate:** 1-2 weeks part-time.
+Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
-### Part 2 — Visual Foundation
+---
 
-**Plan doc:** `visual_foundation_plan.md` (drafted at end of Part 1)
+## Active Continuation
 
-**Goal:** Design system in place across the entire product. Typography,
-spacing, color palette, dark theme, accent color, NBA player headshots and
-team logos threaded through, layout primitives. Components are not yet
-redesigned per query class — that's Part 3 — but the foundation any redesign
-would build on is locked in.
+**Active continuation: Track A, Part 1.** Specifically,
+[`phase_v1_work_queue.md`](./phase_v1_work_queue.md).
 
-**Done definition:** Every existing UI surface uses the new design system.
-Visual quality is felt across the board.
+Track A is the priority track because it is fully agent-runnable without
+infrastructure dependencies. Track B can run in parallel whenever the
+developer is available to complete its human-required steps.
 
-**Estimate:** 2-3 weeks part-time.
+The agent should always work the next unchecked item in Track A first. If
+Track A has a blocker (rare — usually a user-facing decision the developer
+needs to make), the agent should switch to Track B's queue if Track B has
+unblocked work available. If both tracks are blocked on the developer, the
+agent stops and waits.
 
-### Part 3 — Component Experience
+When Track A finishes Part 1, the next active queue is Part 2's first
+phase queue (drafted by Part 1's final task). Same for Part 2 to Part 3.
 
-**Plan doc:** `component_experience_plan.md` (drafted at end of Part 2)
+Track B follows its own internal sequence (`phase_n1` to `phase_n2` to
+`phase_n3` to `phase_n4`).
 
-**Goal:** Each query class — summary, comparison, leaderboard, finder, streak,
-record, split, playoff, occurrence, count — gets an opinionated, purpose-built
-layout. Charts and sparklines where they add understanding. Hero-stat
-treatments for high-signal numbers. Card-based layouts, not table dumps.
-Mobile responsive throughout.
-
-**Done definition:** Every query class renders in a layout designed for that
-class specifically. Charts appear where they aid comprehension. Mobile works
-on every layout.
-
-**Estimate:** 4-6 weeks part-time.
-
-### Closing Phase — First-Run + Polish
-
-**Plan doc:** `first_run_and_polish_plan.md` (drafted at end of Part 3)
-
-**Goal:** Landing/empty state, starter queries, freshness banner, mobile
-verification pass, keyboard shortcuts, copy-to-clipboard, share links,
-transitions, tooltips, error states, loading skeletons.
-
-**Done definition:** A friend lands on the URL cold, understands what the
-product is in 30 seconds, runs a useful query without help, and has it work
-on mobile.
-
-**Estimate:** 2 weeks part-time.
+When both tracks are fully closed, the polish plan is done.
 
 ---
 
 ## Locked Decisions
 
-These were decided during plan-drafting and are not up for re-litigation
-without a documented reason in a phase retrospective.
-
 ### Hosting
 
-- **Frontend:** Vercel (free tier, custom domain on free, automatic HTTPS)
-- **Backend:** Vercel Functions (refactored from FastAPI long-running server
-  to function-per-route during Phase N1)
-- **Data storage:** Cloudflare R2 (free tier covers the entire dataset and
-  expected read volume)
+- Frontend: Vercel (free tier)
+- Backend: Vercel Functions (refactored from FastAPI in Track B)
+- Data storage: Cloudflare R2 (free tier)
+- Data sync strategy: hybrid — laptop pushes to R2, deployed app reads from
+  R2
 
-### Data refresh strategy
+### Design system
 
-Hybrid: developer's laptop runs `nbatools-cli pipeline auto-refresh` as
-today, with a new `nbatools-cli pipeline sync-r2` command that pushes the
-resulting data files to Cloudflare R2 on success. Deployed app reads from R2
-instead of the local `data/` directory. The deployed instance never talks to
-`stats.nba.com` — eliminates IP-blocking risk and cloud-cron complexity.
+Locked in detail in
+[`docs/architecture/design_system.md`](../architecture/design_system.md)
+(created by the design-system-foundation task that runs before Track A
+starts). Summary:
 
-### Visual direction
+- Dark gray base (not navy, not pure black). Page `#1A1A1A`, elevated
+  `#222222`, cards `#2A2A2A`, inputs `#141414`
+- Neutral gray text and borders — no blue tint
+- Single chromatic accent: warm orange `#F97316`, used sparingly
+- Team colors as personality enhancers on team-context cards (stripe, hero
+  wash, badge tints) but never on buttons, body text, or multi-team views
+- Inter for UI, JetBrains Mono for stat numerals
+- 4px-base spacing scale
+- Standard radii (4/8/12/16) and shadows (sm/md/lg)
 
-"Analytical, calm, considered." Dark theme with deep navy-tinted background
-(not pure black). One warm-orange accent color used sparingly. Inter for UI
-typography, JetBrains Mono for numerals. Card-based result layouts. NBA
-player headshots and team logos as first-class visual elements. Charts via
-Recharts. Subtle, considered animations only.
+### Visual reference
 
-A formal design system in `tokens.css` lands during Part 2. All components
-in Part 2 and Part 3 reference those tokens.
+StatMuse-influenced — dark, image-rich, query-centric, card-based — but
+calmer and more analytical. See
+[`docs/architecture/design_system.md`](../architecture/design_system.md) for
+the full philosophy.
 
 ---
 
 ## Capability Status
 
-| Capability area | Current state              | Done state                                                   | Active continuation |
-| --------------- | -------------------------- | ------------------------------------------------------------ | ------------------- |
-| Deployment      | Localhost only             | Real URL, custom domain, HTTPS, deploys on push              | Part 1              |
-| Data sync       | Manual local refresh       | `sync-r2` command + automated read from R2 in production     | Part 1              |
-| Design system   | Default styles, ad-hoc CSS | Real typography, spacing, color palette, tokens.css          | Part 2              |
-| Player imagery  | Names as text              | Headshots and team logos throughout                          | Part 2              |
-| Query class UIs | Generic data tables        | Opinionated card-based layouts with charts where appropriate | Part 3              |
-| Mobile          | Not verified               | Functional and visually clean                                | Part 3 + closing    |
-| First-run       | Empty query bar            | Landing experience explains product in 30 seconds            | Closing             |
-| Error/loading   | Functional but ugly        | Designed states with helpful copy                            | Closing             |
+| Area               | Current state                       | Done state                                                 | Owning track      |
+| ------------------ | ----------------------------------- | ---------------------------------------------------------- | ----------------- |
+| Deployment         | Localhost only                      | Real URL, custom domain, HTTPS, deploys on push            | Track B           |
+| Data sync          | Manual local refresh                | `sync-r2` command + cloud-read in production               | Track B           |
+| Design tokens      | File exists, partially wired        | Tokens consumed everywhere, no raw hex/sizes in components | Track A Part 1    |
+| Primitives library | None                                | Button, Card, Stat, DataTable, etc. as reusable primitives | Track A Part 1    |
+| App shell          | Default layout                      | Header, query bar, results region with real layout         | Track A Part 1    |
+| Player imagery     | Names as text                       | Headshots and team logos rendered consistently             | Track A Part 1    |
+| Component layouts  | Generic data tables for all queries | Opinionated layouts per query class with charts            | Track A Part 2    |
+| Mobile             | Not verified                        | Functional and visually clean on every component           | Track A Parts 2-3 |
+| First-run          | Empty query bar                     | Landing, starter queries, freshness banner                 | Track A Part 3    |
+| Errors / loading   | Functional but ugly                 | Designed states with helpful copy and skeletons            | Track A Part 3    |
 
 ---
 
 ## Guardrails
 
-These apply across every part.
+These apply across every track and every part.
 
-### Design consistency
+### Design system is the source of truth
 
-Once `tokens.css` lands in Part 2, do not introduce ad-hoc styles in Part 3
-or the closing phase. New components extend the design system; they do not
-fork it.
+After Track A Part 1 ships the primitives library, no component imports raw
+color hex values, raw font sizes, or raw spacing values. Everything goes
+through the tokens.
 
 ### Mobile is not optional
 
-Every component built in Part 3 has explicit mobile acceptance criteria.
-Layouts that only work on desktop are not done.
-
-### Test the deployed instance
-
-After Part 1, every UI change is verified on the deployed URL, not just
-localhost. Catches deployment-only issues early.
+Every component built in Track A Part 2 has explicit mobile acceptance
+criteria. Layouts that only work on desktop are not done.
 
 ### No multi-user features
 
-Auth, accounts, billing, rate limiting, multi-user observability — all
-explicitly out of scope. Do not add.
+Auth, accounts, billing, rate limiting — all explicitly out of scope.
 
 ### Honest data freshness
 
@@ -222,30 +223,29 @@ Each phase queue's items must include a "looks done" acceptance criterion
 beyond functional correctness. A component that works but looks
 half-finished is not done.
 
+### Tracks do not block each other
+
+If Track A work stalls, Track B work continues. If Track B work stalls,
+Track A work continues. The agent picks up whichever track has executable
+unchecked items at any given time.
+
+### Track A always takes priority
+
+When both tracks have executable work, the agent works Track A first. Track
+A is the work that makes the product visibly better; Track B is plumbing.
+
 ---
 
 ## Out of Scope
 
-Explicitly excluded from this plan:
-
-- Auth, accounts, signup/login
-- Billing, payments, Stripe
-- Rate limiting and per-user quotas
-- Marketing site beyond in-app landing/empty state
-- SEO, analytics, content marketing
-- Email infrastructure
-- Privacy policy, terms of service, legal copy
-- Customer support tooling
-- Multi-user observability
-- Cloud-side data scraping (eliminated by hybrid sync strategy)
-
-If a follow-on "real product" plan opens later, those items live there.
+Auth, billing, rate limiting, marketing, SEO, analytics, email, legal,
+multi-user observability, customer support tooling, cloud-side data
+scraping. If a follow-on plan opens, those live there.
 
 ---
 
 ## Agent Rule
 
-When an agent is asked "is the polish plan done?", "what is the next step?",
-or any similar status question without a narrower qualifier, it must
-interpret the question as asking about the whole polish plan and answer from
-this document, not from the nearest closed phase.
+When asked "is the polish plan done?" or "what is the next step?",
+interpret as asking about the whole polish plan and answer from this
+document, not from the nearest closed phase or queue.
