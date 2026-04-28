@@ -1,4 +1,5 @@
 import type { SectionRow } from "../api/types";
+import styles from "./DataTable.module.css";
 
 interface Props {
   rows: SectionRow[];
@@ -51,9 +52,9 @@ function isNumericCol(col: string, rows: SectionRow[]): boolean {
 /** Determine the CSS class for a cell based on column name. */
 function cellClass(col: string, rows: SectionRow[]): string {
   const lc = col.toLowerCase();
-  if (RANK_COLS.has(lc)) return "rank-cell";
-  if (ENTITY_COLS.has(lc)) return "entity-cell";
-  if (isNumericCol(col, rows)) return "num";
+  if (RANK_COLS.has(lc)) return styles.rankCell;
+  if (ENTITY_COLS.has(lc)) return styles.entityCell;
+  if (isNumericCol(col, rows)) return styles.num;
   return "";
 }
 
@@ -62,9 +63,11 @@ export default function DataTable({ rows, highlight = false }: Props) {
   const cols = Object.keys(rows[0]);
 
   return (
-    <div className="table-scroll">
+    <div className={styles.tableScroll}>
       <table
-        className={`data-table${highlight ? " data-table-highlight" : ""}`}
+        className={[styles.table, highlight ? styles.highlight : ""]
+          .filter(Boolean)
+          .join(" ")}
       >
         <thead>
           <tr>

@@ -1,0 +1,198 @@
+.envelope {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-small);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+}
+
+.statusOk {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.statusNoResult {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+
+.statusError {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
+}
+
+.pill {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-small);
+  font-weight: var(--weight-medium);
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--text-secondary);
+}
+
+.resultReason {
+  font-size: var(--font-small);
+}
+
+.separator {
+  width: 1px;
+  height: var(--space-4);
+  background: var(--border-default);
+  flex-shrink: 0;
+}
+
+.freshness {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+}
+
+.freshness strong {
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.queryText {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: var(--space-2);
+  font-style: italic;
+}
+
+.context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.contextChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-small);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-primary);
+}
+
+.contextChipLabel {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+}
+
+.infoBlock {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+  font-size: var(--font-small);
+}
+
+.notesBlock {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-left: 3px solid var(--accent);
+}
+
+.caveatsBlock {
+  background: color-mix(in srgb, var(--warning) 6%, transparent);
+  border-left: 3px solid var(--warning);
+}
+
+.infoBlockLabel {
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+  margin-bottom: var(--space-1);
+}
+
+.notesBlock .infoBlockLabel {
+  color: var(--accent);
+}
+
+.caveatsBlock .infoBlockLabel {
+  color: var(--warning);
+}
+
+.infoBlock ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.infoBlock li {
+  color: var(--text-primary);
+  padding: var(--space-1) 0;
+  font-size: var(--font-small);
+}
+
+.infoBlock li::before {
+  content: "\2022  ";
+  color: var(--text-secondary);
+}
+
+.caveatsBlock li::before {
+  color: var(--warning);
+}
+
+.alternatesBlock {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--border-default);
+}
+
+.alternatesLabel {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+}
+
+.alternateChip {
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: var(--radius-xl);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-small);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.alternateChip:hover {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}

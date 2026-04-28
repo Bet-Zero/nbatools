@@ -1,3 +1,5 @@
+import styles from "./SampleQueries.module.css";
+
 const SAMPLES = [
   "Jokic last 10 games",
   "Jokic vs Embiid 2024-25",
@@ -15,8 +17,8 @@ interface Props {
 export default function SampleQueries({ onSelect }: Props) {
   return (
     <div>
-      <div className="samples-label">Try a sample query</div>
-      <div className="samples">
+      <div className={styles.label}>Try a sample query</div>
+      <div className={styles.samples}>
         {SAMPLES.map((q) => (
           <button key={q} type="button" onClick={() => onSelect(q)}>
             {q}

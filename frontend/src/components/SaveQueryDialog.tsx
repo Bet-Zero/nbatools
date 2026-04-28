@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { SavedQuery, SavedQueryInput } from "../api/savedQueryTypes";
+import styles from "./SaveQueryDialog.module.css";
 
 interface Props {
   /** If set, we are editing an existing query. */
@@ -65,23 +66,23 @@ export default function SaveQueryDialog({
   }
 
   return (
-    <div className="save-dialog-overlay" onClick={onCancel}>
+    <div className={styles.overlay} onClick={onCancel}>
       <form
-        className="save-dialog"
+        className={styles.dialog}
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="save-dialog-title">
+        <h3 className={styles.title}>
           {editing ? "Edit Saved Query" : "Save Query"}
         </h3>
 
-        <label className="save-dialog-label" htmlFor="sq-label">
+        <label className={styles.label} htmlFor="sq-label">
           Label
         </label>
         <input
           ref={labelRef}
           id="sq-label"
-          className="save-dialog-input"
+          className={styles.input}
           type="text"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
@@ -90,12 +91,12 @@ export default function SaveQueryDialog({
           maxLength={120}
         />
 
-        <label className="save-dialog-label" htmlFor="sq-query">
+        <label className={styles.label} htmlFor="sq-query">
           Query
         </label>
         <input
           id="sq-query"
-          className="save-dialog-input"
+          className={styles.input}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -103,13 +104,13 @@ export default function SaveQueryDialog({
           autoComplete="off"
         />
 
-        <label className="save-dialog-label" htmlFor="sq-tags">
+        <label className={styles.label} htmlFor="sq-tags">
           Tags{" "}
-          <span className="save-dialog-hint">(comma-separated, optional)</span>
+          <span className={styles.hint}>(comma-separated, optional)</span>
         </label>
         <input
           id="sq-tags"
-          className="save-dialog-input"
+          className={styles.input}
           type="text"
           value={tagsStr}
           onChange={(e) => setTagsStr(e.target.value)}
@@ -117,7 +118,7 @@ export default function SaveQueryDialog({
           autoComplete="off"
         />
 
-        <label className="save-dialog-checkbox">
+        <label className={styles.checkbox}>
           <input
             type="checkbox"
             checked={pinned}
@@ -126,17 +127,17 @@ export default function SaveQueryDialog({
           Pin to top
         </label>
 
-        <div className="save-dialog-actions">
+        <div className={styles.actions}>
           <button
             type="button"
-            className="save-dialog-cancel"
+            className={styles.cancel}
             onClick={onCancel}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="save-dialog-submit"
+            className={styles.submit}
             disabled={!label.trim() || !query.trim()}
           >
             {editing ? "Update" : "Save"}

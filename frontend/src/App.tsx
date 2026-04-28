@@ -19,7 +19,7 @@ import SaveQueryDialog from "./components/SaveQueryDialog";
 import useQueryHistory from "./hooks/useQueryHistory";
 import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
-import "./App.css";
+import styles from "./App.module.css";
 
 export default function App() {
   const [version, setVersion] = useState<string | null>(null);
@@ -203,15 +203,18 @@ export default function App() {
   const showEmpty = !loading && !hasResult && !hasError;
 
   return (
-    <div className="app-shell">
+    <div className={styles.appShell}>
       {/* Header */}
-      <header className="app-header">
-        <div className="header-left">
-          <h1 className="app-title">nbatools</h1>
+      <header className={styles.appHeader}>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.appTitle}>nbatools</h1>
           <span
-            className={`status-indicator ${apiOnline ? "online" : "offline"}`}
+            className={[
+              styles.statusIndicator,
+              apiOnline ? styles.online : styles.offline,
+            ].join(" ")}
           >
-            <span className="status-dot-indicator" />
+            <span className={styles.statusDotIndicator} />
             {version
               ? `v${version}`
               : apiOnline === false
@@ -225,7 +228,7 @@ export default function App() {
       {apiOnline && <FreshnessStatus />}
 
       {/* Query area */}
-      <section className="query-area">
+      <section className={styles.queryArea}>
         <QueryBar
           value={queryText}
           onChange={setQueryText}
@@ -247,35 +250,33 @@ export default function App() {
 
       {/* Result area */}
       {result && (
-        <section className="result-area">
+        <section className={styles.resultArea}>
           <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
 
-          <div className="result-actions">
+          <div className={styles.resultActions}>
             <CopyButton
               text={shareUrl}
               label="Copy Link"
-              className="share-link-btn"
+              variant="share"
             />
-            <CopyButton
-              text={result.query}
-              label="Copy Query"
-              className="copy-query-btn"
-            />
+            <CopyButton text={result.query} label="Copy Query" />
             <CopyButton
               text={JSON.stringify(result, null, 2)}
               label="Copy JSON"
-              className="copy-json-btn"
             />
             <button
               type="button"
-              className="copy-btn save-query-btn"
+              className={[
+                styles.resultActionButton,
+                styles.saveQueryButton,
+              ].join(" ")}
               onClick={() => setShowSaveDialog(true)}
             >
               Save Query
             </button>
           </div>
 
-          <div className="result-content">
+          <div>
             <ResultSections data={result} />
           </div>
 

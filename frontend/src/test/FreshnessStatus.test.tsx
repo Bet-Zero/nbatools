@@ -49,7 +49,7 @@ describe("FreshnessStatus", () => {
     // Never resolves
     mockFetchFreshness.mockReturnValue(new Promise(() => {}));
     const { container } = render(<FreshnessStatus pollInterval={0} />);
-    expect(container.querySelector(".freshness-panel")).toBeNull();
+    expect(container.firstChild).toBeNull();
   });
 
   it("renders nothing when API is offline", async () => {
@@ -57,7 +57,7 @@ describe("FreshnessStatus", () => {
     const { container } = render(<FreshnessStatus pollInterval={0} />);
     // Wait a tick
     await new Promise((r) => setTimeout(r, 50));
-    expect(container.querySelector(".freshness-panel")).toBeNull();
+    expect(container.firstChild).toBeNull();
   });
 
   it("shows fresh status with current_through date", async () => {

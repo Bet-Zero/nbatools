@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchRoutes, postStructuredQuery } from "../api/client";
 import type { QueryResponse } from "../api/types";
+import styles from "./DevTools.module.css";
 
 interface Props {
   onResult: (data: QueryResponse) => void;
@@ -47,9 +48,9 @@ export default function DevTools({
   }
 
   return (
-    <details className="dev-tools">
+    <details className={styles.devTools}>
       <summary>Dev Tools — Structured Query</summary>
-      <div className="dev-tools-body">
+      <div className={styles.body}>
         <label htmlFor="route-select">Route</label>
         <select
           id="route-select"

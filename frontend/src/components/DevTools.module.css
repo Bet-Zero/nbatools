@@ -1,0 +1,68 @@
+.devTools {
+  margin-top: var(--space-6);
+  border-top: 1px solid var(--border-default);
+  padding-top: var(--space-4);
+}
+
+.devTools summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-medium);
+  user-select: none;
+}
+
+.devTools summary:hover {
+  color: var(--text-primary);
+}
+
+.body {
+  margin-top: var(--space-3);
+}
+
+.devTools label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  margin-bottom: var(--space-1);
+}
+
+.devTools select,
+.devTools textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  outline: none;
+  margin-bottom: var(--space-3);
+}
+
+.devTools textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.devTools select:focus,
+.devTools textarea:focus {
+  border-color: var(--accent);
+}
+
+.devTools button {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--accent);
+  background: var(--bg-card);
+  color: var(--accent);
+  border-radius: var(--radius-md);
+  font-size: var(--font-small);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.devTools button:hover {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}

@@ -1,4 +1,5 @@
 import { forwardRef, type FormEvent } from "react";
+import styles from "./QueryBar.module.css";
 
 interface Props {
   value: string;
@@ -18,8 +19,8 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
   }
 
   return (
-    <form className="query-bar" onSubmit={handleSubmit}>
-      <div className="query-input-wrapper">
+    <form className={styles.queryBar} onSubmit={handleSubmit}>
+      <div className={styles.inputWrapper}>
         <input
           ref={ref}
           type="text"
@@ -33,7 +34,7 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
         {value && !disabled && (
           <button
             type="button"
-            className="query-clear"
+            className={styles.clearButton}
             onClick={() => onChange("")}
             aria-label="Clear query"
           >

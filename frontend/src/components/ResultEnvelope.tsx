@@ -1,4 +1,5 @@
 import type { QueryResponse } from "../api/types";
+import styles from "./ResultEnvelope.module.css";
 
 interface Props {
   data: QueryResponse;
@@ -42,6 +43,12 @@ function routeLabel(route: string): string {
   return route.replace(/_/g, " ");
 }
 
+const STATUS_STYLES: Record<string, string> = {
+  ok: styles.statusOk,
+  no_result: styles.statusNoResult,
+  error: styles.statusError,
+};
+
 export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
@@ -72,25 +79,30 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
   }
 
   return (
-    <div className="envelope">
+    <div className={styles.envelope}>
       {/* Status + Route + Freshness row */}
-      <div className="envelope-top">
-        <span className={`status-badge status-badge-${data.result_status}`}>
+      <div className={styles.top}>
+        <span
+          className={[
+            styles.statusBadge,
+            STATUS_STYLES[data.result_status] ?? styles.statusError,
+          ].join(" ")}
+        >
           {statusLabel(data.result_status)}
         </span>
-        {data.route && <span className="pill">{routeLabel(data.route)}</span>}
+        {data.route && <span className={styles.pill}>{routeLabel(data.route)}</span>}
         {queryClass && queryClass !== data.route && (
-          <span className="pill">{queryClass}</span>
+          <span className={styles.pill}>{queryClass}</span>
         )}
         {data.result_reason && (
-          <span className="muted result-reason">
+          <span className={[styles.muted, styles.resultReason].join(" ")}>
             {reasonLabel(data.result_reason)}
           </span>
         )}
         {data.current_through && (
           <>
-            <span className="envelope-separator" />
-            <span className="freshness">
+            <span className={styles.separator} />
+            <span className={styles.freshness}>
               Data through <strong>{data.current_through}</strong>
             </span>
           </>
@@ -98,14 +110,14 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
       </div>
 
       {/* Query text */}
-      <div className="envelope-query-text">&ldquo;{data.query}&rdquo;</div>
+      <div className={styles.queryText}>&ldquo;{data.query}&rdquo;</div>
 
       {/* Context chips */}
       {contextChips.length > 0 && (
-        <div className="envelope-context">
+        <div className={styles.context}>
           {contextChips.map((chip, i) => (
-            <span key={i} className="context-chip">
-              <span className="context-chip-label">{chip.label}</span>
+            <span key={i} className={styles.contextChip}>
+              <span className={styles.contextChipLabel}>{chip.label}</span>
               {chip.value}
             </span>
           ))}
@@ -114,8 +126,8 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
 
       {/* Notes */}
       {data.notes.length > 0 && (
-        <div className="info-block notes-block">
-          <div className="info-block-label">Notes</div>
+        <div className={[styles.infoBlock, styles.notesBlock].join(" ")}>
+          <div className={styles.infoBlockLabel}>Notes</div>
           <ul>
             {data.notes.map((note, i) => (
               <li key={i}>{note}</li>
@@ -126,8 +138,8 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
 
       {/* Caveats */}
       {data.caveats.length > 0 && (
-        <div className="info-block caveats-block">
-          <div className="info-block-label">Caveats</div>
+        <div className={[styles.infoBlock, styles.caveatsBlock].join(" ")}>
+          <div className={styles.infoBlockLabel}>Caveats</div>
           <ul>
             {data.caveats.map((caveat, i) => (
               <li key={i}>{caveat}</li>
@@ -138,13 +150,13 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
 
       {/* Did you mean? — alternate interpretations */}
       {data.alternates.length > 0 && onAlternateSelect && (
-        <div className="info-block alternates-block">
-          <span className="alternates-label">Did you mean: </span>
+        <div className={[styles.infoBlock, styles.alternatesBlock].join(" ")}>
+          <span className={styles.alternatesLabel}>Did you mean: </span>
           {data.alternates.map((alt, i) => (
             <button
               key={i}
               type="button"
-              className="alternate-chip"
+              className={styles.alternateChip}
               onClick={() => onAlternateSelect(alt.description)}
             >
               {alt.description}

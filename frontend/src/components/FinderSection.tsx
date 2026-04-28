@@ -1,5 +1,6 @@
 import type { SectionRow } from "../api/types";
 import DataTable from "./DataTable";
+import styles from "./FinderSection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
@@ -10,10 +11,10 @@ export default function FinderSection({ sections }: Props) {
   if (!finder || finder.length === 0) return null;
 
   return (
-    <div className="section">
-      <div className="section-title">
+    <div className={styles.section}>
+      <div className={styles.title}>
         Matching Games
-        <span className="section-count">
+        <span className={styles.count}>
           {finder.length} game{finder.length !== 1 ? "s" : ""}
         </span>
       </div>

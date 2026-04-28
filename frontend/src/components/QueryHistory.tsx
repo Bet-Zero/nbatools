@@ -1,4 +1,5 @@
 import type { QueryHistoryEntry } from "../api/types";
+import styles from "./QueryHistory.module.css";
 
 interface Props {
   entries: QueryHistoryEntry[];
@@ -9,9 +10,9 @@ interface Props {
 }
 
 function statusDot(status: string): string {
-  if (status === "ok") return "dot-ok";
-  if (status === "no_result") return "dot-warn";
-  return "dot-err";
+  if (status === "ok") return styles.okDot;
+  if (status === "no_result") return styles.warnDot;
+  return styles.errDot;
 }
 
 function timeAgo(ts: number): string {
@@ -33,24 +34,28 @@ export default function QueryHistory({
   if (entries.length === 0) return null;
 
   return (
-    <div className="query-history">
-      <div className="history-header">
-        <span className="history-label">
+    <div className={styles.queryHistory}>
+      <div className={styles.header}>
+        <span className={styles.label}>
           History
-          <span className="section-count section-count-inline">
+          <span className={[styles.count, styles.countInline].join(" ")}>
             {entries.length} {entries.length === 1 ? "query" : "queries"}
           </span>
         </span>
-        <button type="button" className="history-clear" onClick={onClear}>
+        <button type="button" className={styles.clear} onClick={onClear}>
           Clear
         </button>
       </div>
-      <div className="history-list">
+      <div className={styles.list}>
         {entries.map((entry) => (
-          <div key={entry.id} className="history-item">
-            <span className={`history-dot ${statusDot(entry.result_status)}`} />
+          <div key={entry.id} className={styles.item}>
             <span
-              className="history-query"
+              className={[styles.dot, statusDot(entry.result_status)].join(
+                " ",
+              )}
+            />
+            <span
+              className={styles.query}
               onClick={() => onSelect(entry.query)}
               role="button"
               tabIndex={0}
@@ -61,19 +66,19 @@ export default function QueryHistory({
             >
               {entry.query}
             </span>
-            <span className="history-meta">
+            <span className={styles.meta}>
               {entry.query_class && (
-                <span className="history-class">{entry.query_class}</span>
+                <span className={styles.classBadge}>{entry.query_class}</span>
               )}
               {entry.route && (
-                <span className="history-route">{entry.route}</span>
+                <span className={styles.route}>{entry.route}</span>
               )}
-              <span className="history-time">{timeAgo(entry.timestamp)}</span>
+              <span className={styles.time}>{timeAgo(entry.timestamp)}</span>
             </span>
-            <span className="history-item-actions">
+            <span className={styles.actions}>
               <button
                 type="button"
-                className="history-action-btn"
+                className={styles.actionButton}
                 onClick={() => onEdit(entry.query)}
                 title="Edit query"
               >
@@ -81,7 +86,7 @@ export default function QueryHistory({
               </button>
               <button
                 type="button"
-                className="history-action-btn"
+                className={styles.actionButton}
                 onClick={() => onSelect(entry.query)}
                 title="Rerun query"
               >
@@ -90,7 +95,7 @@ export default function QueryHistory({
               {onSave && (
                 <button
                   type="button"
-                  className="history-action-btn"
+                  className={styles.actionButton}
                   onClick={() => onSave(entry.query)}
                   title="Save query"
                 >
