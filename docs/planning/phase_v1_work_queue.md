@@ -81,7 +81,7 @@ should move into proper CSS.
 
 ---
 
-## 2. `[ ]` Replace hardcoded colors with tokens
+## 2. `[x]` Replace hardcoded colors with tokens
 
 **Why:** Most-impactful first refactor. Every color in the app should
 reference a token, so future global color adjustments require editing one
