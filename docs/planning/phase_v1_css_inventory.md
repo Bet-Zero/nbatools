@@ -233,6 +233,34 @@ Documented hardcoded exceptions that remain after item 3:
 | `frontend/src/components/ResultEnvelope.tsx:86` | `style={{ fontSize: "0.78rem" }}` | Move to an envelope reason class; `font-size: var(--font-small)`. |
 | `frontend/src/components/SavedQueries.tsx:117` | `style={{ display: "none" }}` | Move to a file-input utility/class, e.g. `.saved-import-input { display: none; }`. No token mapping needed. |
 
+## Item 4 Completion Notes
+
+Item 4 replaced app typography with the existing type tokens:
+
+- `frontend/src/App.css` no longer defines the legacy `--font` and `--mono`
+  aliases; UI text now uses `--font-sans`, and dense/stat/code-like text
+  uses `--font-mono`.
+- All `font-size` declarations in app CSS now use `--font-*` tokens.
+- All numeric `font-weight` declarations now use `--weight-*` tokens.
+- Uppercase label/chip tracking now uses `--tracking-uppercase`.
+- The `ResultEnvelope.tsx` inline `fontSize` style moved to
+  `.result-reason` with `font-size: var(--font-small)`.
+- `.data-table` now applies `font-feature-settings: "tnum"` and
+  `font-variant-numeric: tabular-nums` so result-table stat columns render
+  with tabular numerals.
+
+Documented typography exceptions that remain after item 4:
+
+- `line-height: 1.5`, `1.6`, and `1` remain explicit rhythm/alignment values
+  because the current token file does not define line-height tokens.
+- `letter-spacing: 0` remains only where compact labels intentionally reset
+  inherited uppercase tracking.
+- `font: inherit` remains on the freshness summary button so the native
+  button inherits surrounding type treatment before applying its size token.
+- `SavedQueries.tsx` still has `style={{ display: "none" }}` for the hidden
+  import input; this is not typography and is left for the CSS architecture
+  pass.
+
 ## Additional Style Constants
 
 These are outside the explicit item 2-4 color/spacing/type scope, but they
@@ -259,9 +287,6 @@ the CSS architecture is cleaned up.
   tokens provide only `--accent-muted` and `--accent-glow`; item 2 should
   collapse them to `--accent-muted` unless visual density needs a second
   muted accent token.
-- Icon/emoji sizing: large icon font sizes do not map exactly to the text
-  scale. Item 4 should either treat these as typography tokens or document
-  them as icon-size exceptions.
 - Layout widths/heights: max widths, dialog dimensions, and textarea heights
   are structural layout constants. Item 3 should keep them documented or move
   them to named component-level custom properties during the CSS architecture

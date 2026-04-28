@@ -83,7 +83,7 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
           <span className="pill">{queryClass}</span>
         )}
         {data.result_reason && (
-          <span className="muted" style={{ fontSize: "0.78rem" }}>
+          <span className="muted result-reason">
             {reasonLabel(data.result_reason)}
           </span>
         )}
