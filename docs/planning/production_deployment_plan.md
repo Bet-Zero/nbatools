@@ -1,11 +1,24 @@
 # Production Deployment Plan
 
-> **Role: Part 1 plan for taking nbatools from localhost to a deployed product
-> with synced data.**
+> **Role: Track B plan for the product polish master plan.** Takes nbatools
+> from localhost to a deployed product with synced data.
 >
 > Whole-plan completion authority is
 > [`product_polish_master_plan.md`](./product_polish_master_plan.md). This
-> doc covers Part 1 only.
+> doc covers Track B only.
+
+---
+
+## Position in the master plan
+
+Track B runs in parallel with Track A. Track A is the priority track
+because it's fully agent-runnable and produces visible-to-user
+improvements; Track B is plumbing that becomes valuable when both tracks
+finish.
+
+Track B's work happens whenever the developer is available to complete its
+human-required steps. The agent picks up Track B items between Track A
+items only if Track A is currently blocked.
 
 ---
 
@@ -13,20 +26,8 @@
 
 Get the product deployed to Vercel, accessible at a custom domain, with a
 hybrid data sync mechanism that keeps the deployed instance fresh without
-requiring cloud-side scraping. No design or UX changes in this part — just
-plumbing.
-
----
-
-## Why this comes first
-
-- Every UI change after Part 1 can be verified on the deployed instance
-- Surfaces deployment-environment bugs before they tangle with redesign work
-- Friends can start using the current product immediately, providing real
-  feedback during redesign work
-- Forces resolution of the FastAPI-to-Vercel-Functions refactor before more
-  work depends on the production architecture
-- Forces resolution of the data sync mechanism before Part 2 builds on it
+requiring cloud-side scraping. No design or UX changes in this track —
+just plumbing.
 
 ---
 
@@ -36,8 +37,8 @@ Four phases, each with a companion work queue.
 
 ### Phase N1 — Backend refactor for Vercel + R2 data sync
 
-Refactor the FastAPI app to Vercel Functions. Add the `sync-r2` pipeline
-command. Wire the deployed app to read from R2.
+Refactor FastAPI to Vercel Functions. Add the `sync-r2` pipeline command.
+Wire the deployed app to read from R2.
 
 **Companion queue:** [`phase_n1_work_queue.md`](./phase_n1_work_queue.md)
 
@@ -46,33 +47,34 @@ command. Wire the deployed app to read from R2.
 Deploy the React frontend to Vercel. Configure custom domain. HTTPS.
 Deploy-on-push from main. Verify end-to-end.
 
-**Companion queue:** `phase_n2_work_queue.md` (drafted at end of N1)
+**Companion queue:** drafted at end of N1.
 
 ### Phase N3 — Monitoring, freshness, and stability
 
-Sentry (or simpler) error monitoring. UI freshness banner that surfaces data
-age. Stability soak: 7 consecutive days without manual intervention.
+Error monitoring. UI freshness banner integrated into the deployed app
+(Track A may have already built the UI side; this phase wires it to real
+data freshness signals from the deployed system). 7-day stability soak.
 
-**Companion queue:** `phase_n3_work_queue.md` (drafted at end of N2)
+**Companion queue:** drafted at end of N2.
 
-### Phase N4 — Retrospective and Part 2 handoff
+### Phase N4 — Track B closure
 
-Capture learnings. Draft `visual_foundation_plan.md` and
-`phase_n5_work_queue.md` (or whatever Part 2's first phase is named).
+Capture learnings. Verify Track B's done definition is met. Update the
+master plan with Track B closure status.
 
-**Companion queue:** `phase_n4_work_queue.md` (drafted at end of N3)
+**Companion queue:** drafted at end of N3.
 
 ---
 
-## Done definition for Part 1
+## Done definition for Track B
 
-Part 1 is done when:
+Track B is done when:
 
 1. The product is reachable at a custom-domain URL
 2. HTTPS works without warnings
 3. Pushing to main triggers an automatic Vercel deploy
-4. `nbatools-cli pipeline sync-r2` syncs local data to Cloudflare R2 in one
-   command
+4. `nbatools-cli pipeline sync-r2` syncs local data to Cloudflare R2 in
+   one command
 5. The deployed app reads data from R2, not from the local filesystem
 6. Errors in production are surfaced to the developer when they happen
 7. The deployment has run for at least 7 consecutive days without manual
