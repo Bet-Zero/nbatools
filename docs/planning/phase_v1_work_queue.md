@@ -135,7 +135,7 @@ file, not hunting through dozens.
 
 ---
 
-## 3. `[ ]` Replace hardcoded spacing and sizing with tokens
+## 3. `[x]` Replace hardcoded spacing and sizing with tokens
 
 **Why:** The 4px-base spacing scale is what makes a layout feel rhythmic
 and intentional. Random padding/margin values are the single biggest "looks

@@ -97,7 +97,7 @@ export default function SavedQueries({
       <div className="saved-header">
         <span className="saved-label">
           Saved Queries
-          <span className="section-count" style={{ marginLeft: 6 }}>
+          <span className="section-count section-count-inline">
             {queries.length} {queries.length === 1 ? "query" : "queries"}
           </span>
         </span>

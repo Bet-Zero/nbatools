@@ -138,6 +138,35 @@ values that item 3 should consciously keep, round, or document.
 | `frontend/src/App.css:39`, `183`, `311`, `501`, `663`, `1038`, `1464` | `960px`, `480px`, `110px`, `400px`, `80px`, `440px`, `180px` | Layout constraints. Keep or convert to named component-level custom properties during CSS architecture work; not spacing-token replacements. |
 | `frontend/src/App.css:73`, `74`, `214`, `215`, `577`, `578`, `725`, `726`, `878` | `1px`, `6px`, `8px`, `16px`, `24px` component dimensions/positioning | Use spacing tokens where they represent physical component size (`--space-2`, `--space-4`, `--space-6`); keep `1px` separator width as an exception. |
 
+## Item 3 Completion Notes
+
+Item 3 replaced app spacing and radii with the existing 4px-grid tokens:
+
+- `padding`, `margin`, and `gap` declarations in `frontend/src/App.css` now
+  use `--space-*` tokens or zero/reset values.
+- Component dimensions that are visual spacing objects, such as status dots,
+  spinners, separator height, and clear-button offset, now use `--space-*`
+  tokens.
+- Border radii now use `--radius-sm`, `--radius-md`, `--radius-lg`, or
+  `--radius-xl`; circular dots and spinners keep `border-radius: 50%`.
+- The inline `marginLeft: 6` styles in `QueryHistory.tsx` and
+  `SavedQueries.tsx` moved to `.section-count-inline` with
+  `margin-left: var(--space-2)`.
+
+Documented hardcoded exceptions that remain after item 3:
+
+- CSS reset and intentional zero values: `margin: 0`, `padding: 0`, `inset: 0`,
+  `min-width: 0`, and `letter-spacing: 0`.
+- Border widths and accent stripes: `1px` standard borders, `3px` spinner and
+  left accent borders, and the `1px` envelope separator width.
+- Viewport and layout constraints: app `max-width: 960px`, empty-copy
+  `max-width: 480px`, raw JSON `max-height: 400px`, dev textarea
+  `height: 80px`, save dialog `width: 440px`, dialog `max-width: 90vw`,
+  dialog `max-height: 90vh`, and freshness label `min-width: 180px`.
+- Fluid dimensions: `width: 100%` and `min-height: 100vh`.
+- Typography and motion constants are intentionally left for item 4 and the
+  later CSS architecture pass.
+
 ## Item 4 Typography Punchlist
 
 ### Legacy Font Aliases

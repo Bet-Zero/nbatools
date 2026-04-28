@@ -37,7 +37,7 @@ export default function QueryHistory({
       <div className="history-header">
         <span className="history-label">
           History
-          <span className="section-count" style={{ marginLeft: 6 }}>
+          <span className="section-count section-count-inline">
             {entries.length} {entries.length === 1 ? "query" : "queries"}
           </span>
         </span>
