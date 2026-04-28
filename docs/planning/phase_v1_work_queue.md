@@ -179,7 +179,7 @@ amateur" tell.
 
 ---
 
-## 4. `[ ]` Replace hardcoded typography with tokens
+## 4. `[x]` Replace hardcoded typography with tokens
 
 **Why:** Final piece of the token wiring. Font sizes, weights, and family
 references should all flow from the type scale.
