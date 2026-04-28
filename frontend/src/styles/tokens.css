@@ -1,36 +1,36 @@
 :root {
   /* Backgrounds */
-  --bg-page: #1A1A1A;
+  --bg-page: #1a1a1a;
   --bg-elevated: #222222;
-  --bg-card: #2A2A2A;
+  --bg-card: #2a2a2a;
   --bg-input: #141414;
 
   /* Borders */
-  --border-subtle: #2F2F2F;
-  --border-default: #3D3D3D;
+  --border-subtle: #2f2f2f;
+  --border-default: #3d3d3d;
   --border-strong: #525252;
 
   /* Text */
-  --text-primary: #F5F5F5;
-  --text-secondary: #A1A1A1;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a1a1a1;
   --text-tertiary: #737373;
-  --text-on-accent: #1A1A1A;
+  --text-on-accent: #1a1a1a;
 
   /* Accent */
-  --accent: #F97316;
-  --accent-hover: #FB923C;
+  --accent: #f97316;
+  --accent-hover: #fb923c;
   --accent-muted: rgba(249, 115, 22, 0.13);
   --accent-glow: rgba(249, 115, 22, 0.25);
 
   /* Status */
-  --success: #3FB950;
-  --danger: #F85149;
-  --warning: #D29922;
-  --info: #58A6FF;
+  --success: #3fb950;
+  --danger: #f85149;
+  --warning: #d29922;
+  --info: #58a6ff;
 
   /* Win / Loss (for game outcomes) */
-  --win: #3FB950;
-  --loss: #F85149;
+  --win: #3fb950;
+  --loss: #f85149;
 
   /* Team colors — populated dynamically via inline style or
      CSS custom property override based on resolved team.
@@ -57,9 +57,9 @@
   --radius-xl: 16px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
 
   /* Typography — sizes */
   --font-stat-hero: 56px;
@@ -79,8 +79,8 @@
   --weight-bold: 700;
 
   /* Typography — families */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
 
   /* Letter spacing */
   --tracking-tight: -0.02em;
