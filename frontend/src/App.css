@@ -1,17 +1,6 @@
 @import "./styles/tokens.css";
 
 :root {
-  --bg: #0f1117;
-  --surface: #181b24;
-  --surface-hover: #1e2230;
-  --border: #2a2d38;
-  --text: #e0e0e6;
-  --muted: #8b8fa3;
-  --accent: #4a90d9;
-  --accent-hover: #5da1ea;
-  --ok: #4caf50;
-  --warn: #f5a623;
-  --err: #e74c3c;
   --radius: 6px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --mono: "SF Mono", "Fira Code", "Consolas", monospace;
@@ -27,8 +16,8 @@
 
 body {
   font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg-page);
+  color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
 }
@@ -47,7 +36,7 @@ body {
   justify-content: space-between;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .header-left {
@@ -65,7 +54,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .status-dot-indicator {
@@ -73,14 +62,14 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--muted);
+  background: var(--text-secondary);
 }
 
 .status-indicator.online .status-dot-indicator {
-  background: var(--ok);
+  background: var(--success);
 }
 .status-indicator.offline .status-dot-indicator {
-  background: var(--err);
+  background: var(--danger);
 }
 
 /* ---- Query Area ---- */
@@ -98,10 +87,10 @@ body {
 .query-bar input {
   flex: 1;
   padding: 10px 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  color: var(--text);
+  color: var(--text-primary);
   font-size: 0.95rem;
   font-family: var(--font);
   outline: none;
@@ -112,14 +101,14 @@ body {
   border-color: var(--accent);
 }
 .query-bar input::placeholder {
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .query-bar button {
   padding: 10px 20px;
   border: none;
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
   border-radius: var(--radius);
   font-size: 0.95rem;
   cursor: pointer;
@@ -146,17 +135,17 @@ body {
 .samples button {
   padding: 4px 10px;
   font-size: 0.78rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  color: var(--muted);
+  color: var(--text-secondary);
   cursor: pointer;
   font-family: var(--font);
   transition: all 0.15s;
 }
 
 .samples button:hover {
-  color: var(--text);
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
@@ -165,7 +154,7 @@ body {
 .empty-state {
   text-align: center;
   padding: 48px 24px;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .empty-icon {
@@ -175,7 +164,7 @@ body {
 .empty-title {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 .empty-desc {
@@ -194,8 +183,8 @@ body {
 
 .empty-tip {
   padding: 4px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   font-size: 0.78rem;
   font-family: var(--mono);
@@ -206,14 +195,14 @@ body {
 .loading {
   text-align: center;
   padding: 32px;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .spinner {
   display: inline-block;
   width: 24px;
   height: 24px;
-  border: 3px solid var(--border);
+  border: 3px solid var(--border-default);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -229,15 +218,15 @@ body {
 /* ---- Error Box ---- */
 
 .error-box {
-  background: rgba(231, 76, 60, 0.1);
-  border: 1px solid var(--err);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  border: 1px solid var(--danger);
   border-radius: var(--radius);
   padding: 12px 16px;
   margin-bottom: 16px;
 }
 
 .error-box .title {
-  color: var(--err);
+  color: var(--danger);
   font-weight: 600;
   margin-bottom: 4px;
 }
@@ -260,10 +249,10 @@ body {
 
 .copy-btn {
   padding: 4px 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
   font-family: var(--font);
@@ -272,7 +261,7 @@ body {
 }
 
 .copy-btn:hover {
-  color: var(--text);
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
@@ -283,14 +272,14 @@ body {
 
 .share-link-btn:hover {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--text-on-accent);
 }
 
 /* ---- Envelope ---- */
 
 .envelope {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
   padding: 14px 16px;
   margin-bottom: 12px;
@@ -307,27 +296,27 @@ body {
   margin-bottom: 0;
 }
 .envelope-label {
-  color: var(--muted);
+  color: var(--text-secondary);
   min-width: 110px;
   flex-shrink: 0;
 }
 .envelope-value {
-  color: var(--text);
+  color: var(--text-primary);
 }
 .status-ok {
-  color: var(--ok);
+  color: var(--success);
   font-weight: 600;
 }
 .status-warn {
-  color: var(--warn);
+  color: var(--warning);
   font-weight: 600;
 }
 .status-err {
-  color: var(--err);
+  color: var(--danger);
   font-weight: 600;
 }
 .muted {
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .pill {
@@ -336,7 +325,7 @@ body {
   border-radius: 10px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: rgba(74, 144, 217, 0.15);
+  background: var(--accent-muted);
   color: var(--accent);
 }
 
@@ -344,14 +333,14 @@ body {
   list-style: none;
 }
 .notes-list li {
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 .notes-list li::before {
   content: "\2022 ";
   color: var(--accent);
 }
 .caveats-list li::before {
-  color: var(--warn);
+  color: var(--warning);
 }
 
 /* ---- Sections ---- */
@@ -368,16 +357,16 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--muted);
+  color: var(--text-secondary);
   margin-bottom: 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .section-count {
   font-size: 0.72rem;
   font-weight: 400;
-  color: var(--muted);
+  color: var(--text-secondary);
   opacity: 0.7;
   text-transform: none;
   letter-spacing: 0;
@@ -390,7 +379,7 @@ body {
   border-collapse: collapse;
   font-size: 0.82rem;
   font-family: var(--mono);
-  background: var(--surface);
+  background: var(--bg-card);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -398,10 +387,10 @@ body {
 .data-table th {
   text-align: left;
   padding: 8px 10px;
-  background: rgba(74, 144, 217, 0.08);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
   color: var(--accent);
   font-weight: 600;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-default);
   white-space: nowrap;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -410,7 +399,7 @@ body {
 
 .data-table td {
   padding: 6px 10px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-default);
   white-space: nowrap;
 }
 
@@ -418,18 +407,18 @@ body {
   border-bottom: none;
 }
 .data-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--text-primary) 2%, transparent);
 }
 .data-table .num {
   text-align: right;
 }
 
 .data-table-highlight tr:nth-child(odd) td {
-  background: rgba(74, 144, 217, 0.03);
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
 }
 
 .data-table-highlight tr:nth-child(odd):hover td {
-  background: rgba(74, 144, 217, 0.06);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
 }
 
 .table-scroll {
@@ -441,15 +430,15 @@ body {
 .no-result-display {
   text-align: center;
   padding: 32px 24px;
-  color: var(--muted);
-  background: var(--surface);
+  color: var(--text-secondary);
+  background: var(--bg-card);
   border-radius: var(--radius);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   margin-bottom: 16px;
 }
 
 .no-result-error {
-  border-color: rgba(231, 76, 60, 0.3);
+  border-color: color-mix(in srgb, var(--danger) 30%, transparent);
 }
 .no-result-icon {
   font-size: 1.5rem;
@@ -457,7 +446,7 @@ body {
 }
 .no-result-title {
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 .no-result-message {
@@ -468,14 +457,14 @@ body {
 
 .raw-toggle {
   margin-top: 16px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-default);
   padding-top: 12px;
 }
 
 .toggle-btn {
   background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
   padding: 5px 12px;
   font-size: 0.78rem;
   border-radius: var(--radius);
@@ -485,14 +474,14 @@ body {
 }
 
 .toggle-btn:hover {
-  color: var(--text);
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
 .raw-json {
   margin-top: 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
   padding: 12px;
   font-family: var(--mono);
@@ -502,14 +491,14 @@ body {
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 /* ---- Query History ---- */
 
 .query-history {
   margin-top: 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-default);
   padding-top: 16px;
 }
 
@@ -525,13 +514,13 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .history-clear {
   background: none;
   border: none;
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
   font-family: var(--font);
@@ -541,7 +530,7 @@ body {
 }
 
 .history-clear:hover {
-  color: var(--err);
+  color: var(--danger);
 }
 
 .history-list {
@@ -559,7 +548,7 @@ body {
   background: none;
   border: 1px solid transparent;
   border-radius: var(--radius);
-  color: var(--text);
+  color: var(--text-primary);
   font-size: 0.82rem;
   font-family: var(--font);
   cursor: pointer;
@@ -568,8 +557,8 @@ body {
 }
 
 .history-item:hover {
-  background: var(--surface);
-  border-color: var(--border);
+  background: var(--bg-card);
+  border-color: var(--border-default);
 }
 
 .history-dot {
@@ -581,13 +570,13 @@ body {
 }
 
 .dot-ok {
-  background: var(--ok);
+  background: var(--success);
 }
 .dot-warn {
-  background: var(--warn);
+  background: var(--warning);
 }
 .dot-err {
-  background: var(--err);
+  background: var(--danger);
 }
 
 .history-query {
@@ -607,14 +596,14 @@ body {
 .history-route {
   font-size: 0.72rem;
   padding: 1px 6px;
-  background: rgba(74, 144, 217, 0.1);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
   border-radius: 8px;
 }
 
 .history-time {
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   opacity: 0.7;
 }
 
@@ -622,25 +611,25 @@ body {
 
 .dev-tools {
   margin-top: 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-default);
   padding-top: 16px;
 }
 .dev-tools summary {
   cursor: pointer;
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   font-weight: 500;
   user-select: none;
 }
 .dev-tools summary:hover {
-  color: var(--text);
+  color: var(--text-primary);
 }
 .dev-tools-body {
   margin-top: 12px;
 }
 .dev-tools label {
   display: block;
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.8rem;
   margin-bottom: 4px;
 }
@@ -649,10 +638,10 @@ body {
 .dev-tools textarea {
   width: 100%;
   padding: 8px 10px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  color: var(--text);
+  color: var(--text-primary);
   font-family: var(--mono);
   font-size: 0.82rem;
   outline: none;
@@ -671,7 +660,7 @@ body {
 .dev-tools button {
   padding: 8px 16px;
   border: 1px solid var(--accent);
-  background: var(--surface);
+  background: var(--bg-card);
   color: var(--accent);
   border-radius: var(--radius);
   font-size: 0.85rem;
@@ -681,7 +670,7 @@ body {
 
 .dev-tools button:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
 }
 
 /* ---- Enhanced Status / Trust Display ---- */
@@ -707,42 +696,42 @@ body {
 }
 
 .status-badge-ok {
-  background: rgba(76, 175, 80, 0.15);
-  color: var(--ok);
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
 }
 
 .status-badge-no_result {
-  background: rgba(245, 166, 35, 0.15);
-  color: var(--warn);
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
 }
 
 .status-badge-error {
-  background: rgba(231, 76, 60, 0.15);
-  color: var(--err);
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
 }
 
 .envelope-separator {
   width: 1px;
   height: 16px;
-  background: var(--border);
+  background: var(--border-default);
   flex-shrink: 0;
 }
 
 .freshness {
   font-size: 0.78rem;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .freshness strong {
-  color: var(--text);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .envelope-query-text {
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   padding: 6px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-default);
   margin-bottom: 8px;
   font-style: italic;
 }
@@ -761,12 +750,12 @@ body {
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.78rem;
-  background: rgba(74, 144, 217, 0.08);
-  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-primary);
 }
 
 .context-chip-label {
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -780,13 +769,13 @@ body {
 }
 
 .notes-block {
-  background: rgba(74, 144, 217, 0.06);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
   border-left: 3px solid var(--accent);
 }
 
 .caveats-block {
-  background: rgba(245, 166, 35, 0.06);
-  border-left: 3px solid var(--warn);
+  background: color-mix(in srgb, var(--warning) 6%, transparent);
+  border-left: 3px solid var(--warning);
 }
 
 .info-block-label {
@@ -802,7 +791,7 @@ body {
 }
 
 .caveats-block .info-block-label {
-  color: var(--warn);
+  color: var(--warning);
 }
 
 .info-block ul {
@@ -812,18 +801,18 @@ body {
 }
 
 .info-block li {
-  color: var(--text);
+  color: var(--text-primary);
   padding: 1px 0;
   font-size: 0.82rem;
 }
 
 .info-block li::before {
   content: "\2022  ";
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .caveats-block li::before {
-  color: var(--warn);
+  color: var(--warning);
 }
 
 /* ---- Alternates / Did you mean ---- */
@@ -834,18 +823,18 @@ body {
   gap: 0.5rem;
   flex-wrap: wrap;
   padding: 0.5rem 0.75rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-default);
 }
 
 .alternates-label {
   font-size: 0.82rem;
-  color: var(--text-secondary, #888);
+  color: var(--text-secondary);
 }
 
 .alternate-chip {
-  background: var(--surface-alt, #2a2a3a);
-  border: 1px solid var(--accent, #4a9eff);
-  color: var(--accent, #4a9eff);
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  color: var(--accent);
   border-radius: 1rem;
   padding: 0.25rem 0.75rem;
   font-size: 0.8rem;
@@ -856,8 +845,8 @@ body {
 }
 
 .alternate-chip:hover {
-  background: var(--accent, #4a9eff);
-  color: var(--bg, #1a1a2e);
+  background: var(--accent);
+  color: var(--text-on-accent);
 }
 
 /* ---- Query Input Enhancement ---- */
@@ -880,7 +869,7 @@ body {
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--muted);
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.85rem;
   padding: 4px;
@@ -893,7 +882,7 @@ body {
 
 .query-clear:hover {
   opacity: 1;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 /* ---- DataTable Entity / Rank Cells ---- */
@@ -906,7 +895,7 @@ body {
 
 .data-table .entity-cell {
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-primary);
   font-family: var(--font);
 }
 
@@ -939,7 +928,7 @@ body {
 .history-action-btn {
   background: none;
   border: 1px solid transparent;
-  color: var(--muted);
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: 0.7rem;
   padding: 2px 6px;
@@ -957,8 +946,8 @@ body {
 .history-class {
   font-size: 0.65rem;
   padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--muted);
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  color: var(--text-secondary);
   border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -968,7 +957,7 @@ body {
 
 .samples-label {
   font-size: 0.7rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 6px;
@@ -979,7 +968,7 @@ body {
 .no-result-notes {
   margin-top: 10px;
   font-size: 0.82rem;
-  color: var(--fg);
+  color: var(--text-primary);
   text-align: left;
   display: inline-block;
 }
@@ -993,7 +982,7 @@ body {
 .no-result-suggestions {
   margin-top: 12px;
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   text-align: left;
   display: inline-block;
 }
@@ -1009,13 +998,13 @@ body {
 /* ---- Save Query Button ---- */
 
 .save-query-btn {
-  border-color: var(--ok);
-  color: var(--ok);
+  border-color: var(--success);
+  color: var(--success);
 }
 
 .save-query-btn:hover {
-  background: var(--ok);
-  color: var(--bg);
+  background: var(--success);
+  color: var(--text-on-accent);
 }
 
 /* ---- Save Query Dialog ---- */
@@ -1023,7 +1012,7 @@ body {
 .save-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: color-mix(in srgb, var(--bg-input) 72%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1031,8 +1020,8 @@ body {
 }
 
 .save-dialog {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
   padding: 24px;
   width: 440px;
@@ -1045,13 +1034,13 @@ body {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 16px;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .save-dialog-label {
   display: block;
   font-size: 0.78rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1067,10 +1056,10 @@ body {
 .save-dialog-input {
   width: 100%;
   padding: 8px 10px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  color: var(--text);
+  color: var(--text-primary);
   font-size: 0.85rem;
   font-family: var(--font);
   outline: none;
@@ -1087,7 +1076,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 0.82rem;
-  color: var(--text);
+  color: var(--text-primary);
   margin-bottom: 16px;
   cursor: pointer;
 }
@@ -1105,9 +1094,9 @@ body {
 .save-dialog-cancel {
   padding: 6px 14px;
   background: none;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.82rem;
   cursor: pointer;
   font-family: var(--font);
@@ -1115,7 +1104,7 @@ body {
 }
 
 .save-dialog-cancel:hover {
-  color: var(--text);
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
@@ -1124,7 +1113,7 @@ body {
   background: var(--accent);
   border: none;
   border-radius: var(--radius);
-  color: #fff;
+  color: var(--text-on-accent);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -1145,7 +1134,7 @@ body {
 
 .saved-queries {
   margin-top: 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-default);
   padding-top: 16px;
 }
 
@@ -1161,7 +1150,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .saved-header-actions {
@@ -1173,7 +1162,7 @@ body {
 .saved-action-sm {
   background: none;
   border: none;
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
   font-family: var(--font);
@@ -1187,7 +1176,7 @@ body {
 }
 
 .saved-action-danger:hover {
-  color: var(--err);
+  color: var(--danger);
 }
 
 /* Tag filter bar */
@@ -1202,22 +1191,22 @@ body {
 .saved-tag-filter {
   padding: 2px 8px;
   font-size: 0.72rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
   border-radius: 10px;
-  color: var(--muted);
+  color: var(--text-secondary);
   cursor: pointer;
   font-family: var(--font);
   transition: all 0.15s;
 }
 
 .saved-tag-filter:hover {
-  color: var(--text);
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
 .saved-tag-filter.active {
-  background: rgba(74, 144, 217, 0.15);
+  background: var(--accent-muted);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -1227,7 +1216,7 @@ body {
 .saved-empty {
   text-align: center;
   padding: 20px 16px;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .saved-empty-icon {
@@ -1238,7 +1227,7 @@ body {
 .saved-empty-text {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
@@ -1265,12 +1254,12 @@ body {
 }
 
 .saved-item:hover {
-  background: var(--surface);
-  border-color: var(--border);
+  background: var(--bg-card);
+  border-color: var(--border-default);
 }
 
 .saved-item-pinned {
-  background: rgba(74, 144, 217, 0.03);
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
 }
 
 .saved-pin-icon {
@@ -1295,7 +1284,7 @@ body {
 .saved-item-label {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-primary);
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1309,7 +1298,7 @@ body {
 
 .saved-item-query {
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1326,8 +1315,8 @@ body {
 .saved-tag {
   font-size: 0.65rem;
   padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--muted);
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  color: var(--text-secondary);
   border-radius: 6px;
   text-transform: lowercase;
 }
@@ -1335,14 +1324,14 @@ body {
 .saved-route {
   font-size: 0.65rem;
   padding: 1px 5px;
-  background: rgba(74, 144, 217, 0.1);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
   border-radius: 6px;
 }
 
 .saved-date {
   font-size: 0.68rem;
-  color: var(--muted);
+  color: var(--text-secondary);
   opacity: 0.7;
   white-space: nowrap;
 }
@@ -1360,17 +1349,17 @@ body {
 }
 
 .saved-delete-btn:hover {
-  color: var(--err) !important;
-  border-color: var(--err) !important;
+  color: var(--danger) !important;
+  border-color: var(--danger) !important;
 }
 
 /* ---- Freshness Status Panel ---- */
 
 .freshness-panel {
   margin-bottom: 16px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--bg-card);
   overflow: hidden;
 }
 
@@ -1382,7 +1371,7 @@ body {
   padding: 8px 12px;
   border: none;
   background: transparent;
-  color: var(--text);
+  color: var(--text-primary);
   font: inherit;
   font-size: 0.85rem;
   cursor: pointer;
@@ -1390,7 +1379,7 @@ body {
 }
 
 .freshness-summary:hover {
-  background: var(--surface-hover);
+  background: var(--bg-elevated);
 }
 
 .freshness-dot {
@@ -1399,16 +1388,16 @@ body {
 }
 
 .freshness-fresh .freshness-dot {
-  color: var(--ok);
+  color: var(--success);
 }
 .freshness-stale .freshness-dot {
-  color: var(--warn);
+  color: var(--warning);
 }
 .freshness-unknown .freshness-dot {
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 .freshness-failed .freshness-dot {
-  color: var(--err);
+  color: var(--danger);
 }
 
 .freshness-label {
@@ -1426,30 +1415,30 @@ body {
 }
 
 .freshness-badge-fresh {
-  background: rgba(76, 175, 80, 0.15);
-  color: var(--ok);
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
 }
 .freshness-badge-stale {
-  background: rgba(245, 166, 35, 0.15);
-  color: var(--warn);
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
 }
 .freshness-badge-unknown {
-  background: rgba(139, 143, 163, 0.15);
-  color: var(--muted);
+  background: color-mix(in srgb, var(--text-secondary) 15%, transparent);
+  color: var(--text-secondary);
 }
 .freshness-badge-failed {
-  background: rgba(231, 76, 60, 0.15);
-  color: var(--err);
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
 }
 
 .freshness-expand {
   font-size: 0.7rem;
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .freshness-details {
   padding: 6px 12px 10px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-default);
   font-size: 0.8rem;
 }
 
@@ -1465,16 +1454,16 @@ body {
 }
 
 .freshness-season-ct {
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .freshness-refresh-row {
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
+  border-top: 1px solid var(--border-default);
+  color: var(--text-secondary);
 }
 
 .freshness-error {
-  color: var(--err);
+  color: var(--danger);
 }
