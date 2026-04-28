@@ -51,6 +51,7 @@ Engineering conventions and internal layer design.
 - `architecture/api_layer.md` — FastAPI HTTP layer
 - `architecture/query_service_layer.md` — query service interface
 - `architecture/structured_result_layer.md` — structured result object design
+- `architecture/design_system.md` — locked visual foundation reference for tokens, typography, color, and component treatment
 
 ## Operations — `operations/`
 
