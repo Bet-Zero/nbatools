@@ -33,7 +33,7 @@ existing thin frontend wrappers.
 
 ---
 
-## 1. `[ ]` Inventory primitive needs and define component API boundaries
+## 1. `[x]` Inventory primitive needs and define component API boundaries
 
 **Why:** The current UI already implies several primitives, but they are
 embedded inside feature components. Before extracting code, define the reusable
