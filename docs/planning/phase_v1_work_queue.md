@@ -34,7 +34,7 @@ to build on.
 
 ---
 
-## 1. `[ ]` Audit current frontend CSS for token-replaceable values
+## 1. `[x]` Audit current frontend CSS for token-replaceable values
 
 **Why:** Before refactoring CSS, we need to know what's there. The agent
 should walk every `.css`, `.scss`, and inline `style={...}` in the frontend

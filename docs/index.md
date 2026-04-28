@@ -66,6 +66,10 @@ Runbooks and operational guides.
 Roadmap, active plans, and closed closure records.
 
 - `planning/master_completion_plan.md` — single top-level authority for whole-plan completion status, active continuation, and open core capability families
+- `planning/product_polish_master_plan.md` — single top-level authority for the product polish push from engineering-complete to friends-tier-production-grade
+- `planning/visual_foundation_plan.md` — Track A Part 1 plan for design tokens, primitives, app shell, imagery, and team theming foundations
+- `planning/phase_v1_work_queue.md` — active Track A visual-foundation queue for tokens audit and CSS architecture
+- `planning/phase_v1_css_inventory.md` — CSS hardcoded-value inventory produced by Phase V1 item 1
 - `planning/parser_examples_completion_plan.md` — active continuation plan for resolving full-sweep examples-library mismatches
 - `planning/parser_examples_blocker_inventory.md` — blocker inventory derived from the latest full parser-examples sweep
 - `planning/phase_m_work_queue.md` — active queue for the remaining parser examples completion blockers from the fresh Phase L sweep
