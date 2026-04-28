@@ -279,7 +279,7 @@ that belong to a component and prevents global CSS pollution.
 
 ---
 
-## 6. `[ ]` Phase V1 retrospective and Phase V2 handoff
+## 6. `[x]` Phase V1 retrospective and Phase V2 handoff
 
 **Why:** Self-propagating final task. Captures learnings and drafts the next
 queue.
@@ -322,6 +322,56 @@ queue.
 
 - `visual_foundation_plan.md` — Phase V2 scope (primitives library)
 - This file as the structural template for phase_v2
+
+---
+
+## Phase V1 retrospective
+
+Phase V1 completed the foundation cleanup that the rest of Track A depends on.
+The frontend now has one token source, one global stylesheet, and
+component-scoped CSS modules for the existing UI.
+
+### Outcomes
+
+- Item 1 produced `phase_v1_css_inventory.md`, which gave the color,
+  spacing, radius, typography, inline-style, and exception punchlists used by
+  the implementation items.
+- Item 2 moved app colors to the locked dark-gray and orange token system.
+  Token source files and team brand colors remain the intentional raw-value
+  sources.
+- Item 3 moved spacing and radii onto the 4px scale, with documented
+  exceptions for zero/reset values, border widths, viewport constraints, and
+  fixed layout constraints.
+- Item 4 moved typography to `--font-*`, `--weight-*`, and tracking tokens.
+  Dense table values now use tabular numerals.
+- Item 5 split component-specific styles into colocated CSS modules and moved
+  global concerns into `frontend/src/styles/global.css`.
+
+### Harder Than Expected
+
+- The original single `App.css` mixed app shell, reusable control, query
+  result, dialog, and table concerns. The CSS modules pass made ownership
+  clearer, but the component tree still repeats primitive patterns instead of
+  consuming a shared library.
+- `DataTable` is both a presentational table and an NBA-specific formatter.
+  Phase V2 should split that into a generic primitive plus a thin
+  nbatools-specific wrapper so the design-system component stays reusable.
+- Some constants are intentionally outside the current token scale:
+  line-height values, overlay/scrim behavior, viewport constraints, and fixed
+  component dimensions. These should stay documented unless V2 finds repeated
+  maintenance pain that justifies new tokens.
+
+### Residuals For Phase V2
+
+- `frontend/src/design-system/` does not exist yet.
+- Existing buttons, cards, status chips, stat displays, table shells, and
+  loading states are still implemented directly inside feature components.
+- Avatar and team badge primitives do not exist. Phase V2 should build neutral
+  fallback primitives only; Phase V4 remains responsible for real player
+  headshot and team-logo integration.
+- Component usage examples are not yet documented in the UI guide.
+
+The Phase V2 handoff is `phase_v2_work_queue.md`.
 
 ---
 

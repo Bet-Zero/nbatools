@@ -62,6 +62,8 @@ styles move into proper component-scoped CSS modules or styled approach.
 Result: the foundation is real, not just a tokens file sitting unused.
 
 **Companion queue:** [`phase_v1_work_queue.md`](./phase_v1_work_queue.md)
+**Status:** Complete. Handoff artifact:
+[`phase_v2_work_queue.md`](./phase_v2_work_queue.md).
 
 ### Phase V2 — Primitives library
 
@@ -70,7 +72,7 @@ out of. Button, Card, Stat, StatBlock, DataTable, Badge, Skeleton, Avatar
 (player headshot wrapper), TeamBadge (team logo + color treatment),
 SectionHeader, ResultEnvelopeShell. Each documented with usage examples.
 
-**Companion queue:** drafted at end of V1.
+**Companion queue:** [`phase_v2_work_queue.md`](./phase_v2_work_queue.md)
 
 ### Phase V3 — App shell and layout
 

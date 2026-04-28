@@ -24,11 +24,12 @@ Out of scope: anything that only matters for a multi-tenant paid product
 
 ## Current Whole-Plan Status
 
-**Whole plan status: not started.**
+**Whole plan status: in progress.**
 
 Engine and parser are complete (see
 [`master_completion_plan.md`](./master_completion_plan.md)). This plan begins
-the product polish work.
+the product polish work. Track A Part 1 Phase V1 is complete; the active
+continuation is Phase V2.
 
 ---
 
@@ -117,8 +118,8 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 1.** Specifically,
-[`phase_v1_work_queue.md`](./phase_v1_work_queue.md).
+**Active continuation: Track A, Part 1, Phase V2.** Specifically,
+[`phase_v2_work_queue.md`](./phase_v2_work_queue.md).
 
 Track A is the priority track because it is fully agent-runnable without
 infrastructure dependencies. Track B can run in parallel whenever the
