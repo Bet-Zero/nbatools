@@ -1,5 +1,9 @@
 import type { QueryResponse } from "../api/types";
-import { ResultEnvelopeShell } from "../design-system";
+import {
+  Badge,
+  ResultEnvelopeShell,
+  type BadgeVariant,
+} from "../design-system";
 import styles from "./ResultEnvelope.module.css";
 
 interface Props {
@@ -44,10 +48,10 @@ function routeLabel(route: string): string {
   return route.replace(/_/g, " ");
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  ok: styles.statusOk,
-  no_result: styles.statusNoResult,
-  error: styles.statusError,
+const STATUS_VARIANTS: Record<string, BadgeVariant> = {
+  ok: "success",
+  no_result: "warning",
+  error: "danger",
 };
 
 export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
@@ -83,19 +87,21 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
     <ResultEnvelopeShell
       meta={
         <>
-          <span
-            className={[
-              styles.statusBadge,
-              STATUS_STYLES[data.result_status] ?? styles.statusError,
-            ].join(" ")}
+          <Badge
+            variant={STATUS_VARIANTS[data.result_status] ?? "danger"}
+            uppercase
           >
             {statusLabel(data.result_status)}
-          </span>
+          </Badge>
           {data.route && (
-            <span className={styles.pill}>{routeLabel(data.route)}</span>
+            <Badge variant="accent" size="sm">
+              {routeLabel(data.route)}
+            </Badge>
           )}
           {queryClass && queryClass !== data.route && (
-            <span className={styles.pill}>{queryClass}</span>
+            <Badge variant="accent" size="sm">
+              {queryClass}
+            </Badge>
           )}
           {data.result_reason && (
             <span className={[styles.muted, styles.resultReason].join(" ")}>
@@ -116,10 +122,10 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
       context={
         contextChips.length > 0
           ? contextChips.map((chip, i) => (
-              <span key={i} className={styles.contextChip}>
+              <Badge key={i} variant="neutral" size="sm">
                 <span className={styles.contextChipLabel}>{chip.label}</span>
                 {chip.value}
-              </span>
+              </Badge>
             ))
           : null
       }

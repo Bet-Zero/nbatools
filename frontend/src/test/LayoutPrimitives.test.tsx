@@ -2,7 +2,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
 import ResultEnvelope from "../components/ResultEnvelope";
-import { Card, ResultEnvelopeShell, SectionHeader } from "../design-system";
+import {
+  Badge,
+  Card,
+  ResultEnvelopeShell,
+  SectionHeader,
+  Stat,
+  StatBlock,
+} from "../design-system";
 
 function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
   return {
@@ -76,6 +83,31 @@ describe("layout primitives", () => {
     expect(
       screen.getByRole("button", { name: "Try another query" }),
     ).toBeInTheDocument();
+  });
+
+  it("renders badge variants and stat values", () => {
+    render(
+      <>
+        <Badge variant="success" uppercase>
+          fresh
+        </Badge>
+        <Stat label="PTS" value="26.4" context="per game" semantic="accent" />
+        <StatBlock
+          stats={[
+            { label: "REB", value: "12.1" },
+            { label: "AST", value: "8.9" },
+          ]}
+          columns={2}
+        />
+      </>,
+    );
+
+    expect(screen.getByText("fresh")).toBeInTheDocument();
+    expect(screen.getByText("PTS")).toBeInTheDocument();
+    expect(screen.getByText("26.4")).toBeInTheDocument();
+    expect(screen.getByText("per game")).toBeInTheDocument();
+    expect(screen.getByText("REB")).toBeInTheDocument();
+    expect(screen.getByText("12.1")).toBeInTheDocument();
   });
 });
 

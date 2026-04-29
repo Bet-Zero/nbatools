@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchFreshness } from "../api/client";
 import type { FreshnessResponse, FreshnessStatusValue } from "../api/types";
+import { Badge, type BadgeVariant } from "../design-system";
 import styles from "./FreshnessStatus.module.css";
 
 const STATUS_CONFIG: Record<
@@ -21,11 +22,11 @@ const STATUS_CONFIG: Record<
   },
 };
 
-const BADGE_STYLES: Record<FreshnessStatusValue, string> = {
-  fresh: styles.badgeFresh,
-  stale: styles.badgeStale,
-  unknown: styles.badgeUnknown,
-  failed: styles.badgeFailed,
+const BADGE_VARIANTS: Record<FreshnessStatusValue, BadgeVariant> = {
+  fresh: "success",
+  stale: "warning",
+  unknown: "neutral",
+  failed: "danger",
 };
 
 interface Props {
@@ -84,9 +85,9 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
             ? `Data through ${info.current_through}`
             : cfg.label}
         </span>
-        <span className={[styles.badge, BADGE_STYLES[status]].join(" ")}>
+        <Badge variant={BADGE_VARIANTS[status]} size="sm" uppercase>
           {status}
-        </span>
+        </Badge>
         <span className={styles.expand}>{expanded ? "▾" : "▸"}</span>
       </button>
 
@@ -100,14 +101,13 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
               <span className={styles.seasonLabel}>
                 {s.season} {s.season_type}
               </span>
-              <span
-                className={[
-                  styles.badge,
-                  BADGE_STYLES[s.status as FreshnessStatusValue],
-                ].join(" ")}
+              <Badge
+                variant={BADGE_VARIANTS[s.status as FreshnessStatusValue]}
+                size="sm"
+                uppercase
               >
                 {s.status}
-              </span>
+              </Badge>
               <span className={styles.seasonCurrentThrough}>
                 {s.current_through ? `through ${s.current_through}` : "—"}
               </span>

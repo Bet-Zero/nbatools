@@ -1,0 +1,64 @@
+.stat {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.value {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-semibold);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.md .value {
+  font-size: var(--font-stat-md);
+}
+
+.hero .value {
+  font-size: var(--font-stat-hero);
+}
+
+.context {
+  color: var(--text-tertiary);
+  font-size: var(--font-small);
+}
+
+.accent .value {
+  color: var(--accent);
+}
+
+.success .value {
+  color: var(--success);
+}
+
+.warning .value {
+  color: var(--warning);
+}
+
+.danger .value {
+  color: var(--danger);
+}
+
+.win .value {
+  color: var(--win);
+}
+
+.loss .value {
+  color: var(--loss);
+}

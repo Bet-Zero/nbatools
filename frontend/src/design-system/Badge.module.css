@@ -1,0 +1,67 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.sm {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-micro);
+}
+
+.md {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-small);
+}
+
+.uppercase {
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.neutral {
+  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  color: var(--text-secondary);
+}
+
+.accent {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.success {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.warning {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+
+.danger {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  color: var(--danger);
+}
+
+.info {
+  background: color-mix(in srgb, var(--info) 15%, transparent);
+  color: var(--info);
+}
+
+.win {
+  background: color-mix(in srgb, var(--win) 15%, transparent);
+  color: var(--win);
+}
+
+.loss {
+  background: color-mix(in srgb, var(--loss) 15%, transparent);
+  color: var(--loss);
+}

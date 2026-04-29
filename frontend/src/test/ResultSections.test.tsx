@@ -45,6 +45,8 @@ describe("ResultSections", () => {
     render(<ResultSections data={data} />);
     expect(screen.getByText("Summary")).toBeInTheDocument();
     expect(screen.getByText("Jokic")).toBeInTheDocument();
+    expect(screen.getAllByText("PTS").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("26").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders leaderboard sections", () => {
