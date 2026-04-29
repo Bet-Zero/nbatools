@@ -96,7 +96,7 @@ accidentally changing team summaries, team records, or playoff summaries.
 
 ---
 
-## 2. `[ ]` Build the player-summary hero and stat hierarchy
+## 2. `[x]` Build the player-summary hero and stat hierarchy
 
 **Why:** The first visible C1 improvement should make the answer feel like a
 designed player summary instead of a table dump.

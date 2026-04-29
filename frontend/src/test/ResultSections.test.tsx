@@ -34,19 +34,61 @@ describe("ResultSections", () => {
       result: {
         query_class: "summary",
         result_status: "ok",
-        metadata: {},
+        metadata: {
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
         notes: [],
         caveats: [],
         sections: {
-          summary: [{ player_name: "Jokic", PTS: 26 }],
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              games: 25,
+              wins: 18,
+              losses: 7,
+              win_pct: 0.72,
+              pts_avg: 26.4,
+              reb_avg: 12.1,
+              ast_avg: 9.3,
+              efg_pct_avg: 0.62,
+            },
+          ],
         },
       },
     });
     render(<ResultSections data={data} />);
     expect(screen.getByText("Player Summary")).toBeInTheDocument();
-    expect(screen.getByText("Jokic")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Nikola Jokic" }),
+    ).toBeInTheDocument();
     expect(screen.getAllByText("PTS").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("26").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("26.4").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("18-7")).toBeInTheDocument();
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+  });
+
+  it("renders sparse player summaries without optional identity or stats", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ player_name: "Mystery Player" }],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Player Summary")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Mystery Player" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
   });
 
   it("keeps team summaries on the generic summary renderer", () => {
