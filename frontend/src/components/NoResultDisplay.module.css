@@ -1,50 +1,65 @@
 .display {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
   text-align: center;
-  padding: var(--space-8) var(--space-6);
   color: var(--text-secondary);
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
-  margin-bottom: var(--space-4);
 }
 
 .error {
   border-color: color-mix(in srgb, var(--danger) 30%, transparent);
 }
 
+.iconWrap {
+  padding: var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+}
+
 .icon {
   font-size: var(--font-h2);
-  margin-bottom: var(--space-2);
+  line-height: 1;
 }
 
 .title {
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
-  margin-bottom: var(--space-1);
+  font-size: var(--font-h3);
+  line-height: 1.2;
 }
 
 .message {
   font-size: var(--font-small);
+  max-width: 520px;
 }
 
 .notes {
-  margin-top: var(--space-3);
   font-size: var(--font-small);
   color: var(--text-primary);
   text-align: left;
-  display: inline-block;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
 }
 
 .note {
-  margin-bottom: var(--space-1);
+  min-width: 0;
 }
 
 .suggestions {
-  margin-top: var(--space-3);
   font-size: var(--font-small);
   color: var(--text-secondary);
   text-align: left;
-  display: inline-block;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
 }
 
 .suggestions strong {

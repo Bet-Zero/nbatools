@@ -221,7 +221,7 @@ prominent and efficient without becoming a marketing hero.
 
 ---
 
-## 5. `[ ]` Redesign empty, loading, and no-result shell states
+## 5. `[x]` Redesign empty, loading, and no-result shell states
 
 **Why:** First-run and transitional states are part of the app shell. They
 should establish product quality before any query result appears.

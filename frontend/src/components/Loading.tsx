@@ -1,4 +1,4 @@
-import { Card, SkeletonBlock, SkeletonText } from "../design-system";
+import { Badge, Card, SkeletonBlock, SkeletonText } from "../design-system";
 import styles from "./Loading.module.css";
 
 export default function Loading() {
@@ -13,6 +13,9 @@ export default function Loading() {
       <div className={styles.header}>
         <div className={styles.spinner} aria-hidden="true" />
         <div className={styles.copy}>
+          <Badge variant="accent" size="sm" uppercase>
+            Running
+          </Badge>
           <div className={styles.message}>Searching NBA data…</div>
           <SkeletonText
             aria-label="Loading query context"
