@@ -7,6 +7,7 @@ import {
   normalizeIdentityId,
   normalizeTeamAbbreviation,
   resolvePlayerIdentity,
+  resolveScopedTeamTheme,
   resolveTeamIdentity,
 } from "./identity";
 
@@ -109,5 +110,80 @@ describe("identity helpers", () => {
       colors: null,
       styleVars: null,
     });
+  });
+
+  it("resolves scoped team themes only for a single team subject", () => {
+    expect(
+      resolveScopedTeamTheme({
+        team: "BOS",
+        team_context: {
+          team_id: 1610612738,
+          team_abbr: "BOS",
+          team_name: "Celtics",
+        },
+      }),
+    ).toEqual({
+      team: {
+        teamId: "1610612738",
+        teamAbbr: "BOS",
+        teamName: "Celtics",
+        logoUrl: "https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg",
+        colors: {
+          primary: "#007A33",
+          secondary: "#BA9653",
+        },
+        styleVars: {
+          "--team-primary": "#007A33",
+          "--team-secondary": "#BA9653",
+        },
+      },
+      styleVars: {
+        "--team-primary": "#007A33",
+        "--team-secondary": "#BA9653",
+      },
+    });
+  });
+
+  it("does not theme player, multi-team, or unknown-team contexts", () => {
+    expect(
+      resolveScopedTeamTheme({
+        player: "Nikola Jokic",
+        team: "DEN",
+        team_context: {
+          team_id: 1610612743,
+          team_abbr: "DEN",
+          team_name: "Nuggets",
+        },
+      }),
+    ).toBeNull();
+
+    expect(
+      resolveScopedTeamTheme({
+        teams: ["BOS", "LAL"],
+        teams_context: [
+          {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Celtics",
+          },
+          {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Lakers",
+          },
+        ],
+      }),
+    ).toBeNull();
+
+    expect(
+      resolveScopedTeamTheme({
+        team: "SEA",
+        team_context: {
+          team_id: 1610612760,
+          team_abbr: "SEA",
+          team_name: "Seattle SuperSonics",
+        },
+      }),
+    ).toBeNull();
   });
 });

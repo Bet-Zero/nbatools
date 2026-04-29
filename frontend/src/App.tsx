@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
 import type { SavedQueryInput } from "./api/savedQueryTypes";
 import type { QueryResponse } from "./api/types";
@@ -21,6 +27,7 @@ import { Badge, Button, Card, SectionHeader } from "./design-system";
 import useQueryHistory from "./hooks/useQueryHistory";
 import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
+import { resolveScopedTeamTheme } from "./lib/identity";
 import styles from "./App.module.css";
 
 export default function App() {
@@ -203,6 +210,13 @@ export default function App() {
   const hasResult = result !== null;
   const hasError = error !== null;
   const showEmpty = !loading && !hasResult && !hasError;
+  const teamTheme = result
+    ? resolveScopedTeamTheme(result.result?.metadata)
+    : null;
+  const teamThemeStyle = (teamTheme?.styleVars ?? undefined) as
+    | CSSProperties
+    | undefined;
+  const teamThemedSurfaceClass = teamTheme ? styles.teamThemedSurface : "";
 
   const header = (
     <div className={styles.headerContent}>
@@ -304,8 +318,24 @@ export default function App() {
       {showEmpty && <EmptyState />}
 
       {result && (
-        <section className={styles.resultArea}>
-          <Card className={styles.resultActionsPanel} depth="elevated" padding="md">
+        <section
+          className={[
+            styles.resultArea,
+            teamTheme ? styles.teamThemedResultArea : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          data-team-theme={teamTheme?.team.teamAbbr ?? undefined}
+          style={teamThemeStyle}
+        >
+          <Card
+            className={[
+              styles.resultActionsPanel,
+              teamThemedSurfaceClass,
+            ].join(" ")}
+            depth="elevated"
+            padding="md"
+          >
             <SectionHeader
               eyebrow="Result"
               title="Query output"
@@ -331,9 +361,17 @@ export default function App() {
             />
           </Card>
 
-          <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
+          <ResultEnvelope
+            data={result}
+            onAlternateSelect={handleSubmit}
+            className={teamThemedSurfaceClass}
+          />
 
-          <div className={styles.resultSections}>
+          <div
+            className={[styles.resultSections, teamThemedSurfaceClass].join(
+              " ",
+            )}
+          >
             <ResultSections data={result} />
           </div>
 

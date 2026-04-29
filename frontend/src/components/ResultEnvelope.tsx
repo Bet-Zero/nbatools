@@ -14,6 +14,7 @@ import styles from "./ResultEnvelope.module.css";
 interface Props {
   data: QueryResponse;
   onAlternateSelect?: (description: string) => void;
+  className?: string;
 }
 
 function statusLabel(status: string): string {
@@ -63,7 +64,11 @@ const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   error: "danger",
 };
 
-export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
+export default function ResultEnvelope({
+  data,
+  onAlternateSelect,
+  className,
+}: Props) {
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
 
@@ -145,6 +150,7 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
 
   return (
     <ResultEnvelopeShell
+      className={className}
       meta={
         <>
           <Badge

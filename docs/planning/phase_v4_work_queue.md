@@ -279,7 +279,7 @@ chips, and team/opponent table columns without overloading the UI with color.
 
 ---
 
-## 6. `[ ]` Apply scoped team theming to single-team result surfaces
+## 6. `[x]` Apply scoped team theming to single-team result surfaces
 
 **Why:** Team color should thread through the shell only when the result has a
 clear single-team context, such as one team summary or one opponent-filtered
