@@ -1,7 +1,6 @@
 .loading {
   display: grid;
   gap: var(--space-5);
-  margin-bottom: var(--space-4);
   color: var(--text-secondary);
 }
 
@@ -13,11 +12,12 @@
 
 .spinner {
   flex: 0 0 auto;
-  width: var(--space-6);
-  height: var(--space-6);
+  width: var(--space-8);
+  height: var(--space-8);
   border: var(--space-1) solid var(--border-default);
   border-top-color: var(--accent);
   border-radius: 50%;
+  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
   /* Loading spinner should move slower than hover/focus transitions. */
   animation: spin 960ms linear infinite;
 }
@@ -31,8 +31,9 @@
 
 .message {
   color: var(--text-primary);
-  font-size: var(--font-body);
-  font-weight: var(--weight-medium);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
 }
 
 .messageSkeleton {
@@ -41,7 +42,7 @@
 
 .preview {
   padding-top: var(--space-3);
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid var(--border-subtle);
 }
 
 @keyframes spin {

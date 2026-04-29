@@ -1,25 +1,39 @@
 .emptyState {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
   text-align: center;
-  padding: var(--space-12) var(--space-6);
   color: var(--text-secondary);
+}
+
+.iconWrap {
+  padding: var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
 }
 
 .icon {
   font-size: var(--font-display);
-  margin-bottom: var(--space-3);
+  line-height: 1;
+}
+
+.copy {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
 }
 
 .title {
   font-size: var(--font-h3);
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
-  margin-bottom: var(--space-2);
 }
 
 .description {
   font-size: var(--font-body);
   max-width: 480px;
-  margin: 0 auto var(--space-5);
+  margin: 0;
   line-height: 1.6;
 }
 
@@ -31,10 +45,22 @@
 }
 
 .tip {
-  padding: var(--space-1) var(--space-3);
-  background: var(--bg-card);
+  max-width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-input);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   font-size: var(--font-small);
   font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+@media (max-width: 640px) {
+  .tips {
+    justify-content: stretch;
+  }
+
+  .tip {
+    width: 100%;
+  }
 }

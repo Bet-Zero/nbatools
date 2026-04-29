@@ -1,3 +1,4 @@
+import { Badge, Card } from "../design-system";
 import styles from "./NoResultDisplay.module.css";
 
 interface Props {
@@ -43,14 +44,26 @@ export default function NoResultDisplay({ reason, status, notes }: Props) {
       : reason === "ambiguous"
         ? "Ambiguous Query"
         : "No Results";
+  const badgeVariant = isError
+    ? "danger"
+    : isUnsupported
+      ? "warning"
+      : "neutral";
 
   return (
-    <div
+    <Card
       className={[styles.display, isError ? styles.error : ""]
         .filter(Boolean)
         .join(" ")}
+      depth="card"
+      padding="lg"
     >
-      <div className={styles.icon}>{icon}</div>
+      <div className={styles.iconWrap}>
+        <div className={styles.icon}>{icon}</div>
+      </div>
+      <Badge variant={badgeVariant} size="sm" uppercase>
+        {status}
+      </Badge>
       <div className={styles.title}>{title}</div>
       <div className={styles.message}>{friendlyReason(reason)}</div>
       {notes && notes.length > 0 && (
@@ -70,6 +83,6 @@ export default function NoResultDisplay({ reason, status, notes }: Props) {
           ))}
         </div>
       )}
-    </div>
+    </Card>
   );
 }
