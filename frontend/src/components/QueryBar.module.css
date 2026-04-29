@@ -1,24 +1,52 @@
 .queryBar {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+  margin-bottom: var(--space-4);
+}
+
+.queryIntro {
+  grid-column: 1 / -1;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.label {
+  display: block;
+  color: var(--text-primary);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
 }
 
 .queryBar input {
   flex: 1;
-  padding: var(--space-3) var(--space-4);
+  min-height: var(--space-12);
+  padding: var(--space-4) var(--space-5);
   background: var(--bg-input);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   color: var(--text-primary);
   font-size: var(--font-body);
   font-family: var(--font-sans);
   outline: none;
-  transition: border-color 0.15s;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .queryBar input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
 }
 
 .queryBar input::placeholder {
@@ -33,7 +61,7 @@
 
 .inputWrapper input {
   width: 100%;
-  padding-right: var(--space-10);
+  padding-right: var(--space-12);
 }
 
 .clearButton {
@@ -47,4 +75,14 @@
 
 .clearButton:hover {
   opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .queryBar {
+    grid-template-columns: 1fr;
+  }
+
+  .queryBar input {
+    min-height: var(--space-12);
+  }
 }

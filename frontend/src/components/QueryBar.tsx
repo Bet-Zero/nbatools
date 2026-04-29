@@ -21,8 +21,15 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
 
   return (
     <form className={styles.queryBar} onSubmit={handleSubmit}>
+      <div className={styles.queryIntro}>
+        <div className={styles.eyebrow}>Ask anything</div>
+        <label className={styles.label} htmlFor="nba-query-input">
+          Search NBA performance
+        </label>
+      </div>
       <div className={styles.inputWrapper}>
         <input
+          id="nba-query-input"
           ref={ref}
           type="text"
           value={value}

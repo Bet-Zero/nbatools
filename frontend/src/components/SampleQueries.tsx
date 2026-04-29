@@ -1,3 +1,4 @@
+import { Button } from "../design-system";
 import styles from "./SampleQueries.module.css";
 
 const SAMPLES = [
@@ -16,13 +17,23 @@ interface Props {
 
 export default function SampleQueries({ onSelect }: Props) {
   return (
-    <div>
-      <div className={styles.label}>Try a sample query</div>
+    <div className={styles.sampleQueries}>
+      <div className={styles.header}>
+        <div className={styles.label}>Try a sample query</div>
+        <div className={styles.hint}>Runs immediately</div>
+      </div>
       <div className={styles.samples}>
         {SAMPLES.map((q) => (
-          <button key={q} type="button" onClick={() => onSelect(q)}>
+          <Button
+            key={q}
+            type="button"
+            className={styles.sampleButton}
+            onClick={() => onSelect(q)}
+            size="sm"
+            variant="ghost"
+          >
             {q}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
