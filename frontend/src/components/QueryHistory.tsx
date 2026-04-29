@@ -1,4 +1,5 @@
 import type { QueryHistoryEntry } from "../api/types";
+import { Badge, Button, Card, SectionHeader } from "../design-system";
 import styles from "./QueryHistory.module.css";
 
 interface Props {
@@ -34,18 +35,17 @@ export default function QueryHistory({
   if (entries.length === 0) return null;
 
   return (
-    <div className={styles.queryHistory}>
-      <div className={styles.header}>
-        <span className={styles.label}>
-          History
-          <span className={[styles.count, styles.countInline].join(" ")}>
-            {entries.length} {entries.length === 1 ? "query" : "queries"}
-          </span>
-        </span>
-        <button type="button" className={styles.clear} onClick={onClear}>
-          Clear
-        </button>
-      </div>
+    <Card className={styles.queryHistory} depth="card" padding="md">
+      <SectionHeader
+        eyebrow="Session"
+        title="History"
+        count={`${entries.length} ${entries.length === 1 ? "query" : "queries"}`}
+        actions={
+          <Button type="button" onClick={onClear} size="sm" variant="ghost">
+            Clear
+          </Button>
+        }
+      />
       <div className={styles.list}>
         {entries.map((entry) => (
           <div key={entry.id} className={styles.item}>
@@ -68,44 +68,54 @@ export default function QueryHistory({
             </span>
             <span className={styles.meta}>
               {entry.query_class && (
-                <span className={styles.classBadge}>{entry.query_class}</span>
+                <Badge variant="neutral" size="sm">
+                  {entry.query_class}
+                </Badge>
               )}
               {entry.route && (
-                <span className={styles.route}>{entry.route}</span>
+                <Badge variant="accent" size="sm">
+                  {entry.route}
+                </Badge>
               )}
               <span className={styles.time}>{timeAgo(entry.timestamp)}</span>
             </span>
             <span className={styles.actions}>
-              <button
+              <Button
                 type="button"
                 className={styles.actionButton}
                 onClick={() => onEdit(entry.query)}
                 title="Edit query"
+                size="sm"
+                variant="ghost"
               >
                 Edit
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={styles.actionButton}
                 onClick={() => onSelect(entry.query)}
                 title="Rerun query"
+                size="sm"
+                variant="ghost"
               >
                 Rerun
-              </button>
+              </Button>
               {onSave && (
-                <button
+                <Button
                   type="button"
                   className={styles.actionButton}
                   onClick={() => onSave(entry.query)}
                   title="Save query"
+                  size="sm"
+                  variant="ghost"
                 >
                   Save
-                </button>
+                </Button>
               )}
             </span>
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { SavedQuery, SavedQueryInput } from "../api/savedQueryTypes";
+import { Badge, Button, Card, SectionHeader } from "../design-system";
 import SaveQueryDialog from "./SaveQueryDialog";
 import styles from "./SavedQueries.module.css";
 
@@ -94,23 +95,22 @@ export default function SavedQueries({
   }
 
   return (
-    <div className={styles.savedQueries}>
-      <div className={styles.header}>
-        <span className={styles.label}>
-          Saved Queries
-          <span className={[styles.count, styles.countInline].join(" ")}>
-            {queries.length} {queries.length === 1 ? "query" : "queries"}
-          </span>
-        </span>
-        <span className={styles.headerActions}>
-          <button
-            type="button"
-            className={styles.actionSmall}
-            onClick={handleImportClick}
-            title="Import saved queries from JSON"
-          >
-            Import
-          </button>
+    <Card className={styles.savedQueries} depth="card" padding="md">
+      <SectionHeader
+        eyebrow="Secondary"
+        title="Saved Queries"
+        count={`${queries.length} ${queries.length === 1 ? "query" : "queries"}`}
+        actions={
+          <span className={styles.headerActions}>
+            <Button
+              type="button"
+              onClick={handleImportClick}
+              title="Import saved queries from JSON"
+              size="sm"
+              variant="ghost"
+            >
+              Import
+            </Button>
           <input
             ref={importRef}
             type="file"
@@ -120,34 +120,34 @@ export default function SavedQueries({
           />
           {queries.length > 0 && (
             <>
-              <button
+              <Button
                 type="button"
-                className={styles.actionSmall}
                 onClick={handleExport}
                 title="Export saved queries as JSON"
+                size="sm"
+                variant="ghost"
               >
                 Export
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className={[
-                  styles.actionSmall,
-                  styles.actionDanger,
-                ].join(" ")}
                 onClick={handleClearAll}
                 title="Delete all saved queries"
+                size="sm"
+                variant={confirmClear ? "danger" : "ghost"}
               >
                 {confirmClear ? "Confirm?" : "Clear All"}
-              </button>
+              </Button>
             </>
           )}
         </span>
-      </div>
+        }
+      />
 
       {/* Tag filter bar */}
       {allTags.length > 0 && (
         <div className={styles.tagsBar}>
-          <button
+          <Button
             type="button"
             className={[
               styles.tagFilter,
@@ -156,11 +156,13 @@ export default function SavedQueries({
               .filter(Boolean)
               .join(" ")}
             onClick={() => setFilterTag(null)}
+            size="sm"
+            variant="ghost"
           >
             All
-          </button>
+          </Button>
           {allTags.map((tag) => (
-            <button
+            <Button
               key={tag}
               type="button"
               className={[
@@ -170,9 +172,11 @@ export default function SavedQueries({
                 .filter(Boolean)
                 .join(" ")}
               onClick={() => setFilterTag(filterTag === tag ? null : tag)}
+              size="sm"
+              variant="ghost"
             >
               {tag}
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -227,54 +231,65 @@ export default function SavedQueries({
                     {tag}
                   </span>
                 ))}
-                {sq.route && <span className={styles.route}>{sq.route}</span>}
+                {sq.route && (
+                  <Badge variant="accent" size="sm">
+                    {sq.route}
+                  </Badge>
+                )}
                 <span className={styles.date}>{timeLabel(sq.updatedAt)}</span>
               </div>
 
               <div className={styles.itemActions}>
-                <button
+                <Button
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onRun(sq.query)}
                   title="Run query"
+                  size="sm"
+                  variant="ghost"
                 >
                   Run
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onEdit(sq.query)}
                   title="Load into query bar"
+                  size="sm"
+                  variant="ghost"
                 >
                   Load
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onPin(sq.id)}
                   title={sq.pinned ? "Unpin" : "Pin"}
+                  size="sm"
+                  variant="ghost"
                 >
                   {sq.pinned ? "Unpin" : "Pin"}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => setEditingId(sq.id)}
                   title="Edit saved query"
+                  size="sm"
+                  variant="ghost"
                 >
                   Edit
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
-                  className={[
-                    styles.itemActionButton,
-                    styles.deleteButton,
-                  ].join(" ")}
+                  className={styles.itemActionButton}
                   onClick={() => onDelete(sq.id)}
                   title="Delete saved query"
+                  size="sm"
+                  variant="danger"
                 >
                   Delete
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -302,6 +317,6 @@ export default function SavedQueries({
           onCancel={() => setEditingId(null)}
         />
       )}
-    </div>
+    </Card>
   );
 }

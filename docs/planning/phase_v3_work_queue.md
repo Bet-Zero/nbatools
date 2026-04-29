@@ -309,7 +309,7 @@ JSON, and future designed query-class layouts.
 
 ---
 
-## 7. `[ ]` Reframe saved queries, history, and dev tools as secondary panels
+## 7. `[x]` Reframe saved queries, history, and dev tools as secondary panels
 
 **Why:** Saved queries and history are useful, but they should not compete
 with the primary query/result workflow. Dev tools should remain available

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchRoutes, postStructuredQuery } from "../api/client";
 import type { QueryResponse } from "../api/types";
+import { Badge, Button, Card } from "../design-system";
 import styles from "./DevTools.module.css";
 
 interface Props {
@@ -48,8 +49,13 @@ export default function DevTools({
   }
 
   return (
-    <details className={styles.devTools}>
-      <summary>Dev Tools — Structured Query</summary>
+    <Card as="details" className={styles.devTools} depth="input" padding="md">
+      <summary>
+        <span>Dev Tools — Structured Query</span>
+        <Badge variant="neutral" size="sm" uppercase>
+          dev
+        </Badge>
+      </summary>
       <div className={styles.body}>
         <label htmlFor="route-select">Route</label>
         <select
@@ -73,10 +79,10 @@ export default function DevTools({
           placeholder='{"season": "2024-25", "stat": "pts", "limit": 10}'
         />
 
-        <button type="button" onClick={handleSubmit}>
+        <Button type="button" onClick={handleSubmit} size="sm" variant="secondary">
           Run Structured Query
-        </button>
+        </Button>
       </div>
-    </details>
+    </Card>
   );
 }
