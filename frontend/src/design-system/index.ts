@@ -20,6 +20,12 @@ export {
   type CardTone,
 } from "./Card";
 export {
+  DataTable,
+  type DataTableAlignment,
+  type DataTableColumn,
+  type DataTableProps,
+} from "./DataTable";
+export {
   ResultEnvelopeShell,
   type ResultEnvelopeShellProps,
 } from "./ResultEnvelopeShell";

@@ -257,7 +257,7 @@ shell and result layouts get more visual weight.
 
 ---
 
-## 6. `[ ]` Split generic DataTable primitive from NBA-specific table wrapper
+## 6. `[x]` Split generic DataTable primitive from NBA-specific table wrapper
 
 **Why:** The current `DataTable` owns both table presentation and
 NBA-specific formatting. Future layouts need a reusable table primitive

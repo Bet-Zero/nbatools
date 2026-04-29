@@ -1,4 +1,9 @@
 import type { SectionRow } from "../api/types";
+import {
+  DataTable as DataTablePrimitive,
+  type DataTableAlignment,
+  type DataTableColumn,
+} from "../design-system";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./DataTable.module.css";
 
@@ -37,38 +42,32 @@ function cellClass(col: string, rows: SectionRow[]): string {
   return "";
 }
 
+function columnAlignment(col: string, rows: SectionRow[]): DataTableAlignment {
+  const lc = col.toLowerCase();
+  if (RANK_COLS.has(lc)) return "center";
+  if (isNumericCol(col, rows)) return "right";
+  return "left";
+}
+
 export default function DataTable({ rows, highlight = false }: Props) {
   if (!rows.length) return null;
-  const cols = Object.keys(rows[0]);
+  const columns: DataTableColumn<SectionRow>[] = Object.keys(rows[0]).map(
+    (col) => ({
+      key: col,
+      header: formatColHeader(col),
+      align: columnAlignment(col, rows),
+      className: cellClass(col, rows),
+      numeric: isNumericCol(col, rows),
+      render: (row) => formatValue(row[col], col),
+    }),
+  );
 
   return (
-    <div className={styles.tableScroll}>
-      <table
-        className={[styles.table, highlight ? styles.highlight : ""]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        <thead>
-          <tr>
-            {cols.map((col) => (
-              <th key={col} className={cellClass(col, rows)}>
-                {formatColHeader(col)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, ri) => (
-            <tr key={ri}>
-              {cols.map((col) => (
-                <td key={col} className={cellClass(col, rows)}>
-                  {formatValue(row[col], col)}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTablePrimitive
+      columns={columns}
+      rows={rows}
+      highlight={highlight}
+      getRowKey={(_, rowIndex) => rowIndex}
+    />
   );
 }
