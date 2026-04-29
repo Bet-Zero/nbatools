@@ -174,7 +174,7 @@ envelope structure before individual query layouts are redesigned in Part 2.
 
 ---
 
-## 4. `[ ]` Build Badge, Stat, and StatBlock primitives
+## 4. `[x]` Build Badge, Stat, and StatBlock primitives
 
 **Why:** Result layouts need consistent chips, labels, and numeric stat
 treatments before hero and comparison components can become opinionated.

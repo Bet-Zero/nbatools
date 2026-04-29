@@ -1,4 +1,10 @@
 export {
+  Badge,
+  type BadgeProps,
+  type BadgeSize,
+  type BadgeVariant,
+} from "./Badge";
+export {
   Button,
   IconButton,
   type ButtonProps,
@@ -18,3 +24,10 @@ export {
   type ResultEnvelopeShellProps,
 } from "./ResultEnvelopeShell";
 export { SectionHeader, type SectionHeaderProps } from "./SectionHeader";
+export {
+  Stat,
+  type StatProps,
+  type StatSemantic,
+  type StatSize,
+} from "./Stat";
+export { StatBlock, type StatBlockProps } from "./StatBlock";

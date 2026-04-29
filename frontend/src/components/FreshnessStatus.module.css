@@ -50,36 +50,6 @@
   flex: 1;
 }
 
-.badge {
-  display: inline-block;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-micro);
-  font-weight: var(--weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
-}
-
-.badgeFresh {
-  background: color-mix(in srgb, var(--success) 15%, transparent);
-  color: var(--success);
-}
-
-.badgeStale {
-  background: color-mix(in srgb, var(--warning) 15%, transparent);
-  color: var(--warning);
-}
-
-.badgeUnknown {
-  background: color-mix(in srgb, var(--text-secondary) 15%, transparent);
-  color: var(--text-secondary);
-}
-
-.badgeFailed {
-  background: color-mix(in srgb, var(--danger) 15%, transparent);
-  color: var(--danger);
-}
-
 .expand {
   font-size: var(--font-micro);
   color: var(--text-secondary);
