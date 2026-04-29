@@ -1,3 +1,4 @@
+import { type CSSProperties } from "react";
 import type { QueryResponse } from "../api/types";
 import {
   Avatar,
@@ -7,7 +8,7 @@ import {
   TeamBadge,
   type BadgeVariant,
 } from "../design-system";
-import { resolvePlayerIdentity } from "../lib/identity";
+import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
 import styles from "./ResultEnvelope.module.css";
 
 interface Props {
@@ -73,6 +74,8 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
     identity?: "player" | "team";
     imageUrl?: string | null;
     identityName?: string | null;
+    abbreviation?: string | null;
+    styleVars?: CSSProperties;
   }[] = [];
   if (metadata) {
     if (typeof metadata.player === "string") {
@@ -93,12 +96,24 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
         label: "Players",
         value: metadata.players.join(", "),
       });
-    if (typeof metadata.team === "string")
+    if (typeof metadata.team === "string") {
+      const teamIdentity = resolveTeamIdentity({
+        teamId: metadata.team_context?.team_id,
+        teamAbbr: metadata.team_context?.team_abbr,
+        teamName: metadata.team_context?.team_name ?? metadata.team,
+      });
       contextChips.push({
         label: "Team",
         value: metadata.team,
         identity: "team",
+        imageUrl: teamIdentity.logoUrl,
+        identityName: teamIdentity.teamName,
+        abbreviation: teamIdentity.teamAbbr,
+        styleVars: (teamIdentity.styleVars ?? undefined) as
+          | CSSProperties
+          | undefined,
       });
+    }
     if (Array.isArray(metadata.teams) && metadata.teams.length)
       contextChips.push({
         label: "Teams",
@@ -106,12 +121,24 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
       });
     if (typeof metadata.season === "string")
       contextChips.push({ label: "Season", value: metadata.season });
-    if (typeof metadata.opponent === "string")
+    if (typeof metadata.opponent === "string") {
+      const opponentIdentity = resolveTeamIdentity({
+        teamId: metadata.opponent_context?.team_id,
+        teamAbbr: metadata.opponent_context?.team_abbr,
+        teamName: metadata.opponent_context?.team_name ?? metadata.opponent,
+      });
       contextChips.push({
         label: "vs",
         value: metadata.opponent,
         identity: "team",
+        imageUrl: opponentIdentity.logoUrl,
+        identityName: opponentIdentity.teamName,
+        abbreviation: opponentIdentity.teamAbbr,
+        styleVars: (opponentIdentity.styleVars ?? undefined) as
+          | CSSProperties
+          | undefined,
       });
+    }
     if (typeof metadata.split_type === "string")
       contextChips.push({ label: "Split", value: metadata.split_type });
   }
@@ -166,11 +193,14 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
                 {chip.identity === "team" && (
                   <TeamBadge
                     abbreviation={
-                      isTeamAbbreviation(chip.value) ? chip.value : undefined
+                      chip.abbreviation ??
+                      (isTeamAbbreviation(chip.value) ? chip.value : undefined)
                     }
-                    name={chip.value}
+                    name={chip.identityName ?? chip.value}
+                    logoUrl={chip.imageUrl}
                     size="sm"
                     showName={false}
+                    style={chip.styleVars}
                   />
                 )}
                 <span className={styles.contextChipLabel}>{chip.label}</span>

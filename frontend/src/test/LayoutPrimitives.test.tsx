@@ -164,6 +164,26 @@ describe("layout primitives", () => {
       "NJ",
     );
   });
+
+  it("falls back to abbreviation when a team logo cannot load", () => {
+    const { container } = render(
+      <TeamBadge
+        abbreviation="DEN"
+        name="Denver Nuggets"
+        logoUrl="https://example.test/nuggets.svg"
+      />,
+    );
+
+    const img = container.querySelector("img");
+    expect(img).toHaveAttribute("src", "https://example.test/nuggets.svg");
+
+    fireEvent.error(img as HTMLImageElement);
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByLabelText("Denver Nuggets (DEN)")).toHaveTextContent(
+      "DEN",
+    );
+  });
 });
 
 describe("migrated result envelope", () => {
@@ -220,5 +240,46 @@ describe("migrated result envelope", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "jokic last 10" }));
     expect(onAlternateSelect).toHaveBeenCalledWith("jokic last 10");
+  });
+
+  it("uses team and opponent metadata contexts for logos and colors", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          team: "BOS",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Celtics",
+          },
+          opponent: "LAL",
+          opponent_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    const teamBadge = screen.getByLabelText("Celtics (BOS)");
+    expect(teamBadge).toHaveStyle("--team-primary: #007A33");
+    expect(teamBadge.querySelector("img")).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg",
+    );
+
+    expect(screen.getByLabelText("Lakers (LAL)").querySelector("img"))
+      .toHaveAttribute(
+        "src",
+        "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
+      );
   });
 });

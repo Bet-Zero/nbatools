@@ -1,4 +1,4 @@
-import { type HTMLAttributes } from "react";
+import { useEffect, useState, type HTMLAttributes } from "react";
 import styles from "./TeamBadge.module.css";
 
 export type TeamBadgeSize = "sm" | "md";
@@ -42,8 +42,14 @@ export function TeamBadge({
   className,
   ...props
 }: TeamBadgeProps) {
+  const [logoUnavailable, setLogoUnavailable] = useState(false);
   const abbr = (abbreviation ?? fallbackAbbreviation(name)).toUpperCase();
   const label = accessibleLabel(name, abbr);
+  const showLogo = Boolean(logoUrl) && !logoUnavailable;
+
+  useEffect(() => {
+    setLogoUnavailable(false);
+  }, [logoUrl]);
 
   return (
     <span
@@ -51,8 +57,20 @@ export function TeamBadge({
       className={joinClassNames(styles.badge, styles[size], className)}
       {...props}
     >
-      <span className={styles.mark} aria-hidden="true">
-        {logoUrl ? <img className={styles.logo} src={logoUrl} alt="" /> : abbr}
+      <span
+        className={joinClassNames(styles.mark, showLogo && styles.logoMark)}
+        aria-hidden="true"
+      >
+        {showLogo ? (
+          <img
+            className={styles.logo}
+            src={logoUrl ?? undefined}
+            alt=""
+            onError={() => setLogoUnavailable(true)}
+          />
+        ) : (
+          abbr
+        )}
       </span>
       {showName && <span className={styles.name}>{name ?? abbr}</span>}
     </span>
