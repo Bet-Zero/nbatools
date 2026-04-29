@@ -1,3 +1,4 @@
+import type { ResultMetadata } from "../api/types";
 import teamColorsJson from "../styles/team-colors.json";
 
 const PLAYER_HEADSHOT_BASE_URL =
@@ -40,6 +41,11 @@ export interface ResolvedTeamIdentity {
   logoUrl: string | null;
   colors: TeamColors | null;
   styleVars: TeamColorVars | null;
+}
+
+export interface ScopedTeamTheme {
+  team: ResolvedTeamIdentity;
+  styleVars: TeamColorVars;
 }
 
 const TEAM_COLORS: Record<string, TeamColors> = teamColorsJson;
@@ -134,4 +140,39 @@ export function resolveTeamIdentity(
         }
       : null,
   };
+}
+
+function hasValues(value: unknown): boolean {
+  return Array.isArray(value) && value.length > 0;
+}
+
+export function resolveScopedTeamTheme(
+  metadata: ResultMetadata | null | undefined,
+): ScopedTeamTheme | null {
+  if (!metadata?.team_context) return null;
+
+  const hasPlayerSubject =
+    Boolean(metadata.player) ||
+    hasValues(metadata.players) ||
+    Boolean(metadata.player_context) ||
+    hasValues(metadata.players_context);
+  if (hasPlayerSubject) return null;
+
+  const hasMultipleTeamSubjects =
+    hasValues(metadata.teams_context) ||
+    (Array.isArray(metadata.teams) && metadata.teams.length > 1);
+  if (hasMultipleTeamSubjects) return null;
+
+  const team = resolveTeamIdentity({
+    teamId: metadata.team_context.team_id,
+    teamAbbr: metadata.team_context.team_abbr,
+    teamName: metadata.team_context.team_name,
+  });
+
+  return team.styleVars
+    ? {
+        team,
+        styleVars: team.styleVars,
+      }
+    : null;
 }
