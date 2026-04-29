@@ -346,7 +346,7 @@ consistent target.
 
 ---
 
-## 8. `[ ]` Document primitive usage and finish library export hygiene
+## 8. `[x]` Document primitive usage and finish library export hygiene
 
 **Why:** The primitives library should be easy to consume during Phase V3 and
 Track A Part 2 without rediscovering variants from source files.
