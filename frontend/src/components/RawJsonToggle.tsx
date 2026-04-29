@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { QueryResponse } from "../api/types";
+import { Button } from "../design-system";
 import styles from "./RawJsonToggle.module.css";
 
 interface Props {
@@ -11,13 +12,14 @@ export default function RawJsonToggle({ data }: Props) {
 
   return (
     <div className={styles.rawToggle}>
-      <button
+      <Button
         type="button"
-        className={styles.toggleButton}
         onClick={() => setOpen((v) => !v)}
+        size="sm"
+        variant="secondary"
       >
         {open ? "Hide Raw JSON" : "Show Raw JSON"}
-      </button>
+      </Button>
       {open && (
         <pre className={styles.rawJson}>{JSON.stringify(data, null, 2)}</pre>
       )}

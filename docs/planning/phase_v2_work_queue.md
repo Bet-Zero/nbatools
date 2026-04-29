@@ -79,7 +79,7 @@ surface and decide which behavior belongs in primitives versus wrappers.
 
 ---
 
-## 2. `[ ]` Establish `frontend/src/design-system/` and Button primitives
+## 2. `[x]` Establish `frontend/src/design-system/` and Button primitives
 
 **Why:** Buttons are the most reused controls and set interaction language for
 the rest of the primitive library.
