@@ -44,6 +44,28 @@ def _capture(fn, *args, **kwargs) -> str:
     return buf.getvalue()
 
 
+def _patch_identity_contexts(monkeypatch) -> None:
+    player_contexts = {
+        "Nikola Jokić": {"player_id": 203999, "player_name": "Nikola Jokić"},
+        "Joel Embiid": {"player_id": 203954, "player_name": "Joel Embiid"},
+    }
+    team_contexts = {
+        "BOS": {"team_id": 1610612738, "team_abbr": "BOS", "team_name": "Celtics"},
+        "LAL": {"team_id": 1610612747, "team_abbr": "LAL", "team_name": "Lakers"},
+    }
+
+    monkeypatch.setattr(
+        query_service,
+        "_resolve_player_context",
+        lambda value: player_contexts.get(value),
+    )
+    monkeypatch.setattr(
+        query_service,
+        "_resolve_team_context",
+        lambda value: team_contexts.get(value),
+    )
+
+
 # ===================================================================
 # Natural query execution through the service layer
 # ===================================================================
@@ -538,6 +560,101 @@ class TestMetadataPreservation:
         assert qr.metadata["query_class"] == "summary"
         assert qr.metadata["season"] == "2024-25"
         assert qr.metadata["player"] == "Nikola Jokić"
+
+    def test_structured_player_metadata_has_player_context(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs: SummaryResult(query_class="summary"),
+        )
+        qr = execute_structured_query(
+            "player_game_summary",
+            season="2024-25",
+            player="Nikola Jokić",
+        )
+        assert qr.metadata["player"] == "Nikola Jokić"
+        assert qr.metadata["player_context"] == {
+            "player_id": 203999,
+            "player_name": "Nikola Jokić",
+        }
+
+    def test_structured_team_metadata_has_team_context(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs: SummaryResult(query_class="summary"),
+        )
+        qr = execute_structured_query(
+            "game_summary",
+            season="2024-25",
+            team="BOS",
+        )
+        assert qr.metadata["team"] == "BOS"
+        assert qr.metadata["team_context"]["team_id"] == 1610612738
+        assert qr.metadata["team_context"]["team_abbr"] == "BOS"
+        assert "Celtics" in qr.metadata["team_context"]["team_name"]
+
+    def test_structured_opponent_metadata_has_opponent_context(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs: SummaryResult(query_class="summary"),
+        )
+        qr = execute_structured_query(
+            "player_game_summary",
+            season="2024-25",
+            player="Nikola Jokić",
+            opponent="LAL",
+        )
+        assert qr.metadata["opponent"] == "LAL"
+        assert qr.metadata["opponent_context"] == {
+            "team_id": 1610612747,
+            "team_abbr": "LAL",
+            "team_name": "Lakers",
+        }
+
+    def test_structured_player_comparison_metadata_has_players_context(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs: ComparisonResult(query_class="comparison"),
+        )
+        qr = execute_structured_query(
+            "player_compare",
+            season="2024-25",
+            player_a="Nikola Jokić",
+            player_b="Joel Embiid",
+        )
+        assert qr.metadata["player"] == "Nikola Jokić, Joel Embiid"
+        assert qr.metadata["players_context"] == [
+            {"player_id": 203999, "player_name": "Nikola Jokić"},
+            {"player_id": 203954, "player_name": "Joel Embiid"},
+        ]
+        assert "player_context" not in qr.metadata
+
+    def test_structured_team_comparison_metadata_has_teams_context(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs: ComparisonResult(query_class="comparison"),
+        )
+        qr = execute_structured_query(
+            "team_compare",
+            season="2024-25",
+            team_a="BOS",
+            team_b="LAL",
+        )
+        assert qr.metadata["team"] == "BOS, LAL"
+        assert qr.metadata["teams_context"] == [
+            {"team_id": 1610612738, "team_abbr": "BOS", "team_name": "Celtics"},
+            {"team_id": 1610612747, "team_abbr": "LAL", "team_name": "Lakers"},
+        ]
+        assert "team_context" not in qr.metadata
 
     @pytest.mark.needs_data
     def test_current_through_present(self):

@@ -345,6 +345,34 @@ class TestResponseShape:
         assert body["alternates"] == []
 
     @patch("nbatools.api.execute_natural_query")
+    def test_result_metadata_uses_query_result_metadata(self, mock_exec):
+        """API result metadata should expose the query-service metadata contract."""
+        result = SummaryResult(query_class="summary")
+        mock_exec.return_value = QueryResult(
+            result=result,
+            metadata={
+                "route": "player_game_summary",
+                "player": "Nikola Jokić",
+                "player_context": {
+                    "player_id": 203999,
+                    "player_name": "Nikola Jokić",
+                },
+                "opponent_context": {
+                    "team_id": 1610612747,
+                    "team_abbr": "LAL",
+                    "team_name": "Lakers",
+                },
+            },
+            query="Jokic vs Lakers",
+            route="player_game_summary",
+        )
+        resp = client.post("/query", json={"query": "Jokic vs Lakers"})
+        metadata = resp.json()["result"]["metadata"]
+        assert metadata["player"] == "Nikola Jokić"
+        assert metadata["player_context"]["player_id"] == 203999
+        assert metadata["opponent_context"]["team_abbr"] == "LAL"
+
+    @patch("nbatools.api.execute_natural_query")
     def test_high_confidence_empty_alternates(self, mock_exec):
         """High-confidence query has empty alternates in response."""
         result = SummaryResult(query_class="summary")

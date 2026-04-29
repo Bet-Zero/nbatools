@@ -66,6 +66,17 @@ export type RouteName =
 
 // --- Result metadata ---
 
+export interface PlayerIdentityContext {
+  player_id: number;
+  player_name: string;
+}
+
+export interface TeamIdentityContext {
+  team_id: number;
+  team_abbr: string;
+  team_name: string;
+}
+
 export interface ResultMetadata {
   query_text?: string;
   route?: string | null;
@@ -78,8 +89,13 @@ export interface ResultMetadata {
   end_date?: string | null;
   player?: string | null;
   players?: string[];
+  player_context?: PlayerIdentityContext | null;
+  players_context?: PlayerIdentityContext[];
   team?: string | null;
   teams?: string[];
+  team_context?: TeamIdentityContext | null;
+  teams_context?: TeamIdentityContext[];
+  opponent_context?: TeamIdentityContext | null;
   opponent?: string | null;
   split_type?: string | null;
   grouped_boolean_used?: boolean;

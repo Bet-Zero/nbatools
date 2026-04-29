@@ -140,7 +140,7 @@ renderers.
 
 ---
 
-## 3. `[ ]` Enrich API/front-end identity metadata contracts
+## 3. `[x]` Enrich API/front-end identity metadata contracts
 
 **Why:** The UI cannot reliably render imagery from display names alone. The
 API response should expose identity fields where the engine already knows them.
