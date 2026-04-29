@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import type { SectionRow } from "../api/types";
 import {
   Avatar,
@@ -7,7 +7,7 @@ import {
   type DataTableAlignment,
   type DataTableColumn,
 } from "../design-system";
-import { resolvePlayerIdentity } from "../lib/identity";
+import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./DataTable.module.css";
 
@@ -19,17 +19,18 @@ interface Props {
 /** Column names that indicate a rank column. */
 const RANK_COLS = new Set(["rank", "#"]);
 
-/** Column names that indicate an entity (player/team) column. */
-const ENTITY_COLS = new Set([
-  "player_name",
-  "player",
+const PLAYER_COLS = new Set(["player_name", "player"]);
+const TEAM_COLS = new Set([
   "team",
   "team_name",
+  "team_abbr",
   "opponent",
+  "opponent_team_name",
+  "opponent_team_abbr",
 ]);
 
-const PLAYER_COLS = new Set(["player_name", "player"]);
-const TEAM_COLS = new Set(["team", "team_name", "opponent"]);
+/** Column names that indicate an entity (player/team) column. */
+const ENTITY_COLS = new Set([...PLAYER_COLS, ...TEAM_COLS]);
 
 /** Check whether a column contains numeric values (sample first 5 rows). */
 function isNumericCol(col: string, rows: SectionRow[]): boolean {
@@ -65,6 +66,35 @@ function rowIdentityId(value: unknown): number | string | null {
   return null;
 }
 
+function rowText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function teamIdentityForColumn(
+  col: string,
+  row: SectionRow,
+  formatted: string,
+) {
+  const lc = col.toLowerCase();
+  const isOpponent = lc.startsWith("opponent");
+  const teamId = rowIdentityId(
+    isOpponent ? row.opponent_team_id : row.team_id,
+  );
+  const teamAbbr =
+    rowText(isOpponent ? row.opponent_team_abbr : row.team_abbr) ??
+    (isTeamAbbreviation(formatted) ? formatted : null);
+  const teamName =
+    rowText(isOpponent ? row.opponent_team_name : row.team_name) ?? formatted;
+
+  return resolveTeamIdentity({
+    teamId,
+    teamAbbr,
+    teamName,
+  });
+}
+
 function renderEntityValue(
   value: unknown,
   col: string,
@@ -91,12 +121,20 @@ function renderEntityValue(
     );
   }
   if (TEAM_COLS.has(lc)) {
+    const teamIdentity = teamIdentityForColumn(col, row, formatted);
     return (
       <TeamBadge
-        abbreviation={isTeamAbbreviation(formatted) ? formatted : undefined}
-        name={formatted}
+        abbreviation={
+          teamIdentity.teamAbbr ??
+          (isTeamAbbreviation(formatted) ? formatted : undefined)
+        }
+        name={teamIdentity.teamName ?? formatted}
+        logoUrl={teamIdentity.logoUrl}
         size="sm"
         showName={!isTeamAbbreviation(formatted)}
+        style={(teamIdentity.styleVars ?? undefined) as
+          | CSSProperties
+          | undefined}
       />
     );
   }

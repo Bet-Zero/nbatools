@@ -32,6 +32,10 @@
   font-weight: var(--weight-bold);
 }
 
+.logoMark {
+  background: color-mix(in srgb, var(--team-primary) 14%, var(--bg-card));
+}
+
 .sm .mark {
   min-width: var(--space-8);
   height: var(--space-5);
@@ -39,11 +43,21 @@
   font-size: var(--font-micro);
 }
 
+.sm .logoMark {
+  width: var(--space-8);
+  padding: 1px;
+}
+
 .md .mark {
   min-width: var(--space-10);
   height: var(--space-6);
   padding: 0 var(--space-2);
   font-size: var(--font-small);
+}
+
+.md .logoMark {
+  width: var(--space-10);
+  padding: 2px;
 }
 
 .name {

@@ -76,6 +76,66 @@ describe("DataTable", () => {
     expect(screen.getByLabelText("DEN")).toBeInTheDocument();
   });
 
+  it("renders team logos and colors when stable team identity is present", () => {
+    const rows = [
+      {
+        team_name: "Lakers",
+        team_id: 1610612747,
+        team_abbr: "LAL",
+        wins: 50,
+      },
+    ];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(screen.getAllByLabelText("Lakers (LAL)")[0]).toHaveStyle(
+      "--team-primary: #552583",
+    );
+    expect(container.querySelector("img")).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
+    );
+  });
+
+  it("falls back to text badges for unknown teams", () => {
+    const rows = [
+      {
+        team_name: "Seattle SuperSonics",
+        team_abbr: "SEA",
+      },
+    ];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(
+      screen.getAllByLabelText("Seattle SuperSonics (SEA)")[0],
+    ).toHaveTextContent("SEA");
+    expect(container.querySelector("img")).toBeNull();
+  });
+
+  it("renders opponent columns with opponent identity", () => {
+    const rows = [
+      {
+        opponent_team_name: "Lakers",
+        opponent_team_id: 1610612747,
+        opponent_team_abbr: "LAL",
+      },
+    ];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(screen.getAllByLabelText("Lakers (LAL)").length).toBeGreaterThan(0);
+    expect(container.querySelector("img")).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
+    );
+  });
+
+  it("renders abbreviation-only team rows as text badges", () => {
+    const rows = [{ team_abbr: "BOS" }];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(screen.getByLabelText("BOS")).toHaveTextContent("BOS");
+    expect(container.querySelector("img")).toBeNull();
+  });
+
   it("applies highlight class when highlight prop is true", () => {
     const rows = [{ a: 1 }];
     const { container } = render(<DataTable rows={rows} highlight />);

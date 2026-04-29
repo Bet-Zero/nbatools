@@ -233,7 +233,7 @@ with graceful fallback where ids or images are unavailable.
 
 ---
 
-## 5. `[ ]` Render team logos and color-aware badges
+## 5. `[x]` Render team logos and color-aware badges
 
 **Why:** Team identity should be visible and consistent in metadata, opponent
 chips, and team/opponent table columns without overloading the UI with color.
