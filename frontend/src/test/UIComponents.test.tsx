@@ -78,6 +78,7 @@ describe("Loading", () => {
   it("renders loading text", () => {
     render(<Loading />);
     expect(screen.getByText("Searching NBA data\u2026")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeInTheDocument();
   });
 });
 
