@@ -1,6 +1,9 @@
+import { type ReactNode } from "react";
 import type { SectionRow } from "../api/types";
 import {
+  Avatar,
   DataTable as DataTablePrimitive,
+  TeamBadge,
   type DataTableAlignment,
   type DataTableColumn,
 } from "../design-system";
@@ -23,6 +26,9 @@ const ENTITY_COLS = new Set([
   "team_name",
   "opponent",
 ]);
+
+const PLAYER_COLS = new Set(["player_name", "player"]);
+const TEAM_COLS = new Set(["team", "team_name", "opponent"]);
 
 /** Check whether a column contains numeric values (sample first 5 rows). */
 function isNumericCol(col: string, rows: SectionRow[]): boolean {
@@ -49,6 +55,37 @@ function columnAlignment(col: string, rows: SectionRow[]): DataTableAlignment {
   return "left";
 }
 
+function isTeamAbbreviation(value: string): boolean {
+  return /^[A-Z]{2,4}$/.test(value);
+}
+
+function renderEntityValue(value: unknown, col: string): ReactNode {
+  const formatted = formatValue(value, col);
+  if (value === null || value === undefined) return formatted;
+
+  const lc = col.toLowerCase();
+  if (PLAYER_COLS.has(lc)) {
+    return (
+      <span className={styles.identityValue}>
+        <Avatar name={formatted} size="sm" />
+        <span>{formatted}</span>
+      </span>
+    );
+  }
+  if (TEAM_COLS.has(lc)) {
+    return (
+      <TeamBadge
+        abbreviation={isTeamAbbreviation(formatted) ? formatted : undefined}
+        name={formatted}
+        size="sm"
+        showName={!isTeamAbbreviation(formatted)}
+      />
+    );
+  }
+
+  return formatted;
+}
+
 export default function DataTable({ rows, highlight = false }: Props) {
   if (!rows.length) return null;
   const columns: DataTableColumn<SectionRow>[] = Object.keys(rows[0]).map(
@@ -58,7 +95,7 @@ export default function DataTable({ rows, highlight = false }: Props) {
       align: columnAlignment(col, rows),
       className: cellClass(col, rows),
       numeric: isNumericCol(col, rows),
-      render: (row) => formatValue(row[col], col),
+      render: (row) => renderEntityValue(row[col], col),
     }),
   );
 

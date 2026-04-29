@@ -1,7 +1,9 @@
 import type { QueryResponse } from "../api/types";
 import {
+  Avatar,
   Badge,
   ResultEnvelopeShell,
+  TeamBadge,
   type BadgeVariant,
 } from "../design-system";
 import styles from "./ResultEnvelope.module.css";
@@ -48,6 +50,10 @@ function routeLabel(route: string): string {
   return route.replace(/_/g, " ");
 }
 
+function isTeamAbbreviation(value: string): boolean {
+  return /^[A-Z]{2,4}$/.test(value);
+}
+
 const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   ok: "success",
   no_result: "warning",
@@ -59,17 +65,29 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
   const queryClass = data.result?.query_class;
 
   // Build context chips from metadata
-  const contextChips: { label: string; value: string }[] = [];
+  const contextChips: {
+    label: string;
+    value: string;
+    identity?: "player" | "team";
+  }[] = [];
   if (metadata) {
     if (typeof metadata.player === "string")
-      contextChips.push({ label: "Player", value: metadata.player });
+      contextChips.push({
+        label: "Player",
+        value: metadata.player,
+        identity: "player",
+      });
     if (Array.isArray(metadata.players) && metadata.players.length)
       contextChips.push({
         label: "Players",
         value: metadata.players.join(", "),
       });
     if (typeof metadata.team === "string")
-      contextChips.push({ label: "Team", value: metadata.team });
+      contextChips.push({
+        label: "Team",
+        value: metadata.team,
+        identity: "team",
+      });
     if (Array.isArray(metadata.teams) && metadata.teams.length)
       contextChips.push({
         label: "Teams",
@@ -78,7 +96,11 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
     if (typeof metadata.season === "string")
       contextChips.push({ label: "Season", value: metadata.season });
     if (typeof metadata.opponent === "string")
-      contextChips.push({ label: "vs", value: metadata.opponent });
+      contextChips.push({
+        label: "vs",
+        value: metadata.opponent,
+        identity: "team",
+      });
     if (typeof metadata.split_type === "string")
       contextChips.push({ label: "Split", value: metadata.split_type });
   }
@@ -123,6 +145,19 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
         contextChips.length > 0
           ? contextChips.map((chip, i) => (
               <Badge key={i} variant="neutral" size="sm">
+                {chip.identity === "player" && (
+                  <Avatar name={chip.value} size="sm" />
+                )}
+                {chip.identity === "team" && (
+                  <TeamBadge
+                    abbreviation={
+                      isTeamAbbreviation(chip.value) ? chip.value : undefined
+                    }
+                    name={chip.value}
+                    size="sm"
+                    showName={false}
+                  />
+                )}
                 <span className={styles.contextChipLabel}>{chip.label}</span>
                 {chip.value}
               </Badge>

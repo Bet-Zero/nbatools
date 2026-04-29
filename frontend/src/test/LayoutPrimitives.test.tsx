@@ -12,6 +12,8 @@ import {
   SkeletonText,
   Stat,
   StatBlock,
+  Avatar,
+  TeamBadge,
 } from "../design-system";
 
 function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
@@ -126,6 +128,26 @@ describe("layout primitives", () => {
     expect(screen.getByLabelText("Loading text")).toBeInTheDocument();
     expect(screen.getByLabelText("Loading table")).toBeInTheDocument();
   });
+
+  it("renders avatar and team badge fallbacks with accessible labels", () => {
+    render(
+      <>
+        <Avatar name="Nikola Jokic" />
+        <Avatar name="Unavailable Player" unavailable />
+        <TeamBadge abbreviation="DEN" name="Denver Nuggets" />
+      </>,
+    );
+
+    expect(screen.getByLabelText("Nikola Jokic avatar")).toHaveTextContent(
+      "NJ",
+    );
+    expect(
+      screen.getByLabelText("Unavailable Player avatar unavailable"),
+    ).toHaveTextContent("UP");
+    expect(screen.getByLabelText("Denver Nuggets (DEN)")).toHaveTextContent(
+      "DEN",
+    );
+  });
 });
 
 describe("migrated result envelope", () => {
@@ -147,6 +169,7 @@ describe("migrated result envelope", () => {
         result_status: "ok",
         metadata: {
           player: "Nikola Jokic",
+          team: "DEN",
           season: "2024-25",
         },
         notes: [],
@@ -164,6 +187,8 @@ describe("migrated result envelope", () => {
     expect(screen.getByText(/Data through/)).toBeInTheDocument();
     expect(screen.getByText("2025-04-01")).toBeInTheDocument();
     expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
+    expect(screen.getByLabelText("Nikola Jokic avatar")).toBeInTheDocument();
+    expect(screen.getByLabelText("DEN")).toBeInTheDocument();
     expect(screen.getByText("2024-25")).toBeInTheDocument();
     expect(screen.getByText("Using regular-season logs")).toBeInTheDocument();
     expect(screen.getByText("Playoff games excluded")).toBeInTheDocument();
