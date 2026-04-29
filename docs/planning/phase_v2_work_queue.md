@@ -385,7 +385,7 @@ Track A Part 2 without rediscovering variants from source files.
 
 ---
 
-## 9. `[ ]` Phase V2 retrospective and Phase V3 handoff
+## 9. `[x]` Phase V2 retrospective and Phase V3 handoff
 
 **Why:** Self-propagating final task. Captures learnings and drafts the next
 queue.
@@ -433,3 +433,57 @@ queue.
 
 When all items above are checked `[x]`, Phase V2 is complete. The draft of
 `phase_v3_work_queue.md` from item 9 is the handoff artifact.
+
+---
+
+## Phase V2 Retrospective
+
+### Outcomes
+
+- `frontend/src/design-system/` now contains the primitives needed by the
+  next visual phases: `Button`, `IconButton`, `Card`, `SectionHeader`,
+  `ResultEnvelopeShell`, `Badge`, `Stat`, `StatBlock`, `Skeleton`,
+  `SkeletonText`, `SkeletonBlock`, generic `DataTable`, `Avatar`, and
+  `TeamBadge`.
+- Existing feature components compose the primitives in representative places:
+  query/copy/raw controls, result envelope metadata, section headers, summary
+  stat treatment, loading state, table presentation, and player/team fallback
+  identity displays.
+- The generic table primitive is split from the NBA-aware wrapper. Header
+  formatting, value formatting, entity/rank/numeric detection, and query-result
+  decisions remain outside `design-system/`.
+- `docs/operations/ui_guide.md` documents the primitive import path, variant
+  guidance, presentation-only boundaries, and a checklist for future primitive
+  consumers.
+- Every implementation item ran `cd frontend && npm run build` and
+  `cd frontend && npm test`; CI passed before each PR merged.
+
+### What Was Harder
+
+- The primitives needed to prove composition without starting the larger Part 2
+  query-layout redesign. Several migrations intentionally stayed narrow so the
+  library shipped without moving business logic into the frontend.
+- `DataTable` required an explicit adapter split earlier than a pure visual
+  extraction would, because NBA-specific value formatting was intertwined with
+  table presentation.
+- Real imagery and team-color resolution could not be completed responsibly in
+  the primitives phase. `Avatar` and `TeamBadge` are fallback targets only;
+  source integration and dynamic team context remain Phase V4 work.
+
+### Residuals And Deferrals
+
+- Phase V3 owns app shell, page layout, query-area prominence, result-region
+  hierarchy, and secondary panel organization.
+- Phase V4 owns real player headshot sources, team logo sources, team-color
+  lookup, and dynamic population of `--team-primary` / `--team-secondary`.
+- Part 2 still owns opinionated per-query-class result layouts. Phase V2 only
+  supplied the primitives those layouts should compose.
+- Some older feature components still have local CSS for workflow-specific
+  rows, panels, dialogs, and forms. They should migrate only when Phase V3 or
+  Part 2 touches those surfaces for a concrete layout reason.
+
+### Handoff
+
+- Next active queue: [`phase_v3_work_queue.md`](./phase_v3_work_queue.md).
+- Immediate next item: Phase V3 item 1, app-shell layout and ownership
+  inventory.
