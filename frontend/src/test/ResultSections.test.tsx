@@ -29,7 +29,7 @@ function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
 }
 
 describe("ResultSections", () => {
-  it("renders summary sections", () => {
+  it("routes player summaries to the dedicated player summary renderer", () => {
     const data = makeResponse({
       result: {
         query_class: "summary",
@@ -43,10 +43,50 @@ describe("ResultSections", () => {
       },
     });
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.getByText("Player Summary")).toBeInTheDocument();
     expect(screen.getByText("Jokic")).toBeInTheDocument();
     expect(screen.getAllByText("PTS").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("26").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("keeps team summaries on the generic summary renderer", () => {
+    const data = makeResponse({
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ team_name: "Lakers", wins: 50, losses: 32 }],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
+    expect(screen.getByText("Lakers")).toBeInTheDocument();
+  });
+
+  it("keeps playoff summaries on the generic summary renderer", () => {
+    const data = makeResponse({
+      route: "playoff_history",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: { route: "playoff_history" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ team_name: "Lakers", seasons_appeared: 21 }],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
+    expect(screen.getByText("Lakers")).toBeInTheDocument();
   });
 
   it("renders leaderboard sections", () => {

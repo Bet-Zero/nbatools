@@ -5,6 +5,7 @@ import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
 import LeaderboardSection from "./LeaderboardSection";
 import NoResultDisplay from "./NoResultDisplay";
+import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
@@ -29,12 +30,22 @@ function sectionLabel(key: string): string {
   return SECTION_LABELS[key] ?? key.replace(/_/g, " ");
 }
 
-function renderByQueryClass(
-  queryClass: string,
-  sections: Record<string, SectionRow[]>,
-): React.ReactNode {
+function isPlayerSummary(data: QueryResponse): boolean {
+  return (
+    data.route === "player_game_summary" ||
+    data.result?.metadata?.route === "player_game_summary"
+  );
+}
+
+function renderByQueryClass(data: QueryResponse): React.ReactNode {
+  const queryClass = data.result?.query_class ?? "";
+  const sections = data.result?.sections ?? {};
+
   switch (queryClass) {
     case "summary":
+      if (isPlayerSummary(data)) {
+        return <PlayerSummarySection sections={sections} />;
+      }
       return <SummarySection sections={sections} />;
     case "comparison":
       return <ComparisonSection sections={sections} />;
@@ -86,7 +97,6 @@ export default function ResultSections({ data }: Props) {
     return null;
   }
 
-  const queryClass = result.query_class ?? "";
   const hasSections = Object.values(result.sections).some(
     (rows) => rows && rows.length > 0,
   );
@@ -104,5 +114,5 @@ export default function ResultSections({ data }: Props) {
     return null;
   }
 
-  return <>{renderByQueryClass(queryClass, result.sections)}</>;
+  return <>{renderByQueryClass(data)}</>;
 }

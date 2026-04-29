@@ -48,7 +48,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Establish the player-summary renderer boundary
+## 1. `[x]` Establish the player-summary renderer boundary
 
 **Why:** `SummarySection.tsx` currently owns every summary-shaped result.
 Player summary needs a dedicated owner before C1 can redesign it without
