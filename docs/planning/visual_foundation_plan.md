@@ -73,6 +73,8 @@ out of. Button, Card, Stat, StatBlock, DataTable, Badge, Skeleton, Avatar
 SectionHeader, ResultEnvelopeShell. Each documented with usage examples.
 
 **Companion queue:** [`phase_v2_work_queue.md`](./phase_v2_work_queue.md)
+**Status:** Complete. Handoff artifact:
+[`phase_v3_work_queue.md`](./phase_v3_work_queue.md).
 
 ### Phase V3 — App shell and layout
 
@@ -80,7 +82,8 @@ Goal: the app gets a real layout — header with branding and query bar,
 main content area, results region, freshness indicator at the top, sample
 queries when empty. Replaces the current bare-bones structure.
 
-**Companion queue:** drafted at end of V2.
+**Companion queue:** [`phase_v3_work_queue.md`](./phase_v3_work_queue.md)
+**Status:** Active.
 
 ### Phase V4 — Player imagery and team theming
 

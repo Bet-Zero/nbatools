@@ -28,8 +28,8 @@ Out of scope: anything that only matters for a multi-tenant paid product
 
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
-the product polish work. Track A Part 1 Phase V1 is complete; the active
-continuation is Phase V2.
+the product polish work. Track A Part 1 Phases V1 and V2 are complete; the
+active continuation is Phase V3.
 
 ---
 
@@ -118,8 +118,8 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 1, Phase V2.** Specifically,
-[`phase_v2_work_queue.md`](./phase_v2_work_queue.md).
+**Active continuation: Track A, Part 1, Phase V3.** Specifically,
+[`phase_v3_work_queue.md`](./phase_v3_work_queue.md).
 
 Track A is the priority track because it is fully agent-runnable without
 infrastructure dependencies. Track B can run in parallel whenever the
@@ -183,14 +183,14 @@ the full philosophy.
 | ------------------ | ----------------------------------- | ---------------------------------------------------------- | ----------------- |
 | Deployment         | Localhost only                      | Real URL, custom domain, HTTPS, deploys on push            | Track B           |
 | Data sync          | Manual local refresh                | `sync-r2` command + cloud-read in production               | Track B           |
-| Design tokens      | File exists, partially wired        | Tokens consumed everywhere, no raw hex/sizes in components | Track A Part 1    |
-| Primitives library | None                                | Button, Card, Stat, DataTable, etc. as reusable primitives | Track A Part 1    |
+| Design tokens      | Phase V1 tokenized frontend CSS baseline complete | Tokens consumed everywhere, no raw hex/sizes in components | Track A Part 1    |
+| Primitives library | Phase V2 primitives built and documented | Button, Card, Stat, DataTable, etc. as reusable primitives | Track A Part 1    |
 | App shell          | Default layout                      | Header, query bar, results region with real layout         | Track A Part 1    |
-| Player imagery     | Names as text                       | Headshots and team logos rendered consistently             | Track A Part 1    |
+| Player imagery     | Fallback Avatar/TeamBadge targets only | Headshots and team logos rendered consistently             | Track A Part 1    |
 | Component layouts  | Generic data tables for all queries | Opinionated layouts per query class with charts            | Track A Part 2    |
 | Mobile             | Not verified                        | Functional and visually clean on every component           | Track A Parts 2-3 |
 | First-run          | Empty query bar                     | Landing, starter queries, freshness banner                 | Track A Part 3    |
-| Errors / loading   | Functional but ugly                 | Designed states with helpful copy and skeletons            | Track A Part 3    |
+| Errors / loading   | Loading skeleton added; broader states still functional | Designed states with helpful copy and skeletons            | Track A Part 3    |
 
 ---
 
