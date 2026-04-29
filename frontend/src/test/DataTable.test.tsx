@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import DataTable from "../components/DataTable";
+import { DataTable as PrimitiveDataTable } from "../design-system";
 import styles from "../components/DataTable.module.css";
+import primitiveStyles from "../design-system/DataTable.module.css";
 
 describe("DataTable", () => {
   it("renders nothing for empty rows", () => {
@@ -55,6 +57,26 @@ describe("DataTable", () => {
     const rows = [{ a: 1 }];
     const { container } = render(<DataTable rows={rows} highlight />);
     const table = container.querySelector("table");
-    expect(table?.classList.contains(styles.highlight)).toBe(true);
+    expect(table?.classList.contains(primitiveStyles.highlight)).toBe(true);
+  });
+
+  it("renders the design-system table without NBA-specific formatting", () => {
+    const rows = [{ raw_header: 0.523 }];
+    render(
+      <PrimitiveDataTable
+        rows={rows}
+        columns={[
+          {
+            key: "raw_header",
+            header: "raw_header",
+            render: (row) => row.raw_header,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("raw_header")).toBeInTheDocument();
+    expect(screen.getByText("0.523")).toBeInTheDocument();
+    expect(screen.queryByText("52.3%")).not.toBeInTheDocument();
   });
 });
