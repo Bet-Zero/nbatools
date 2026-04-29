@@ -1,17 +1,14 @@
 .panel {
-  margin-bottom: var(--space-4);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
+  border-color: var(--border-subtle);
   overflow: hidden;
 }
 
 .summary {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   width: 100%;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border: none;
   background: transparent;
   color: var(--text-primary);
@@ -26,6 +23,14 @@
 }
 
 .dot {
+  width: var(--space-6);
+  height: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
   font-size: var(--font-micro);
   line-height: 1;
 }
@@ -48,6 +53,7 @@
 
 .label {
   flex: 1;
+  font-weight: var(--weight-medium);
 }
 
 .expand {
@@ -56,33 +62,65 @@
 }
 
 .details {
-  padding: var(--space-2) var(--space-3) var(--space-3);
-  border-top: 1px solid var(--border-default);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--border-subtle);
   font-size: var(--font-small);
 }
 
+.detailsLabel {
+  margin-bottom: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
 .seasonRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) 0;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
 }
 
 .seasonLabel {
-  min-width: 180px;
+  min-width: 0;
+  color: var(--text-primary);
 }
 
 .seasonCurrentThrough {
   color: var(--text-secondary);
+  text-align: right;
 }
 
 .refreshRow {
   margin-top: var(--space-2);
   padding-top: var(--space-2);
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid var(--border-subtle);
   color: var(--text-secondary);
 }
 
 .error {
   color: var(--danger);
+}
+
+@media (max-width: 640px) {
+  .summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .label {
+    flex-basis: calc(100% - var(--space-10));
+  }
+
+  .seasonRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+
+  .seasonCurrentThrough {
+    text-align: left;
+  }
 }

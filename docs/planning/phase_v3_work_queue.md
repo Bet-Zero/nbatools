@@ -133,7 +133,7 @@ execution state.
 
 ---
 
-## 3. `[ ]` Redesign header, API status, and freshness placement
+## 3. `[x]` Redesign header, API status, and freshness placement
 
 **Why:** The product needs a calm top frame that identifies the app and makes
 data/API status visible without competing with the query workflow.
