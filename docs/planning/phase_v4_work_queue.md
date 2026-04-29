@@ -40,7 +40,7 @@ parsing, NBA computation, filtering, and route semantics stay in the engine/API.
 
 ---
 
-## 1. `[ ]` Inventory identity data, target surfaces, and fallback semantics
+## 1. `[x]` Inventory identity data, target surfaces, and fallback semantics
 
 **Why:** Imagery and team theming need a precise contract before code starts
 threading ids and assets through result renderers.
