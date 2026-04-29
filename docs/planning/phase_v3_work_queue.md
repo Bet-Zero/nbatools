@@ -84,7 +84,7 @@ which parts of the current UI belong to the shell versus feature components.
 
 ---
 
-## 2. `[ ]` Build AppShell layout component and page regions
+## 2. `[x]` Build AppShell layout component and page regions
 
 **Why:** The app needs one coherent page frame before individual sections are
 rearranged. A shell component keeps layout structure separate from query

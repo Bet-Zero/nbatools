@@ -1,34 +1,39 @@
-.appShell {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-4);
-}
-
-.appHeader {
+.headerContent {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--border-default);
+  gap: var(--space-4);
 }
 
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
 }
 
 .appTitle {
-  font-size: var(--font-h2);
-  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-h1);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
 }
 
 .statusIndicator {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   font-size: var(--font-small);
+  font-weight: var(--weight-medium);
   color: var(--text-secondary);
 }
 
@@ -48,36 +53,21 @@
   background: var(--danger);
 }
 
-.queryArea {
-  margin-bottom: var(--space-5);
-}
-
 .resultArea {
-  margin-bottom: var(--space-4);
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
 }
 
 .resultActions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
-}
-
-.resultActionButton {
-  padding: var(--space-1) var(--space-3);
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  font-size: var(--font-small);
-  cursor: pointer;
-  font-family: var(--font-sans);
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-
-.resultActionButton:hover {
-  color: var(--text-primary);
-  border-color: var(--accent);
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
 }
 
 .saveQueryButton {
@@ -88,4 +78,20 @@
 .saveQueryButton:hover {
   background: var(--success);
   color: var(--text-on-accent);
+}
+
+.resultSections {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .headerContent {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .statusIndicator {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

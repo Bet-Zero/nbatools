@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
 import type { SavedQueryInput } from "./api/savedQueryTypes";
 import type { QueryResponse } from "./api/types";
+import AppShell from "./components/AppShell";
 import CopyButton from "./components/CopyButton";
 import DevTools from "./components/DevTools";
 import EmptyState from "./components/EmptyState";
@@ -16,6 +17,7 @@ import ResultSections from "./components/ResultSections";
 import SampleQueries from "./components/SampleQueries";
 import SavedQueries from "./components/SavedQueries";
 import SaveQueryDialog from "./components/SaveQueryDialog";
+import { Button } from "./design-system";
 import useQueryHistory from "./hooks/useQueryHistory";
 import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
@@ -202,89 +204,43 @@ export default function App() {
   const hasError = error !== null;
   const showEmpty = !loading && !hasResult && !hasError;
 
-  return (
-    <div className={styles.appShell}>
-      {/* Header */}
-      <header className={styles.appHeader}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.appTitle}>nbatools</h1>
-          <span
-            className={[
-              styles.statusIndicator,
-              apiOnline ? styles.online : styles.offline,
-            ].join(" ")}
-          >
-            <span className={styles.statusDotIndicator} />
-            {version
-              ? `v${version}`
-              : apiOnline === false
-                ? "API offline"
-                : "…"}
-          </span>
-        </div>
-      </header>
+  const header = (
+    <div className={styles.headerContent}>
+      <div>
+        <div className={styles.eyebrow}>NBA search workspace</div>
+        <h1 className={styles.appTitle}>nbatools</h1>
+      </div>
+      <span
+        className={[
+          styles.statusIndicator,
+          apiOnline ? styles.online : styles.offline,
+        ].join(" ")}
+      >
+        <span className={styles.statusDotIndicator} />
+        {version
+          ? `v${version}`
+          : apiOnline === false
+            ? "API offline"
+            : "…"}
+      </span>
+    </div>
+  );
 
-      {/* Data freshness indicator */}
-      {apiOnline && <FreshnessStatus />}
+  const queryRegion = (
+    <>
+      <QueryBar
+        value={queryText}
+        onChange={setQueryText}
+        onSubmit={handleSubmit}
+        disabled={loading}
+        ref={inputRef}
+      />
+      <SampleQueries onSelect={handleSampleSelect} />
+    </>
+  );
 
-      {/* Query area */}
-      <section className={styles.queryArea}>
-        <QueryBar
-          value={queryText}
-          onChange={setQueryText}
-          onSubmit={handleSubmit}
-          disabled={loading}
-          ref={inputRef}
-        />
-        <SampleQueries onSelect={handleSampleSelect} />
-      </section>
-
-      {/* Loading */}
-      {loading && <Loading />}
-
-      {/* Error */}
-      {error && <ErrorBox message={error} />}
-
-      {/* Empty state */}
-      {showEmpty && <EmptyState />}
-
-      {/* Result area */}
-      {result && (
-        <section className={styles.resultArea}>
-          <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
-
-          <div className={styles.resultActions}>
-            <CopyButton
-              text={shareUrl}
-              label="Copy Link"
-              variant="share"
-            />
-            <CopyButton text={result.query} label="Copy Query" />
-            <CopyButton
-              text={JSON.stringify(result, null, 2)}
-              label="Copy JSON"
-            />
-            <button
-              type="button"
-              className={[
-                styles.resultActionButton,
-                styles.saveQueryButton,
-              ].join(" ")}
-              onClick={() => setShowSaveDialog(true)}
-            >
-              Save Query
-            </button>
-          </div>
-
-          <div>
-            <ResultSections data={result} />
-          </div>
-
-          <RawJsonToggle data={result} />
-        </section>
-      )}
-
-      {/* Saved queries */}
+  const secondaryPanels = (
+    <>
       <SavedQueries
         queries={saved.queries}
         onRun={handleSavedQueryRun}
@@ -297,8 +253,6 @@ export default function App() {
         onExport={saved.exportJSON}
         onImport={saved.importJSON}
       />
-
-      {/* Query history */}
       <QueryHistory
         entries={history}
         onSelect={handleHistorySelect}
@@ -306,24 +260,65 @@ export default function App() {
         onClear={clearHistory}
         onSave={handleSaveFromHistory}
       />
-
-      {/* Developer tools */}
       <DevTools
         onResult={handleStructuredResult}
         onError={handleStructuredError}
         onLoading={setLoading}
         onQueryStart={handleStructuredQueryStart}
       />
+    </>
+  );
 
-      {/* Save dialog */}
-      {showSaveDialog && (
-        <SaveQueryDialog
-          defaultQuery={queryText || result?.query || ""}
-          defaultRoute={result?.route}
-          onSave={handleSaveQuery}
-          onCancel={() => setShowSaveDialog(false)}
-        />
+  const dialog = showSaveDialog ? (
+    <SaveQueryDialog
+      defaultQuery={queryText || result?.query || ""}
+      defaultRoute={result?.route}
+      onSave={handleSaveQuery}
+      onCancel={() => setShowSaveDialog(false)}
+    />
+  ) : null;
+
+  return (
+    <AppShell
+      header={header}
+      status={apiOnline ? <FreshnessStatus /> : null}
+      query={queryRegion}
+      secondary={secondaryPanels}
+      dialog={dialog}
+    >
+      {loading && <Loading />}
+      {error && <ErrorBox message={error} />}
+      {showEmpty && <EmptyState />}
+
+      {result && (
+        <section className={styles.resultArea}>
+          <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
+
+          <div className={styles.resultActions}>
+            <CopyButton text={shareUrl} label="Copy Link" variant="share" />
+            <CopyButton text={result.query} label="Copy Query" />
+            <CopyButton
+              text={JSON.stringify(result, null, 2)}
+              label="Copy JSON"
+            />
+            <Button
+              type="button"
+              className={styles.saveQueryButton}
+              onClick={() => setShowSaveDialog(true)}
+              size="sm"
+              variant="secondary"
+            >
+              Save Query
+            </Button>
+          </div>
+
+          <div className={styles.resultSections}>
+            <ResultSections data={result} />
+          </div>
+
+          <RawJsonToggle data={result} />
+        </section>
       )}
-    </div>
+    </AppShell>
   );
 }
