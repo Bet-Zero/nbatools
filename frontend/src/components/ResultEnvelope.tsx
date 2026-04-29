@@ -2,6 +2,7 @@ import type { QueryResponse } from "../api/types";
 import {
   Avatar,
   Badge,
+  Button,
   ResultEnvelopeShell,
   TeamBadge,
   type BadgeVariant,
@@ -197,14 +198,16 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
           <>
             <span className={styles.alternatesLabel}>Did you mean: </span>
             {data.alternates.map((alt, i) => (
-              <button
+              <Button
                 key={i}
                 type="button"
                 className={styles.alternateChip}
                 onClick={() => onAlternateSelect(alt.description)}
+                size="sm"
+                variant="secondary"
               >
                 {alt.description}
-              </button>
+              </Button>
             ))}
           </>
         ) : null

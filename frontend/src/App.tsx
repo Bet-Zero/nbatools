@@ -17,7 +17,7 @@ import ResultSections from "./components/ResultSections";
 import SampleQueries from "./components/SampleQueries";
 import SavedQueries from "./components/SavedQueries";
 import SaveQueryDialog from "./components/SaveQueryDialog";
-import { Badge, Button } from "./design-system";
+import { Badge, Button, Card, SectionHeader } from "./design-system";
 import useQueryHistory from "./hooks/useQueryHistory";
 import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
@@ -305,25 +305,33 @@ export default function App() {
 
       {result && (
         <section className={styles.resultArea}>
-          <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
-
-          <div className={styles.resultActions}>
-            <CopyButton text={shareUrl} label="Copy Link" variant="share" />
-            <CopyButton text={result.query} label="Copy Query" />
-            <CopyButton
-              text={JSON.stringify(result, null, 2)}
-              label="Copy JSON"
+          <Card className={styles.resultActionsPanel} depth="elevated" padding="md">
+            <SectionHeader
+              eyebrow="Result"
+              title="Query output"
+              actions={
+                <div className={styles.resultActions}>
+                  <CopyButton text={shareUrl} label="Copy Link" variant="share" />
+                  <CopyButton text={result.query} label="Copy Query" />
+                  <CopyButton
+                    text={JSON.stringify(result, null, 2)}
+                    label="Copy JSON"
+                  />
+                  <Button
+                    type="button"
+                    className={styles.saveQueryButton}
+                    onClick={() => setShowSaveDialog(true)}
+                    size="sm"
+                    variant="secondary"
+                  >
+                    Save Query
+                  </Button>
+                </div>
+              }
             />
-            <Button
-              type="button"
-              className={styles.saveQueryButton}
-              onClick={() => setShowSaveDialog(true)}
-              size="sm"
-              variant="secondary"
-            >
-              Save Query
-            </Button>
-          </div>
+          </Card>
+
+          <ResultEnvelope data={result} onAlternateSelect={handleSubmit} />
 
           <div className={styles.resultSections}>
             <ResultSections data={result} />

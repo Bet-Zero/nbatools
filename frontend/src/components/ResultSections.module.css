@@ -1,17 +1,3 @@
 .section {
-  margin-bottom: var(--space-4);
-}
-
-.title {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  font-size: var(--font-small);
-  font-weight: var(--weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-2);
-  padding-bottom: var(--space-1);
-  border-bottom: 1px solid var(--border-default);
+  min-width: 0;
 }

@@ -98,15 +98,15 @@
   gap: var(--space-4);
 }
 
+.resultActionsPanel {
+  min-width: 0;
+}
+
 .resultActions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   align-items: center;
-  padding: var(--space-3);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
 }
 
 .saveQueryButton {
@@ -136,5 +136,9 @@
   .statusStack {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .resultActions {
+    width: 100%;
   }
 }
