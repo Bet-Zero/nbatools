@@ -1,4 +1,5 @@
 import { forwardRef, type FormEvent } from "react";
+import { Button, IconButton } from "../design-system";
 import styles from "./QueryBar.module.css";
 
 interface Props {
@@ -32,19 +33,26 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
           disabled={disabled}
         />
         {value && !disabled && (
-          <button
+          <IconButton
             type="button"
             className={styles.clearButton}
             onClick={() => onChange("")}
             aria-label="Clear query"
-          >
-            ✕
-          </button>
+            icon="✕"
+            size="sm"
+            variant="ghost"
+          />
         )}
       </div>
-      <button type="submit" disabled={disabled || !value.trim()}>
+      <Button
+        type="submit"
+        disabled={disabled || !value.trim()}
+        loading={disabled}
+        variant="primary"
+        size="md"
+      >
         {disabled ? "Running…" : "Query"}
-      </button>
+      </Button>
     </form>
   );
 });
