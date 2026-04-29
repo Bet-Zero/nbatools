@@ -89,3 +89,13 @@
 .actionButton {
   font-size: var(--font-micro);
 }
+
+@media (max-width: 640px) {
+  .item {
+    align-items: start;
+  }
+
+  .actions > * {
+    flex: 1 1 calc(var(--space-16) * 1.5);
+  }
+}

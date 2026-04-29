@@ -356,7 +356,7 @@ without looking like product chrome.
 
 ---
 
-## 8. `[ ]` Responsive and visual-quality verification pass
+## 8. `[x]` Responsive and visual-quality verification pass
 
 **Why:** The shell is not complete until it works at realistic desktop and
 mobile widths with no clipped controls, overlapping text, or awkward region

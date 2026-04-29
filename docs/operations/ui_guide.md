@@ -277,6 +277,25 @@ The app stores query state in URL search params so every result is linkable:
 - Copy Link button: copies the shareable URL to clipboard.
 - Natural and structured params are mutually exclusive in the URL.
 
+## App shell layout notes
+
+The Phase V3 shell is slot-based: `App.tsx` still owns query state, URL state,
+API calls, saved-query state, and dialog mounting, while
+`components/AppShell.tsx` owns the page regions for header, freshness, query,
+main results, and secondary panels.
+
+Responsive expectations for future frontend work:
+
+- Keep primary query/result controls in the main region; saved queries, history,
+  and dev tools belong in the secondary panel area.
+- Long query text and dense results should stay inside their region. Tables
+  remain horizontally scrollable through the data-table wrapper instead of
+  forcing the whole page wider.
+- Section-header actions should wrap at mobile widths. Avoid adding fixed-width
+  controls to shell regions unless they also have a mobile wrapping rule.
+- Freshness and API status are shell chrome, but their fetching and semantics
+  remain in `App.tsx` and `FreshnessStatus.tsx`.
+
 ## Out of scope (intentional)
 
 - Authentication / user accounts
