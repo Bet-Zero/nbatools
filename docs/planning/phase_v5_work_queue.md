@@ -38,7 +38,7 @@ start with clear contracts, known residuals, and a concrete first queue.
 
 ---
 
-## 1. `[ ]` Audit Track A Part 1 against the done definition
+## 1. `[x]` Audit Track A Part 1 against the done definition
 
 **Why:** Before Part 2 starts, the foundation should be checked against the
 actual Part 1 done definition rather than assumed complete because V1-V4 items
