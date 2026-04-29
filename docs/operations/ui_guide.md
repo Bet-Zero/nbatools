@@ -95,6 +95,32 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | streak        | Streaks                         |
 | (no result)   | Status message with reason      |
 
+## Identity imagery and team theming
+
+Phase V4 adds presentation-only identity treatment for players and teams:
+
+- Player headshots render only from stable `player_id` values supplied by the
+  API. Missing ids or failed image loads fall back to the initials avatar.
+- Team logos render only from stable `team_id` values. Known abbreviations use
+  `frontend/src/styles/team-colors.json` for badge colors; unknown or
+  historical abbreviations fall back to neutral text badges.
+- Result-level team color is scoped to a safe single-team context from
+  `team_context`. Player-subject, multi-team, comparison, and league-wide
+  leaderboard results remain neutral.
+- Team color treatment is limited to identity surfaces: badges, a subtle result
+  stripe, and a light surface wash. Buttons, body copy, table text, and global
+  action states keep the design-system colors.
+- Tables remain horizontally scrollable for dense results. Player avatars and
+  team logo marks have fixed dimensions so image loading and fallback states do
+  not change row height.
+
+Useful Phase V4 visual checks:
+
+- Player result: `Jokic last 10 games`
+- Single-team result: `Celtics record 2024-25`
+- Multi-team comparison: `Celtics vs Lakers record 2024-25`
+- League leaderboard: `top 10 scorers 2024-25`
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)

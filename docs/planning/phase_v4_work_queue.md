@@ -327,7 +327,7 @@ team card.
 
 ---
 
-## 7. `[ ]` Responsive and visual-quality verification for imagery/theming
+## 7. `[x]` Responsive and visual-quality verification for imagery/theming
 
 **Why:** Images and logos can introduce clipping, layout shift, network-failure
 states, and excess visual noise if not verified across realistic result shapes.
