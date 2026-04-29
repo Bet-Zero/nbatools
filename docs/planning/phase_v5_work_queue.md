@@ -82,7 +82,7 @@ were checked off.
 
 ---
 
-## 2. `[ ]` Inventory Part 2 component-layout readiness
+## 2. `[x]` Inventory Part 2 component-layout readiness
 
 **Why:** Part 2 should start with a concrete view of current result renderers,
 available structured data, and likely gaps before redesigning the first query
