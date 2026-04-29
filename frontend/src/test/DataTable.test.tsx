@@ -18,6 +18,7 @@ describe("DataTable", () => {
     expect(screen.getByText("Player Name")).toBeInTheDocument();
     expect(screen.getByText("PTS")).toBeInTheDocument();
     expect(screen.getByText("REB")).toBeInTheDocument();
+    expect(screen.getByLabelText("Jokic avatar")).toBeInTheDocument();
   });
 
   it("renders row values", () => {
@@ -45,12 +46,13 @@ describe("DataTable", () => {
   });
 
   it("applies rank-cell class for rank column", () => {
-    const rows = [{ rank: 1, player_name: "Jokic", PTS: 25 }];
+    const rows = [{ rank: 1, player_name: "Jokic", team: "DEN", PTS: 25 }];
     const { container } = render(<DataTable rows={rows} />);
     const rankTh = container.getElementsByClassName(styles.rankCell)[0];
     expect(rankTh).not.toBeNull();
     const entityTh = container.getElementsByClassName(styles.entityCell)[0];
     expect(entityTh).not.toBeNull();
+    expect(screen.getByLabelText("DEN")).toBeInTheDocument();
   });
 
   it("applies highlight class when highlight prop is true", () => {

@@ -302,7 +302,7 @@ without moving business logic into the design system.
 
 ---
 
-## 7. `[ ]` Build Avatar and TeamBadge fallback primitives
+## 7. `[x]` Build Avatar and TeamBadge fallback primitives
 
 **Why:** Phase V4 will add real player imagery and team-logo plumbing, but
 Part 1 needs stable identity primitives first so later image work has a

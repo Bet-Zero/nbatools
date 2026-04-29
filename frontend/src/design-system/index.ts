@@ -1,4 +1,9 @@
 export {
+  Avatar,
+  type AvatarProps,
+  type AvatarSize,
+} from "./Avatar";
+export {
   Badge,
   type BadgeProps,
   type BadgeSize,
@@ -46,3 +51,8 @@ export {
   type StatSize,
 } from "./Stat";
 export { StatBlock, type StatBlockProps } from "./StatBlock";
+export {
+  TeamBadge,
+  type TeamBadgeProps,
+  type TeamBadgeSize,
+} from "./TeamBadge";
