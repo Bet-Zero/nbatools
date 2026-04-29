@@ -91,7 +91,7 @@ threading ids and assets through result renderers.
 
 ---
 
-## 2. `[ ]` Add frontend identity helper module and tests
+## 2. `[x]` Add frontend identity helper module and tests
 
 **Why:** Asset URL construction, team-color lookup, and image-unavailable
 fallbacks should be centralized instead of repeated in table and envelope
