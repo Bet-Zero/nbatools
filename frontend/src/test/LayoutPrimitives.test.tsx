@@ -148,6 +148,22 @@ describe("layout primitives", () => {
       "DEN",
     );
   });
+
+  it("falls back to initials when an avatar image cannot load", () => {
+    const { container } = render(
+      <Avatar name="Nikola Jokic" imageUrl="https://example.test/jokic.png" />,
+    );
+
+    const img = container.querySelector("img");
+    expect(img).toHaveAttribute("src", "https://example.test/jokic.png");
+
+    fireEvent.error(img as HTMLImageElement);
+
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByLabelText("Nikola Jokic avatar")).toHaveTextContent(
+      "NJ",
+    );
+  });
 });
 
 describe("migrated result envelope", () => {
@@ -169,6 +185,10 @@ describe("migrated result envelope", () => {
         result_status: "ok",
         metadata: {
           player: "Nikola Jokic",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
           team: "DEN",
           season: "2024-25",
         },
@@ -188,6 +208,11 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("2025-04-01")).toBeInTheDocument();
     expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
     expect(screen.getByLabelText("Nikola Jokic avatar")).toBeInTheDocument();
+    expect(screen.getByLabelText("Nikola Jokic avatar").querySelector("img"))
+      .toHaveAttribute(
+        "src",
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+      );
     expect(screen.getByLabelText("DEN")).toBeInTheDocument();
     expect(screen.getByText("2024-25")).toBeInTheDocument();
     expect(screen.getByText("Using regular-season logs")).toBeInTheDocument();

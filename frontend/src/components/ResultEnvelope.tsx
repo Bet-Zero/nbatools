@@ -7,6 +7,7 @@ import {
   TeamBadge,
   type BadgeVariant,
 } from "../design-system";
+import { resolvePlayerIdentity } from "../lib/identity";
 import styles from "./ResultEnvelope.module.css";
 
 interface Props {
@@ -70,14 +71,23 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
     label: string;
     value: string;
     identity?: "player" | "team";
+    imageUrl?: string | null;
+    identityName?: string | null;
   }[] = [];
   if (metadata) {
-    if (typeof metadata.player === "string")
+    if (typeof metadata.player === "string") {
+      const playerIdentity = resolvePlayerIdentity({
+        playerId: metadata.player_context?.player_id,
+        playerName: metadata.player_context?.player_name ?? metadata.player,
+      });
       contextChips.push({
         label: "Player",
         value: metadata.player,
         identity: "player",
+        imageUrl: playerIdentity.headshotUrl,
+        identityName: playerIdentity.playerName,
       });
+    }
     if (Array.isArray(metadata.players) && metadata.players.length)
       contextChips.push({
         label: "Players",
@@ -147,7 +157,11 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
           ? contextChips.map((chip, i) => (
               <Badge key={i} variant="neutral" size="sm">
                 {chip.identity === "player" && (
-                  <Avatar name={chip.value} size="sm" />
+                  <Avatar
+                    name={chip.identityName ?? chip.value}
+                    imageUrl={chip.imageUrl}
+                    size="sm"
+                  />
                 )}
                 {chip.identity === "team" && (
                   <TeamBadge

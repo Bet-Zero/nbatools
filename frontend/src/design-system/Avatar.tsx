@@ -1,4 +1,4 @@
-import { type HTMLAttributes } from "react";
+import { useEffect, useState, type HTMLAttributes } from "react";
 import styles from "./Avatar.module.css";
 
 export type AvatarSize = "sm" | "md" | "lg";
@@ -35,7 +35,13 @@ export function Avatar({
   className,
   ...props
 }: AvatarProps) {
-  const showImage = Boolean(imageUrl) && !unavailable;
+  const [imageUnavailable, setImageUnavailable] = useState(false);
+
+  useEffect(() => {
+    setImageUnavailable(false);
+  }, [imageUrl]);
+
+  const showImage = Boolean(imageUrl) && !unavailable && !imageUnavailable;
 
   return (
     <span
@@ -49,7 +55,12 @@ export function Avatar({
       {...props}
     >
       {showImage ? (
-        <img className={styles.image} src={imageUrl ?? undefined} alt="" />
+        <img
+          className={styles.image}
+          src={imageUrl ?? undefined}
+          alt=""
+          onError={() => setImageUnavailable(true)}
+        />
       ) : (
         <span aria-hidden="true">{initials(name)}</span>
       )}

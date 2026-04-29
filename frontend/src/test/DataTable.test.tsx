@@ -21,6 +21,27 @@ describe("DataTable", () => {
     expect(screen.getByLabelText("Jokic avatar")).toBeInTheDocument();
   });
 
+  it("renders player headshots when a stable player id is present", () => {
+    const rows = [{ player_name: "Nikola Jokic", player_id: 203999, PTS: 25 }];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(screen.getByLabelText("Nikola Jokic avatar")).toBeInTheDocument();
+    expect(container.querySelector("img")).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+    );
+  });
+
+  it("falls back to player initials when a player id is missing", () => {
+    const rows = [{ player_name: "Nikola Jokic", PTS: 25 }];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(screen.getByLabelText("Nikola Jokic avatar")).toHaveTextContent(
+      "NJ",
+    );
+    expect(container.querySelector("img")).toBeNull();
+  });
+
   it("renders row values", () => {
     const rows = [
       { name: "Jokic", pts: 25.3, reb: 12 },

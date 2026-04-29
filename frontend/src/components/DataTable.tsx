@@ -7,6 +7,7 @@ import {
   type DataTableAlignment,
   type DataTableColumn,
 } from "../design-system";
+import { resolvePlayerIdentity } from "../lib/identity";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./DataTable.module.css";
 
@@ -59,15 +60,32 @@ function isTeamAbbreviation(value: string): boolean {
   return /^[A-Z]{2,4}$/.test(value);
 }
 
-function renderEntityValue(value: unknown, col: string): ReactNode {
+function rowIdentityId(value: unknown): number | string | null {
+  if (typeof value === "number" || typeof value === "string") return value;
+  return null;
+}
+
+function renderEntityValue(
+  value: unknown,
+  col: string,
+  row: SectionRow,
+): ReactNode {
   const formatted = formatValue(value, col);
   if (value === null || value === undefined) return formatted;
 
   const lc = col.toLowerCase();
   if (PLAYER_COLS.has(lc)) {
+    const playerIdentity = resolvePlayerIdentity({
+      playerId: rowIdentityId(row.player_id),
+      playerName: formatted,
+    });
     return (
       <span className={styles.identityValue}>
-        <Avatar name={formatted} size="sm" />
+        <Avatar
+          name={playerIdentity.playerName ?? formatted}
+          imageUrl={playerIdentity.headshotUrl}
+          size="sm"
+        />
         <span>{formatted}</span>
       </span>
     );
@@ -95,7 +113,7 @@ export default function DataTable({ rows, highlight = false }: Props) {
       align: columnAlignment(col, rows),
       className: cellClass(col, rows),
       numeric: isNumericCol(col, rows),
-      render: (row) => renderEntityValue(row[col], col),
+      render: (row) => renderEntityValue(row[col], col, row),
     }),
   );
 

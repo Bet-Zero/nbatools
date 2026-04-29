@@ -187,7 +187,7 @@ API response should expose identity fields where the engine already knows them.
 
 ---
 
-## 4. `[ ]` Render player headshots in metadata chips and data tables
+## 4. `[x]` Render player headshots in metadata chips and data tables
 
 **Why:** Player identity should be recognizable in the primary result surfaces,
 with graceful fallback where ids or images are unavailable.
