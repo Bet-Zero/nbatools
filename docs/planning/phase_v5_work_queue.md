@@ -129,7 +129,7 @@ class.
 
 ---
 
-## 3. `[ ]` Retrospective, component plan refresh, and C1 queue draft
+## 3. `[x]` Retrospective, component plan refresh, and C1 queue draft
 
 **Why:** Self-propagating final task. It closes Track A Part 1 and creates the
 first executable Part 2 queue.
@@ -174,6 +174,51 @@ first executable Part 2 queue.
 - `docs/planning/phase_v5_component_layout_inventory.md`
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
+
+---
+
+## Phase V5 retrospective
+
+### What went well
+
+- The Part 1 completion audit made the handoff honest. It confirmed there is
+  no unresolved Part 1 blocker, while still naming partial product-experience
+  residuals for Part 2 and Part 3.
+- The component-layout inventory gave Part 2 a concrete starting map: current
+  renderer owners, identity coverage, available sections, and per-query-family
+  contract gaps.
+- Phase V5 kept the visual-foundation boundary clean. It did not redesign
+  query layouts; it converted foundation status and Part 2 readiness into
+  actionable queue work.
+
+### What was harder
+
+- The Part 2 plan needed a guardrail refresh once the identity/theming audit was
+  read against the component ambitions. Mixed player/team views should stay
+  neutral; team colors belong to safe single-team contexts and identity badges.
+- Player summary looked superficially ready because the aggregate row is rich,
+  but the planned sparkline requires exact-sample game data that does not
+  currently exist as a structured summary section.
+- The current `summary` query class serves player, team, record, and playoff
+  surfaces. C1 needs a player-specific renderer boundary before visual redesign
+  can proceed without changing unrelated summary routes.
+
+### Residuals and Part 2 notes
+
+- C1 should start by splitting player-summary rendering from generic summary
+  rendering, then build the hero/stat hierarchy from existing data.
+- The player-summary sparkline must wait for an additive engine/API game-series
+  section. React should not issue hidden secondary queries or infer missing
+  sample rows.
+- Team summaries still lack the pace/offensive-rating/defensive-rating metrics
+  described by the Part 2 plan. C5 should either add those fields or narrow the
+  shipped team-summary layout target explicitly.
+- Occurrence/count and playoff layouts need clearer result contracts before
+  their later phases can support expandable game lists or series/round-specific
+  presentations.
+- Track A Part 1 is now closed. The polish plan remains in progress, with
+  Track A Part 2 Phase C1 as the active visual continuation and Track B still
+  following its deployment queue.
 
 ---
 

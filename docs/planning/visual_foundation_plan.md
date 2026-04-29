@@ -103,7 +103,8 @@ Goal: capture learnings, draft `component_experience_plan.md` (Part 2 of
 Track A), draft `phase_c1_work_queue.md` (Part 2's first queue).
 
 **Companion queue:** [`phase_v5_work_queue.md`](./phase_v5_work_queue.md)
-**Status:** Active.
+**Status:** Complete. Handoff artifact:
+[`phase_c1_work_queue.md`](./phase_c1_work_queue.md).
 
 ---
 
