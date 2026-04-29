@@ -7,6 +7,9 @@ import {
   Card,
   ResultEnvelopeShell,
   SectionHeader,
+  Skeleton,
+  SkeletonBlock,
+  SkeletonText,
   Stat,
   StatBlock,
 } from "../design-system";
@@ -108,6 +111,20 @@ describe("layout primitives", () => {
     expect(screen.getByText("per game")).toBeInTheDocument();
     expect(screen.getByText("REB")).toBeInTheDocument();
     expect(screen.getByText("12.1")).toBeInTheDocument();
+  });
+
+  it("renders skeleton shapes, text, and blocks", () => {
+    const { container } = render(
+      <>
+        <Skeleton width="50%" height="20px" />
+        <SkeletonText aria-label="Loading text" lines={2} width="80%" />
+        <SkeletonBlock aria-label="Loading table" rows={2} />
+      </>,
+    );
+
+    expect(container.querySelectorAll("[aria-hidden='true']").length).toBe(10);
+    expect(screen.getByLabelText("Loading text")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading table")).toBeInTheDocument();
   });
 });
 

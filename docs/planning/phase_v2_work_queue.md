@@ -216,7 +216,7 @@ treatments before hero and comparison components can become opinionated.
 
 ---
 
-## 5. `[ ]` Build Skeleton and loading-state primitives
+## 5. `[x]` Build Skeleton and loading-state primitives
 
 **Why:** Loading states should feel designed and consistent before the app
 shell and result layouts get more visual weight.

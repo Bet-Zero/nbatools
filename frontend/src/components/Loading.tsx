@@ -1,10 +1,32 @@
+import { Card, SkeletonBlock, SkeletonText } from "../design-system";
 import styles from "./Loading.module.css";
 
 export default function Loading() {
   return (
-    <div className={styles.loading}>
-      <div className={styles.spinner} />
-      <div>Searching NBA data…</div>
-    </div>
+    <Card
+      className={styles.loading}
+      depth="card"
+      padding="lg"
+      role="status"
+      aria-live="polite"
+    >
+      <div className={styles.header}>
+        <div className={styles.spinner} aria-hidden="true" />
+        <div className={styles.copy}>
+          <div className={styles.message}>Searching NBA data…</div>
+          <SkeletonText
+            aria-label="Loading query context"
+            className={styles.messageSkeleton}
+            lines={2}
+            width={["72%", "46%"]}
+          />
+        </div>
+      </div>
+      <SkeletonBlock
+        aria-label="Loading result preview"
+        className={styles.preview}
+        rows={3}
+      />
+    </Card>
   );
 }

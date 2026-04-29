@@ -1,0 +1,75 @@
+.skeleton {
+  display: block;
+  max-width: 100%;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--text-secondary) 12%, transparent),
+      transparent
+    ),
+    color-mix(in srgb, var(--text-secondary) 10%, transparent);
+  background-size: 220% 100%;
+  /* Skeleton loading is ambient; interaction transition tokens are too fast. */
+  animation: skeletonPulse 1200ms ease-in-out infinite;
+}
+
+.sm {
+  border-radius: var(--radius-sm);
+}
+
+.md {
+  border-radius: var(--radius-md);
+}
+
+.lg {
+  border-radius: var(--radius-lg);
+}
+
+.xl {
+  border-radius: var(--radius-xl);
+}
+
+.text {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.block {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.rows {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--space-12) 1fr var(--space-16);
+  gap: var(--space-3);
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes skeletonPulse {
+  0% {
+    background-position: 120% 0;
+    opacity: 0.72;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    background-position: -120% 0;
+    opacity: 0.72;
+  }
+}

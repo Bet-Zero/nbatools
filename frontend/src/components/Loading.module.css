@@ -1,22 +1,57 @@
 .loading {
-  text-align: center;
-  padding: var(--space-8);
+  display: grid;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
   color: var(--text-secondary);
 }
 
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
 .spinner {
-  display: inline-block;
+  flex: 0 0 auto;
   width: var(--space-6);
   height: var(--space-6);
-  border: 3px solid var(--border-default);
+  border: var(--space-1) solid var(--border-default);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: var(--space-2);
+  /* Loading spinner should move slower than hover/focus transitions. */
+  animation: spin 960ms linear infinite;
+}
+
+.copy {
+  display: grid;
+  flex: 1;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.message {
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-medium);
+}
+
+.messageSkeleton {
+  max-width: 420px;
+}
+
+.preview {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    gap: var(--space-3);
   }
 }
