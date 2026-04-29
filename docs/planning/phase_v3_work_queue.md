@@ -398,7 +398,7 @@ ordering.
 
 ---
 
-## 9. `[ ]` Phase V3 retrospective and Phase V4 handoff
+## 9. `[x]` Phase V3 retrospective and Phase V4 handoff
 
 **Why:** Self-propagating final task. Captures shell/layout learnings and
 drafts the player imagery and team-theming queue.
@@ -442,7 +442,53 @@ drafts the player imagery and team-theming queue.
 
 ---
 
+## Phase V3 Retrospective
+
+### What went well
+
+- The shell boundary stayed clean. `App.tsx` still owns query execution, URL
+  state, API health, saved-query state, history, and dialog wiring, while
+  `AppShell` owns only page regions and responsive structure.
+- The Phase V2 primitives were useful in real composition work. Header status,
+  result actions, freshness, empty/loading/no-result states, secondary panels,
+  and result metadata now share the same token and primitive language.
+- The result workspace is clearer without changing result semantics. Query-class
+  routing, raw JSON, alternate-query behavior, copy actions, saved queries,
+  history, and dev tools stayed in their existing feature owners.
+- Responsive cleanup produced explicit shell notes in `docs/operations/ui_guide.md`
+  for future component work.
+
+### What was harder
+
+- `App.tsx` remains a large orchestration component. Phase V3 reduced layout
+  ownership there, but further decomposition should remain cautious because
+  query state transitions are easier to audit when they are visible.
+- Result actions, result envelope metadata, and section rendering touch adjacent
+  surfaces. Visual hierarchy improved, but individual query-class layout work is
+  still intentionally deferred to Track A Part 2.
+- The identity primitives could only use fallback initials/abbreviations during
+  Phase V3 because player image URLs, team logo URLs, and team-context color
+  resolution need a separate data/contract pass.
+
+### Residuals for Phase V4
+
+- Player headshots and team logos are not loaded yet. `Avatar` and `TeamBadge`
+  accept image/logo URLs, but current call sites usually provide only names or
+  abbreviations.
+- `frontend/src/styles/team-colors.json` contains team color tokens by
+  abbreviation, but no shared helper currently resolves a query result to a
+  single safe team context or applies scoped `--team-primary` /
+  `--team-secondary` overrides.
+- Metadata context chips currently distinguish player/team display values, but
+  the API/front-end contract does not consistently expose `player_id`,
+  `team_id`, team abbreviation, and opponent identity in the places needed for
+  reliable imagery.
+- Dense multi-team views need restraint: logos and team color should identify
+  rows and badges without turning leaderboards or comparisons into a saturated
+  team-color view.
+
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Phase V3 is complete. The draft of
-`phase_v4_work_queue.md` from item 9 is the handoff artifact.
+All items above are checked `[x]`; Phase V3 is complete. The draft of
+[`phase_v4_work_queue.md`](./phase_v4_work_queue.md) from item 9 is the
+handoff artifact.

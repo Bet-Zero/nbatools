@@ -83,7 +83,8 @@ main content area, results region, freshness indicator at the top, sample
 queries when empty. Replaces the current bare-bones structure.
 
 **Companion queue:** [`phase_v3_work_queue.md`](./phase_v3_work_queue.md)
-**Status:** Active.
+**Status:** Complete. Handoff artifact:
+[`phase_v4_work_queue.md`](./phase_v4_work_queue.md).
 
 ### Phase V4 — Player imagery and team theming
 
@@ -92,7 +93,8 @@ render consistently. The `--team-primary` and `--team-secondary` CSS
 variables get populated dynamically based on team context. Existing
 results render with the new theming applied automatically.
 
-**Companion queue:** drafted at end of V3.
+**Companion queue:** [`phase_v4_work_queue.md`](./phase_v4_work_queue.md)
+**Status:** Active.
 
 ### Phase V5 — Retrospective and Part 2 handoff
 
