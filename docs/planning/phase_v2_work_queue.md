@@ -7,7 +7,12 @@
 > **How to work this file:** Find the first unchecked item below. Review the
 > reference docs it cites. Execute per its acceptance criteria. Run the test
 > commands. Check the item off, commit, open a PR, wait for CI, merge when
-> green, then stop if the user asked for one item.
+> green, then immediately move on to the next unchecked item and repeat.
+> Continue working items in order without stopping until every item is
+> checked `[x]` or you hit a genuine blocker (failing tests you cannot
+> resolve, missing credentials, an ambiguous decision that needs the user).
+> If blocked, leave the item marked `[~]` with an inline note and stop. Do
+> not stop merely because one item finished — the default is to keep going.
 
 ---
 
@@ -125,7 +130,7 @@ the rest of the primitive library.
 
 ---
 
-## 3. `[ ]` Build Card, SectionHeader, and ResultEnvelopeShell primitives
+## 3. `[x]` Build Card, SectionHeader, and ResultEnvelopeShell primitives
 
 **Why:** Most result views need a consistent surface, heading, metadata, and
 envelope structure before individual query layouts are redesigned in Part 2.

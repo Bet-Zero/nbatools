@@ -1,4 +1,5 @@
 import type { SectionRow } from "../api/types";
+import { SectionHeader } from "../design-system";
 import DataTable from "./DataTable";
 import styles from "./LeaderboardSection.module.css";
 
@@ -12,10 +13,10 @@ export default function LeaderboardSection({ sections }: Props) {
 
   return (
     <div className={styles.section}>
-      <div className={styles.title}>
-        Leaderboard
-        <span className={styles.count}>{leaderboard.length} entries</span>
-      </div>
+      <SectionHeader
+        title="Leaderboard"
+        count={`${leaderboard.length} entries`}
+      />
       <DataTable rows={leaderboard} highlight />
     </div>
   );

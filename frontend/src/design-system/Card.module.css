@@ -1,0 +1,53 @@
+.card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+}
+
+.depthElevated {
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+}
+
+.depthCard {
+  background: var(--bg-card);
+}
+
+.depthInput {
+  background: var(--bg-input);
+}
+
+.paddingNone {
+  padding: 0;
+}
+
+.paddingSm {
+  padding: var(--space-3);
+}
+
+.paddingMd {
+  padding: var(--space-4);
+}
+
+.paddingLg {
+  padding: var(--space-6);
+}
+
+.toneNeutral {
+  border-color: var(--border-default);
+}
+
+.toneDanger {
+  border-color: var(--danger);
+  box-shadow: inset var(--space-1) 0 0 var(--danger);
+}
+
+.toneWarning {
+  border-color: var(--warning);
+  box-shadow: inset var(--space-1) 0 0 var(--warning);
+}
+
+.toneSuccess {
+  border-color: var(--success);
+  box-shadow: inset var(--space-1) 0 0 var(--success);
+}
