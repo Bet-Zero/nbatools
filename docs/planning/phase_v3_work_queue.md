@@ -176,7 +176,7 @@ data/API status visible without competing with the query workflow.
 
 ---
 
-## 4. `[ ]` Make the query area the primary workspace
+## 4. `[x]` Make the query area the primary workspace
 
 **Why:** The text input is the product's main interaction. It should feel
 prominent and efficient without becoming a marketing hero.

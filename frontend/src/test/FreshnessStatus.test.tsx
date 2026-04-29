@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import FreshnessStatus from "../components/FreshnessStatus";
@@ -111,8 +111,7 @@ describe("FreshnessStatus", () => {
       expect(screen.getByText(/Data through/)).toBeInTheDocument();
     });
 
-    const button = screen.getByRole("button");
-    await userEvent.click(button);
+    fireEvent.click(screen.getByRole("button"));
 
     await waitFor(() => {
       expect(screen.getByText("2025-26 Regular Season")).toBeInTheDocument();
