@@ -77,8 +77,16 @@
 
 @media (max-width: 640px) {
   .container {
+    padding-top: var(--space-4);
     padding-right: var(--space-3);
     padding-left: var(--space-3);
+    padding-bottom: var(--space-8);
+    gap: var(--space-4);
+  }
+
+  .header {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
   }
 
   .queryRegion {

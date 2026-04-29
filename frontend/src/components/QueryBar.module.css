@@ -85,4 +85,8 @@
   .queryBar input {
     min-height: var(--space-12);
   }
+
+  .label {
+    font-size: var(--font-body);
+  }
 }
