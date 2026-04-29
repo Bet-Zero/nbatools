@@ -25,7 +25,11 @@ Both return one of the typed result classes defined in
 
 from __future__ import annotations
 
+import csv
+import unicodedata
 from dataclasses import dataclass, field
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 from nbatools.commands._constants import contains_boolean_or
@@ -35,6 +39,7 @@ from nbatools.commands._natural_query_execution import (
     _execute_or_query_build_result,
     _extract_grouped_condition_text,
 )
+from nbatools.commands.entity_resolution import resolve_team
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.natural_query import (
@@ -62,6 +67,169 @@ from nbatools.commands.structured_results import (  # noqa: F401
 # Metadata helper
 # ---------------------------------------------------------------------------
 
+_DATA_ROOT = Path(__file__).resolve().parents[2] / "data"
+
+
+def _clean_text(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _identity_key(value: Any) -> str:
+    text = _clean_text(value) or ""
+    normalized = unicodedata.normalize("NFKD", text)
+    stripped = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    return " ".join(stripped.lower().split())
+
+
+def _coerce_int(value: Any) -> int | None:
+    text = _clean_text(value)
+    if text is None or not text.isdigit():
+        return None
+    number = int(text)
+    return number if number > 0 else None
+
+
+def _read_csv_dicts(path: Path) -> list[dict[str, str]]:
+    if not path.is_file():
+        return []
+    with path.open(newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
+
+
+@lru_cache(maxsize=1)
+def _player_identity_lookup() -> dict[str, dict[str, Any]]:
+    lookup: dict[str, dict[str, Any]] = {}
+    roster_dir = _DATA_ROOT / "raw" / "rosters"
+    for csv_path in sorted(roster_dir.glob("*.csv")):
+        for row in _read_csv_dicts(csv_path):
+            player_id = _coerce_int(row.get("player_id"))
+            player_name = _clean_text(row.get("player_name"))
+            if player_id is None or player_name is None:
+                continue
+            lookup[_identity_key(player_name)] = {
+                "player_id": player_id,
+                "player_name": player_name,
+            }
+    return lookup
+
+
+@lru_cache(maxsize=1)
+def _team_identity_lookup() -> dict[str, dict[str, Any]]:
+    lookup: dict[str, dict[str, Any]] = {}
+
+    def add_row(row: dict[str, Any]) -> None:
+        team_id = _coerce_int(row.get("team_id"))
+        team_abbr = _clean_text(row.get("team_abbr"))
+        team_name = _clean_text(row.get("team_name"))
+        if team_id is None or team_abbr is None or team_name is None:
+            return
+
+        context = {
+            "team_id": team_id,
+            "team_abbr": team_abbr.upper(),
+            "team_name": team_name,
+        }
+        labels = [
+            team_abbr,
+            team_name,
+            row.get("city"),
+            row.get("franchise_label"),
+        ]
+        city = _clean_text(row.get("city"))
+        if city:
+            labels.append(f"{city} {team_name}")
+
+        for label in labels:
+            key = _identity_key(label)
+            if key:
+                lookup[key] = context
+
+    history_path = _DATA_ROOT / "raw" / "teams" / "team_history_reference.csv"
+    for row in _read_csv_dicts(history_path):
+        add_row(row)
+
+    teams_path = _DATA_ROOT / "raw" / "teams" / "teams_reference.csv"
+    for row in _read_csv_dicts(teams_path):
+        add_row(row)
+
+    return lookup
+
+
+def _resolve_player_context(player_name: Any) -> dict[str, Any] | None:
+    key = _identity_key(player_name)
+    if not key:
+        return None
+    context = _player_identity_lookup().get(key)
+    return dict(context) if context else None
+
+
+def _resolve_team_context(team_value: Any) -> dict[str, Any] | None:
+    text = _clean_text(team_value)
+    if text is None:
+        return None
+
+    lookup = _team_identity_lookup()
+    resolved = resolve_team(text)
+    candidates: list[str] = []
+    if resolved.is_confident and resolved.resolved:
+        candidates.append(resolved.resolved)
+    candidates.append(text)
+
+    for candidate in candidates:
+        context = lookup.get(_identity_key(candidate))
+        if context:
+            return dict(context)
+    return None
+
+
+def _dedupe_contexts(contexts: list[dict[str, Any]], id_key: str) -> list[dict[str, Any]]:
+    deduped: list[dict[str, Any]] = []
+    seen: set[Any] = set()
+    for context in contexts:
+        identity = context.get(id_key)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        deduped.append(context)
+    return deduped
+
+
+def _add_identity_contexts(
+    meta: dict[str, Any],
+    *,
+    player_values: list[Any],
+    team_values: list[Any],
+    opponent_value: Any,
+) -> None:
+    player_contexts = _dedupe_contexts(
+        [
+            context
+            for value in player_values
+            if (context := _resolve_player_context(value)) is not None
+        ],
+        "player_id",
+    )
+    if len(player_contexts) == 1:
+        meta["player_context"] = player_contexts[0]
+    elif len(player_contexts) > 1:
+        meta["players_context"] = player_contexts
+
+    team_contexts = _dedupe_contexts(
+        [context for value in team_values if (context := _resolve_team_context(value)) is not None],
+        "team_id",
+    )
+    if len(team_contexts) == 1:
+        meta["team_context"] = team_contexts[0]
+    elif len(team_contexts) > 1:
+        meta["teams_context"] = team_contexts
+
+    opponent_context = _resolve_team_context(opponent_value)
+    if opponent_context is not None:
+        meta["opponent_context"] = opponent_context
+
 
 def _build_query_metadata(
     parsed: dict,
@@ -79,19 +247,19 @@ def _build_query_metadata(
     route = parsed.get("route")
     query_class = route_to_query_class(route)
 
+    player_a = parsed.get("player_a")
+    player_b = parsed.get("player_b")
     player = parsed.get("player")
     if not player:
-        player_a = parsed.get("player_a")
-        player_b = parsed.get("player_b")
         if player_a and player_b:
             player = f"{player_a}, {player_b}"
         else:
             player = player_a or player_b
 
+    team_a = parsed.get("team_a")
+    team_b = parsed.get("team_b")
     team = parsed.get("team")
     if not team:
-        team_a = parsed.get("team_a")
-        team_b = parsed.get("team_b")
         if team_a and team_b:
             team = f"{team_a}, {team_b}"
         else:
@@ -156,6 +324,19 @@ def _build_query_metadata(
 
     if notes:
         meta["notes"] = notes
+
+    player_values = [value for value in [player_a, player_b] if value]
+    if not player_values and player:
+        player_values = [player]
+    team_values = [value for value in [team_a, team_b] if value]
+    if not team_values and team:
+        team_values = [team]
+    _add_identity_contexts(
+        meta,
+        player_values=player_values,
+        team_values=team_values,
+        opponent_value=parsed.get("opponent"),
+    )
 
     # Phase D fields: confidence, intent, alternates
     if parsed.get("confidence") is not None:
@@ -614,17 +795,17 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     query_class = route_to_query_class(route)
 
     # Build metadata from kwargs
-    player = kwargs.get("player")
     player_a = kwargs.get("player_a")
     player_b = kwargs.get("player_b")
+    player = kwargs.get("player")
     if not player and player_a and player_b:
         player = f"{player_a}, {player_b}"
     elif not player:
         player = player_a or player_b
 
-    team = kwargs.get("team")
     team_a = kwargs.get("team_a")
     team_b = kwargs.get("team_b")
+    team = kwargs.get("team")
     if not team and team_a and team_b:
         team = f"{team_a}, {team_b}"
     elif not team:
@@ -681,6 +862,19 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     }
     if current_through is not None:
         metadata["current_through"] = current_through
+
+    player_values = [value for value in [player_a, player_b] if value]
+    if not player_values and player:
+        player_values = [player]
+    team_values = [value for value in [team_a, team_b] if value]
+    if not team_values and team:
+        team_values = [team]
+    _add_identity_contexts(
+        metadata,
+        player_values=player_values,
+        team_values=team_values,
+        opponent_value=kwargs.get("opponent"),
+    )
 
     query_desc = f"structured:{route}"
 

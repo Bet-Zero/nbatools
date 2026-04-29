@@ -170,7 +170,7 @@ class FreshnessResponse(BaseModel):
 
 def _query_result_to_response(qr: QueryResult) -> QueryResponse:
     """Convert a QueryResult envelope into a JSON-friendly response."""
-    result_dict = qr.result.to_dict() if hasattr(qr.result, "to_dict") else {}
+    result_dict = qr.to_dict()
 
     notes: list[str] = getattr(qr.result, "notes", []) or []
     caveats: list[str] = getattr(qr.result, "caveats", []) or []
