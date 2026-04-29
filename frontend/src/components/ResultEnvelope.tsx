@@ -1,4 +1,5 @@
 import type { QueryResponse } from "../api/types";
+import { ResultEnvelopeShell } from "../design-system";
 import styles from "./ResultEnvelope.module.css";
 
 interface Props {
@@ -79,91 +80,94 @@ export default function ResultEnvelope({ data, onAlternateSelect }: Props) {
   }
 
   return (
-    <div className={styles.envelope}>
-      {/* Status + Route + Freshness row */}
-      <div className={styles.top}>
-        <span
-          className={[
-            styles.statusBadge,
-            STATUS_STYLES[data.result_status] ?? styles.statusError,
-          ].join(" ")}
-        >
-          {statusLabel(data.result_status)}
-        </span>
-        {data.route && <span className={styles.pill}>{routeLabel(data.route)}</span>}
-        {queryClass && queryClass !== data.route && (
-          <span className={styles.pill}>{queryClass}</span>
-        )}
-        {data.result_reason && (
-          <span className={[styles.muted, styles.resultReason].join(" ")}>
-            {reasonLabel(data.result_reason)}
+    <ResultEnvelopeShell
+      meta={
+        <>
+          <span
+            className={[
+              styles.statusBadge,
+              STATUS_STYLES[data.result_status] ?? styles.statusError,
+            ].join(" ")}
+          >
+            {statusLabel(data.result_status)}
           </span>
-        )}
-        {data.current_through && (
+          {data.route && (
+            <span className={styles.pill}>{routeLabel(data.route)}</span>
+          )}
+          {queryClass && queryClass !== data.route && (
+            <span className={styles.pill}>{queryClass}</span>
+          )}
+          {data.result_reason && (
+            <span className={[styles.muted, styles.resultReason].join(" ")}>
+              {reasonLabel(data.result_reason)}
+            </span>
+          )}
+          {data.current_through && (
+            <>
+              <span className={styles.separator} />
+              <span className={styles.freshness}>
+                Data through <strong>{data.current_through}</strong>
+              </span>
+            </>
+          )}
+        </>
+      }
+      query={<>&ldquo;{data.query}&rdquo;</>}
+      context={
+        contextChips.length > 0
+          ? contextChips.map((chip, i) => (
+              <span key={i} className={styles.contextChip}>
+                <span className={styles.contextChipLabel}>{chip.label}</span>
+                {chip.value}
+              </span>
+            ))
+          : null
+      }
+      notices={
+        data.notes.length > 0 || data.caveats.length > 0 ? (
           <>
-            <span className={styles.separator} />
-            <span className={styles.freshness}>
-              Data through <strong>{data.current_through}</strong>
-            </span>
+            {data.notes.length > 0 && (
+              <div className={[styles.infoBlock, styles.notesBlock].join(" ")}>
+                <div className={styles.infoBlockLabel}>Notes</div>
+                <ul>
+                  {data.notes.map((note, i) => (
+                    <li key={i}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {data.caveats.length > 0 && (
+              <div
+                className={[styles.infoBlock, styles.caveatsBlock].join(" ")}
+              >
+                <div className={styles.infoBlockLabel}>Caveats</div>
+                <ul>
+                  {data.caveats.map((caveat, i) => (
+                    <li key={i}>{caveat}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </>
-        )}
-      </div>
-
-      {/* Query text */}
-      <div className={styles.queryText}>&ldquo;{data.query}&rdquo;</div>
-
-      {/* Context chips */}
-      {contextChips.length > 0 && (
-        <div className={styles.context}>
-          {contextChips.map((chip, i) => (
-            <span key={i} className={styles.contextChip}>
-              <span className={styles.contextChipLabel}>{chip.label}</span>
-              {chip.value}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Notes */}
-      {data.notes.length > 0 && (
-        <div className={[styles.infoBlock, styles.notesBlock].join(" ")}>
-          <div className={styles.infoBlockLabel}>Notes</div>
-          <ul>
-            {data.notes.map((note, i) => (
-              <li key={i}>{note}</li>
+        ) : null
+      }
+      alternates={
+        data.alternates.length > 0 && onAlternateSelect ? (
+          <>
+            <span className={styles.alternatesLabel}>Did you mean: </span>
+            {data.alternates.map((alt, i) => (
+              <button
+                key={i}
+                type="button"
+                className={styles.alternateChip}
+                onClick={() => onAlternateSelect(alt.description)}
+              >
+                {alt.description}
+              </button>
             ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Caveats */}
-      {data.caveats.length > 0 && (
-        <div className={[styles.infoBlock, styles.caveatsBlock].join(" ")}>
-          <div className={styles.infoBlockLabel}>Caveats</div>
-          <ul>
-            {data.caveats.map((caveat, i) => (
-              <li key={i}>{caveat}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Did you mean? — alternate interpretations */}
-      {data.alternates.length > 0 && onAlternateSelect && (
-        <div className={[styles.infoBlock, styles.alternatesBlock].join(" ")}>
-          <span className={styles.alternatesLabel}>Did you mean: </span>
-          {data.alternates.map((alt, i) => (
-            <button
-              key={i}
-              type="button"
-              className={styles.alternateChip}
-              onClick={() => onAlternateSelect(alt.description)}
-            >
-              {alt.description}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+          </>
+        ) : null
+      }
+    />
   );
 }
