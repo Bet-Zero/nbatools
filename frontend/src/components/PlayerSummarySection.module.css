@@ -1,3 +1,84 @@
 .section {
   margin-bottom: var(--space-4);
 }
+
+.hero {
+  display: grid;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.identityRow {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatar {
+  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
+}
+
+.identityText {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.playerName {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h2);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.heroStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.heroStat {
+  min-height: calc(var(--space-16) + var(--space-4));
+}
+
+.supportingStats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.statBlock {
+  min-width: 0;
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 760px) {
+  .supportingStats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .identityRow {
+    align-items: flex-start;
+  }
+
+  .heroStats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

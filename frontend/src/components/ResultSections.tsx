@@ -44,7 +44,12 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
   switch (queryClass) {
     case "summary":
       if (isPlayerSummary(data)) {
-        return <PlayerSummarySection sections={sections} />;
+        return (
+          <PlayerSummarySection
+            sections={sections}
+            metadata={data.result?.metadata}
+          />
+        );
       }
       return <SummarySection sections={sections} />;
     case "comparison":
