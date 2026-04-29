@@ -73,6 +73,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_v3_work_queue.md` — completed Track A visual-foundation queue for app shell and layout work
 - `planning/phase_v3_app_shell_inventory.md` — app-shell ownership and boundary inventory produced by Phase V3 item 1
 - `planning/phase_v4_work_queue.md` — active Track A visual-foundation queue for player imagery, team logos, and team-color plumbing
+- `planning/phase_v4_identity_inventory.md` — identity data, target UI surface, and fallback inventory produced by Phase V4 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
