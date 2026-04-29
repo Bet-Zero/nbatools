@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchFreshness } from "../api/client";
 import type { FreshnessResponse, FreshnessStatusValue } from "../api/types";
-import { Badge, type BadgeVariant } from "../design-system";
+import { Badge, Card, type BadgeVariant } from "../design-system";
 import styles from "./FreshnessStatus.module.css";
 
 const STATUS_CONFIG: Record<
@@ -71,7 +71,11 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.unknown;
 
   return (
-    <div className={[styles.panel, cfg.className].join(" ")}>
+    <Card
+      className={[styles.panel, cfg.className].join(" ")}
+      depth="card"
+      padding="none"
+    >
       <button
         type="button"
         className={styles.summary}
@@ -93,6 +97,7 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
 
       {expanded && (
         <div className={styles.details}>
+          <div className={styles.detailsLabel}>Season coverage</div>
           {info.seasons.map((s) => (
             <div
               key={`${s.season}-${s.season_type}`}
@@ -131,6 +136,6 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

@@ -3,7 +3,32 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.brandBlock {
+  min-width: 0;
+  display: flex;
+  align-items: center;
   gap: var(--space-4);
+}
+
+.logoMark {
+  width: var(--space-12);
+  height: var(--space-12);
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
+  color: var(--accent-hover);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
 }
 
 .eyebrow {
@@ -23,15 +48,29 @@
   line-height: 1;
 }
 
+.tagline {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  line-height: 1.4;
+}
+
+.statusStack {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
 .statusIndicator {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
-  padding: var(--space-2) var(--space-3);
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
   font-size: var(--font-small);
   font-weight: var(--weight-medium);
   color: var(--text-secondary);
@@ -90,7 +129,11 @@
     flex-direction: column;
   }
 
-  .statusIndicator {
+  .brandBlock {
+    align-items: flex-start;
+  }
+
+  .statusStack {
     width: 100%;
     justify-content: space-between;
   }

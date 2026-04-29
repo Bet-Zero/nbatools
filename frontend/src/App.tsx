@@ -17,7 +17,7 @@ import ResultSections from "./components/ResultSections";
 import SampleQueries from "./components/SampleQueries";
 import SavedQueries from "./components/SavedQueries";
 import SaveQueryDialog from "./components/SaveQueryDialog";
-import { Button } from "./design-system";
+import { Badge, Button } from "./design-system";
 import useQueryHistory from "./hooks/useQueryHistory";
 import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
@@ -206,23 +206,36 @@ export default function App() {
 
   const header = (
     <div className={styles.headerContent}>
-      <div>
-        <div className={styles.eyebrow}>NBA search workspace</div>
-        <h1 className={styles.appTitle}>nbatools</h1>
+      <div className={styles.brandBlock}>
+        <div className={styles.logoMark} aria-hidden="true">
+          NT
+        </div>
+        <div>
+          <div className={styles.eyebrow}>NBA search workspace</div>
+          <h1 className={styles.appTitle}>nbatools</h1>
+          <p className={styles.tagline}>
+            Natural-language lookup for players, teams, streaks, and leaders.
+          </p>
+        </div>
       </div>
-      <span
-        className={[
-          styles.statusIndicator,
-          apiOnline ? styles.online : styles.offline,
-        ].join(" ")}
-      >
-        <span className={styles.statusDotIndicator} />
-        {version
-          ? `v${version}`
-          : apiOnline === false
-            ? "API offline"
-            : "…"}
-      </span>
+      <div className={styles.statusStack} aria-label="API status">
+        <span
+          className={[
+            styles.statusIndicator,
+            apiOnline ? styles.online : styles.offline,
+          ].join(" ")}
+        >
+          <span className={styles.statusDotIndicator} />
+          <span>{apiOnline === false ? "API offline" : "API online"}</span>
+        </span>
+        <Badge variant={apiOnline === false ? "danger" : "neutral"} size="sm">
+          {version
+            ? `v${version}`
+            : apiOnline === false
+              ? "unreachable"
+              : "checking"}
+        </Badge>
+      </div>
     </div>
   );
 
