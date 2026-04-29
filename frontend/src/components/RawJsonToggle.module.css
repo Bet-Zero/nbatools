@@ -1,7 +1,5 @@
 .rawToggle {
-  margin-top: var(--space-4);
-  border-top: 1px solid var(--border-default);
-  padding-top: var(--space-3);
+  min-width: 0;
 }
 
 .rawJson {

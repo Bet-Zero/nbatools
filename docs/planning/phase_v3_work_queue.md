@@ -265,7 +265,7 @@ should establish product quality before any query result appears.
 
 ---
 
-## 6. `[ ]` Organize result actions and result region layout
+## 6. `[x]` Organize result actions and result region layout
 
 **Why:** Results should have a stable area for metadata, actions, tables, raw
 JSON, and future designed query-class layouts.

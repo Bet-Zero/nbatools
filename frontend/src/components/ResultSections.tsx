@@ -1,4 +1,5 @@
 import type { QueryResponse, SectionRow } from "../api/types";
+import { Card, SectionHeader } from "../design-system";
 import ComparisonSection from "./ComparisonSection";
 import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
@@ -60,10 +61,10 @@ function renderFallback(
   return (
     <>
       {keys.map((key) => (
-        <div className={styles.section} key={key}>
-          <div className={styles.title}>{sectionLabel(key)}</div>
+        <Card className={styles.section} key={key} depth="card" padding="md">
+          <SectionHeader title={sectionLabel(key)} />
           <DataTable rows={sections[key]} />
-        </div>
+        </Card>
       ))}
     </>
   );
