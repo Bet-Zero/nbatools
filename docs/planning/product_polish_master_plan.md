@@ -250,3 +250,27 @@ scraping. If a follow-on plan opens, those live there.
 When asked "is the polish plan done?" or "what is the next step?",
 interpret as asking about the whole polish plan and answer from this
 document, not from the nearest closed phase or queue.
+
+---
+
+## Reusable Kickoff Prompt
+
+Paste this prompt to start a continuous work session against the master
+plan. It self-locates the active queue, runs items in order, and rolls
+forward across phase handoffs without needing to be edited per phase.
+
+```text
+Read docs/planning/product_polish_master_plan.md and find the "Active
+Continuation" section — it names the current active work queue. Open that
+queue, read its "How to work this file" instructions, then start at the
+first unchecked item and continue through items in order without stopping.
+After each item: check it off, commit, open a PR, wait for CI, merge when
+green, then move directly to the next unchecked item. If the queue gets
+fully checked off and its final item drafts a new queue, re-read the
+master plan, follow it to the new active queue, and keep going. Only stop
+if every queue under the master plan is closed, or if you hit a genuine
+blocker (failing tests you can't resolve, missing credentials, an
+ambiguous decision that needs me) — in which case mark the item `[~]`
+with an inline note explaining the blocker and stop. Do not stop merely
+because one item or one phase finished.
+```
