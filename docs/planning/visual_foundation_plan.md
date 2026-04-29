@@ -52,7 +52,7 @@ own pieces.
 
 ## Phase structure
 
-Four phases, each with its own work queue.
+Five phases, each with its own work queue.
 
 ### Phase V1 — Tokens audit and CSS architecture
 
@@ -94,14 +94,16 @@ variables get populated dynamically based on team context. Existing
 results render with the new theming applied automatically.
 
 **Companion queue:** [`phase_v4_work_queue.md`](./phase_v4_work_queue.md)
-**Status:** Active.
+**Status:** Complete. Handoff artifact:
+[`phase_v5_work_queue.md`](./phase_v5_work_queue.md).
 
 ### Phase V5 — Retrospective and Part 2 handoff
 
 Goal: capture learnings, draft `component_experience_plan.md` (Part 2 of
 Track A), draft `phase_c1_work_queue.md` (Part 2's first queue).
 
-**Companion queue:** drafted at end of V4.
+**Companion queue:** [`phase_v5_work_queue.md`](./phase_v5_work_queue.md)
+**Status:** Active.
 
 ---
 

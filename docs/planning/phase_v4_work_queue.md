@@ -369,7 +369,7 @@ states, and excess visual noise if not verified across realistic result shapes.
 
 ---
 
-## 8. `[ ]` Phase V4 retrospective and Phase V5 handoff
+## 8. `[x]` Phase V4 retrospective and Phase V5 handoff
 
 **Why:** Self-propagating final task. Captures identity/theming learnings and
 drafts the final Track A Part 1 handoff queue.
@@ -410,6 +410,51 @@ drafts the final Track A Part 1 handoff queue.
 
 - `visual_foundation_plan.md` - Phase V5 scope
 - This file as the structural template for Phase V5
+
+---
+
+## Phase V4 retrospective
+
+### What went well
+
+- The identity inventory gave the phase a clean contract boundary: the engine
+  supplies stable ids and display facts, while frontend helpers construct image
+  URLs, color variables, and fallback presentation.
+- Player headshots and team logos now flow through the same metadata and table
+  surfaces that already render identity chips, so the feature did not require a
+  frontend business-logic fork.
+- Scoped team theming landed with a conservative guard. Single-team result
+  surfaces get subtle color treatment, while player-subject, comparison,
+  multi-team, and league-wide leaderboard results stay neutral.
+- Frontend tests now cover identity helper behavior, metadata chip imagery,
+  data-table player/team rendering, and result-level theming guards.
+
+### What was harder
+
+- Identity data was present in source tables but not consistently exposed in
+  result metadata or row projections, so Phase V4 needed API/result-contract
+  enrichment before the UI could stay display-string agnostic.
+- Team context required restraint. Opponent teams and multi-team comparisons
+  can show logos and badges, but they should not automatically color the whole
+  result surface.
+- Browser-level visual verification exposed environment friction. The useful
+  lasting output is the documented Phase V4 visual-check query set and the
+  hardened primitive CSS for image sizing/fallback stability.
+
+### Residuals and Part 2 notes
+
+- Phase V4 intentionally keeps result layouts generic. Part 2 should replace
+  table-primary result rendering with query-class-specific layouts that reuse
+  `Avatar`, `TeamBadge`, `Stat`, `StatBlock`, `Card`, and scoped team variables.
+- Historical or unknown team abbreviations fall back to neutral text badges.
+  Part 2 should keep that behavior unless a season-aware historical logo source
+  is explicitly added.
+- Team color should continue to be contextual. Part 2 component cards can use
+  scoped team variables for single-team subjects, but global actions, dense
+  table text, and mixed-team views should remain neutral.
+- Player and team imagery is URL-derived from stable ids. If Part 2 needs
+  richer player/team display data, that should be added to structured results
+  or metadata, not inferred in React.
 
 ---
 
