@@ -38,7 +38,7 @@ API, or existing feature wrappers.
 
 ---
 
-## 1. `[ ]` Inventory app-shell layout and ownership boundaries
+## 1. `[x]` Inventory app-shell layout and ownership boundaries
 
 **Why:** Phase V2 created primitives. Before reshaping the app shell, define
 which parts of the current UI belong to the shell versus feature components.
