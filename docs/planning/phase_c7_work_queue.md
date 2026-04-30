@@ -339,7 +339,7 @@ documented and safe on desktop and mobile.
 
 ---
 
-## 7. `[ ]` Phase C7 retrospective and C8 handoff
+## 7. `[x]` Phase C7 retrospective and C8 handoff
 
 **Why:** Self-propagating final task. It closes head-to-head/playoff layout
 work and creates the next executable Part 2 queue.
@@ -384,7 +384,45 @@ work and creates the next executable Part 2 queue.
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
 
----
+## Phase C7 retrospective
+
+### What went well
+
+- The row-shape inventory made the ownership boundaries explicit before
+  implementation: head-to-head comparison routes, playoff summary/comparison
+  routes, and playoff leaderboards each needed separate treatment even though
+  they share matchup/postseason context.
+- Moving `team_matchup_record` into `HeadToHeadSection.tsx` simplified the C5
+  overlap. Single-team records remain in `TeamRecordSection.tsx`; mixed-team
+  matchup records now share one neutral head-to-head layout with player/team
+  head-to-head comparisons and decade matchups.
+- `PlayoffSection.tsx` became a bounded postseason owner without moving series
+  interpretation into React. It promotes only supplied team identity, records,
+  appearances, round/season labels, rankings, and detail tables.
+- The existing Part 1 primitives were sufficient. C7 did not need new
+  design-system primitives, only route-specific composition and CSS modules.
+
+### What was harder
+
+- The playoff payloads are still generic summary/comparison/leaderboard
+  payloads. The UI has to identify postseason routes from route metadata and
+  preserve dynamic detail columns instead of relying on a dedicated playoff
+  result class.
+- Playoff matchup rows do not include series winners, bracket objects, or
+  game-list detail. The layout had to read as postseason history without
+  implying unavailable series facts.
+- `playoff_round_record` does not expose the target stat structurally, so the
+  leaderboard treatment uses conservative supplied-field priority and keeps the
+  full table visible for unpromoted fields.
+
+### Residuals and next action
+
+- Phase C7 closes head-to-head and playoff layout ownership, but Part 2 is not
+  done. The remaining Part 2 work is the dedicated mobile pass across all
+  redesigned components and then the Part 2 retrospective/handoff.
+- The next active queue is
+  [`phase_c8_work_queue.md`](./phase_c8_work_queue.md), focused on full mobile
+  verification and polish across the C1-C7 component set.
 
 ## Appendix: progress tracking
 
