@@ -242,7 +242,7 @@ honest about what the API actually supplied.
 
 ---
 
-## 5. `[ ]` Polish finder responsive detail and docs
+## 5. `[x]` Polish finder responsive detail and docs
 
 **Why:** C4 should close implementation with player game finders feeling
 complete on desktop and mobile, with docs accurately describing boundaries and

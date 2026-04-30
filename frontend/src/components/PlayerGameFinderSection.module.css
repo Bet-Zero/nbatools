@@ -61,6 +61,10 @@
   max-width: 100%;
 }
 
+.contextBadge {
+  max-width: 100%;
+}
+
 .resultBadge {
   flex: 0 0 auto;
 }
