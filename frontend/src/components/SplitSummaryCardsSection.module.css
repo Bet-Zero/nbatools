@@ -33,6 +33,14 @@
   flex: 1 1 auto;
 }
 
+.teamBadge {
+  max-width: min(100%, 24rem);
+}
+
+.entityAvatar {
+  flex: 0 0 auto;
+}
+
 .eyebrow {
   margin-bottom: var(--space-1);
   color: var(--text-tertiary);
@@ -99,8 +107,9 @@
 }
 
 .bucketCount {
-  flex: 0 0 auto;
-  white-space: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+  text-align: right;
 }
 
 @media (max-width: 760px) {
@@ -114,5 +123,9 @@
   .bucketHeader {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .bucketCount {
+    text-align: left;
   }
 }

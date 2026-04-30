@@ -124,6 +124,7 @@ function entityMark(
         name={team.teamName ?? name}
         logoUrl={team.logoUrl}
         size="md"
+        className={styles.teamBadge}
         style={(team.styleVars ?? undefined) as CSSProperties | undefined}
       />
     );
@@ -139,6 +140,7 @@ function entityMark(
       name={player.playerName ?? name}
       imageUrl={player.headshotUrl}
       size="md"
+      className={styles.entityAvatar}
     />
   );
 }

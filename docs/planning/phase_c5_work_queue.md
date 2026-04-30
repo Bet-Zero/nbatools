@@ -283,7 +283,7 @@ bucket cards before dense split tables.
 
 ---
 
-## 6. `[ ]` Polish team/split responsive detail and docs
+## 6. `[x]` Polish team/split responsive detail and docs
 
 **Why:** C5 should close implementation with team and split layouts documented
 and safe on desktop and mobile.

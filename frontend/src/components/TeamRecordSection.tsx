@@ -190,6 +190,7 @@ function TeamBadgeMark({ team }: { team: ResolvedTeamIdentity }) {
       name={team.teamName ?? team.teamAbbr ?? "Team"}
       logoUrl={team.logoUrl}
       size="md"
+      className={styles.teamBadge}
       style={(team.styleVars ?? undefined) as CSSProperties | undefined}
     />
   );
@@ -211,6 +212,7 @@ function SingleTeamRecord({
   const record = recordStat(summaryRow, "hero");
   const stats = secondaryStats(summaryRow);
   const context = sampleContext(metadata, summaryRow);
+  const hasRecordStats = Boolean(record) || stats.length > 0;
 
   return (
     <>
@@ -243,16 +245,18 @@ function SingleTeamRecord({
               </div>
             </div>
 
-            <div className={styles.recordStats}>
-              {record && <Stat {...record} className={styles.primaryRecord} />}
-              {stats.length > 0 && (
-                <StatBlock
-                  stats={stats}
-                  columns={stats.length >= 4 ? 4 : 2}
-                  className={styles.secondaryStats}
-                />
-              )}
-            </div>
+            {hasRecordStats && (
+              <div className={styles.recordStats}>
+                {record && <Stat {...record} className={styles.primaryRecord} />}
+                {stats.length > 0 && (
+                  <StatBlock
+                    stats={stats}
+                    columns={stats.length >= 4 ? 4 : 2}
+                    className={styles.secondaryStats}
+                  />
+                )}
+              </div>
+            )}
           </Card>
 
           <div className={styles.detailSection}>

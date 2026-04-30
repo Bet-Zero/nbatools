@@ -92,20 +92,25 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | Route / query_class             | Sections displayed                                                                 |
 | ------------------------------- | ---------------------------------------------------------------------------------- |
 | `player_game_summary` / summary | Player hero, Game Log trend/recent games when present, Full Summary, By Season     |
+| `game_summary` / summary        | Team hero, record/headline stats when present, Full Summary, By Season             |
+| `team_record` / summary         | Record-first team card, opponent identity when present, Record Detail, By Season   |
 | generic summary                 | Summary, By Season (if present)                                                    |
 | `player_compare` / comparison   | Player Comparison, Metric Comparison, Player Summary Detail, Full Metric Detail     |
+| `team_matchup_record` / comparison | Neutral matchup record cards, Team Summary Detail, Metric Detail                 |
 | generic comparison              | Summary/Players, Comparison                                                        |
 | `player_game_finder` / finder   | Player Games, Player Game Detail                                                   |
 | generic finder                  | Matching Games                                                                     |
-| split_summary                   | Summary, Split Comparison                                                          |
+| `team_split_summary` / split_summary | Team split hero, bucket cards, Split Summary Detail, Split Comparison Detail    |
+| `player_split_summary` / split_summary | Player split hero, bucket cards, Split Summary Detail, Split Comparison Detail |
+| generic split_summary           | Summary, Split Comparison                                                          |
 | leaderboard                     | Ranked Leaderboard, Full Leaderboard detail table                                  |
 | streak                          | Streaks                                                                            |
 | (no result)                     | Status message with reason                                                         |
 
 `PlayerSummarySection.tsx` owns only `player_game_summary` rendering. Team
-summaries, playoff summaries, and unknown summary routes continue through the
-generic `SummarySection.tsx` path so player-specific layout choices do not leak
-into other summary-shaped responses.
+record, split, playoff, and unknown routes continue through their route-specific
+or generic paths so player-specific layout choices do not leak into other
+summary-shaped responses.
 
 `LeaderboardSection.tsx` owns `query_class: "leaderboard"` rendering. It
 promotes only fields already present in `sections.leaderboard`: rank, a
@@ -133,6 +138,28 @@ take over team game finders, count detail, top-game leaderboards, or unknown
 finder-shaped routes. The full finder `DataTable` detail remains visible below
 the cards.
 
+`TeamSummarySection.tsx` owns summary results whose route is `game_summary`.
+It promotes supplied team identity, season/sample context, record, and headline
+stat values into a team hero card, then keeps the full summary and by-season
+tables visible. Playoff summaries and unknown summary-shaped routes remain on
+`SummarySection.tsx`.
+
+`TeamRecordSection.tsx` owns `team_record` and `team_matchup_record` results.
+Single-team records use scoped team treatment only when `team_context` marks a
+safe single-team result; opponent identity is shown as a badge or text fallback.
+Matchup records stay neutral, showing each team as an identity-accented record
+card rather than assigning the whole surface to one team. Record math is not
+computed in React; the renderer displays only supplied wins, losses, win
+percentage, sample size, and secondary stats. Full summary, by-season, and
+metric detail tables remain visible.
+
+`SplitSummaryCardsSection.tsx` owns `team_split_summary` and
+`player_split_summary` results. It renders the entity context first, then bucket
+cards for supplied split rows such as home/away, wins/losses, or custom bucket
+labels. Bucket labels are formatted for display without changing the underlying
+payload. Full split summary and split-comparison detail tables remain visible,
+and unknown split-shaped routes continue through `SplitSummarySection.tsx`.
+
 ## Identity imagery and team theming
 
 Phase V4 adds presentation-only identity treatment for players and teams:
@@ -154,6 +181,14 @@ Phase V4 adds presentation-only identity treatment for players and teams:
 - Player-game-finder cards may show player avatars plus small team/opponent
   badges, but player-subject finder pages remain neutral and do not derive
   result-level team theming from row-level teams or opponents.
+- Team summaries and single-team records may use scoped result-level team
+  treatment only when metadata identifies one safe team context.
+- Team matchup records stay neutral except for each team's badge and restrained
+  card accents; the layout must not imply full-surface ownership by either
+  side.
+- Team split summaries may use scoped team treatment for the hero when the
+  metadata supplies a safe single-team context. Player split summaries stay
+  neutral except for player identity imagery.
 - Team color treatment is limited to identity surfaces: badges, a subtle result
   stripe, and a light surface wash. Buttons, body copy, table text, and global
   action states keep the design-system colors.
@@ -231,6 +266,33 @@ Player-game-finder edge-case fallbacks:
 - `game_finder`, count results with finder detail, top-game leaderboards, and
   unknown finder-shaped routes remain on their existing renderers.
 
+Team-summary and team-record edge-case fallbacks:
+
+- Missing team ids or logos use team abbreviation/name badges and still show
+  the supplied team title.
+- Missing wins/losses omits the promoted record stat instead of inventing a
+  record, while the detail table remains visible.
+- Missing opponent identity on team records renders the available opponent text
+  as a neutral badge when present.
+- Matchup records without full team identity use row-level team labels or
+  generated "Team 1" / "Team 2" labels. They stay neutral and still expose the
+  summary and metric detail tables.
+- Long team and opponent names are constrained within badges/headings; mobile
+  layouts stack identity, title, and stat groups to avoid overlap.
+- Playoff summaries, unknown summary routes, and generic comparison routes
+  remain on their fallback renderers.
+
+Split-summary edge-case fallbacks:
+
+- Missing team or player identity falls back to the supplied row/entity label,
+  then to "Team" or "Player".
+- Missing wins/losses omits the record stat for that bucket. Sparse buckets
+  still show their label, supplied game count when available, and the detail
+  table below.
+- Long custom bucket labels wrap within the bucket card. At mobile widths, the
+  bucket count stacks below the label.
+- Unknown split routes remain on the generic `SplitSummarySection.tsx` path.
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)
@@ -243,7 +305,14 @@ Player-game-finder edge-case fallbacks:
   `frontend/src/components/PlayerComparisonSection.tsx`
 - Player game finder renderer:
   `frontend/src/components/PlayerGameFinderSection.tsx`
+- Team summary renderer:
+  `frontend/src/components/TeamSummarySection.tsx`
+- Team record and matchup renderer:
+  `frontend/src/components/TeamRecordSection.tsx`
+- Team/player split card renderer:
+  `frontend/src/components/SplitSummaryCardsSection.tsx`
 - Generic summary fallback: `frontend/src/components/SummarySection.tsx`
+- Generic split fallback: `frontend/src/components/SplitSummarySection.tsx`
 
 ## Tech stack
 
@@ -353,8 +422,11 @@ frontend/src/
     ResultEnvelope.tsx    # Envelope metadata (status, route, notes, caveats)
     ResultSections.tsx    # Dispatcher — routes to per-query-class renderers
     SummarySection.tsx    # Summary + By Season tables
+    TeamSummarySection.tsx # Team summary hero + detail tables
     ComparisonSection.tsx # Players + Comparison tables
+    TeamRecordSection.tsx # Team record/matchup record cards + detail tables
     SplitSummarySection.tsx # Summary + Split Comparison tables
+    SplitSummaryCardsSection.tsx # Team/player split bucket cards + detail tables
     FinderSection.tsx     # Matching Games table with count
     LeaderboardSection.tsx # Leaderboard table with count
     StreakSection.tsx      # Streaks table with count

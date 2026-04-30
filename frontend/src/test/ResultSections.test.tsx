@@ -513,6 +513,50 @@ describe("ResultSections", () => {
     expect(screen.getByText("Record Detail")).toBeInTheDocument();
   });
 
+  it("renders sparse team records with long opponent names without requiring record fields", () => {
+    const longOpponent =
+      "A Very Long Opponent Name With Multiple Regional Qualifier Words";
+    const data = makeResponse({
+      route: "team_record",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "team_record",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+          opponent_context: {
+            team_id: 999,
+            team_abbr: "EXT",
+            team_name: longOpponent,
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              games: 0,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Record")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(`${longOpponent} (EXT)`),
+    ).toBeInTheDocument();
+    expect(screen.getByText("0 games")).toBeInTheDocument();
+    expect(screen.queryByText("Record")).not.toBeInTheDocument();
+    expect(screen.getByText("Record Detail")).toBeInTheDocument();
+  });
+
   it("keeps playoff summaries on the generic summary renderer", () => {
     const data = makeResponse({
       route: "playoff_history",
@@ -1500,6 +1544,45 @@ describe("ResultSections", () => {
     expect(screen.getByText("Metric Detail")).toBeInTheDocument();
     expect(screen.queryByText("Players")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
+  });
+
+  it("renders sparse matchup records without team ids or record fields", () => {
+    const data = makeResponse({
+      route: "team_matchup_record",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "team_matchup_record" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name:
+                "A Very Long Home Team Name With Several Market Segments",
+              games: 0,
+            },
+            {
+              team_name:
+                "A Very Long Away Team Name With Several Market Segments",
+              games: 0,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Matchup Record")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: /A Very Long Home Team Name.*A Very Long Away Team Name/,
+      }),
+    ).toBeInTheDocument();
+    const records = screen.getByLabelText("Matchup records");
+    expect(within(records).getAllByText("0 games").length).toBe(2);
+    expect(within(records).queryByText("Record")).not.toBeInTheDocument();
+    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
   });
 
   it("renders sparse player comparison cards with identity fallbacks", () => {
