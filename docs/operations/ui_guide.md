@@ -52,7 +52,8 @@ module replacement during frontend development.
   - **Notes** — blue-bordered info block
   - **Caveats** — orange/yellow-bordered warning block
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
-- **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, leaderboard, finder, streak, split). Entity columns (player names, teams) are bolded; rank columns are highlighted.
+- **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
+- **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
 - **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
 - **Raw JSON** — toggle to inspect the full API response.
@@ -93,7 +94,7 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | comparison                      | Summary, Comparison                                                                |
 | split_summary                   | Summary, Split Comparison                                                          |
 | finder                          | Matching Games                                                                     |
-| leaderboard                     | Leaderboard                                                                        |
+| leaderboard                     | Ranked Leaderboard, Full Leaderboard detail table                                  |
 | streak                          | Streaks                                                                            |
 | (no result)                     | Status message with reason                                                         |
 
@@ -101,6 +102,15 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 summaries, playoff summaries, and unknown summary routes continue through the
 generic `SummarySection.tsx` path so player-specific layout choices do not leak
 into other summary-shaped responses.
+
+`LeaderboardSection.tsx` owns `query_class: "leaderboard"` rendering. It
+promotes only fields already present in `sections.leaderboard`: rank, a
+player/team/entity label, one best available ranked metric, and secondary
+metadata such as games played, season, team, game date, opponent, result, and
+qualifier fields. Ranking, filters, qualifiers, and metric computation remain
+engine/API responsibilities. The full `DataTable` detail stays visible below
+the ranked rows so unpromoted columns and sparse/unknown leaderboard shapes are
+still inspectable.
 
 ## Identity imagery and team theming
 
@@ -114,6 +124,9 @@ Phase V4 adds presentation-only identity treatment for players and teams:
 - Result-level team color is scoped to a safe single-team context from
   `team_context`. Player-subject, multi-team, comparison, and league-wide
   leaderboard results remain neutral.
+- Leaderboard rows may show player avatars or team badges as identity accents,
+  but the leaderboard surface itself remains neutral for mixed league-wide
+  contexts.
 - Team color treatment is limited to identity surfaces: badges, a subtle result
   stripe, and a light surface wash. Buttons, body copy, table text, and global
   action states keep the design-system colors.
@@ -136,6 +149,22 @@ Player-summary edge-case fallbacks:
 - Long player names and dense stat values wrap within the player-summary card
   while full summary rows remain available in the detail table.
 
+Leaderboard edge-case fallbacks:
+
+- Missing `player_id` keeps a player initials avatar; missing `team_id` keeps a
+  team abbreviation badge.
+- Unknown or historical team abbreviations render as neutral badges unless a
+  known abbreviation supplies color tokens.
+- Sparse leaderboard rows without player/team identity keep text-only entity
+  labels and still expose the full row in the detail table.
+- If no ranked metric is available, the row still renders rank/entity/context
+  without inventing a value; `games_played` is promoted only as the final
+  fallback.
+- Long entity names, long metric labels, and qualifier text wrap within the
+  ranked row; mobile rows stack the metric below identity/context.
+- Unknown query classes and unknown section keys bypass leaderboard rendering
+  and continue through the generic fallback renderer.
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)
@@ -143,6 +172,7 @@ Player-summary edge-case fallbacks:
 - API serving: `src/nbatools/api.py` → `GET /` + `/assets` static mount
 - Vite config: `frontend/vite.config.ts` (proxy + build output path)
 - Player summary renderer: `frontend/src/components/PlayerSummarySection.tsx`
+- Leaderboard renderer: `frontend/src/components/LeaderboardSection.tsx`
 - Generic summary fallback: `frontend/src/components/SummarySection.tsx`
 
 ## Tech stack
