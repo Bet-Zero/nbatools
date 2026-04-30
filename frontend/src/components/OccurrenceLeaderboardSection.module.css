@@ -10,6 +10,7 @@
 
 .rankedRow {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns:
     var(--space-12) minmax(0, 1fr)
@@ -88,6 +89,7 @@
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--bg-input) 72%, transparent);
   line-height: 1.35;
+  hyphens: auto;
   overflow-wrap: anywhere;
 }
 
@@ -129,6 +131,7 @@
   font-weight: var(--weight-semibold);
   line-height: 1.25;
   max-width: 100%;
+  hyphens: auto;
   overflow-wrap: anywhere;
 }
 
@@ -144,6 +147,7 @@
 
   .metricBlock {
     grid-column: 1 / -1;
+    min-width: 0;
     justify-items: start;
     max-width: 100%;
     text-align: left;

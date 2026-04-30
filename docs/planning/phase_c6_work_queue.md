@@ -294,7 +294,7 @@ ranked-row behavior for ordinary leaderboards.
 
 ---
 
-## 6. `[ ]` Polish streak/occurrence responsive detail and docs
+## 6. `[x]` Polish streak/occurrence responsive detail and docs
 
 **Why:** C6 should close implementation with event-over-time layouts documented
 and safe on desktop and mobile.

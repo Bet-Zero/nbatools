@@ -2090,6 +2090,38 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
   });
 
+  it("renders streak cards without length or dates while preserving detail", () => {
+    const data = makeResponse({
+      route: "player_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: { route: "player_streak_finder" },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              player_name: "Sparse Streak Player",
+              condition: "very_long_condition_label_with_no_supplied_span",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(
+      screen.getByRole("heading", { name: "Sparse Streak Player" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("very_long_condition_label_with_no_supplied_span")
+        .length,
+    ).toBeGreaterThan(0);
+    expect(screen.queryByLabelText("Streak span")).not.toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
+  });
+
   it("keeps unknown streak-shaped routes on the generic fallback renderer", () => {
     const data = makeResponse({
       route: "unknown_streak",

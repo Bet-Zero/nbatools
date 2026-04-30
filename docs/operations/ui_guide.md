@@ -55,6 +55,9 @@ module replacement during frontend development.
 - **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
 - **Player comparisons** — `player_compare` responses use side-by-side player cards, metric comparison cards, and full summary/comparison detail tables while keeping mixed-player styling neutral.
 - **Player game finders** — `player_game_finder` responses use game cards with player identity, opponent context, W/L badges, supplied stat values, secondary context chips, and a full detail table below.
+- **Streaks** — `player_streak_finder` and `team_streak_finder` responses use answer-first streak cards with identity, condition, length, active/completed status, supplied span context, and full streak detail.
+- **Counts** — `count` query-class responses render the supplied count as the primary answer, then keep count rows and any underlying finder/leaderboard/detail sections visible below.
+- **Occurrence leaderboards** — `player_occurrence_leaders` and `team_occurrence_leaders` leaderboard responses use event-count rankings that promote the supplied occurrence metric while preserving full leaderboard detail.
 - **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
 - **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
@@ -103,8 +106,13 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | `team_split_summary` / split_summary | Team split hero, bucket cards, Split Summary Detail, Split Comparison Detail    |
 | `player_split_summary` / split_summary | Player split hero, bucket cards, Split Summary Detail, Split Comparison Detail |
 | generic split_summary           | Summary, Split Comparison                                                          |
-| leaderboard                     | Ranked Leaderboard, Full Leaderboard detail table                                  |
-| streak                          | Streaks                                                                            |
+| generic leaderboard             | Ranked Leaderboard, Full Leaderboard detail table                                  |
+| `player_occurrence_leaders` / leaderboard | Occurrence Leaderboard, Full Occurrence Detail                           |
+| `team_occurrence_leaders` / leaderboard | Occurrence Leaderboard, Full Occurrence Detail                             |
+| `player_streak_finder` / streak | Streak cards, Full Streak Detail                                                   |
+| `team_streak_finder` / streak   | Streak cards, Full Streak Detail                                                   |
+| count                           | Count answer, Count Detail, optional matching/detail sections                       |
+| unknown streak/leaderboard routes | Generic fallback or generic leaderboard path                                      |
 | (no result)                     | Status message with reason                                                         |
 
 `PlayerSummarySection.tsx` owns only `player_game_summary` rendering. Team
@@ -120,6 +128,14 @@ qualifier fields. Ranking, filters, qualifiers, and metric computation remain
 engine/API responsibilities. The full `DataTable` detail stays visible below
 the ranked rows so unpromoted columns and sparse/unknown leaderboard shapes are
 still inspectable.
+
+`OccurrenceLeaderboardSection.tsx` owns only leaderboard results whose route is
+`player_occurrence_leaders` or `team_occurrence_leaders`. It promotes the
+dynamic supplied event-count column, row rank, player/team identity, games
+played, season/date filters, and qualifier context. It does not parse the
+event definition, rank rows, or calculate qualifying games in React. Ordinary
+season leaders, top-game leaderboards, record leaderboards, and unknown
+leaderboard-shaped responses stay on `LeaderboardSection.tsx`.
 
 `PlayerComparisonSection.tsx` owns only comparison results whose route is
 `player_compare`. It promotes supplied summary rows into player cards and
@@ -160,6 +176,19 @@ labels. Bucket labels are formatted for display without changing the underlying
 payload. Full split summary and split-comparison detail tables remain visible,
 and unknown split-shaped routes continue through `SplitSummarySection.tsx`.
 
+`StreakSection.tsx` owns only `player_streak_finder` and
+`team_streak_finder` streak results. It promotes the supplied streak length or
+game count, condition label, entity identity, active/completed status, record,
+date span, and selected average stats. It does not reconstruct game-level
+streak events or calculate streak lengths. Unknown streak-shaped routes stay on
+the generic fallback renderer.
+
+`CountSection.tsx` owns `query_class: "count"` results. It promotes the
+supplied count value, metadata query text, entity context, season/date/filter
+context, and route label, then keeps `Count Detail` and any non-count detail
+sections visible below. It does not derive count values, parse events, or infer
+missing matching games.
+
 ## Identity imagery and team theming
 
 Phase V4 adds presentation-only identity treatment for players and teams:
@@ -175,6 +204,8 @@ Phase V4 adds presentation-only identity treatment for players and teams:
 - Leaderboard rows may show player avatars or team badges as identity accents,
   but the leaderboard surface itself remains neutral for mixed league-wide
   contexts.
+- Occurrence leaderboards stay neutral except for row-level identity accents;
+  row-level team abbreviations must not apply full-surface team theming.
 - Player-comparison rows may show player avatars and small team badges, but the
   surface does not split into team-colored sides or apply result-level team
   theming.
@@ -293,6 +324,29 @@ Split-summary edge-case fallbacks:
   bucket count stacks below the label.
 - Unknown split routes remain on the generic `SplitSummarySection.tsx` path.
 
+Streak/count/occurrence edge-case fallbacks:
+
+- Streak rows with missing player/team ids keep initials or text badge identity.
+  Missing `condition` falls back to "Streak"; missing length shows a neutral
+  streak answer instead of inventing a value.
+- Missing streak dates or game counts omit the span panel rather than leaving an
+  empty visual block. The full streak detail table remains visible.
+- Long player/team names, long streak conditions, and long date values wrap
+  inside cards. At mobile widths, identity, status, answer, and span/context
+  regions stack.
+- Count results can be zero and may have no finder detail. The count answer and
+  count detail table still render; optional finder or custom detail sections
+  appear only when supplied by the response.
+- Long count query text, route labels, and context chips wrap inside the count
+  card without widening the result region.
+- Occurrence leaderboard rows without identity render a text-only "Occurrence
+  Entry" label and still expose the full detail table.
+- Occurrence event labels are formatted from supplied dynamic column names
+  without threshold parsing. Long compound labels wrap inside the metric column;
+  at mobile widths the event-count block stacks below identity/context.
+- Ordinary leaderboards, finder routes, unknown streak routes, and generic
+  fallback sections remain available for shapes not explicitly owned by C6.
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)
@@ -311,6 +365,10 @@ Split-summary edge-case fallbacks:
   `frontend/src/components/TeamRecordSection.tsx`
 - Team/player split card renderer:
   `frontend/src/components/SplitSummaryCardsSection.tsx`
+- Streak renderer: `frontend/src/components/StreakSection.tsx`
+- Count renderer: `frontend/src/components/CountSection.tsx`
+- Occurrence leaderboard renderer:
+  `frontend/src/components/OccurrenceLeaderboardSection.tsx`
 - Generic summary fallback: `frontend/src/components/SummarySection.tsx`
 - Generic split fallback: `frontend/src/components/SplitSummarySection.tsx`
 
@@ -428,8 +486,10 @@ frontend/src/
     SplitSummarySection.tsx # Summary + Split Comparison tables
     SplitSummaryCardsSection.tsx # Team/player split bucket cards + detail tables
     FinderSection.tsx     # Matching Games table with count
-    LeaderboardSection.tsx # Leaderboard table with count
-    StreakSection.tsx      # Streaks table with count
+    LeaderboardSection.tsx # Generic leaderboard ranked rows + detail table
+    OccurrenceLeaderboardSection.tsx # Occurrence event-count ranked rows + detail
+    StreakSection.tsx      # Player/team streak cards + detail table
+    CountSection.tsx       # Count answer card + detail sections
     DataTable.tsx         # NBA-specific wrapper over the generic table primitive
     NoResultDisplay.tsx   # No-result and error state display
     RawJsonToggle.tsx     # Raw JSON toggle
