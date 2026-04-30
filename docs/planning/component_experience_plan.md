@@ -158,14 +158,21 @@ Goal: bundle three closely-related team-context layouts — summary, record,
 and split — since they share visual patterns. Reduces phase count without
 losing scope.
 
-Status: active. Phase C5 starts with a row-shape inventory because summary and
-split result classes are shared across team, player, playoff, and unknown
-routes that need explicit renderer boundaries.
+Status: complete. `TeamSummarySection.tsx` owns `game_summary` responses,
+`TeamRecordSection.tsx` owns `team_record` and `team_matchup_record` responses,
+and `SplitSummaryCardsSection.tsx` owns `team_split_summary` and
+`player_split_summary` responses. C5 keeps player, playoff, unknown summary,
+unknown split, and generic comparison fallbacks intact while preserving full
+detail tables.
 
 ### Phase C6 — Streak and occurrence layouts
 
 Goal: bundle these because both are "events over time" shapes that benefit
 from similar visual treatments.
+
+Status: active. Phase C6 begins with a row-shape inventory because streaks,
+finder-derived counts, and occurrence leaderboards span multiple query classes
+and have different detail-section fallbacks.
 
 ### Phase C7 — Head-to-head and playoff layouts
 
