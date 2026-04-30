@@ -238,6 +238,8 @@ export default function StreakSection({ sections, metadata, route }: Props) {
           const stats = secondaryStats(row);
           const status = activeBadge(row);
           const context = contextText(row);
+          const span = dateSpan(row);
+          const hasSpanContext = Boolean(context || span);
           return (
             <Card
               as="article"
@@ -262,12 +264,20 @@ export default function StreakSection({ sections, metadata, route }: Props) {
                 {status && <div className={styles.status}>{status}</div>}
               </div>
 
-              <div className={styles.answerGrid}>
+              <div
+                className={`${styles.answerGrid} ${
+                  hasSpanContext ? "" : styles.answerGridSingle
+                }`}
+              >
                 <Stat {...streakLengthStat(row)} className={styles.heroStat} />
-                <div className={styles.spanBlock}>
-                  {context && <div className={styles.context}>{context}</div>}
-                  {dateSpan(row)}
-                </div>
+                {hasSpanContext && (
+                  <div className={styles.spanBlock}>
+                    {context && (
+                      <div className={styles.context}>{context}</div>
+                    )}
+                    {span}
+                  </div>
+                )}
               </div>
 
               {stats.length > 0 && (

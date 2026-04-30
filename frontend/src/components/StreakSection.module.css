@@ -12,6 +12,7 @@
   display: grid;
   gap: var(--space-4);
   min-width: 0;
+  max-width: 100%;
 }
 
 .cardHeader {
@@ -81,6 +82,10 @@
   align-items: stretch;
 }
 
+.answerGridSingle {
+  grid-template-columns: minmax(150px, 0.5fr);
+}
+
 .heroStat,
 .statBlock {
   min-width: 0;
@@ -95,6 +100,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-input);
+  overflow: hidden;
 }
 
 .context {
@@ -113,8 +119,10 @@
 
 .datePill {
   min-width: 0;
+  max-width: 100%;
   display: inline-flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-default);
@@ -126,6 +134,7 @@
 }
 
 .dateLabel {
+  flex: 0 0 auto;
   color: var(--text-tertiary);
   font-family: var(--font-sans);
   font-size: var(--font-micro);
