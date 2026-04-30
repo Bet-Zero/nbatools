@@ -91,8 +91,9 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_c6_streak_occurrence_inventory.md` — streak, count, and occurrence row-shape inventory produced by Phase C6 item 1
 - `planning/phase_c7_work_queue.md` — completed Track A component-experience queue for head-to-head and playoff layout work
 - `planning/phase_c7_head_to_head_playoff_inventory.md` — head-to-head and playoff row-shape inventory produced by Phase C7 item 1
-- `planning/phase_c8_work_queue.md` — active Track A component-experience queue for the full mobile pass across redesigned components
+- `planning/phase_c8_work_queue.md` — completed Track A component-experience queue for the full mobile pass across redesigned components
 - `planning/phase_c8_mobile_inventory.md` — mobile-risk and verification-fixture inventory produced by Phase C8 item 1
+- `planning/phase_c9_work_queue.md` — active Track A component-experience closure queue for the Part 2 retrospective and Part 3 handoff
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
