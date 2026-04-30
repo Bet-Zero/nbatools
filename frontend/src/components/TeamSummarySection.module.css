@@ -1,8 +1,10 @@
 .section {
+  min-width: 0;
   margin-bottom: var(--space-4);
 }
 
 .heroCard {
+  min-width: 0;
   position: relative;
   overflow: hidden;
   display: grid;
@@ -43,7 +45,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -70,6 +72,7 @@
 }
 
 .detailSection {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
 }
@@ -78,5 +81,9 @@
   .identityRow {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .teamBadge {
+    max-width: 100%;
   }
 }

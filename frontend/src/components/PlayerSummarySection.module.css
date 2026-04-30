@@ -1,8 +1,10 @@
 .section {
+  min-width: 0;
   margin-bottom: var(--space-4);
 }
 
 .hero {
+  min-width: 0;
   display: grid;
   gap: var(--space-5);
   margin-bottom: var(--space-4);
@@ -30,7 +32,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -69,11 +71,13 @@
 }
 
 .detailSection {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
 }
 
 .gameSeries {
+  min-width: 0;
   display: grid;
   gap: var(--space-4);
   margin-bottom: var(--space-4);
@@ -92,19 +96,22 @@
 }
 
 .gameSeriesTitle {
+  min-width: 0;
   margin: 0;
   color: var(--text-primary);
   font-size: var(--font-h3);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .gameSeriesCount {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: var(--font-small);
-  white-space: nowrap;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .sparklinePanel {
@@ -114,6 +121,7 @@
 }
 
 .sparklineMeta {
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -124,13 +132,15 @@
   color: var(--text-secondary);
   font-size: var(--font-small);
   font-weight: var(--weight-semibold);
+  overflow-wrap: anywhere;
 }
 
 .sparklineLatest {
   color: var(--text-tertiary);
   font-family: var(--font-mono);
   font-size: var(--font-small);
-  white-space: nowrap;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .sparklineSvg {
@@ -169,8 +179,9 @@
 }
 
 .recentList {
+  min-width: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(148px, 100%), 1fr));
   gap: var(--space-2);
   align-items: stretch;
 }
@@ -209,6 +220,7 @@
 }
 
 .gameStats {
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-2);
@@ -233,7 +245,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
@@ -260,5 +272,11 @@
 
   .recentList {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .gameStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

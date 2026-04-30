@@ -136,7 +136,7 @@ or dev tools force horizontal overflow.
 
 ---
 
-## 3. `[ ]` Polish summary, record, and split result cards on mobile
+## 3. `[x]` Polish summary, record, and split result cards on mobile
 
 **Why:** Summary-style cards are the largest hero surfaces and are most likely
 to expose long-name, stat-grid, and identity-stacking issues.
