@@ -82,6 +82,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_c2_work_queue.md` — completed Track A component-experience queue for leaderboard layout work
 - `planning/phase_c2_leaderboard_inventory.md` — leaderboard row-shape and metric-priority inventory produced by Phase C2 item 1
 - `planning/phase_c3_work_queue.md` — active Track A component-experience queue for player comparison layout work
+- `planning/phase_c3_comparison_inventory.md` — comparison row-shape and renderer-boundary inventory produced by Phase C3 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker

@@ -56,7 +56,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory comparison row shapes and renderer boundary
+## 1. `[x]` Inventory comparison row shapes and renderer boundary
 
 **Why:** `query_class: "comparison"` covers player comparisons, team
 comparisons, matchup records, playoff comparisons, and decade breakdowns. C3
