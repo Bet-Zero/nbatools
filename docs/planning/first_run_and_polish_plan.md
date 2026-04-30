@@ -90,12 +90,16 @@ The work breaks into four areas:
 Goal: the landing/empty state, freshness banner, starter queries, hero
 query bar treatment.
 
-Status: active. The active queue is
-[`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
+Status: complete. P1 shipped the first-run surface, grouped starter queries,
+first-run freshness banner, and first-run mobile/accessibility polish. The
+queue is [`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
 
 ### Phase P2 — Loading, error, and empty states
 
 Goal: every state that isn't "showing a result" gets designed.
+
+Status: active. The active queue is
+[`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
 
 ### Phase P3 — Mobile verification and fixes
 
@@ -149,7 +153,9 @@ This is "feels finished":
 ## Phase queue handoff
 
 Phase P1's queue was drafted by Track A Part 2's final phase retrospective:
-[`phase_p1_work_queue.md`](./phase_p1_work_queue.md). Each subsequent phase's
+[`phase_p1_work_queue.md`](./phase_p1_work_queue.md). Phase P2's queue was
+drafted by Phase P1's retrospective:
+[`phase_p2_work_queue.md`](./phase_p2_work_queue.md). Each subsequent phase's
 queue is drafted by the prior phase's retrospective.
 
 When Phase P5 declares the master plan done, Track A is closed. If Track B

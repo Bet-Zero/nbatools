@@ -28,8 +28,8 @@ Out of scope: anything that only matters for a multi-tenant paid product
 
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
-the product polish work. Track A Parts 1 and 2 are complete; the active
-continuation is Track A Part 3, Phase P1.
+the product polish work. Track A Parts 1 and 2 are complete; Track A Part 3 is
+in progress and the active continuation is Phase P2.
 
 ---
 
@@ -118,8 +118,8 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 3, Phase P1.** Specifically,
-[`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
+**Active continuation: Track A, Part 3, Phase P2.** Specifically,
+[`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
 
 Track A is the priority track because it is fully agent-runnable without
 infrastructure dependencies. Track B can run in parallel whenever the
@@ -189,8 +189,8 @@ the full philosophy.
 | Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete | Headshots and team logos rendered consistently             | Track A Part 1    |
 | Component layouts  | Phase C1-C9 complete; Track A Part 2 closed by completion audit | Opinionated layouts per query class with charts            | Track A Part 2    |
 | Mobile             | Phase C8 dedicated component mobile pass complete; Part 3 broader first-run mobile verification remains | Functional and visually clean on every component           | Track A Parts 2-3 |
-| First-run          | Track A Part 3 Phase P1 active      | Landing, starter queries, freshness banner                 | Track A Part 3    |
-| Errors / loading   | Loading skeleton added; broader states still functional | Designed states with helpful copy and skeletons            | Track A Part 3    |
+| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete | Landing, starter queries, freshness banner                 | Track A Part 3    |
+| Errors / loading   | Track A Part 3 Phase P2 active      | Designed states with helpful copy and skeletons            | Track A Part 3    |
 
 ---
 
