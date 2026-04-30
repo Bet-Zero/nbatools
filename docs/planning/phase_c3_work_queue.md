@@ -282,7 +282,7 @@ fallbacks.
 
 ---
 
-## 6. `[ ]` Phase C3 retrospective and C4 handoff
+## 6. `[x]` Phase C3 retrospective and C4 handoff
 
 **Why:** Self-propagating final task. It closes player-comparison work and
 creates the next executable Part 2 queue.
@@ -326,6 +326,54 @@ creates the next executable Part 2 queue.
 - This file
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
+
+---
+
+## Phase C3 retrospective
+
+**Status:** Phase C3 is closed. Player-comparison layout work is complete, but
+Track A Part 2 and the overall product polish plan remain in progress.
+
+**What went well:**
+
+- The comparison inventory kept the renderer boundary narrow: only
+  `player_compare` moved to the dedicated layout, while team, matchup,
+  playoff, decade, and unknown comparison-shaped routes stayed on the generic
+  fallback.
+- The work split cleanly into PR-sized units: boundary, identity cards, metric
+  cards, responsive/docs polish, and the final handoff.
+- Existing design-system primitives carried the layout: `Avatar`, `TeamBadge`,
+  `Card`, `SectionHeader`, `Stat`, `StatBlock`, and `DataTable` covered the
+  required identity, stat, and detail-table surfaces without new primitives.
+- Tests now cover route dispatch, generic comparison fallback, populated player
+  identity rows, sparse identity fallback, tied/non-numeric metric rows, custom
+  long metric labels, and detail-table preservation.
+
+**What was harder:**
+
+- `ComparisonResult` still exposes comparison columns by display name rather
+  than stable entity ids, so the metric-card renderer has to stay conservative
+  and presentation-only.
+- Player summary rows do not consistently include team identity fields; the UI
+  can render team badges when row fields are present, but it cannot guarantee
+  team context for every player comparison.
+- There is no explicit metric direction metadata. C3 uses a small
+  higher-is-better allowlist and avoids leader emphasis for ambiguous, custom,
+  missing, or nonnumeric rows.
+
+**Residuals carried forward:**
+
+- A future engine/API improvement could expose stable comparison entity keys,
+  metric display metadata, metric direction, and sample-span context.
+- Team comparison, matchup record, playoff comparison, decade comparison,
+  split, finder, streak, occurrence/count, head-to-head, and playoff layouts
+  still need their Part 2 designs.
+- The player-comparison renderer remains neutral by design; any richer
+  team-color treatment for two-team/player contexts needs an explicit product
+  decision in a later phase.
+
+**Immediate handoff:** Continue Track A Part 2 with Phase C4, using
+[`phase_c4_work_queue.md`](./phase_c4_work_queue.md).
 
 ---
 
