@@ -1,5 +1,6 @@
 .headerContent {
   width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -32,7 +33,7 @@
   font-family: var(--font-mono);
   font-size: var(--font-small);
   font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: 0;
 }
 
 .eyebrow {
@@ -40,7 +41,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -48,8 +49,9 @@
   color: var(--text-primary);
   font-size: var(--font-h1);
   font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-display);
+  letter-spacing: 0;
   line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .tagline {
@@ -60,6 +62,7 @@
 }
 
 .statusStack {
+  min-width: 0;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -135,10 +138,15 @@
 }
 
 .resultActions {
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   align-items: center;
+}
+
+.resultActions > * {
+  min-width: 0;
 }
 
 .saveQueryButton {
@@ -183,6 +191,12 @@
 
   .resultActions > * {
     flex: 1 1 calc(var(--space-16) * 2);
+  }
+}
+
+@media (max-width: 520px) {
+  .resultActions > * {
+    flex-basis: 100%;
   }
 }
 

@@ -4,6 +4,7 @@
 }
 
 .summary {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -52,8 +53,10 @@
 }
 
 .label {
+  min-width: 0;
   flex: 1;
   font-weight: var(--weight-medium);
+  overflow-wrap: anywhere;
 }
 
 .expand {
@@ -62,6 +65,7 @@
 }
 
 .details {
+  min-width: 0;
   padding: var(--space-3) var(--space-4) var(--space-4);
   border-top: 1px solid var(--border-subtle);
   font-size: var(--font-small);
@@ -72,7 +76,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -87,11 +91,13 @@
 .seasonLabel {
   min-width: 0;
   color: var(--text-primary);
+  overflow-wrap: anywhere;
 }
 
 .seasonCurrentThrough {
   color: var(--text-secondary);
   text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .refreshRow {
@@ -99,10 +105,12 @@
   padding-top: var(--space-2);
   border-top: 1px solid var(--border-subtle);
   color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .error {
   color: var(--danger);
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 640px) {

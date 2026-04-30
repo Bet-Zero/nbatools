@@ -1,5 +1,6 @@
 .shell {
   min-height: 100vh;
+  overflow-x: clip;
   background:
     radial-gradient(circle at top left, var(--bg-elevated), transparent 32rem),
     var(--bg-page);
@@ -7,6 +8,7 @@
 
 .container {
   width: min(100%, calc(var(--space-16) * 18));
+  min-width: 0;
   margin: 0 auto;
   padding: var(--space-8) var(--space-4) var(--space-12);
   display: grid;
@@ -14,6 +16,7 @@
 }
 
 .header {
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -30,6 +33,7 @@
 }
 
 .workspace {
+  min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, calc(var(--space-16) * 5));
   align-items: start;
