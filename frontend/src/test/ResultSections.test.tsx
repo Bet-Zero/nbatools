@@ -874,6 +874,69 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
   });
 
+  it("keeps long player names and custom metric labels in player comparisons", () => {
+    const longFirst =
+      "A Very Long Player Name With Multiple Hyphenated-Surnames And Suffixes";
+    const longSecond =
+      "Another Extended Player Name With Several Middle Names";
+    const data = makeResponse({
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "player_compare" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: longFirst,
+              team_name: "A Very Long Historical Team Name For Wrapping Tests",
+              team_abbr: "LONG",
+              pts_avg: 27.4,
+              reb_avg: 9.1,
+              ast_avg: 8.8,
+            },
+            {
+              player_name: longSecond,
+              pts_avg: 26.9,
+              reb_avg: 10.2,
+              ast_avg: 7.6,
+            },
+          ],
+          comparison: [
+            {
+              metric: "very_long_metric_label_with_extra_context",
+              [longFirst]: 123.456,
+              [longSecond]: 98.765,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const compared = screen.getByLabelText("Compared players");
+    const metricCards = screen.getByLabelText("Metric comparison cards");
+    expect(within(compared).getByText(longFirst)).toBeInTheDocument();
+    expect(within(compared).getByText(longSecond)).toBeInTheDocument();
+    expect(
+      within(compared).getByLabelText(
+        "A Very Long Historical Team Name For Wrapping Tests (LONG)",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(metricCards).getByText(
+        "Very Long Metric Label With Extra Context",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(metricCards).queryByText(/leads by/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+  });
+
   it("renders streak sections", () => {
     const data = makeResponse({
       result: {

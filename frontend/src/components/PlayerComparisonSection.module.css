@@ -50,6 +50,7 @@
 
 .teamBadge {
   margin-top: var(--space-1);
+  max-width: 100%;
 }
 
 .heroStats,
