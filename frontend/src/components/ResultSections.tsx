@@ -5,6 +5,7 @@ import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
 import LeaderboardSection from "./LeaderboardSection";
 import NoResultDisplay from "./NoResultDisplay";
+import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
@@ -37,6 +38,13 @@ function isPlayerSummary(data: QueryResponse): boolean {
   );
 }
 
+function isPlayerComparison(data: QueryResponse): boolean {
+  return (
+    data.route === "player_compare" ||
+    data.result?.metadata?.route === "player_compare"
+  );
+}
+
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
   const queryClass = data.result?.query_class ?? "";
   const sections = data.result?.sections ?? {};
@@ -53,6 +61,9 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <SummarySection sections={sections} />;
     case "comparison":
+      if (isPlayerComparison(data)) {
+        return <PlayerComparisonSection sections={sections} />;
+      }
       return <ComparisonSection sections={sections} />;
     case "split_summary":
       return <SplitSummarySection sections={sections} />;
