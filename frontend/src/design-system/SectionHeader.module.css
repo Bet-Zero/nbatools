@@ -1,4 +1,5 @@
 .header {
+  min-width: 0;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -9,6 +10,7 @@
 }
 
 .titleGroup {
+  flex: 1 1 auto;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -17,22 +19,27 @@
 }
 
 .eyebrow {
+  min-width: 0;
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .title {
+  min-width: 0;
   color: var(--text-secondary);
   font-size: var(--font-small);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .count {
+  min-width: 0;
   color: var(--text-secondary);
   font-size: var(--font-micro);
   font-weight: var(--weight-regular);
@@ -41,6 +48,7 @@
 }
 
 .actions {
+  min-width: 0;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -57,5 +65,10 @@
   .actions {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .actions > * {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 }

@@ -16,6 +16,15 @@
   overflow-wrap: anywhere;
 }
 
+.devTools summary > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.devTools summary > :last-child {
+  flex: 0 0 auto;
+}
+
 .devTools summary:hover {
   color: var(--text-primary);
 }
@@ -36,6 +45,7 @@
 
 .devTools select,
 .devTools textarea {
+  box-sizing: border-box;
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -54,6 +64,8 @@
 .devTools textarea {
   height: 80px;
   resize: vertical;
+  overflow-x: auto;
+  white-space: pre-wrap;
 }
 
 .devTools select:focus,

@@ -264,7 +264,7 @@ metric blocks, and contained detail when many rows render.
 
 ---
 
-## 6. `[ ]` Polish tables, raw JSON, copy actions, and mobile docs
+## 6. `[x]` Polish tables, raw JSON, copy actions, and mobile docs
 
 **Why:** Dense tables and utility panels are the common fallback for every
 result. They must stay usable after all card layouts are polished.

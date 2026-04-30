@@ -1,4 +1,6 @@
 .share {
+  min-width: 0;
+  max-width: 100%;
   border-color: var(--accent);
   color: var(--accent);
 }
