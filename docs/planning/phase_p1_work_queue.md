@@ -256,7 +256,7 @@ for pointer users.
 
 ---
 
-## 5. `[ ]` Phase P1 retrospective and P2 handoff
+## 5. `[x]` Phase P1 retrospective and P2 handoff
 
 **Why:** Self-propagating final task. It closes the landing/first-run queue and
 creates the executable loading/error/empty-states queue.
@@ -300,6 +300,48 @@ creates the executable loading/error/empty-states queue.
 - `docs/planning/first_run_and_polish_plan.md`
 - `docs/planning/product_polish_master_plan.md`
 - `docs/operations/ui_guide.md`
+
+---
+
+## Phase P1 retrospective
+
+What went well:
+
+- The first-run inventory made starter-query selection explicit before runtime
+  work started, so P1 did not promote unsupported examples.
+- The existing `App.tsx` query path already handled starter-query execution,
+  URL state, history insertion, and result rendering. P1 reused that path
+  instead of adding new frontend routing logic.
+- Freshness promotion stayed additive: the first-run banner uses the existing
+  `/freshness` response and the result envelope still owns result-level
+  freshness after a query returns.
+- Focused tests now cover grouped starter rendering, first-run query execution,
+  freshness banner variants, and keyboard flow from query input to starters.
+
+What was harder:
+
+- The first-run surface had to feel complete without becoming a marketing page.
+  The final shape keeps the existing app shell and query bar as the primary
+  workflow.
+- Long starter-query labels and freshness messages needed explicit mobile
+  containment rules so the grouped controls stay stable at phone widths.
+- Freshness has overlapping states with API health. P1 kept API-online/offline
+  handling separate while making fresh/stale/unknown/failed data states visible.
+
+Residuals:
+
+- Phase P2 owns loading skeletons, no-result/unsupported/ambiguous states,
+  client/network failure copy, and retry affordances.
+- Phase P3 owns the broader mobile verification pass across existing component
+  and state surfaces.
+- Phase P4 owns keyboard shortcuts, transitions, copy/share confirmation,
+  number animation, and stat/tooltips.
+
+Handoff:
+
+- Phase P1 is closed.
+- Track A Part 3 continues with
+  [`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
 
 ---
 
