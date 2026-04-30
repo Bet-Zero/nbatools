@@ -180,15 +180,22 @@ routes, and generic fallbacks while keeping full detail tables visible.
 
 Goal: matchup card and playoff history — the two most custom shapes.
 
-Status: active. Phase C7 starts with a head-to-head/playoff row-shape inventory
-because the target routes span comparison, summary, and leaderboard query
-classes and overlap with existing team-record rendering.
+Status: complete. `HeadToHeadSection.tsx` owns team matchup records,
+head-to-head-marked player/team comparisons, and matchup-by-decade comparison
+results. `PlayoffSection.tsx` owns playoff history, playoff appearances,
+playoff matchup history, and playoff round-record leaderboards. C7 preserves
+ordinary comparison, summary, leaderboard, occurrence, and fallback renderers
+while keeping full detail tables visible and avoiding playoff-series inference
+in React.
 
 ### Phase C8 — Mobile pass for every component
 
 Goal: dedicated phase to verify and fix every redesigned component on
 mobile. Each component gets explicit mobile acceptance criteria during
 its phase, but a final pass is worth doing once everything ships.
+
+Status: active. The active queue is
+[`phase_c8_work_queue.md`](./phase_c8_work_queue.md).
 
 ### Phase C9 — Retrospective and Part 3 handoff
 
