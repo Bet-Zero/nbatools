@@ -54,7 +54,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory head-to-head and playoff row shapes
+## 1. `[x]` Inventory head-to-head and playoff row shapes
 
 **Why:** C7 spans comparison, summary, and leaderboard query classes. The queue
 needs verified row-shape guidance before assigning renderer ownership.
