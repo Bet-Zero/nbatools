@@ -77,6 +77,28 @@ module replacement during frontend development.
 - **Dev Tools panel** — collapsible structured-query interface for calling `POST /structured-query` with a route selector and kwargs JSON input.
 - **Health indicator** — live green/red dot showing API connectivity and version.
 
+## Mobile and dense-output behavior
+
+The UI is designed to remain usable from phone widths through desktop:
+
+- The main workspace uses a two-column result/sidebar layout on desktop and
+  stacks into one column below 900px. Outer padding tightens below 640px.
+- Result actions and section-header actions wrap instead of overlapping; the
+  main result action buttons become full-width around 520px.
+- Route/status metadata, context chips, long entity names, playoff round
+  labels, event-count labels, and saved/dev-tool text wrap inside their regions.
+- Redesigned card grids generally collapse to one column around 720-760px, with
+  identity rows and ranked-row metric blocks stacking on phone widths.
+- Full detail tables remain visible for every result family. Wide tables scroll
+  horizontally inside their own table wrapper instead of widening the app shell.
+- Raw JSON and structured-query kwargs stay inside their panels. Long JSON keys
+  and values can wrap, while the panel itself also supports internal scrolling.
+
+Remaining Part 3 polish should focus on first-run onboarding, starter-query
+curation, freshness/banner presentation, keyboard shortcuts, transitions,
+loading/error copy, copy/share affordances, and a browser screenshot pass across
+real phone/tablet/desktop fixtures.
+
 ## How it works
 
 ```

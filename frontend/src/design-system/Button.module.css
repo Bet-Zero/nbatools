@@ -1,4 +1,6 @@
 .button {
+  min-width: 0;
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -7,9 +9,9 @@
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
   font-weight: var(--weight-medium);
-  line-height: 1;
+  line-height: 1.2;
   cursor: pointer;
-  white-space: nowrap;
+  white-space: normal;
   text-decoration: none;
   transition:
     background-color var(--transition-fast),
@@ -97,9 +99,12 @@
 }
 
 .content {
+  min-width: 0;
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow-wrap: anywhere;
 }
 
 .spinner {
