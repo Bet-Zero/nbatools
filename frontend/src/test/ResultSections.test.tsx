@@ -653,16 +653,30 @@ describe("ResultSections", () => {
               game_date: "2025-01-15",
               player_name: "Stephen Curry",
               player_id: 201939,
+              team_name: "Golden State Warriors",
+              team_abbr: "GSW",
+              opponent_team_name: "Boston Celtics",
               opponent_team_abbr: "BOS",
+              is_home: 1,
+              wl: "W",
               pts: 42,
+              reb: 6,
+              ast: 8,
             },
             {
               rank: 2,
               game_date: "2025-01-20",
               player_name: "Stephen Curry",
               player_id: 201939,
+              team_name: "Golden State Warriors",
+              team_abbr: "GSW",
+              opponent_team_name: "Los Angeles Lakers",
               opponent_team_abbr: "LAL",
+              is_away: 1,
+              wl: "L",
               pts: 35,
+              reb: 5,
+              ast: 7,
             },
           ],
         },
@@ -670,14 +684,70 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const cards = screen.getByLabelText("Player game cards");
     expect(screen.getByText("Player Games")).toBeInTheDocument();
     expect(screen.getByText("2 games")).toBeInTheDocument();
     expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
     expect(screen.queryByText("Matching Games")).not.toBeInTheDocument();
+    expect(within(cards).getAllByText("Stephen Curry").length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      within(cards)
+        .getAllByLabelText("Stephen Curry avatar")[0]
+        .querySelector("img"),
+    ).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/headshots/nba/latest/1040x760/201939.png",
+    );
+    expect(
+      within(cards).getAllByLabelText("Golden State Warriors (GSW)").length,
+    ).toBeGreaterThan(0);
+    expect(
+      within(cards).getByLabelText("Boston Celtics (BOS)").querySelector("img"),
+    ).toBeNull();
+    expect(within(cards).getByText("#1 / 2025-01-15")).toBeInTheDocument();
+    expect(within(cards).getByText("vs BOS")).toBeInTheDocument();
+    expect(within(cards).getByText("W")).toBeInTheDocument();
+    expect(within(cards).getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(within(cards).getByText("42")).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Player Name" }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Stephen Curry").length).toBeGreaterThan(0);
+  });
+
+  it("renders sparse player game cards with identity fallbacks", () => {
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: { route: "player_game_finder" },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              game_date: "2025-01-15",
+              player_name: "Mystery Player",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const cards = screen.getByLabelText("Player game cards");
+    expect(within(cards).getByText("Mystery Player")).toBeInTheDocument();
+    expect(within(cards).getByText("2025-01-15")).toBeInTheDocument();
+    expect(
+      within(cards)
+        .getByLabelText("Mystery Player avatar")
+        .querySelector("img"),
+    ).toBeNull();
+    expect(within(cards).queryByText(/vs |at /)).not.toBeInTheDocument();
+    expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
   });
 
   it("keeps team game finders on the generic finder renderer", () => {
