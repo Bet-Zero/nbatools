@@ -700,6 +700,67 @@ describe("ResultSections", () => {
     expect(screen.getByText("Comparison")).toBeInTheDocument();
   });
 
+  it("routes player comparisons to the dedicated renderer", () => {
+    const data = makeResponse({
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "player_compare" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { player_name: "Nikola Jokic", pts_avg: 26.4 },
+            { player_name: "Joel Embiid", pts_avg: 30.1 },
+          ],
+          comparison: [
+            {
+              metric: "pts_avg",
+              "Nikola Jokic": 26.4,
+              "Joel Embiid": 30.1,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Player Comparison")).toBeInTheDocument();
+    expect(screen.getByText("2 players")).toBeInTheDocument();
+    expect(screen.getByText("Metric Comparison")).toBeInTheDocument();
+    expect(screen.queryByText("Players")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Nikola Jokic").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Joel Embiid").length).toBeGreaterThan(0);
+  });
+
+  it("keeps team comparisons on the generic comparison renderer", () => {
+    const data = makeResponse({
+      route: "team_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "team_compare" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { team_name: "Celtics", wins: 60 },
+            { team_name: "Lakers", wins: 47 },
+          ],
+          comparison: [{ metric: "wins", Celtics: 60, Lakers: 47 }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Players")).toBeInTheDocument();
+    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Celtics").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lakers").length).toBeGreaterThan(0);
+  });
+
   it("renders streak sections", () => {
     const data = makeResponse({
       result: {

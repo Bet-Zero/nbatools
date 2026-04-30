@@ -101,7 +101,7 @@ subset into a new renderer.
 
 ---
 
-## 2. `[ ]` Establish the player-comparison renderer boundary
+## 2. `[x]` Establish the player-comparison renderer boundary
 
 **Why:** Player comparison needs a dedicated owner without accidentally
 redesigning every `comparison` result shape.
