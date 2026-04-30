@@ -5,6 +5,8 @@
 }
 
 .content {
+  width: 100%;
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
   max-width: 720px;
@@ -28,6 +30,7 @@
 }
 
 .capabilities {
+  width: 100%;
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

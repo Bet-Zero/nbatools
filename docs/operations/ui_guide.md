@@ -90,6 +90,10 @@ The UI is designed to remain usable from phone widths through desktop:
   main result action buttons become full-width around 520px.
 - First-run freshness banner content wraps inside the top status region and
   keeps stale, unknown, and failed states visible before the first query.
+- Phase P1 verified the first-run path against 360x740, 390x844, 768x1024, and
+  1280x900 layout targets. Query input remains the first focus target; with an
+  empty query, Tab advances to the first starter-query button because the submit
+  button is disabled until text exists.
 - Route/status metadata, context chips, long entity names, playoff round
   labels, event-count labels, and saved/dev-tool text wrap inside their regions.
 - Redesigned card grids generally collapse to one column around 720-760px, with

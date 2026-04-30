@@ -192,7 +192,17 @@
   }
 
   .banner .summary {
+    align-items: flex-start;
     padding: var(--space-3) var(--space-4);
+  }
+
+  .banner .dot {
+    margin-top: var(--space-1);
+  }
+
+  .banner .expand {
+    margin-left: auto;
+    padding-top: var(--space-1);
   }
 
   .labelStack {
