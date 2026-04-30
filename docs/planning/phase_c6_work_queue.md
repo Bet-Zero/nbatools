@@ -201,7 +201,7 @@ then expose the supporting rows.
 
 ---
 
-## 4. `[ ]` Build count answer layout
+## 4. `[x]` Build count answer layout
 
 **Why:** Count queries should read as a direct answer rather than a generic
 section label followed by a one-row table.

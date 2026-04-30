@@ -176,7 +176,13 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return renderFallback(sections);
     case "count":
-      return <CountSection sections={sections} />;
+      return (
+        <CountSection
+          sections={sections}
+          metadata={data.result?.metadata}
+          route={data.route}
+        />
+      );
     default:
       return renderFallback(sections);
   }
