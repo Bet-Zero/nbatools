@@ -14,6 +14,7 @@ Validates that:
 
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
@@ -119,6 +120,32 @@ class TestNaturalQuery:
         assert body["current_through"] == "2026-04-10"
         assert body["notes"] == ["test note"]
         assert body["caveats"] == ["test caveat"]
+
+    @patch("nbatools.api.execute_natural_query")
+    def test_natural_query_preserves_player_summary_game_log_section(self, mock_exec):
+        result = SummaryResult(
+            summary=pd.DataFrame([{"player_name": "Test Player", "games": 1}]),
+            game_log=pd.DataFrame(
+                [
+                    {
+                        "game_date": "2024-10-25",
+                        "game_id": "001",
+                        "opponent_team_abbr": "LAL",
+                        "wl": "W",
+                        "minutes": 34.5,
+                        "pts": 28,
+                        "reb": 10,
+                        "ast": 8,
+                    }
+                ]
+            ),
+        )
+        mock_exec.return_value = self._mock_result(result=result)
+
+        resp = client.post("/query", json={"query": "anything"})
+        body = resp.json()
+
+        assert body["result"]["sections"]["game_log"][0]["pts"] == 28
 
     @patch("nbatools.api.execute_natural_query")
     def test_natural_query_no_result(self, mock_exec):

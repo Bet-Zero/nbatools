@@ -122,6 +122,31 @@ class TestSummaryResult:
         assert d["sections"]["summary"][0]["player_name"] == "Test Player"
         assert d["sections"]["summary"][0]["pts_avg"] == 25.0
 
+    def test_to_dict_can_include_structured_game_log_without_labeled_output(self):
+        summary = pd.DataFrame([{"player_name": "Test Player", "games": 2}])
+        game_log = pd.DataFrame(
+            [
+                {
+                    "game_date": "2024-10-25",
+                    "game_id": "001",
+                    "opponent_team_abbr": "LAL",
+                    "wl": "W",
+                    "minutes": 34.5,
+                    "pts": 28,
+                    "reb": 10,
+                    "ast": 8,
+                }
+            ]
+        )
+        result = SummaryResult(summary=summary, game_log=game_log)
+
+        d = result.to_dict()
+        assert d["sections"]["game_log"] == [game_log.iloc[0].to_dict()]
+
+        sections = parse_labeled_sections(result.to_labeled_text())
+        assert "SUMMARY" in sections
+        assert "GAME_LOG" not in sections
+
     def test_to_dict_handles_nan(self):
         summary = pd.DataFrame([{"player_name": "X", "pts_avg": float("nan")}])
         r = SummaryResult(summary=summary)
@@ -572,6 +597,54 @@ class TestBuildResultTeamSplitSummary:
 
 
 class TestToDictIntegration:
+    @pytest.mark.needs_data
+    @pytest.mark.engine
+    def test_to_dict_has_normal_game_log_sample(self):
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+        )
+        assert isinstance(result, SummaryResult)
+
+        d = result.to_dict()
+        game_log = d["sections"]["game_log"]
+        summary_row = d["sections"]["summary"][0]
+        assert len(game_log) == summary_row["games"]
+        assert {
+            "game_date",
+            "game_id",
+            "opponent_team_abbr",
+            "wl",
+            "minutes",
+            "pts",
+            "reb",
+            "ast",
+        }.issubset(game_log[0])
+
+    @pytest.mark.needs_data
+    @pytest.mark.engine
+    def test_to_dict_has_exact_last_n_game_log_sample(self):
+        from nbatools.commands.player_game_summary import build_result
+
+        result = build_result(
+            season="2024-25",
+            player="Nikola Jokić",
+            season_type="Regular Season",
+            last_n=5,
+        )
+        assert isinstance(result, SummaryResult)
+
+        d = result.to_dict()
+        game_log = d["sections"]["game_log"]
+        assert len(game_log) == 5
+        assert d["sections"]["summary"][0]["games"] == 5
+        assert [row["game_date"] for row in game_log] == sorted(
+            row["game_date"] for row in game_log
+        )
+
     @pytest.mark.needs_data
     def test_player_summary_dict_has_by_season(self):
         from nbatools.commands.player_game_summary import build_result
