@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import FreshnessStatus from "../components/FreshnessStatus";
-import type { FreshnessResponse } from "../api/types";
+import type { FreshnessResponse, FreshnessStatusValue } from "../api/types";
 
 // Mock the fetch-based client
 const mockFetchFreshness = vi.fn<() => Promise<FreshnessResponse>>();
@@ -101,6 +101,42 @@ describe("FreshnessStatus", () => {
     render(<FreshnessStatus pollInterval={0} />);
     await waitFor(() => {
       expect(screen.getByText("failed")).toBeInTheDocument();
+    });
+  });
+
+  it("renders first-run banner presentation", async () => {
+    mockFetchFreshness.mockResolvedValue(makeFreshnessData());
+    render(<FreshnessStatus pollInterval={0} variant="banner" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Data freshness")).toBeInTheDocument();
+      expect(screen.getByText("Ready for a first query.")).toBeInTheDocument();
+    });
+    expect(
+      screen.getByRole("button", {
+        name: "Data freshness: Data through 2026-04-13",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it.each<[FreshnessStatusValue, string]>([
+    ["stale", "Review data age before sharing results."],
+    ["unknown", "Freshness is not confirmed."],
+    ["failed", "Refresh needs attention before results are trusted."],
+  ])("shows %s banner guidance", async (status, message) => {
+    mockFetchFreshness.mockResolvedValue(
+      makeFreshnessData({
+        status,
+        current_through: status === "stale" ? "2026-04-01" : null,
+        last_refresh_ok: status === "failed" ? false : null,
+        last_refresh_error: status === "failed" ? "API timeout" : null,
+      }),
+    );
+    render(<FreshnessStatus pollInterval={0} variant="banner" />);
+
+    await waitFor(() => {
+      expect(screen.getByText(status)).toBeInTheDocument();
+      expect(screen.getByText(message)).toBeInTheDocument();
     });
   });
 

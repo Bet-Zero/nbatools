@@ -29,12 +29,23 @@ const BADGE_VARIANTS: Record<FreshnessStatusValue, BadgeVariant> = {
   failed: "danger",
 };
 
+const BANNER_MESSAGES: Record<FreshnessStatusValue, string> = {
+  fresh: "Ready for a first query.",
+  stale: "Review data age before sharing results.",
+  unknown: "Freshness is not confirmed.",
+  failed: "Refresh needs attention before results are trusted.",
+};
+
 interface Props {
   /** Poll interval in ms — 0 to disable polling. */
   pollInterval?: number;
+  variant?: "panel" | "banner";
 }
 
-export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
+export default function FreshnessStatus({
+  pollInterval = 120_000,
+  variant = "panel",
+}: Props) {
   const [info, setInfo] = useState<FreshnessResponse | null>(null);
   const [expanded, setExpanded] = useState(false);
 
@@ -69,10 +80,18 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
 
   const status = info.status as FreshnessStatusValue;
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.unknown;
+  const isBanner = variant === "banner";
+  const label = info.current_through
+    ? `Data through ${info.current_through}`
+    : cfg.label;
 
   return (
     <Card
-      className={[styles.panel, cfg.className].join(" ")}
+      className={[
+        styles.panel,
+        cfg.className,
+        isBanner ? styles.banner : "",
+      ].join(" ")}
       depth="card"
       padding="none"
     >
@@ -82,12 +101,19 @@ export default function FreshnessStatus({ pollInterval = 120_000 }: Props) {
         onClick={() => setExpanded((e) => !e)}
         aria-expanded={expanded}
         title={cfg.label}
+        aria-label={isBanner ? `Data freshness: ${label}` : undefined}
       >
         <span className={styles.dot}>{cfg.dot}</span>
-        <span className={styles.label}>
-          {info.current_through
-            ? `Data through ${info.current_through}`
-            : cfg.label}
+        <span className={styles.labelStack}>
+          {isBanner && (
+            <span className={styles.kicker}>Data freshness</span>
+          )}
+          <span className={styles.label}>{label}</span>
+          {isBanner && (
+            <span className={styles.bannerMessage}>
+              {BANNER_MESSAGES[status] ?? BANNER_MESSAGES.unknown}
+            </span>
+          )}
         </span>
         <Badge variant={BADGE_VARIANTS[status]} size="sm" uppercase>
           {status}

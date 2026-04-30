@@ -78,6 +78,11 @@ describe("first-run starter queries", () => {
 
     render(<App />);
 
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("Ready for a first query.")).toBeInTheDocument();
+
     fireEvent.click(
       screen.getByRole("button", {
         name: "Run starter query: Jokic last 10 games",
