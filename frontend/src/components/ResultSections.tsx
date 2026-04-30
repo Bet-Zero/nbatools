@@ -8,6 +8,7 @@ import NoResultDisplay from "./NoResultDisplay";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerSummarySection from "./PlayerSummarySection";
+import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
@@ -70,6 +71,11 @@ function isTeamMatchupRecord(data: QueryResponse): boolean {
   return route === "team_matchup_record";
 }
 
+function isOwnedSplitSummary(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "team_split_summary" || route === "player_split_summary";
+}
+
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
   const queryClass = data.result?.query_class ?? "";
   const sections = data.result?.sections ?? {};
@@ -123,6 +129,15 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <ComparisonSection sections={sections} />;
     case "split_summary":
+      if (isOwnedSplitSummary(data)) {
+        return (
+          <SplitSummaryCardsSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            route={data.route}
+          />
+        );
+      }
       return <SplitSummarySection sections={sections} />;
     case "finder":
       if (isPlayerGameFinder(data)) {

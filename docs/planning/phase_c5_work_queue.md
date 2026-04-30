@@ -239,7 +239,7 @@ supporting stat table.
 
 ---
 
-## 5. `[ ]` Redesign split summary layout
+## 5. `[x]` Redesign split summary layout
 
 **Why:** Split summaries are comparisons between buckets. They should render as
 bucket cards before dense split tables.

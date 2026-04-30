@@ -555,6 +555,192 @@ describe("ResultSections", () => {
     expect(screen.getByText("Fallback Team")).toBeInTheDocument();
   });
 
+  it("routes team split summaries to bucket cards", () => {
+    const data = makeResponse({
+      route: "team_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: {
+          route: "team_split_summary",
+          split_type: "home_away",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              season_start: "2024-25",
+              season_end: "2024-25",
+              season_type: "Regular Season",
+              split: "home_away",
+              games_total: 6,
+            },
+          ],
+          split_comparison: [
+            {
+              bucket: "home",
+              games: 3,
+              wins: 2,
+              losses: 1,
+              win_pct: 0.667,
+              pts_avg: 119.3,
+            },
+            {
+              bucket: "away",
+              games: 3,
+              wins: 1,
+              losses: 2,
+              win_pct: 0.333,
+              pts_avg: 111.7,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Split Summary")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Boston Celtics" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Home/Away / 2024-25 / Regular Season / 6 games")).toBeInTheDocument();
+    const buckets = screen.getByLabelText("Split buckets");
+    expect(within(buckets).getByText("Home")).toBeInTheDocument();
+    expect(within(buckets).getByText("Away")).toBeInTheDocument();
+    expect(within(buckets).getByText("2-1")).toBeInTheDocument();
+    expect(within(buckets).getByText("1-2")).toBeInTheDocument();
+    expect(screen.getByText("Split Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Split Comparison Detail")).toBeInTheDocument();
+  });
+
+  it("routes player split summaries to neutral bucket cards", () => {
+    const data = makeResponse({
+      route: "player_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: {
+          route: "player_split_summary",
+          split_type: "wins_losses",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              season_start: "2024-25",
+              season_end: "2024-25",
+              season_type: "Regular Season",
+              split: "wins_losses",
+              games_total: 8,
+            },
+          ],
+          split_comparison: [
+            {
+              bucket: "wins",
+              games: 5,
+              wins: 5,
+              losses: 0,
+              win_pct: 1,
+              minutes_avg: 34.5,
+              pts_avg: 30.5,
+            },
+            {
+              bucket: "losses",
+              games: 3,
+              wins: 0,
+              losses: 3,
+              win_pct: 0,
+              minutes_avg: 36.2,
+              pts_avg: 24.1,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Player Split Summary")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Nikola Jokic" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByLabelText("Nikola Jokic avatar").length,
+    ).toBeGreaterThan(0);
+    const buckets = screen.getByLabelText("Split buckets");
+    expect(within(buckets).getByText("Wins")).toBeInTheDocument();
+    expect(within(buckets).getByText("Losses")).toBeInTheDocument();
+    expect(within(buckets).getByText("30.5")).toBeInTheDocument();
+    expect(within(buckets).getByText("34.5")).toBeInTheDocument();
+  });
+
+  it("renders long split bucket labels with sparse stats", () => {
+    const data = makeResponse({
+      route: "team_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: {
+          route: "team_split_summary",
+          team: "Long Bucket Team",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ team_name: "Long Bucket Team", games_total: 1 }],
+          split_comparison: [
+            {
+              bucket: "post_all_star_break_really_long_bucket",
+              games: 1,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(
+      screen.getByText("Post All Star Break Really Long Bucket"),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("1 game").length).toBeGreaterThan(0);
+    expect(screen.getByText("Split Comparison Detail")).toBeInTheDocument();
+  });
+
+  it("keeps unknown split summaries on the generic split renderer", () => {
+    const data = makeResponse({
+      route: "unknown_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: { route: "unknown_split_summary" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ label: "Fallback split" }],
+          split_comparison: [{ bucket: "custom_bucket", games: 2 }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.getByText("Split Comparison")).toBeInTheDocument();
+    expect(screen.queryByText("Team Split Summary")).not.toBeInTheDocument();
+    expect(screen.queryByText("Player Split Summary")).not.toBeInTheDocument();
+  });
+
   it("renders leaderboard sections", () => {
     const data = makeResponse({
       result: {
