@@ -1,10 +1,12 @@
 import type { QueryResponse, SectionRow } from "../api/types";
 import { Card, SectionHeader } from "../design-system";
 import ComparisonSection from "./ComparisonSection";
+import CountSection from "./CountSection";
 import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
 import LeaderboardSection from "./LeaderboardSection";
 import NoResultDisplay from "./NoResultDisplay";
+import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerSummarySection from "./PlayerSummarySection";
@@ -76,6 +78,19 @@ function isOwnedSplitSummary(data: QueryResponse): boolean {
   return route === "team_split_summary" || route === "player_split_summary";
 }
 
+function isOwnedStreak(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "player_streak_finder" || route === "team_streak_finder";
+}
+
+function isOccurrenceLeaderboard(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return (
+    route === "player_occurrence_leaders" ||
+    route === "team_occurrence_leaders"
+  );
+}
+
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
   const queryClass = data.result?.query_class ?? "";
   const sections = data.result?.sections ?? {};
@@ -145,9 +160,17 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <FinderSection sections={sections} />;
     case "leaderboard":
+      if (isOccurrenceLeaderboard(data)) {
+        return <OccurrenceLeaderboardSection sections={sections} />;
+      }
       return <LeaderboardSection sections={sections} />;
     case "streak":
-      return <StreakSection sections={sections} />;
+      if (isOwnedStreak(data)) {
+        return <StreakSection sections={sections} />;
+      }
+      return renderFallback(sections);
+    case "count":
+      return <CountSection sections={sections} />;
     default:
       return renderFallback(sections);
   }

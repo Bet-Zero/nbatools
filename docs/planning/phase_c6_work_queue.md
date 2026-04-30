@@ -107,7 +107,7 @@ row-shape guidance before assigning renderer ownership.
 
 ---
 
-## 2. `[ ]` Establish streak and occurrence renderer boundaries
+## 2. `[x]` Establish streak and occurrence renderer boundaries
 
 **Why:** Streaks, occurrence leaderboards, and count answers need dedicated
 owners without hijacking generic leaderboard/finder/count-shaped fallbacks.
