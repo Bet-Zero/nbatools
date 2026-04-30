@@ -11,12 +11,63 @@ import {
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
 import DataTable from "./DataTable";
-import { formatValue } from "./tableFormatting";
+import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./PlayerGameFinderSection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
 }
+
+const STAT_LABELS: Record<string, string> = {
+  ast: "AST",
+  blk: "BLK",
+  efg: "eFG",
+  fg3a: "FG3A",
+  fg3m: "FG3M",
+  pts: "PTS",
+  reb: "REB",
+  stl: "STL",
+  tov: "TOV",
+  ts: "TS",
+  usg: "USG",
+};
+
+const PROMOTED_STAT_CANDIDATES = [
+  "pts",
+  "reb",
+  "ast",
+  "fg3m",
+  "stl",
+  "blk",
+  "tov",
+  "fg3a",
+];
+
+const DETAIL_OR_CONTEXT_KEYS = new Set([
+  "rank",
+  "game_date",
+  "game_id",
+  "season",
+  "season_type",
+  "player_name",
+  "player",
+  "player_id",
+  "team_name",
+  "team",
+  "team_abbr",
+  "team_id",
+  "opponent_team_name",
+  "opponent_team_abbr",
+  "opponent_team_id",
+  "opponent",
+  "is_home",
+  "is_away",
+  "wl",
+  "minutes",
+  "plus_minus",
+  "clutch_events",
+  "clutch_seconds",
+]);
 
 function numericValue(row: SectionRow, key: string): number | null {
   const value = row[key];
@@ -94,25 +145,85 @@ function resultVariant(wl: string): "win" | "loss" | "neutral" {
   return "neutral";
 }
 
+function statLabel(key: string): string {
+  return formatColHeader(key).replace(
+    /\b(ast|blk|efg|fg3a|fg3m|pts|reb|stl|tov|ts|usg)\b/gi,
+    (stat) => STAT_LABELS[stat.toLowerCase()] ?? stat,
+  );
+}
+
+function addStat(
+  stats: StatProps[],
+  row: SectionRow,
+  key: string,
+  semantic: StatProps["semantic"] = "neutral",
+): boolean {
+  const value = numericValue(row, key);
+  if (value === null) return false;
+  stats.push({
+    label: statLabel(key),
+    value: formatValue(value, key),
+    semantic,
+  });
+  return true;
+}
+
 function topLineStats(row: SectionRow): StatProps[] {
   const stats: StatProps[] = [];
-  const candidates = [
-    { key: "pts", label: "PTS", semantic: "accent" as const },
-    { key: "reb", label: "REB", semantic: "neutral" as const },
-    { key: "ast", label: "AST", semantic: "neutral" as const },
-  ];
+  const used = new Set<string>();
 
-  for (const { key, label, semantic } of candidates) {
-    const value = numericValue(row, key);
-    if (value === null) continue;
-    stats.push({
-      label,
-      value: formatValue(value, key),
-      semantic,
-    });
+  for (const key of PROMOTED_STAT_CANDIDATES) {
+    if (stats.length >= 4) break;
+    if (addStat(stats, row, key, stats.length === 0 ? "accent" : "neutral")) {
+      used.add(key);
+    }
+  }
+
+  for (const key of Object.keys(row)) {
+    if (stats.length >= 4) break;
+    if (used.has(key) || DETAIL_OR_CONTEXT_KEYS.has(key)) continue;
+    addStat(stats, row, key, stats.length === 0 ? "accent" : "neutral");
   }
 
   return stats;
+}
+
+function signedValue(value: number, key: string): string {
+  const formatted = formatValue(value, key);
+  return value > 0 ? `+${formatted}` : formatted;
+}
+
+function secondaryContext(row: SectionRow): string[] {
+  const context = [
+    textValue(row, "season"),
+    textValue(row, "season_type"),
+  ];
+  const minutes = numericValue(row, "minutes");
+  const plusMinus = numericValue(row, "plus_minus");
+  const clutchEvents = numericValue(row, "clutch_events");
+  const clutchSeconds = numericValue(row, "clutch_seconds");
+
+  if (minutes !== null) context.push(`MIN ${formatValue(minutes, "minutes")}`);
+  if (plusMinus !== null) {
+    context.push(`+/- ${signedValue(plusMinus, "plus_minus")}`);
+  }
+  if (clutchEvents !== null) {
+    context.push(`Clutch events ${formatValue(clutchEvents, "clutch_events")}`);
+  }
+  if (clutchSeconds !== null) {
+    context.push(
+      `Clutch seconds ${formatValue(clutchSeconds, "clutch_seconds")}`,
+    );
+  }
+
+  return context.filter((item): item is string => Boolean(item));
+}
+
+function statColumns(count: number): 1 | 2 | 3 | 4 {
+  if (count >= 4) return 4;
+  if (count === 3) return 3;
+  if (count === 2) return 2;
+  return 1;
 }
 
 export default function PlayerGameFinderSection({ sections }: Props) {
@@ -136,6 +247,7 @@ export default function PlayerGameFinderSection({ sections }: Props) {
           const rank = rankLabel(row);
           const date = gameDate(row);
           const stats = topLineStats(row);
+          const context = secondaryContext(row);
 
           return (
             <Card
@@ -208,10 +320,20 @@ export default function PlayerGameFinderSection({ sections }: Props) {
                 </div>
               )}
 
+              {context.length > 0 && (
+                <div className={styles.secondaryContext}>
+                  {context.map((item) => (
+                    <span className={styles.contextChip} key={item}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {stats.length > 0 && (
                 <StatBlock
                   className={styles.statBlock}
-                  columns={stats.length >= 3 ? 3 : 2}
+                  columns={statColumns(stats.length)}
                   stats={stats}
                 />
               )}

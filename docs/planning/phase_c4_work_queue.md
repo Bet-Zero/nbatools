@@ -199,7 +199,7 @@ matching games rather than rows in a dense table.
 
 ---
 
-## 4. `[ ]` Add stat emphasis, context, and sparse-row handling
+## 4. `[x]` Add stat emphasis, context, and sparse-row handling
 
 **Why:** Game cards should quickly answer why each game matched while staying
 honest about what the API actually supplied.

@@ -659,9 +659,15 @@ describe("ResultSections", () => {
               opponent_team_abbr: "BOS",
               is_home: 1,
               wl: "W",
+              season: "2024-25",
+              season_type: "Regular Season",
+              minutes: 36,
               pts: 42,
               reb: 6,
               ast: 8,
+              fg3m: 7,
+              plus_minus: 12,
+              clutch_events: 2,
             },
             {
               rank: 2,
@@ -674,9 +680,14 @@ describe("ResultSections", () => {
               opponent_team_abbr: "LAL",
               is_away: 1,
               wl: "L",
+              season: "2024-25",
+              season_type: "Regular Season",
+              minutes: 34,
               pts: 35,
               reb: 5,
               ast: 7,
+              fg3m: 5,
+              plus_minus: -3,
             },
           ],
         },
@@ -708,9 +719,19 @@ describe("ResultSections", () => {
     ).toBeNull();
     expect(within(cards).getByText("#1 / 2025-01-15")).toBeInTheDocument();
     expect(within(cards).getByText("vs BOS")).toBeInTheDocument();
+    expect(within(cards).getByText("at LAL")).toBeInTheDocument();
     expect(within(cards).getByText("W")).toBeInTheDocument();
     expect(within(cards).getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(within(cards).getAllByText("FG3M").length).toBeGreaterThan(0);
     expect(within(cards).getByText("42")).toBeInTheDocument();
+    expect(within(cards).getAllByText("7").length).toBeGreaterThan(0);
+    expect(within(cards).getAllByText("2024-25").length).toBeGreaterThan(0);
+    expect(within(cards).getAllByText("Regular Season").length).toBeGreaterThan(
+      0,
+    );
+    expect(within(cards).getByText("MIN 36")).toBeInTheDocument();
+    expect(within(cards).getByText("+/- +12")).toBeInTheDocument();
+    expect(within(cards).getByText("Clutch events 2")).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Player Name" }),
     ).toBeInTheDocument();
@@ -747,6 +768,51 @@ describe("ResultSections", () => {
         .querySelector("img"),
     ).toBeNull();
     expect(within(cards).queryByText(/vs |at /)).not.toBeInTheDocument();
+    expect(within(cards).queryByText("PTS")).not.toBeInTheDocument();
+    expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
+  });
+
+  it("keeps long player, opponent, and custom stat labels readable", () => {
+    const longPlayer =
+      "A Very Long Player Name With Multiple Hyphenated-Surnames And Suffixes";
+    const longOpponent =
+      "A Very Long Opponent Team Name With Historical Qualifier";
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: { route: "player_game_finder" },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              rank: 1,
+              game_date: "2025-02-01",
+              player_name: longPlayer,
+              opponent_team_name: longOpponent,
+              opponent_team_abbr: "LONG",
+              is_away: true,
+              wl: "W",
+              very_long_custom_metric_label_for_display: 12,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const cards = screen.getByLabelText("Player game cards");
+    expect(within(cards).getByText(longPlayer)).toBeInTheDocument();
+    expect(
+      within(cards).getByLabelText(`${longOpponent} (LONG)`),
+    ).toBeInTheDocument();
+    expect(within(cards).getByText("at LONG")).toBeInTheDocument();
+    expect(
+      within(cards).getByText("Very Long Custom Metric Label For Display"),
+    ).toBeInTheDocument();
+    expect(within(cards).getByText("12")).toBeInTheDocument();
     expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
   });
 
