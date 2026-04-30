@@ -1,0 +1,131 @@
+.section {
+  margin-bottom: var(--space-4);
+}
+
+.matchupCard {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: var(--space-4);
+}
+
+.matchupHeader {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.matchupTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  line-height: 1.2;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.contextList {
+  min-width: 0;
+  max-width: min(100%, 28rem);
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.contextItem {
+  min-width: 0;
+  max-width: 100%;
+  padding: 1px var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg-input) 72%, transparent);
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.participantGrid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: var(--space-3);
+}
+
+.participantCard {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.participantIdentity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.identityMark {
+  flex: 0 0 auto;
+}
+
+.participantName {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.recordStat,
+.statBlock {
+  min-width: 0;
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 760px) {
+  .matchupHeader {
+    display: grid;
+  }
+
+  .contextList {
+    max-width: none;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .participantIdentity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

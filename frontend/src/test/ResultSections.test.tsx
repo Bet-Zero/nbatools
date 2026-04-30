@@ -1800,10 +1800,29 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const participants = screen.getByLabelText("Head-to-head participants");
     expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
-    expect(screen.getByText("Player Comparison")).toBeInTheDocument();
-    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
-    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+    expect(screen.getByText("Head-to-Head")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Nikola Jokic vs Joel Embiid" }),
+    ).toBeInTheDocument();
+    expect(within(participants).getByText("Nikola Jokic")).toBeInTheDocument();
+    expect(within(participants).getByText("Joel Embiid")).toBeInTheDocument();
+    expect(
+      within(participants)
+        .getByLabelText("Nikola Jokic avatar")
+        .querySelector("img"),
+    ).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+    );
+    expect(within(participants).getByText("2-1")).toBeInTheDocument();
+    expect(within(participants).getByText("1-2")).toBeInTheDocument();
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
+    expect(screen.getByText("Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
+    expect(screen.queryByText("Player Summary Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Full Metric Detail")).not.toBeInTheDocument();
   });
 
   it("keeps team comparisons on the generic comparison renderer", () => {
@@ -1859,9 +1878,20 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const participants = screen.getByLabelText("Head-to-head participants");
     expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
-    expect(screen.getByText("Players")).toBeInTheDocument();
-    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(screen.getByText("Head-to-Head")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Celtics vs Lakers" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Head-to-head sample")).toBeInTheDocument();
+    expect(within(participants).getByText("Celtics")).toBeInTheDocument();
+    expect(within(participants).getByText("Lakers")).toBeInTheDocument();
+    expect(within(participants).getByText("3-1")).toBeInTheDocument();
+    expect(within(participants).getByText("1-3")).toBeInTheDocument();
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
+    expect(screen.getByText("Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Players")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
   });
 
@@ -1919,18 +1949,27 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const participants = screen.getByLabelText("Head-to-head participants");
     expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
-    expect(screen.getByText("Team Matchup Record")).toBeInTheDocument();
+    expect(screen.getByText("Head-to-Head")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         name: "Boston Celtics vs Los Angeles Lakers",
       }),
     ).toBeInTheDocument();
-    const records = screen.getByLabelText("Matchup records");
-    expect(within(records).getByText("3-1")).toBeInTheDocument();
-    expect(within(records).getByText("1-3")).toBeInTheDocument();
-    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
+    expect(
+      within(participants).getByLabelText("Boston Celtics (BOS)"),
+    ).toBeInTheDocument();
+    expect(
+      within(participants).getByLabelText("Los Angeles Lakers (LAL)"),
+    ).toBeInTheDocument();
+    expect(within(participants).getByText("3-1")).toBeInTheDocument();
+    expect(within(participants).getByText("1-3")).toBeInTheDocument();
+    expect(within(participants).getByText("118.2")).toBeInTheDocument();
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
     expect(screen.getByText("Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Team Matchup Record")).not.toBeInTheDocument();
+    expect(screen.queryByText("Team Summary Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("Players")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
   });
@@ -1963,10 +2002,18 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const participants = screen.getByLabelText("Head-to-head participants");
     expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
-    expect(screen.getByText("Players")).toBeInTheDocument();
-    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(screen.getByText("Head-to-Head")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Celtics vs Lakers" }),
+    ).toBeInTheDocument();
+    expect(within(participants).getByText("10-8")).toBeInTheDocument();
+    expect(within(participants).getByText("8-10")).toBeInTheDocument();
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
+    expect(screen.getByText("Metric Detail")).toBeInTheDocument();
     expect(screen.getByText("1980s")).toBeInTheDocument();
+    expect(screen.queryByText("Players")).not.toBeInTheDocument();
   });
 
   it("renders sparse matchup records without team ids or record fields", () => {
@@ -1996,16 +2043,20 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Team Matchup Record")).toBeInTheDocument();
+    const participants = screen.getByLabelText("Head-to-head participants");
+    expect(screen.getByText("Head-to-Head")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         name: /A Very Long Home Team Name.*A Very Long Away Team Name/,
       }),
     ).toBeInTheDocument();
-    const records = screen.getByLabelText("Matchup records");
-    expect(within(records).getAllByText("0 games").length).toBe(2);
-    expect(within(records).queryByText("Record")).not.toBeInTheDocument();
-    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
+    expect(within(participants).getAllByText("Sample").length).toBe(2);
+    expect(within(participants).getAllByText("0").length).toBe(2);
+    expect(within(participants).getAllByText("games").length).toBe(2);
+    expect(within(participants).queryByText("Record")).not.toBeInTheDocument();
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Team Matchup Record")).not.toBeInTheDocument();
+    expect(screen.queryByText("Team Summary Detail")).not.toBeInTheDocument();
   });
 
   it("renders sparse player comparison cards with identity fallbacks", () => {
