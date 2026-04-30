@@ -170,13 +170,19 @@ detail tables.
 Goal: bundle these because both are "events over time" shapes that benefit
 from similar visual treatments.
 
-Status: active. Phase C6 begins with a row-shape inventory because streaks,
-finder-derived counts, and occurrence leaderboards span multiple query classes
-and have different detail-section fallbacks.
+Status: complete. `StreakSection.tsx` owns `player_streak_finder` and
+`team_streak_finder` results, `CountSection.tsx` owns `query_class: "count"`
+results, and `OccurrenceLeaderboardSection.tsx` owns occurrence leaderboard
+routes. C6 preserves ordinary leaderboards, finder routes, unknown streak
+routes, and generic fallbacks while keeping full detail tables visible.
 
 ### Phase C7 — Head-to-head and playoff layouts
 
 Goal: matchup card and playoff history — the two most custom shapes.
+
+Status: active. Phase C7 starts with a head-to-head/playoff row-shape inventory
+because the target routes span comparison, summary, and leaderboard query
+classes and overlap with existing team-record rendering.
 
 ### Phase C8 — Mobile pass for every component
 

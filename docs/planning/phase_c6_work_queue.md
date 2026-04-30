@@ -337,7 +337,7 @@ and safe on desktop and mobile.
 
 ---
 
-## 7. `[ ]` Phase C6 retrospective and C7 handoff
+## 7. `[x]` Phase C6 retrospective and C7 handoff
 
 **Why:** Self-propagating final task. It closes streak/occurrence layout work
 and creates the next executable Part 2 queue.
@@ -383,6 +383,40 @@ and creates the next executable Part 2 queue.
 - `docs/planning/product_polish_master_plan.md`
 
 ---
+
+## Phase C6 retrospective
+
+### What went well
+
+- The row-shape inventory clarified that streaks, counts, and occurrence
+  leaderboards needed three bounded owners even though they share an
+  event-over-time theme.
+- Route-level ownership kept ordinary leaderboards, player-game finders,
+  unknown streak-shaped payloads, and generic fallbacks intact while C6 added
+  designed answer-first surfaces.
+- The Part 1 primitives carried the phase cleanly: `Card`, `Stat`,
+  `StatBlock`, `Avatar`, `TeamBadge`, `SectionHeader`, and the table wrapper
+  were enough to make streak/count/occurrence layouts feel consistent without
+  adding new design-system primitives.
+
+### What was harder
+
+- Occurrence leaderboards encode the event definition in dynamic column names,
+  so the UI had to infer the event-count column conservatively without parsing
+  thresholds or inventing structured event labels.
+- Count results can be direct occurrence counts or finder-derived counts. Only
+  finder-derived counts have matching-game detail today, so the count renderer
+  had to avoid implying detail exists when it does not.
+- Sparse streak rows made it important to omit absent span/date blocks rather
+  than render empty card regions.
+
+### Residuals and next action
+
+- C6 leaves remaining Part 2 work open. Head-to-head and playoff-specific
+  routes still need purpose-built layouts and mobile verification.
+- The next active queue is
+  [`phase_c7_work_queue.md`](./phase_c7_work_queue.md), focused on
+  head-to-head and playoff layouts.
 
 ## Appendix: progress tracking
 
