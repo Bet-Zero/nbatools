@@ -1437,7 +1437,7 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Leaderboard")).toBeInTheDocument();
   });
 
-  it("renders nothing for empty ok leaderboard sections", () => {
+  it("renders neutral empty display for empty ok leaderboard sections", () => {
     const data = makeResponse({
       result: {
         query_class: "leaderboard",
@@ -1450,8 +1450,8 @@ describe("ResultSections", () => {
         },
       },
     });
-    const { container } = render(<ResultSections data={data} />);
-    expect(container).toBeEmptyDOMElement();
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("No Displayable Rows")).toBeInTheDocument();
   });
 
   it("renders finder sections with count", () => {
@@ -1801,6 +1801,8 @@ describe("ResultSections", () => {
     const data = makeResponse({
       result_status: "no_result",
       result_reason: "no_match",
+      notes: ["No rows matched the requested filters"],
+      caveats: ["Recent games may still be loading"],
       result: {
         query_class: "finder",
         result_status: "no_result",
@@ -1811,7 +1813,11 @@ describe("ResultSections", () => {
       },
     });
     render(<ResultSections data={data} />);
-    expect(screen.getByText("No Results")).toBeInTheDocument();
+    expect(screen.getByText("No Matching Results")).toBeInTheDocument();
+    expect(screen.getByText(/No rows matched/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Recent games may still be loading/),
+    ).toBeInTheDocument();
   });
 
   it("keeps unknown query classes on the generic fallback renderer", () => {

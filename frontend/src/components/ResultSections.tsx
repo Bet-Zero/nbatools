@@ -284,6 +284,17 @@ export default function ResultSections({ data }: Props) {
           reason={data.result_reason}
           status={data.result_status}
           notes={data.notes}
+          caveats={data.caveats}
+        />
+      );
+    }
+    if (data.result_status === "ok") {
+      return (
+        <NoResultDisplay
+          reason="empty_sections"
+          status={data.result_status}
+          notes={data.notes}
+          caveats={data.caveats}
         />
       );
     }
@@ -301,10 +312,18 @@ export default function ResultSections({ data }: Props) {
           reason={data.result_reason}
           status={data.result_status}
           notes={data.notes}
+          caveats={data.caveats}
         />
       );
     }
-    return null;
+    return (
+      <NoResultDisplay
+        reason="empty_sections"
+        status={data.result_status}
+        notes={data.notes}
+        caveats={data.caveats}
+      />
+    );
   }
 
   return <>{renderByQueryClass(data)}</>;

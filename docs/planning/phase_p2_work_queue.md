@@ -138,7 +138,7 @@ generic blocking spinner.
 
 ---
 
-## 3. `[ ]` Redesign no-result, unsupported, and ambiguous states
+## 3. `[x]` Redesign no-result, unsupported, and ambiguous states
 
 **Why:** Empty API results should help the user recover without implying the
 engine found data it did not find.
