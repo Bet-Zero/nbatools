@@ -11,6 +11,7 @@ import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
+import TeamRecordSection from "./TeamRecordSection";
 import TeamSummarySection from "./TeamSummarySection";
 import styles from "./ResultSections.module.css";
 
@@ -56,7 +57,17 @@ function isPlayerGameFinder(data: QueryResponse): boolean {
 
 function isTeamSummary(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
-  return route === "game_summary" || route === "team_record";
+  return route === "game_summary";
+}
+
+function isTeamRecord(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "team_record";
+}
+
+function isTeamMatchupRecord(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "team_matchup_record";
 }
 
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
@@ -82,6 +93,15 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           />
         );
       }
+      if (isTeamRecord(data)) {
+        return (
+          <TeamRecordSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            route={data.route}
+          />
+        );
+      }
       return <SummarySection sections={sections} />;
     case "comparison":
       if (isPlayerComparison(data)) {
@@ -89,6 +109,15 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           <PlayerComparisonSection
             sections={sections}
             metadata={data.result?.metadata}
+          />
+        );
+      }
+      if (isTeamMatchupRecord(data)) {
+        return (
+          <TeamRecordSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            route={data.route}
           />
         );
       }

@@ -424,7 +424,7 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Summary")).toBeInTheDocument();
   });
 
-  it("routes team records to the dedicated team summary renderer", () => {
+  it("routes team records to the dedicated record renderer", () => {
     const data = makeResponse({
       route: null,
       result: {
@@ -453,6 +453,7 @@ describe("ResultSections", () => {
               losses: 1,
               games: 5,
               win_pct: 0.8,
+              pts_avg: 116.4,
             },
           ],
           by_season: [{ season: "2024-25", wins: 4, losses: 1 }],
@@ -464,9 +465,52 @@ describe("ResultSections", () => {
     expect(
       screen.getByRole("heading", { name: "Boston Celtics" }),
     ).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Boston Celtics (BOS)").length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getByLabelText("Los Angeles Lakers (LAL)")).toBeInTheDocument();
     expect(screen.getByText("4-1")).toBeInTheDocument();
-    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+    expect(screen.getByText("5 games / 80.0% win pct")).toBeInTheDocument();
+    expect(screen.getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(screen.getByText("Record Detail")).toBeInTheDocument();
     expect(screen.getByText("By Season")).toBeInTheDocument();
+  });
+
+  it("renders team records when opponent identity is only a text filter", () => {
+    const data = makeResponse({
+      route: "team_record",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "team_record",
+          opponent: "LAL",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              wins: 2,
+              losses: 2,
+              games: 4,
+              win_pct: 0.5,
+            },
+          ],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Record")).toBeInTheDocument();
+    expect(screen.getByLabelText("LAL")).toBeInTheDocument();
+    expect(screen.getByText("2-2")).toBeInTheDocument();
+    expect(screen.getByText("Record Detail")).toBeInTheDocument();
   });
 
   it("keeps playoff summaries on the generic summary renderer", () => {
@@ -1201,6 +1245,75 @@ describe("ResultSections", () => {
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
     expect(screen.getAllByText("Celtics").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Lakers").length).toBeGreaterThan(0);
+  });
+
+  it("routes team matchup records to the dedicated record renderer", () => {
+    const data = makeResponse({
+      route: "team_matchup_record",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          route: "team_matchup_record",
+          teams_context: [
+            {
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+            },
+            {
+              team_id: 1610612747,
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+            },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              games: 4,
+              wins: 3,
+              losses: 1,
+              win_pct: 0.75,
+              pts_avg: 118.2,
+            },
+            {
+              team_name: "Los Angeles Lakers",
+              games: 4,
+              wins: 1,
+              losses: 3,
+              win_pct: 0.25,
+              pts_avg: 109.8,
+            },
+          ],
+          comparison: [
+            {
+              metric: "wins",
+              "Boston Celtics": 3,
+              "Los Angeles Lakers": 1,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Matchup Record")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Boston Celtics vs Los Angeles Lakers",
+      }),
+    ).toBeInTheDocument();
+    const records = screen.getByLabelText("Matchup records");
+    expect(within(records).getByText("3-1")).toBeInTheDocument();
+    expect(within(records).getByText("1-3")).toBeInTheDocument();
+    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Players")).not.toBeInTheDocument();
+    expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
   });
 
   it("renders sparse player comparison cards with identity fallbacks", () => {

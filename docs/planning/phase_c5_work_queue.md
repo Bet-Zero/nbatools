@@ -196,7 +196,7 @@ stats instead of as anonymous summary rows.
 
 ---
 
-## 4. `[ ]` Build team record and matchup record treatment
+## 4. `[x]` Build team record and matchup record treatment
 
 **Why:** Record queries should answer with the record first, then expose the
 supporting stat table.

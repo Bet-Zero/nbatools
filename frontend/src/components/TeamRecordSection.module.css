@@ -1,0 +1,125 @@
+.section {
+  margin-bottom: var(--space-4);
+}
+
+.recordHero,
+.matchupHero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.recordHero::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--space-1);
+  background: linear-gradient(
+    180deg,
+    var(--team-primary),
+    var(--team-secondary)
+  );
+  content: "";
+}
+
+.recordHeader {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.identityStack {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.versus {
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.teamName {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h2);
+  font-weight: var(--weight-bold);
+  line-height: 1.15;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.context,
+.matchupContext {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  overflow-wrap: anywhere;
+}
+
+.context {
+  margin-top: var(--space-2);
+}
+
+.recordStats {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(0, 2fr);
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.primaryRecord,
+.secondaryStats {
+  min-width: 0;
+}
+
+.matchupGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.matchupTeam {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 760px) {
+  .recordHeader,
+  .recordStats,
+  .matchupGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
