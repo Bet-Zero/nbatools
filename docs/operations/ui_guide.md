@@ -54,6 +54,7 @@ module replacement during frontend development.
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
 - **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
 - **Player comparisons** — `player_compare` responses use side-by-side player cards, metric comparison cards, and full summary/comparison detail tables while keeping mixed-player styling neutral.
+- **Player game finders** — `player_game_finder` responses use game cards with player identity, opponent context, W/L badges, supplied stat values, secondary context chips, and a full detail table below.
 - **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
 - **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
@@ -94,8 +95,9 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | generic summary                 | Summary, By Season (if present)                                                    |
 | `player_compare` / comparison   | Player Comparison, Metric Comparison, Player Summary Detail, Full Metric Detail     |
 | generic comparison              | Summary/Players, Comparison                                                        |
+| `player_game_finder` / finder   | Player Games, Player Game Detail                                                   |
+| generic finder                  | Matching Games                                                                     |
 | split_summary                   | Summary, Split Comparison                                                          |
-| finder                          | Matching Games                                                                     |
 | leaderboard                     | Ranked Leaderboard, Full Leaderboard detail table                                  |
 | streak                          | Streaks                                                                            |
 | (no result)                     | Status message with reason                                                         |
@@ -122,6 +124,15 @@ and comparison `DataTable` detail remains visible below the promoted layout.
 Team comparisons, matchup records, playoff comparisons, decade comparisons,
 and unknown comparison-shaped routes continue through `ComparisonSection.tsx`.
 
+`PlayerGameFinderSection.tsx` owns only finder results whose route is
+`player_game_finder`. It promotes supplied finder rows into player game cards
+with player identity, date/rank context, opponent badges, home/away labels,
+W/L badges, supplied stat values, and secondary context chips. It does not
+parse thresholds, reconstruct natural-query intent, calculate new metrics, or
+take over team game finders, count detail, top-game leaderboards, or unknown
+finder-shaped routes. The full finder `DataTable` detail remains visible below
+the cards.
+
 ## Identity imagery and team theming
 
 Phase V4 adds presentation-only identity treatment for players and teams:
@@ -140,6 +151,9 @@ Phase V4 adds presentation-only identity treatment for players and teams:
 - Player-comparison rows may show player avatars and small team badges, but the
   surface does not split into team-colored sides or apply result-level team
   theming.
+- Player-game-finder cards may show player avatars plus small team/opponent
+  badges, but player-subject finder pages remain neutral and do not derive
+  result-level team theming from row-level teams or opponents.
 - Team color treatment is limited to identity surfaces: badges, a subtle result
   stripe, and a light surface wash. Buttons, body copy, table text, and global
   action states keep the design-system colors.
@@ -198,6 +212,25 @@ Player-comparison edge-case fallbacks:
 - Non-player comparison routes remain on the generic `ComparisonSection.tsx`
   path.
 
+Player-game-finder edge-case fallbacks:
+
+- Row-level `player_id` supplies player headshots when available. Missing ids
+  or failed images fall back to initials.
+- Row-level team and opponent fields render small badges when present. Missing
+  team ids keep abbreviation/text badges without logos.
+- Cards promote supplied numeric stat fields only. They prioritize common
+  player-game stats such as PTS, REB, AST, FG3M, steals, blocks, turnovers, and
+  attempts, then fall back to custom numeric fields without parsing query text.
+- Secondary context chips show supplied season, season type, minutes,
+  plus-minus, and clutch fields when present. Missing context simply omits the
+  chip.
+- Missing W/L, opponent, team, or promoted stats still leaves a readable player
+  card and the full detail table.
+- Long player names, long opponent/team labels, and long custom stat labels are
+  constrained within cards. At mobile widths, game cards and stat grids stack.
+- `game_finder`, count results with finder detail, top-game leaderboards, and
+  unknown finder-shaped routes remain on their existing renderers.
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)
@@ -208,6 +241,8 @@ Player-comparison edge-case fallbacks:
 - Leaderboard renderer: `frontend/src/components/LeaderboardSection.tsx`
 - Player comparison renderer:
   `frontend/src/components/PlayerComparisonSection.tsx`
+- Player game finder renderer:
+  `frontend/src/components/PlayerGameFinderSection.tsx`
 - Generic summary fallback: `frontend/src/components/SummarySection.tsx`
 
 ## Tech stack

@@ -303,6 +303,7 @@ export default function PlayerGameFinderSection({ sections }: Props) {
                 <div className={styles.contextRow}>
                   {opponent && (
                     <TeamBadge
+                      className={styles.contextBadge}
                       abbreviation={opponent.teamAbbr ?? undefined}
                       name={
                         opponent.teamName ?? opponent.teamAbbr ?? "Opponent"
