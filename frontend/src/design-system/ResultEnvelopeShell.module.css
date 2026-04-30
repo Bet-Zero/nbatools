@@ -1,9 +1,11 @@
 .shell {
+  min-width: 0;
   margin-bottom: var(--space-3);
   font-size: var(--font-small);
 }
 
 .meta {
+  min-width: 0;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -12,15 +14,18 @@
 }
 
 .query {
+  min-width: 0;
   color: var(--text-secondary);
   font-size: var(--font-small);
   font-style: italic;
   margin-bottom: var(--space-2);
   padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-default);
+  overflow-wrap: anywhere;
 }
 
 .context {
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
@@ -28,12 +33,14 @@
 }
 
 .notices {
+  min-width: 0;
   display: grid;
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
 
 .alternates {
+  min-width: 0;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -41,4 +48,15 @@
   margin-top: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border-top: 1px solid var(--border-default);
+}
+
+@media (max-width: 520px) {
+  .meta,
+  .alternates {
+    align-items: flex-start;
+  }
+
+  .alternates > * {
+    max-width: 100%;
+  }
 }

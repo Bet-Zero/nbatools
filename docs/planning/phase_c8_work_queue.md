@@ -92,7 +92,7 @@ and widths before making polish changes.
 
 ---
 
-## 2. `[ ]` Polish shell, query, envelope, and side panels on mobile
+## 2. `[x]` Polish shell, query, envelope, and side panels on mobile
 
 **Why:** The result components sit inside the app shell. Mobile polish is not
 credible if query controls, freshness, result metadata, history, saved queries,

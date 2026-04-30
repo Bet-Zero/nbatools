@@ -4,6 +4,7 @@
 
 .resultReason {
   font-size: var(--font-small);
+  overflow-wrap: anywhere;
 }
 
 .separator {
@@ -16,6 +17,7 @@
 .freshness {
   font-size: var(--font-small);
   color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .freshness strong {
@@ -27,10 +29,11 @@
   color: var(--text-secondary);
   font-size: var(--font-micro);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
 }
 
 .infoBlock {
+  min-width: 0;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
   margin-top: var(--space-2);
@@ -51,7 +54,7 @@
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   margin-bottom: var(--space-1);
 }
 
@@ -73,6 +76,7 @@
   color: var(--text-primary);
   padding: var(--space-1) 0;
   font-size: var(--font-small);
+  overflow-wrap: anywhere;
 }
 
 .infoBlock li::before {
@@ -85,13 +89,17 @@
 }
 
 .alternatesLabel {
+  min-width: 0;
   font-size: var(--font-small);
   color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .alternateChip {
+  max-width: 100%;
   border: 1px solid var(--accent);
   color: var(--accent);
+  white-space: normal;
 }
 
 .alternateChip:hover {

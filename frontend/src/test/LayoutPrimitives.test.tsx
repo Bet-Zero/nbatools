@@ -242,6 +242,73 @@ describe("migrated result envelope", () => {
     expect(onAlternateSelect).toHaveBeenCalledWith("jokic last 10");
   });
 
+  it("keeps long envelope content available for mobile wrapping", () => {
+    const onAlternateSelect = vi.fn();
+    const longQuery =
+      "show playoff matchup history for a very specific pair of teams " +
+      "with ExtremelyLongUnbrokenMobileQueryToken1234567890";
+    const longAlternate =
+      "try the same postseason matchup search with " +
+      "ExtremelyLongAlternateSuggestionToken1234567890";
+    const longNote =
+      "Using a long envelope note that should remain readable on narrow viewports.";
+    const longCaveat =
+      "Long caveat text stays available when the shell stacks on mobile.";
+    const data = makeResponse({
+      query: longQuery,
+      route: "playoff_matchup_history_with_extra_long_route_label",
+      alternates: [
+        {
+          intent: "playoff_matchup",
+          route: "playoff_matchup_history",
+          description: longAlternate,
+          confidence: 0.64,
+        },
+      ],
+      notes: [longNote],
+      caveats: [longCaveat],
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          teams: [
+            "A Very Long Team Name With Several Market Segments",
+            "Another Very Long Team Name With Several Market Segments",
+          ],
+          season: "2024-25",
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(
+      <ResultEnvelope data={data} onAlternateSelect={onAlternateSelect} />,
+    );
+
+    expect(
+      screen.getByText(
+        (_, element) => element?.textContent === `\u201c${longQuery}\u201d`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("playoff matchup history with extra long route label"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("comparison")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "A Very Long Team Name With Several Market Segments, Another Very Long Team Name With Several Market Segments",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2024-25")).toBeInTheDocument();
+    expect(screen.getByText(longNote)).toBeInTheDocument();
+    expect(screen.getByText(longCaveat)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: longAlternate }));
+    expect(onAlternateSelect).toHaveBeenCalledWith(longAlternate);
+  });
+
   it("uses team and opponent metadata contexts for logos and colors", () => {
     const data = makeResponse({
       result: {

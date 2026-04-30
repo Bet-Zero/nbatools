@@ -1,4 +1,5 @@
 .display {
+  min-width: 0;
   display: grid;
   justify-items: center;
   gap: var(--space-3);
@@ -23,18 +24,23 @@
 }
 
 .title {
+  min-width: 0;
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
   font-size: var(--font-h3);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .message {
+  min-width: 0;
   font-size: var(--font-small);
   max-width: 520px;
+  overflow-wrap: anywhere;
 }
 
 .notes {
+  min-width: 0;
   font-size: var(--font-small);
   color: var(--text-primary);
   text-align: left;
@@ -48,9 +54,11 @@
 
 .note {
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .suggestions {
+  min-width: 0;
   font-size: var(--font-small);
   color: var(--text-secondary);
   text-align: left;
@@ -67,5 +75,5 @@
   margin-bottom: var(--space-1);
   font-size: var(--font-small);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
 }
