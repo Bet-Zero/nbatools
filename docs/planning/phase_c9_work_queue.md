@@ -129,7 +129,7 @@ audit before the handoff queue activates Part 3.
 
 ---
 
-## 3. `[ ]` Phase C9 retrospective and Part 3 queue handoff
+## 3. `[x]` Phase C9 retrospective and Part 3 queue handoff
 
 **Why:** Self-propagating final task. It closes Track A Part 2 and creates the
 first executable Part 3 queue.
@@ -173,6 +173,49 @@ first executable Part 3 queue.
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/first_run_and_polish_plan.md`
 - `docs/planning/product_polish_master_plan.md`
+
+---
+
+## Phase C9 retrospective
+
+What went well:
+
+- The audit forced Track A Part 2 closure to be evidence-based instead of just
+  relying on a fully checked C1-C8 queue series.
+- The status refresh clarified the important Part 2 boundary: supported shipped
+  query families now have owner renderers, while generic fallbacks remain a
+  deliberate data-preservation path for unknown shapes.
+- The Part 3 handoff has a clear starting point. P1 can focus on the first-run
+  screen, starter queries, and freshness rather than reopening component
+  ownership decisions from Part 2.
+
+What was harder:
+
+- The original Part 2 goal language was broader than the actual UI contract.
+  C9 tightened it to "supported shipped query families" so unknown routes can
+  keep safe fallback rendering without looking like unfinished Part 2 work.
+- The chart criterion needed a conservative reading. Player summaries have
+  structured `game_log` data for a scoring trend; other families should not
+  invent chart series in React.
+- Mobile closure depends on C8's CSS/test pass and documented responsive
+  boundaries. A real browser screenshot matrix remains a Part 3 verification
+  task.
+
+Residuals:
+
+- Track A Part 3 owns first-run onboarding, starter-query curation, freshness
+  banner prominence, loading/error copy, mobile screenshot verification,
+  keyboard shortcuts, transitions, and copy/share interaction polish.
+- Track B still owns deployment, data sync, custom domain, and production
+  monitoring.
+- Future chart additions should wait for appropriate structured series or
+  distribution data from the engine/API.
+
+Handoff:
+
+- Track A Part 2 is closed.
+- Track A Part 3 begins with
+  [`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
 
 ---
 

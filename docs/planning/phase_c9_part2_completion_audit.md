@@ -9,7 +9,7 @@
 
 ## Audit Verdict
 
-**Track A Part 2 status: ready to close after C9 status refresh and handoff.**
+**Track A Part 2 status: closed by Phase C9 after status refresh and handoff.**
 
 C1-C8 shipped purpose-built result layouts for the supported query families,
 kept full detail tables visible, preserved generic fallbacks for unknown or

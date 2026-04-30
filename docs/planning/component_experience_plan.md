@@ -208,11 +208,11 @@ Goal: audit Track A Part 2 against its done definition, capture learnings,
 refresh Part 2 status/residuals, and draft `phase_p1_work_queue.md` (Part 3's
 first queue).
 
-Status: active. The C9 completion audit is recorded in
-[`phase_c9_part2_completion_audit.md`](./phase_c9_part2_completion_audit.md).
-It found no blocking Track A Part 2 gaps; status refresh and the Part 3 queue
-handoff remain before C9 closes. The active queue is
-[`phase_c9_work_queue.md`](./phase_c9_work_queue.md).
+Status: complete. The C9 completion audit is recorded in
+[`phase_c9_part2_completion_audit.md`](./phase_c9_part2_completion_audit.md)
+and found no blocking Track A Part 2 gaps. C9 refreshed the Part 2
+status/residual docs and drafted
+[`phase_p1_work_queue.md`](./phase_p1_work_queue.md) for Track A Part 3.
 
 ---
 
@@ -234,11 +234,10 @@ Part 2 is done when:
 7. Visual quality bar met: every result feels designed for its question.
    The product no longer feels like "tables but dark mode"
 
-The C9 completion audit maps each item above to shipped evidence. Its verdict:
-Track A Part 2 is ready to close after the C9 status refresh and Part 3
-handoff. This closes only Component Experience work; the product-polish master
-plan remains in progress until Track A Part 3 and Track B deployment are also
-closed.
+The C9 completion audit maps each item above to shipped evidence. Track A Part
+2 is closed. This closes only Component Experience work; the product-polish
+master plan remains in progress until Track A Part 3 and Track B deployment are
+also closed.
 
 Non-blocking Part 2 residuals and boundaries:
 
