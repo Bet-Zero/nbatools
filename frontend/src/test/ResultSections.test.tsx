@@ -654,6 +654,30 @@ describe("ResultSections", () => {
     expect(screen.getByText("No Results")).toBeInTheDocument();
   });
 
+  it("keeps unknown query classes on the generic fallback renderer", () => {
+    const data = makeResponse({
+      route: "unknown_route",
+      result: {
+        query_class: "experimental_result",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          custom_section: [{ label: "Fallback row", value: 42 }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("custom section")).toBeInTheDocument();
+    expect(screen.getByText("Fallback row")).toBeInTheDocument();
+    expect(screen.getByText("42")).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Ranked leaderboard"),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders comparison sections", () => {
     const data = makeResponse({
       result: {

@@ -218,7 +218,7 @@ sparse.
 
 ---
 
-## 5. `[ ]` Polish leaderboard docs and renderer boundary
+## 5. `[x]` Polish leaderboard docs and renderer boundary
 
 **Why:** C2 should close implementation with docs that accurately describe the
 shipped leaderboard renderer and its fallbacks.
