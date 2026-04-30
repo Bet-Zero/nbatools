@@ -48,7 +48,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory loading, empty, and error-state fixtures
+## 1. `[x]` Inventory loading, empty, and error-state fixtures
 
 **Why:** P2 touches multiple response states. Start by naming the exact states,
 owners, fixtures, and copy boundaries before runtime changes.
