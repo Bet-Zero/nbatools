@@ -51,7 +51,8 @@ module replacement during frontend development.
   - **Context chips** — player, team, season, opponent, split type
   - **Notes** — blue-bordered info block
   - **Caveats** — orange/yellow-bordered warning block
-- **Data tables** — renders the result payload as readable tables. Layout adapts to the result type (summary, comparison, leaderboard, finder, streak, split). Entity columns (player names, teams) are bolded; rank columns are highlighted.
+- **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
+- **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, leaderboard, finder, streak, split). Entity columns (player names, teams) are bolded; rank columns are highlighted.
 - **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
 - **Raw JSON** — toggle to inspect the full API response.
@@ -85,15 +86,21 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 
 ## Result types rendered
 
-| query_class   | Sections displayed              |
-| ------------- | ------------------------------- |
-| summary       | Summary, By Season (if present) |
-| comparison    | Summary, Comparison             |
-| split_summary | Summary, Split Comparison       |
-| finder        | Matching Games                  |
-| leaderboard   | Leaderboard                     |
-| streak        | Streaks                         |
-| (no result)   | Status message with reason      |
+| Route / query_class             | Sections displayed                                                                 |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| `player_game_summary` / summary | Player hero, Game Log trend/recent games when present, Full Summary, By Season     |
+| generic summary                 | Summary, By Season (if present)                                                    |
+| comparison                      | Summary, Comparison                                                                |
+| split_summary                   | Summary, Split Comparison                                                          |
+| finder                          | Matching Games                                                                     |
+| leaderboard                     | Leaderboard                                                                        |
+| streak                          | Streaks                                                                            |
+| (no result)                     | Status message with reason                                                         |
+
+`PlayerSummarySection.tsx` owns only `player_game_summary` rendering. Team
+summaries, playoff summaries, and unknown summary routes continue through the
+generic `SummarySection.tsx` path so player-specific layout choices do not leak
+into other summary-shaped responses.
 
 ## Identity imagery and team theming
 
@@ -121,12 +128,22 @@ Useful Phase V4 visual checks:
 - Multi-team comparison: `Celtics vs Lakers record 2024-25`
 - League leaderboard: `top 10 scorers 2024-25`
 
+Player-summary edge-case fallbacks:
+
+- Missing `player_id` keeps the initials avatar and does not attempt a headshot.
+- Missing or one-row `game_log` keeps recent-game context but omits the scoring
+  sparkline until at least two point values are available.
+- Long player names and dense stat values wrap within the player-summary card
+  while full summary rows remain available in the detail table.
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)
 - Build output: `src/nbatools/ui/dist/` (served by FastAPI)
 - API serving: `src/nbatools/api.py` → `GET /` + `/assets` static mount
 - Vite config: `frontend/vite.config.ts` (proxy + build output path)
+- Player summary renderer: `frontend/src/components/PlayerSummarySection.tsx`
+- Generic summary fallback: `frontend/src/components/SummarySection.tsx`
 
 ## Tech stack
 
