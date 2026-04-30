@@ -107,7 +107,7 @@ renderer.
 
 ---
 
-## 2. `[ ]` Establish the player-game-finder renderer boundary
+## 2. `[x]` Establish the player-game-finder renderer boundary
 
 **Why:** Player game finder needs a dedicated owner without accidentally
 redesigning team finders, count detail, or future finder-shaped payloads.

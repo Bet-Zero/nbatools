@@ -637,6 +637,103 @@ describe("ResultSections", () => {
     expect(screen.getByText("2 games")).toBeInTheDocument();
   });
 
+  it("routes player game finders to the dedicated renderer", () => {
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: { route: "player_game_finder" },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              rank: 1,
+              game_date: "2025-01-15",
+              player_name: "Stephen Curry",
+              player_id: 201939,
+              opponent_team_abbr: "BOS",
+              pts: 42,
+            },
+            {
+              rank: 2,
+              game_date: "2025-01-20",
+              player_name: "Stephen Curry",
+              player_id: 201939,
+              opponent_team_abbr: "LAL",
+              pts: 35,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Player Games")).toBeInTheDocument();
+    expect(screen.getByText("2 games")).toBeInTheDocument();
+    expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Matching Games")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Player Name" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Stephen Curry").length).toBeGreaterThan(0);
+  });
+
+  it("keeps team game finders on the generic finder renderer", () => {
+    const data = makeResponse({
+      route: "game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: { route: "game_finder" },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              game_date: "2025-01-15",
+              team_name: "Boston Celtics",
+              pts: 118,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Matching Games")).toBeInTheDocument();
+    expect(screen.getByText("1 game")).toBeInTheDocument();
+    expect(screen.queryByText("Player Games")).not.toBeInTheDocument();
+    expect(screen.getByText("Boston Celtics")).toBeInTheDocument();
+  });
+
+  it("keeps count results with finder detail on the fallback renderer", () => {
+    const data = makeResponse({
+      route: "player_game_finder",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: { route: "player_game_finder", query_class: "count" },
+        notes: [],
+        caveats: [],
+        sections: {
+          count: [{ count: 2 }],
+          finder: [
+            { game_date: "2025-01-15", player_name: "Stephen Curry", pts: 42 },
+            { game_date: "2025-01-20", player_name: "Stephen Curry", pts: 35 },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.queryByText("Player Games")).not.toBeInTheDocument();
+    expect(screen.getByText("count")).toBeInTheDocument();
+    expect(screen.getByText("Matching Games")).toBeInTheDocument();
+    expect(screen.getAllByText("Stephen Curry").length).toBeGreaterThan(0);
+  });
+
   it("renders no-result display for no_result status", () => {
     const data = makeResponse({
       result_status: "no_result",
