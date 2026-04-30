@@ -10,7 +10,6 @@ import {
 } from "../design-system";
 import { resolveTeamIdentity } from "../lib/identity";
 import DataTable from "./DataTable";
-import LeaderboardSection from "./LeaderboardSection";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./PlayoffSection.module.css";
 
@@ -126,6 +125,10 @@ function contextItems(
   ].filter((item): item is string => Boolean(item));
 }
 
+function hasValue(value: unknown): boolean {
+  return value !== null && value !== undefined && value !== "";
+}
+
 function recordStat(
   row: SectionRow | undefined,
   size: StatProps["size"] = "md",
@@ -235,6 +238,87 @@ function teamIdentity(
       textValue(row, "team"),
     teamName: name,
   });
+}
+
+function leaderboardTeamIdentity(row: SectionRow): TeamIdentity | null {
+  const name =
+    textValue(row, "team_name") ??
+    textValue(row, "team") ??
+    textValue(row, "team_abbr");
+  const abbr = textValue(row, "team_abbr") ?? textValue(row, "team");
+  const id = identityId(row.team_id);
+  if (!name && !abbr && !id) return null;
+
+  return resolveTeamIdentity({
+    teamId: id,
+    teamAbbr: abbr,
+    teamName: name,
+  });
+}
+
+function rankLabel(row: SectionRow, index: number): string {
+  const rank = row.rank;
+  if (typeof rank === "number" || typeof rank === "string") {
+    return `#${rank}`;
+  }
+  return `#${index + 1}`;
+}
+
+function leaderboardLabel(
+  row: SectionRow,
+  index: number,
+  identity: TeamIdentity | null,
+): string {
+  return (
+    identity?.teamName ??
+    identity?.teamAbbr ??
+    textValue(row, "team_name") ??
+    textValue(row, "team_abbr") ??
+    textValue(row, "team") ??
+    textValue(row, "entity") ??
+    textValue(row, "name") ??
+    `Playoff Entry ${index + 1}`
+  );
+}
+
+function leaderboardMetric(row: SectionRow, route: string | null | undefined) {
+  const candidates =
+    routeName(route) === "playoff_appearances"
+      ? ["appearances", "wins", "win_pct", "losses", "games_played"]
+      : ["win_pct", "wins", "losses", "appearances", "games_played"];
+  return candidates.find((key) => hasValue(row[key])) ?? null;
+}
+
+function leaderboardContext(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+  metric: string | null,
+): string[] {
+  const games = numericValue(row, "games_played");
+  return [
+    roundLabel(metadata, row),
+    seasonRange(metadata, row),
+    textValue(row, "season_type") ?? metadataText(metadata, "season_type"),
+    games !== null && metric !== "games_played"
+      ? `${formatValue(games, "games_played")} games`
+      : null,
+    textValue(row, "qualifier"),
+    textValue(row, "qualification"),
+  ].filter((item): item is string => Boolean(item));
+}
+
+function recordText(row: SectionRow): string | null {
+  const wins = numericValue(row, "wins");
+  const losses = numericValue(row, "losses");
+  if (wins === null || losses === null) return null;
+  return `${formatValue(wins, "wins")}-${formatValue(losses, "losses")}`;
+}
+
+function leaderboardTitle(route: string | null | undefined): string {
+  if (routeName(route) === "playoff_round_record") {
+    return "Playoff Round Records";
+  }
+  return "Playoff Appearance Leaders";
 }
 
 function TeamIdentityMark({ team }: { team: TeamIdentity }) {
@@ -418,6 +502,85 @@ function PlayoffComparisonLayout({
   );
 }
 
+function PlayoffLeaderboardLayout({
+  sections,
+  metadata,
+  route,
+}: {
+  sections: Record<string, SectionRow[]>;
+  metadata?: ResultMetadata;
+  route?: string | null;
+}) {
+  const leaderboard = sections.leaderboard ?? [];
+  if (leaderboard.length === 0) return null;
+
+  return (
+    <div className={styles.section}>
+      <SectionHeader
+        title={leaderboardTitle(route)}
+        count={`${leaderboard.length} entries`}
+      />
+      <div
+        className={styles.leaderboardList}
+        aria-label="Playoff leaderboard rankings"
+      >
+        {leaderboard.map((row, index) => {
+          const identity = leaderboardTeamIdentity(row);
+          const label = leaderboardLabel(row, index, identity);
+          const metric = leaderboardMetric(row, route);
+          const context = leaderboardContext(row, metadata, metric);
+          const record = recordText(row);
+          const isTopRank = index === 0;
+
+          return (
+            <article
+              className={`${styles.leaderboardRow} ${
+                isTopRank ? styles.topLeaderboardRow : ""
+              }`}
+              key={`${rankLabel(row, index)}-${label}-${index}`}
+            >
+              <div className={styles.rank}>{rankLabel(row, index)}</div>
+              <div className={styles.leaderboardEntity}>
+                {identity && <TeamIdentityMark team={identity} />}
+                <div className={styles.entityText}>
+                  <div className={styles.entityName}>{label}</div>
+                  {context.length > 0 && (
+                    <div
+                      className={styles.leaderboardContext}
+                      aria-label={`${label} playoff context`}
+                    >
+                      {context.map((item) => (
+                        <span className={styles.contextItem} key={item}>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {record && <div className={styles.recordPill}>{record}</div>}
+              {metric && (
+                <div className={styles.metricBlock}>
+                  <div className={styles.metricValue}>
+                    {formatValue(row[metric], metric)}
+                  </div>
+                  <div className={styles.metricLabel}>
+                    {formatColHeader(metric)}
+                  </div>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+      <div className={styles.detailSection}>
+        <SectionHeader title="Full Playoff Leaderboard" />
+        <DataTable rows={leaderboard} highlight />
+      </div>
+    </div>
+  );
+}
+
 export default function PlayoffSection({
   sections,
   metadata,
@@ -453,7 +616,11 @@ export default function PlayoffSection({
   if (queryClass === "leaderboard") {
     return (
       <div aria-label="Playoff result">
-        <LeaderboardSection sections={sections} />
+        <PlayoffLeaderboardLayout
+          sections={sections}
+          metadata={metadata}
+          route={resolvedRoute}
+        />
       </div>
     );
   }

@@ -110,6 +110,120 @@
   min-width: 0;
 }
 
+.leaderboardList {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.leaderboardRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns:
+    var(--space-12) minmax(0, 1fr) minmax(var(--space-14), auto)
+    minmax(var(--space-16), calc(var(--space-16) * 2.25));
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.topLeaderboardRow {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border-default));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-card));
+  box-shadow: inset var(--space-1) 0 0 var(--accent);
+}
+
+.rank {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.topLeaderboardRow .rank,
+.topLeaderboardRow .metricValue {
+  color: var(--accent);
+}
+
+.leaderboardEntity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.entityText {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.entityName {
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.leaderboardContext {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.recordPill {
+  min-width: 0;
+  grid-column: 3;
+  justify-self: end;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.metricBlock {
+  min-width: var(--space-16);
+  max-width: calc(var(--space-16) * 2.25);
+  grid-column: 4;
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+  text-align: right;
+}
+
+.metricValue {
+  max-width: 100%;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-stat-md);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.metricLabel {
+  max-width: 100%;
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
 .detailSection {
   display: grid;
   gap: var(--space-3);
@@ -124,6 +238,18 @@
   .contextList {
     max-width: none;
     justify-content: flex-start;
+  }
+
+  .leaderboardRow {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .recordPill,
+  .metricBlock {
+    grid-column: 1 / -1;
+    justify-self: start;
+    max-width: 100%;
+    text-align: left;
   }
 }
 

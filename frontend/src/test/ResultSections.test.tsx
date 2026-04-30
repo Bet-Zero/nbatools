@@ -677,12 +677,16 @@ describe("ResultSections", () => {
           leaderboard: [
             {
               rank: 1,
+              team_id: 1610612738,
               team_name: "Boston Celtics",
               team_abbr: "BOS",
+              games_played: 42,
               wins: 28,
               losses: 14,
               win_pct: 0.667,
               round: "Finals",
+              seasons: "1980-81 to 2024-25",
+              season_type: "Playoffs",
             },
           ],
         },
@@ -690,10 +694,70 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Playoff leaderboard rankings");
     expect(screen.getByLabelText("Playoff result")).toBeInTheDocument();
-    expect(screen.getByText("Leaderboard")).toBeInTheDocument();
-    expect(screen.getByText("Full Leaderboard")).toBeInTheDocument();
+    expect(screen.getByText("Playoff Round Records")).toBeInTheDocument();
+    expect(within(ranked).getByText("Boston Celtics")).toBeInTheDocument();
+    expect(
+      within(ranked).getByLabelText("Boston Celtics (BOS)"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("28-14")).toBeInTheDocument();
+    expect(within(ranked).getByText("66.7%")).toBeInTheDocument();
+    expect(within(ranked).getByText("Win Pct")).toBeInTheDocument();
+    expect(within(ranked).getByText("42 games")).toBeInTheDocument();
+    expect(within(ranked).getByText("Finals")).toBeInTheDocument();
+    expect(
+      within(ranked).getByText("1980-81 to 2024-25"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Full Playoff Leaderboard")).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Ranked leaderboard"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Occurrence Leaderboard")).not.toBeInTheDocument();
+  });
+
+  it("renders playoff appearance leaderboards with sparse identity fallbacks", () => {
+    const longRound =
+      "Conference Finals With A Very Long Historical Round Label";
+    const data = makeResponse({
+      route: "playoff_appearances",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: { route: "playoff_appearances" },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Los Angeles Lakers",
+              team_abbr: "LAL",
+              appearances: 7,
+              round: longRound,
+              seasons: "2019-20 to 2024-25",
+            },
+            {
+              rank: 2,
+              appearances: 0,
+              round: longRound,
+              seasons: "2019-20 to 2024-25",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Playoff leaderboard rankings");
+    expect(screen.getByText("Playoff Appearance Leaders")).toBeInTheDocument();
+    expect(within(ranked).getByText("Los Angeles Lakers")).toBeInTheDocument();
+    expect(within(ranked).getByText("Playoff Entry 2")).toBeInTheDocument();
+    expect(within(ranked).getByText("7")).toBeInTheDocument();
+    expect(within(ranked).getByText("0")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("Appearances").length).toBe(2);
+    expect(within(ranked).getAllByText(longRound).length).toBe(2);
+    expect(screen.getByText("Full Playoff Leaderboard")).toBeInTheDocument();
   });
 
   it("routes playoff matchup comparisons to the C7 boundary owner", () => {
