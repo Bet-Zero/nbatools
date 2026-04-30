@@ -124,4 +124,73 @@ describe("first-run starter queries", () => {
       expect(screen.getByText("Query output")).toBeInTheDocument(),
     );
   });
+
+  it("shows the shared loading preview for pending natural queries", async () => {
+    let resolveQuery: (data: QueryResponse) => void = () => {};
+    vi.mocked(postQuery).mockReturnValueOnce(
+      new Promise<QueryResponse>((resolve) => {
+        resolveQuery = resolve;
+      }),
+    );
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+      target: { value: "Jokic last 10 games" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Query" }));
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Searching NBA data",
+    );
+    expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
+
+    resolveQuery(makeResponse("Jokic last 10 games"));
+    await waitFor(() =>
+      expect(screen.getByText("Query output")).toBeInTheDocument(),
+    );
+  });
+
+  it("shows the shared loading preview for pending structured queries", async () => {
+    let resolveStructured: (data: QueryResponse) => void = () => {};
+    vi.mocked(fetchRoutes).mockResolvedValueOnce({
+      routes: ["season_leaders"],
+    });
+    vi.mocked(postStructuredQuery).mockReturnValueOnce(
+      new Promise<QueryResponse>((resolve) => {
+        resolveStructured = resolve;
+      }),
+    );
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/Dev Tools/));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("option", { name: "season_leaders" }),
+      ).toBeInTheDocument(),
+    );
+    fireEvent.change(screen.getByLabelText("Route"), {
+      target: { value: "season_leaders" },
+    });
+    fireEvent.change(screen.getByLabelText("kwargs (JSON)"), {
+      target: { value: '{"stat":"pts"}' },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Run Structured Query" }),
+    );
+
+    expect(postStructuredQuery).toHaveBeenCalledWith("season_leaders", {
+      stat: "pts",
+    });
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Searching NBA data",
+    );
+    expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
+
+    resolveStructured(makeResponse("structured query"));
+    await waitFor(() =>
+      expect(screen.getByText("Query output")).toBeInTheDocument(),
+    );
+  });
 });

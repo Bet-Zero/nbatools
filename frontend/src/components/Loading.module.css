@@ -1,11 +1,11 @@
 .loading {
   min-width: 0;
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
   color: var(--text-secondary);
 }
 
-.header {
+.statusRow {
   min-width: 0;
   display: flex;
   align-items: flex-start;
@@ -27,8 +27,24 @@
 .copy {
   display: grid;
   flex: 1;
-  gap: var(--space-3);
+  gap: var(--space-2);
   min-width: 0;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.context {
+  color: var(--text-tertiary);
+  font-size: var(--font-label);
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .message {
@@ -39,13 +55,59 @@
   overflow-wrap: anywhere;
 }
 
-.messageSkeleton {
-  max-width: 420px;
+.detail {
+  max-width: 560px;
+  color: var(--text-secondary);
+  font-size: var(--font-body-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .preview {
-  padding-top: var(--space-3);
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--border-subtle);
+}
+
+.previewHeader {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.34fr) 1fr;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.previewMeta {
+  min-width: 0;
+}
+
+.previewGrid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 0.38fr) 1fr;
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.summaryPreview,
+.tablePreview {
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-elevated) 72%, transparent);
+}
+
+.summaryPreview {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
 }
 
 @keyframes spin {
@@ -54,8 +116,29 @@
   }
 }
 
+@media (max-width: 760px) {
+  .previewHeader,
+  .previewGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 520px) {
-  .header {
+  .statusRow {
     gap: var(--space-3);
+  }
+
+  .spinner {
+    width: var(--space-7);
+    height: var(--space-7);
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryPreview,
+  .tablePreview {
+    padding: var(--space-3);
   }
 }

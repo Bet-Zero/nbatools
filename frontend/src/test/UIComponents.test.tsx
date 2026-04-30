@@ -117,7 +117,17 @@ describe("Loading", () => {
   it("renders loading text", () => {
     render(<Loading />);
     expect(screen.getByText("Searching NBA data\u2026")).toBeInTheDocument();
-    expect(screen.getByRole("status")).toBeInTheDocument();
+    const status = screen.getByRole("status");
+    expect(status).toHaveAttribute("aria-live", "polite");
+    expect(status).toHaveAttribute("aria-busy", "true");
+  });
+
+  it("renders a compact result-preview skeleton", () => {
+    render(<Loading />);
+    expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading result metadata")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading summary preview")).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading result rows")).toBeInTheDocument();
   });
 });
 
