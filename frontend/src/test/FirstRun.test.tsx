@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
 
@@ -71,6 +72,27 @@ beforeEach(() => {
 });
 
 describe("first-run starter queries", () => {
+  it("keeps keyboard flow from query input to starter queries", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+
+    const input = screen.getByLabelText("Search NBA performance");
+    input.focus();
+    expect(input).toHaveFocus();
+
+    await user.tab();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Run starter query: Jokic last 10 games",
+      }),
+    ).toHaveFocus();
+  });
+
   it("runs a starter query through the natural-query path", async () => {
     vi.mocked(postQuery).mockResolvedValueOnce(
       makeResponse("Jokic last 10 games"),

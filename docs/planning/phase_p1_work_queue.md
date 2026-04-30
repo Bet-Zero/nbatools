@@ -204,7 +204,7 @@ answer, especially when the app is stale, unknown, or offline.
 
 ---
 
-## 4. `[ ]` Verify first-run mobile and accessibility polish
+## 4. `[x]` Verify first-run mobile and accessibility polish
 
 **Why:** P1 is not done if the first-run surface only works on desktop or only
 for pointer users.

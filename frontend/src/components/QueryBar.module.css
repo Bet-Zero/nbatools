@@ -80,6 +80,11 @@
   opacity: 1;
 }
 
+.submitButton {
+  justify-self: end;
+  min-width: calc(var(--space-16) * 1.25);
+}
+
 @media (max-width: 640px) {
   .queryBar {
     grid-template-columns: 1fr;
@@ -91,5 +96,10 @@
 
   .label {
     font-size: var(--font-body);
+  }
+
+  .submitButton {
+    width: 100%;
+    justify-self: stretch;
   }
 }

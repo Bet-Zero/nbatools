@@ -53,6 +53,7 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
       </div>
       <Button
         type="submit"
+        className={styles.submitButton}
         disabled={disabled || !value.trim()}
         loading={disabled}
         variant="primary"
