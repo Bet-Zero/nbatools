@@ -706,13 +706,41 @@ describe("ResultSections", () => {
       result: {
         query_class: "comparison",
         result_status: "ok",
-        metadata: { route: "player_compare" },
+        metadata: {
+          route: "player_compare",
+          players_context: [
+            { player_id: 203999, player_name: "Nikola Jokic" },
+            { player_id: 203954, player_name: "Joel Embiid" },
+          ],
+        },
         notes: [],
         caveats: [],
         sections: {
           summary: [
-            { player_name: "Nikola Jokic", pts_avg: 26.4 },
-            { player_name: "Joel Embiid", pts_avg: 30.1 },
+            {
+              player_name: "Nikola Jokic",
+              team_name: "Denver Nuggets",
+              team_abbr: "DEN",
+              team_id: 1610612743,
+              games: 10,
+              wins: 7,
+              losses: 3,
+              win_pct: 0.7,
+              pts_avg: 26.4,
+              reb_avg: 12.1,
+              ast_avg: 9.3,
+              efg_pct_avg: 0.62,
+            },
+            {
+              player_name: "Joel Embiid",
+              games: 8,
+              wins: 5,
+              losses: 3,
+              win_pct: 0.625,
+              pts_avg: 30.1,
+              reb_avg: 10.8,
+              ast_avg: 5.7,
+            },
           ],
           comparison: [
             {
@@ -726,12 +754,26 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const compared = screen.getByLabelText("Compared players");
     expect(screen.getByText("Player Comparison")).toBeInTheDocument();
     expect(screen.getByText("2 players")).toBeInTheDocument();
     expect(screen.getByText("Metric Comparison")).toBeInTheDocument();
+    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
     expect(screen.queryByText("Players")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Nikola Jokic").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Joel Embiid").length).toBeGreaterThan(0);
+    expect(within(compared).getByText("Nikola Jokic")).toBeInTheDocument();
+    expect(within(compared).getByText("Joel Embiid")).toBeInTheDocument();
+    expect(
+      within(compared)
+        .getByLabelText("Nikola Jokic avatar")
+        .querySelector("img"),
+    ).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+    );
+    expect(within(compared).getByText("Denver Nuggets")).toBeInTheDocument();
+    expect(within(compared).getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(within(compared).getByText("26.4")).toBeInTheDocument();
+    expect(within(compared).getByText("7-3")).toBeInTheDocument();
   });
 
   it("keeps team comparisons on the generic comparison renderer", () => {
@@ -759,6 +801,37 @@ describe("ResultSections", () => {
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
     expect(screen.getAllByText("Celtics").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Lakers").length).toBeGreaterThan(0);
+  });
+
+  it("renders sparse player comparison cards with identity fallbacks", () => {
+    const data = makeResponse({
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "player_compare" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { player_name: "Mystery Player" },
+            { player_name: "Sparse Opponent", games: 0 },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const compared = screen.getByLabelText("Compared players");
+    expect(within(compared).getByText("Mystery Player")).toBeInTheDocument();
+    expect(within(compared).getByText("Sparse Opponent")).toBeInTheDocument();
+    expect(
+      within(compared)
+        .getByLabelText("Mystery Player avatar")
+        .querySelector("img"),
+    ).toBeNull();
+    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Metric Comparison")).not.toBeInTheDocument();
   });
 
   it("renders streak sections", () => {

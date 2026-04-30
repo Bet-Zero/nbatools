@@ -1,3 +1,81 @@
 .section {
   margin-bottom: var(--space-4);
 }
+
+.playerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.playerCard {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.identityRow {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatar {
+  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
+}
+
+.identityText {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.eyebrow {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.playerName {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h3);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.teamBadge {
+  margin-top: var(--space-1);
+}
+
+.heroStats,
+.secondaryStats {
+  min-width: 0;
+}
+
+.supportingStats {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 720px) {
+  .playerGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .identityRow {
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}
