@@ -52,7 +52,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory mobile risks and verification fixtures
+## 1. `[x]` Inventory mobile risks and verification fixtures
 
 **Why:** A whole-app mobile pass needs a concrete matrix of routes, edge cases,
 and widths before making polish changes.
