@@ -2073,6 +2073,34 @@ describe("ResultSections", () => {
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
   });
 
+  it("renders tied head-to-head records without inventing a winner", () => {
+    const data = makeResponse({
+      route: "team_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          route: "team_compare",
+          head_to_head_used: true,
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { team_name: "Celtics", games: 2, wins: 1, losses: 1 },
+            { team_name: "Lakers", games: 2, wins: 1, losses: 1 },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const participants = screen.getByLabelText("Head-to-head participants");
+    expect(screen.getByText("Head-to-Head")).toBeInTheDocument();
+    expect(within(participants).getAllByText("1-1").length).toBe(2);
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
+  });
+
   it("routes team matchup records to the dedicated record renderer", () => {
     const data = makeResponse({
       route: "team_matchup_record",

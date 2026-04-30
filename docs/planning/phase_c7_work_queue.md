@@ -295,7 +295,7 @@ context, not just ordinary regular-season leaderboard rows.
 
 ---
 
-## 6. `[ ]` Polish C7 responsive detail and docs
+## 6. `[x]` Polish C7 responsive detail and docs
 
 **Why:** C7 should close implementation with head-to-head/playoff layouts
 documented and safe on desktop and mobile.

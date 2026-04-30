@@ -254,6 +254,7 @@
 }
 
 @media (max-width: 520px) {
+  .leaderboardEntity,
   .participantIdentity {
     align-items: flex-start;
     flex-direction: column;
