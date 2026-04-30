@@ -96,7 +96,7 @@ states.
 
 ---
 
-## 2. `[ ]` Build the first-run landing/empty surface
+## 2. `[x]` Build the first-run landing/empty surface
 
 **Why:** The initial screen should communicate what nbatools does, keep the
 query bar central, and invite a useful first action without reading docs.

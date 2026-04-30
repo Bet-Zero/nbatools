@@ -1,66 +1,72 @@
 .emptyState {
   display: grid;
-  justify-items: center;
-  gap: var(--space-5);
-  text-align: center;
+  gap: var(--space-6);
   color: var(--text-secondary);
 }
 
-.iconWrap {
-  padding: var(--space-3);
-  background: var(--bg-input);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-}
-
-.icon {
-  font-size: var(--font-display);
-  line-height: 1;
-}
-
-.copy {
+.content {
   display: grid;
-  justify-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  max-width: 720px;
 }
 
 .title {
-  font-size: var(--font-h3);
+  margin: 0;
+  font-size: var(--font-h2);
   font-weight: var(--weight-semibold);
+  line-height: 1.15;
   color: var(--text-primary);
+  overflow-wrap: anywhere;
 }
 
 .description {
   font-size: var(--font-body);
-  max-width: 480px;
+  max-width: 680px;
   margin: 0;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
-.tips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  justify-content: center;
+.capabilities {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
 }
 
-.tip {
-  max-width: 100%;
-  padding: var(--space-2) var(--space-3);
-  background: var(--bg-input);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-small);
-  font-family: var(--font-mono);
+.capability {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+}
+
+.capabilityTitle {
   color: var(--text-primary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.capabilityDetail {
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 640px) {
-  .tips {
-    justify-content: stretch;
+  .emptyState {
+    gap: var(--space-5);
   }
 
-  .tip {
-    width: 100%;
+  .title {
+    font-size: var(--font-h3);
+  }
+
+  .capabilities {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
 }

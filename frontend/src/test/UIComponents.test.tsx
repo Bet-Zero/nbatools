@@ -1,19 +1,58 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import EmptyState from "../components/EmptyState";
 import NoResultDisplay from "../components/NoResultDisplay";
 import Loading from "../components/Loading";
 import ErrorBox from "../components/ErrorBox";
+import SampleQueries from "../components/SampleQueries";
 
 describe("EmptyState", () => {
-  it("renders welcome message", () => {
+  it("renders first-run message", () => {
     render(<EmptyState />);
-    expect(screen.getByText("Search the NBA")).toBeInTheDocument();
+    expect(
+      screen.getByText("Ask a basketball question. Get a structured answer."),
+    ).toBeInTheDocument();
   });
 
-  it("renders example tips", () => {
+  it("renders supported query areas", () => {
     render(<EmptyState />);
-    expect(screen.getByText(/Jokic last 10 games/)).toBeInTheDocument();
+    expect(screen.getByText("Players")).toBeInTheDocument();
+    expect(screen.getByText("Teams")).toBeInTheDocument();
+    expect(screen.getByText("History")).toBeInTheDocument();
+  });
+});
+
+describe("SampleQueries", () => {
+  it("renders grouped starter queries", () => {
+    render(<SampleQueries onSelect={vi.fn()} />);
+
+    expect(
+      screen.getByRole("heading", { name: "Players" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Teams" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Run starter query: Jokic last 10 games",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Run starter query: Lakers playoff history",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("submits selected starter query text", () => {
+    const onSelect = vi.fn();
+    render(<SampleQueries onSelect={onSelect} />);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Run starter query: Celtics record 2024-25",
+      }),
+    );
+
+    expect(onSelect).toHaveBeenCalledWith("Celtics record 2024-25");
   });
 });
 
