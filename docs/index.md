@@ -86,6 +86,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_c4_work_queue.md` — completed Track A component-experience queue for player game finder layout work
 - `planning/phase_c4_finder_inventory.md` — finder row-shape and renderer-boundary inventory produced by Phase C4 item 1
 - `planning/phase_c5_work_queue.md` — active Track A component-experience queue for team summary, team record, and split layout work
+- `planning/phase_c5_team_split_inventory.md` — team summary, record, matchup-record, and split row-shape inventory produced by Phase C5 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker

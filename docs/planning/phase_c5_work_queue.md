@@ -57,7 +57,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory team summary, record, and split row shapes
+## 1. `[x]` Inventory team summary, record, and split row shapes
 
 **Why:** `query_class: "summary"` and `query_class: "split_summary"` cover
 multiple routes. C5 needs verified row-shape guidance before assigning
