@@ -94,7 +94,7 @@ owners, fixtures, and copy boundaries before runtime changes.
 
 ---
 
-## 2. `[ ]` Redesign loading and skeleton states
+## 2. `[x]` Redesign loading and skeleton states
 
 **Why:** Loading should feel connected to the incoming result, not like a
 generic blocking spinner.
