@@ -325,7 +325,7 @@ and safe on desktop and mobile.
 
 ---
 
-## 7. `[ ]` Phase C5 retrospective and C6 handoff
+## 7. `[x]` Phase C5 retrospective and C6 handoff
 
 **Why:** Self-propagating final task. It closes team/split layout work and
 creates the next executable Part 2 queue.
@@ -371,6 +371,38 @@ creates the next executable Part 2 queue.
 - `docs/planning/product_polish_master_plan.md`
 
 ---
+
+## Phase C5 retrospective
+
+### What went well
+
+- The upfront inventory made renderer ownership explicit before code changed,
+  which kept `game_summary`, `team_record`, `team_matchup_record`,
+  `team_split_summary`, and `player_split_summary` from leaking into player,
+  playoff, or unknown fallback paths.
+- Team summary, record, matchup, and split layouts reused the Part 1
+  primitives cleanly: `Card`, `Stat`, `StatBlock`, `TeamBadge`, `Avatar`,
+  `SectionHeader`, and the table wrapper carried most of the visual structure.
+- The full detail tables stayed visible throughout the phase, so designed
+  summaries did not narrow the machine-readable/debugging surface.
+
+### What was harder
+
+- `summary`, `comparison`, and `split_summary` are shared query classes, so
+  route-level boundaries were more important than query-class-level routing.
+- Occasional sparse rows made it important to omit absent promoted stats rather
+  than render empty hero/stat regions.
+- Team identity has several possible sources (`metadata`, row fields, text
+  filters), so fallback behavior needed dedicated tests and documentation.
+
+### Residuals and next action
+
+- C5 leaves remaining Part 2 work open. Streaks still render as a table-first
+  section, count results still use the generic fallback, and occurrence
+  leaderboards need event-count-specific treatment.
+- The next active queue is
+  [`phase_c6_work_queue.md`](./phase_c6_work_queue.md), focused on streak and
+  occurrence layouts.
 
 ## Appendix: progress tracking
 
