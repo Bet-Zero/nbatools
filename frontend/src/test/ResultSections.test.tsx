@@ -572,10 +572,78 @@ describe("ResultSections", () => {
       },
     });
     render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Playoff result")).toBeInTheDocument();
     expect(screen.getByText("Summary")).toBeInTheDocument();
     expect(screen.queryByText("Team Summary")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
     expect(screen.getByText("Lakers")).toBeInTheDocument();
+  });
+
+  it("routes playoff leaderboards to the C7 boundary owner", () => {
+    const data = makeResponse({
+      route: "playoff_round_record",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: { route: "playoff_round_record" },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Boston Celtics",
+              team_abbr: "BOS",
+              wins: 28,
+              losses: 14,
+              win_pct: 0.667,
+              round: "Finals",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Playoff result")).toBeInTheDocument();
+    expect(screen.getByText("Leaderboard")).toBeInTheDocument();
+    expect(screen.getByText("Full Leaderboard")).toBeInTheDocument();
+    expect(screen.queryByText("Occurrence Leaderboard")).not.toBeInTheDocument();
+  });
+
+  it("routes playoff matchup comparisons to the C7 boundary owner", () => {
+    const data = makeResponse({
+      route: "playoff_matchup_history",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "playoff_matchup_history" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { team_name: "Celtics", games: 7, wins: 4, losses: 3 },
+            { team_name: "Heat", games: 7, wins: 3, losses: 4 },
+          ],
+          comparison: [
+            {
+              season: "2022-23",
+              round: "Conference Finals",
+              BOS_wins: 3,
+              BOS_losses: 4,
+              MIA_wins: 4,
+              MIA_losses: 3,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Playoff result")).toBeInTheDocument();
+    expect(screen.getByText("Players")).toBeInTheDocument();
+    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(screen.getByText("Conference Finals")).toBeInTheDocument();
   });
 
   it("keeps unknown summary routes on the generic summary renderer", () => {
@@ -1670,6 +1738,9 @@ describe("ResultSections", () => {
     render(<ResultSections data={data} />);
     const compared = screen.getByLabelText("Compared players");
     const metricCards = screen.getByLabelText("Metric comparison cards");
+    expect(
+      screen.queryByLabelText("Head-to-head result"),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Player Comparison")).toBeInTheDocument();
     expect(screen.getByText("2 players")).toBeInTheDocument();
     expect(screen.getByText("Metric Comparison")).toBeInTheDocument();
@@ -1696,6 +1767,45 @@ describe("ResultSections", () => {
     ).toBeInTheDocument();
   });
 
+  it("routes player head-to-head comparisons to the C7 boundary owner", () => {
+    const data = makeResponse({
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          route: "player_compare",
+          head_to_head_used: true,
+          players_context: [
+            { player_id: 203999, player_name: "Nikola Jokic" },
+            { player_id: 203954, player_name: "Joel Embiid" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { player_name: "Nikola Jokic", games: 3, wins: 2, losses: 1 },
+            { player_name: "Joel Embiid", games: 3, wins: 1, losses: 2 },
+          ],
+          comparison: [
+            {
+              metric: "wins",
+              "Nikola Jokic": 2,
+              "Joel Embiid": 1,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
+    expect(screen.getByText("Player Comparison")).toBeInTheDocument();
+    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+  });
+
   it("keeps team comparisons on the generic comparison renderer", () => {
     const data = makeResponse({
       route: "team_compare",
@@ -1716,11 +1826,43 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    expect(
+      screen.queryByLabelText("Head-to-head result"),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Players")).toBeInTheDocument();
     expect(screen.getByText("Comparison")).toBeInTheDocument();
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
     expect(screen.getAllByText("Celtics").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Lakers").length).toBeGreaterThan(0);
+  });
+
+  it("routes team head-to-head comparisons to the C7 boundary owner", () => {
+    const data = makeResponse({
+      route: "team_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          route: "team_compare",
+          head_to_head_used: true,
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { team_name: "Celtics", games: 4, wins: 3, losses: 1 },
+            { team_name: "Lakers", games: 4, wins: 1, losses: 3 },
+          ],
+          comparison: [{ metric: "wins", Celtics: 3, Lakers: 1 }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
+    expect(screen.getByText("Players")).toBeInTheDocument();
+    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
   });
 
   it("routes team matchup records to the dedicated record renderer", () => {
@@ -1777,6 +1919,7 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
     expect(screen.getByText("Team Matchup Record")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
@@ -1790,6 +1933,40 @@ describe("ResultSections", () => {
     expect(screen.getByText("Metric Detail")).toBeInTheDocument();
     expect(screen.queryByText("Players")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
+  });
+
+  it("routes matchup-by-decade comparisons to the C7 boundary owner", () => {
+    const data = makeResponse({
+      route: "matchup_by_decade",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "matchup_by_decade" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { team_name: "Celtics", games: 18, wins: 10, losses: 8 },
+            { team_name: "Lakers", games: 18, wins: 8, losses: 10 },
+          ],
+          comparison: [
+            {
+              decade: "1980s",
+              BOS_wins: 4,
+              BOS_losses: 2,
+              LAL_wins: 2,
+              LAL_losses: 4,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByLabelText("Head-to-head result")).toBeInTheDocument();
+    expect(screen.getByText("Players")).toBeInTheDocument();
+    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(screen.getByText("1980s")).toBeInTheDocument();
   });
 
   it("renders sparse matchup records without team ids or record fields", () => {
