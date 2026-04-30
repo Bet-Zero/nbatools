@@ -97,6 +97,8 @@ Conceptual shape:
 - **tabular data section(s):**
   - overall summary row
   - optional per-season breakdown (maps to the stable `BY_SEASON` label — see [section 6](#6-section-label-guidance))
+  - optional exact-sample game series for player summaries, exposed as structured
+    API/JSON data rather than a CLI section label
 - **summary metrics:** box-score aggregates plus shooting splits; for player summaries, sample-aware rate metrics (USG%, AST%, REB%) per [docs/data_contracts.md](data_contracts.md#7-sample-aware-metric-contract)
 - **optional metadata:** sample size, games played, date range of the actual sample
 - **current CLI surfaces that map here:**

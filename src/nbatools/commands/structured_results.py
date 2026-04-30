@@ -137,6 +137,7 @@ class SummaryResult:
     query_class: str = "summary"
     summary: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
     by_season: pd.DataFrame | None = None
+    game_log: pd.DataFrame | None = None
     result_status: str = "ok"
     result_reason: str | None = None
     current_through: str | None = None
@@ -171,6 +172,8 @@ class SummaryResult:
             out["current_through"] = self.current_through
         if self.by_season is not None and not self.by_season.empty:
             out["sections"]["by_season"] = _df_to_records(self.by_season)
+        if self.game_log is not None and not self.game_log.empty:
+            out["sections"]["game_log"] = _df_to_records(self.game_log)
         return out
 
     def to_sections_dict(self) -> dict[str, str]:

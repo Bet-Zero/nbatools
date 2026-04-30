@@ -143,7 +143,7 @@ designed player summary instead of a table dump.
 
 ---
 
-## 3. `[ ]` Add an exact-sample game-series section for player summaries
+## 3. `[x]` Add an exact-sample game-series section for player summaries
 
 **Why:** The C1 sparkline and recent-game context need structured
 game-by-game data for the same sample as the summary. React should render that

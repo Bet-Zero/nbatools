@@ -506,6 +506,12 @@ The web UI displays a collapsible freshness panel with:
 
 All structured result classes produce a `to_dict()` output that always includes `result_reason` (set to `null` for successful results). This key is never omitted.
 
+Player summary results (`player_game_summary`) expose an additive
+`sections.game_log` array in API/JSON output. The rows are the exact filtered
+sample used for the summary, ordered chronologically, and include game date,
+game id, opponent identity, W/L, minutes, points, rebounds, and assists. The
+legacy CLI labeled output remains `SUMMARY` plus optional `BY_SEASON`.
+
 ### ResultStatus values
 
 - `ok` — query executed and produced data

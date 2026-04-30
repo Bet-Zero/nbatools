@@ -52,6 +52,28 @@ ALLOWED_STATS = {
     "tov_pct": "tov_pct",
 }
 
+GAME_LOG_COLUMNS = [
+    "game_date",
+    "game_id",
+    "season",
+    "season_type",
+    "player_id",
+    "player_name",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "wl",
+    "minutes",
+    "pts",
+    "reb",
+    "ast",
+]
+
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -140,6 +162,19 @@ def _apply_filters(
         )
 
     return out
+
+
+def _build_game_log_section(df: pd.DataFrame) -> pd.DataFrame:
+    cols = [col for col in GAME_LOG_COLUMNS if col in df.columns]
+    game_log = (
+        df.sort_values(["game_date", "game_id"], ascending=[True, True])
+        .loc[:, cols]
+        .reset_index(drop=True)
+        .copy()
+    )
+    if "game_date" in game_log.columns:
+        game_log["game_date"] = pd.to_datetime(game_log["game_date"]).dt.strftime("%Y-%m-%d")
+    return game_log
 
 
 def build_result(
@@ -275,6 +310,7 @@ def build_result(
 
     team_df = load_team_games_for_seasons(seasons, season_type)
     context_df = build_player_team_context(df, team_df)
+    game_log = _build_game_log_section(df)
 
     numeric_cols = [
         "minutes",
@@ -380,6 +416,7 @@ def build_result(
     return SummaryResult(
         summary=summary,
         by_season=by_season,
+        game_log=game_log,
         current_through=current_through,
         notes=notes,
         caveats=caveats,
