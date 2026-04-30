@@ -1,86 +1,181 @@
-import { Badge, Card } from "../design-system";
+import { Badge, Card, type BadgeVariant } from "../design-system";
 import styles from "./NoResultDisplay.module.css";
 
 interface Props {
   reason?: string | null;
   status: string;
   notes?: string[];
+  caveats?: string[];
 }
 
-function friendlyReason(reason: string | null | undefined): string {
+type StateVariant =
+  | "recoverable"
+  | "unsupported"
+  | "ambiguous"
+  | "error"
+  | "empty";
+
+interface StateProfile {
+  variant: StateVariant;
+  title: string;
+  label: string;
+  message: string;
+  badgeVariant: BadgeVariant;
+  suggestions: string[];
+}
+
+const RECOVERABLE_SUGGESTIONS = [
+  "Check player or team spelling",
+  "Try a different season or date range",
+  "Broaden stat filters or split filters",
+  "Start from a grouped starter query",
+];
+
+const NO_DATA_SUGGESTIONS = [
+  "Try a season covered by the local data",
+  "Broaden the date window",
+  "Remove narrow split filters",
+];
+
+function stateProfile(
+  reason: string | null | undefined,
+  status: string,
+): StateProfile {
+  if (status === "error" || reason === "error") {
+    return {
+      variant: "error",
+      title: "Query Error",
+      label: "Result error",
+      message: "An error occurred while processing the query.",
+      badgeVariant: "danger",
+      suggestions: [],
+    };
+  }
+
   switch (reason) {
     case "no_match":
-      return "No games or records matched your query filters.";
+      return {
+        variant: "recoverable",
+        title: "No Matching Results",
+        label: "No matching rows",
+        message: "No games or records matched the query filters.",
+        badgeVariant: "neutral",
+        suggestions: RECOVERABLE_SUGGESTIONS,
+      };
     case "no_data":
-      return "Data is not available for the requested scope.";
+      return {
+        variant: "recoverable",
+        title: "Data Not Available",
+        label: "Unavailable scope",
+        message: "Data is not available for the requested scope.",
+        badgeVariant: "neutral",
+        suggestions: NO_DATA_SUGGESTIONS,
+      };
     case "unrouted":
-      return "This query type is not yet supported.";
+      return {
+        variant: "unsupported",
+        title: "Unsupported Query",
+        label: "Not routed",
+        message: "This query type is not yet supported by the engine.",
+        badgeVariant: "warning",
+        suggestions: [],
+      };
     case "ambiguous":
-      return "The query matched multiple possible entities. Try being more specific.";
+      return {
+        variant: "ambiguous",
+        title: "Ambiguous Query",
+        label: "Needs specificity",
+        message:
+          "The query matched multiple possible entities. Add more specific player, team, season, or matchup details.",
+        badgeVariant: "warning",
+        suggestions: [],
+      };
     case "unsupported":
-      return "This query combination is not supported by the engine.";
-    case "error":
-      return "An error occurred while processing the query.";
+      return {
+        variant: "unsupported",
+        title: "Unsupported Query",
+        label: "Unsupported combination",
+        message: "This query combination is not supported by the engine.",
+        badgeVariant: "warning",
+        suggestions: [],
+      };
+    case "empty_sections":
+      return {
+        variant: "empty",
+        title: "No Displayable Rows",
+        label: "Completed without rows",
+        message:
+          "The query completed, but the response did not include rows this view can display.",
+        badgeVariant: "info",
+        suggestions: [],
+      };
     default:
-      return reason ?? "No matching data found.";
+      return {
+        variant: "recoverable",
+        title: "No Results",
+        label: "No matching data",
+        message: reason ?? "No matching data found.",
+        badgeVariant: "neutral",
+        suggestions: RECOVERABLE_SUGGESTIONS,
+      };
   }
 }
 
-const SUGGESTIONS = [
-  "Check player/team spelling",
-  "Try a different season or date range",
-  "Broaden your stat filters",
-  "Try one of the sample queries above",
-];
+function formatStatus(status: string): string {
+  return status.replace(/_/g, " ");
+}
 
-export default function NoResultDisplay({ reason, status, notes }: Props) {
-  const isError = status === "error";
-  const isUnsupported = reason === "unsupported" || reason === "ambiguous";
-  const icon = isError ? "⚠" : isUnsupported ? "⊘" : "∅";
-  const title = isError
-    ? "Query Error"
-    : reason === "unsupported"
-      ? "Unsupported Query"
-      : reason === "ambiguous"
-        ? "Ambiguous Query"
-        : "No Results";
-  const badgeVariant = isError
-    ? "danger"
-    : isUnsupported
-      ? "warning"
-      : "neutral";
+export default function NoResultDisplay({
+  reason,
+  status,
+  notes = [],
+  caveats = [],
+}: Props) {
+  const profile = stateProfile(reason, status);
+  const details = [
+    ...notes.map((text) => ({ kind: "Note", text })),
+    ...caveats.map((text) => ({ kind: "Caveat", text })),
+  ];
 
   return (
     <Card
-      className={[styles.display, isError ? styles.error : ""]
+      className={[styles.display, styles[profile.variant]]
         .filter(Boolean)
         .join(" ")}
       depth="card"
       padding="lg"
     >
-      <div className={styles.iconWrap}>
-        <div className={styles.icon}>{icon}</div>
+      <div className={styles.header}>
+        <div className={styles.titleGroup}>
+          <span className={styles.stateLabel}>{profile.label}</span>
+          <div className={styles.title}>{profile.title}</div>
+        </div>
+        <Badge variant={profile.badgeVariant} size="sm" uppercase>
+          {formatStatus(status)}
+        </Badge>
       </div>
-      <Badge variant={badgeVariant} size="sm" uppercase>
-        {status}
-      </Badge>
-      <div className={styles.title}>{title}</div>
-      <div className={styles.message}>{friendlyReason(reason)}</div>
-      {notes && notes.length > 0 && (
-        <div className={styles.notes}>
-          {notes.map((note, i) => (
-            <div key={i} className={styles.note}>
-              &bull; {note}
+      <div className={styles.message}>{profile.message}</div>
+      {details.length > 0 && (
+        <div className={styles.details} aria-label="Result details">
+          <div className={styles.sectionTitle}>Details</div>
+          {details.map((detail, i) => (
+            <div key={`${detail.kind}-${i}`} className={styles.detailItem}>
+              <span className={styles.detailKind}>{detail.kind}</span>
+              <span className={styles.detailText}>{detail.text}</span>
             </div>
           ))}
         </div>
       )}
-      {!isError && !isUnsupported && (
-        <div className={styles.suggestions}>
-          <strong>Suggestions</strong>
-          {SUGGESTIONS.map((s, i) => (
-            <div key={i}>&bull; {s}</div>
-          ))}
+      {profile.suggestions.length > 0 && (
+        <div className={styles.suggestions} aria-label="Suggested next steps">
+          <div className={styles.sectionTitle}>Suggested next steps</div>
+          <div className={styles.suggestionGrid}>
+            {profile.suggestions.map((suggestion) => (
+              <div key={suggestion} className={styles.suggestion}>
+                {suggestion}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </Card>

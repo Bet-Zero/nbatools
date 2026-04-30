@@ -59,9 +59,9 @@ describe("SampleQueries", () => {
 describe("NoResultDisplay", () => {
   it("shows no results for no_result status", () => {
     render(<NoResultDisplay reason="no_match" status="no_result" />);
-    expect(screen.getByText("No Results")).toBeInTheDocument();
+    expect(screen.getByText("No Matching Results")).toBeInTheDocument();
     expect(
-      screen.getByText("No games or records matched your query filters."),
+      screen.getByText("No games or records matched the query filters."),
     ).toBeInTheDocument();
   });
 
@@ -72,6 +72,7 @@ describe("NoResultDisplay", () => {
 
   it("shows default message when no reason", () => {
     render(<NoResultDisplay reason={null} status="no_result" />);
+    expect(screen.getByText("No Results")).toBeInTheDocument();
     expect(screen.getByText("No matching data found.")).toBeInTheDocument();
   });
 
@@ -92,6 +93,7 @@ describe("NoResultDisplay", () => {
     expect(
       screen.getByText(/Cannot use both home_only and away_only/),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Result details")).toHaveTextContent("Note");
   });
 
   it("shows ambiguous variant", () => {
@@ -104,12 +106,51 @@ describe("NoResultDisplay", () => {
 
   it("does not show suggestions for unsupported reason", () => {
     render(<NoResultDisplay reason="unsupported" status="no_result" />);
-    expect(screen.queryByText("Suggestions")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Suggested next steps"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show suggestions for ambiguous or unrouted reasons", () => {
+    const { rerender } = render(
+      <NoResultDisplay reason="ambiguous" status="no_result" />,
+    );
+    expect(
+      screen.queryByLabelText("Suggested next steps"),
+    ).not.toBeInTheDocument();
+
+    rerender(<NoResultDisplay reason="unrouted" status="no_result" />);
+    expect(screen.getByText("Unsupported Query")).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Suggested next steps"),
+    ).not.toBeInTheDocument();
   });
 
   it("shows suggestions for no_match reason", () => {
     render(<NoResultDisplay reason="no_match" status="no_result" />);
-    expect(screen.getByText("Suggestions")).toBeInTheDocument();
+    expect(screen.getByLabelText("Suggested next steps")).toBeInTheDocument();
+  });
+
+  it("shows supplied caveats in details", () => {
+    render(
+      <NoResultDisplay
+        reason="no_data"
+        status="no_result"
+        caveats={["Recent games may not be loaded yet"]}
+      />,
+    );
+    expect(screen.getByLabelText("Result details")).toHaveTextContent("Caveat");
+    expect(
+      screen.getByText(/Recent games may not be loaded yet/),
+    ).toBeInTheDocument();
+  });
+
+  it("shows neutral empty-section state for ok responses without rows", () => {
+    render(<NoResultDisplay reason="empty_sections" status="ok" />);
+    expect(screen.getByText("No Displayable Rows")).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Suggested next steps"),
+    ).not.toBeInTheDocument();
   });
 });
 
