@@ -220,7 +220,7 @@ winner implication, and cramped detail when stacked on small screens.
 
 ---
 
-## 5. `[ ]` Polish list, ranking, finder, streak, count, and occurrence mobile layouts
+## 5. `[x]` Polish list, ranking, finder, streak, count, and occurrence mobile layouts
 
 **Why:** Repeated card and ranking lists need stable mobile dimensions, readable
 metric blocks, and contained detail when many rows render.

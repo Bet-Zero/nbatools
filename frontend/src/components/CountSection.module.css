@@ -1,4 +1,5 @@
 .section {
+  min-width: 0;
   margin-bottom: var(--space-4);
 }
 
@@ -43,7 +44,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -69,7 +70,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-align: right;
   text-transform: uppercase;
   overflow-wrap: anywhere;
@@ -97,7 +98,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-input);
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .contextItem {
@@ -110,6 +111,7 @@
 }
 
 .detailSection {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
 }

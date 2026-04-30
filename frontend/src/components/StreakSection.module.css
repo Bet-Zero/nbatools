@@ -1,8 +1,10 @@
 .section {
+  min-width: 0;
   margin-bottom: var(--space-4);
 }
 
 .cardList {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-3);
@@ -48,7 +50,7 @@
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -107,6 +109,7 @@
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: var(--font-small);
+  overflow-wrap: anywhere;
 }
 
 .spanRow {
@@ -139,11 +142,12 @@
   font-family: var(--font-sans);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .detailSection {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-4);
