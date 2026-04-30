@@ -155,7 +155,7 @@ redesigning team finders, count detail, or future finder-shaped payloads.
 
 ---
 
-## 3. `[ ]` Build player game-card list layout
+## 3. `[x]` Build player game-card list layout
 
 **Why:** Finder answers are event lists. The primary view should read as
 matching games rather than rows in a dense table.
