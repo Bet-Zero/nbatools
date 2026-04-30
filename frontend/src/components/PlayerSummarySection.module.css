@@ -67,6 +67,157 @@
   gap: var(--space-3);
 }
 
+.gameSeries {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.gameSeriesHeader {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.gameSeriesTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+}
+
+.gameSeriesCount {
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+}
+
+.sparklinePanel {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sparklineMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sparklineLabel {
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+}
+
+.sparklineLatest {
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  white-space: nowrap;
+}
+
+.sparklineSvg {
+  width: 100%;
+  height: var(--space-16);
+  display: block;
+  color: var(--accent);
+  overflow: visible;
+}
+
+.sparklineBaseline {
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.sparklineLine {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.sparklinePoint {
+  fill: var(--bg-card);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.sparklinePointLatest {
+  fill: currentColor;
+}
+
+.recentList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: var(--space-2);
+}
+
+.recentGame {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.recentGameHeader {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.gameDate {
+  min-width: 0;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-micro);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gameStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.gameStat {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.gameStatValue {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.gameStatLabel {
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+}
+
 @media (max-width: 760px) {
   .supportingStats {
     grid-template-columns: minmax(0, 1fr);
@@ -79,6 +230,16 @@
   }
 
   .heroStats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gameSeriesHeader,
+  .sparklineMeta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recentList {
     grid-template-columns: minmax(0, 1fr);
   }
 }
