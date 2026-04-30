@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ResultSections from "../components/ResultSections";
 import type { QueryResponse } from "../api/types";
@@ -379,6 +379,119 @@ describe("ResultSections", () => {
     expect(
       screen.getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
+  });
+
+  it("renders player identity marks in leaderboard rows", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Nikola Jokic",
+              player_id: 203999,
+              team_abbr: "DEN",
+              games_played: 70,
+              pts_per_game: 29.6,
+            },
+            {
+              rank: 2,
+              player_name: "Mystery Player",
+              team_abbr: "UNK",
+              games_played: 12,
+              pts_per_game: 18.2,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    const jokicAvatar = within(ranked).getByLabelText("Nikola Jokic avatar");
+    expect(jokicAvatar.querySelector("img")).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+    );
+    expect(
+      within(ranked)
+        .getByLabelText("Mystery Player avatar")
+        .querySelector("img"),
+    ).toBeNull();
+  });
+
+  it("renders team identity marks in leaderboard rows", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Los Angeles Lakers",
+              team_abbr: "LAL",
+              team_id: 1610612747,
+              games_played: 82,
+              pts_per_game: 118.4,
+            },
+            {
+              rank: 2,
+              team_abbr: "SEA",
+              games_played: 4,
+              "games_pts_120+": 3,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    const lakersBadge = within(ranked).getByLabelText(
+      "Los Angeles Lakers (LAL)",
+    );
+    expect(lakersBadge.querySelector("img")).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
+    );
+    expect(
+      within(ranked).getByLabelText("SEA").querySelector("img"),
+    ).toBeNull();
+  });
+
+  it("renders sparse leaderboard rows without identity fields", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              entity: "Best lineup",
+              games_played: 11,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    expect(within(ranked).getByText("Best lineup")).toBeInTheDocument();
+    expect(within(ranked).queryByLabelText(/avatar/)).not.toBeInTheDocument();
   });
 
   it("renders nothing for empty ok leaderboard sections", () => {

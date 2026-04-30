@@ -1,5 +1,7 @@
+import { type CSSProperties } from "react";
 import type { SectionRow } from "../api/types";
-import { SectionHeader } from "../design-system";
+import { Avatar, SectionHeader, TeamBadge } from "../design-system";
+import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
 import DataTable from "./DataTable";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./LeaderboardSection.module.css";
@@ -39,11 +41,28 @@ const ENTITY_COLUMNS = [
   "name",
 ];
 
+type RowIdentity =
+  | {
+      kind: "player";
+      label: string;
+      player: ReturnType<typeof resolvePlayerIdentity>;
+    }
+  | {
+      kind: "team";
+      label: string;
+      team: ReturnType<typeof resolveTeamIdentity>;
+    };
+
 function textValue(row: SectionRow, key: string): string | null {
   const value = row[key];
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+function identityId(value: unknown): number | string | null {
+  if (typeof value === "number" || typeof value === "string") return value;
+  return null;
 }
 
 function hasValue(value: unknown): boolean {
@@ -68,6 +87,38 @@ function entityLabel(row: SectionRow): string {
     if (text) return text;
   }
   return "Leaderboard Entry";
+}
+
+function rowIdentity(row: SectionRow): RowIdentity | null {
+  const playerName = textValue(row, "player_name") ?? textValue(row, "player");
+  if (playerName) {
+    const player = resolvePlayerIdentity({
+      playerId: identityId(row.player_id),
+      playerName,
+    });
+    return {
+      kind: "player",
+      label: player.playerName ?? playerName,
+      player,
+    };
+  }
+
+  const teamName = textValue(row, "team_name") ?? textValue(row, "team");
+  const teamAbbr = textValue(row, "team_abbr");
+  if (teamName || teamAbbr) {
+    const team = resolveTeamIdentity({
+      teamId: identityId(row.team_id),
+      teamAbbr,
+      teamName,
+    });
+    return {
+      kind: "team",
+      label: team.teamName ?? team.teamAbbr ?? teamName ?? teamAbbr ?? "Team",
+      team,
+    };
+  }
+
+  return null;
 }
 
 function metricColumn(row: SectionRow): string | null {
@@ -115,6 +166,33 @@ function rowKey(row: SectionRow, index: number): string {
   return `${rankLabel(row, index)}-${entityLabel(row)}-${index}`;
 }
 
+function IdentityMark({ identity }: { identity: RowIdentity }) {
+  if (identity.kind === "player") {
+    return (
+      <Avatar
+        className={styles.identityMark}
+        name={identity.player.playerName ?? identity.label}
+        imageUrl={identity.player.headshotUrl}
+        size="md"
+      />
+    );
+  }
+
+  return (
+    <TeamBadge
+      className={styles.identityMark}
+      abbreviation={identity.team.teamAbbr ?? undefined}
+      name={identity.team.teamName ?? identity.team.teamAbbr ?? identity.label}
+      logoUrl={identity.team.logoUrl}
+      size="md"
+      showName={false}
+      style={(identity.team.styleVars ?? undefined) as
+        | CSSProperties
+        | undefined}
+    />
+  );
+}
+
 export default function LeaderboardSection({ sections }: Props) {
   const leaderboard = sections.leaderboard;
   if (!leaderboard || leaderboard.length === 0) return null;
@@ -130,6 +208,7 @@ export default function LeaderboardSection({ sections }: Props) {
           const metric = metricColumn(row);
           const context = contextItems(row);
           const isTopRank = index === 0;
+          const identity = rowIdentity(row);
 
           return (
             <article
@@ -140,10 +219,19 @@ export default function LeaderboardSection({ sections }: Props) {
             >
               <div className={styles.rank}>{rankLabel(row, index)}</div>
               <div className={styles.entityBlock}>
-                <div className={styles.entityName}>{entityLabel(row)}</div>
-                {context.length > 0 && (
-                  <div className={styles.context}>{context.join(" / ")}</div>
-                )}
+                <div className={styles.entityContent}>
+                  {identity && <IdentityMark identity={identity} />}
+                  <div className={styles.entityText}>
+                    <div className={styles.entityName}>
+                      {identity?.label ?? entityLabel(row)}
+                    </div>
+                    {context.length > 0 && (
+                      <div className={styles.context}>
+                        {context.join(" / ")}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               {metric && (
                 <div className={styles.metricBlock}>

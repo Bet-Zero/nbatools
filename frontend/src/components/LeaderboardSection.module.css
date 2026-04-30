@@ -41,6 +41,21 @@
 
 .entityBlock {
   min-width: 0;
+}
+
+.entityContent {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.identityMark {
+  flex: 0 0 auto;
+}
+
+.entityText {
+  min-width: 0;
   display: grid;
   gap: var(--space-1);
 }
