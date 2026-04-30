@@ -49,7 +49,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory leaderboard row shapes and metric priorities
+## 1. `[x]` Inventory leaderboard row shapes and metric priorities
 
 **Why:** Leaderboard rows vary across player, team, and occurrence-style
 routes. The renderer needs a verified row-shape inventory before selecting
