@@ -29,7 +29,7 @@ Out of scope: anything that only matters for a multi-tenant paid product
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
 the product polish work. Track A Part 1 is complete; the active continuation is
-Track A Part 2, Phase C4.
+Track A Part 2, Phase C5.
 
 ---
 
@@ -118,8 +118,8 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 2, Phase C4.** Specifically,
-[`phase_c4_work_queue.md`](./phase_c4_work_queue.md).
+**Active continuation: Track A, Part 2, Phase C5.** Specifically,
+[`phase_c5_work_queue.md`](./phase_c5_work_queue.md).
 
 Track A is the priority track because it is fully agent-runnable without
 infrastructure dependencies. Track B can run in parallel whenever the
@@ -187,7 +187,7 @@ the full philosophy.
 | Primitives library | Phase V2 primitives built and documented | Button, Card, Stat, DataTable, etc. as reusable primitives | Track A Part 1    |
 | App shell          | Phase V3 shell/layout complete      | Header, query bar, results region with real layout         | Track A Part 1    |
 | Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete | Headshots and team logos rendered consistently             | Track A Part 1    |
-| Component layouts  | Phase C1 player summary, Phase C2 leaderboard, and Phase C3 player comparison complete; Phase C4 player game finder active; generic data tables still primary for most other queries | Opinionated layouts per query class with charts            | Track A Part 2    |
+| Component layouts  | Phase C1 player summary, Phase C2 leaderboard, Phase C3 player comparison, and Phase C4 player game finder complete; Phase C5 team/split layouts active; generic data tables still primary for remaining queries | Opinionated layouts per query class with charts            | Track A Part 2    |
 | Mobile             | Phase V4 identity/theming surfaces checked; full component mobile pass still pending | Functional and visually clean on every component           | Track A Parts 2-3 |
 | First-run          | Empty query bar                     | Landing, starter queries, freshness banner                 | Track A Part 3    |
 | Errors / loading   | Loading skeleton added; broader states still functional | Designed states with helpful copy and skeletons            | Track A Part 3    |
