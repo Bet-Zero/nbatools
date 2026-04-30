@@ -7,7 +7,10 @@ import {
   TeamBadge,
   type StatProps,
 } from "../design-system";
-import { resolveTeamIdentity } from "../lib/identity";
+import {
+  resolveScopedTeamTheme,
+  resolveTeamIdentity,
+} from "../lib/identity";
 import DataTable from "./DataTable";
 import { formatValue } from "./tableFormatting";
 import styles from "./TeamSummarySection.module.css";
@@ -54,6 +57,39 @@ function sectionTitle(
   return (route ?? metadata?.route) === "team_record"
     ? "Team Record"
     : "Team Summary";
+}
+
+function seasonText(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow | undefined,
+): string | null {
+  const start =
+    textValue(row, "season_start") ??
+    metadata?.start_season ??
+    metadata?.season ??
+    null;
+  const end =
+    textValue(row, "season_end") ??
+    metadata?.end_season ??
+    metadata?.season ??
+    null;
+
+  if (start && end && start !== end) return `${start} to ${end}`;
+  return start ?? end;
+}
+
+function sampleContext(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow | undefined,
+): string {
+  const games = numericValue(row, "games");
+  const parts = [
+    seasonText(metadata, row),
+    textValue(row, "season_type") ?? metadata?.season_type ?? null,
+    games !== null ? `${formatValue(games, "games")} games` : null,
+  ];
+
+  return parts.filter(Boolean).join(" / ");
 }
 
 function recordStat(row: SectionRow | undefined): StatProps | null {
@@ -114,6 +150,8 @@ export default function TeamSummarySection({ sections, metadata, route }: Props)
   const summaryRow = summary?.[0];
   const name = teamName(metadata, summaryRow);
   const title = sectionTitle(route, metadata);
+  const context = sampleContext(metadata, summaryRow);
+  const scopedTheme = resolveScopedTeamTheme(metadata);
   const identity = resolveTeamIdentity({
     teamId:
       metadata?.team_context?.team_id ?? identityId(summaryRow?.team_id),
@@ -129,7 +167,14 @@ export default function TeamSummarySection({ sections, metadata, route }: Props)
     <>
       {summary && summary.length > 0 && (
         <div className={styles.section}>
-          <Card className={styles.ownerCard} depth="card" padding="md">
+          <Card
+            className={styles.heroCard}
+            depth="elevated"
+            padding="lg"
+            style={(scopedTheme?.styleVars ?? undefined) as
+              | CSSProperties
+              | undefined}
+          >
             <div className={styles.identityRow}>
               <TeamBadge
                 abbreviation={identity.teamAbbr ?? undefined}
@@ -143,6 +188,7 @@ export default function TeamSummarySection({ sections, metadata, route }: Props)
               <div className={styles.identityText}>
                 <div className={styles.eyebrow}>{title}</div>
                 <h2 className={styles.teamName}>{name}</h2>
+                {context && <div className={styles.context}>{context}</div>}
               </div>
             </div>
             {stats.length > 0 && (

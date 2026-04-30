@@ -2,10 +2,24 @@
   margin-bottom: var(--space-4);
 }
 
-.ownerCard {
+.heroCard {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: var(--space-4);
   margin-bottom: var(--space-4);
+}
+
+.heroCard::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--space-1);
+  background: linear-gradient(
+    180deg,
+    var(--team-primary),
+    var(--team-secondary)
+  );
+  content: "";
 }
 
 .identityRow {
@@ -32,10 +46,18 @@
 .teamName {
   margin: 0;
   color: var(--text-primary);
-  font-size: var(--font-h3);
-  font-weight: var(--weight-semibold);
-  line-height: 1.2;
+  font-size: var(--font-h2);
+  font-weight: var(--weight-bold);
+  line-height: 1.15;
   hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.context {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
   overflow-wrap: anywhere;
 }
 

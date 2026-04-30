@@ -153,7 +153,7 @@ player summaries, playoff summaries, or unknown summary-shaped routes.
 
 ---
 
-## 3. `[ ]` Build team summary hero layout
+## 3. `[x]` Build team summary hero layout
 
 **Why:** Team summaries should first read as the team, record, and headline
 stats instead of as anonymous summary rows.

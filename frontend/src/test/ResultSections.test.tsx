@@ -330,6 +330,9 @@ describe("ResultSections", () => {
           summary: [
             {
               team_name: "Los Angeles Lakers",
+              season_start: "2024-25",
+              season_end: "2024-25",
+              season_type: "Regular Season",
               wins: 50,
               losses: 32,
               games: 82,
@@ -349,9 +352,76 @@ describe("ResultSections", () => {
       screen.getAllByLabelText("Los Angeles Lakers (LAL)").length,
     ).toBeGreaterThan(0);
     expect(screen.getByText("50-32")).toBeInTheDocument();
+    expect(
+      screen.getByText("2024-25 / Regular Season / 82 games"),
+    ).toBeInTheDocument();
     expect(screen.getAllByText("PTS").length).toBeGreaterThan(0);
     expect(screen.getByText("Full Summary")).toBeInTheDocument();
     expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
+  });
+
+  it("renders team summaries without team ids, logos, or optional stats", () => {
+    const data = makeResponse({
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "game_summary",
+          team: "Mystery Team",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Mystery Team",
+              games: 12,
+            },
+          ],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Summary")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Mystery Team" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Mystery Team (MT)").length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getByText("12 games")).toBeInTheDocument();
+    expect(screen.queryByText("Record")).not.toBeInTheDocument();
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+  });
+
+  it("keeps long team names readable in the team summary hero", () => {
+    const longName =
+      "A Very Long Team Name With Multiple Hyphenated-Market Segments";
+    const data = makeResponse({
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: { route: "game_summary", team: longName },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: longName,
+              wins: 3,
+              losses: 4,
+              win_pct: 0.429,
+            },
+          ],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByRole("heading", { name: longName })).toBeInTheDocument();
+    expect(screen.getByText("3-4")).toBeInTheDocument();
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
   });
 
   it("routes team records to the dedicated team summary renderer", () => {
