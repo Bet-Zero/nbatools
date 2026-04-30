@@ -29,9 +29,10 @@
 
 Replace the generic table-first treatment for `player_game_finder` results
 with a purpose-built list of game cards for queries such as `Curry 5+ threes`,
-`LeBron best games`, and `Jokic under 20 points`. The layout should make each
-matching game scannable by date, opponent, home/away, result, player identity,
-and key stat values while retaining the full detail table for dense columns.
+`Jokic under 20 points`, and player-opponent game lists. The layout should make
+each matching game scannable by date, opponent, home/away, result, player
+identity, and key stat values while retaining the full detail table for dense
+columns.
 
 C4 is not complete until `player_game_finder` results have a dedicated
 route-scoped renderer, game-card treatment, identity/opponent context, metric
@@ -57,18 +58,20 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory finder row shapes and renderer boundary
+## 1. `[x]` Inventory finder row shapes and renderer boundary
 
 **Why:** `query_class: "finder"` covers player game finders, team game
-finders, grouped boolean finder results, top-game finder results, and finder
-detail inside count-style results. C4 needs verified row-shape guidance before
-routing only player game finders into a new renderer.
+finders, grouped boolean finder results, and finder detail inside count-style
+results; adjacent top-game routes are leaderboard-shaped today. C4 needs
+verified row-shape guidance before routing only player game finders into a new
+renderer.
 
 **Scope:**
 
 - Inventory representative `finder` rows for `player_game_finder`,
-  `game_finder`, grouped boolean finder output, top-game player finder output,
-  and count results that include finder detail.
+  `game_finder`, grouped boolean finder output, count results that include
+  finder detail, and adjacent top-game routes that are currently
+  leaderboard-shaped rather than finder-shaped.
 - Identify stable player identity fields, team/opponent fields, date/result
   fields, stat candidates, rank/sort fields, and columns that should remain
   detail-only.
