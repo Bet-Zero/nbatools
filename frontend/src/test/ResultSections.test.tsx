@@ -494,6 +494,111 @@ describe("ResultSections", () => {
     expect(within(ranked).queryByLabelText(/avatar/)).not.toBeInTheDocument();
   });
 
+  it("promotes occurrence metrics ahead of qualifier columns", () => {
+    const longName =
+      "A Very Long Leaderboard Player Name With Hyphenated-Surnames";
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: longName,
+              min_games: 10,
+              games_played: 12,
+              season: "2024-25",
+              qualifier: "Playoff games only",
+              "games_pts_30+_reb_10+_ast_10+": 6,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    expect(within(ranked).getByText(longName)).toBeInTheDocument();
+    expect(within(ranked).getByText("6")).toBeInTheDocument();
+    expect(
+      within(ranked).getByText("Games PTS 30+ REB 10+ AST 10+"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("12 games")).toBeInTheDocument();
+    expect(within(ranked).getByText("2024-25")).toBeInTheDocument();
+    expect(within(ranked).getByText("Min games 10")).toBeInTheDocument();
+    expect(within(ranked).getByText("Playoff games only")).toBeInTheDocument();
+  });
+
+  it("surfaces game and team context as secondary leaderboard metadata", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Nikola Jokic",
+              player_id: 203999,
+              team_abbr: "DEN",
+              game_date: "2024-10-24",
+              opponent_team_abbr: "LAL",
+              is_away: true,
+              wl: "W",
+              pts: 41,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    expect(within(ranked).getByText("41")).toBeInTheDocument();
+    expect(within(ranked).getByText("PTS")).toBeInTheDocument();
+    expect(within(ranked).getByText("DEN")).toBeInTheDocument();
+    expect(within(ranked).getByText("2024-10-24")).toBeInTheDocument();
+    expect(within(ranked).getByText("at LAL")).toBeInTheDocument();
+    expect(within(ranked).getByText("W")).toBeInTheDocument();
+  });
+
+  it("renders rows that do not have a ranked metric value", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              entity: "Sparse leaderboard entry",
+              season: "2024-25",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    expect(
+      within(ranked).getByText("Sparse leaderboard entry"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("2024-25")).toBeInTheDocument();
+    expect(within(ranked).queryByText("Games Played")).not.toBeInTheDocument();
+    expect(screen.getByText("Full Leaderboard")).toBeInTheDocument();
+  });
+
   it("renders nothing for empty ok leaderboard sections", () => {
     const data = makeResponse({
       result: {

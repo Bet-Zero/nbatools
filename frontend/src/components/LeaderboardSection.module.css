@@ -11,7 +11,9 @@
 .rankedRow {
   min-width: 0;
   display: grid;
-  grid-template-columns: var(--space-12) minmax(0, 1fr) minmax(var(--space-16), auto);
+  grid-template-columns:
+    var(--space-12) minmax(0, 1fr)
+    minmax(var(--space-16), calc(var(--space-16) * 2.25));
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -69,15 +71,29 @@
 }
 
 .context {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
   color: var(--text-tertiary);
   font-size: var(--font-small);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.contextItem {
+  min-width: 0;
+  max-width: 100%;
+  padding: 1px var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg-input) 72%, transparent);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .metricBlock {
-  min-width: 0;
+  min-width: var(--space-16);
+  max-width: calc(var(--space-16) * 2.25);
   display: grid;
   justify-items: end;
   gap: var(--space-1);
@@ -90,6 +106,7 @@
   font-size: var(--font-stat-md);
   font-weight: var(--weight-bold);
   line-height: 1;
+  max-width: 100%;
   overflow-wrap: anywhere;
 }
 
@@ -102,6 +119,8 @@
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-uppercase);
+  line-height: 1.25;
+  max-width: 100%;
   overflow-wrap: anywhere;
   text-transform: uppercase;
 }
@@ -119,12 +138,9 @@
   .metricBlock {
     grid-column: 1 / -1;
     justify-items: start;
+    max-width: 100%;
     text-align: left;
     padding-top: var(--space-2);
     border-top: 1px solid var(--border-subtle);
-  }
-
-  .context {
-    white-space: normal;
   }
 }

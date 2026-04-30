@@ -34,12 +34,81 @@ const ENTITY_COLUMNS = [
   "player_name",
   "team_name",
   "team_abbr",
+  "team",
   "lineup",
   "lineup_members",
   "members",
   "entity",
   "name",
 ];
+
+const CONTEXT_COLUMNS = new Set([
+  ...SYSTEM_COLUMNS,
+  ...ENTITY_COLUMNS,
+  "games_played",
+  "min_games",
+  "min_value",
+  "max_value",
+  "qualifier",
+  "qualification",
+  "qualified",
+  "sample_size",
+  "threshold",
+]);
+
+const QUALIFIER_COLUMNS = [
+  ["min_games", "Min games"],
+  ["min_value", "Min"],
+  ["max_value", "Max"],
+  ["threshold", "Threshold"],
+  ["qualifier", null],
+  ["qualification", null],
+  ["sample_size", "Sample"],
+] as const;
+
+const DIRECT_STAT_COLUMNS = new Set([
+  "pts",
+  "reb",
+  "ast",
+  "stl",
+  "blk",
+  "tov",
+  "fgm",
+  "fga",
+  "fg3m",
+  "fg3a",
+  "ftm",
+  "fta",
+  "minutes",
+  "wins",
+  "losses",
+  "off_rating",
+  "def_rating",
+  "net_rating",
+  "pace",
+]);
+
+const STAT_LABELS: Record<string, string> = {
+  ast: "AST",
+  blk: "BLK",
+  def: "DEF",
+  fga: "FGA",
+  fg3a: "FG3A",
+  fg3m: "FG3M",
+  fgm: "FGM",
+  fta: "FTA",
+  ftm: "FTM",
+  off: "OFF",
+  pts: "PTS",
+  reb: "REB",
+  stl: "STL",
+  tov: "TOV",
+};
+
+interface ContextItem {
+  key: string;
+  text: string;
+}
 
 type RowIdentity =
   | {
@@ -67,6 +136,12 @@ function identityId(value: unknown): number | string | null {
 
 function hasValue(value: unknown): boolean {
   return value !== null && value !== undefined && value !== "";
+}
+
+function addContextItem(items: ContextItem[], key: string, text: string | null) {
+  if (!text) return;
+  if (items.some((item) => item.text === text)) return;
+  items.push({ key, text });
 }
 
 function rankLabel(row: SectionRow, index: number): string {
@@ -121,43 +196,92 @@ function rowIdentity(row: SectionRow): RowIdentity | null {
   return null;
 }
 
+function metricPriority(row: SectionRow, key: string): number {
+  if (!hasValue(row[key])) return -1;
+
+  const lc = key.toLowerCase();
+  if (lc.startsWith("games_") && lc !== "games_played") return 100;
+  if (lc.endsWith("_per_game")) return 95;
+  if (lc.endsWith("_pct") || lc.includes("pct")) return 90;
+  if (DIRECT_STAT_COLUMNS.has(lc)) return 85;
+  if (typeof row[key] === "number") return 80;
+  return 10;
+}
+
 function metricColumn(row: SectionRow): string | null {
   const columns = Object.keys(row);
-  const metricCandidates = columns.filter(
-    (key) =>
-      !SYSTEM_COLUMNS.has(key) &&
-      !ENTITY_COLUMNS.includes(key) &&
-      key !== "games_played",
-  );
+  const metricCandidates = columns
+    .map((key, index) => ({
+      key,
+      index,
+      priority: CONTEXT_COLUMNS.has(key) ? -1 : metricPriority(row, key),
+    }))
+    .filter((candidate) => candidate.priority >= 0)
+    .sort(
+      (a, b) => b.priority - a.priority || a.index - b.index,
+    );
 
   return (
-    metricCandidates.find((key) => typeof row[key] === "number") ??
-    metricCandidates.find((key) => hasValue(row[key])) ??
+    metricCandidates[0]?.key ??
     (hasValue(row.games_played) ? "games_played" : null)
   );
 }
 
-function contextItems(row: SectionRow): string[] {
-  const items: string[] = [];
+function metricLabel(metric: string): string {
+  return formatColHeader(metric).replace(
+    /\b(ast|blk|def|fga|fg3a|fg3m|fgm|fta|ftm|off|pts|reb|stl|tov)\b/gi,
+    (stat) => STAT_LABELS[stat.toLowerCase()] ?? stat,
+  );
+}
+
+function contextItems(row: SectionRow): ContextItem[] {
+  const items: ContextItem[] = [];
+  const hasPlayerIdentity = Boolean(
+    textValue(row, "player_name") ?? textValue(row, "player"),
+  );
 
   if (hasValue(row.games_played)) {
-    items.push(`${formatValue(row.games_played, "games_played")} games`);
+    addContextItem(
+      items,
+      "games_played",
+      `${formatValue(row.games_played, "games_played")} games`,
+    );
   }
 
   const season = textValue(row, "seasons") ?? textValue(row, "season");
-  if (season) items.push(season);
+  addContextItem(items, "season", season);
 
   const seasonType = textValue(row, "season_type");
-  if (seasonType) items.push(seasonType);
+  addContextItem(items, "season_type", seasonType);
 
   const team = textValue(row, "team_abbr");
-  if (team && textValue(row, "team_name")) items.push(team);
+  if (team && (hasPlayerIdentity || textValue(row, "team_name"))) {
+    addContextItem(items, "team_abbr", team);
+  }
 
   const gameDate = textValue(row, "game_date");
-  if (gameDate) items.push(gameDate);
+  addContextItem(items, "game_date", gameDate);
 
-  const opponent = textValue(row, "opponent_team_abbr");
-  if (opponent) items.push(`vs ${opponent}`);
+  const opponent =
+    textValue(row, "opponent_team_abbr") ??
+    textValue(row, "opponent_team_name");
+  if (opponent) {
+    const prefix = row.is_away === true ? "at" : "vs";
+    addContextItem(items, "opponent", `${prefix} ${opponent}`);
+  }
+
+  const result = textValue(row, "wl");
+  if (result) addContextItem(items, "wl", result.toUpperCase());
+
+  for (const [key, label] of QUALIFIER_COLUMNS) {
+    if (!hasValue(row[key])) continue;
+    const formatted = formatValue(row[key], key);
+    addContextItem(items, key, label ? `${label} ${formatted}` : formatted);
+  }
+
+  if (typeof row.qualified === "boolean") {
+    addContextItem(items, "qualified", row.qualified ? "Qualified" : null);
+  }
 
   return items;
 }
@@ -226,8 +350,15 @@ export default function LeaderboardSection({ sections }: Props) {
                       {identity?.label ?? entityLabel(row)}
                     </div>
                     {context.length > 0 && (
-                      <div className={styles.context}>
-                        {context.join(" / ")}
+                      <div
+                        className={styles.context}
+                        aria-label={`${identity?.label ?? entityLabel(row)} context`}
+                      >
+                        {context.map((item) => (
+                          <span className={styles.contextItem} key={item.key}>
+                            {item.text}
+                          </span>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -239,7 +370,7 @@ export default function LeaderboardSection({ sections }: Props) {
                     {formatValue(row[metric], metric)}
                   </div>
                   <div className={styles.metricLabel}>
-                    {formatColHeader(metric)}
+                    {metricLabel(metric)}
                   </div>
                 </div>
               )}

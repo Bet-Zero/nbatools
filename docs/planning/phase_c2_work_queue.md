@@ -176,7 +176,7 @@ recognizable while staying neutral in mixed league-wide contexts.
 
 ---
 
-## 4. `[ ]` Tighten metric emphasis, qualifiers, and mobile behavior
+## 4. `[x]` Tighten metric emphasis, qualifiers, and mobile behavior
 
 **Why:** Leaderboards need to scan cleanly on desktop and mobile, even when
 metric names are long, qualifier/context fields are present, or rows are
