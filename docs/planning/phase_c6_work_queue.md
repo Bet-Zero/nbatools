@@ -55,7 +55,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory streak, count, and occurrence row shapes
+## 1. `[x]` Inventory streak, count, and occurrence row shapes
 
 **Why:** C6 spans multiple query classes and routes. The queue needs verified
 row-shape guidance before assigning renderer ownership.

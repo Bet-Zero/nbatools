@@ -88,6 +88,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_c5_work_queue.md` — completed Track A component-experience queue for team summary, team record, and split layout work
 - `planning/phase_c5_team_split_inventory.md` — team summary, record, matchup-record, and split row-shape inventory produced by Phase C5 item 1
 - `planning/phase_c6_work_queue.md` — active Track A component-experience queue for streak and occurrence layout work
+- `planning/phase_c6_streak_occurrence_inventory.md` — streak, count, and occurrence row-shape inventory produced by Phase C6 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
