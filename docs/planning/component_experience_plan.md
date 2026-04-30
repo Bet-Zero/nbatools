@@ -123,10 +123,22 @@ for the scoring sparkline/recent-games context without a hidden refetch.
 Goal: redesign leaderboard results into ranked-row cards with imagery,
 the stat value prominent, the #1 row emphasized.
 
+Status: complete. `LeaderboardSection.tsx` owns `query_class: "leaderboard"`
+rendering with ranked rows, player/team identity accents, promoted metric
+values, wrapped context/qualifier metadata, restrained #1 emphasis, and a full
+detail table. Ranking, filtering, qualifiers, and metric computation remain in
+the engine/API; sparse or unusual leaderboard rows degrade through conservative
+field inspection and the detail table.
+
 ### Phase C3 — Player comparison layout
 
 Goal: side-by-side comparison cards with player/team identity, neutral mixed
 context treatment, and difference highlighting.
+
+Status: active. Phase C3 starts with a comparison row-shape inventory because
+`query_class: "comparison"` covers player comparisons plus team, matchup,
+playoff, decade, and other comparison-shaped routes that must keep the generic
+fallback until their later phases.
 
 ### Phase C4 — Player game finder layout
 

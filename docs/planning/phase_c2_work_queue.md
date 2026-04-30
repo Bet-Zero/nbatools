@@ -259,7 +259,7 @@ shipped leaderboard renderer and its fallbacks.
 
 ---
 
-## 6. `[ ]` Phase C2 retrospective and C3 handoff
+## 6. `[x]` Phase C2 retrospective and C3 handoff
 
 **Why:** Self-propagating final task. It closes leaderboard work and creates
 the next executable Part 2 queue.
@@ -303,6 +303,51 @@ the next executable Part 2 queue.
 - This file
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
+
+---
+
+## Phase C2 retrospective
+
+**Status:** Phase C2 is closed. Leaderboard layout work is complete, but
+Track A Part 2 and the overall product polish plan remain in progress.
+
+**What went well:**
+
+- The row-shape inventory made the renderer conservative from the start:
+  rank/entity/metric promotion is based on existing response fields, while the
+  full detail table remains visible for every leaderboard shape.
+- The ranked-row layout, identity marks, metric emphasis, and context chips
+  landed as separate PR-sized units, which kept each CI cycle focused and easy
+  to reason about.
+- `Avatar`, `TeamBadge`, `SectionHeader`, and `DataTable` carried the visual
+  foundation without adding a parallel leaderboard-specific design system.
+- Tests now cover populated, empty, player, team, missing-id, sparse, long-name,
+  long-label, qualifier/context, missing-metric, and unknown-query fallback
+  behavior.
+
+**What was harder:**
+
+- `LeaderboardResult` does not name the ranked metric or entity type in
+  metadata, so the frontend uses conservative row inspection rather than a
+  strict contract.
+- Occurrence and top-game rows share `query_class: "leaderboard"` with season
+  aggregate leaderboards. C2 kept those rows safe and readable, but later
+  phases may give game/event shapes more specific treatments.
+- The existing frontend lint target still reports unrelated pre-existing issues
+  in shared components/hooks, so C2 used the queue-required test/build commands
+  as the completion gate rather than widening into unrelated lint cleanup.
+
+**Residuals carried forward:**
+
+- A future engine/API improvement could expose ranked metric metadata, entity
+  type, sort direction, and qualifier thresholds explicitly.
+- Top-game leaderboards may eventually belong closer to player-game-finder card
+  layouts once Phase C4 redesigns game results.
+- Other comparison, finder, streak, split, team, head-to-head, and playoff
+  query classes still need their Part 2 layouts.
+
+**Immediate handoff:** Continue Track A Part 2 with Phase C3, using
+[`phase_c3_work_queue.md`](./phase_c3_work_queue.md).
 
 ---
 
