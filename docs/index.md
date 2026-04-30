@@ -98,6 +98,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_p1_work_queue.md` — completed Track A first-run queue for landing, starter queries, freshness, and first-run mobile polish
 - `planning/phase_p1_first_run_inventory.md` — first-run surface, starter-query, freshness, and mobile inventory produced by Phase P1 item 1
 - `planning/phase_p2_work_queue.md` — active Track A loading/error/empty-state queue for designed non-result states and recovery paths
+- `planning/phase_p2_state_inventory.md` — loading, empty, no-result, error, retry, and freshness state inventory produced by Phase P2 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
