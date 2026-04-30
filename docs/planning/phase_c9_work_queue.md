@@ -50,7 +50,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Audit Track A Part 2 completion
+## 1. `[x]` Audit Track A Part 2 completion
 
 **Why:** Part 2 should close from an explicit done-definition audit, not from
 the absence of unchecked component items.
