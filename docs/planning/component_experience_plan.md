@@ -135,14 +135,20 @@ field inspection and the detail table.
 Goal: side-by-side comparison cards with player/team identity, neutral mixed
 context treatment, and difference highlighting.
 
-Status: active. Phase C3 starts with a comparison row-shape inventory because
-`query_class: "comparison"` covers player comparisons plus team, matchup,
-playoff, decade, and other comparison-shaped routes that must keep the generic
-fallback until their later phases.
+Status: complete. `PlayerComparisonSection.tsx` owns only `player_compare`
+responses, promotes supplied summary rows into player identity cards, promotes
+supplied metric rows into comparison cards with conservative leader/tie
+emphasis, preserves full detail tables, and keeps team, matchup, playoff,
+decade, and unknown comparison-shaped routes on the generic fallback.
 
 ### Phase C4 — Player game finder layout
 
 Goal: list of game cards instead of table rows.
+
+Status: active. Phase C4 starts with a finder row-shape inventory because
+`query_class: "finder"` covers player game finders plus team game finders,
+count detail, grouped boolean outputs, and future finder-shaped routes that
+must keep the generic fallback until their later phases.
 
 ### Phase C5 — Team summary, team record, split layouts
 
