@@ -51,6 +51,9 @@ module replacement during frontend development.
   - **Context chips** — player, team, season, opponent, split type
   - **Notes** — blue-bordered info block
   - **Caveats** — orange/yellow-bordered warning block
+- **First-run freshness** — before a query result exists, freshness renders as
+  a top banner with fresh/stale/unknown/failed state guidance. Result-level
+  freshness remains in the result envelope after a query returns.
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
 - **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
 - **Player comparisons** — `player_compare` responses use side-by-side player cards, metric comparison cards, and full summary/comparison detail tables while keeping mixed-player styling neutral.
@@ -85,6 +88,8 @@ The UI is designed to remain usable from phone widths through desktop:
   stacks into one column below 900px. Outer padding tightens below 640px.
 - Result actions and section-header actions wrap instead of overlapping; the
   main result action buttons become full-width around 520px.
+- First-run freshness banner content wraps inside the top status region and
+  keeps stale, unknown, and failed states visible before the first query.
 - Route/status metadata, context chips, long entity names, playoff round
   labels, event-count labels, and saved/dev-tool text wrap inside their regions.
 - Redesigned card grids generally collapse to one column around 720-760px, with

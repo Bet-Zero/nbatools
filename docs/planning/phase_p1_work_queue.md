@@ -154,7 +154,7 @@ query bar central, and invite a useful first action without reading docs.
 
 ---
 
-## 3. `[ ]` Promote freshness into the first-run experience
+## 3. `[x]` Promote freshness into the first-run experience
 
 **Why:** A friend should know how current the data is before trusting the first
 answer, especially when the app is stale, unknown, or offline.

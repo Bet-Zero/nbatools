@@ -308,7 +308,11 @@ export default function App() {
   return (
     <AppShell
       header={header}
-      status={apiOnline ? <FreshnessStatus /> : null}
+      status={
+        apiOnline ? (
+          <FreshnessStatus variant={showEmpty ? "banner" : "panel"} />
+        ) : null
+      }
       query={queryRegion}
       secondary={secondaryPanels}
       dialog={dialog}
