@@ -251,7 +251,7 @@ history, with round/series context and records ahead of tables.
 
 ---
 
-## 5. `[ ]` Build playoff leaderboard treatment
+## 5. `[x]` Build playoff leaderboard treatment
 
 **Why:** Playoff appearance and round-record leaderboards need postseason
 context, not just ordinary regular-season leaderboard rows.
