@@ -310,24 +310,93 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Summary")).toBeInTheDocument();
   });
 
-  it("keeps team summaries on the generic summary renderer", () => {
+  it("routes team summaries to the dedicated team summary renderer", () => {
     const data = makeResponse({
       route: "game_summary",
       result: {
         query_class: "summary",
         result_status: "ok",
-        metadata: {},
+        metadata: {
+          route: "game_summary",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+        },
         notes: [],
         caveats: [],
         sections: {
-          summary: [{ team_name: "Lakers", wins: 50, losses: 32 }],
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              wins: 50,
+              losses: 32,
+              games: 82,
+              win_pct: 0.61,
+              pts_avg: 117.2,
+            },
+          ],
         },
       },
     });
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.getByText("Team Summary")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Los Angeles Lakers" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByLabelText("Los Angeles Lakers (LAL)").length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByText("50-32")).toBeInTheDocument();
+    expect(screen.getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
     expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
-    expect(screen.getByText("Lakers")).toBeInTheDocument();
+  });
+
+  it("routes team records to the dedicated team summary renderer", () => {
+    const data = makeResponse({
+      route: null,
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "team_record",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+          opponent_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              wins: 4,
+              losses: 1,
+              games: 5,
+              win_pct: 0.8,
+            },
+          ],
+          by_season: [{ season: "2024-25", wins: 4, losses: 1 }],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Record")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Boston Celtics" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("4-1")).toBeInTheDocument();
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+    expect(screen.getByText("By Season")).toBeInTheDocument();
   });
 
   it("keeps playoff summaries on the generic summary renderer", () => {
@@ -346,8 +415,30 @@ describe("ResultSections", () => {
     });
     render(<ResultSections data={data} />);
     expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.queryByText("Team Summary")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
     expect(screen.getByText("Lakers")).toBeInTheDocument();
+  });
+
+  it("keeps unknown summary routes on the generic summary renderer", () => {
+    const data = makeResponse({
+      route: "unknown_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: { route: "unknown_summary" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ team_name: "Fallback Team", wins: 12 }],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.queryByText("Team Summary")).not.toBeInTheDocument();
+    expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
+    expect(screen.getByText("Fallback Team")).toBeInTheDocument();
   });
 
   it("renders leaderboard sections", () => {

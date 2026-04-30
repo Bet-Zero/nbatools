@@ -106,7 +106,7 @@ team-specific renderer ownership.
 
 ---
 
-## 2. `[ ]` Establish team-summary and team-record renderer boundaries
+## 2. `[x]` Establish team-summary and team-record renderer boundaries
 
 **Why:** Team-specific layouts need dedicated owners without leaking into
 player summaries, playoff summaries, or unknown summary-shaped routes.
