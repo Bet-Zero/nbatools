@@ -110,7 +110,7 @@ needs verified row-shape guidance before assigning renderer ownership.
 
 ---
 
-## 2. `[ ]` Establish C7 renderer boundaries
+## 2. `[x]` Establish C7 renderer boundaries
 
 **Why:** Head-to-head and playoff routes need dedicated owners without taking
 over ordinary comparisons, generic summaries, generic leaderboards, or the C5

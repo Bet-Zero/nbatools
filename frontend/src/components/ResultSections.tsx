@@ -4,11 +4,13 @@ import ComparisonSection from "./ComparisonSection";
 import CountSection from "./CountSection";
 import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
+import HeadToHeadSection from "./HeadToHeadSection";
 import LeaderboardSection from "./LeaderboardSection";
 import NoResultDisplay from "./NoResultDisplay";
 import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerGameFinderSection from "./PlayerGameFinderSection";
+import PlayoffSection from "./PlayoffSection";
 import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
 import SplitSummarySection from "./SplitSummarySection";
@@ -91,12 +93,36 @@ function isOccurrenceLeaderboard(data: QueryResponse): boolean {
   );
 }
 
+function isPlayoffRoute(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return (
+    route === "playoff_history" ||
+    route === "playoff_appearances" ||
+    route === "playoff_matchup_history" ||
+    route === "playoff_round_record"
+  );
+}
+
+function isHeadToHeadComparison(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  if (route === "team_matchup_record" || route === "matchup_by_decade") {
+    return true;
+  }
+  if (route === "player_compare" || route === "team_compare") {
+    return data.result?.metadata?.head_to_head_used === true;
+  }
+  return false;
+}
+
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
   const queryClass = data.result?.query_class ?? "";
   const sections = data.result?.sections ?? {};
 
   switch (queryClass) {
     case "summary":
+      if (isPlayoffRoute(data)) {
+        return <PlayoffSection sections={sections} queryClass={queryClass} />;
+      }
       if (isPlayerSummary(data)) {
         return (
           <PlayerSummarySection
@@ -125,6 +151,18 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <SummarySection sections={sections} />;
     case "comparison":
+      if (isPlayoffRoute(data)) {
+        return <PlayoffSection sections={sections} queryClass={queryClass} />;
+      }
+      if (isHeadToHeadComparison(data)) {
+        return (
+          <HeadToHeadSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            route={data.route}
+          />
+        );
+      }
       if (isPlayerComparison(data)) {
         return (
           <PlayerComparisonSection
@@ -167,6 +205,9 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             metadata={data.result?.metadata}
           />
         );
+      }
+      if (isPlayoffRoute(data)) {
+        return <PlayoffSection sections={sections} queryClass={queryClass} />;
       }
       return <LeaderboardSection sections={sections} />;
     case "streak":
