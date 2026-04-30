@@ -1,3 +1,115 @@
 .section {
   margin-bottom: var(--space-4);
 }
+
+.rankedList {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.rankedRow {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: var(--space-12) minmax(0, 1fr) minmax(var(--space-16), auto);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.topRankedRow {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border-default));
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-card));
+  box-shadow: inset var(--space-1) 0 0 var(--accent);
+}
+
+.rank {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.topRankedRow .rank {
+  color: var(--accent);
+}
+
+.entityBlock {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.entityName {
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.context {
+  color: var(--text-tertiary);
+  font-size: var(--font-small);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metricBlock {
+  min-width: 0;
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+  text-align: right;
+}
+
+.metricValue {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-stat-md);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.topRankedRow .metricValue {
+  color: var(--accent);
+}
+
+.metricLabel {
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .rankedRow {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .metricBlock {
+    grid-column: 1 / -1;
+    justify-items: start;
+    text-align: left;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .context {
+    white-space: normal;
+  }
+}

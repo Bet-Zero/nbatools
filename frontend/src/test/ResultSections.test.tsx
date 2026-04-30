@@ -369,7 +369,33 @@ describe("ResultSections", () => {
     render(<ResultSections data={data} />);
     expect(screen.getByText("Leaderboard")).toBeInTheDocument();
     expect(screen.getByText("2 entries")).toBeInTheDocument();
-    expect(screen.getByText("Luka")).toBeInTheDocument();
+    expect(screen.getByLabelText("Ranked leaderboard")).toBeInTheDocument();
+    expect(screen.getByText("#1")).toBeInTheDocument();
+    expect(screen.getAllByText("Luka").length).toBeGreaterThan(0);
+    expect(screen.getByText("Full Leaderboard")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Player Name" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PTS" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders nothing for empty ok leaderboard sections", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [],
+        },
+      },
+    });
+    const { container } = render(<ResultSections data={data} />);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("renders finder sections with count", () => {

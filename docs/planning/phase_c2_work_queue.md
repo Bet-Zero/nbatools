@@ -92,7 +92,7 @@ which fields become the primary rank/value/entity treatment.
 
 ---
 
-## 2. `[ ]` Build the ranked leaderboard row layout
+## 2. `[x]` Build the ranked leaderboard row layout
 
 **Why:** The primary leaderboard answer should read as ranked results, not a
 generic table dump.
