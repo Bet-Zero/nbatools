@@ -88,7 +88,7 @@ the absence of unchecked component items.
 
 ---
 
-## 2. `[ ]` Refresh Part 2 status and residual docs
+## 2. `[x]` Refresh Part 2 status and residual docs
 
 **Why:** The planning and operations docs should reflect the Part 2 closure
 audit before the handoff queue activates Part 3.

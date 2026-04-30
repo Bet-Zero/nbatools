@@ -19,9 +19,11 @@ where there's a hero stat. Charts and sparklines where they aid
 comprehension. Card-based result envelopes throughout. Mobile responsive on
 every layout.
 
-By the end of this plan, the product no longer renders any query result as
-a generic table dump. Every result feels designed for the question that
-produced it.
+By the end of this plan, every supported shipped query family has an
+opinionated primary renderer instead of a generic table dump. Generic table
+fallbacks remain intentionally available for unknown, experimental, or
+unpromoted detail payloads so the UI never hides supplied data it cannot safely
+interpret.
 
 ---
 
@@ -206,7 +208,10 @@ Goal: audit Track A Part 2 against its done definition, capture learnings,
 refresh Part 2 status/residuals, and draft `phase_p1_work_queue.md` (Part 3's
 first queue).
 
-Status: active. The active queue is
+Status: active. The C9 completion audit is recorded in
+[`phase_c9_part2_completion_audit.md`](./phase_c9_part2_completion_audit.md).
+It found no blocking Track A Part 2 gaps; status refresh and the Part 3 queue
+handoff remain before C9 closes. The active queue is
 [`phase_c9_work_queue.md`](./phase_c9_work_queue.md).
 
 ---
@@ -228,6 +233,24 @@ Part 2 is done when:
 6. All existing tests pass — no functional regression
 7. Visual quality bar met: every result feels designed for its question.
    The product no longer feels like "tables but dark mode"
+
+The C9 completion audit maps each item above to shipped evidence. Its verdict:
+Track A Part 2 is ready to close after the C9 status refresh and Part 3
+handoff. This closes only Component Experience work; the product-polish master
+plan remains in progress until Track A Part 3 and Track B deployment are also
+closed.
+
+Non-blocking Part 2 residuals and boundaries:
+
+- Generic table/detail fallbacks remain required for unknown routes, unknown
+  query classes, and unpromoted sections.
+- Playoff renderers avoid inferring winners, brackets, or round hierarchy that
+  the engine/API does not supply.
+- Future charts are Part 3-or-later work only where the engine/API exposes
+  appropriate structured series or distribution data.
+- First-run onboarding, freshness/banner presentation, loading/error copy,
+  browser screenshot verification, keyboard shortcuts, transitions, and
+  copy/share interaction polish belong to Track A Part 3.
 
 ---
 
