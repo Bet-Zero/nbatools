@@ -34,6 +34,10 @@
   flex: 1 1 auto;
 }
 
+.teamBadge {
+  max-width: min(100%, 24rem);
+}
+
 .eyebrow {
   margin-bottom: var(--space-1);
   color: var(--text-tertiary);

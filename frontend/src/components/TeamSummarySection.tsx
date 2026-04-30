@@ -181,6 +181,7 @@ export default function TeamSummarySection({ sections, metadata, route }: Props)
                 name={identity.teamName ?? name}
                 logoUrl={identity.logoUrl}
                 size="md"
+                className={styles.teamBadge}
                 style={(identity.styleVars ?? undefined) as
                   | CSSProperties
                   | undefined}

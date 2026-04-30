@@ -39,6 +39,10 @@
   gap: var(--space-2);
 }
 
+.teamBadge {
+  max-width: min(100%, 22rem);
+}
+
 .versus {
   color: var(--text-tertiary);
   font-size: var(--font-micro);
@@ -121,5 +125,9 @@
   .recordStats,
   .matchupGrid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .recordHeader {
+    align-items: start;
   }
 }
