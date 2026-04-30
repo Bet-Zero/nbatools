@@ -28,8 +28,8 @@ Out of scope: anything that only matters for a multi-tenant paid product
 
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
-the product polish work. Track A Part 1 is complete; the active continuation is
-Track A Part 2, Phase C9.
+the product polish work. Track A Parts 1 and 2 are complete; the active
+continuation is Track A Part 3, Phase P1.
 
 ---
 
@@ -90,7 +90,7 @@ Roughly 4-6 weeks part-time.
 #### Part 3 — First-Run and Polish
 
 **Plan doc:** [`first_run_and_polish_plan.md`](./first_run_and_polish_plan.md)
-**First queue:** drafted at the end of Part 2's final queue.
+**First queue:** [`phase_p1_work_queue.md`](./phase_p1_work_queue.md)
 
 Landing experience, starter queries, freshness banner, mobile verification
 pass, keyboard shortcuts, copy buttons, share links, transitions, error
@@ -118,8 +118,8 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 2, Phase C9.** Specifically,
-[`phase_c9_work_queue.md`](./phase_c9_work_queue.md).
+**Active continuation: Track A, Part 3, Phase P1.** Specifically,
+[`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
 
 Track A is the priority track because it is fully agent-runnable without
 infrastructure dependencies. Track B can run in parallel whenever the
@@ -187,9 +187,9 @@ the full philosophy.
 | Primitives library | Phase V2 primitives built and documented | Button, Card, Stat, DataTable, etc. as reusable primitives | Track A Part 1    |
 | App shell          | Phase V3 shell/layout complete      | Header, query bar, results region with real layout         | Track A Part 1    |
 | Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete | Headshots and team logos rendered consistently             | Track A Part 1    |
-| Component layouts  | Phase C1-C8 query-class layouts and mobile pass complete; Phase C9 Part 2 closure active | Opinionated layouts per query class with charts            | Track A Part 2    |
+| Component layouts  | Phase C1-C9 complete; Track A Part 2 closed by completion audit | Opinionated layouts per query class with charts            | Track A Part 2    |
 | Mobile             | Phase C8 dedicated component mobile pass complete; Part 3 broader first-run mobile verification remains | Functional and visually clean on every component           | Track A Parts 2-3 |
-| First-run          | Empty query bar                     | Landing, starter queries, freshness banner                 | Track A Part 3    |
+| First-run          | Track A Part 3 Phase P1 active      | Landing, starter queries, freshness banner                 | Track A Part 3    |
 | Errors / loading   | Loading skeleton added; broader states still functional | Designed states with helpful copy and skeletons            | Track A Part 3    |
 
 ---
