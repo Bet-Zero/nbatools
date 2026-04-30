@@ -288,7 +288,7 @@ fallbacks.
 
 ---
 
-## 6. `[ ]` Phase C4 retrospective and C5 handoff
+## 6. `[x]` Phase C4 retrospective and C5 handoff
 
 **Why:** Self-propagating final task. It closes player-game-finder work and
 creates the next executable Part 2 queue.
@@ -333,6 +333,56 @@ creates the next executable Part 2 queue.
 - This file
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
+
+---
+
+## Phase C4 retrospective
+
+**Status:** Phase C4 is closed. Player-game-finder layout work is complete,
+but Track A Part 2 and the overall product polish plan remain in progress.
+
+**What went well:**
+
+- The finder inventory clarified the route boundary before implementation:
+  only `player_game_finder` moved to the dedicated layout, while
+  `game_finder`, count detail, top-game leaderboards, and unknown
+  finder-shaped routes stayed on existing renderers.
+- The renderer shipped incrementally: first ownership and fallback tests, then
+  game cards, then broader stat/context treatment, and finally docs/fallback
+  polish.
+- Existing primitives carried the experience. `Avatar`, `TeamBadge`, `Badge`,
+  `Card`, `SectionHeader`, `StatBlock`, and `DataTable` covered the identity,
+  result, stat, and detail-table surfaces without introducing new primitives.
+- Tests now cover route dispatch, generic finder fallback, count-detail
+  fallback, populated player game cards, missing player ids, missing opponent
+  context, missing W/L/results, long labels, custom numeric stat fallback, and
+  full detail-table preservation.
+
+**What was harder:**
+
+- Finder responses do not expose structured threshold/filter copy, primary
+  matched stat, sort direction, limit, or truncation state. The UI therefore
+  promotes supplied fields conservatively and avoids explaining why a game
+  matched beyond the values in the row.
+- `player_game_finder` currently loads team and opponent ids but does not emit
+  them in `output_cols`, so team/opponent badges often use abbreviation/text
+  fallbacks rather than logos.
+- Single-game top routes such as `top_player_games` are leaderboard-shaped
+  today. They may eventually want game-card treatment, but C4 left them on the
+  leaderboard path to keep the boundary honest.
+
+**Residuals carried forward:**
+
+- A future engine/API improvement could emit `team_id`, `opponent_team_id`,
+  primary stat/filter metadata, sort direction, and truncation metadata for
+  finder results.
+- Team game finders still need a team-specific event-list design in a later
+  team/head-to-head phase if they remain a supported primary surface.
+- Team summary, team record, split, streak, occurrence/count, head-to-head, and
+  playoff layouts still need their Part 2 designs.
+
+**Immediate handoff:** Continue Track A Part 2 with Phase C5, using
+[`phase_c5_work_queue.md`](./phase_c5_work_queue.md).
 
 ---
 

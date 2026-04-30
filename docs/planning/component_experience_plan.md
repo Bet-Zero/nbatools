@@ -145,16 +145,22 @@ decade, and unknown comparison-shaped routes on the generic fallback.
 
 Goal: list of game cards instead of table rows.
 
-Status: active. Phase C4 starts with a finder row-shape inventory because
-`query_class: "finder"` covers player game finders plus team game finders,
-count detail, grouped boolean outputs, and future finder-shaped routes that
-must keep the generic fallback until their later phases.
+Status: complete. `PlayerGameFinderSection.tsx` owns only
+`player_game_finder` responses, promotes supplied finder rows into game cards
+with player identity, opponent/location context, W/L badges, supplied stat
+values, secondary context chips, and full detail tables. Team game finders,
+count detail, top-game leaderboards, and unknown finder-shaped routes stay on
+their existing paths.
 
 ### Phase C5 — Team summary, team record, split layouts
 
 Goal: bundle three closely-related team-context layouts — summary, record,
 and split — since they share visual patterns. Reduces phase count without
 losing scope.
+
+Status: active. Phase C5 starts with a row-shape inventory because summary and
+split result classes are shared across team, player, playoff, and unknown
+routes that need explicit renderer boundaries.
 
 ### Phase C6 — Streak and occurrence layouts
 
