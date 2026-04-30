@@ -54,6 +54,8 @@ module replacement during frontend development.
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
 - **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
 - **Player comparisons** — `player_compare` responses use side-by-side player cards, metric comparison cards, and full summary/comparison detail tables while keeping mixed-player styling neutral.
+- **Head-to-head results** — matchup routes promote both participants, supplied records/samples, season/date context, and neutral identity accents before the supporting detail tables.
+- **Playoff results** — playoff history, matchup, appearance, and round-record routes use postseason-specific cards/rankings with supplied team identity, round/season context, records, and full detail tables.
 - **Player game finders** — `player_game_finder` responses use game cards with player identity, opponent context, W/L badges, supplied stat values, secondary context chips, and a full detail table below.
 - **Streaks** — `player_streak_finder` and `team_streak_finder` responses use answer-first streak cards with identity, condition, length, active/completed status, supplied span context, and full streak detail.
 - **Counts** — `count` query-class responses render the supplied count as the primary answer, then keep count rows and any underlying finder/leaderboard/detail sections visible below.
@@ -99,7 +101,9 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | `team_record` / summary         | Record-first team card, opponent identity when present, Record Detail, By Season   |
 | generic summary                 | Summary, By Season (if present)                                                    |
 | `player_compare` / comparison   | Player Comparison, Metric Comparison, Player Summary Detail, Full Metric Detail     |
-| `team_matchup_record` / comparison | Neutral matchup record cards, Team Summary Detail, Metric Detail                 |
+| `team_matchup_record`, head-to-head `player_compare`/`team_compare`, `matchup_by_decade` / comparison | Head-to-head card, Participant Detail, Metric Detail |
+| `playoff_history`, team-scoped `playoff_appearances` / summary | Playoff history/appearance card, Postseason Summary Detail, Season Breakdown |
+| `playoff_matchup_history` / comparison | Playoff matchup card, Postseason Summary Detail, Series Detail |
 | generic comparison              | Summary/Players, Comparison                                                        |
 | `player_game_finder` / finder   | Player Games, Player Game Detail                                                   |
 | generic finder                  | Matching Games                                                                     |
@@ -109,6 +113,7 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | generic leaderboard             | Ranked Leaderboard, Full Leaderboard detail table                                  |
 | `player_occurrence_leaders` / leaderboard | Occurrence Leaderboard, Full Occurrence Detail                           |
 | `team_occurrence_leaders` / leaderboard | Occurrence Leaderboard, Full Occurrence Detail                             |
+| `playoff_appearances`, `playoff_round_record` / leaderboard | Playoff leaderboard rankings, Full Playoff Leaderboard |
 | `player_streak_finder` / streak | Streak cards, Full Streak Detail                                                   |
 | `team_streak_finder` / streak   | Streak cards, Full Streak Detail                                                   |
 | count                           | Count answer, Count Detail, optional matching/detail sections                       |
@@ -142,8 +147,17 @@ leaderboard-shaped responses stay on `LeaderboardSection.tsx`.
 supplied comparison rows into metric cards, but it does not calculate new NBA
 facts, choose routes, or transform generic comparison payloads. Full summary
 and comparison `DataTable` detail remains visible below the promoted layout.
-Team comparisons, matchup records, playoff comparisons, decade comparisons,
-and unknown comparison-shaped routes continue through `ComparisonSection.tsx`.
+Ordinary team comparisons and unknown comparison-shaped routes continue through
+`ComparisonSection.tsx`.
+
+`HeadToHeadSection.tsx` owns `team_matchup_record`, `matchup_by_decade`, and
+only those `player_compare` / `team_compare` responses whose metadata marks
+`head_to_head_used: true`. It promotes supplied participant identity,
+records/samples, season/date context, and selected supplied stat values while
+keeping mixed-player and mixed-team surfaces neutral except for row-level
+identity accents. It does not calculate records, winners, game lists, or
+comparison metrics in React. The full participant summary, metric, finder, and
+unknown detail sections stay visible below the matchup card.
 
 `PlayerGameFinderSection.tsx` owns only finder results whose route is
 `player_game_finder`. It promotes supplied finder rows into player game cards
@@ -157,17 +171,25 @@ the cards.
 `TeamSummarySection.tsx` owns summary results whose route is `game_summary`.
 It promotes supplied team identity, season/sample context, record, and headline
 stat values into a team hero card, then keeps the full summary and by-season
-tables visible. Playoff summaries and unknown summary-shaped routes remain on
-`SummarySection.tsx`.
+tables visible. Playoff summaries route to `PlayoffSection.tsx`, while unknown
+summary-shaped routes remain on `SummarySection.tsx`.
 
-`TeamRecordSection.tsx` owns `team_record` and `team_matchup_record` results.
+`TeamRecordSection.tsx` owns `team_record` results.
 Single-team records use scoped team treatment only when `team_context` marks a
 safe single-team result; opponent identity is shown as a badge or text fallback.
-Matchup records stay neutral, showing each team as an identity-accented record
-card rather than assigning the whole surface to one team. Record math is not
-computed in React; the renderer displays only supplied wins, losses, win
-percentage, sample size, and secondary stats. Full summary, by-season, and
-metric detail tables remain visible.
+Record math is not computed in React; the renderer displays only supplied wins,
+losses, win percentage, sample size, and secondary stats. Full summary and
+by-season detail tables remain visible.
+
+`PlayoffSection.tsx` owns playoff routes: `playoff_history`,
+`playoff_appearances`, `playoff_matchup_history`, and `playoff_round_record`.
+Summary and comparison routes promote supplied postseason team identity,
+appearance counts, records, round/series/season context, and neutral matchup
+cards. Playoff leaderboard routes promote supplied ranks, team identity,
+appearance or record metrics, round labels, season span, and qualifier context.
+It does not infer playoff series, winners, round hierarchy, rankings, or target
+metrics; the engine/API must supply those values. Full postseason summary,
+season, series, and leaderboard detail tables remain visible.
 
 `SplitSummaryCardsSection.tsx` owns `team_split_summary` and
 `player_split_summary` results. It renders the entity context first, then bucket
@@ -214,9 +236,11 @@ Phase V4 adds presentation-only identity treatment for players and teams:
   result-level team theming from row-level teams or opponents.
 - Team summaries and single-team records may use scoped result-level team
   treatment only when metadata identifies one safe team context.
-- Team matchup records stay neutral except for each team's badge and restrained
-  card accents; the layout must not imply full-surface ownership by either
-  side.
+- Head-to-head and playoff matchup results stay neutral except for each
+  participant's identity badge and restrained row/card accents; the layout must
+  not imply full-surface ownership by either side.
+- Playoff leaderboards stay neutral for league-wide rankings. Row-level team
+  badges provide identity only; they do not apply full-surface team theming.
 - Team split summaries may use scoped team treatment for the hero when the
   metadata supplies a safe single-team context. Player split summaries stay
   neutral except for player identity imagery.
@@ -305,13 +329,34 @@ Team-summary and team-record edge-case fallbacks:
   record, while the detail table remains visible.
 - Missing opponent identity on team records renders the available opponent text
   as a neutral badge when present.
-- Matchup records without full team identity use row-level team labels or
-  generated "Team 1" / "Team 2" labels. They stay neutral and still expose the
-  summary and metric detail tables.
 - Long team and opponent names are constrained within badges/headings; mobile
   layouts stack identity, title, and stat groups to avoid overlap.
-- Playoff summaries, unknown summary routes, and generic comparison routes
-  remain on their fallback renderers.
+- Unknown summary routes and generic comparison routes remain on their fallback
+  renderers.
+
+Head-to-head and playoff edge-case fallbacks:
+
+- Missing player/team ids keep initials avatars or neutral team abbreviation
+  badges. Row-level names, metadata identity context, or generated participant
+  labels keep the card readable.
+- Missing wins/losses omits the promoted record instead of inventing a result.
+  If only a supplied game/sample count exists, the renderer shows that sample
+  size and keeps the detail table visible.
+- Tied records remain neutral. The UI displays the supplied tied record without
+  creating a winner label or assigning ownership to either participant.
+- Missing dates, season ranges, round labels, or opponent filters simply omit
+  those context chips. Supplied chips wrap and do not widen the result region.
+- Long player/team names, long round labels, and long dynamic series columns
+  wrap inside cards. At mobile widths, identity, context, record, and metric
+  regions stack vertically.
+- Playoff matchup/history rows do not include series winners or bracket objects
+  today; `PlayoffSection.tsx` does not infer them. Dynamic team-prefixed
+  columns remain available in the detail table.
+- Playoff leaderboard rows without team identity render a text fallback such
+  as "Playoff Entry 2"; sparse rows still expose the full leaderboard table.
+- Ordinary comparisons, ordinary leaderboards, occurrence leaderboards,
+  unknown summary routes, and unknown fallback sections remain available for
+  shapes not explicitly owned by C7.
 
 Split-summary edge-case fallbacks:
 
@@ -361,8 +406,12 @@ Streak/count/occurrence edge-case fallbacks:
   `frontend/src/components/PlayerGameFinderSection.tsx`
 - Team summary renderer:
   `frontend/src/components/TeamSummarySection.tsx`
-- Team record and matchup renderer:
+- Team record renderer:
   `frontend/src/components/TeamRecordSection.tsx`
+- Head-to-head renderer:
+  `frontend/src/components/HeadToHeadSection.tsx`
+- Playoff renderer:
+  `frontend/src/components/PlayoffSection.tsx`
 - Team/player split card renderer:
   `frontend/src/components/SplitSummaryCardsSection.tsx`
 - Streak renderer: `frontend/src/components/StreakSection.tsx`
@@ -482,7 +531,9 @@ frontend/src/
     SummarySection.tsx    # Summary + By Season tables
     TeamSummarySection.tsx # Team summary hero + detail tables
     ComparisonSection.tsx # Players + Comparison tables
-    TeamRecordSection.tsx # Team record/matchup record cards + detail tables
+    TeamRecordSection.tsx # Team record cards + detail tables
+    HeadToHeadSection.tsx # Head-to-head matchup cards + detail tables
+    PlayoffSection.tsx    # Playoff history/matchup/leaderboard layouts + detail tables
     SplitSummarySection.tsx # Summary + Split Comparison tables
     SplitSummaryCardsSection.tsx # Team/player split bucket cards + detail tables
     FinderSection.tsx     # Matching Games table with count
