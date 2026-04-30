@@ -9,14 +9,17 @@
 }
 
 .label {
+  min-width: 0;
   color: var(--text-secondary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-uppercase);
+  letter-spacing: 0;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .value {
+  min-width: 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-feature-settings: "tnum";
@@ -35,8 +38,10 @@
 }
 
 .context {
+  min-width: 0;
   color: var(--text-tertiary);
   font-size: var(--font-small);
+  overflow-wrap: anywhere;
 }
 
 .accent .value {
