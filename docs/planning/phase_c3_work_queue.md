@@ -236,7 +236,7 @@ the exact underlying table.
 
 ---
 
-## 5. `[ ]` Polish comparison responsive detail and docs
+## 5. `[x]` Polish comparison responsive detail and docs
 
 **Why:** C3 should close implementation with player comparisons feeling
 complete on desktop and mobile, with docs accurately describing boundaries and

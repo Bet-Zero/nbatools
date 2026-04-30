@@ -53,6 +53,7 @@ module replacement during frontend development.
   - **Caveats** — orange/yellow-bordered warning block
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
 - **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
+- **Player comparisons** — `player_compare` responses use side-by-side player cards, metric comparison cards, and full summary/comparison detail tables while keeping mixed-player styling neutral.
 - **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
 - **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
@@ -91,7 +92,8 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 | ------------------------------- | ---------------------------------------------------------------------------------- |
 | `player_game_summary` / summary | Player hero, Game Log trend/recent games when present, Full Summary, By Season     |
 | generic summary                 | Summary, By Season (if present)                                                    |
-| comparison                      | Summary, Comparison                                                                |
+| `player_compare` / comparison   | Player Comparison, Metric Comparison, Player Summary Detail, Full Metric Detail     |
+| generic comparison              | Summary/Players, Comparison                                                        |
 | split_summary                   | Summary, Split Comparison                                                          |
 | finder                          | Matching Games                                                                     |
 | leaderboard                     | Ranked Leaderboard, Full Leaderboard detail table                                  |
@@ -112,6 +114,14 @@ engine/API responsibilities. The full `DataTable` detail stays visible below
 the ranked rows so unpromoted columns and sparse/unknown leaderboard shapes are
 still inspectable.
 
+`PlayerComparisonSection.tsx` owns only comparison results whose route is
+`player_compare`. It promotes supplied summary rows into player cards and
+supplied comparison rows into metric cards, but it does not calculate new NBA
+facts, choose routes, or transform generic comparison payloads. Full summary
+and comparison `DataTable` detail remains visible below the promoted layout.
+Team comparisons, matchup records, playoff comparisons, decade comparisons,
+and unknown comparison-shaped routes continue through `ComparisonSection.tsx`.
+
 ## Identity imagery and team theming
 
 Phase V4 adds presentation-only identity treatment for players and teams:
@@ -127,6 +137,9 @@ Phase V4 adds presentation-only identity treatment for players and teams:
 - Leaderboard rows may show player avatars or team badges as identity accents,
   but the leaderboard surface itself remains neutral for mixed league-wide
   contexts.
+- Player-comparison rows may show player avatars and small team badges, but the
+  surface does not split into team-colored sides or apply result-level team
+  theming.
 - Team color treatment is limited to identity surfaces: badges, a subtle result
   stripe, and a light surface wash. Buttons, body copy, table text, and global
   action states keep the design-system colors.
@@ -165,6 +178,26 @@ Leaderboard edge-case fallbacks:
 - Unknown query classes and unknown section keys bypass leaderboard rendering
   and continue through the generic fallback renderer.
 
+Player-comparison edge-case fallbacks:
+
+- `metadata.players_context` supplies player ids for headshots when available.
+  Missing ids, missing context, or failed images fall back to initials.
+- Row-level team fields render small team badges when present. Missing or
+  unknown team ids keep neutral abbreviation/text badges, and no team colors are
+  applied to the whole comparison surface.
+- Sparse rows still render player identity cards and the full detail tables for
+  supplied summary/comparison rows. Missing optional stats simply omit the
+  promoted stat block.
+- Metric cards emphasize leaders only for whitelisted numeric,
+  higher-is-better metrics already supplied by the response. Ties show a tie
+  badge; ambiguous, missing, custom, or nonnumeric rows render without leader
+  emphasis.
+- Long player names, long team labels, and long custom metric labels are
+  constrained within their cards. At mobile widths, player cards and metric
+  cards stack to preserve detail.
+- Non-player comparison routes remain on the generic `ComparisonSection.tsx`
+  path.
+
 ## File locations
 
 - Frontend source: `frontend/` (React + TypeScript + Vite)
@@ -173,6 +206,8 @@ Leaderboard edge-case fallbacks:
 - Vite config: `frontend/vite.config.ts` (proxy + build output path)
 - Player summary renderer: `frontend/src/components/PlayerSummarySection.tsx`
 - Leaderboard renderer: `frontend/src/components/LeaderboardSection.tsx`
+- Player comparison renderer:
+  `frontend/src/components/PlayerComparisonSection.tsx`
 - Generic summary fallback: `frontend/src/components/SummarySection.tsx`
 
 ## Tech stack
