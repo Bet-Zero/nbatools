@@ -161,7 +161,12 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       return <FinderSection sections={sections} />;
     case "leaderboard":
       if (isOccurrenceLeaderboard(data)) {
-        return <OccurrenceLeaderboardSection sections={sections} />;
+        return (
+          <OccurrenceLeaderboardSection
+            sections={sections}
+            metadata={data.result?.metadata}
+          />
+        );
       }
       return <LeaderboardSection sections={sections} />;
     case "streak":

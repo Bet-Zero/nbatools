@@ -957,6 +957,7 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
     const ranked = screen.getByLabelText("Ranked leaderboard");
+    expect(screen.queryByText("Occurrence Leaderboard")).not.toBeInTheDocument();
     expect(within(ranked).getByText(longName)).toBeInTheDocument();
     expect(within(ranked).getByText("6")).toBeInTheDocument();
     expect(
@@ -993,10 +994,135 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
     expect(screen.getByText("Occurrence Leaderboard")).toBeInTheDocument();
-    expect(screen.getByText("Occurrence Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Occurrence Detail")).toBeInTheDocument();
     expect(screen.queryByText("Full Leaderboard")).not.toBeInTheDocument();
-    expect(screen.getAllByText("12").length).toBeGreaterThan(0);
-    expect(screen.getByText("Games PTS 30+ REB 10+")).toBeInTheDocument();
+    const ranked = screen.getByLabelText("Occurrence leaderboard rankings");
+    expect(within(ranked).getByText("Nikola Jokic")).toBeInTheDocument();
+    expect(within(ranked).getByText("12")).toBeInTheDocument();
+    expect(within(ranked).getByText("Event Count")).toBeInTheDocument();
+    expect(
+      within(ranked).getByText("Games PTS 30+ REB 10+"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("72 games")).toBeInTheDocument();
+    expect(within(ranked).getByText("2024-25")).toBeInTheDocument();
+  });
+
+  it("renders team occurrence leaderboards with neutral event-count rows", () => {
+    const data = makeResponse({
+      route: "team_occurrence_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "team_occurrence_leaders",
+          season_type: "Regular Season",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_abbr: "BOS",
+              games_played: 82,
+              "games_pts_120+_fg3m_15+": 18,
+              season: "2024-25",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Occurrence leaderboard rankings");
+    expect(within(ranked).getAllByText("BOS").length).toBeGreaterThan(0);
+    expect(within(ranked).getByText("18")).toBeInTheDocument();
+    expect(
+      within(ranked).getByText("Games PTS 120+ FG3M 15+"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("82 games")).toBeInTheDocument();
+    expect(within(ranked).getByText("Regular Season")).toBeInTheDocument();
+  });
+
+  it("formats compound occurrence labels without parsing the event", () => {
+    const data = makeResponse({
+      route: "player_occurrence_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "player_occurrence_leaders",
+          start_date: "2024-11-01",
+          end_date: "2025-02-01",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 2,
+              player_name:
+                "A Very Long Player Name With Compound-Hyphen Context",
+              team_abbr: "OKC",
+              games_played: 41,
+              min_games: 20,
+              qualifier: "Road wins only",
+              "games_pts_30+_reb_10+_ast_10+": 9,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Occurrence leaderboard rankings");
+    expect(
+      within(ranked).getByText(
+        "A Very Long Player Name With Compound-Hyphen Context",
+      ),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("9")).toBeInTheDocument();
+    expect(
+      within(ranked).getByText("Games PTS 30+ REB 10+ AST 10+"),
+    ).toBeInTheDocument();
+    expect(
+      within(ranked).getByText("2024-11-01 to 2025-02-01"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getByText("Min games 20")).toBeInTheDocument();
+    expect(within(ranked).getByText("Road wins only")).toBeInTheDocument();
+  });
+
+  it("keeps sparse occurrence leaderboard rows readable", () => {
+    const data = makeResponse({
+      route: "team_occurrence_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "team_occurrence_leaders",
+          season: "2024-25",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              games_played: 20,
+              qualifying_games: 7,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const ranked = screen.getByLabelText("Occurrence leaderboard rankings");
+    expect(within(ranked).getByText("Occurrence Entry")).toBeInTheDocument();
+    expect(within(ranked).getByText("7")).toBeInTheDocument();
+    expect(within(ranked).getByText("Qualifying Games")).toBeInTheDocument();
+    expect(within(ranked).getByText("20 games")).toBeInTheDocument();
+    expect(within(ranked).getByText("2024-25")).toBeInTheDocument();
   });
 
   it("surfaces game and team context as secondary leaderboard metadata", () => {

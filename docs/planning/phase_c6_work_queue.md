@@ -246,7 +246,7 @@ section label followed by a one-row table.
 
 ---
 
-## 5. `[ ]` Build occurrence leaderboard treatment
+## 5. `[x]` Build occurrence leaderboard treatment
 
 **Why:** Occurrence leaderboards are leaderboards by event count, not generic
 stat leaders. The event and count should be explicit while preserving existing
