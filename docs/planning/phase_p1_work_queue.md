@@ -48,7 +48,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory first-run surfaces and starter-query fixtures
+## 1. `[x]` Inventory first-run surfaces and starter-query fixtures
 
 **Why:** P1 should start with a concrete first-run matrix so the landing work
 does not accidentally depend on unsupported examples or undocumented freshness
