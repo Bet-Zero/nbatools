@@ -1,0 +1,56 @@
+.section {
+  margin-bottom: var(--space-4);
+}
+
+.ownerCard {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.identityRow {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.identityText {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.teamName {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.stats {
+  min-width: 0;
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 520px) {
+  .identityRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

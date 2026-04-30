@@ -11,6 +11,7 @@ import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
+import TeamSummarySection from "./TeamSummarySection";
 import styles from "./ResultSections.module.css";
 
 interface Props {
@@ -53,6 +54,11 @@ function isPlayerGameFinder(data: QueryResponse): boolean {
   );
 }
 
+function isTeamSummary(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "game_summary" || route === "team_record";
+}
+
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
   const queryClass = data.result?.query_class ?? "";
   const sections = data.result?.sections ?? {};
@@ -64,6 +70,15 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           <PlayerSummarySection
             sections={sections}
             metadata={data.result?.metadata}
+          />
+        );
+      }
+      if (isTeamSummary(data)) {
+        return (
+          <TeamSummarySection
+            sections={sections}
+            metadata={data.result?.metadata}
+            route={data.route}
           />
         );
       }
