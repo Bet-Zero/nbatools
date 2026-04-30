@@ -755,10 +755,12 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
     const compared = screen.getByLabelText("Compared players");
+    const metricCards = screen.getByLabelText("Metric comparison cards");
     expect(screen.getByText("Player Comparison")).toBeInTheDocument();
     expect(screen.getByText("2 players")).toBeInTheDocument();
     expect(screen.getByText("Metric Comparison")).toBeInTheDocument();
     expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
     expect(screen.queryByText("Players")).not.toBeInTheDocument();
     expect(within(compared).getByText("Nikola Jokic")).toBeInTheDocument();
     expect(within(compared).getByText("Joel Embiid")).toBeInTheDocument();
@@ -774,6 +776,10 @@ describe("ResultSections", () => {
     expect(within(compared).getAllByText("PTS").length).toBeGreaterThan(0);
     expect(within(compared).getByText("26.4")).toBeInTheDocument();
     expect(within(compared).getByText("7-3")).toBeInTheDocument();
+    expect(within(metricCards).getByText("PTS Avg")).toBeInTheDocument();
+    expect(
+      within(metricCards).getByText("Joel Embiid leads by 3.7"),
+    ).toBeInTheDocument();
   });
 
   it("keeps team comparisons on the generic comparison renderer", () => {
@@ -832,6 +838,40 @@ describe("ResultSections", () => {
     ).toBeNull();
     expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
     expect(screen.queryByText("Metric Comparison")).not.toBeInTheDocument();
+  });
+
+  it("handles tied, nonnumeric, and missing comparison metric values", () => {
+    const data = makeResponse({
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: { route: "player_compare" },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            { player_name: "Player A" },
+            { player_name: "Player B" },
+          ],
+          comparison: [
+            { metric: "ast_avg", "Player A": 8, "Player B": 8 },
+            { metric: "status", "Player A": "available", "Player B": null },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const metricCards = screen.getByLabelText("Metric comparison cards");
+    expect(within(metricCards).getByText("AST Avg")).toBeInTheDocument();
+    expect(within(metricCards).getByText("Tie")).toBeInTheDocument();
+    expect(within(metricCards).getByText("Status")).toBeInTheDocument();
+    expect(within(metricCards).getByText("available")).toBeInTheDocument();
+    expect(
+      within(metricCards).queryByText(/status leads/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
   });
 
   it("renders streak sections", () => {

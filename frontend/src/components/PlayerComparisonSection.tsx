@@ -11,13 +11,47 @@ import {
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
 import DataTable from "./DataTable";
-import { formatValue } from "./tableFormatting";
+import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./PlayerComparisonSection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
   metadata?: ResultMetadata;
 }
+
+const STAT_LABELS: Record<string, string> = {
+  ast: "AST",
+  blk: "BLK",
+  efg: "eFG",
+  fg3m: "FG3M",
+  pts: "PTS",
+  reb: "REB",
+  stl: "STL",
+  ts: "TS",
+  usg: "USG",
+};
+
+const LEADER_ELIGIBLE_METRICS = new Set([
+  "games",
+  "wins",
+  "win_pct",
+  "minutes_avg",
+  "pts_avg",
+  "reb_avg",
+  "ast_avg",
+  "stl_avg",
+  "blk_avg",
+  "fg3m_avg",
+  "plus_minus_avg",
+  "efg_pct_avg",
+  "ts_pct_avg",
+  "usg_pct_avg",
+  "ast_pct_avg",
+  "reb_pct_avg",
+  "pts_sum",
+  "reb_sum",
+  "ast_sum",
+]);
 
 function numericValue(row: SectionRow | undefined, key: string): number | null {
   const value = row?.[key];
@@ -146,6 +180,55 @@ function rowKey(row: SectionRow, index: number): string {
   return textValue(row, "player_name") ?? textValue(row, "player") ?? `${index}`;
 }
 
+function metricKey(row: SectionRow): string {
+  return textValue(row, "metric") ?? "metric";
+}
+
+function metricLabel(metric: string): string {
+  return formatColHeader(metric).replace(
+    /\b(ast|blk|efg|fg3m|pts|reb|stl|ts|usg)\b/gi,
+    (stat) => STAT_LABELS[stat.toLowerCase()] ?? stat,
+  );
+}
+
+function comparisonColumns(row: SectionRow): string[] {
+  return Object.keys(row).filter((key) => key !== "metric");
+}
+
+function comparisonValue(row: SectionRow, column: string): number | null {
+  const value = row[column];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function leaderInfo(row: SectionRow, columns: string[]) {
+  const metric = metricKey(row);
+  if (!LEADER_ELIGIBLE_METRICS.has(metric)) return null;
+
+  const numericValues = columns
+    .map((column) => ({
+      column,
+      value: comparisonValue(row, column),
+    }))
+    .filter(
+      (item): item is { column: string; value: number } => item.value !== null,
+    )
+    .sort((a, b) => b.value - a.value);
+
+  if (numericValues.length < 2) return null;
+
+  const [first, second] = numericValues;
+  if (Math.abs(first.value - second.value) < 1e-9) {
+    return { type: "tie" as const };
+  }
+
+  return {
+    type: "leader" as const,
+    column: first.column,
+    delta: first.value - second.value,
+    metric,
+  };
+}
+
 export default function PlayerComparisonSection({ sections, metadata }: Props) {
   const summary = sections.summary;
   const comparison = sections.comparison;
@@ -231,7 +314,64 @@ export default function PlayerComparisonSection({ sections, metadata }: Props) {
       {comparison && comparison.length > 0 && (
         <div className={styles.section}>
           <SectionHeader title="Metric Comparison" />
-          <DataTable rows={comparison} highlight />
+          <div
+            className={styles.metricGrid}
+            aria-label="Metric comparison cards"
+          >
+            {comparison.map((row, index) => {
+              const metric = metricKey(row);
+              const columns = comparisonColumns(row);
+              const leader = leaderInfo(row, columns);
+
+              return (
+                <Card
+                  className={styles.metricCard}
+                  depth="card"
+                  key={`${metric}-${index}`}
+                  padding="md"
+                >
+                  <div className={styles.metricHeader}>
+                    <div className={styles.metricName}>
+                      {metricLabel(metric)}
+                    </div>
+                    {leader?.type === "leader" && (
+                      <div className={styles.leaderBadge}>
+                        {leader.column} leads by{" "}
+                        {formatValue(leader.delta, leader.metric)}
+                      </div>
+                    )}
+                    {leader?.type === "tie" && (
+                      <div className={styles.tieBadge}>Tie</div>
+                    )}
+                  </div>
+                  <div className={styles.metricValues}>
+                    {columns.map((column) => {
+                      const isLeader =
+                        leader?.type === "leader" &&
+                        leader.column === column;
+                      return (
+                        <div
+                          className={`${styles.metricValue} ${
+                            isLeader ? styles.leaderValue : ""
+                          }`}
+                          key={column}
+                        >
+                          <span className={styles.metricEntity}>{column}</span>
+                          <span className={styles.metricNumber}>
+                            {formatValue(row[column], metric)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+          <div className={styles.detailSection}>
+            <SectionHeader title="Full Metric Detail" />
+            <DataTable rows={comparison} highlight />
+          </div>
         </div>
       )}
     </>

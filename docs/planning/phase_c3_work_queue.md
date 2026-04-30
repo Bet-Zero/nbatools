@@ -193,7 +193,7 @@ of as anonymous table rows.
 
 ---
 
-## 4. `[ ]` Add metric comparison and difference emphasis
+## 4. `[x]` Add metric comparison and difference emphasis
 
 **Why:** The user needs to scan who leads each important metric without losing
 the exact underlying table.
