@@ -1316,7 +1316,16 @@ describe("ResultSections", () => {
       result: {
         query_class: "count",
         result_status: "ok",
-        metadata: { route: "player_game_finder", query_class: "count" },
+        metadata: {
+          route: "player_game_finder",
+          query_class: "count",
+          query_text: "how many 35 point games did Stephen Curry have",
+          season: "2024-25",
+          player_context: {
+            player_id: 201939,
+            player_name: "Stephen Curry",
+          },
+        },
         notes: [],
         caveats: [],
         sections: {
@@ -1331,9 +1340,89 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
     expect(screen.queryByText("Player Games")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Stephen Curry" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Stephen Curry avatar").length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      screen.getByText("how many 35 point games did Stephen Curry have"),
+    ).toBeInTheDocument();
     expect(screen.getAllByText("Count").length).toBeGreaterThan(0);
+    expect(screen.getByText("Count Detail")).toBeInTheDocument();
     expect(screen.getByText("Matching Games")).toBeInTheDocument();
     expect(screen.getAllByText("Stephen Curry").length).toBeGreaterThan(0);
+  });
+
+  it("renders zero team occurrence counts without requiring detail rows", () => {
+    const data = makeResponse({
+      route: "team_occurrence_leaders",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          route: "team_occurrence_leaders",
+          query_class: "count",
+          query_text: "how many 140 point games did the Celtics have",
+          season: "2024-25",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          count: [{ count: 0 }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(
+      screen.getByRole("heading", { name: "Boston Celtics" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(screen.getAllByText("0").length).toBeGreaterThan(0);
+    expect(screen.getByText("Regular Season")).toBeInTheDocument();
+    expect(screen.queryByText("Matching Games")).not.toBeInTheDocument();
+    expect(screen.getByText("Count Detail")).toBeInTheDocument();
+  });
+
+  it("renders distinct counts with long query context and custom detail", () => {
+    const longQuery =
+      "how many distinct players had a very long compound occurrence of thirty points and ten rebounds";
+    const data = makeResponse({
+      route: "player_occurrence_leaders",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          route: "player_occurrence_leaders",
+          query_class: "count",
+          query_text: longQuery,
+          season: "2024-25",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          count: [{ count: 47 }],
+          custom_detail: [{ label: "kept detail" }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(
+      screen.getByRole("heading", { name: "Matching results" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(longQuery)).toBeInTheDocument();
+    expect(screen.getAllByText("47").length).toBeGreaterThan(0);
+    expect(screen.getByText("Custom Detail")).toBeInTheDocument();
+    expect(screen.getByText("kept detail")).toBeInTheDocument();
   });
 
   it("renders no-result display for no_result status", () => {
