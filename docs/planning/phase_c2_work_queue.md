@@ -136,7 +136,7 @@ generic table dump.
 
 ---
 
-## 3. `[ ]` Add identity-aware leaderboard rows
+## 3. `[x]` Add identity-aware leaderboard rows
 
 **Why:** Player and team leaderboards should make the ranked entity visually
 recognizable while staying neutral in mixed league-wide contexts.
