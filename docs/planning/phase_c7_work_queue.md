@@ -156,7 +156,7 @@ team-record paths that already work.
 
 ---
 
-## 3. `[ ]` Build head-to-head answer layout
+## 3. `[x]` Build head-to-head answer layout
 
 **Why:** Head-to-head queries should answer with the participants and record or
 comparison result first, then expose supporting rows.
