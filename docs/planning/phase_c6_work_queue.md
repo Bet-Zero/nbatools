@@ -154,7 +154,7 @@ owners without hijacking generic leaderboard/finder/count-shaped fallbacks.
 
 ---
 
-## 3. `[ ]` Build player and team streak answer layout
+## 3. `[x]` Build player and team streak answer layout
 
 **Why:** Streak queries should answer with the streak length and span first,
 then expose the supporting rows.

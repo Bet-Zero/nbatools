@@ -166,7 +166,13 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       return <LeaderboardSection sections={sections} />;
     case "streak":
       if (isOwnedStreak(data)) {
-        return <StreakSection sections={sections} />;
+        return (
+          <StreakSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            route={data.route}
+          />
+        );
       }
       return renderFallback(sections);
     case "count":

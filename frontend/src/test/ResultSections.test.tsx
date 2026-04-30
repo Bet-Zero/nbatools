@@ -1744,7 +1744,109 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
   });
 
-  it("renders streak sections", () => {
+  it("renders player streak cards with active status and detail", () => {
+    const data = makeResponse({
+      route: "player_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: {
+          route: "player_streak_finder",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              player_name: "Nikola Jokic",
+              condition: "pts>=30",
+              start_date: "2025-01-01",
+              end_date: "2025-01-10",
+              streak_length: 5,
+              games: 5,
+              wins: 4,
+              losses: 1,
+              is_active: 1,
+              pts_avg: 32.6,
+              reb_avg: 11.2,
+            },
+          ],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Streaks")).toBeInTheDocument();
+    expect(screen.getByText("1 found")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Nikola Jokic" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Nikola Jokic avatar").length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByText("pts>=30").length).toBeGreaterThan(0);
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("4-1")).toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
+    const span = screen.getByLabelText("Streak span");
+    expect(within(span).getByText("2025-01-01")).toBeInTheDocument();
+    expect(within(span).getByText("2025-01-10")).toBeInTheDocument();
+  });
+
+  it("renders team streak cards with team identity and completed status", () => {
+    const data = makeResponse({
+      route: "team_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: {
+          route: "team_streak_finder",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              team_name: "Boston Celtics",
+              condition: "wins",
+              start_date: "2025-02-01",
+              end_date: "2025-02-08",
+              streak_length: 4,
+              games: 4,
+              wins: 4,
+              losses: 0,
+              is_active: 0,
+              pts_avg: 121.5,
+              fg3m_avg: 15.2,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Team Streak")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Boston Celtics" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(screen.getAllByText("wins").length).toBeGreaterThan(0);
+    expect(screen.getByText("Completed")).toBeInTheDocument();
+    expect(screen.getByText("4-0")).toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
+  });
+
+  it("renders sparse streak cards with long names and missing condition labels", () => {
+    const longName =
+      "A Very Long Player Name With Multiple Hyphenated-Surname Segments";
     const data = makeResponse({
       route: "player_streak_finder",
       result: {
@@ -1756,17 +1858,21 @@ describe("ResultSections", () => {
         sections: {
           streak: [
             {
-              start_date: "2025-01-01",
-              end_date: "2025-01-10",
-              streak_length: 5,
+              player_name: longName,
+              games: 2,
+              start_date: "2025-03-01",
             },
           ],
         },
       },
     });
+
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Streaks")).toBeInTheDocument();
-    expect(screen.getByText("1 found")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: longName })).toBeInTheDocument();
+    expect(screen.getAllByText("Streak").length).toBeGreaterThan(0);
+    expect(screen.getByText("2 games")).toBeInTheDocument();
+    expect(screen.getAllByText("2025-03-01").length).toBeGreaterThan(0);
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
   });
 
   it("keeps unknown streak-shaped routes on the generic fallback renderer", () => {
