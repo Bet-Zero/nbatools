@@ -557,26 +557,111 @@ describe("ResultSections", () => {
     expect(screen.getByText("Record Detail")).toBeInTheDocument();
   });
 
-  it("keeps playoff summaries on the generic summary renderer", () => {
+  it("routes playoff histories to the C7 history layout", () => {
     const data = makeResponse({
       route: "playoff_history",
       result: {
         query_class: "summary",
         result_status: "ok",
-        metadata: { route: "playoff_history" },
+        metadata: {
+          route: "playoff_history",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
         notes: [],
         caveats: [],
         sections: {
-          summary: [{ team_name: "Lakers", seasons_appeared: 21 }],
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              season_start: "2019-20",
+              season_end: "2024-25",
+              season_type: "Playoffs",
+              games: 63,
+              wins: 39,
+              losses: 24,
+              win_pct: 0.619,
+              seasons_appeared: 6,
+              playoff_round: "Finals",
+            },
+          ],
+          by_season: [
+            {
+              season: "2023-24",
+              games: 19,
+              wins: 16,
+              losses: 3,
+              win_pct: 0.842,
+              deepest_round: "Finals",
+            },
+          ],
         },
       },
     });
+
     render(<ResultSections data={data} />);
+    const stats = screen.getByLabelText("Postseason summary stats");
     expect(screen.getByLabelText("Playoff result")).toBeInTheDocument();
-    expect(screen.getByText("Summary")).toBeInTheDocument();
+    expect(screen.getByText("Playoff History")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Boston Celtics" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(within(stats).getByText("Seasons")).toBeInTheDocument();
+    expect(within(stats).getByText("6")).toBeInTheDocument();
+    expect(within(stats).getByText("39-24")).toBeInTheDocument();
+    expect(screen.getByText("2019-20 to 2024-25")).toBeInTheDocument();
+    expect(screen.getAllByText("Playoffs").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Finals").length).toBeGreaterThan(0);
+    expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Season Breakdown")).toBeInTheDocument();
     expect(screen.queryByText("Team Summary")).not.toBeInTheDocument();
     expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
-    expect(screen.getByText("Lakers")).toBeInTheDocument();
+  });
+
+  it("renders playoff appearances with round context and sparse rows", () => {
+    const longTeam =
+      "A Very Long Playoff Team Name With Several Market Segments";
+    const longRound =
+      "Conference Finals With A Very Long Historical Round Label";
+    const data = makeResponse({
+      route: "playoff_appearances",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "playoff_appearances",
+          start_season: "1980-81",
+          end_season: "2024-25",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: longTeam,
+              appearances: 12,
+              round: longRound,
+            },
+          ],
+          by_season: [{ season: "2023-24" }],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    const stats = screen.getByLabelText("Postseason summary stats");
+    expect(screen.getByText("Playoff Appearances")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: longTeam })).toBeInTheDocument();
+    expect(within(stats).getByText("Appearances")).toBeInTheDocument();
+    expect(within(stats).getByText("12")).toBeInTheDocument();
+    expect(screen.getByText("1980-81 to 2024-25")).toBeInTheDocument();
+    expect(screen.getAllByText(longRound).length).toBeGreaterThan(0);
+    expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Season Breakdown")).toBeInTheDocument();
   });
 
   it("routes playoff leaderboards to the C7 boundary owner", () => {
@@ -617,7 +702,21 @@ describe("ResultSections", () => {
       result: {
         query_class: "comparison",
         result_status: "ok",
-        metadata: { route: "playoff_matchup_history" },
+        metadata: {
+          route: "playoff_matchup_history",
+          teams_context: [
+            {
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+            },
+            {
+              team_id: 1610612748,
+              team_abbr: "MIA",
+              team_name: "Miami Heat",
+            },
+          ],
+        },
         notes: [],
         caveats: [],
         sections: {
@@ -640,10 +739,25 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
+    const teams = screen.getByLabelText("Playoff matchup teams");
     expect(screen.getByLabelText("Playoff result")).toBeInTheDocument();
-    expect(screen.getByText("Players")).toBeInTheDocument();
-    expect(screen.getByText("Comparison")).toBeInTheDocument();
-    expect(screen.getByText("Conference Finals")).toBeInTheDocument();
+    expect(screen.getByText("Playoff Matchup")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Boston Celtics vs Miami Heat" }),
+    ).toBeInTheDocument();
+    expect(
+      within(teams).getByLabelText("Boston Celtics (BOS)"),
+    ).toBeInTheDocument();
+    expect(
+      within(teams).getByLabelText("Miami Heat (MIA)"),
+    ).toBeInTheDocument();
+    expect(within(teams).getByText("4-3")).toBeInTheDocument();
+    expect(within(teams).getByText("3-4")).toBeInTheDocument();
+    expect(screen.getAllByText("Conference Finals").length).toBeGreaterThan(0);
+    expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Series Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Players")).not.toBeInTheDocument();
+    expect(screen.queryByText("Comparison")).not.toBeInTheDocument();
   });
 
   it("keeps unknown summary routes on the generic summary renderer", () => {

@@ -121,7 +121,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
   switch (queryClass) {
     case "summary":
       if (isPlayoffRoute(data)) {
-        return <PlayoffSection sections={sections} queryClass={queryClass} />;
+        return (
+          <PlayoffSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            queryClass={queryClass}
+            route={data.route}
+          />
+        );
       }
       if (isPlayerSummary(data)) {
         return (
@@ -152,7 +159,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       return <SummarySection sections={sections} />;
     case "comparison":
       if (isPlayoffRoute(data)) {
-        return <PlayoffSection sections={sections} queryClass={queryClass} />;
+        return (
+          <PlayoffSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            queryClass={queryClass}
+            route={data.route}
+          />
+        );
       }
       if (isHeadToHeadComparison(data)) {
         return (
@@ -207,7 +221,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
         );
       }
       if (isPlayoffRoute(data)) {
-        return <PlayoffSection sections={sections} queryClass={queryClass} />;
+        return (
+          <PlayoffSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            queryClass={queryClass}
+            route={data.route}
+          />
+        );
       }
       return <LeaderboardSection sections={sections} />;
     case "streak":

@@ -206,7 +206,7 @@ comparison result first, then expose supporting rows.
 
 ---
 
-## 4. `[ ]` Build playoff history and matchup layout
+## 4. `[x]` Build playoff history and matchup layout
 
 **Why:** Playoff history and playoff matchup results should read as postseason
 history, with round/series context and records ahead of tables.
