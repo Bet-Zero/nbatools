@@ -281,7 +281,7 @@ and mobile, with docs reflecting shipped UI behavior.
 
 ---
 
-## 6. `[ ]` Phase C1 retrospective and C2 handoff
+## 6. `[x]` Phase C1 retrospective and C2 handoff
 
 **Why:** Self-propagating final task. It closes player-summary work and creates
 the next executable Part 2 queue.
@@ -324,6 +324,52 @@ the next executable Part 2 queue.
 - This file
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
+
+---
+
+## Phase C1 retrospective
+
+**Status:** Phase C1 is closed. Player-summary layout work is complete, but
+Track A Part 2 and the overall product polish plan remain in progress.
+
+**What went well:**
+
+- The renderer boundary landed first, so `player_game_summary` could evolve
+  without changing team summaries, playoff summaries, or unknown summary
+  fallbacks.
+- The hero/stat layout reused Part 1 primitives (`Avatar`, `Card`, `Stat`,
+  `StatBlock`, `TeamBadge`, and `Badge`) instead of introducing a parallel
+  visual system.
+- The exact-sample `game_log` section kept the sparkline/API boundary honest:
+  React renders the engine-provided sample and does not refetch or reconstruct
+  NBA query data.
+- Frontend tests now cover populated, sparse, missing, single-game, empty
+  game-log, long-name, missing-image, and dense-stat cases.
+
+**What was harder:**
+
+- The sparkline needed an engine/API addition before the UI could be completed
+  cleanly. That confirmed the Part 2 rule that UI polish may still need small
+  structured-result contract additions.
+- The existing frontend lint target currently reports unrelated pre-existing
+  issues in shared components/hooks, so C1 used the queue-required test/build
+  commands as the completion gate rather than widening into unrelated lint
+  cleanup.
+- Player summaries still lack a resolved sample date-window metadata field for
+  phrases such as `last 10`; the layout avoids claiming a date span it does not
+  receive.
+
+**Residuals carried forward:**
+
+- Broader first-run copy, saved/share polish, and app-wide mobile verification
+  remain Track A Part 3 work.
+- A resolved sample date window would improve summary context later, but it is
+  not required for the completed C1 layout.
+- Generic summary routes remain intentionally table-oriented until their later
+  Part 2 phases redesign them.
+
+**Immediate handoff:** Continue Track A Part 2 with Phase C2, using
+[`phase_c2_work_queue.md`](./phase_c2_work_queue.md).
 
 ---
 

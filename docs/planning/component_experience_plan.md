@@ -112,11 +112,11 @@ Goal: redesign the player summary result. Hero stats, headshot, sparkline
 chart of game-by-game points across the queried timeframe, secondary stat
 block, by-season expandable. Mobile responsive.
 
-Phase V5 readiness note: current player-summary responses have enough data for
-the hero, record, secondary stat block, and by-season detail. The sparkline
-requires an additive structured game-series section for the exact summary
-sample. React must not fetch a hidden second query or reconstruct missing
-sample data client-side.
+Status: complete. `PlayerSummarySection.tsx` owns only `player_game_summary`
+responses and preserves the generic summary fallback for team, playoff, and
+unknown summary routes. Player-summary API responses now expose an additive
+`game_log` section for the exact filtered sample, and the UI uses that section
+for the scoring sparkline/recent-games context without a hidden refetch.
 
 ### Phase C2 — Leaderboard layout
 
