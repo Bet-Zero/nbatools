@@ -307,7 +307,7 @@ result. They must stay usable after all card layouts are polished.
 
 ---
 
-## 7. `[ ]` Phase C8 retrospective and C9 handoff
+## 7. `[x]` Phase C8 retrospective and C9 handoff
 
 **Why:** Self-propagating final task. It closes the dedicated mobile pass and
 creates the next executable Part 2 closing queue.
@@ -352,7 +352,51 @@ creates the next executable Part 2 closing queue.
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/product_polish_master_plan.md`
 
----
+## Phase C8 retrospective
+
+### What went well
+
+- The C8 inventory made the mobile pass concrete before CSS work started. It
+  named representative fixtures across the C1-C7 component set, which kept the
+  pass focused on layout risk instead of re-litigating data or engine behavior.
+- The component-level ownership from C1-C7 held up. Most fixes were contained
+  to CSS modules and design-system primitives: `min-width: 0`, wrapping rules,
+  stacked card grids, contained table/JSON scroll regions, and action wrapping.
+- Existing frontend tests already covered many mobile-sensitive data shapes:
+  long names, sparse rows, zero counts, ties, missing identities, long playoff
+  labels, and unknown fallbacks. C8 only needed a small focused envelope test
+  plus the required full frontend test/build loop for each runtime item.
+- The UI docs now describe known responsive boundaries and dense-output
+  behavior, so future mobile work has a verified baseline instead of implicit
+  CSS knowledge.
+
+### What was harder
+
+- Mobile issues were mostly cross-component containment problems rather than
+  obvious route-specific bugs. Shared primitives such as buttons, section
+  headers, stat blocks, team badges, and table wrappers needed small changes to
+  prevent narrow-screen regressions from reappearing in multiple renderers.
+- Detail tables must remain visible by product decision. That means mobile
+  polish cannot hide complexity; it has to keep horizontal scrolling contained
+  while card layouts above the tables stay readable.
+- Browser-accurate visual verification is still larger than a single component
+  pass. C8 improved responsive CSS and test coverage, but a Part 3 screenshot
+  matrix against live fixtures is still useful.
+
+### Residuals and next action
+
+- Phase C8 closes the dedicated Part 2 mobile pass. It does not close Track A
+  Part 2 by itself and does not complete the whole polish plan.
+- Remaining Part 2 work is the C9 closure audit and Part 3 handoff. C9 should
+  audit the Part 2 done definition, refresh status/residual docs, and draft the
+  first Part 3 queue.
+- Part 3 should pick up first-run onboarding, starter-query curation, freshness
+  banner polish, loading/error states, transitions, keyboard shortcuts,
+  copy/share refinements, and a browser screenshot pass across real
+  phone/tablet/desktop fixtures.
+- The next active queue is
+  [`phase_c9_work_queue.md`](./phase_c9_work_queue.md), focused on Part 2
+  closure and the Track A Part 3 handoff.
 
 ## Appendix: progress tracking
 

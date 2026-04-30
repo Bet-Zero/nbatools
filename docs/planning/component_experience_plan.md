@@ -194,13 +194,20 @@ Goal: dedicated phase to verify and fix every redesigned component on
 mobile. Each component gets explicit mobile acceptance criteria during
 its phase, but a final pass is worth doing once everything ships.
 
-Status: active. The active queue is
-[`phase_c8_work_queue.md`](./phase_c8_work_queue.md).
+Status: complete. C8 verified and tightened the app shell, result envelope,
+summary/record/split surfaces, comparison/head-to-head/playoff surfaces,
+ranking/finder/streak/count surfaces, dense detail tables, raw JSON, and
+utility actions for mobile containment. It also documented known responsive
+boundaries in `docs/operations/ui_guide.md`.
 
 ### Phase C9 — Retrospective and Part 3 handoff
 
-Goal: capture learnings, draft `first_run_and_polish_plan.md` (Track A
-Part 3) and `phase_p1_work_queue.md` (Part 3's first queue).
+Goal: audit Track A Part 2 against its done definition, capture learnings,
+refresh Part 2 status/residuals, and draft `phase_p1_work_queue.md` (Part 3's
+first queue).
+
+Status: active. The active queue is
+[`phase_c9_work_queue.md`](./phase_c9_work_queue.md).
 
 ---
 
