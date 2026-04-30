@@ -1,4 +1,5 @@
 .section {
+  min-width: 0;
   display: grid;
   gap: var(--space-4);
   margin-bottom: var(--space-4);
@@ -128,6 +129,7 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--bg-card);
+  overflow-wrap: anywhere;
 }
 
 .topLeaderboardRow {
@@ -225,6 +227,7 @@
 }
 
 .detailSection {
+  min-width: 0;
   display: grid;
   gap: var(--space-3);
 }

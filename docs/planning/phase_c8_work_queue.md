@@ -178,7 +178,7 @@ to expose long-name, stat-grid, and identity-stacking issues.
 
 ---
 
-## 4. `[ ]` Polish comparison, head-to-head, and playoff matchup mobile layouts
+## 4. `[x]` Polish comparison, head-to-head, and playoff matchup mobile layouts
 
 **Why:** Multi-entity layouts have the highest risk of overlap, accidental
 winner implication, and cramped detail when stacked on small screens.
