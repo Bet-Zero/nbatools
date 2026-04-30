@@ -8,6 +8,8 @@ import styles from "./LeaderboardSection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
+  title?: string;
+  detailTitle?: string;
 }
 
 const SYSTEM_COLUMNS = new Set([
@@ -317,14 +319,18 @@ function IdentityMark({ identity }: { identity: RowIdentity }) {
   );
 }
 
-export default function LeaderboardSection({ sections }: Props) {
+export default function LeaderboardSection({
+  sections,
+  title = "Leaderboard",
+  detailTitle = "Full Leaderboard",
+}: Props) {
   const leaderboard = sections.leaderboard;
   if (!leaderboard || leaderboard.length === 0) return null;
 
   return (
     <div className={styles.section}>
       <SectionHeader
-        title="Leaderboard"
+        title={title}
         count={`${leaderboard.length} entries`}
       />
       <div className={styles.rankedList} aria-label="Ranked leaderboard">
@@ -379,7 +385,7 @@ export default function LeaderboardSection({ sections }: Props) {
         })}
       </div>
       <div className={styles.detailSection}>
-        <SectionHeader title="Full Leaderboard" />
+        <SectionHeader title={detailTitle} />
         <DataTable rows={leaderboard} highlight />
       </div>
     </div>

@@ -968,6 +968,37 @@ describe("ResultSections", () => {
     expect(within(ranked).getByText("Playoff games only")).toBeInTheDocument();
   });
 
+  it("routes occurrence leaderboards to the occurrence owner", () => {
+    const data = makeResponse({
+      route: "player_occurrence_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: { route: "player_occurrence_leaders" },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Nikola Jokic",
+              games_played: 72,
+              "games_pts_30+_reb_10+": 12,
+              season: "2024-25",
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Occurrence Leaderboard")).toBeInTheDocument();
+    expect(screen.getByText("Occurrence Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Full Leaderboard")).not.toBeInTheDocument();
+    expect(screen.getAllByText("12").length).toBeGreaterThan(0);
+    expect(screen.getByText("Games PTS 30+ REB 10+")).toBeInTheDocument();
+  });
+
   it("surfaces game and team context as secondary leaderboard metadata", () => {
     const data = makeResponse({
       result: {
@@ -1279,7 +1310,7 @@ describe("ResultSections", () => {
     expect(screen.getByText("Boston Celtics")).toBeInTheDocument();
   });
 
-  it("keeps count results with finder detail on the fallback renderer", () => {
+  it("routes count results to the dedicated count renderer with finder detail", () => {
     const data = makeResponse({
       route: "player_game_finder",
       result: {
@@ -1300,7 +1331,7 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
     expect(screen.queryByText("Player Games")).not.toBeInTheDocument();
-    expect(screen.getByText("count")).toBeInTheDocument();
+    expect(screen.getAllByText("Count").length).toBeGreaterThan(0);
     expect(screen.getByText("Matching Games")).toBeInTheDocument();
     expect(screen.getAllByText("Stephen Curry").length).toBeGreaterThan(0);
   });
@@ -1715,10 +1746,11 @@ describe("ResultSections", () => {
 
   it("renders streak sections", () => {
     const data = makeResponse({
+      route: "player_streak_finder",
       result: {
         query_class: "streak",
         result_status: "ok",
-        metadata: {},
+        metadata: { route: "player_streak_finder" },
         notes: [],
         caveats: [],
         sections: {
@@ -1735,5 +1767,31 @@ describe("ResultSections", () => {
     render(<ResultSections data={data} />);
     expect(screen.getByText("Streaks")).toBeInTheDocument();
     expect(screen.getByText("1 found")).toBeInTheDocument();
+  });
+
+  it("keeps unknown streak-shaped routes on the generic fallback renderer", () => {
+    const data = makeResponse({
+      route: "unknown_streak",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: { route: "unknown_streak" },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              start_date: "2025-01-01",
+              end_date: "2025-01-10",
+              streak_length: 5,
+            },
+          ],
+        },
+      },
+    });
+    render(<ResultSections data={data} />);
+    expect(screen.getByText("Streaks")).toBeInTheDocument();
+    expect(screen.queryByText("1 found")).not.toBeInTheDocument();
+    expect(screen.getByText("2025-01-01")).toBeInTheDocument();
   });
 });
