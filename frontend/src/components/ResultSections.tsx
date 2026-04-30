@@ -6,6 +6,7 @@ import FinderSection from "./FinderSection";
 import LeaderboardSection from "./LeaderboardSection";
 import NoResultDisplay from "./NoResultDisplay";
 import PlayerComparisonSection from "./PlayerComparisonSection";
+import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
@@ -45,6 +46,13 @@ function isPlayerComparison(data: QueryResponse): boolean {
   );
 }
 
+function isPlayerGameFinder(data: QueryResponse): boolean {
+  return (
+    data.route === "player_game_finder" ||
+    data.result?.metadata?.route === "player_game_finder"
+  );
+}
+
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
   const queryClass = data.result?.query_class ?? "";
   const sections = data.result?.sections ?? {};
@@ -73,6 +81,9 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
     case "split_summary":
       return <SplitSummarySection sections={sections} />;
     case "finder":
+      if (isPlayerGameFinder(data)) {
+        return <PlayerGameFinderSection sections={sections} />;
+      }
       return <FinderSection sections={sections} />;
     case "leaderboard":
       return <LeaderboardSection sections={sections} />;

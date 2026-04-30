@@ -1,0 +1,11 @@
+.section {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.detailCard {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-3);
+}
