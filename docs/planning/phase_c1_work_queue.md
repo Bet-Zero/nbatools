@@ -195,7 +195,7 @@ data, not compute or refetch it.
 
 ---
 
-## 4. `[ ]` Render scoring sparkline and recent-game context
+## 4. `[x]` Render scoring sparkline and recent-game context
 
 **Why:** The sparkline turns a player summary from static aggregates into a
 quick read on form across the queried sample.
