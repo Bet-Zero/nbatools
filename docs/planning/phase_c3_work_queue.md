@@ -148,7 +148,7 @@ redesigning every `comparison` result shape.
 
 ---
 
-## 3. `[ ]` Build side-by-side player identity cards
+## 3. `[x]` Build side-by-side player identity cards
 
 **Why:** A player comparison should first read as "these two players" instead
 of as anonymous table rows.

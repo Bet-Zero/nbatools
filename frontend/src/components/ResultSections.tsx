@@ -62,7 +62,12 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       return <SummarySection sections={sections} />;
     case "comparison":
       if (isPlayerComparison(data)) {
-        return <PlayerComparisonSection sections={sections} />;
+        return (
+          <PlayerComparisonSection
+            sections={sections}
+            metadata={data.result?.metadata}
+          />
+        );
       }
       return <ComparisonSection sections={sections} />;
     case "split_summary":
