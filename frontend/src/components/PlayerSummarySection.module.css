@@ -16,11 +16,13 @@
 }
 
 .avatar {
+  flex: 0 0 auto;
   box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
 }
 
 .identityText {
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 .eyebrow {
@@ -37,7 +39,8 @@
   color: var(--text-primary);
   font-size: var(--font-h2);
   font-weight: var(--weight-bold);
-  line-height: var(--leading-tight);
+  line-height: 1.15;
+  hyphens: auto;
   overflow-wrap: anywhere;
 }
 
@@ -45,13 +48,16 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-3);
+  align-items: stretch;
 }
 
 .heroStat {
+  min-width: 0;
   min-height: calc(var(--space-16) + var(--space-4));
 }
 
 .supportingStats {
+  min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: var(--space-3);
@@ -81,6 +87,10 @@
   gap: var(--space-3);
 }
 
+.gameSeriesTitleBlock {
+  min-width: 0;
+}
+
 .gameSeriesTitle {
   margin: 0;
   color: var(--text-primary);
@@ -94,6 +104,7 @@
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: var(--font-small);
+  white-space: nowrap;
 }
 
 .sparklinePanel {
@@ -123,6 +134,7 @@
 }
 
 .sparklineSvg {
+  min-width: 0;
   width: 100%;
   height: var(--space-16);
   display: block;
@@ -160,6 +172,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
   gap: var(--space-2);
+  align-items: stretch;
 }
 
 .recentGame {
@@ -182,12 +195,17 @@
 
 .gameDate {
   min-width: 0;
+  max-width: 100%;
   color: var(--text-tertiary);
   font-family: var(--font-mono);
   font-size: var(--font-micro);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.opponentBadge {
+  max-width: 100%;
 }
 
 .gameStats {
@@ -216,6 +234,7 @@
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-uppercase);
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 760px) {

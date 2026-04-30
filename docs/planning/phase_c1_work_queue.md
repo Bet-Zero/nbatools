@@ -239,7 +239,7 @@ quick read on form across the queried sample.
 
 ---
 
-## 5. `[ ]` Polish player-summary responsive detail and docs
+## 5. `[x]` Polish player-summary responsive detail and docs
 
 **Why:** C1 should close with the player summary feeling complete on desktop
 and mobile, with docs reflecting shipped UI behavior.

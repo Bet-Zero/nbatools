@@ -263,6 +263,7 @@ function RecentGames({ rows }: { rows: SectionRow[] }) {
               </Badge>
             </div>
             <TeamBadge
+              className={styles.opponentBadge}
               abbreviation={team.teamAbbr ?? undefined}
               name={team.teamName ?? team.teamAbbr ?? "Opponent"}
               logoUrl={team.logoUrl}
@@ -350,7 +351,7 @@ export default function PlayerSummarySection({ sections, metadata }: Props) {
           {gameLog.length > 0 && (
             <Card className={styles.gameSeries} padding="md">
               <div className={styles.gameSeriesHeader}>
-                <div>
+                <div className={styles.gameSeriesTitleBlock}>
                   <div className={styles.eyebrow}>Game Log</div>
                   <h3 className={styles.gameSeriesTitle}>Recent Games</h3>
                 </div>

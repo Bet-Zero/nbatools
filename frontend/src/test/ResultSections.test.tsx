@@ -251,6 +251,65 @@ describe("ResultSections", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("covers long-name, missing-image, dense-stat, and short-sample fallback", () => {
+    const longName =
+      "A Very Long Player Name With Multiple Hyphenated-Surnames";
+    const data = makeResponse({
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: longName,
+              games: 1,
+              wins: 1,
+              losses: 0,
+              win_pct: 1,
+              pts_avg: 101.5,
+              reb_avg: 20.5,
+              ast_avg: 18.5,
+              minutes_avg: 48,
+              efg_pct_avg: 0.755,
+              ts_pct_avg: 0.82,
+              fg3_pct_avg: 0.5,
+              plus_minus_avg: 27,
+            },
+          ],
+          game_log: [
+            {
+              game_date: "2024-10-24",
+              game_id: "001",
+              wl: "W",
+              minutes: 48,
+              pts: 101.5,
+              reb: 20.5,
+              ast: 18.5,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByRole("heading", { name: longName })).toBeInTheDocument();
+    expect(
+      screen.getAllByLabelText(`${longName} avatar`).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByText("TS%")).toBeInTheDocument();
+    expect(screen.getByText("+/-")).toBeInTheDocument();
+    expect(screen.getByText("1 game")).toBeInTheDocument();
+    expect(screen.getByLabelText("Opponent (OPP)")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("img", { name: /points over/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+  });
+
   it("keeps team summaries on the generic summary renderer", () => {
     const data = makeResponse({
       route: "game_summary",
