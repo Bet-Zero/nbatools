@@ -18,6 +18,12 @@
   overflow-wrap: anywhere;
 }
 
+.helpLabel {
+  cursor: help;
+  text-decoration: underline dotted var(--border-strong);
+  text-underline-offset: 2px;
+}
+
 .value {
   min-width: 0;
   color: var(--text-primary);

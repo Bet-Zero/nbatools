@@ -244,7 +244,7 @@ accessible confirmation and graceful behavior when clipboard APIs fail.
 
 ---
 
-## 4. `[ ]` Add stat abbreviation help and formatting polish
+## 4. `[x]` Add stat abbreviation help and formatting polish
 
 **Why:** Designed result cards use compact stat labels. A friend should be able
 to understand abbreviations such as eFG%, TS%, USG%, AST%, REB%, TOV%, 3PM,
@@ -283,6 +283,20 @@ and +/- without cluttering cards.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Added shared `Stat` abbreviation help for common compact labels including
+  PTS, REB, AST, eFG%, TS%, USG%, 3PM, and +/-; labels now expose title text
+  and accessible names without changing visible card copy.
+- Added an explicit `help` prop for owner components that need local help text
+  beyond the shared abbreviation map.
+- Audited the P4 number-formatting inventory and kept formatting behavior
+  presentation-only; existing `formatValue` handling for percentages, locale
+  integers, and small decimals already covers the surfaced consistency cases,
+  so no engine/result-contract changes were needed.
+- Local verification: `cd frontend && npm test -- LayoutPrimitives`, `cd
+  frontend && npm test`, and `cd frontend && npm run build`.
 
 **Reference docs/files to consult:**
 
