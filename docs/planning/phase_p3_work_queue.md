@@ -245,7 +245,7 @@ small screens.
 
 ---
 
-## 4. `[ ]` Verify table-heavy result renderers on mobile
+## 4. `[x]` Verify table-heavy result renderers on mobile
 
 **Why:** Tables are the highest overflow risk in the app and need explicit
 containment checks after the result layout work.
@@ -290,6 +290,25 @@ containment checks after the result layout work.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Tightened the shared table primitive so wide content sizes to the internal
+  scroll region, added a framed scroll container, and applied explicit
+  max-width containment to table-heavy owner sections.
+- Local verification: `cd frontend && npm test`, `cd frontend && npm run
+  build`.
+- Browser evidence: FastAPI-served build at `390 x 844` for `top 10 scorers
+  2024-25`, `Curry 5+ threes`, structured `player_occurrence_leaders`
+  (`pts >= 40`, `2024-25`), `how many Jokic games with 30+ points and 10+
+  rebounds since 2021`, and `Lakers playoff history`. Each run reported
+  `docScrollWidth: 390`, `bodyScrollWidth: 390`, and wide tables scrolling
+  inside their own wrappers. Screenshots written to
+  `/tmp/nbatools-p3-table-leaderboard-390.png`,
+  `/tmp/nbatools-p3-table-player-finder-390.png`,
+  `/tmp/nbatools-p3-table-occurrence-390.png`,
+  `/tmp/nbatools-p3-table-count-390.png`, and
+  `/tmp/nbatools-p3-table-playoff-390.png`.
 
 **Reference docs/files to consult:**
 

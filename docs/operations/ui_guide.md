@@ -103,7 +103,9 @@ The UI is designed to remain usable from phone widths through desktop:
 - Redesigned card grids generally collapse to one column around 720-760px, with
   identity rows and ranked-row metric blocks stacking on phone widths.
 - Full detail tables remain visible for every result family. Wide tables scroll
-  horizontally inside their own table wrapper instead of widening the app shell.
+  horizontally inside their own framed table wrapper instead of widening the
+  app shell; the table primitive sizes wide content to the internal scroll
+  region and keeps the page width fixed on phone viewports.
 - Raw JSON and structured-query kwargs stay inside their panels. Long JSON keys
   and values can wrap, while the panel itself also supports internal scrolling.
 

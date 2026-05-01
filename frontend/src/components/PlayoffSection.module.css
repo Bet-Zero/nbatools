@@ -1,5 +1,6 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-4);
   margin-bottom: var(--space-4);
@@ -14,6 +15,7 @@
 
 .heroHeader {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) minmax(0, auto);
   align-items: center;
@@ -22,6 +24,7 @@
 
 .titleBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .eyebrow {
@@ -71,10 +74,12 @@
 
 .statsPanel {
   min-width: 0;
+  max-width: 100%;
 }
 
 .participantGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
   gap: var(--space-3);
@@ -82,6 +87,7 @@
 
 .participantCard {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -92,6 +98,7 @@
 
 .participantIdentity {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -113,12 +120,14 @@
 
 .leaderboardList {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-2);
 }
 
 .leaderboardRow {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns:
     var(--space-12) minmax(0, 1fr) minmax(var(--space-14), auto)
@@ -154,6 +163,7 @@
 
 .leaderboardEntity {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -161,6 +171,7 @@
 
 .entityText {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-1);
 }
@@ -176,6 +187,7 @@
 
 .leaderboardContext {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
@@ -228,6 +240,7 @@
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
