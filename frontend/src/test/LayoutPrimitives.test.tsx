@@ -108,11 +108,25 @@ describe("layout primitives", () => {
     );
 
     expect(screen.getByText("fresh")).toBeInTheDocument();
-    expect(screen.getByText("PTS")).toBeInTheDocument();
+    expect(screen.getByText("PTS")).toHaveAttribute("title", "Points");
+    expect(screen.getByText("PTS")).toHaveAccessibleName("PTS: Points");
     expect(screen.getByText("26.4")).toBeInTheDocument();
     expect(screen.getByText("per game")).toBeInTheDocument();
-    expect(screen.getByText("REB")).toBeInTheDocument();
+    expect(screen.getByText("REB")).toHaveAttribute("title", "Rebounds");
     expect(screen.getByText("12.1")).toBeInTheDocument();
+  });
+
+  it("allows explicit stat help without changing visible labels", () => {
+    render(<Stat label="CUSTOM" value="12" help="Custom supplied metric" />);
+
+    expect(screen.getByText("CUSTOM")).toHaveAccessibleName(
+      "CUSTOM: Custom supplied metric",
+    );
+    expect(screen.getByText("CUSTOM")).toHaveAttribute(
+      "title",
+      "Custom supplied metric",
+    );
+    expect(screen.getByText("12")).toBeInTheDocument();
   });
 
   it("renders skeleton shapes, text, and blocks", () => {
