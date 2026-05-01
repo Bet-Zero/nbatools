@@ -254,13 +254,17 @@ describe("first-run starter queries", () => {
       }),
     );
 
-    render(<App />);
+    const { container } = render(<App />);
 
     fireEvent.change(screen.getByLabelText("Search NBA performance"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
 
+    expect(container.querySelector("[data-app-state='loading']")).not.toBeNull();
+    expect(
+      container.querySelector("[data-state-surface='loading']"),
+    ).not.toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent(
       "Searching NBA data",
     );
@@ -270,6 +274,10 @@ describe("first-run starter queries", () => {
     await waitFor(() =>
       expect(screen.getByText("Query output")).toBeInTheDocument(),
     );
+    expect(container.querySelector("[data-app-state='result']")).not.toBeNull();
+    expect(
+      container.querySelector("[data-state-surface='result']"),
+    ).not.toBeNull();
   });
 
   it("shows the shared loading preview for pending structured queries", async () => {

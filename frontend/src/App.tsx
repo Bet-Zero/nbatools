@@ -373,6 +373,15 @@ export default function App() {
       ? "Retry structured query"
       : "Retry query";
   const showEmpty = !loading && !hasResult && !hasError;
+  const appState = loading
+    ? "loading"
+    : hasError
+      ? "error"
+      : showEmpty
+        ? "empty"
+        : hasResult
+          ? "result"
+          : "idle";
   const teamTheme = result
     ? resolveScopedTeamTheme(result.result?.metadata)
     : null;
@@ -482,78 +491,96 @@ export default function App() {
       secondary={secondaryPanels}
       dialog={dialog}
     >
-      {loading && <Loading />}
-      {error && (
-        <ErrorBox
-          message={error}
-          onRetry={lastRetryableRequest ? handleRetryError : undefined}
-          retryLabel={retryLabel}
-          apiOnline={apiOnline}
-        />
-      )}
-      {showEmpty && <EmptyState />}
-
-      {result && (
-        <section
-          className={[
-            styles.resultArea,
-            teamTheme ? styles.teamThemedResultArea : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          data-team-theme={teamTheme?.team.teamAbbr ?? undefined}
-          style={teamThemeStyle}
-        >
-          <Card
-            className={[
-              styles.resultActionsPanel,
-              teamThemedSurfaceClass,
-            ].join(" ")}
-            depth="elevated"
-            padding="md"
-          >
-            <SectionHeader
-              eyebrow="Result"
-              title="Query output"
-              actions={
-                <div className={styles.resultActions}>
-                  <CopyButton text={shareUrl} label="Copy Link" variant="share" />
-                  <CopyButton text={result.query} label="Copy Query" />
-                  <CopyButton
-                    text={JSON.stringify(result, null, 2)}
-                    label="Copy JSON"
-                  />
-                  <Button
-                    type="button"
-                    className={styles.saveQueryButton}
-                    onClick={() => setShowSaveDialog(true)}
-                    size="sm"
-                    variant="secondary"
-                  >
-                    Save Query
-                  </Button>
-                </div>
-              }
-            />
-          </Card>
-
-          <ResultEnvelope
-            data={result}
-            onAlternateSelect={handleSubmit}
-            className={teamThemedSurfaceClass}
-          />
-
-          <div
-            className={[styles.resultSections, teamThemedSurfaceClass].join(
-              " ",
-            )}
-          >
-            <ResultSections data={result} />
+      <div className={styles.stateStack} data-app-state={appState}>
+        {loading && (
+          <div className={styles.stateSurface} data-state-surface="loading">
+            <Loading />
           </div>
+        )}
+        {error && (
+          <div className={styles.stateSurface} data-state-surface="error">
+            <ErrorBox
+              message={error}
+              onRetry={lastRetryableRequest ? handleRetryError : undefined}
+              retryLabel={retryLabel}
+              apiOnline={apiOnline}
+            />
+          </div>
+        )}
+        {showEmpty && (
+          <div className={styles.stateSurface} data-state-surface="empty">
+            <EmptyState />
+          </div>
+        )}
 
-          <RawJsonToggle data={result} />
-        </section>
-      )}
+        {result && (
+          <section
+            className={[
+              styles.stateSurface,
+              styles.resultArea,
+              teamTheme ? styles.teamThemedResultArea : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            data-state-surface="result"
+            data-team-theme={teamTheme?.team.teamAbbr ?? undefined}
+            style={teamThemeStyle}
+          >
+            <Card
+              className={[
+                styles.resultActionsPanel,
+                teamThemedSurfaceClass,
+              ].join(" ")}
+              depth="elevated"
+              padding="md"
+            >
+              <SectionHeader
+                eyebrow="Result"
+                title="Query output"
+                actions={
+                  <div className={styles.resultActions}>
+                    <CopyButton
+                      text={shareUrl}
+                      label="Copy Link"
+                      variant="share"
+                    />
+                    <CopyButton text={result.query} label="Copy Query" />
+                    <CopyButton
+                      text={JSON.stringify(result, null, 2)}
+                      label="Copy JSON"
+                    />
+                    <Button
+                      type="button"
+                      className={styles.saveQueryButton}
+                      onClick={() => setShowSaveDialog(true)}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      Save Query
+                    </Button>
+                  </div>
+                }
+              />
+            </Card>
+
+            <ResultEnvelope
+              data={result}
+              onAlternateSelect={handleSubmit}
+              className={teamThemedSurfaceClass}
+            />
+
+            <div
+              className={[styles.resultSections, teamThemedSurfaceClass].join(
+                " ",
+              )}
+            >
+              <ResultSections data={result} />
+            </div>
+
+            <RawJsonToggle data={result} />
+          </section>
+        )}
+      </div>
     </AppShell>
   );
 }

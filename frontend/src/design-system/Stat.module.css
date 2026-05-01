@@ -35,6 +35,11 @@
   overflow-wrap: anywhere;
 }
 
+.motionValue {
+  animation: statValueSettle var(--transition-default) both;
+  will-change: opacity, transform;
+}
+
 .md .value {
   font-size: var(--font-stat-md);
 }
@@ -72,4 +77,23 @@
 
 .loss .value {
   color: var(--loss);
+}
+
+@keyframes statValueSettle {
+  from {
+    opacity: 0.01;
+    transform: translateY(var(--space-1));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motionValue {
+    animation: none;
+    will-change: auto;
+  }
 }

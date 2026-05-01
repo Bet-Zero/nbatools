@@ -57,6 +57,7 @@ module replacement during frontend development.
   freshness remains in the result envelope after a query returns.
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
 - **Stat help** — compact stat labels such as PTS, REB, AST, eFG%, TS%, USG%, 3PM, and +/- expose nonintrusive title/accessibility help through the shared Stat primitive.
+- **Motion polish** — empty, loading, error, and result surfaces use restrained token-driven entry transitions; hero stat values can opt into reduced-motion-aware settling motion through the shared Stat primitive.
 - **Leaderboards** — `leaderboard` query-class responses use ranked rows with player/team identity marks, a prominent metric value, wrapped context/qualifier metadata, restrained #1 emphasis, and a full detail table below.
 - **Player comparisons** — `player_compare` responses use side-by-side player cards, metric comparison cards, and full summary/comparison detail tables while keeping mixed-player styling neutral.
 - **Head-to-head results** — matchup routes promote both participants, supplied records/samples, season/date context, and neutral identity accents before the supporting detail tables.

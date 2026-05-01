@@ -155,6 +155,7 @@ function recordStat(row: SectionRow): StatProps | null {
       context,
       semantic: wins > losses ? "win" : wins < losses ? "loss" : "neutral",
       size: "hero",
+      animateValue: true,
     };
   }
 
@@ -165,6 +166,7 @@ function recordStat(row: SectionRow): StatProps | null {
       context: games === 1 ? "game" : "games",
       semantic: "accent",
       size: "hero",
+      animateValue: true,
     };
   }
 

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
 import ResultEnvelope from "../components/ResultEnvelope";
 import {
@@ -15,6 +15,34 @@ import {
   Avatar,
   TeamBadge,
 } from "../design-system";
+
+const originalMatchMedia = window.matchMedia;
+
+function mockReducedMotion(matches: boolean) {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches:
+        query === "(prefers-reduced-motion: reduce)" ? matches : false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
+
+afterEach(() => {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    writable: true,
+    value: originalMatchMedia,
+  });
+});
 
 function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
   return {
@@ -127,6 +155,22 @@ describe("layout primitives", () => {
       "Custom supplied metric",
     );
     expect(screen.getByText("12")).toBeInTheDocument();
+  });
+
+  it("applies opt-in stat value motion when motion is allowed", () => {
+    mockReducedMotion(false);
+
+    render(<Stat label="PTS" value="26.4" size="hero" animateValue />);
+
+    expect(screen.getByText("26.4")).toHaveAttribute("data-motion", "value");
+  });
+
+  it("keeps opt-in stat value motion still under reduced motion", () => {
+    mockReducedMotion(true);
+
+    render(<Stat label="PTS" value="26.4" size="hero" animateValue />);
+
+    expect(screen.getByText("26.4")).toHaveAttribute("data-motion", "reduced");
   });
 
   it("renders skeleton shapes, text, and blocks", () => {

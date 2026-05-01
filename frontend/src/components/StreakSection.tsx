@@ -136,6 +136,7 @@ function streakLengthStat(row: SectionRow): StatProps {
     context: value !== null ? (value === 1 ? "game" : "games") : undefined,
     semantic: "accent",
     size: "hero",
+    animateValue: true,
   };
 }
 

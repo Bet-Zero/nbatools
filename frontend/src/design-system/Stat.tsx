@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import styles from "./Stat.module.css";
 
 export type StatSemantic =
@@ -17,6 +17,7 @@ export interface StatProps {
   value: ReactNode;
   context?: ReactNode;
   help?: string;
+  animateValue?: boolean;
   semantic?: StatSemantic;
   size?: StatSize;
   className?: string;
@@ -51,17 +52,48 @@ function normalizeStatLabel(label: ReactNode): string | null {
   return typeof label === "string" ? label.trim().toUpperCase() : null;
 }
 
+function readReducedMotion(enabled: boolean): boolean {
+  if (!enabled || typeof window === "undefined" || !window.matchMedia) {
+    return false;
+  }
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function useReducedMotion(enabled: boolean): boolean {
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    readReducedMotion(enabled),
+  );
+
+  useEffect(() => {
+    if (!enabled || typeof window === "undefined" || !window.matchMedia) {
+      setReducedMotion(false);
+      return;
+    }
+
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, [enabled]);
+
+  return reducedMotion;
+}
+
 export function Stat({
   label,
   value,
   context,
   help,
+  animateValue = false,
   semantic = "neutral",
   size = "md",
   className,
 }: StatProps) {
   const resolvedHelp = help ?? STAT_HELP[normalizeStatLabel(label) ?? ""];
   const labelText = typeof label === "string" ? label : null;
+  const reducedMotion = useReducedMotion(animateValue);
+  const shouldAnimateValue = animateValue && !reducedMotion;
 
   return (
     <div
@@ -81,7 +113,17 @@ export function Stat({
       >
         {label}
       </span>
-      <span className={styles.value}>{value}</span>
+      <span
+        className={joinClassNames(
+          styles.value,
+          shouldAnimateValue && styles.motionValue,
+        )}
+        data-motion={
+          animateValue ? (shouldAnimateValue ? "value" : "reduced") : undefined
+        }
+      >
+        {value}
+      </span>
       {context && <span className={styles.context}>{context}</span>}
     </div>
   );
