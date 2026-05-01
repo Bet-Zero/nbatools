@@ -1,15 +1,103 @@
 .errorBox {
   min-width: 0;
-  background: color-mix(in srgb, var(--danger) 10%, transparent);
-  border: 1px solid var(--danger);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-4);
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+}
+
+.errorBox::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--space-1);
+  background: var(--warning);
+}
+
+.offline {
+  border-color: color-mix(in srgb, var(--danger) 32%, transparent);
+}
+
+.offline::before {
+  background: var(--danger);
+}
+
+.header {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.titleGroup {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.eyebrow,
+.detailsTitle {
+  min-width: 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-label);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
 .title {
-  color: var(--danger);
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h3);
   font-weight: var(--weight-semibold);
-  margin-bottom: var(--space-1);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.message {
+  min-width: 0;
+  max-width: 680px;
+  font-size: var(--font-body-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.details {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.detailText {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: var(--font-small);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 560px) {
+  .header {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .details {
+    padding: var(--space-3);
+  }
 }

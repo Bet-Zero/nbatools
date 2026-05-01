@@ -30,11 +30,24 @@ import useUrlState, { type UrlParams } from "./hooks/useUrlState";
 import { resolveScopedTeamTheme } from "./lib/identity";
 import styles from "./App.module.css";
 
+type RetryRequest =
+  | { kind: "natural"; query: string }
+  | { kind: "structured"; route: string; kwargs: string };
+
+function safeErrorMessage(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err ?? "");
+  const firstLine = raw.split(/\r?\n/)[0]?.trim();
+  if (!firstLine) return "Request failed.";
+  return firstLine.length > 220 ? `${firstLine.slice(0, 217)}...` : firstLine;
+}
+
 export default function App() {
   const [version, setVersion] = useState<string | null>(null);
   const [apiOnline, setApiOnline] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastRetryableRequest, setLastRetryableRequest] =
+    useState<RetryRequest | null>(null);
   const [result, setResult] = useState<QueryResponse | null>(null);
   const [queryText, setQueryText] = useState("");
 
@@ -48,6 +61,7 @@ export default function App() {
 
   const runQuery = useCallback(
     async (query: string) => {
+      setLastRetryableRequest({ kind: "natural", query });
       setLoading(true);
       setError(null);
       setResult(null);
@@ -56,7 +70,7 @@ export default function App() {
         setResult(data);
         addEntry(query, data);
       } catch (err) {
-        setError((err as Error).message);
+        setError(safeErrorMessage(err));
       } finally {
         setLoading(false);
       }
@@ -70,9 +84,15 @@ export default function App() {
       try {
         parsed = JSON.parse(kwargsStr || "{}");
       } catch {
+        setLastRetryableRequest(null);
         setError("Invalid kwargs in URL");
         return;
       }
+      setLastRetryableRequest({
+        kind: "structured",
+        route,
+        kwargs: kwargsStr || "{}",
+      });
       setLoading(true);
       setError(null);
       setResult(null);
@@ -81,7 +101,7 @@ export default function App() {
         setResult(data);
         addEntry(data.query ?? route, data);
       } catch (err) {
-        setError((err as Error).message);
+        setError(safeErrorMessage(err));
       } finally {
         setLoading(false);
       }
@@ -176,13 +196,30 @@ export default function App() {
     addEntry(data.query ?? "(structured query)", data);
   }
 
-  function handleStructuredError(msg: string) {
+  function handleStructuredError(
+    msg: string,
+    options?: { retryable?: boolean },
+  ) {
     setResult(null);
-    setError(msg);
+    if (options?.retryable === false) {
+      setLastRetryableRequest(null);
+    }
+    setError(safeErrorMessage(msg));
   }
 
   function handleStructuredQueryStart(route: string, kwargs: string) {
+    setLastRetryableRequest({ kind: "structured", route, kwargs });
     pushStructured(route, kwargs);
+  }
+
+  function handleRetryError() {
+    if (!lastRetryableRequest) return;
+    if (lastRetryableRequest.kind === "natural") {
+      setQueryText(lastRetryableRequest.query);
+      runQuery(lastRetryableRequest.query);
+      return;
+    }
+    runStructuredQuery(lastRetryableRequest.route, lastRetryableRequest.kwargs);
   }
 
   /* ---- saved queries ---- */
@@ -209,6 +246,10 @@ export default function App() {
 
   const hasResult = result !== null;
   const hasError = error !== null;
+  const retryLabel =
+    lastRetryableRequest?.kind === "structured"
+      ? "Retry structured query"
+      : "Retry query";
   const showEmpty = !loading && !hasResult && !hasError;
   const teamTheme = result
     ? resolveScopedTeamTheme(result.result?.metadata)
@@ -318,7 +359,14 @@ export default function App() {
       dialog={dialog}
     >
       {loading && <Loading />}
-      {error && <ErrorBox message={error} />}
+      {error && (
+        <ErrorBox
+          message={error}
+          onRetry={lastRetryableRequest ? handleRetryError : undefined}
+          retryLabel={retryLabel}
+          apiOnline={apiOnline}
+        />
+      )}
       {showEmpty && <EmptyState />}
 
       {result && (

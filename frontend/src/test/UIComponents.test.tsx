@@ -176,6 +176,26 @@ describe("ErrorBox", () => {
   it("renders error message", () => {
     render(<ErrorBox message="Connection refused" />);
     expect(screen.getByText("Connection refused")).toBeInTheDocument();
-    expect(screen.getByText("Error")).toBeInTheDocument();
+    expect(screen.getByText("Request failed")).toBeInTheDocument();
+    expect(screen.getByLabelText("Failure details")).toBeInTheDocument();
+  });
+
+  it("renders retry action when provided", () => {
+    const onRetry = vi.fn();
+    render(
+      <ErrorBox
+        message="Network request failed"
+        onRetry={onRetry}
+        retryLabel="Retry query"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Retry query" }));
+    expect(onRetry).toHaveBeenCalledOnce();
+  });
+
+  it("renders API offline messaging distinctly", () => {
+    render(<ErrorBox message="Failed to fetch" apiOnline={false} />);
+    expect(screen.getByText("API offline")).toBeInTheDocument();
+    expect(screen.getByText("offline")).toBeInTheDocument();
   });
 });
