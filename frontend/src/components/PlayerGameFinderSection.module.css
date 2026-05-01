@@ -1,5 +1,6 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
@@ -7,6 +8,7 @@
 
 .gameGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
@@ -14,6 +16,7 @@
 
 .gameCard {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   overflow-wrap: anywhere;
@@ -21,6 +24,7 @@
 
 .cardHeader {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -29,6 +33,7 @@
 
 .identityRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -40,6 +45,7 @@
 
 .identityText {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-1);
 }
@@ -74,6 +80,7 @@
 
 .contextRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -89,6 +96,7 @@
 
 .secondaryContext {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
@@ -113,6 +121,7 @@
 
 .detailCard {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }

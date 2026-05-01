@@ -1,14 +1,18 @@
 .tableScroll {
   box-sizing: border-box;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   overflow-x: auto;
   overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
 }
 
 .table {
-  width: 100%;
+  width: max-content;
   min-width: 100%;
   border-collapse: collapse;
   overflow: hidden;
@@ -72,10 +76,20 @@
 }
 
 .empty {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   padding: var(--space-4);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: var(--font-small);
+}
+
+@media (max-width: 520px) {
+  .table th,
+  .table td {
+    padding: var(--space-2);
+  }
 }

@@ -1,10 +1,12 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
 .rankedList {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-2);
   margin-bottom: var(--space-4);
@@ -12,6 +14,7 @@
 
 .rankedRow {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns:
     var(--space-12) minmax(0, 1fr)
@@ -46,10 +49,12 @@
 
 .entityBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .entityContent {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -61,6 +66,7 @@
 
 .entityText {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-1);
 }
@@ -130,6 +136,7 @@
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }

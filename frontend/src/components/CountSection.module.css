@@ -1,5 +1,6 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
@@ -13,6 +14,7 @@
 
 .heroHeader {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -21,6 +23,7 @@
 
 .identityRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -37,6 +40,7 @@
 
 .titleBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .eyebrow {
@@ -78,6 +82,7 @@
 
 .answerGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(150px, 0.45fr) minmax(0, 1.55fr);
   gap: var(--space-3);
@@ -112,6 +117,7 @@
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
