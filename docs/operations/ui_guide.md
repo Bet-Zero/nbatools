@@ -88,6 +88,10 @@ The UI is designed to remain usable from phone widths through desktop:
   stacks into one column below 900px. Outer padding tightens below 640px.
 - Result actions and section-header actions wrap instead of overlapping; the
   main result action buttons become full-width around 520px.
+- Result chrome, saved-query controls, query history, save dialogs, raw JSON,
+  and dev tools are explicitly contained on phone widths. Long saved-query
+  labels, tags, route badges, JSON keys/values, and structured kwargs wrap or
+  scroll inside their own panels instead of widening the page.
 - First-run freshness banner content wraps inside the top status region and
   keeps stale, unknown, and failed states visible before the first query.
 - Phase P1 verified the first-run path against 360x740, 390x844, 768x1024, and

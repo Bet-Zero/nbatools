@@ -1,9 +1,13 @@
 .rawToggle {
+  box-sizing: border-box;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
 }
 
 .rawJson {
   box-sizing: border-box;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   margin-top: var(--space-3);
