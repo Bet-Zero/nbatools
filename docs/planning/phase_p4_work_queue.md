@@ -48,7 +48,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory felt-polish gaps and fixture set
+## 1. `[x]` Inventory felt-polish gaps and fixture set
 
 **Why:** P4 touches many small interactions. Start by naming the current state,
 target behavior, owner files, fixtures, and test/screenshot strategy before
@@ -84,6 +84,18 @@ runtime changes.
 **Tests to run:**
 
 - None (docs/inventory only)
+
+**Completion notes:**
+
+- Added
+  [`phase_p4_felt_polish_inventory.md`](./phase_p4_felt_polish_inventory.md)
+  covering current behavior, target P4 behavior, owner files, risks, fixture
+  queries, and verification strategy for keyboard shortcuts, copy/share
+  feedback, stat help, formatting, transitions/value motion, and history/saved
+  ergonomics.
+- Identified already-complete P1/P2/P3 behavior so P4 runtime work can focus on
+  remaining interaction polish instead of duplicating shipped first-run,
+  non-result, and mobile containment work.
 
 **Reference docs/files to consult:**
 
