@@ -408,7 +408,7 @@ dense stat grids, and wide action/detail regions.
 
 ---
 
-## 6. `[ ]` Phase P3 retrospective and P4 handoff
+## 6. `[x]` Phase P3 retrospective and P4 handoff
 
 **Why:** Self-propagating final task. It closes the mobile-verification queue
 and creates the executable felt-polish queue.
@@ -446,6 +446,16 @@ and creates the executable felt-polish queue.
 
 - None (docs/handoff only)
 
+**Completion notes:**
+
+- Added the Phase P3 retrospective below.
+- Drafted [`phase_p4_work_queue.md`](./phase_p4_work_queue.md) with concrete
+  felt-polish items for inventory, keyboard shortcuts, copy/share feedback, stat
+  help, result transitions/value motion, history/saved-query ergonomics, and P5
+  handoff.
+- Updated Track A Part 3 and master-plan active-continuation docs to point to
+  Phase P4.
+
 **Reference docs to consult:**
 
 - `docs/planning/first_run_and_polish_plan.md`
@@ -456,6 +466,49 @@ and creates the executable felt-polish queue.
 
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Phase P3 is complete. The draft of
-`phase_p4_work_queue.md` from item 6 is the handoff artifact for Track A Part 3
-Phase P4.
+All items above are checked `[x]`; Phase P3 is complete. The draft of
+[`phase_p4_work_queue.md`](./phase_p4_work_queue.md) from item 6 is the handoff
+artifact for Track A Part 3 Phase P4.
+
+---
+
+## Phase P3 retrospective
+
+### What went well
+
+- The inventory-first pass kept P3 scoped. Each runtime item had named owner
+  components, fixture queries, likely overflow risks, and screenshot evidence
+  before changes started.
+- Most mobile defects were fixable with narrow CSS containment: `min-width: 0`,
+  `max-width: 100%`, wrapping action rows, and table scroll containment. That
+  preserved desktop layout and avoided new React state or business logic.
+- FastAPI-served browser checks at `390 x 844` caught the difference between
+  page-level overflow and acceptable internal table overflow. The repeated
+  `docScrollWidth` / `bodyScrollWidth` evidence made the mobile claim concrete.
+- The result chrome, secondary panels, table-heavy renderers, and card-heavy
+  renderers now share the same mobile contract: the page width stays fixed, and
+  dense detail tables scroll in their own framed wrappers.
+
+### What was harder
+
+- Some card-heavy routes still expose very wide detail tables below otherwise
+  clean mobile cards. That is expected, but verification had to distinguish
+  internal table overflow from shell overflow.
+- The frontend has many owner-specific CSS modules. The safest fixes were
+  deliberately repetitive because broad abstraction would have added risk late
+  in Part 3.
+- Browser evidence required real API-backed pages because static screenshots can
+  stop at loading states and miss result-specific overflow.
+
+### Residuals and next action
+
+- P3 closes explicit mobile verification, but Track A Part 3 is not done.
+  Phase P4 remains open for felt polish: keyboard shortcuts, copy/share
+  feedback, stat abbreviation help, transitions/value motion, and final
+  saved/history ergonomics.
+- Track B deployment remains separate and still controls the real URL, custom
+  domain, and production data-sync requirements in the master plan.
+- Immediate continuation: re-read
+  [`product_polish_master_plan.md`](./product_polish_master_plan.md), follow its
+  Active Continuation to [`phase_p4_work_queue.md`](./phase_p4_work_queue.md),
+  and start with the first unchecked P4 item.
