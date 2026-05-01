@@ -1,4 +1,5 @@
 .shell {
+  width: 100%;
   min-height: 100vh;
   overflow-x: clip;
   background:
@@ -8,6 +9,7 @@
 
 .container {
   width: min(100%, calc(var(--space-16) * 18));
+  max-width: 100%;
   min-width: 0;
   margin: 0 auto;
   padding: var(--space-8) var(--space-4) var(--space-12);
@@ -96,5 +98,17 @@
   .queryRegion {
     padding: var(--space-4);
     border-radius: var(--radius-lg);
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding-right: var(--space-2);
+    padding-left: var(--space-2);
+  }
+
+  .header,
+  .queryRegion {
+    padding: var(--space-3);
   }
 }

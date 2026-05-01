@@ -64,6 +64,7 @@
 
 .statusStack {
   min-width: 0;
+  max-width: 100%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -75,15 +76,20 @@
   border-radius: var(--radius-lg);
 }
 
+.statusStack > * {
+  min-width: 0;
+}
+
 .statusIndicator {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
-  flex-shrink: 0;
+  flex: 1 1 auto;
   font-size: var(--font-small);
   font-weight: var(--weight-medium);
   color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .statusDotIndicator {
@@ -185,6 +191,10 @@
     width: 100%;
     align-items: stretch;
     justify-content: space-between;
+  }
+
+  .statusIndicator {
+    flex-wrap: wrap;
   }
 
   .resultActions {

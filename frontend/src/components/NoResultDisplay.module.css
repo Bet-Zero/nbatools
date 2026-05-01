@@ -1,4 +1,5 @@
 .display {
+  width: 100%;
   min-width: 0;
   position: relative;
   overflow: hidden;
@@ -84,6 +85,7 @@
 
 .details,
 .suggestions {
+  max-width: 100%;
   min-width: 0;
   display: grid;
   gap: var(--space-3);
