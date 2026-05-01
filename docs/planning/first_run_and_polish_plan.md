@@ -98,12 +98,16 @@ queue is [`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
 
 Goal: every state that isn't "showing a result" gets designed.
 
-Status: active. The active queue is
-[`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
+Status: complete. P2 shipped designed loading, no-result, unsupported,
+ambiguous, empty-section, and network/API failure states with retry paths. The
+queue is [`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
 
 ### Phase P3 — Mobile verification and fixes
 
 Goal: explicit mobile pass on every existing component, with fixes.
+
+Status: active. The active queue is
+[`phase_p3_work_queue.md`](./phase_p3_work_queue.md).
 
 ### Phase P4 — Felt polish and small details
 
@@ -155,7 +159,9 @@ This is "feels finished":
 Phase P1's queue was drafted by Track A Part 2's final phase retrospective:
 [`phase_p1_work_queue.md`](./phase_p1_work_queue.md). Phase P2's queue was
 drafted by Phase P1's retrospective:
-[`phase_p2_work_queue.md`](./phase_p2_work_queue.md). Each subsequent phase's
+[`phase_p2_work_queue.md`](./phase_p2_work_queue.md). Phase P3's queue was
+drafted by Phase P2's retrospective:
+[`phase_p3_work_queue.md`](./phase_p3_work_queue.md). Each subsequent phase's
 queue is drafted by the prior phase's retrospective.
 
 When Phase P5 declares the master plan done, Track A is closed. If Track B
