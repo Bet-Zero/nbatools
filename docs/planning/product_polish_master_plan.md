@@ -29,7 +29,7 @@ Out of scope: anything that only matters for a multi-tenant paid product
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
 the product polish work. Track A Parts 1 and 2 are complete; Track A Part 3 is
-in progress and the active continuation is Phase P4.
+in progress and the active continuation is Phase P5.
 
 ---
 
@@ -118,8 +118,8 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 3, Phase P4.** Specifically,
-[`phase_p4_work_queue.md`](./phase_p4_work_queue.md).
+**Active continuation: Track A, Part 3, Phase P5.** Specifically,
+[`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
 
 Track A is the priority track because it is fully agent-runnable without
 infrastructure dependencies. Track B can run in parallel whenever the
@@ -191,7 +191,7 @@ the full philosophy.
 | Mobile             | Phase C8 component pass complete; Track A Part 3 Phase P3 broader mobile verification complete | Functional and visually clean on every component           | Track A Parts 2-3 |
 | First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete | Landing, starter queries, freshness banner                 | Track A Part 3    |
 | Errors / loading   | Track A Part 3 Phase P2 complete    | Designed states with helpful copy and skeletons            | Track A Part 3    |
-| Felt polish        | Track A Part 3 Phase P4 active      | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
+| Felt polish        | Track A Part 3 Phase P4 complete; Phase P5 closure active | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
 
 ---
 

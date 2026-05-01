@@ -116,13 +116,18 @@ table-heavy results, and card-heavy renderers. The queue is
 Goal: the 50 small things — transitions, animations, copy buttons, share
 links, tooltips, keyboard shortcuts, query history UI.
 
-Status: active. The active queue is
+Status: complete. P4 shipped keyboard shortcuts and query-history recall,
+copy/share success and failure feedback, stat abbreviation help, restrained
+state/value motion, and saved/history ergonomics. The queue is
 [`phase_p4_work_queue.md`](./phase_p4_work_queue.md).
 
 ### Phase P5 — Retrospective and master-plan closure
 
 Goal: capture learnings. Update `product_polish_master_plan.md` to declare
 the polish plan complete (or name a continuation if any blockers remain).
+
+Status: active. The active queue is
+[`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
 
 ---
 
@@ -168,7 +173,9 @@ drafted by Phase P1's retrospective:
 drafted by Phase P2's retrospective:
 [`phase_p3_work_queue.md`](./phase_p3_work_queue.md). Phase P4's queue was
 drafted by Phase P3's retrospective:
-[`phase_p4_work_queue.md`](./phase_p4_work_queue.md). Each subsequent phase's
+[`phase_p4_work_queue.md`](./phase_p4_work_queue.md). Phase P5's queue was
+drafted by Phase P4's retrospective:
+[`phase_p5_work_queue.md`](./phase_p5_work_queue.md). Each subsequent phase's
 queue is drafted by the prior phase's retrospective.
 
 When Phase P5 declares the master plan done, Track A is closed. If Track B
