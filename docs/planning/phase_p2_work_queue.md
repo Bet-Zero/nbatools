@@ -182,7 +182,7 @@ engine found data it did not find.
 
 ---
 
-## 4. `[ ]` Add API/network failure recovery affordances
+## 4. `[x]` Add API/network failure recovery affordances
 
 **Why:** A friend should get a clear recovery path when a request fails instead
 of a dead-end error box.

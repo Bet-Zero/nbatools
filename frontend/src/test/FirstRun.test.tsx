@@ -193,4 +193,108 @@ describe("first-run starter queries", () => {
       expect(screen.getByText("Query output")).toBeInTheDocument(),
     );
   });
+
+  it("retries a failed natural query through the existing query path", async () => {
+    vi.mocked(postQuery)
+      .mockRejectedValueOnce(new Error("Network request failed\nstack line"))
+      .mockResolvedValueOnce(makeResponse("Jokic last 10 games"));
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+      target: { value: "Jokic last 10 games" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Query" }));
+
+    await waitFor(() =>
+      expect(screen.getByText("Request failed")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("Network request failed")).toBeInTheDocument();
+    expect(screen.queryByText("stack line")).not.toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get("q")).toBe(
+      "Jokic last 10 games",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Retry query" }));
+
+    await waitFor(() => expect(postQuery).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(screen.getByText("Query output")).toBeInTheDocument(),
+    );
+    expect(new URLSearchParams(window.location.search).get("q")).toBe(
+      "Jokic last 10 games",
+    );
+  });
+
+  it("retries a failed structured query through the existing structured path", async () => {
+    vi.mocked(fetchRoutes).mockResolvedValueOnce({
+      routes: ["season_leaders"],
+    });
+    vi.mocked(postStructuredQuery)
+      .mockRejectedValueOnce(new Error("Structured API timeout"))
+      .mockResolvedValueOnce(makeResponse("structured query"));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/Dev Tools/));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("option", { name: "season_leaders" }),
+      ).toBeInTheDocument(),
+    );
+    fireEvent.change(screen.getByLabelText("Route"), {
+      target: { value: "season_leaders" },
+    });
+    fireEvent.change(screen.getByLabelText("kwargs (JSON)"), {
+      target: { value: '{"stat":"pts"}' },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Run Structured Query" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Structured API timeout")).toBeInTheDocument(),
+    );
+    expect(new URLSearchParams(window.location.search).get("route")).toBe(
+      "season_leaders",
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Retry structured query" }),
+    );
+
+    await waitFor(() => expect(postStructuredQuery).toHaveBeenCalledTimes(2));
+    expect(postStructuredQuery).toHaveBeenLastCalledWith("season_leaders", {
+      stat: "pts",
+    });
+    await waitFor(() =>
+      expect(screen.getByText("Query output")).toBeInTheDocument(),
+    );
+    expect(new URLSearchParams(window.location.search).get("route")).toBe(
+      "season_leaders",
+    );
+  });
+
+  it("keeps API-offline failures distinct from no-result responses", async () => {
+    vi.mocked(fetchHealth).mockRejectedValueOnce(new Error("offline"));
+    vi.mocked(postQuery).mockRejectedValueOnce(new Error("Failed to fetch"));
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("unreachable")).toBeInTheDocument(),
+    );
+    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+      target: { value: "Celtics record 2024-25" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Query" }));
+
+    await waitFor(() =>
+      expect(screen.getAllByText("API offline").length).toBeGreaterThan(1),
+    );
+    expect(screen.getByLabelText("Failure details")).toHaveTextContent(
+      "Failed to fetch",
+    );
+    expect(screen.queryByText("No Matching Results")).not.toBeInTheDocument();
+  });
 });

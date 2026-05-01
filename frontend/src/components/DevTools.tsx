@@ -6,7 +6,7 @@ import styles from "./DevTools.module.css";
 
 interface Props {
   onResult: (data: QueryResponse) => void;
-  onError: (msg: string) => void;
+  onError: (msg: string, options?: { retryable?: boolean }) => void;
   onLoading: (loading: boolean) => void;
   onQueryStart?: (route: string, kwargs: string) => void;
 }
@@ -33,7 +33,9 @@ export default function DevTools({
     try {
       parsed = JSON.parse(kwargs || "{}");
     } catch (err) {
-      onError("Invalid JSON in kwargs: " + (err as Error).message);
+      onError("Invalid JSON in kwargs: " + (err as Error).message, {
+        retryable: false,
+      });
       return;
     }
     onQueryStart?.(selectedRoute, kwargs);
@@ -42,7 +44,7 @@ export default function DevTools({
       const data = await postStructuredQuery(selectedRoute, parsed);
       onResult(data);
     } catch (err) {
-      onError((err as Error).message);
+      onError((err as Error).message, { retryable: true });
     } finally {
       onLoading(false);
     }
