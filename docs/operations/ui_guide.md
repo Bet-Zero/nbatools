@@ -42,6 +42,7 @@ module replacement during frontend development.
 ## What the UI does
 
 - **Query bar** — type a natural-language NBA query and press Enter or click Query. Includes a clear (✕) button and shows "Running…" state during queries.
+- **Keyboard shortcuts** — `Cmd+K` / `Ctrl+K` focuses and selects the query input, Escape clears active query text from the input, and up/down arrows recall in-session query history from the input.
 - **Sample buttons** — pre-filled example queries with a label, click to run immediately.
 - **Empty state** — welcome screen with tips shown before the first query.
 - **Result envelope** — shows query metadata with clear visual hierarchy:
@@ -98,6 +99,9 @@ The UI is designed to remain usable from phone widths through desktop:
   1280x900 layout targets. Query input remains the first focus target; with an
   empty query, Tab advances to the first starter-query button because the submit
   button is disabled until text exists.
+- Keyboard shortcuts are scoped away from dialogs, raw JSON, and structured
+  kwargs editing so they do not interrupt focused text or developer-output
+  inspection.
 - Route/status metadata, context chips, long entity names, playoff round
   labels, event-count labels, and saved/dev-tool text wrap inside their regions.
 - Redesigned card grids generally collapse to one column around 720-760px, with

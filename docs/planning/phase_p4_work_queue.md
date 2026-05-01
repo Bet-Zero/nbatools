@@ -112,7 +112,7 @@ runtime changes.
 
 ---
 
-## 2. `[ ]` Add keyboard shortcuts and query-history navigation
+## 2. `[x]` Add keyboard shortcuts and query-history navigation
 
 **Why:** The query-first UI should be fast without the mouse, especially for
 repeat use and quick exploration.
@@ -154,6 +154,19 @@ repeat use and quick exploration.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Added guarded app-level `Cmd+K` / `Ctrl+K` handling that focuses and selects
+  the query input without firing from dialogs, dev-tool kwargs editing, or raw
+  JSON/developer-output regions.
+- Added input-local Escape clearing and up/down in-session history recall from
+  the query input, with recalled text still submitted through the existing form
+  path.
+- Updated tests for focus selection, history recall, Escape clear, and shortcut
+  opt-out regions.
+- Local verification: `cd frontend && npm test -- FirstRun`, `cd frontend &&
+  npm test`, and `cd frontend && npm run build`.
 
 **Reference docs/files to consult:**
 

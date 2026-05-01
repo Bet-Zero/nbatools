@@ -51,7 +51,13 @@ export default function DevTools({
   }
 
   return (
-    <Card as="details" className={styles.devTools} depth="input" padding="md">
+    <Card
+      as="details"
+      className={styles.devTools}
+      data-shortcut-scope="ignore"
+      depth="input"
+      padding="md"
+    >
       <summary>
         <span>Dev Tools — Structured Query</span>
         <Badge variant="neutral" size="sm" uppercase>

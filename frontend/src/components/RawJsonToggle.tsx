@@ -11,7 +11,12 @@ export default function RawJsonToggle({ data }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
-    <Card className={styles.rawToggle} depth="input" padding="md">
+    <Card
+      className={styles.rawToggle}
+      data-shortcut-scope="ignore"
+      depth="input"
+      padding="md"
+    >
       <SectionHeader
         eyebrow="Developer output"
         title="Raw response"

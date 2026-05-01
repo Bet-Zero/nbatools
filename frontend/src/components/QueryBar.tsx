@@ -1,4 +1,4 @@
-import { forwardRef, type FormEvent } from "react";
+import { forwardRef, type FormEvent, type KeyboardEvent } from "react";
 import { Button, IconButton } from "../design-system";
 import styles from "./QueryBar.module.css";
 
@@ -6,17 +6,50 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   onSubmit: (query: string) => void;
+  onHistoryPrevious?: () => boolean;
+  onHistoryNext?: () => boolean;
   disabled: boolean;
 }
 
 const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
-  { value, onChange, onSubmit, disabled },
+  {
+    value,
+    onChange,
+    onSubmit,
+    onHistoryPrevious,
+    onHistoryNext,
+    disabled,
+  },
   ref,
 ) {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const q = value.trim();
     if (q) onSubmit(q);
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.nativeEvent.isComposing) return;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+
+    if (e.key === "Escape" && value) {
+      e.preventDefault();
+      onChange("");
+      return;
+    }
+
+    if (e.currentTarget.selectionStart !== e.currentTarget.selectionEnd) {
+      return;
+    }
+
+    if (e.key === "ArrowUp" && onHistoryPrevious?.()) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key === "ArrowDown" && onHistoryNext?.()) {
+      e.preventDefault();
+    }
   }
 
   return (
@@ -34,6 +67,7 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type an NBA query…"
           autoComplete="off"
           autoFocus
