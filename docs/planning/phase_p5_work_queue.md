@@ -104,7 +104,7 @@ from the absence of unchecked P1-P4 queue items.
 
 ---
 
-## 2. `[ ]` Refresh Track A Part 3 status docs
+## 2. `[x]` Refresh Track A Part 3 status docs
 
 **Why:** The Part 3 plan, master plan, and docs index should reflect the
 completion audit before the final handoff updates active continuation.
@@ -135,6 +135,15 @@ completion audit before the final handoff updates active continuation.
 **Tests to run:**
 
 - None (docs only)
+
+**Completion notes:**
+
+- Updated `first_run_and_polish_plan.md` with the P5 audit verdict: no Track A
+  Part 3 closure-blocking residuals, with final closure still pending the P5
+  handoff task.
+- Updated `product_polish_master_plan.md` status language and capability rows
+  to reflect the P5 audit while keeping Active Continuation on Phase P5.
+- Confirmed `docs/index.md` already lists the P5 audit artifact from item 1.
 
 **Reference docs to consult:**
 
