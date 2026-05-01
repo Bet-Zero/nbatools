@@ -1,10 +1,12 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
 .heroCard {
   min-width: 0;
+  max-width: 100%;
   position: relative;
   overflow: hidden;
   display: grid;
@@ -26,6 +28,7 @@
 
 .identityRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -33,6 +36,7 @@
 
 .identityText {
   min-width: 0;
+  max-width: 100%;
   flex: 1 1 auto;
 }
 
@@ -69,10 +73,12 @@
 
 .stats {
   min-width: 0;
+  max-width: 100%;
 }
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }

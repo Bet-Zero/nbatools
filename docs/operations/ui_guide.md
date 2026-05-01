@@ -102,6 +102,10 @@ The UI is designed to remain usable from phone widths through desktop:
   labels, event-count labels, and saved/dev-tool text wrap inside their regions.
 - Redesigned card grids generally collapse to one column around 720-760px, with
   identity rows and ranked-row metric blocks stacking on phone widths.
+- Phase P3 verified card-heavy result renderers at 390x844: player/team
+  summaries, team records, split cards, player and team comparisons,
+  head-to-head matchups, streaks, and playoff history keep page width fixed
+  while detail tables scroll inside their own wrappers.
 - Full detail tables remain visible for every result family. Wide tables scroll
   horizontally inside their own framed table wrapper instead of widening the
   app shell; the table primitive sizes wide content to the internal scroll

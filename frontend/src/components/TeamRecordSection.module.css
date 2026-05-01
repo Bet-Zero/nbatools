@@ -1,11 +1,13 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
 .recordHero,
 .matchupHero {
   min-width: 0;
+  max-width: 100%;
   position: relative;
   overflow: hidden;
   display: grid;
@@ -27,6 +29,7 @@
 
 .recordHeader {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   gap: var(--space-4);
@@ -35,6 +38,7 @@
 
 .identityStack {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -55,6 +59,7 @@
 
 .titleBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .eyebrow {
@@ -90,6 +95,7 @@
 
 .recordStats {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(180px, 0.8fr) minmax(0, 2fr);
   gap: var(--space-3);
@@ -99,10 +105,12 @@
 .primaryRecord,
 .secondaryStats {
   min-width: 0;
+  max-width: 100%;
 }
 
 .matchupGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
@@ -110,6 +118,7 @@
 
 .matchupTeam {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -121,6 +130,7 @@
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
