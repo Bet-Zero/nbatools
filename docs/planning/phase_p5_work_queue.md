@@ -50,7 +50,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Audit Track A Part 3 completion
+## 1. `[x]` Audit Track A Part 3 completion
 
 **Why:** Part 3 should close from the done definition and shipped evidence, not
 from the absence of unchecked P1-P4 queue items.
@@ -82,6 +82,16 @@ from the absence of unchecked P1-P4 queue items.
 **Tests to run:**
 
 - None (docs/audit only)
+
+**Completion notes:**
+
+- Added
+  [`phase_p5_part3_completion_audit.md`](./phase_p5_part3_completion_audit.md)
+  mapping each Track A Part 3 done-definition item to shipped P1-P4 evidence.
+- Confirmed Track A Part 3 has no closure-blocking residuals, while the whole
+  master plan remains open for Track B deployment, R2 data sync, custom domain,
+  and production monitoring.
+- Updated `docs/index.md` for the new audit artifact.
 
 **Reference docs to consult:**
 
