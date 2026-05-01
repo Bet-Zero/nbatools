@@ -103,7 +103,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_p3_mobile_inventory.md` — mobile viewport, fixture, risk, and evidence inventory produced by Phase P3 item 1
 - `planning/phase_p4_work_queue.md` — completed Track A felt-polish queue for keyboard shortcuts, copy/share feedback, stat help, transitions, and history ergonomics
 - `planning/phase_p4_felt_polish_inventory.md` — felt-polish current-state, fixture, risk, and verification inventory produced by Phase P4 item 1
-- `planning/phase_p5_work_queue.md` — active Track A Part 3 closure queue for first-run/polish audit, Track A closure, and master-plan handoff
+- `planning/phase_p5_work_queue.md` — completed Track A Part 3 closure queue for first-run/polish audit, Track A closure, and master-plan handoff
 - `planning/phase_p5_part3_completion_audit.md` — Track A Part 3 done-definition audit produced by Phase P5 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan

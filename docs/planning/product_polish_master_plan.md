@@ -29,8 +29,8 @@ Out of scope: anything that only matters for a multi-tenant paid product
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
 the product polish work. Track A Parts 1 and 2 are complete; Track A Part 3 is
-in Phase P5 closure after a completion audit found no Track A Part 3 blockers.
-The active continuation remains Phase P5 until the final Track A handoff runs.
+closed by Phase P5. Track A is closed. Track B deployment remains open and is
+the active continuation.
 
 ---
 
@@ -119,18 +119,16 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track A, Part 3, Phase P5.** Specifically,
-[`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
+**Active continuation: Track B, Phase N1.** Specifically,
+[`phase_n1_work_queue.md`](./phase_n1_work_queue.md).
 
-Track A is the priority track because it is fully agent-runnable without
-infrastructure dependencies. Track B can run in parallel whenever the
-developer is available to complete its human-required steps.
+Track A is closed. Track B is the remaining open track. Its first queue
+contains developer-gated infrastructure setup followed by agent-runnable code
+work once the required credentials and bucket exist.
 
-The agent should always work the next unchecked item in Track A first. If
-Track A has a blocker (rare — usually a user-facing decision the developer
-needs to make), the agent should switch to Track B's queue if Track B has
-unblocked work available. If both tracks are blocked on the developer, the
-agent stops and waits.
+The agent should work the next unchecked item in Track B's active queue. If a
+Track B item requires missing developer credentials or infrastructure setup,
+mark that item blocked per the queue instructions and stop.
 
 When Track A finishes Part 1, the next active queue is Part 2's first
 phase queue (drafted by Part 1's final task). Same for Part 2 to Part 3.
@@ -190,9 +188,9 @@ the full philosophy.
 | Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete | Headshots and team logos rendered consistently             | Track A Part 1    |
 | Component layouts  | Phase C1-C9 complete; Track A Part 2 closed by completion audit | Opinionated layouts per query class with charts            | Track A Part 2    |
 | Mobile             | Phase C8 component pass complete; Track A Part 3 Phase P3 broader mobile verification complete; P5 audit verified | Functional and visually clean on every component           | Track A Parts 2-3 |
-| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete; P5 audit verified | Landing, starter queries, freshness banner                 | Track A Part 3    |
-| Errors / loading   | Track A Part 3 Phase P2 complete; P5 audit verified | Designed states with helpful copy and skeletons            | Track A Part 3    |
-| Felt polish        | Track A Part 3 Phase P4 complete; P5 audit verified; Phase P5 closure active | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
+| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete; Track A Part 3 closed by P5 | Landing, starter queries, freshness banner                 | Track A Part 3    |
+| Errors / loading   | Track A Part 3 Phase P2 complete; Track A Part 3 closed by P5 | Designed states with helpful copy and skeletons            | Track A Part 3    |
+| Felt polish        | Track A Part 3 Phase P4 complete; Track A Part 3 closed by P5 | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
 
 ---
 
