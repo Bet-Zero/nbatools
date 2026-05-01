@@ -50,7 +50,7 @@ Guardrails:
 
 ---
 
-## 1. `[ ]` Inventory mobile verification fixtures and risk areas
+## 1. `[x]` Inventory mobile verification fixtures and risk areas
 
 **Why:** P3 touches many UI surfaces. Start by naming the viewport fixtures,
 owner components, likely overflow risks, and verification approach before
