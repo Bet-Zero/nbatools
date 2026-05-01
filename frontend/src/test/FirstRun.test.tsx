@@ -93,6 +93,127 @@ describe("first-run starter queries", () => {
     ).toHaveFocus();
   });
 
+  it("focuses and selects the query input with the command palette shortcut", async () => {
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+
+    const input = screen.getByLabelText(
+      "Search NBA performance",
+    ) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { value: "Jokic last 10 games" },
+    });
+    screen
+      .getByRole("button", {
+        name: "Run starter query: Jokic last 10 games",
+      })
+      .focus();
+
+    fireEvent.keyDown(document, { key: "k", metaKey: true });
+
+    expect(input).toHaveFocus();
+    expect(input.selectionStart).toBe(0);
+    expect(input.selectionEnd).toBe("Jokic last 10 games".length);
+  });
+
+  it("recalls session query history from the query input", async () => {
+    const user = userEvent.setup();
+    vi.mocked(postQuery).mockImplementation(async (query: string) =>
+      makeResponse(query),
+    );
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+
+    const input = screen.getByLabelText("Search NBA performance");
+
+    await user.clear(input);
+    await user.type(input, "first query");
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(postQuery).toHaveBeenCalledWith("first query"));
+
+    await user.clear(input);
+    await user.type(input, "second query");
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(postQuery).toHaveBeenCalledWith("second query"));
+
+    await user.clear(input);
+    await user.type(input, "draft query");
+
+    await user.keyboard("{ArrowUp}");
+    expect(input).toHaveValue("second query");
+
+    await user.keyboard("{ArrowUp}");
+    expect(input).toHaveValue("first query");
+
+    await user.keyboard("{ArrowDown}");
+    expect(input).toHaveValue("second query");
+
+    await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(postQuery).toHaveBeenLastCalledWith("second query"),
+    );
+  });
+
+  it("clears the active query with Escape from the query input", async () => {
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+
+    const input = screen.getByLabelText("Search NBA performance");
+    fireEvent.change(input, {
+      target: { value: "Celtics summary 2024-25" },
+    });
+
+    fireEvent.keyDown(input, { key: "Escape" });
+
+    expect(input).toHaveValue("");
+  });
+
+  it("does not steal focus from dev tools or dialogs", async () => {
+    vi.mocked(fetchRoutes).mockResolvedValueOnce({
+      routes: ["season_leaders"],
+    });
+    vi.mocked(postQuery).mockResolvedValueOnce(
+      makeResponse("Jokic last 10 games"),
+    );
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText(/Dev Tools/));
+    const kwargs = screen.getByLabelText("kwargs (JSON)");
+    kwargs.focus();
+    fireEvent.keyDown(kwargs, { key: "k", metaKey: true });
+    expect(kwargs).toHaveFocus();
+
+    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+      target: { value: "Jokic last 10 games" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Query" }));
+    await waitFor(() =>
+      expect(screen.getByText("Query output")).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Save Query" }));
+    const cancel = screen.getByRole("button", { name: "Cancel" });
+    cancel.focus();
+    fireEvent.keyDown(cancel, { key: "k", metaKey: true });
+
+    expect(cancel).toHaveFocus();
+  });
+
   it("runs a starter query through the natural-query path", async () => {
     vi.mocked(postQuery).mockResolvedValueOnce(
       makeResponse("Jokic last 10 games"),

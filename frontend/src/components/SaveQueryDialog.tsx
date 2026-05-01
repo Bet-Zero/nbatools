@@ -69,10 +69,13 @@ export default function SaveQueryDialog({
     <div className={styles.overlay} onClick={onCancel}>
       <form
         className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="save-query-dialog-title"
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className={styles.title}>
+        <h3 id="save-query-dialog-title" className={styles.title}>
           {editing ? "Edit Saved Query" : "Save Query"}
         </h3>
 

@@ -41,6 +41,48 @@ function safeErrorMessage(err: unknown): string {
   return firstLine.length > 220 ? `${firstLine.slice(0, 217)}...` : firstLine;
 }
 
+function closestShortcutBoundary(node: Node | null): Element | null {
+  let current: Node | null = node;
+  while (current) {
+    if (
+      current instanceof Element &&
+      current.matches('[role="dialog"], [data-shortcut-scope="ignore"]')
+    ) {
+      return current;
+    }
+    current = current.parentNode;
+  }
+  return null;
+}
+
+function isEditableOutsideQueryInput(
+  target: EventTarget | null,
+  queryInput: HTMLInputElement | null,
+): boolean {
+  if (!(target instanceof Element)) return false;
+  if (target instanceof HTMLTextAreaElement) return true;
+  if (target instanceof HTMLSelectElement) return true;
+  if (target instanceof HTMLInputElement) return target !== queryInput;
+  if (target instanceof HTMLElement && target.isContentEditable) return true;
+  return Boolean(target.closest('[contenteditable="true"]'));
+}
+
+function shouldIgnoreGlobalFocusShortcut(
+  target: EventTarget | null,
+  queryInput: HTMLInputElement | null,
+): boolean {
+  if (target instanceof Node && closestShortcutBoundary(target)) return true;
+  const selection = window.getSelection();
+  if (
+    selection &&
+    !selection.isCollapsed &&
+    closestShortcutBoundary(selection.anchorNode)
+  ) {
+    return true;
+  }
+  return isEditableOutsideQueryInput(target, queryInput);
+}
+
 export default function App() {
   const [version, setVersion] = useState<string | null>(null);
   const [apiOnline, setApiOnline] = useState<boolean | null>(null);
@@ -56,6 +98,56 @@ export default function App() {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const initialUrlHandled = useRef(false);
+  const historyRecallIndexRef = useRef<number | null>(null);
+  const historyDraftRef = useRef("");
+
+  const resetHistoryRecall = useCallback(() => {
+    historyRecallIndexRef.current = null;
+    historyDraftRef.current = "";
+  }, []);
+
+  const handleQueryTextChange = useCallback(
+    (value: string) => {
+      resetHistoryRecall();
+      setQueryText(value);
+    },
+    [resetHistoryRecall],
+  );
+
+  const recallPreviousQuery = useCallback(() => {
+    if (history.length === 0) return false;
+
+    const current = historyRecallIndexRef.current;
+    if (current === null) {
+      historyDraftRef.current = queryText;
+    }
+
+    const next = current === null ? 0 : Math.min(current + 1, history.length - 1);
+    historyRecallIndexRef.current = next;
+    setQueryText(history[next].query);
+    return true;
+  }, [history, queryText]);
+
+  const recallNextQuery = useCallback(() => {
+    const current = historyRecallIndexRef.current;
+    if (current === null) return false;
+    if (current >= history.length) {
+      resetHistoryRecall();
+      return false;
+    }
+
+    const next = current - 1;
+    if (next >= 0) {
+      historyRecallIndexRef.current = next;
+      setQueryText(history[next].query);
+      return true;
+    }
+
+    const draft = historyDraftRef.current;
+    resetHistoryRecall();
+    setQueryText(draft);
+    return true;
+  }, [history, resetHistoryRecall]);
 
   /* ---- query execution ---- */
 
@@ -119,6 +211,7 @@ export default function App() {
   runStructuredRef.current = runStructuredQuery;
 
   const handleNavigate = useCallback((nav: UrlParams) => {
+    resetHistoryRecall();
     if (nav.q) {
       setQueryText(nav.q);
       runQueryRef.current(nav.q);
@@ -129,7 +222,7 @@ export default function App() {
       setResult(null);
       setError(null);
     }
-  }, []);
+  }, [resetHistoryRecall]);
 
   const {
     params: urlParams,
@@ -152,6 +245,28 @@ export default function App() {
       });
   }, []);
 
+  useEffect(() => {
+    function handleGlobalKeyDown(event: KeyboardEvent) {
+      const isFocusShortcut =
+        event.key.toLowerCase() === "k" &&
+        (event.metaKey || event.ctrlKey) &&
+        !event.altKey &&
+        !event.shiftKey;
+
+      if (!isFocusShortcut) return;
+      if (shouldIgnoreGlobalFocusShortcut(event.target, inputRef.current)) {
+        return;
+      }
+
+      event.preventDefault();
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
   // Auto-run query from URL on first load.
   useEffect(() => {
     if (initialUrlHandled.current) return;
@@ -168,24 +283,28 @@ export default function App() {
   /* ---- handlers ---- */
 
   function handleSubmit(query: string) {
+    resetHistoryRecall();
     setQueryText(query);
     pushQuery(query);
     runQuery(query);
   }
 
   function handleSampleSelect(query: string) {
+    resetHistoryRecall();
     setQueryText(query);
     pushQuery(query);
     runQuery(query);
   }
 
   function handleHistorySelect(query: string) {
+    resetHistoryRecall();
     setQueryText(query);
     pushQuery(query);
     runQuery(query);
   }
 
   function handleHistoryEdit(query: string) {
+    resetHistoryRecall();
     setQueryText(query);
     inputRef.current?.focus();
   }
@@ -213,6 +332,7 @@ export default function App() {
   }
 
   function handleRetryError() {
+    resetHistoryRecall();
     if (!lastRetryableRequest) return;
     if (lastRetryableRequest.kind === "natural") {
       setQueryText(lastRetryableRequest.query);
@@ -230,12 +350,14 @@ export default function App() {
   }
 
   function handleSavedQueryRun(query: string) {
+    resetHistoryRecall();
     setQueryText(query);
     pushQuery(query);
     runQuery(query);
   }
 
   function handleSavedQueryEdit(query: string) {
+    resetHistoryRecall();
     setQueryText(query);
     inputRef.current?.focus();
   }
@@ -298,8 +420,10 @@ export default function App() {
     <>
       <QueryBar
         value={queryText}
-        onChange={setQueryText}
+        onChange={handleQueryTextChange}
         onSubmit={handleSubmit}
+        onHistoryPrevious={recallPreviousQuery}
+        onHistoryNext={recallNextQuery}
         disabled={loading}
         ref={inputRef}
       />
