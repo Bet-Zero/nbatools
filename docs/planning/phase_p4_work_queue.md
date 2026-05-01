@@ -446,7 +446,7 @@ them predictable, keyboard-friendly, and easy to trust.
 
 ---
 
-## 7. `[ ]` Phase P4 retrospective and P5 handoff
+## 7. `[x]` Phase P4 retrospective and P5 handoff
 
 **Why:** Self-propagating final task. It closes the felt-polish queue and
 creates the executable Track A Part 3 closure queue.
@@ -484,11 +484,60 @@ creates the executable Track A Part 3 closure queue.
 
 - None (docs/handoff only)
 
+**Completion notes:**
+
+- Added the Phase P4 retrospective below.
+- Drafted [`phase_p5_work_queue.md`](./phase_p5_work_queue.md) as the Track A
+  Part 3 closure queue.
+- Updated active-continuation docs to point to Track A Part 3 Phase P5.
+
 **Reference docs to consult:**
 
 - `docs/planning/first_run_and_polish_plan.md`
 - `docs/planning/product_polish_master_plan.md`
 - `docs/operations/ui_guide.md`
+
+---
+
+## Phase P4 retrospective
+
+What went well:
+
+- P4 stayed in the frontend presentation layer. Keyboard shortcuts, copy/share
+  feedback, stat help, restrained motion, and history/saved-query ergonomics
+  all landed without moving parser, analytics, or filtering logic into React.
+- The shared primitives absorbed the right work. `Stat` now owns compact stat
+  help and optional value motion, while `CopyButton` owns clipboard success and
+  failure feedback.
+- The queue kept polish incremental. Each interaction shipped as a PR-sized
+  unit with focused tests plus the full frontend suite and build.
+
+What was harder:
+
+- Browser-level evidence was uneven. Headless Firefox was usable for mobile
+  smoke screenshots, but Safari DOM inspection was unavailable because local
+  Apple Events JavaScript permission is disabled.
+- Numeric count-up sounded attractive but was not worth the risk for formatted
+  percentages, records, and mixed stat values. P4 used reduced-motion-aware
+  value settling instead.
+- Query history and saved-query polish had more accessibility details than the
+  original labels suggested; action-specific names, pressed states, import
+  feedback, and long-label behavior needed to land together to feel coherent.
+
+Residuals:
+
+- Track A Part 3 still needs a final completion audit before it can be closed.
+- Track B still owns real deployment, custom domain, R2 data sync, and
+  production monitoring. The whole product-polish plan remains open until Track
+  B closes.
+- A future post-polish plan can revisit richer animations or charting only if
+  the engine/API provides structured data that makes those additions honest.
+
+Handoff:
+
+- Phase P4 is complete.
+- Track A Part 3 continues with
+  [`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
 
 ---
 
