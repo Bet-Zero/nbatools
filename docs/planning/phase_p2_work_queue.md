@@ -231,7 +231,7 @@ of a dead-end error box.
 
 ---
 
-## 5. `[ ]` Phase P2 retrospective and P3 handoff
+## 5. `[x]` Phase P2 retrospective and P3 handoff
 
 **Why:** Self-propagating final task. It closes the state-design queue and
 creates the executable broader mobile-verification queue.
@@ -275,6 +275,45 @@ creates the executable broader mobile-verification queue.
 - `docs/planning/first_run_and_polish_plan.md`
 - `docs/planning/product_polish_master_plan.md`
 - `docs/operations/ui_guide.md`
+
+---
+
+## Phase P2 retrospective
+
+Phase P2 is closed. This closes only the loading/error/empty-state phase of
+Track A Part 3; Track A Part 3 and the whole product polish plan remain open.
+The active continuation is Phase P3:
+[`phase_p3_work_queue.md`](./phase_p3_work_queue.md).
+
+What went well:
+
+- The state inventory made the runtime boundaries clear before UI edits began.
+- Loading, API no-result, unsupported, ambiguous, empty-section, and
+  client/network failure states now have designed treatments instead of generic
+  placeholders.
+- Retry behavior reuses existing natural and structured execution paths, so the
+  frontend still does not parse queries or duplicate engine behavior.
+- Focused tests now cover loading accessibility, no-result detail visibility,
+  suppressed unsupported/ambiguous suggestions, empty-section display, natural
+  retry, structured retry, and API-offline distinction.
+
+What was harder:
+
+- Empty successful responses needed a neutral display that preserved `ok`
+  semantics without pretending the API returned a no-result response.
+- Structured-query retry required a small retryability signal from `DevTools`
+  so invalid JSON validation errors would not expose a stale retry action.
+- The error state needed to balance useful details with safe copy and no stack
+  trace exposure.
+
+Residuals for later phases:
+
+- P3 should verify the new loading, no-result, and error panels at mobile
+  widths with long notes/details and retry actions.
+- P4 can add finer felt-polish feedback, such as smoother transitions or
+  confirmation states, after mobile containment is verified.
+- Track A Part 3 is not complete until the mobile-verification and felt-polish
+  phases close.
 
 ---
 
