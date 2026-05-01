@@ -2,10 +2,18 @@
  * Tests for SavedQueries UI components: SavedQueries panel, SaveQueryDialog,
  * and integration with useSavedQueries hook.
  */
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { QueryHistoryEntry } from "../api/types";
 import type { SavedQuery } from "../api/savedQueryTypes";
+import QueryHistory from "../components/QueryHistory";
 import SavedQueries from "../components/SavedQueries";
 import {
   addSavedQuery as storageAdd,
@@ -25,6 +33,20 @@ function makeSavedQuery(overrides: Partial<SavedQuery> = {}): SavedQuery {
     pinned: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    ...overrides,
+  };
+}
+
+function makeHistoryEntry(
+  overrides: Partial<QueryHistoryEntry> = {},
+): QueryHistoryEntry {
+  return {
+    id: 1,
+    query: "Jokic last 10 games",
+    route: "player_game_summary",
+    query_class: "summary",
+    result_status: "ok",
+    timestamp: Date.now(),
     ...overrides,
   };
 }
@@ -93,6 +115,18 @@ describe("SavedQueries panel", () => {
     expect(onRun).toHaveBeenCalledWith("Jokic last 10 games");
   });
 
+  it("runs saved query labels from the keyboard", () => {
+    const onRun = vi.fn();
+    renderPanel([makeSavedQuery()], { onRun });
+    const label = screen.getByRole("button", {
+      name: "Run saved query from label: Test Query",
+    });
+
+    fireEvent.keyDown(label, { key: " " });
+
+    expect(onRun).toHaveBeenCalledWith("Jokic last 10 games");
+  });
+
   it("calls onEdit when Load button is clicked", () => {
     const onEdit = vi.fn();
     renderPanel([makeSavedQuery()], { onEdit });
@@ -122,6 +156,7 @@ describe("SavedQueries panel", () => {
   it("shows pin icon for pinned queries", () => {
     renderPanel([makeSavedQuery({ pinned: true })]);
     expect(screen.getByTitle("Pinned")).toBeInTheDocument();
+    expect(screen.getByLabelText("Pinned query")).toBeInTheDocument();
   });
 
   it("shows tags on a query", () => {
@@ -131,6 +166,29 @@ describe("SavedQueries panel", () => {
     expect(playerElements.length).toBeGreaterThanOrEqual(2);
     const statsElements = screen.getAllByText("stats");
     expect(statsElements.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("keeps long saved labels and tags actionable", () => {
+    const longLabel =
+      "Jokic playoff matchup history with a very specific saved query label";
+    const longTag = "very-long-tag-name-for-mobile-containment";
+    renderPanel([makeSavedQuery({ label: longLabel, tags: [longTag] })]);
+
+    expect(
+      screen.getByRole("button", {
+        name: `Run saved query from label: ${longLabel}`,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: `Filter saved queries by tag: ${longTag}`,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: `Delete saved query: ${longLabel}`,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("shows route badge when route is set", () => {
@@ -158,10 +216,24 @@ describe("SavedQueries panel", () => {
     expect(screen.queryByText("Untagged")).not.toBeInTheDocument();
   });
 
+  it("exposes tag filters as pressed controls", () => {
+    renderPanel([makeSavedQuery({ tags: ["player"] })]);
+    const playerFilter = screen.getByRole("button", {
+      name: "Filter saved queries by tag: player",
+    });
+
+    expect(playerFilter).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(playerFilter);
+    expect(playerFilter).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("shows import button always", () => {
     renderPanel([]);
     expect(
       screen.getByTitle("Import saved queries from JSON"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Import saved queries from JSON" }),
     ).toBeInTheDocument();
   });
 
@@ -182,6 +254,65 @@ describe("SavedQueries panel", () => {
     expect(clearBtn.textContent).toBe("Confirm?");
     fireEvent.click(clearBtn);
     expect(onClearAll).toHaveBeenCalled();
+  });
+
+  it("shows visible feedback when import fails", async () => {
+    const user = userEvent.setup();
+    const onImport = vi.fn(() => {
+      throw new Error("bad import");
+    });
+    renderPanel([], { onImport });
+    const fileInput = screen.getByLabelText(
+      "Saved query JSON file",
+    ) as HTMLInputElement;
+
+    await user.upload(
+      fileInput,
+      new File(["not json"], "saved-queries.json", {
+        type: "application/json",
+      }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("Import failed"),
+    );
+  });
+});
+
+describe("QueryHistory panel", () => {
+  it("names history actions and supports keyboard activation", () => {
+    const onSelect = vi.fn();
+    const onEdit = vi.fn();
+    const onSave = vi.fn();
+    render(
+      <QueryHistory
+        entries={[makeHistoryEntry()]}
+        onSelect={onSelect}
+        onEdit={onEdit}
+        onClear={vi.fn()}
+        onSave={onSave}
+      />,
+    );
+
+    const label = screen.getByRole("button", {
+      name: "Run history query from label: Jokic last 10 games",
+    });
+    fireEvent.keyDown(label, { key: " " });
+    expect(onSelect).toHaveBeenCalledWith("Jokic last 10 games");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Edit history query: Jokic last 10 games",
+      }),
+    );
+    expect(onEdit).toHaveBeenCalledWith("Jokic last 10 games");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save history query: Jokic last 10 games",
+      }),
+    );
+    expect(onSave).toHaveBeenCalledWith("Jokic last 10 games");
   });
 });
 

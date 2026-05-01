@@ -40,6 +40,10 @@ export default function SavedQueries({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterTag, setFilterTag] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [importStatus, setImportStatus] = useState<{
+    kind: "success" | "error";
+    message: string;
+  } | null>(null);
   const importRef = useRef<HTMLInputElement>(null);
 
   // Collect all tags for the filter bar
@@ -66,6 +70,7 @@ export default function SavedQueries({
   }
 
   function handleImportClick() {
+    setImportStatus(null);
     importRef.current?.click();
   }
 
@@ -76,9 +81,23 @@ export default function SavedQueries({
     reader.onload = () => {
       try {
         onImport(reader.result as string);
+        setFilterTag(null);
+        setImportStatus({
+          kind: "success",
+          message: "Imported saved queries.",
+        });
       } catch {
-        // silently ignore bad files
+        setImportStatus({
+          kind: "error",
+          message: "Import failed. Choose a valid saved-query JSON export.",
+        });
       }
+    };
+    reader.onerror = () => {
+      setImportStatus({
+        kind: "error",
+        message: "Import failed. Choose a readable JSON file.",
+      });
     };
     reader.readAsText(file);
     // Reset so re-importing the same file works
@@ -92,6 +111,7 @@ export default function SavedQueries({
     }
     onClearAll();
     setConfirmClear(false);
+    setImportStatus(null);
   }
 
   return (
@@ -105,44 +125,68 @@ export default function SavedQueries({
             <Button
               type="button"
               onClick={handleImportClick}
+              aria-label="Import saved queries from JSON"
               title="Import saved queries from JSON"
               size="sm"
               variant="ghost"
             >
               Import
             </Button>
-          <input
-            ref={importRef}
-            type="file"
-            accept=".json"
-            className={styles.importInput}
-            onChange={handleImportFile}
-          />
-          {queries.length > 0 && (
-            <>
-              <Button
-                type="button"
-                onClick={handleExport}
-                title="Export saved queries as JSON"
-                size="sm"
-                variant="ghost"
-              >
-                Export
-              </Button>
-              <Button
-                type="button"
-                onClick={handleClearAll}
-                title="Delete all saved queries"
-                size="sm"
-                variant={confirmClear ? "danger" : "ghost"}
-              >
-                {confirmClear ? "Confirm?" : "Clear All"}
-              </Button>
-            </>
-          )}
-        </span>
+            <input
+              ref={importRef}
+              type="file"
+              accept=".json"
+              aria-label="Saved query JSON file"
+              className={styles.importInput}
+              onChange={handleImportFile}
+            />
+            {queries.length > 0 && (
+              <>
+                <Button
+                  type="button"
+                  onClick={handleExport}
+                  aria-label={`Export ${queries.length} saved ${
+                    queries.length === 1 ? "query" : "queries"
+                  } as JSON`}
+                  title="Export saved queries as JSON"
+                  size="sm"
+                  variant="ghost"
+                >
+                  Export
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleClearAll}
+                  aria-label={
+                    confirmClear
+                      ? "Confirm delete all saved queries"
+                      : "Delete all saved queries"
+                  }
+                  title="Delete all saved queries"
+                  size="sm"
+                  variant={confirmClear ? "danger" : "ghost"}
+                >
+                  {confirmClear ? "Confirm?" : "Clear All"}
+                </Button>
+              </>
+            )}
+          </span>
         }
       />
+
+      {importStatus && (
+        <div
+          className={[
+            styles.importStatus,
+            importStatus.kind === "error" ? styles.importError : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          role={importStatus.kind === "error" ? "alert" : "status"}
+        >
+          {importStatus.message}
+        </div>
+      )}
 
       {/* Tag filter bar */}
       {allTags.length > 0 && (
@@ -156,6 +200,8 @@ export default function SavedQueries({
               .filter(Boolean)
               .join(" ")}
             onClick={() => setFilterTag(null)}
+            aria-label="Show all saved queries"
+            aria-pressed={filterTag === null}
             size="sm"
             variant="ghost"
           >
@@ -172,6 +218,8 @@ export default function SavedQueries({
                 .filter(Boolean)
                 .join(" ")}
               onClick={() => setFilterTag(filterTag === tag ? null : tag)}
+              aria-label={`Filter saved queries by tag: ${tag}`}
+              aria-pressed={filterTag === tag}
               size="sm"
               variant="ghost"
             >
@@ -204,20 +252,29 @@ export default function SavedQueries({
             >
               <div className={styles.itemMain}>
                 {sq.pinned && (
-                  <span className={styles.pinIcon} title="Pinned">
+                  <span
+                    className={styles.pinIcon}
+                    role="img"
+                    aria-label="Pinned query"
+                    title="Pinned"
+                  >
                     📌
                   </span>
                 )}
                 <div className={styles.itemInfo}>
                   <span
                     className={styles.itemLabel}
+                    aria-label={`Run saved query from label: ${sq.label}`}
                     onClick={() => onRun(sq.query)}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") onRun(sq.query);
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onRun(sq.query);
+                      }
                     }}
-                    title="Click to run"
+                    title="Run saved query"
                   >
                     {sq.label}
                   </span>
@@ -244,6 +301,7 @@ export default function SavedQueries({
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onRun(sq.query)}
+                  aria-label={`Run saved query: ${sq.label}`}
                   title="Run query"
                   size="sm"
                   variant="ghost"
@@ -254,6 +312,7 @@ export default function SavedQueries({
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onEdit(sq.query)}
+                  aria-label={`Load saved query into query bar: ${sq.label}`}
                   title="Load into query bar"
                   size="sm"
                   variant="ghost"
@@ -264,6 +323,9 @@ export default function SavedQueries({
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onPin(sq.id)}
+                  aria-label={`${
+                    sq.pinned ? "Unpin" : "Pin"
+                  } saved query: ${sq.label}`}
                   title={sq.pinned ? "Unpin" : "Pin"}
                   size="sm"
                   variant="ghost"
@@ -274,6 +336,7 @@ export default function SavedQueries({
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => setEditingId(sq.id)}
+                  aria-label={`Edit saved query: ${sq.label}`}
                   title="Edit saved query"
                   size="sm"
                   variant="ghost"
@@ -284,6 +347,7 @@ export default function SavedQueries({
                   type="button"
                   className={styles.itemActionButton}
                   onClick={() => onDelete(sq.id)}
+                  aria-label={`Delete saved query: ${sq.label}`}
                   title="Delete saved query"
                   size="sm"
                   variant="danger"
@@ -302,6 +366,15 @@ export default function SavedQueries({
           <div className={styles.emptyText}>
             No queries tagged "{filterTag}"
           </div>
+          <Button
+            type="button"
+            className={styles.showAllButton}
+            onClick={() => setFilterTag(null)}
+            size="sm"
+            variant="ghost"
+          >
+            Show All
+          </Button>
         </div>
       )}
 

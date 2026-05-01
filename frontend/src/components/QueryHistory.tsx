@@ -16,6 +16,12 @@ function statusDot(status: string): string {
   return styles.errDot;
 }
 
+function statusLabel(status: string): string {
+  if (status === "ok") return "Successful query";
+  if (status === "no_result") return "No-result query";
+  return "Failed query";
+}
+
 function timeAgo(ts: number): string {
   const seconds = Math.floor((Date.now() - ts) / 1000);
   if (seconds < 60) return "just now";
@@ -53,16 +59,22 @@ export default function QueryHistory({
               className={[styles.dot, statusDot(entry.result_status)].join(
                 " ",
               )}
+              role="img"
+              aria-label={statusLabel(entry.result_status)}
             />
             <span
               className={styles.query}
+              aria-label={`Run history query from label: ${entry.query}`}
               onClick={() => onSelect(entry.query)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === "Enter") onSelect(entry.query);
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(entry.query);
+                }
               }}
-              title="Click to rerun"
+              title="Run history query"
             >
               {entry.query}
             </span>
@@ -83,29 +95,32 @@ export default function QueryHistory({
               <Button
                 type="button"
                 className={styles.actionButton}
-                onClick={() => onEdit(entry.query)}
-                title="Edit query"
+                onClick={() => onSelect(entry.query)}
+                aria-label={`Run history query: ${entry.query}`}
+                title="Run history query"
                 size="sm"
                 variant="ghost"
               >
-                Edit
+                Run
               </Button>
               <Button
                 type="button"
                 className={styles.actionButton}
-                onClick={() => onSelect(entry.query)}
-                title="Rerun query"
+                onClick={() => onEdit(entry.query)}
+                aria-label={`Edit history query: ${entry.query}`}
+                title="Edit history query"
                 size="sm"
                 variant="ghost"
               >
-                Rerun
+                Edit
               </Button>
               {onSave && (
                 <Button
                   type="button"
                   className={styles.actionButton}
                   onClick={() => onSave(entry.query)}
-                  title="Save query"
+                  aria-label={`Save history query: ${entry.query}`}
+                  title="Save history query"
                   size="sm"
                   variant="ghost"
                 >

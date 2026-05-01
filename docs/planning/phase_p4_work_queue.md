@@ -378,7 +378,7 @@ the data or making the app feel slow.
 
 ---
 
-## 6. `[ ]` Tighten query history and saved-query ergonomics
+## 6. `[x]` Tighten query history and saved-query ergonomics
 
 **Why:** Query history and saved queries exist, but final polish should make
 them predictable, keyboard-friendly, and easy to trust.
@@ -417,6 +417,22 @@ them predictable, keyboard-friendly, and easy to trust.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Tightened Query History action order and naming: history labels are keyboard
+  activatable with query-specific accessible names, and actions now read as
+  Run, Edit, Save.
+- Added saved-query action labels for run/load/pin/edit/delete, pressed states
+  for tag filters, pinned-query labeling, visible import success/failure
+  feedback, and a reset path for stale tag filters.
+- Preserved the existing localStorage saved-query contract and client-side JSON
+  import/export model.
+- Added focused tests for keyboard activation, action accessible names, import
+  failure feedback, pressed tag filters, and long saved labels/tags remaining
+  actionable.
+- Local verification: `cd frontend && npm test -- SavedQueries`, `cd frontend
+  && npm test`, and `cd frontend && npm run build`.
 
 **Reference docs/files to consult:**
 
