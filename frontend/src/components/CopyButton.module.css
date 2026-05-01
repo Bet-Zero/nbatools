@@ -3,6 +3,7 @@
   max-width: 100%;
   border-color: var(--accent);
   color: var(--accent);
+  overflow-wrap: anywhere;
 }
 
 .share:hover:not(:disabled) {

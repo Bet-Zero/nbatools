@@ -171,7 +171,7 @@ non-result states before any data table appears.
 
 ---
 
-## 3. `[ ]` Verify result chrome and secondary panels on mobile
+## 3. `[x]` Verify result chrome and secondary panels on mobile
 
 **Why:** Result actions and secondary tools can easily crowd the main column on
 small screens.
@@ -214,6 +214,22 @@ small screens.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Applied a CSS containment pass for result actions, envelope route/context
+  chips, raw JSON, saved-query controls, save dialogs, query history, and dev
+  tools.
+- Local verification: `cd frontend && npm test`, `cd frontend && npm run
+  build`.
+- Browser evidence: FastAPI-served build at `390 x 844` for `Jokic last 10
+  games`, with no page-level horizontal overflow for result chrome, raw JSON,
+  save dialog, saved/history panels, and dev tools. Screenshots written to
+  `/tmp/nbatools-p3-result-chrome-loaded-390.png`,
+  `/tmp/nbatools-p3-raw-json-390.png`,
+  `/tmp/nbatools-p3-save-dialog-390.png`,
+  `/tmp/nbatools-p3-secondary-panels-390.png`, and
+  `/tmp/nbatools-p3-dev-tools-390.png`.
 
 **Reference docs/files to consult:**
 

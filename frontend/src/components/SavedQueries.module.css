@@ -1,5 +1,6 @@
 .savedQueries {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
@@ -36,11 +37,18 @@
 }
 
 .headerActions {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   align-items: center;
   justify-content: flex-end;
+}
+
+.headerActions > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .actionSmall {
@@ -68,6 +76,8 @@
 }
 
 .tagsBar {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
@@ -111,12 +121,16 @@
 }
 
 .list {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
 .item {
+  min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
@@ -154,6 +168,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  max-width: 100%;
 }
 
 .itemLabel {
@@ -182,6 +197,7 @@
 
 .itemMeta {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
@@ -189,12 +205,14 @@
 }
 
 .tag {
+  max-width: 100%;
   font-size: var(--font-micro);
   padding: var(--space-1) var(--space-2);
   background: color-mix(in srgb, var(--text-primary) 5%, transparent);
   color: var(--text-secondary);
   border-radius: var(--radius-sm);
   text-transform: lowercase;
+  overflow-wrap: anywhere;
 }
 
 .route {
@@ -210,9 +228,12 @@
   color: var(--text-secondary);
   opacity: 0.7;
   white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .itemActions {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
@@ -225,7 +246,13 @@
 
 @media (max-width: 640px) {
   .headerActions {
+    width: 100%;
     justify-content: flex-start;
+  }
+
+  .headerActions > *,
+  .tagsBar > * {
+    flex: 1 1 calc(var(--space-16) * 1.25);
   }
 
   .itemMain {
@@ -240,5 +267,9 @@
 
   .itemActions > * {
     flex: 1 1 calc(var(--space-16) * 1.5);
+  }
+
+  .date {
+    white-space: normal;
   }
 }

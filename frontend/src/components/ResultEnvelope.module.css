@@ -14,6 +14,14 @@
   flex-shrink: 0;
 }
 
+.routeBadge,
+.contextChip {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .freshness {
   font-size: var(--font-small);
   color: var(--text-secondary);
@@ -105,4 +113,15 @@
 .alternateChip:hover {
   background: var(--accent);
   color: var(--text-on-accent);
+}
+
+@media (max-width: 520px) {
+  .separator {
+    display: none;
+  }
+
+  .freshness,
+  .contextChip {
+    flex-basis: 100%;
+  }
 }

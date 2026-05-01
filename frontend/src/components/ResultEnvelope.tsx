@@ -160,12 +160,12 @@ export default function ResultEnvelope({
             {statusLabel(data.result_status)}
           </Badge>
           {data.route && (
-            <Badge variant="accent" size="sm">
+            <Badge className={styles.routeBadge} variant="accent" size="sm">
               {routeLabel(data.route)}
             </Badge>
           )}
           {queryClass && queryClass !== data.route && (
-            <Badge variant="accent" size="sm">
+            <Badge className={styles.routeBadge} variant="accent" size="sm">
               {queryClass}
             </Badge>
           )}
@@ -188,7 +188,12 @@ export default function ResultEnvelope({
       context={
         contextChips.length > 0
           ? contextChips.map((chip, i) => (
-              <Badge key={i} variant="neutral" size="sm">
+              <Badge
+                key={i}
+                className={styles.contextChip}
+                variant="neutral"
+                size="sm"
+              >
                 {chip.identity === "player" && (
                   <Avatar
                     name={chip.identityName ?? chip.value}
