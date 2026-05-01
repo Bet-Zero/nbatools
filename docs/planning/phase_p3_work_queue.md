@@ -325,7 +325,7 @@ containment checks after the result layout work.
 
 ---
 
-## 5. `[ ]` Verify card-heavy result renderers on mobile
+## 5. `[x]` Verify card-heavy result renderers on mobile
 
 **Why:** Designed card layouts can still fail on mobile through long names,
 dense stat grids, and wide action/detail regions.
@@ -363,6 +363,32 @@ dense stat grids, and wide action/detail regions.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Applied a CSS containment pass across card-heavy renderer modules so section
+  shells, identity rows, stat grids, metric cards, split buckets, streak spans,
+  and detail regions opt into `min-width: 0` / `max-width: 100%` containment
+  before nested content can widen the app shell.
+- Local verification: `cd frontend && npm test`, `cd frontend && npm run
+  build`.
+- Browser evidence: FastAPI-served build at `390 x 844` for `Jokic last 10
+  games`, `Celtics summary 2024-25`, `Celtics record 2024-25`, `Celtics home
+  vs away 2024-25`, `Jokic vs Embiid 2024-25`, `Lakers vs Celtics since
+  2010`, `Lakers head-to-head vs Celtics since 2010`, `Lakers longest winning
+  streak 2024-25`, and `Lakers playoff history`. Each run reported
+  `docScrollWidth: 390`, `bodyScrollWidth: 390`, and no page-level horizontal
+  overflow. Expected wide detail tables stayed inside their framed internal
+  scroll wrappers. Screenshots written to
+  `/tmp/nbatools-p3-card-player-summary-390.png`,
+  `/tmp/nbatools-p3-card-team-summary-390.png`,
+  `/tmp/nbatools-p3-card-team-record-390.png`,
+  `/tmp/nbatools-p3-card-split-390.png`,
+  `/tmp/nbatools-p3-card-player-comparison-390.png`,
+  `/tmp/nbatools-p3-card-comparison-390.png`,
+  `/tmp/nbatools-p3-card-head-to-head-390.png`,
+  `/tmp/nbatools-p3-card-streak-390.png`, and
+  `/tmp/nbatools-p3-card-playoff-390.png`.
 
 **Reference docs/files to consult:**
 

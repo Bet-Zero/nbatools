@@ -1,10 +1,12 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
 .playerGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
@@ -13,12 +15,14 @@
 
 .playerCard {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-4);
 }
 
 .identityRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -30,6 +34,7 @@
 
 .identityText {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-1);
 }
@@ -58,22 +63,26 @@
 .heroStats,
 .secondaryStats {
   min-width: 0;
+  max-width: 100%;
 }
 
 .supportingStats {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
 
 .metricGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
@@ -82,12 +91,14 @@
 
 .metricCard {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
 
 .metricHeader {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -127,6 +138,7 @@
 
 .metricValues {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);

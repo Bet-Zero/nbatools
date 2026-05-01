@@ -1,10 +1,12 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
 .hero {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-5);
   margin-bottom: var(--space-4);
@@ -12,6 +14,7 @@
 
 .identityRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -24,6 +27,7 @@
 
 .identityText {
   min-width: 0;
+  max-width: 100%;
   flex: 1 1 auto;
 }
 
@@ -47,6 +51,8 @@
 }
 
 .heroStats {
+  min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-3);
@@ -60,6 +66,7 @@
 
 .supportingStats {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: var(--space-3);
@@ -72,12 +79,14 @@
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
 }
 
 .gameSeries {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-4);
   margin-bottom: var(--space-4);
@@ -85,6 +94,7 @@
 
 .gameSeriesHeader {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -93,6 +103,7 @@
 
 .gameSeriesTitleBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .gameSeriesTitle {
@@ -116,12 +127,14 @@
 
 .sparklinePanel {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-2);
 }
 
 .sparklineMeta {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -180,6 +193,7 @@
 
 .recentList {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(148px, 100%), 1fr));
   gap: var(--space-2);
@@ -188,6 +202,7 @@
 
 .recentGame {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -198,6 +213,7 @@
 
 .recentGameHeader {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -221,6 +237,7 @@
 
 .gameStats {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-2);

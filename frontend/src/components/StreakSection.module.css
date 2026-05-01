@@ -1,10 +1,12 @@
 .section {
   min-width: 0;
+  max-width: 100%;
   margin-bottom: var(--space-4);
 }
 
 .cardList {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-3);
@@ -19,6 +21,7 @@
 
 .cardHeader {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -27,6 +30,7 @@
 
 .identityRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -43,6 +47,7 @@
 
 .titleBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .eyebrow {
@@ -78,6 +83,7 @@
 
 .answerGrid {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(150px, 0.5fr) minmax(0, 1.5fr);
   gap: var(--space-3);
@@ -91,10 +97,12 @@
 .heroStat,
 .statBlock {
   min-width: 0;
+  max-width: 100%;
 }
 
 .spanBlock {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   align-content: center;
@@ -114,6 +122,7 @@
 
 .spanRow {
   min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -148,6 +157,7 @@
 
 .detailSection {
   min-width: 0;
+  max-width: 100%;
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-4);
