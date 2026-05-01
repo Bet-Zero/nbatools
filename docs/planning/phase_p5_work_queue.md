@@ -154,7 +154,7 @@ completion audit before the final handoff updates active continuation.
 
 ---
 
-## 3. `[ ]` Phase P5 retrospective and master-plan handoff
+## 3. `[x]` Phase P5 retrospective and master-plan handoff
 
 **Why:** Self-propagating final task. It closes Track A if the audit is green
 and moves the master plan to the next open continuation.
@@ -192,6 +192,13 @@ and moves the master plan to the next open continuation.
 
 - None (docs only)
 
+**Completion notes:**
+
+- Added the Phase P5 retrospective below.
+- Closed Track A Part 3 and Track A based on the P5 completion audit.
+- Updated the master plan Active Continuation to Track B Phase N1 because
+  deployment remains open.
+
 **Reference docs to consult:**
 
 - `docs/planning/phase_p5_part3_completion_audit.md`
@@ -202,8 +209,47 @@ and moves the master plan to the next open continuation.
 
 ---
 
+## Phase P5 retrospective
+
+What went well:
+
+- The closure audit kept Track A completion evidence-based. P5 did not infer
+  completion from checked P1-P4 queues alone; it mapped the Part 3 done
+  definition to shipped evidence.
+- Track A ends with clear scope boundaries. First-run, mobile, state design,
+  and felt polish are closed, while real URL deployment and data sync remain
+  explicitly Track B.
+- The active-continuation handoff is concrete: the next open master-plan queue
+  is Track B Phase N1.
+
+What was harder:
+
+- The original Part 3 plan included aspirational examples like numeric count-up
+  and optional generated highlights. P5 had to separate non-blocking optional
+  ideas from the actual done definition.
+- Completion language needed careful scoping. Track A can close, but the whole
+  product-polish plan cannot close while production deployment is still local
+  and developer-gated.
+
+Residuals:
+
+- Track A has no closure-blocking residuals.
+- Track B still owns Cloudflare R2 setup, production data sync, Vercel
+  deployment, custom domain, and production runbook/monitoring.
+- The first Track B item requires developer-owned infrastructure credentials
+  and may block until those credentials exist.
+
+Handoff:
+
+- Track A Part 3 is closed.
+- Track A is closed.
+- The product-polish master plan remains in progress.
+- Active continuation moves to Track B Phase N1:
+  [`phase_n1_work_queue.md`](./phase_n1_work_queue.md).
+
+---
+
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Track A Part 3 is closed if the audit
-supports closure. The master plan remains open until Track B deployment work is
-also closed.
+All items above are checked `[x]`; Track A Part 3 and Track A are closed. The
+master plan remains open until Track B deployment work is also closed.

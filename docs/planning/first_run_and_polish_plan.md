@@ -126,9 +126,9 @@ state/value motion, and saved/history ergonomics. The queue is
 Goal: capture learnings. Update `product_polish_master_plan.md` to declare
 the polish plan complete (or name a continuation if any blockers remain).
 
-Status: active. Phase P5 item 1 produced
+Status: complete. Phase P5 item 1 produced
 [`phase_p5_part3_completion_audit.md`](./phase_p5_part3_completion_audit.md),
-which found no Track A Part 3 closure-blocking residuals. The active queue is
+which found no Track A Part 3 closure-blocking residuals. The closed queue is
 [`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
 
 ---
@@ -149,9 +149,9 @@ Part 3 is done when:
    data is stale
 6. All existing tests pass
 
-Phase P5 audit status: ready for closure after the P5 status-refresh and
-master-plan handoff tasks complete. Track B deployment remains outside Track A
-Part 3 and continues to keep the whole product-polish master plan open.
+Phase P5 audit status: Track A Part 3 is closed. Track B deployment remains
+outside Track A Part 3 and continues to keep the whole product-polish master
+plan open.
 
 ---
 
@@ -184,5 +184,5 @@ drafted by Phase P4's retrospective:
 [`phase_p5_work_queue.md`](./phase_p5_work_queue.md). Each subsequent phase's
 queue is drafted by the prior phase's retrospective.
 
-When Phase P5 declares the master plan done, Track A is closed. If Track B
-(deployment) is also closed at that point, the polish plan is complete.
+Phase P5 closed Track A. Track B deployment remains open, so the whole product
+polish plan continues under Track B until deployment is also closed.
