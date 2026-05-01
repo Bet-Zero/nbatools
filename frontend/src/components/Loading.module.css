@@ -1,4 +1,5 @@
 .loading {
+  width: 100%;
   min-width: 0;
   display: grid;
   gap: var(--space-4);
@@ -64,6 +65,7 @@
 }
 
 .preview {
+  min-width: 0;
   display: grid;
   gap: var(--space-4);
   padding-top: var(--space-4);
@@ -140,5 +142,11 @@
   .summaryPreview,
   .tablePreview {
     padding: var(--space-3);
+  }
+}
+
+@media (max-width: 380px) {
+  .statusRow {
+    flex-direction: column;
   }
 }

@@ -650,6 +650,10 @@ Responsive expectations for future frontend work:
   forcing the whole page wider.
 - Section-header actions should wrap at mobile widths. Avoid adding fixed-width
   controls to shell regions unless they also have a mobile wrapping rule.
+- Core first-run and non-result panels should remain explicitly contained at
+  narrow phone widths: use `width: 100%`, `min-width: 0`, token padding, and
+  wrapping action rows for long details, starter queries, suggestions, and
+  retry controls.
 - Freshness and API status are shell chrome, but their fetching and semantics
   remain in `App.tsx` and `FreshnessStatus.tsx`.
 

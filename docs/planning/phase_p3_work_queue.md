@@ -103,7 +103,7 @@ runtime changes.
 
 ---
 
-## 2. `[ ]` Verify core shell, query, and non-result states on mobile
+## 2. `[x]` Verify core shell, query, and non-result states on mobile
 
 **Why:** The first mobile impression is the shell, query bar, empty state, and
 non-result states before any data table appears.
@@ -148,6 +148,14 @@ non-result states before any data table appears.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Applied a CSS-only containment pass for the shell, header/status stack,
+  starter queries, freshness, loading, no-result, and error panels.
+- Local verification: `cd frontend && npm test`, `cd frontend && npm run
+  build`, and headless Firefox screenshots at `390 x 844` for first-run and
+  API-offline query/error paths.
 
 **Reference docs/files to consult:**
 

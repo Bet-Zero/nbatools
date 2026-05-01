@@ -1,4 +1,5 @@
 .emptyState {
+  min-width: 0;
   display: grid;
   gap: var(--space-6);
   color: var(--text-secondary);
@@ -71,5 +72,11 @@
   .capabilities {
     grid-template-columns: 1fr;
     gap: var(--space-3);
+  }
+}
+
+@media (max-width: 380px) {
+  .emptyState {
+    gap: var(--space-4);
   }
 }
