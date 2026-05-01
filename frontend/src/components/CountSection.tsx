@@ -158,6 +158,7 @@ export default function CountSection({ sections, metadata, route }: Props) {
                 value={formatValue(value, "count")}
                 size="hero"
                 semantic="accent"
+                animateValue
                 className={styles.countStat}
               />
               {context.length > 0 && (

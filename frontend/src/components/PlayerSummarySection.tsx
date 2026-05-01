@@ -65,6 +65,7 @@ function heroStats(row: SectionRow | undefined): StatProps[] {
       value: formatValue(value, key),
       semantic,
       size: "hero",
+      animateValue: true,
     });
   }
 

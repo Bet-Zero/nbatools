@@ -108,6 +108,18 @@
   background: var(--danger);
 }
 
+.stateStack {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.stateSurface {
+  min-width: 0;
+  animation: stateSurfaceEnter var(--transition-default) both;
+  will-change: opacity, transform;
+}
+
 .resultArea {
   min-width: 0;
   display: grid;
@@ -218,5 +230,24 @@
 @media (max-width: 420px) {
   .brandBlock {
     flex-direction: column;
+  }
+}
+
+@keyframes stateSurfaceEnter {
+  from {
+    opacity: 0.01;
+    transform: translateY(var(--space-1));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stateSurface {
+    animation: none;
+    will-change: auto;
   }
 }

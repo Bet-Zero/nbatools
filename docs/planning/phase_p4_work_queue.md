@@ -309,7 +309,7 @@ and +/- without cluttering cards.
 
 ---
 
-## 5. `[ ]` Add restrained result transitions and stat value motion
+## 5. `[x]` Add restrained result transitions and stat value motion
 
 **Why:** Loading-to-result changes should feel finished without distracting from
 the data or making the app feel slow.
@@ -347,6 +347,25 @@ the data or making the app feel slow.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Added a shared App state surface wrapper for empty, loading, error, and result
+  states with token-driven entry motion and a reduced-motion CSS opt-out.
+- Added opt-in `Stat` value settling motion with `prefers-reduced-motion`
+  detection; player summary, count, streak, and head-to-head hero stats now opt
+  in without animating tables or non-hero stat blocks.
+- Kept numeric count-up out of scope for this pass because displayed values are
+  already formatted strings, including percentages and records, and counting
+  through parsed values would add representation and width-jitter risk.
+- Added focused tests for App state-surface transitions, stat value motion, and
+  reduced-motion behavior.
+- Local verification: `cd frontend && npm test -- LayoutPrimitives FirstRun`,
+  `cd frontend && npm test`, and `cd frontend && npm run build`.
+- Browser evidence: captured a 390px-wide Firefox headless loading-state
+  screenshot for `Jokic last 10 games`; Safari DOM width inspection was
+  unavailable because Safari's "Allow JavaScript from Apple Events" setting is
+  disabled locally.
 
 **Reference docs/files to consult:**
 
