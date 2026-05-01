@@ -106,13 +106,18 @@ queue is [`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
 
 Goal: explicit mobile pass on every existing component, with fixes.
 
-Status: active. The active queue is
+Status: complete. P3 shipped explicit mobile verification and fixes across the
+app shell, first-run/non-result states, result chrome, secondary panels,
+table-heavy results, and card-heavy renderers. The queue is
 [`phase_p3_work_queue.md`](./phase_p3_work_queue.md).
 
 ### Phase P4 — Felt polish and small details
 
 Goal: the 50 small things — transitions, animations, copy buttons, share
 links, tooltips, keyboard shortcuts, query history UI.
+
+Status: active. The active queue is
+[`phase_p4_work_queue.md`](./phase_p4_work_queue.md).
 
 ### Phase P5 — Retrospective and master-plan closure
 
@@ -161,7 +166,9 @@ Phase P1's queue was drafted by Track A Part 2's final phase retrospective:
 drafted by Phase P1's retrospective:
 [`phase_p2_work_queue.md`](./phase_p2_work_queue.md). Phase P3's queue was
 drafted by Phase P2's retrospective:
-[`phase_p3_work_queue.md`](./phase_p3_work_queue.md). Each subsequent phase's
+[`phase_p3_work_queue.md`](./phase_p3_work_queue.md). Phase P4's queue was
+drafted by Phase P3's retrospective:
+[`phase_p4_work_queue.md`](./phase_p4_work_queue.md). Each subsequent phase's
 queue is drafted by the prior phase's retrospective.
 
 When Phase P5 declares the master plan done, Track A is closed. If Track B
