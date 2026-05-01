@@ -60,9 +60,13 @@
 
 .query {
   min-width: 0;
+  min-height: var(--space-8);
+  display: inline-flex;
+  align-items: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  word-break: break-word;
   cursor: pointer;
 }
 
@@ -98,6 +102,7 @@
 }
 
 .actionButton {
+  min-height: var(--space-8);
   font-size: var(--font-micro);
 }
 

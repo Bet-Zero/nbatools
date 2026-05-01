@@ -75,10 +75,15 @@ module replacement during frontend development.
   - Status dots (green/yellow/red)
   - Query class and route labels
   - Query count
+  - Keyboard-activatable query labels with query-specific accessible names
+  - **Run** button — immediately re-executes the query
   - **Edit** button — populates the input bar for modification without running
-  - **Rerun** button — immediately re-executes the query
+  - **Save** button — saves a history entry into Saved Queries when available
   - Time-ago display
   - Not persisted across sessions
+- **Saved queries** — persisted local shortcuts with pinned ordering, tag
+  filters that expose pressed state, query-specific run/load/pin/edit/delete
+  action names, JSON import/export, and visible import failure feedback.
 - **No-result / error display** — friendly messages for empty results (with suggestions) and errors.
 - **Dev Tools panel** — collapsible structured-query interface for calling `POST /structured-query` with a route selector and kwargs JSON input.
 - **Health indicator** — live green/red dot showing API connectivity and version.
