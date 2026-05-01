@@ -180,7 +180,7 @@ repeat use and quick exploration.
 
 ---
 
-## 3. `[ ]` Polish copy/share feedback and failure states
+## 3. `[x]` Polish copy/share feedback and failure states
 
 **Why:** Copy actions already exist, but friend-ready polish needs durable,
 accessible confirmation and graceful behavior when clipboard APIs fail.
@@ -218,6 +218,21 @@ accessible confirmation and graceful behavior when clipboard APIs fail.
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
+
+**Completion notes:**
+
+- Reworked `CopyButton` into explicit idle/copied/failed states with accessible
+  live status text, guarded clipboard fallback, visible failure feedback, reset
+  timer cleanup, and repeated-click timer reset behavior.
+- Preserved existing URL/share semantics through the existing `shareUrl` value;
+  this item only changes button feedback and resilience.
+- Updated focused tests for clipboard success, fallback success, fallback
+  failure, and latest-click timer reset behavior.
+- Local verification: `cd frontend && npm test -- Button`, `cd frontend &&
+  npm test`, and `cd frontend && npm run build`.
+- Extra check: `cd frontend && npm run lint` still fails on pre-existing
+  unrelated frontend lint issues in `SampleQueries.tsx`, `Avatar.tsx`,
+  `TeamBadge.tsx`, `useUrlState.ts`, and `savedQueryStorage.ts`.
 
 **Reference docs/files to consult:**
 

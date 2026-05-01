@@ -1,10 +1,23 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Button, IconButton } from "../design-system";
 import CopyButton from "../components/CopyButton";
 import QueryBar from "../components/QueryBar";
 import RawJsonToggle from "../components/RawJsonToggle";
 import type { QueryResponse } from "../api/types";
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: undefined,
+  });
+  Object.defineProperty(document, "execCommand", {
+    configurable: true,
+    value: undefined,
+  });
+});
 
 function makeResponse(): QueryResponse {
   return {
@@ -103,6 +116,98 @@ describe("migrated button controls", () => {
       "title",
       "Copied!",
     );
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Copy Link copied to clipboard.",
+    );
+  });
+
+  it("falls back to execCommand when clipboard write fails", async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error("blocked"));
+    const execCommand = vi.fn().mockReturnValue(true);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    Object.defineProperty(document, "execCommand", {
+      configurable: true,
+      value: execCommand,
+    });
+
+    render(<CopyButton text="fallback-url" label="Copy Link" />);
+    fireEvent.click(screen.getByRole("button", { name: "Copy Link" }));
+
+    await waitFor(() => expect(execCommand).toHaveBeenCalledWith("copy"));
+    expect(screen.getByRole("button", { name: "✓ Copied" })).toBeInTheDocument();
+    expect(document.querySelector("textarea")).not.toBeInTheDocument();
+  });
+
+  it("shows copy failure feedback when both copy paths fail", async () => {
+    vi.useFakeTimers();
+    const writeText = vi.fn().mockRejectedValue(new Error("blocked"));
+    const execCommand = vi.fn().mockReturnValue(false);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    Object.defineProperty(document, "execCommand", {
+      configurable: true,
+      value: execCommand,
+    });
+
+    render(<CopyButton text="blocked" label="Copy JSON" />);
+    fireEvent.click(screen.getByRole("button", { name: "Copy JSON" }));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.getByRole("button", { name: "Copy Failed" })).toHaveAttribute(
+      "title",
+      "Copy failed",
+    );
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Copy JSON failed to copy.",
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(1500);
+    });
+
+    expect(screen.getByRole("button", { name: "Copy JSON" })).toBeInTheDocument();
+  });
+
+  it("resets copy feedback from the latest click timer", async () => {
+    vi.useFakeTimers();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(<CopyButton text="share-url" label="Copy Link" />);
+    const button = screen.getByRole("button", { name: "Copy Link" });
+
+    fireEvent.click(button);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(writeText).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "✓ Copied" }));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(writeText).toHaveBeenCalledTimes(2);
+
+    act(() => {
+      vi.advanceTimersByTime(1499);
+    });
+    expect(screen.getByRole("button", { name: "✓ Copied" })).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(screen.getByRole("button", { name: "Copy Link" })).toBeInTheDocument();
   });
 
   it("toggles raw JSON visibility", () => {
