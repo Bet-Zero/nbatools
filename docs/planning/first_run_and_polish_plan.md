@@ -126,7 +126,9 @@ state/value motion, and saved/history ergonomics. The queue is
 Goal: capture learnings. Update `product_polish_master_plan.md` to declare
 the polish plan complete (or name a continuation if any blockers remain).
 
-Status: active. The active queue is
+Status: active. Phase P5 item 1 produced
+[`phase_p5_part3_completion_audit.md`](./phase_p5_part3_completion_audit.md),
+which found no Track A Part 3 closure-blocking residuals. The active queue is
 [`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
 
 ---
@@ -146,6 +148,10 @@ Part 3 is done when:
 5. The freshness banner correctly surfaces data age, prominently when
    data is stale
 6. All existing tests pass
+
+Phase P5 audit status: ready for closure after the P5 status-refresh and
+master-plan handoff tasks complete. Track B deployment remains outside Track A
+Part 3 and continues to keep the whole product-polish master plan open.
 
 ---
 

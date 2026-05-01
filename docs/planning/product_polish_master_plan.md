@@ -29,7 +29,8 @@ Out of scope: anything that only matters for a multi-tenant paid product
 Engine and parser are complete (see
 [`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
 the product polish work. Track A Parts 1 and 2 are complete; Track A Part 3 is
-in progress and the active continuation is Phase P5.
+in Phase P5 closure after a completion audit found no Track A Part 3 blockers.
+The active continuation remains Phase P5 until the final Track A handoff runs.
 
 ---
 
@@ -188,10 +189,10 @@ the full philosophy.
 | App shell          | Phase V3 shell/layout complete      | Header, query bar, results region with real layout         | Track A Part 1    |
 | Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete | Headshots and team logos rendered consistently             | Track A Part 1    |
 | Component layouts  | Phase C1-C9 complete; Track A Part 2 closed by completion audit | Opinionated layouts per query class with charts            | Track A Part 2    |
-| Mobile             | Phase C8 component pass complete; Track A Part 3 Phase P3 broader mobile verification complete | Functional and visually clean on every component           | Track A Parts 2-3 |
-| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete | Landing, starter queries, freshness banner                 | Track A Part 3    |
-| Errors / loading   | Track A Part 3 Phase P2 complete    | Designed states with helpful copy and skeletons            | Track A Part 3    |
-| Felt polish        | Track A Part 3 Phase P4 complete; Phase P5 closure active | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
+| Mobile             | Phase C8 component pass complete; Track A Part 3 Phase P3 broader mobile verification complete; P5 audit verified | Functional and visually clean on every component           | Track A Parts 2-3 |
+| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete; P5 audit verified | Landing, starter queries, freshness banner                 | Track A Part 3    |
+| Errors / loading   | Track A Part 3 Phase P2 complete; P5 audit verified | Designed states with helpful copy and skeletons            | Track A Part 3    |
+| Felt polish        | Track A Part 3 Phase P4 complete; P5 audit verified; Phase P5 closure active | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
 
 ---
 
