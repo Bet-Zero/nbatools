@@ -71,7 +71,7 @@ deployed surface, not on the still-missing custom domain.
 
 ---
 
-## 2. `[ ]` Ship a reusable deployment smoke and monitoring harness
+## 2. `[x]` Ship a reusable deployment smoke and monitoring harness - completed on 2026-05-02: `src/nbatools/deployment_monitoring.py` and `tools/deployment_smoke.py` now produce a machine-readable smoke report for any supplied base URL, `tests/test_deployment_monitoring.py` covers the monitoring logic, and `make test-preflight` passed.
 
 **Why:** Monitoring and stability evidence should come from a repeatable tool,
 not ad hoc terminal curls or browser sessions.
