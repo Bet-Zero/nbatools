@@ -180,7 +180,7 @@ proof that the real domain works end to end.
 
 ---
 
-## 5. `[ ]` Track B closure retrospective and master-plan handoff
+## 5. `[~]` Track B closure retrospective and master-plan handoff - blocked on 2026-05-02: the developer must complete items 1, 3, and 4 on the live custom domain so Track B has real production-domain setup evidence, deploy-on-main evidence, and post-cutover smoke results before the final closure pass can run.
 
 **Why:** Self-propagating final task. Closes Track B cleanly and records the
 final deployment state instead of leaving the remaining domain work implicit.
