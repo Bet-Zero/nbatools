@@ -120,6 +120,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_n4_domain_cutover_checklist.md` — operator-ready checklist for custom-domain purchase, Vercel/DNS attachment, cutover evidence, and post-cutover smoke
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
+- `planning/query_bugs.md` — recurring query bug patterns and resolution log
 - `planning/roadmap.md` — planned and future capabilities
 
 ## Archive — `archive/`
