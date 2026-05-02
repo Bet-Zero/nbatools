@@ -128,7 +128,7 @@ map requires one consistent reveal pattern across every section.
 
 ---
 
-## 2. `[ ]` Wire `RawDetailToggle` into every existing always-open raw table
+## 2. `[x]` Wire `RawDetailToggle` into every existing always-open raw table
 
 **Why:** Make the toggle live across every result page in one sweep,
 rather than route-by-route. This delivers the map's "raw tables hidden by

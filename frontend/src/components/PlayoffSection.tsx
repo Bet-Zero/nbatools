@@ -9,7 +9,7 @@ import {
   type StatProps,
 } from "../design-system";
 import { resolveTeamIdentity } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./PlayoffSection.module.css";
 
@@ -360,8 +360,11 @@ function Details({ sections }: { sections: Record<string, SectionRow[]> }) {
     <>
       {detailKeys(sections).map((key) => (
         <div className={styles.detailSection} key={key}>
-          <SectionHeader title={detailTitle(key)} />
-          <DataTable rows={sections[key]} highlight={key !== "summary"} />
+          <RawDetailToggle
+            title={detailTitle(key)}
+            rows={sections[key]}
+            highlight={key !== "summary"}
+          />
         </div>
       ))}
     </>
@@ -583,14 +586,12 @@ function PlayoffLeaderboardLayout({
           );
         })}
       </div>
-      <div className={styles.detailSection}>
-        <SectionHeader title="Full Playoff Leaderboard" />
-        <DataTable
-          rows={leaderboard}
-          highlight
-          hiddenColumns={PLAYOFF_LEADERBOARD_HIDDEN_COLUMNS}
-        />
-      </div>
+      <RawDetailToggle
+        title="Full Playoff Leaderboard"
+        rows={leaderboard}
+        highlight
+        hiddenColumns={PLAYOFF_LEADERBOARD_HIDDEN_COLUMNS}
+      />
     </div>
   );
 }

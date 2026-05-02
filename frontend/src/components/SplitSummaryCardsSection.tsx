@@ -3,7 +3,6 @@ import type { ResultMetadata, SectionRow } from "../api/types";
 import {
   Avatar,
   Card,
-  SectionHeader,
   StatBlock,
   TeamBadge,
   type StatProps,
@@ -13,7 +12,7 @@ import {
   resolveScopedTeamTheme,
   resolveTeamIdentity,
 } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./SplitSummaryCardsSection.module.css";
 
@@ -270,14 +269,16 @@ export default function SplitSummaryCardsSection({
 
       {summary && summary.length > 0 && (
         <div className={styles.section}>
-          <SectionHeader title="Split Summary Detail" />
-          <DataTable rows={summary} />
+          <RawDetailToggle title="Split Summary Detail" rows={summary} />
         </div>
       )}
       {splitComparison && splitComparison.length > 0 && (
         <div className={styles.section}>
-          <SectionHeader title="Split Comparison Detail" />
-          <DataTable rows={splitComparison} highlight />
+          <RawDetailToggle
+            title="Split Comparison Detail"
+            rows={splitComparison}
+            highlight
+          />
         </div>
       )}
     </>

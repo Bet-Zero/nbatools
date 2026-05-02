@@ -14,7 +14,7 @@ import {
   resolvePlayerIdentity,
   resolveTeamIdentity,
 } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatValue } from "./tableFormatting";
 import styles from "./StreakSection.module.css";
 
@@ -293,10 +293,7 @@ export default function StreakSection({ sections, metadata, route }: Props) {
         })}
       </div>
 
-      <div className={styles.detailSection}>
-        <SectionHeader title="Full Streak Detail" />
-        <DataTable rows={streak} highlight />
-      </div>
+      <RawDetailToggle title="Full Streak Detail" rows={streak} highlight />
     </div>
   );
 }

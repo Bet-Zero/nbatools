@@ -11,7 +11,7 @@ import {
   resolveScopedTeamTheme,
   resolveTeamIdentity,
 } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatValue } from "./tableFormatting";
 import styles from "./TeamSummarySection.module.css";
 
@@ -201,10 +201,7 @@ export default function TeamSummarySection({ sections, metadata, route }: Props)
             )}
           </Card>
 
-          <div className={styles.detailSection}>
-            <SectionHeader title="Full Summary" />
-            <DataTable rows={summary} />
-          </div>
+          <RawDetailToggle title="Full Summary" rows={summary} />
         </div>
       )}
       {(!summary || summary.length === 0) && (
@@ -214,8 +211,7 @@ export default function TeamSummarySection({ sections, metadata, route }: Props)
       )}
       {bySeason && bySeason.length > 0 && (
         <div className={styles.section}>
-          <SectionHeader title="By Season" />
-          <DataTable rows={bySeason} />
+          <RawDetailToggle title="By Season" rows={bySeason} />
         </div>
       )}
     </>

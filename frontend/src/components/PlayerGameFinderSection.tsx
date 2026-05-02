@@ -10,7 +10,7 @@ import {
   type StatProps,
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./PlayerGameFinderSection.module.css";
 
@@ -342,10 +342,7 @@ export default function PlayerGameFinderSection({ sections }: Props) {
           );
         })}
       </div>
-      <Card className={styles.detailCard} depth="card" padding="md">
-        <SectionHeader title="Player Game Detail" />
-        <DataTable rows={finder} />
-      </Card>
+      <RawDetailToggle title="Player Game Detail" rows={finder} />
     </div>
   );
 }

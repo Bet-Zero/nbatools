@@ -13,7 +13,7 @@ import {
   resolvePlayerIdentity,
   resolveTeamIdentity,
 } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./HeadToHeadSection.module.css";
 
@@ -331,8 +331,11 @@ export default function HeadToHeadSection({
 
       {details.map((key) => (
         <div className={styles.detailSection} key={key}>
-          <SectionHeader title={detailTitle(key)} />
-          <DataTable rows={sections[key]} highlight={key !== "summary"} />
+          <RawDetailToggle
+            title={detailTitle(key)}
+            rows={sections[key]}
+            highlight={key !== "summary"}
+          />
         </div>
       ))}
     </div>
