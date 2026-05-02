@@ -152,10 +152,12 @@ not ad hoc terminal curls or browser sessions.
 
 ---
 
-## 4. `[~]` Start the 7-day deployed stability soak log - started on 2026-05-02: `phase_n3_stability_soak_log.md` now holds the day-0 entry and the daily-check procedure. This item stays in progress until seven consecutive days complete without manual intervention.
+## 4. `[-]` Skip the 7-day deployed stability soak - skipped on 2026-05-02: friends-tier scope makes an extended synthetic soak lower value than ongoing real usage, while `phase_n3_stability_soak_log.md` preserves the day-0 baseline and the existing smoke harness remains available for targeted checks when needed.
 
-**Why:** Track B is not done until the deployment survives seven consecutive
-days without manual intervention.
+**Why:** Friends-tier release scope does not justify holding Track B open for a
+seven-day synthetic soak when the deployed app will now get real usage and the
+day-0 baseline plus reusable smoke harness already provide a repeatable
+fallback check.
 
 **Scope:**
 
@@ -173,9 +175,10 @@ days without manual intervention.
 
 **Acceptance criteria:**
 
-- Soak log exists with day-0 entry and explicit follow-up procedure.
-- The queue item is left `[~]` until seven consecutive days complete.
-- Any incident or missing signal has a concrete next action.
+- Soak log exists with the day-0 entry and an explicit skip/closure note.
+- The queue item is marked `[-]` with the rationale captured inline.
+- The retained baseline and smoke harness are named as the fallback evidence
+  path.
 
 **Tests to run:**
 
@@ -225,6 +228,7 @@ Track B wrap-up queue that closes the remaining custom-domain work.
 
 ## Appendix: progress tracking
 
-Phase N3 is complete when items 1-4 are checked `[x]` and item 5 has drafted
-the N4 wrap-up queue. Until then, the active deployed `*.vercel.app` URL is the
+Phase N3 is complete when items 1-3 are checked `[x]`, item 4 is either
+checked `[x]` or explicitly skipped `[-]`, and item 5 has drafted the N4
+wrap-up queue. Until then, the active deployed `*.vercel.app` URL is the
 canonical N3 target and custom-domain-only work remains deferred.

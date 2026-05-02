@@ -1,17 +1,34 @@
 # Phase N3 Stability Soak Log
 
-> **Status:** In progress. Started on 2026-05-02.
+> **Status:** Closed as skipped on 2026-05-02 after the day-0 baseline.
 
 Deployment target for the current soak:
 `https://nbatools-kn8wz220h-brents-projects-686e97fc.vercel.app/`
 
-This soak stays anchored on the active Vercel deployment URL until the custom
-domain exists. If the domain is purchased mid-soak, Phase N4 can decide whether
-to continue on the Vercel URL, restart on the custom domain, or run both.
+This soak was originally anchored on the active Vercel deployment URL until the
+custom domain existed. On 2026-05-02, Track B closed the synthetic seven-day
+loop as out of scope for a friends-tier release. The retained day-0 baseline
+and the reusable smoke harness remain the fallback evidence path if deployed
+behavior needs to be checked again before the custom-domain wrap-up.
 
 ---
 
-## Success rule
+## Skip decision
+
+The seven-day synthetic soak is intentionally skipped.
+
+Reason for the skip:
+
+- Friends-tier scope means real ongoing usage is a better signal than waiting
+  through a synthetic daily smoke loop.
+- The day-0 baseline already captured a clean deployed reference point.
+- `tools/deployment_smoke.py` remains available for targeted follow-up checks
+  any time deployment behavior looks suspicious.
+
+This file remains as the closed record of the baseline and the decision to stop
+the longer soak procedure.
+
+## Original success rule
 
 The soak is successful when seven consecutive calendar days pass without manual
 intervention on the deployed app and the daily smoke checks continue to return
@@ -35,7 +52,7 @@ resets after the repair lands and a new day-0 entry is recorded.
 
 ---
 
-## Daily procedure
+## Original daily procedure
 
 Run once per day from the repo root:
 
@@ -81,8 +98,9 @@ but still returned successful results.
 - Incident: none
 - Reset required: no
 
-The soak remains active. Keep appending one flat day entry per check until day
-7 closes or an incident forces a reset.
+The synthetic soak does not continue past day 0. If a later targeted check is
+needed, run the same smoke command and record the outcome in a new Phase N4
+artifact or incident note instead of resuming this daily procedure.
 
 ---
 
