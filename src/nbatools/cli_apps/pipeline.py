@@ -4,6 +4,8 @@ Exposes deterministic refresh, rebuild, backfill, status, and auto-refresh
 commands that orchestrate the full pull → validate → build → manifest pipeline.
 """
 
+from pathlib import Path
+
 import typer
 
 from nbatools.commands.pipeline.orchestrator import (
@@ -15,6 +17,7 @@ from nbatools.commands.pipeline.orchestrator import (
 from nbatools.commands.pipeline.orchestrator import (
     rebuild_season as rebuild_season_fn,
 )
+from nbatools.commands.pipeline.sync_r2 import R2SyncError, SyncProgress, run_sync_r2
 
 app = typer.Typer()
 
@@ -29,6 +32,14 @@ def _print_result(result: PipelineResult) -> None:
     else:
         print(f"\n❌ Pipeline {result.mode} completed with failures.")
         raise typer.Exit(code=1)
+
+
+def _print_sync_progress(progress: SyncProgress) -> None:
+    """Pretty-print one R2 sync progress event."""
+    print(
+        f"[{progress.processed_files}/{progress.total_files}] "
+        f"{progress.action} {progress.key} ({progress.size_bytes} bytes)"
+    )
 
 
 @app.command("refresh")
@@ -185,6 +196,43 @@ def status(
 
     if not missing_raw and not missing_proc:
         print("\nAll expected files present.")
+
+
+@app.command("sync-r2")
+def sync_r2(
+    data_dir: Path = typer.Option(
+        Path("data"),
+        "--data-dir",
+        help="Local data directory to sync.",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show planned uploads without writing to R2.",
+    ),
+    prefix: str = typer.Option(
+        "",
+        "--prefix",
+        help="Optional object-key prefix inside the R2 bucket.",
+    ),
+):
+    """Sync the local data directory to Cloudflare R2."""
+    try:
+        result = run_sync_r2(
+            data_dir=data_dir,
+            dry_run=dry_run,
+            prefix=prefix,
+            progress=_print_sync_progress,
+        )
+    except R2SyncError as exc:
+        print(f"R2 sync failed: {exc}")
+        raise typer.Exit(code=1)
+
+    for line in result.summary_lines:
+        print(line)
+
+    if not result.success:
+        raise typer.Exit(code=1)
 
 
 @app.command("auto-refresh")

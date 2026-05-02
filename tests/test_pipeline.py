@@ -502,6 +502,7 @@ class TestCLISurface:
         assert "rebuild" in result.output
         assert "backfill" in result.output
         assert "status" in result.output
+        assert "sync-r2" in result.output
 
     def test_status_command_runs(self):
         from typer.testing import CliRunner
@@ -556,6 +557,7 @@ class TestCLISurface:
         result = runner.invoke(app, ["pipeline", "--help"])
         assert result.exit_code == 0
         assert "refresh" in result.output
+        assert "sync-r2" in result.output
 
 
 # ---------------------------------------------------------------------------

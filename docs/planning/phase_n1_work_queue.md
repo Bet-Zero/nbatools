@@ -64,7 +64,7 @@ everything else.
 
 ---
 
-## 2. `[ ]` Add `pipeline sync-r2` CLI command
+## 2. `[x]` Add `pipeline sync-r2` CLI command — completed: CLI command, R2 sync implementation, mocked unit coverage, and live R2 dry-run/full-sync/incremental verification were completed.
 
 **Why:** This is the first half of the hybrid data sync — the developer-side
 push. It takes the local `data/` directory (or whichever subset is needed for
