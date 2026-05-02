@@ -330,7 +330,7 @@ the next queue for monitoring, freshness, and stability.
 
 ## Appendix: progress tracking
 
-Phase N2's preview/frontend-build work is complete. Item 4 remains `[~]`
-until the developer purchases or chooses the production domain. Items 5-6 are
-deferred to Track B wrap-up time because they require that domain. The draft of
-`phase_n3_work_queue.md` from item 7 is now the active handoff artifact.
+Phase N2's preview/frontend-build work is complete. Item 4 remains the
+historical human gate and items 5-6 remain historical deferrals, but the active
+continuation for all remaining custom-domain/cutover closure work now lives in
+`phase_n4_work_queue.md`. `phase_n3_work_queue.md` is closed.

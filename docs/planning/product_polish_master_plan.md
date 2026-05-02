@@ -119,23 +119,24 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track B, Phase N3.** Specifically,
-[`phase_n3_work_queue.md`](./phase_n3_work_queue.md).
+**Active continuation: Track B, Phase N4.** Specifically,
+[`phase_n4_work_queue.md`](./phase_n4_work_queue.md).
 
 Track A is closed. Track B is the remaining open track. Phase N1 closed the
 backend deployment foundation: R2 sync/read support, Vercel Function handlers,
 and deployed-mode API verification. Phase N2 shipped the React UI through
-Vercel and verified the deployed preview workflows. N2 items 4-6 are
-deferred until the developer purchases or chooses the production domain and
-can complete DNS/HTTPS setup. Phase N3 is the active continuation for
-domain-agnostic monitoring, deployed freshness evidence, and the 7-day
-stability soak against the existing `*.vercel.app` deployment; the
-custom-domain cutover and production smoke return during Track B wrap-up.
+Vercel and verified the deployed preview workflows. Phase N3 closed the
+domain-agnostic monitoring slice with a reusable smoke harness, deployed
+freshness/banner evidence, and a deliberate decision to skip the synthetic
+seven-day soak for friends-tier scope. Phase N4 is now the active continuation
+and owns the remaining custom-domain, production-cutover, production-smoke,
+and Track B closure work.
 
 The agent should work the next unchecked item in Track B's active queue. If a
 Track B item requires missing developer credentials or infrastructure setup,
-mark that item blocked per the queue instructions and stop. Domain-dependent
-items deferred from N2 should not block domain-agnostic N3 work.
+mark that item per the queue instructions and continue to any later
+domain-independent N4 items. Stop only when no later item can make progress
+without the developer.
 
 When Track A finishes Part 1, the next active queue is Part 2's first
 phase queue (drafted by Part 1's final task). Same for Part 2 to Part 3.

@@ -191,7 +191,7 @@ fallback check.
 
 ---
 
-## 5. `[ ]` Phase N3 retrospective and Phase N4 handoff
+## 5. `[x]` Phase N3 retrospective and Phase N4 handoff - completed on 2026-05-02: N3 shipped the reusable deployment smoke harness, captured deployed freshness/banner evidence against the live `*.vercel.app` URL, skipped the synthetic seven-day soak for friends-tier scope, and drafted `phase_n4_work_queue.md` so the remaining custom-domain closure work lives in one place.
 
 **Why:** Self-propagating final task. Captures what N3 learned and drafts the
 Track B wrap-up queue that closes the remaining custom-domain work.
@@ -218,17 +218,30 @@ Track B wrap-up queue that closes the remaining custom-domain work.
 - Retrospective captures outcomes, surprises, and residual risks.
 - `phase_n4_work_queue.md` exists with concrete wrap-up items.
 - The remaining domain-gated work is explicit.
-- This item is checked off only after the soak closes.
+- This item is checked off only after the N3 monitoring/freshness work is
+  closed, including an explicit decision on the soak path.
 
 **Tests to run:**
 
 - None (docs only)
 
+**Retrospective:**
+
+- What went well: the live `*.vercel.app` deployment was enough to build a
+  reusable smoke harness, capture a baseline, and verify that the UI freshness
+  banner matched the backend signal without waiting on the custom domain.
+- What was harder: the seven-day synthetic soak would have held Track B open
+  longer than warranted for a friends-tier app, while the domain gate still
+  prevented the real production URL, cutover, and post-cutover smoke from
+  happening.
+- Residuals: Phase N4 now owns the remaining custom-domain setup, production
+  cutover, production smoke, and final Track B closure work. The retained N3
+  baseline and smoke harness stay available as comparison artifacts.
+
 ---
 
 ## Appendix: progress tracking
 
-Phase N3 is complete when items 1-3 are checked `[x]`, item 4 is either
-checked `[x]` or explicitly skipped `[-]`, and item 5 has drafted the N4
-wrap-up queue. Until then, the active deployed `*.vercel.app` URL is the
-canonical N3 target and custom-domain-only work remains deferred.
+Phase N3 is now closed. Items 1-3 are checked `[x]`, item 4 is deliberately
+skipped `[-]` for friends-tier scope, and item 5 has handed the remaining
+custom-domain/cutover closure work to `phase_n4_work_queue.md`.
