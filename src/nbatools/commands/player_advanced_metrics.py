@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from pathlib import Path
 
 import pandas as pd
+
+from nbatools.data_source import data_exists, data_read_csv
 
 
 def _safe_divide(numer: float, denom: float) -> float | None:
@@ -34,11 +35,11 @@ def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.Data
     frames: list[pd.DataFrame] = []
 
     for season in seasons:
-        path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
-        if not path.exists():
+        path = f"data/raw/team_game_stats/{season}_{safe}.csv"
+        if not data_exists(path):
             continue
 
-        df = pd.read_csv(path).copy()
+        df = data_read_csv(path).copy()
         df["season"] = season
         df["season_type"] = season_type
         frames.append(df)
