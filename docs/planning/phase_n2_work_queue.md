@@ -114,7 +114,7 @@ talks to the same deployed API functions.
 
 ---
 
-## 3. `[ ]` Verify preview UI workflows end-to-end
+## 3. `[x]` Verify preview UI workflows end-to-end — completed: `phase_n2_preview_ui_e2e_results.md` documents the deployed preview browser pass for first-run load, health/freshness, representative natural queries, result renderers, raw JSON, copy link, saved queries, history, and desktop/phone viewport checks.
 
 **Why:** Loading the UI is not enough; the deployed React app must execute the
 core user workflows against R2-backed API functions.
