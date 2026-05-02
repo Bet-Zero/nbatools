@@ -160,10 +160,32 @@ Testmon runs serial (`-n0`). When it selects a large number of tests, it costs m
 
 - The diff touches a high fan-in module: `src/nbatools/query_service.py`, `src/nbatools/commands/natural_query.py`, parser core, the API layer, or shared fixtures/conftest files.
 - The diff exceeds ~50 lines in a single `src/` file.
-- A previous `test-impacted` run on the same change selected more than ~300 tests, or visibly stalls past ~2 minutes without finishing.
+- A previous `test-impacted` run on the same change selected more than ~300 tests.
 - Data files, environment variables, or dynamically loaded modules changed (testmon does not track these).
 
 For these cases, use `make test-preflight` (parallel, broad). If you also want a tight iteration loop first, run the matching domain slice (`make test-query`, `make test-api`, `make test-parser`, etc.) — these run the whole slice, not the testmon subset.
+
+#### Bail out fast when `test-impacted` runs slow
+
+Testmon should complete a small-change run in well under a minute. If it has not finished within **60 seconds**, or if its progress indicator is climbing slower than ~10% per minute, **kill it and use a focused pytest invocation instead** — do not "wait it out." This is the most common cause of agent loops dragging from minutes to hours.
+
+Replace the stalled `test-impacted` with a direct pytest call on the test files for the changed code, e.g.:
+
+```bash
+.venv/bin/pytest tests/test_<changed_file>.py -n0
+```
+
+Or run the matching domain slice (`make test-query`, `make test-api`, etc.). Either is sufficient for local "is my change sane" feedback.
+
+#### CI is the backstop — local tests are for fast feedback
+
+CI (`.github/workflows/ci.yml`) runs lint, `make test-unit`, and `make test` (the full parallel suite) on every PR. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
+
+- Run focused pytest on the directly-changed test files, **or** the matching `make test-<domain>` slice.
+- Push the PR. CI runs the comprehensive suite in parallel while you move on.
+- Trust CI to catch what focused tests miss.
+
+Only run `make test` or `make test-preflight` locally when CI is unavailable, when you need maximum confidence before pushing (e.g., a risky cross-cutting change), or when investigating a CI-only failure.
 
 ### Domain subset targets
 
