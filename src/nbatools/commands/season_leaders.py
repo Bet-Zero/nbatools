@@ -172,8 +172,15 @@ def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     return pd.Timestamp(ts).normalize()
 
 
+def _is_playoff_season_type(season_type: str | None) -> bool:
+    if season_type is None:
+        return False
+    return season_type.strip().lower() in {"playoff", "playoffs"}
+
+
 def _recommended_min_games(
     target_col: str,
+    season_type: str | None = None,
     date_window_active: bool = False,
     opponent_active: bool = False,
 ) -> int:
@@ -183,6 +190,10 @@ def _recommended_min_games(
         if target_col in COUNT_LEADERBOARD_STATS:
             return 1
         return 3
+    if _is_playoff_season_type(season_type):
+        if target_col in PERCENTAGE_STATS:
+            return 3
+        return 4
     if target_col in COUNT_LEADERBOARD_STATS:
         return 10
     if target_col in PERCENTAGE_STATS:
@@ -555,6 +566,7 @@ def _apply_default_guardrails(
     df: pd.DataFrame,
     target_col: str,
     min_games: int,
+    season_type: str | None = None,
     date_window_active: bool = False,
     opponent_active: bool = False,
     num_seasons: int = 1,
@@ -563,15 +575,21 @@ def _apply_default_guardrails(
         min_games,
         _recommended_min_games(
             target_col,
+            season_type=season_type,
             date_window_active=date_window_active,
             opponent_active=opponent_active,
         ),
     )
     df = df[df["games_played"] >= effective_min_games].copy()
 
-    fga_floor = 200 * num_seasons
-    fg3a_floor = 100 * num_seasons
-    fta_floor = 50 * num_seasons
+    if _is_playoff_season_type(season_type):
+        fga_floor = 40 * num_seasons
+        fg3a_floor = 20 * num_seasons
+        fta_floor = 10 * num_seasons
+    else:
+        fga_floor = 200 * num_seasons
+        fg3a_floor = 100 * num_seasons
+        fta_floor = 50 * num_seasons
 
     if target_col in {"fg_pct", "efg_pct", "ts_pct"} and "fga_total" in df.columns:
         df = df[df["fga_total"] >= fga_floor].copy()
@@ -883,6 +901,7 @@ def build_result(
             df,
             target_col,
             min_games,
+            season_type=season_type,
             date_window_active=date_window_active or game_filter_active,
             opponent_active=bool(opponent),
             num_seasons=len(seasons),

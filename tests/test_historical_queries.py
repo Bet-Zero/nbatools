@@ -1686,6 +1686,40 @@ class TestLiveSmokeHistoricalExtended:
         assert qr.is_ok
         assert qr.route == "game_summary"
 
+    def test_2025_playoff_ppg_leaderboard_includes_non_finals_team_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("most ppg in 2025 playoffs")
+        assert qr.is_ok
+        assert qr.route == "season_leaders"
+        leaders = qr.result.leaders.head(10)
+        assert any(team not in {"OKC", "IND"} for team in leaders["team_abbr"].dropna())
+
+    def test_2025_playoff_team_scoring_leaderboard_includes_non_finals_team_live(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("best scoring teams in 2025 playoffs")
+        assert qr.is_ok
+        assert qr.route == "season_team_leaders"
+        leaders = qr.result.leaders.head(10)
+        assert any(team not in {"OKC", "IND"} for team in leaders["team_abbr"].dropna())
+
+    def test_2025_regular_season_ppg_keeps_regular_season_floor_live(self):
+        from nbatools.query_service import execute_structured_query
+
+        qr = execute_structured_query(
+            "season_leaders",
+            season="2024-25",
+            stat="pts",
+            season_type="Regular Season",
+            min_games=1,
+            limit=250,
+        )
+        assert qr.is_ok
+        leaders = qr.result.leaders
+        assert not leaders.empty
+        assert leaders["games_played"].min() >= 20
+
     # -- Leaderboard hardening --
 
     def test_career_assists_leaders_live(self):
