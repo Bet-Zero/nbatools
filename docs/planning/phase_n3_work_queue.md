@@ -29,7 +29,7 @@
 
 ---
 
-## 1. `[ ]` Audit the deployed monitoring/freshness surface and lock the N3 evidence workflow
+## 1. `[x]` Audit the deployed monitoring/freshness surface and lock the N3 evidence workflow - completed on 2026-05-02: `phase_n3_monitoring_inventory.md` locks the active deployment-target rule, canonical smoke cases, evidence artifacts, and the custom-domain checks deferred to Phase N4.
 
 **Why:** N3 needs a domain-agnostic monitoring plan anchored on the actual
 deployed surface, not on the still-missing custom domain.
