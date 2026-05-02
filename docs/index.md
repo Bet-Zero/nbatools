@@ -115,6 +115,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_n3_work_queue.md` — active Track B monitoring, deployed-freshness, and stability queue using the current deployed URL
 - `planning/phase_n3_monitoring_inventory.md` — deployed monitoring target, smoke-case, header-field, and wrap-up-deferral inventory produced by Phase N3 item 1
 - `planning/phase_n3_preview_monitoring_baseline.md` — first deployed smoke baseline and freshness-banner verification produced by Phase N3 item 3
+- `planning/phase_n3_stability_soak_log.md` — active 7-day stability soak log started in Phase N3 item 4
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/roadmap.md` — planned and future capabilities

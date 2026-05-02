@@ -152,7 +152,7 @@ not ad hoc terminal curls or browser sessions.
 
 ---
 
-## 4. `[ ]` Start the 7-day deployed stability soak log
+## 4. `[~]` Start the 7-day deployed stability soak log - started on 2026-05-02: `phase_n3_stability_soak_log.md` now holds the day-0 entry and the daily-check procedure. This item stays in progress until seven consecutive days complete without manual intervention.
 
 **Why:** Track B is not done until the deployment survives seven consecutive
 days without manual intervention.
