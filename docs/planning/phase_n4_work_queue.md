@@ -105,7 +105,7 @@ from a concrete checklist instead of reconstructing the operator procedure.
 
 ---
 
-## 3. `[ ]` Re-complete N2 item 5: production cutover and deploy-on-main evidence
+## 3. `[~]` Re-complete N2 item 5: production cutover and deploy-on-main evidence - blocked on 2026-05-02: the developer must finish item 1 so the custom domain is live, run a fresh `nbatools-cli pipeline sync-r2` with real credentials, confirm the Vercel production environment still points at R2, and then hand the live custom domain plus the chosen deploy-on-main merge event back to the agent for documentation.
 
 **Why:** The app is not really in production until the custom-domain deployment
 path, R2-backed production configuration, and deploy-on-main evidence are
