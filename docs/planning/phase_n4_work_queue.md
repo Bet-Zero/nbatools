@@ -28,7 +28,7 @@
 
 ---
 
-## 1. `[ ]` Re-complete N2 item 4: custom domain and HTTPS
+## 1. `[~]` Re-complete N2 item 4: custom domain and HTTPS - blocked on 2026-05-02: the developer must choose and buy the final production domain, add the chosen hostname(s) in Vercel Project > Settings > Domains, create the exact DNS records Vercel shows at the registrar or DNS host, wait for Vercel to verify DNS and issue HTTPS, and then hand the live domain back to the agent for verification.
 
 **Why:** Track B is not closed until friends use a real custom-domain URL with
 clean HTTPS.
