@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
+  "outputDirectory": "src/nbatools/ui/dist",
   "env": {
     "DATA_SOURCE": "r2",
     "R2_BUCKET_NAME": "nbatools-data"

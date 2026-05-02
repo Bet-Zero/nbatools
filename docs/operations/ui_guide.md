@@ -34,11 +34,13 @@ npm --prefix frontend ci && npm --prefix frontend run build
 ```
 
 The Vite output is generated at `src/nbatools/ui/dist/` during the Vercel
-build. Those files are build artifacts and are intentionally not committed.
-The root function serves `index.html` when present, and the UI asset function
-serves generated `/assets/...`, `/favicon.svg`, and `/icons.svg` files from the
-same bundle. If the bundle is missing, `/` falls back to the lightweight "UI
-bundle not built" shell so API-only deployments still respond.
+build, and `vercel.json` names that directory as the static output directory.
+Those files are build artifacts and are intentionally not committed. Vercel can
+serve the generated root and `/assets/...` files directly from that output; the
+Python UI helpers still serve the same bundle when routed through the local API
+or function fallback path. If the bundle is missing locally, `/` falls back to
+the lightweight "UI bundle not built" shell so API-only checkouts still
+respond.
 
 ### Development (two terminals, hot reload)
 

@@ -77,8 +77,10 @@ project build:
 npm --prefix frontend ci && npm --prefix frontend run build
 ```
 
-The generated Vite bundle lands in `src/nbatools/ui/dist/` and is served by the
-Python UI functions. The `frontend/` source directory remains excluded from
-runtime function bundles; only the generated `ui/dist` output is needed at
-runtime. If the bundle is unavailable, the root route intentionally falls back
-to the API-only "UI bundle not built" shell.
+The generated Vite bundle lands in `src/nbatools/ui/dist/`, which is also the
+configured Vercel static output directory. The Python UI functions can serve
+that same bundle for local production-like runs and fallback function paths.
+The `frontend/` source directory remains excluded from runtime function
+bundles; only the generated `ui/dist` output is needed at runtime. If the
+bundle is unavailable locally, the root route intentionally falls back to the
+API-only "UI bundle not built" shell.
