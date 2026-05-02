@@ -119,12 +119,14 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 
 ## Active Continuation
 
-**Active continuation: Track B, Phase N1.** Specifically,
-[`phase_n1_work_queue.md`](./phase_n1_work_queue.md).
+**Active continuation: Track B, Phase N2.** Specifically,
+[`phase_n2_work_queue.md`](./phase_n2_work_queue.md).
 
-Track A is closed. Track B is the remaining open track. Its first queue
-contains developer-gated infrastructure setup followed by agent-runnable code
-work once the required credentials and bucket exist.
+Track A is closed. Track B is the remaining open track. Phase N1 closed the
+backend deployment foundation: R2 sync/read support, Vercel Function handlers,
+and deployed-mode API verification. Phase N2 is the active continuation for
+shipping the React UI through Vercel, configuring the custom domain, and
+cutting over production.
 
 The agent should work the next unchecked item in Track B's active queue. If a
 Track B item requires missing developer credentials or infrastructure setup,

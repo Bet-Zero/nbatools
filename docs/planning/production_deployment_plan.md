@@ -47,7 +47,7 @@ Wire the deployed app to read from R2.
 Deploy the React frontend to Vercel. Configure custom domain. HTTPS.
 Deploy-on-push from main. Verify end-to-end.
 
-**Companion queue:** drafted at end of N1.
+**Companion queue:** [`phase_n2_work_queue.md`](./phase_n2_work_queue.md)
 
 ### Phase N3 — Monitoring, freshness, and stability
 
