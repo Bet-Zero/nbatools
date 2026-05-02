@@ -42,9 +42,12 @@ npm --prefix frontend ci && npm --prefix frontend run build
 ```
 
 This keeps `src/nbatools/ui/dist/**` generated in the deployment workspace, not
-committed. The existing Python UI loader can then read `index.html` from the
-generated package path, while the function `excludeFiles` rules continue to
-exclude `frontend/**` and `node_modules` from runtime bundles.
+committed. `vercel.json` should also set
+`"outputDirectory": "src/nbatools/ui/dist"` so Vercel accepts the build output
+and can serve the generated files directly. The existing Python UI loader can
+still read `index.html` from the generated package path when routed through the
+local API or function fallback path, while the function `excludeFiles` rules
+continue to exclude `frontend/**` and `node_modules` from runtime bundles.
 
 This strategy was chosen over committing `src/nbatools/ui/dist/**` because Vite
 emits hashed asset filenames and committing build output would create frequent
@@ -62,6 +65,12 @@ Item 2 should make these exact changes:
 
    ```json
    "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build"
+   ```
+
+   Also set:
+
+   ```json
+   "outputDirectory": "src/nbatools/ui/dist"
    ```
 
 2. Add a Vercel function for UI static assets, for example `api/assets.py`,

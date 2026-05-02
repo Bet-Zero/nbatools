@@ -67,7 +67,7 @@ Vercel deployment, or use another repo-native approach.
 
 ---
 
-## 2. `[ ]` Ship the React bundle in the Vercel preview
+## 2. `[x]` Ship the React bundle in the Vercel preview — completed: Vercel now runs the frontend build before packaging functions, the generated React bundle is served at `/`, Vite assets are served through a safe UI asset function, deployment docs describe the build path, and local/frontend/API verification passed.
 
 **Why:** The deployed API works, but `/` still serves the fallback shell. N2's
 first functional milestone is a preview URL where the real React app loads and
