@@ -59,14 +59,14 @@ the answer requires multiple parts.
   - `Jokic last 10 games`
   - `LeBron last 5 games`
   - `Curry this season`
-- **Currently shows:** _fill in by running the query_
-- **Should show:**
-  - Hero block: player identity (headshot, name, team) + summary line ("Last 10 games")
-  - Summary stats over the window: PTS / REB / AST / FG% / 3P% / FT% / MIN, displayed as averages (per game)
-  - Game logs table: one row per game, columns for date, opponent, W/L, MIN, PTS, REB, AST, STL, BLK, TOV, FG, 3P, FT
-  - Optional small visualizations: trend sparkline for primary stat
-- **Bugs filed:** none yet
-- **Notes:**
+- **Currently shows (4 stacked sections):**
+  1. **Hero card:** player headshot (Avatar), team logo (TeamBadge), player name, three "hero" stats (PTS/REB/AST as averages), optional W-L record stat, supporting stats grid (StatBlock, 2 or 4 columns)
+  2. **"Recent Games" card** (only if `game_log` section exists): scoring sparkline (line graph of points per game) + a list of game rows. **Hardcoded to show only the last 5 games** regardless of how many were requested. Each row shows: date, W/L badge, opponent logo, and exactly 4 stats: PTS / REB / AST / MIN
+  3. **"Full Summary" data table:** raw DataTable dump of the `summary` section
+  4. **"By Season" data table** (only if `by_season` section exists): DataTable dump of the `by_season` section
+- **Should show:** _TBD — write your curated intent_
+- **Bugs filed:** none yet (candidate: "Recent Games hardcoded to 5 games and 4 stat columns — should show all requested games and richer stats for `last N games` queries")
+- **Notes:** Compound result. You explicitly said this should show both summary stats AND full game logs. Currently the "Recent Games" block is the closest thing to a game log but it's truncated to 5 games and stripped down to 4 stats.
 
 ### `player_summary`-style routes for season averages `[ ]`
 - **Example queries:**
@@ -79,8 +79,11 @@ the answer requires multiple parts.
 - **Example queries:**
   - `Lakers record this season`
   - `Celtics record vs Bucks`
-- **Currently shows:** _fill in_
-- **Should show:** _TBD_
+- **Currently shows (3 stacked sections):**
+  1. **Hero card:** team logo (TeamBadge), team name (h2), primary record stat (large W-L display), supporting stats grid (StatBlock)
+  2. **"Record Detail" data table:** raw DataTable dump of the `summary` section
+  3. **"By Season" data table** (only if `by_season` section exists): DataTable dump of the `by_season` section, under "Team Record" / "By Season" headers
+- **Should show:** _TBD — write your curated intent_
 
 ### `team_split_summary` `[ ]`
 - **Section component:** `TeamSummarySection` (likely)
@@ -108,7 +111,12 @@ the answer requires multiple parts.
 - **Example queries:**
   - `Jokic vs Embiid this season`
   - `LeBron vs MJ career`
-- **Should show:** _TBD_ (likely two side-by-side player blocks with stat comparison)
+- **Currently shows (4 stacked sections):**
+  1. **Header section** (SectionHeader)
+  2. **Side-by-side player blocks:** each block has player name (h3), supporting stats grid (StatBlock), optional record stat
+  3. **"Player Summary Detail" data table:** raw DataTable dump of the `summary` section
+  4. **"Metric Comparison" + "Full Metric Detail" data tables:** raw DataTable dumps of the `comparison` section (one with `highlight` styling)
+- **Should show:** _TBD — write your curated intent_
 
 ### `team_compare` `[ ]`
 - **Example queries:**
@@ -163,20 +171,22 @@ the answer requires multiple parts.
   - `most ppg in 2025 playoffs`
   - `top 10 scorers 2025-26`
   - `assists leaders this season`
-- **Currently shows:**
-  - Designed view: ranked card per player with headshot, name, team chip, games played, season type, and one hero metric (PTS/AST/etc.)
-  - Detail table below the designed view (now hidden after column-cleanup PR)
-- **Should show:** _TBD — currently mostly correct, but for "best record" type queries the win/loss should appear as context_
-- **Bugs filed:** playoff min-games threshold (running fix), redundant detail table
-- **Notes:** leaderboard is the most-used class
+- **Currently shows (2 stacked sections):**
+  1. **Ranked list:** SectionHeader "Leaderboard" + "{N} entries" count. Per-row card with: rank (#1, #2, ...), identity mark (player headshot via Avatar, or team logo via TeamBadge), entity name, context chips (games played, season, season_type, team abbr, opponent if applicable, qualifier columns), one hero metric value (PTS/AST/PPG/etc.) on the right
+  2. **"Full Leaderboard" data table:** DataTable of the same `leaderboard` rows. After PR #200 (in flight) hides system columns, this table shows the same content as the ranked list above — redundant by design until you decide otherwise
+- **Should show:** _TBD — write your curated intent_
+- **Bugs filed:** playoff min-games threshold (in flight), redundant Full Leaderboard table (decision pending)
+- **Notes:** Most-used class. The cross-cutting "remove redundant detail table" decision lives here too.
 
 ### `season_team_leaders` `[ ]`
-- **Section component:** `LeaderboardSection`
+
+- **Section component:** `LeaderboardSection` (same component as `season_leaders`)
 - **Example queries:**
   - `best record since 2015`
   - `most wins by a team in a season`
-- **Should show:** _TBD — wins/losses chip alongside win% metric_
-- **Bugs filed:** playoff min-games threshold (running fix), wins/losses missing as context
+- **Currently shows:** Same 2-section layout as `season_leaders` (ranked list + Full Leaderboard data table). For "best record" queries the hero metric is `win_pct`. **Wins and losses are not surfaced as context chips** because `contextItems` in `LeaderboardSection.tsx` doesn't know about them.
+- **Should show:** _TBD — write your curated intent_
+- **Bugs filed:** playoff min-games threshold (in flight), wins/losses missing as context (in flight)
 
 ### `team_record_leaderboard` `[ ]`
 - **Example queries:**
