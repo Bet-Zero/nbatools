@@ -68,7 +68,7 @@ already account for this:
 
 ---
 
-## 1. `[ ]` Add the shared `RawDetailToggle` primitive
+## 1. `[x]` Add the shared `RawDetailToggle` primitive
 
 **Why:** Every section component currently embeds raw `DataTable`
 sections inline and always-open. Without a shared collapsed primitive,
