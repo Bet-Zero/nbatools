@@ -65,7 +65,7 @@ clean HTTPS.
 
 ---
 
-## 2. `[ ]` Draft the custom-domain cutover worksheet and operator checklist
+## 2. `[x]` Draft the custom-domain cutover worksheet and operator checklist - completed on 2026-05-02: `phase_n4_domain_cutover_checklist.md` now captures the operator sequence for domain purchase/selection, Vercel attachment, DNS verification, production readiness, deploy-on-main evidence capture, and post-cutover smoke commands.
 
 **Why:** Once the domain exists, the cutover and smoke steps should execute
 from a concrete checklist instead of reconstructing the operator procedure.

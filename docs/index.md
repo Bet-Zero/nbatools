@@ -117,6 +117,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_n3_preview_monitoring_baseline.md` — first deployed smoke baseline and freshness-banner verification produced by Phase N3 item 3
 - `planning/phase_n3_stability_soak_log.md` — closed day-0 stability-baseline record and soak-skip decision from Phase N3 item 4
 - `planning/phase_n4_work_queue.md` — active Track B custom-domain, production-cutover, production-smoke, and closure queue
+- `planning/phase_n4_domain_cutover_checklist.md` — operator-ready checklist for custom-domain purchase, Vercel/DNS attachment, cutover evidence, and post-cutover smoke
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/roadmap.md` — planned and future capabilities
