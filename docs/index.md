@@ -106,9 +106,10 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_p4_felt_polish_inventory.md` — felt-polish current-state, fixture, risk, and verification inventory produced by Phase P4 item 1
 - `planning/phase_p5_work_queue.md` — completed Track A Part 3 closure queue for first-run/polish audit, Track A closure, and master-plan handoff
 - `planning/phase_p5_part3_completion_audit.md` — Track A Part 3 done-definition audit produced by Phase P5 item 1
-- `planning/phase_n1_work_queue.md` — active Track B deployment queue
+- `planning/phase_n1_work_queue.md` — completed Track B backend deployment and R2 queue
 - `planning/phase_n1_api_inventory.md` — FastAPI route, state, cold-start, and Vercel-refactor inventory produced by Phase N1 item 4
 - `planning/phase_n1_e2e_results.md` — deployed R2/Vercel end-to-end verification results produced by Phase N1 item 6
+- `planning/phase_n2_work_queue.md` — active Track B frontend deployment, custom-domain, and production-cutover queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/roadmap.md` — planned and future capabilities

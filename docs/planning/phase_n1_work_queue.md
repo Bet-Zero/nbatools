@@ -313,7 +313,7 @@ actually works. This is the integration test for items 1-5.
 
 ---
 
-## 7. `[ ]` Phase N1 retrospective and Phase N2 handoff
+## 7. `[x]` Phase N1 retrospective and Phase N2 handoff — completed: Phase N1 outcomes, surprises, and residuals are captured below; `phase_n2_work_queue.md` now defines the frontend deployment, custom-domain, production-cutover, and Phase N3 handoff sequence.
 
 **Why:** Self-propagating final task. Captures learnings and drafts the next
 queue.
@@ -344,6 +344,41 @@ queue.
 **Tests to run:**
 
 - None (docs only)
+
+### Phase N1 Retrospective
+
+**What shipped:**
+
+- Cloudflare R2 setup is documented, with local `.env` and Vercel env-var
+  expectations recorded in `docs/operations/deployment.md`.
+- `nbatools-cli pipeline sync-r2` can dry-run, sync, and incrementally skip
+  unchanged local data objects into the `nbatools-data` bucket.
+- The engine/API can switch between local filesystem data and R2 reads through
+  `DATA_SOURCE`, with local mode preserved as the default.
+- FastAPI routes have Vercel Function entrypoints, shared handler/payload
+  helpers, route rewrites, and function timeout configuration.
+- The main Vercel preview reads from R2 and passed deployed `/freshness` plus
+  representative `/query` verification.
+
+**What was harder than expected:**
+
+- Vercel Deployment Protection blocked unauthenticated preview verification
+  until the user disabled it.
+- The initial R2 abstraction missed one player advanced-metric team-context
+  loader that still read from `data/raw/...` directly. That only surfaced in
+  deployed mode because Vercel excludes `data/**`.
+- R2-backed first requests can be slow enough to exceed the default `10s`
+  Vercel safety bar; `api/query.py`, `api/structured_query.py`, and
+  `api/freshness.py` need the configured `maxDuration: 60`.
+
+**Residuals for Phase N2:**
+
+- `/` still serves the expected fallback until the React bundle is included in
+  the deployed artifact or built during deployment.
+- Custom domain, HTTPS, production cutover, and deploy-on-main verification
+  remain open.
+- Phase N3 should treat cold-start timing and R2 data freshness as monitoring
+  concerns, not just one-off manual checks.
 
 ---
 
