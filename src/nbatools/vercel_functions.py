@@ -25,6 +25,13 @@ def ui_fallback_asset_response() -> tuple[int, str, str]:
     return HTTPStatus.OK, UI_FALLBACK_SCRIPT, "application/javascript"
 
 
+def ui_asset_response(asset_path: str) -> tuple[int, bytes, str]:
+    """Return a bundled UI asset response."""
+    from nbatools.api_ui import ui_asset_response as build_ui_asset_response
+
+    return build_ui_asset_response(asset_path)
+
+
 def health_response() -> tuple[int, dict[str, Any]]:
     """Return the health endpoint response."""
     return HTTPStatus.OK, health_payload()

@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm --prefix frontend ci && npm --prefix frontend run build",
   "env": {
     "DATA_SOURCE": "r2",
     "R2_BUCKET_NAME": "nbatools-data"
@@ -11,6 +12,11 @@
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
     },
     "api/ui_fallback_asset.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/assets.py": {
       "memory": 1024,
       "maxDuration": 10,
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
@@ -49,6 +55,18 @@
     {
       "source": "/assets/index-fallback.js",
       "destination": "/api/ui_fallback_asset"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/api/assets?path=assets/:path*"
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": "/api/assets?path=favicon.svg"
+    },
+    {
+      "source": "/icons.svg",
+      "destination": "/api/assets?path=icons.svg"
     },
     {
       "source": "/health",

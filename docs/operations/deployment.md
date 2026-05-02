@@ -67,3 +67,18 @@ nbatools-cli pipeline sync-r2
 The one-off manual upload/download test from the original setup checklist was
 intentionally skipped. The `pipeline sync-r2` command is the production path
 and is the meaningful verification.
+
+## Vercel Frontend Build
+
+Phase N2 deploys the React UI by running the frontend build during Vercel's
+project build:
+
+```bash
+npm --prefix frontend ci && npm --prefix frontend run build
+```
+
+The generated Vite bundle lands in `src/nbatools/ui/dist/` and is served by the
+Python UI functions. The `frontend/` source directory remains excluded from
+runtime function bundles; only the generated `ui/dist` output is needed at
+runtime. If the bundle is unavailable, the root route intentionally falls back
+to the API-only "UI bundle not built" shell.

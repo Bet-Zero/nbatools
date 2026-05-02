@@ -42,6 +42,20 @@ class JsonHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def send_bytes(
+        self,
+        content: bytes,
+        *,
+        content_type: str,
+        status: int = HTTPStatus.OK,
+    ) -> None:
+        self.send_response(status)
+        self._send_cors_headers()
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(content)))
+        self.end_headers()
+        self.wfile.write(content)
+
     def send_api_error(
         self,
         status: int,

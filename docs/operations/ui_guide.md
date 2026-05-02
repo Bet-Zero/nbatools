@@ -25,6 +25,21 @@ uvicorn nbatools.api:app --reload
 
 Then open **http://127.0.0.1:8000** in a browser.
 
+### Deployed preview / production build
+
+Vercel builds the frontend before packaging the Python Functions:
+
+```bash
+npm --prefix frontend ci && npm --prefix frontend run build
+```
+
+The Vite output is generated at `src/nbatools/ui/dist/` during the Vercel
+build. Those files are build artifacts and are intentionally not committed.
+The root function serves `index.html` when present, and the UI asset function
+serves generated `/assets/...`, `/favicon.svg`, and `/icons.svg` files from the
+same bundle. If the bundle is missing, `/` falls back to the lightweight "UI
+bundle not built" shell so API-only deployments still respond.
+
 ### Development (two terminals, hot reload)
 
 ```bash
