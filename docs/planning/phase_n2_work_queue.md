@@ -21,7 +21,7 @@
 
 ---
 
-## 1. `[ ]` Audit the frontend deployment path and choose the build strategy
+## 1. `[x]` Audit the frontend deployment path and choose the build strategy — completed: `phase_n2_frontend_deployment_inventory.md` chooses a Vercel build-time Vite build, keeps generated `dist/` assets out of git, and defines the item 2 punchlist for build command, asset serving, tests, docs, and preview verification.
 
 **Why:** Phase N1 intentionally shipped the API fallback because the React
 bundle was not part of the Vercel deployment. Before changing build behavior,
