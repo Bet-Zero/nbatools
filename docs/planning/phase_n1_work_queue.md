@@ -163,7 +163,7 @@ deployed app needs to read from R2 instead of the local filesystem.
 
 ---
 
-## 4. `[ ]` Reconnaissance: audit FastAPI app for Vercel Functions refactor
+## 4. `[x]` Reconnaissance: audit FastAPI app for Vercel Functions refactor — completed: documented every current route/mount, middleware, startup/global state, cold-start measurements, Vercel constraints, refactor mapping, and R2 timeout risks in `phase_n1_api_inventory.md`.
 
 **Why:** Before refactoring, we need to know what we're refactoring. Vercel
 Functions are stateless function handlers, not a long-running server. The
