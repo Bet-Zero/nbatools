@@ -51,18 +51,32 @@ Deploy-on-push from main. Verify end-to-end.
 
 ### Phase N3 — Monitoring, freshness, and stability
 
-Error monitoring. UI freshness banner integrated into the deployed app
-(Track A may have already built the UI side; this phase wires it to real
-data freshness signals from the deployed system). 7-day stability soak.
+Domain-agnostic monitoring and freshness verification against the active
+deployed URL (currently the Vercel `*.vercel.app` deployment until the
+custom domain exists). Track A already built the UI freshness banner; this
+phase makes the deployed monitoring path, freshness evidence, and stability
+workflow repeatable. Custom-domain-only checks stay deferred to wrap-up
+time.
 
-**Companion queue:** drafted at end of N2.
+**Companion queue:** [`phase_n3_work_queue.md`](./phase_n3_work_queue.md)
 
 ### Phase N4 — Track B closure
 
-Capture learnings. Verify Track B's done definition is met. Update the
-master plan with Track B closure status.
+Capture learnings. Finish any custom-domain-specific wrap-up that Phase N3
+could not execute before the domain existed. Verify Track B's done
+definition is met. Update the master plan with Track B closure status.
 
 **Companion queue:** drafted at end of N3.
+
+---
+
+## Current continuation note
+
+As of 2026-05-02, Phase N2 items 4-6 are deferred until the developer buys
+or chooses the production domain and can complete Vercel DNS/HTTPS setup.
+Track B is continuing immediately with Phase N3 against the current deployed
+Vercel URL so monitoring, deployed freshness evidence, and the 7-day
+stability workflow are not blocked by domain purchase timing.
 
 ---
 

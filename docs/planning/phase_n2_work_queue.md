@@ -158,7 +158,7 @@ core user workflows against R2-backed API functions.
 
 ---
 
-## 4. `[ ]` Configure the custom domain and HTTPS - human-gated
+## 4. `[~]` Configure the custom domain and HTTPS - human-gated — blocked on 2026-05-02: developer must choose or purchase the production domain, add it to the Vercel project, configure the DNS records Vercel provides, and wait for HTTPS certificate provisioning before the agent can verify and document this item.
 
 **Why:** Track B is not done until the product is reachable on a custom-domain
 URL with clean HTTPS. This step requires the developer to own or purchase the
@@ -202,7 +202,7 @@ item `[~]` with the exact developer action needed and stop.
 
 ---
 
-## 5. `[ ]` Prepare production cutover and deploy-on-main evidence path
+## 5. `[-]` Prepare production cutover and deploy-on-main evidence path - deferred on 2026-05-02: this item depends on the custom domain from item 4, so Track B is skipping ahead to Phase N3's domain-agnostic monitoring/freshness/stability work and will return to production cutover in Phase N4 once the developer purchases the domain.
 
 **Why:** The preview can pass while production is still incomplete. This item
 prepares the actual production deployment path so the next item can verify the
@@ -242,7 +242,7 @@ custom-domain production deployment created by this item's merge to `main`.
 
 ---
 
-## 6. `[ ]` Production UI/API smoke, deploy-on-main, and performance record
+## 6. `[-]` Production UI/API smoke, deploy-on-main, and performance record - deferred on 2026-05-02: this item requires the production custom-domain deployment path from items 4-5, so it moves to Track B wrap-up work in Phase N4 after domain purchase.
 
 **Why:** After cutover, capture the production baseline and deploy-on-main
 evidence that Phase N3's monitoring and stability soak can compare against.
@@ -287,7 +287,7 @@ evidence that Phase N3's monitoring and stability soak can compare against.
 
 ---
 
-## 7. `[ ]` Phase N2 retrospective and Phase N3 handoff
+## 7. `[x]` Phase N2 retrospective and Phase N3 handoff - completed on 2026-05-02: N2 shipped the React Vercel preview, verified deployed UI workflows, and then hit the expected domain-purchase gate. Phase N3 is drafted early and uses the live `*.vercel.app` deployment as the monitoring/freshness/stability target until the custom domain exists.
 
 **Why:** Self-propagating final task. Captures deployment lessons and drafts
 the next queue for monitoring, freshness, and stability.
@@ -320,9 +320,17 @@ the next queue for monitoring, freshness, and stability.
 
 - None (docs only)
 
+**Retrospective:**
+
+- What went well: N1's Vercel/R2 refactor let N2 focus on the frontend build path instead of backend churn, and the deployed preview passed both browser and API verification with same-origin requests.
+- What was harder: custom-domain setup, production cutover, and deploy-on-main evidence all depend on a developer-owned domain and DNS control, which the agent cannot create.
+- Residuals: item 4 remains human-gated; items 5-6 are intentionally deferred until domain purchase; Phase N3 now continues with domain-agnostic monitoring, deployed freshness evidence, and the stability soak against the existing Vercel deployment.
+
 ---
 
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Phase N2 is complete. The draft of
-`phase_n3_work_queue.md` from item 7 is the handoff artifact.
+Phase N2's preview/frontend-build work is complete. Item 4 remains `[~]`
+until the developer purchases or chooses the production domain. Items 5-6 are
+deferred to Track B wrap-up time because they require that domain. The draft of
+`phase_n3_work_queue.md` from item 7 is now the active handoff artifact.

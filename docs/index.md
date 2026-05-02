@@ -109,9 +109,10 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_n1_work_queue.md` — completed Track B backend deployment and R2 queue
 - `planning/phase_n1_api_inventory.md` — FastAPI route, state, cold-start, and Vercel-refactor inventory produced by Phase N1 item 4
 - `planning/phase_n1_e2e_results.md` — deployed R2/Vercel end-to-end verification results produced by Phase N1 item 6
-- `planning/phase_n2_work_queue.md` — active Track B frontend deployment, custom-domain, and production-cutover queue
+- `planning/phase_n2_work_queue.md` — Track B frontend deployment queue; preview work is complete and custom-domain cutover items are deferred until domain purchase
 - `planning/phase_n2_frontend_deployment_inventory.md` — frontend build/deploy strategy inventory produced by Phase N2 item 1
 - `planning/phase_n2_preview_ui_e2e_results.md` — deployed preview UI workflow verification results produced by Phase N2 item 3
+- `planning/phase_n3_work_queue.md` — active Track B monitoring, deployed-freshness, and stability queue using the current deployed URL
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/roadmap.md` — planned and future capabilities
