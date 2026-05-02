@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import unicodedata
+
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
@@ -74,6 +76,25 @@ GAME_LOG_COLUMNS = [
     "ast",
 ]
 
+_DASH_TRANSLATION = str.maketrans(
+    {
+        "\u2010": "-",
+        "\u2011": "-",
+        "\u2012": "-",
+        "\u2013": "-",
+        "\u2014": "-",
+        "\u2015": "-",
+        "\u2212": "-",
+    }
+)
+
+
+def _player_name_key(value: object) -> str:
+    text = str(value).translate(_DASH_TRANSLATION)
+    normalized = unicodedata.normalize("NFKD", text)
+    stripped = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    return " ".join(stripped.casefold().split())
+
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -115,7 +136,8 @@ def _apply_filters(
         out = out[out["game_date"] <= end_ts].copy()
 
     if player:
-        out = out[out["player_name"].astype(str).str.upper() == player.upper()].copy()
+        player_key = _player_name_key(player)
+        out = out[out["player_name"].map(_player_name_key) == player_key].copy()
 
     if team:
         team_upper = team.upper()
