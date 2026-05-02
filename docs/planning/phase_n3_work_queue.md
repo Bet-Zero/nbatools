@@ -113,7 +113,7 @@ not ad hoc terminal curls or browser sessions.
 
 ---
 
-## 3. `[ ]` Capture the first deployed monitoring baseline and freshness-banner evidence
+## 3. `[x]` Capture the first deployed monitoring baseline and freshness-banner evidence - completed on 2026-05-02: `phase_n3_preview_monitoring_baseline.md` records the first deployed smoke report, the freshness banner matched the live `/freshness` payload, and the watch-list routes were named for the soak.
 
 **Why:** N3 should establish a real baseline before the 7-day soak starts.
 
