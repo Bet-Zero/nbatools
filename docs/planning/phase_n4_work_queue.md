@@ -144,7 +144,7 @@ documented.
 
 ---
 
-## 4. `[ ]` Re-complete N2 item 6: custom-domain production smoke and performance record
+## 4. `[~]` Re-complete N2 item 6: custom-domain production smoke and performance record - blocked on 2026-05-02: the developer must complete items 1 and 3 so the custom domain serves the intended production deployment, verify that the deploy-on-main evidence event has landed, and then hand the live custom domain back to the agent for the smoke harness and browser verification pass.
 
 **Why:** After cutover, Track B still needs a recorded production baseline and
 proof that the real domain works end to end.
