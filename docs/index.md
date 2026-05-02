@@ -109,13 +109,14 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_n1_work_queue.md` — completed Track B backend deployment and R2 queue
 - `planning/phase_n1_api_inventory.md` — FastAPI route, state, cold-start, and Vercel-refactor inventory produced by Phase N1 item 4
 - `planning/phase_n1_e2e_results.md` — deployed R2/Vercel end-to-end verification results produced by Phase N1 item 6
-- `planning/phase_n2_work_queue.md` — Track B frontend deployment queue; preview work is complete and custom-domain cutover items are deferred until domain purchase
+- `planning/phase_n2_work_queue.md` — completed Track B frontend deployment queue; deferred custom-domain/cutover items now roll forward through Phase N4
 - `planning/phase_n2_frontend_deployment_inventory.md` — frontend build/deploy strategy inventory produced by Phase N2 item 1
 - `planning/phase_n2_preview_ui_e2e_results.md` — deployed preview UI workflow verification results produced by Phase N2 item 3
-- `planning/phase_n3_work_queue.md` — active Track B monitoring, deployed-freshness, and stability queue using the current deployed URL
+- `planning/phase_n3_work_queue.md` — completed Track B monitoring/freshness queue using the deployed Vercel URL; the seven-day synthetic soak was intentionally skipped for friends-tier scope
 - `planning/phase_n3_monitoring_inventory.md` — deployed monitoring target, smoke-case, header-field, and wrap-up-deferral inventory produced by Phase N3 item 1
 - `planning/phase_n3_preview_monitoring_baseline.md` — first deployed smoke baseline and freshness-banner verification produced by Phase N3 item 3
-- `planning/phase_n3_stability_soak_log.md` — active 7-day stability soak log started in Phase N3 item 4
+- `planning/phase_n3_stability_soak_log.md` — closed day-0 stability-baseline record and soak-skip decision from Phase N3 item 4
+- `planning/phase_n4_work_queue.md` — active Track B custom-domain, production-cutover, production-smoke, and closure queue
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/roadmap.md` — planned and future capabilities

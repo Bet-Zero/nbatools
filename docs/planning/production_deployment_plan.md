@@ -66,17 +66,20 @@ Capture learnings. Finish any custom-domain-specific wrap-up that Phase N3
 could not execute before the domain existed. Verify Track B's done
 definition is met. Update the master plan with Track B closure status.
 
-**Companion queue:** drafted at end of N3.
+**Companion queue:** [`phase_n4_work_queue.md`](./phase_n4_work_queue.md)
 
 ---
 
 ## Current continuation note
 
-As of 2026-05-02, Phase N2 items 4-6 are deferred until the developer buys
-or chooses the production domain and can complete Vercel DNS/HTTPS setup.
-Track B is continuing immediately with Phase N3 against the current deployed
-Vercel URL so monitoring, deployed freshness evidence, and the 7-day
-stability workflow are not blocked by domain purchase timing.
+As of 2026-05-02, Phase N3 is closed: the reusable deployment smoke harness,
+preview monitoring baseline, and deployed freshness-banner evidence are in
+place, and the synthetic seven-day soak was intentionally skipped for
+friends-tier scope. Track B's active continuation is now Phase N4. N2 items
+4-6 are re-opened there for re-completion once the developer purchases or
+chooses the production domain and can complete Vercel DNS/HTTPS setup. The
+queue is allowed to continue past those domain-gated items to later
+domain-independent prep work.
 
 ---
 
@@ -91,6 +94,6 @@ Track B is done when:
    one command
 5. The deployed app reads data from R2, not from the local filesystem
 6. Errors in production are surfaced to the developer when they happen
-7. The deployment has run for at least 7 consecutive days without manual
-   intervention
+7. The deployment has a recorded smoke baseline and a reusable smoke path for
+   targeted follow-up checks
 8. The deployed instance is what friends are using
