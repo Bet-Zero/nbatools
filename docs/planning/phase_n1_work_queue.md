@@ -211,7 +211,7 @@ decorators, and middleware that need to be reorganized.
 
 ---
 
-## 5. `[ ]` Refactor API to Vercel Functions structure
+## 5. `[x]` Refactor API to Vercel Functions structure — completed: added Vercel function entrypoints, shared payload/HTTP helpers, `vercel.json` rewrites and function config, local FastAPI compatibility, API/function tests, manual local route smoke, and post-refactor cold-start measurements. R2 `api/query.py` still exceeded the 10s safety bar in an isolated cold run (13.47s), so item 6 preview verification must confirm `maxDuration: 60` works in the deployed environment.
 
 **Why:** Convert the FastAPI long-running server into Vercel-compatible
 function handlers. Use the inventory from item 4 as the punchlist.

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "env": {
+    "DATA_SOURCE": "r2",
+    "R2_BUCKET_NAME": "nbatools-data"
+  },
+  "functions": {
+    "api/index.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/ui_fallback_asset.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/health.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/routes.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/freshness.py": {
+      "memory": 1024,
+      "maxDuration": 60,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/query.py": {
+      "memory": 1024,
+      "maxDuration": 60,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
+    "api/structured_query.py": {
+      "memory": 1024,
+      "maxDuration": 60,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api"
+    },
+    {
+      "source": "/assets/index-fallback.js",
+      "destination": "/api/ui_fallback_asset"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/freshness",
+      "destination": "/api/freshness"
+    },
+    {
+      "source": "/routes",
+      "destination": "/api/routes"
+    },
+    {
+      "source": "/query",
+      "destination": "/api/query"
+    },
+    {
+      "source": "/structured-query",
+      "destination": "/api/structured_query"
+    }
+  ]
+}

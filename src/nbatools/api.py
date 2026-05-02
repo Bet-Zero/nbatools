@@ -11,7 +11,6 @@ Run locally with::
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
@@ -20,7 +19,8 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from nbatools import __version__
+from nbatools import __version__, api_ui
+from nbatools.api_handlers import query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
 from nbatools.query_service import (
     VALID_ROUTES,
@@ -28,6 +28,11 @@ from nbatools.query_service import (
     execute_natural_query,
     execute_structured_query,
 )
+
+_UI_DIR = api_ui.UI_DIR
+_UI_INDEX = api_ui.UI_INDEX
+_UI_FALLBACK_ASSET = api_ui.UI_FALLBACK_ASSET
+_UI_FALLBACK_SCRIPT = api_ui.UI_FALLBACK_SCRIPT
 
 # ---------------------------------------------------------------------------
 # App
@@ -46,49 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Path to the bundled single-page UI (Vite build output).
-_UI_DIR = Path(__file__).resolve().parent / "ui" / "dist"
-_UI_INDEX = _UI_DIR / "index.html"
-_UI_FALLBACK_ASSET = "/assets/index-fallback.js"
-_UI_FALLBACK_HTML = f"""<!doctype html>
-<html lang=\"en\">
-    <head>
-        <meta charset=\"utf-8\" />
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-        <title>nbatools</title>
-    </head>
-    <body>
-        <div id=\"root\"></div>
-        <script type=\"module\" src=\"{_UI_FALLBACK_ASSET}\"></script>
-    </body>
-</html>
-"""
-_UI_FALLBACK_SCRIPT = """
-const root = document.getElementById("root");
-if (root) {
-    root.innerHTML = `
-        <main
-            style="
-                font-family: ui-sans-serif, system-ui, sans-serif;
-                max-width: 48rem;
-                margin: 3rem auto;
-                padding: 0 1rem;
-                line-height: 1.5;
-            "
-        >
-            <h1 style="margin-bottom: 0.5rem;">nbatools UI bundle not built</h1>
-            <p style="margin: 0; color: #4b5563;">
-                The API is available, but the frontend build output is missing from this checkout.
-            </p>
-            <p style="color: #4b5563;">
-                Run <code>npm install</code> and <code>npm run build</code> in
-                <code>frontend/</code> to enable the bundled UI.
-            </p>
-        </main>
-    `;
-}
-""".strip()
 
 # ---------------------------------------------------------------------------
 # Request / response models
@@ -170,32 +132,12 @@ class FreshnessResponse(BaseModel):
 
 def _query_result_to_response(qr: QueryResult) -> QueryResponse:
     """Convert a QueryResult envelope into a JSON-friendly response."""
-    result_dict = qr.to_dict()
-
-    notes: list[str] = getattr(qr.result, "notes", []) or []
-    caveats: list[str] = getattr(qr.result, "caveats", []) or []
-
-    return QueryResponse(
-        ok=qr.is_ok,
-        query=qr.query,
-        route=qr.route,
-        result_status=qr.result_status,
-        result_reason=qr.result_reason,
-        current_through=qr.current_through,
-        confidence=qr.metadata.get("confidence"),
-        intent=qr.metadata.get("intent"),
-        alternates=qr.metadata.get("alternates", []),
-        notes=notes,
-        caveats=caveats,
-        result=result_dict,
-    )
+    return QueryResponse(**query_result_to_payload(qr))
 
 
 def _load_ui_html() -> str:
     """Return bundled UI HTML when present, else a minimal fallback shell."""
-    if _UI_INDEX.is_file():
-        return _UI_INDEX.read_text()
-    return _UI_FALLBACK_HTML
+    return api_ui.load_ui_html(_UI_INDEX)
 
 
 # ---------------------------------------------------------------------------
