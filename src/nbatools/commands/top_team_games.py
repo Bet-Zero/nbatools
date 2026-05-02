@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
+from nbatools.data_source import data_exists, data_read_csv
 
 ALLOWED_STATS = {
     "pts": "pts",
@@ -44,7 +45,7 @@ def build_result(
     safe = season_type.lower().replace(" ", "_")
     path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
 
-    if not path.exists():
+    if not data_exists(path):
         return NoResult(query_class="leaderboard", reason="no_data")
 
     stat = stat.lower().strip()
@@ -65,7 +66,7 @@ def build_result(
             notes=["limit must be greater than 0"],
         )
 
-    df = pd.read_csv(path)
+    df = data_read_csv(path)
 
     col = ALLOWED_STATS[stat]
     if col not in df.columns:

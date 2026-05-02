@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import os
 import unicodedata
 from functools import cache
-from pathlib import Path
 
 import pandas as pd
+
+from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
 
 PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS = [
     "game_id",
@@ -410,10 +410,10 @@ def describe_opponent_filter(
 
 @cache
 def _load_latest_standings_snapshot_cached(season: str, data_root: str) -> pd.DataFrame:
-    path = Path(data_root) / f"data/raw/standings_snapshots/{season}_regular_season.csv"
-    if not path.exists():
+    path = f"data/raw/standings_snapshots/{season}_regular_season.csv"
+    if not data_exists(path):
         raise FileNotFoundError(f"Missing standings snapshot file: {path}")
-    df = pd.read_csv(path)
+    df = data_read_csv(path)
     if "snapshot_date" in df.columns:
         df["_snapshot_date"] = pd.to_datetime(df["snapshot_date"], errors="coerce")
         latest = df["_snapshot_date"].max()
@@ -424,15 +424,15 @@ def _load_latest_standings_snapshot_cached(season: str, data_root: str) -> pd.Da
 
 
 def load_latest_standings_snapshot(season: str) -> pd.DataFrame:
-    return _load_latest_standings_snapshot_cached(season, os.getcwd()).copy()
+    return _load_latest_standings_snapshot_cached(season, data_source_cache_key()).copy()
 
 
 @cache
 def _load_latest_team_advanced_cached(season: str, data_root: str) -> pd.DataFrame:
-    path = Path(data_root) / f"data/raw/team_season_advanced/{season}_regular_season.csv"
-    if not path.exists():
+    path = f"data/raw/team_season_advanced/{season}_regular_season.csv"
+    if not data_exists(path):
         raise FileNotFoundError(f"Missing team season advanced file: {path}")
-    df = pd.read_csv(path)
+    df = data_read_csv(path)
     if "as_of_date" in df.columns:
         df["_as_of_date"] = pd.to_datetime(df["as_of_date"], errors="coerce")
         latest = df["_as_of_date"].max()
@@ -443,7 +443,7 @@ def _load_latest_team_advanced_cached(season: str, data_root: str) -> pd.DataFra
 
 
 def load_latest_team_advanced(season: str) -> pd.DataFrame:
-    return _load_latest_team_advanced_cached(season, os.getcwd()).copy()
+    return _load_latest_team_advanced_cached(season, data_source_cache_key()).copy()
 
 
 def resolve_opponent_quality_teams(
@@ -511,10 +511,10 @@ def _load_team_games_cached(
     frames: list[pd.DataFrame] = []
 
     for season in seasons:
-        path = Path(data_root) / f"data/raw/team_game_stats/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/team_game_stats/{season}_{safe}.csv"
+        if not data_exists(path):
             continue
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         df = add_advanced_pct_columns(df)
         frames.append(df)
 
@@ -527,7 +527,7 @@ def _load_team_games_cached(
 
 def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load and concatenate team_game_stats CSVs for the given seasons."""
-    return _load_team_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_team_games_cached(tuple(seasons), season_type, data_source_cache_key()).copy()
 
 
 @cache
@@ -536,20 +536,19 @@ def _load_player_games_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
 
     for season in seasons:
-        path = root / f"data/raw/player_game_stats/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/player_game_stats/{season}_{safe}.csv"
+        if not data_exists(path):
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
 
-        team_stats_path = root / f"data/raw/team_game_stats/{season}_{safe}.csv"
-        if not team_stats_path.exists():
+        team_stats_path = f"data/raw/team_game_stats/{season}_{safe}.csv"
+        if not data_exists(team_stats_path):
             raise FileNotFoundError(f"Missing team stats file: {team_stats_path}")
 
-        team_stats = pd.read_csv(team_stats_path)[["game_id", "team_id", "wl"]].drop_duplicates()
+        team_stats = data_read_csv(team_stats_path)[["game_id", "team_id", "wl"]].drop_duplicates()
         df = df.merge(team_stats, on=["game_id", "team_id"], how="left", suffixes=("", "_team"))
 
         if "wl_team" in df.columns:
@@ -575,7 +574,7 @@ def _load_player_games_cached(
 
 def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
-    return _load_player_games_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_player_games_cached(tuple(seasons), season_type, data_source_cache_key()).copy()
 
 
 def _empty_player_game_period_df() -> pd.DataFrame:
@@ -593,16 +592,15 @@ def _load_player_game_period_stats_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/raw/player_game_period_stats/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/player_game_period_stats/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         missing = [col for col in PLAYER_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"player_game_period_stats missing required columns: {missing}")
@@ -676,7 +674,9 @@ def _load_player_game_period_stats_cached(
 
 
 def load_player_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    return _load_player_game_period_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_player_game_period_stats_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def _empty_team_game_period_df() -> pd.DataFrame:
@@ -694,16 +694,15 @@ def _load_team_game_period_stats_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/raw/team_game_period_stats/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/team_game_period_stats/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         missing = [col for col in TEAM_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"team_game_period_stats missing required columns: {missing}")
@@ -771,7 +770,9 @@ def _load_team_game_period_stats_cached(
 
 
 def load_team_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    return _load_team_game_period_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_team_game_period_stats_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def _empty_schedule_context_features_df() -> pd.DataFrame:
@@ -784,16 +785,15 @@ def _load_schedule_context_features_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/processed/schedule_context_features/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/processed/schedule_context_features/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         missing = [col for col in SCHEDULE_CONTEXT_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"schedule_context_features missing required columns: {missing}")
@@ -848,7 +848,9 @@ def load_schedule_context_features_for_seasons(
     seasons: list[str], season_type: str
 ) -> pd.DataFrame:
     """Load validated team-game schedule-context features for the given seasons."""
-    return _load_schedule_context_features_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_schedule_context_features_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def _empty_team_player_on_off_summary_df() -> pd.DataFrame:
@@ -861,16 +863,15 @@ def _load_team_player_on_off_summary_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/raw/team_player_on_off_summary/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/team_player_on_off_summary/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         missing = [col for col in TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"team_player_on_off_summary missing required columns: {missing}")
@@ -919,7 +920,9 @@ def load_team_player_on_off_summary_for_seasons(
     seasons: list[str], season_type: str
 ) -> pd.DataFrame:
     """Load validated team/player on-off summary rows for the given seasons."""
-    return _load_team_player_on_off_summary_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_team_player_on_off_summary_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def _empty_league_lineup_viz_df() -> pd.DataFrame:
@@ -943,16 +946,15 @@ def _load_league_lineup_viz_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/raw/league_lineup_viz/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/league_lineup_viz/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         missing = [col for col in LEAGUE_LINEUP_VIZ_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"league_lineup_viz missing required columns: {missing}")
@@ -1009,7 +1011,9 @@ def _load_league_lineup_viz_cached(
 
 def load_league_lineup_viz_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated lineup-unit rows for the given seasons."""
-    return _load_league_lineup_viz_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_league_lineup_viz_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def select_trusted_league_lineup_viz_rows(
@@ -1079,16 +1083,15 @@ def _load_play_by_play_events_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/raw/play_by_play_events/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/play_by_play_events/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path, dtype={"game_id": str})
+        df = data_read_csv(path, dtype={"game_id": str})
         missing = [col for col in PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
             raise ValueError(f"play_by_play_events missing required columns: {missing}")
@@ -1141,7 +1144,9 @@ def _load_play_by_play_events_cached(
 
 def load_play_by_play_events_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated play-by-play event rows for the given seasons."""
-    return _load_play_by_play_events_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_play_by_play_events_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def select_trusted_play_by_play_events(
@@ -1188,16 +1193,15 @@ def _load_clutch_stats_files(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
     missing_paths: list[str] = []
 
     for season in seasons:
-        path = root / f"data/processed/{dataset}/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/processed/{dataset}/{season}_{safe}.csv"
+        if not data_exists(path):
             missing_paths.append(str(path))
             continue
 
-        df = pd.read_csv(path, dtype={"game_id": str})
+        df = data_read_csv(path, dtype={"game_id": str})
         missing = [col for col in required_columns if col not in df.columns]
         if missing:
             raise ValueError(f"{dataset} missing required columns: {missing}")
@@ -1254,7 +1258,9 @@ def _load_player_game_clutch_stats_cached(
 
 def load_player_game_clutch_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated player-game clutch stats for the given seasons."""
-    return _load_player_game_clutch_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_player_game_clutch_stats_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 @cache
@@ -1273,7 +1279,9 @@ def _load_team_game_clutch_stats_cached(
 
 def load_team_game_clutch_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated team-game clutch stats for the given seasons."""
-    return _load_team_game_clutch_stats_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_team_game_clutch_stats_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def select_trusted_clutch_stats(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
@@ -1608,14 +1616,13 @@ def _load_player_game_starter_roles_cached(
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
     frames: list[pd.DataFrame] = []
-    root = Path(data_root)
 
     for season in seasons:
-        path = root / f"data/raw/player_game_starter_roles/{season}_{safe}.csv"
-        if not path.exists():
+        path = f"data/raw/player_game_starter_roles/{season}_{safe}.csv"
+        if not data_exists(path):
             continue
 
-        df = pd.read_csv(path)
+        df = data_read_csv(path)
         missing = [
             col for col in PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS if col not in df.columns
         ]
@@ -1646,7 +1653,9 @@ def load_player_game_starter_roles_for_seasons(
     seasons: list[str], season_type: str
 ) -> pd.DataFrame:
     """Load the optional starter-role dataset for the given seasons."""
-    return _load_player_game_starter_roles_cached(tuple(seasons), season_type, os.getcwd()).copy()
+    return _load_player_game_starter_roles_cached(
+        tuple(seasons), season_type, data_source_cache_key()
+    ).copy()
 
 
 def apply_player_role_filter(
@@ -1778,15 +1787,14 @@ def add_usage_ast_reb_rate_columns(
     """Merge usage/ast/reb rate columns from player_season_advanced files."""
     out = df.copy()
     safe = normalize_season_type(season_type)
-    root = Path(data_root) if data_root else Path()
     frames: list[pd.DataFrame] = []
 
     for season in seasons:
-        adv_path = root / f"data/raw/player_season_advanced/{season}_{safe}.csv"
-        if not adv_path.exists():
+        adv_path = f"data/raw/player_season_advanced/{season}_{safe}.csv"
+        if not data_exists(adv_path):
             continue
 
-        adv = pd.read_csv(adv_path)
+        adv = data_read_csv(adv_path)
 
         rename_map: dict[str, str] = {}
         if "usage_rate" in adv.columns:

@@ -13,6 +13,7 @@ from nbatools.commands.data_utils import (
 )
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
+from nbatools.data_source import data_exists, data_read_csv
 
 ALLOWED_STATS = {
     "pts": "pts_per_game",
@@ -224,10 +225,10 @@ def _latest_team_lookup_from_games(basic: pd.DataFrame) -> pd.DataFrame:
 
 def _load_roster_lookup(season: str) -> pd.DataFrame | None:
     rosters_path = Path(f"data/raw/rosters/{season}.csv")
-    if not rosters_path.exists():
+    if not data_exists(rosters_path):
         return None
 
-    rosters = pd.read_csv(rosters_path)
+    rosters = data_read_csv(rosters_path)
     needed = [c for c in ["player_id", "team_id", "team_abbr"] if c in rosters.columns]
     if len(needed) < 3:
         return None
@@ -317,8 +318,8 @@ def _merge_game_log_derived_advanced(
     team_frames: list[pd.DataFrame] = []
     for s in seasons:
         tpath = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
-        if tpath.exists():
-            team_frames.append(pd.read_csv(tpath))
+        if data_exists(tpath):
+            team_frames.append(data_read_csv(tpath))
     if not team_frames:
         return grouped
 
@@ -509,10 +510,10 @@ def _prepare_advanced_rows(adv: pd.DataFrame) -> pd.DataFrame:
 
 
 def _merge_advanced_if_available(grouped: pd.DataFrame, adv_path: Path) -> pd.DataFrame:
-    if not adv_path.exists():
+    if not data_exists(adv_path):
         return grouped
 
-    adv = pd.read_csv(adv_path)
+    adv = data_read_csv(adv_path)
     adv = _prepare_advanced_rows(adv)
 
     if adv.empty or "player_id" not in adv.columns:
@@ -621,8 +622,8 @@ def _load_roster_positions(seasons: list[str]) -> pd.DataFrame:
     frames: list[pd.DataFrame] = []
     for s in seasons:
         rpath = Path(f"data/raw/rosters/{s}.csv")
-        if rpath.exists():
-            frames.append(pd.read_csv(rpath))
+        if data_exists(rpath):
+            frames.append(data_read_csv(rpath))
     if not frames:
         return pd.DataFrame(columns=["player_id", "position"])
     rosters = pd.concat(frames, ignore_index=True)
@@ -707,8 +708,8 @@ def build_result(
     frames: list[pd.DataFrame] = []
     for s in seasons:
         basic_path = Path(f"data/raw/player_game_stats/{s}_{safe}.csv")
-        if basic_path.exists():
-            frames.append(pd.read_csv(basic_path))
+        if data_exists(basic_path):
+            frames.append(data_read_csv(basic_path))
 
     if not frames:
         return NoResult(query_class="leaderboard", reason="no_data")
@@ -721,8 +722,8 @@ def build_result(
         team_frames: list[pd.DataFrame] = []
         for s in seasons:
             team_path = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
-            if team_path.exists():
-                tf = pd.read_csv(team_path, usecols=["game_id", "team_id", "wl"])
+            if data_exists(team_path):
+                tf = data_read_csv(team_path, usecols=["game_id", "team_id", "wl"])
                 team_frames.append(tf)
         if team_frames:
             team_wl = pd.concat(team_frames, ignore_index=True).drop_duplicates(

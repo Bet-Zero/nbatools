@@ -8,6 +8,7 @@ from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import safe_divide
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
+from nbatools.data_source import data_exists, data_read_csv
 
 ALLOWED_STATS = {
     "games_played": "games_played",
@@ -225,10 +226,10 @@ def _latest_advanced_team_rows(adv: pd.DataFrame) -> pd.DataFrame:
 
 
 def _merge_advanced_if_available(df: pd.DataFrame, adv_path: Path) -> pd.DataFrame:
-    if not adv_path.exists():
+    if not data_exists(adv_path):
         return df
 
-    adv = pd.read_csv(adv_path)
+    adv = data_read_csv(adv_path)
     adv = _latest_advanced_team_rows(adv)
 
     if adv.empty:
@@ -357,8 +358,8 @@ def build_result(
     frames: list[pd.DataFrame] = []
     for s in seasons:
         basic_path = Path(f"data/raw/team_game_stats/{s}_{safe}.csv")
-        if basic_path.exists():
-            frames.append(pd.read_csv(basic_path))
+        if data_exists(basic_path):
+            frames.append(data_read_csv(basic_path))
 
     if not frames:
         return NoResult(query_class="leaderboard", reason="no_data")

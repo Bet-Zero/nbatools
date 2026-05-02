@@ -114,7 +114,7 @@ production) and uploads it to R2.
 
 ---
 
-## 3. `[ ]` Add R2-backed data loader to the engine
+## 3. `[x]` Add R2-backed data loader to the engine — completed: added the `DATA_SOURCE` abstraction, routed engine/API file reads through it, covered local and R2 modes with unit tests, and verified `DATA_SOURCE=r2` API responses match `DATA_SOURCE=local` for freshness plus `Jokic last 10`.
 
 **Why:** Second half of the hybrid sync — the production-read side. The
 deployed app needs to read from R2 instead of the local filesystem.

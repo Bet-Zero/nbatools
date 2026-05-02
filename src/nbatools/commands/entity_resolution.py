@@ -21,6 +21,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.data_source import data_glob, data_read_csv
+
 # ---------------------------------------------------------------------------
 # Resolution result types
 # ---------------------------------------------------------------------------
@@ -575,16 +577,19 @@ def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
     lists of canonical full names (as they appear in the data).
     """
     if data_dir is None:
-        data_dir = _DATA_DIR
-
-    stats_dir = data_dir / "raw" / "player_game_stats"
-    if not stats_dir.exists():
-        return {}
+        csv_paths = data_glob("raw/player_game_stats/*.csv")
+        read_csv = data_read_csv
+    else:
+        stats_dir = data_dir / "raw" / "player_game_stats"
+        if not stats_dir.exists():
+            return {}
+        csv_paths = sorted(stats_dir.glob("*.csv"))
+        read_csv = pd.read_csv
 
     all_names: set[str] = set()
-    for csv_path in stats_dir.glob("*.csv"):
+    for csv_path in csv_paths:
         try:
-            df = pd.read_csv(csv_path, usecols=["player_name"], dtype=str)
+            df = read_csv(csv_path, usecols=["player_name"], dtype=str)
             all_names.update(df["player_name"].dropna().unique())
         except Exception:
             continue

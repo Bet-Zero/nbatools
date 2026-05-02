@@ -29,6 +29,7 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands.data_utils import normalize_season_type
+from nbatools.data_source import data_exists, data_read_csv, data_read_text
 
 # ---------------------------------------------------------------------------
 # Status semantics
@@ -140,10 +141,10 @@ def _manifest_complete(
 ) -> bool:
     """Return True when the backfill manifest says this season/type is fully loaded."""
     manifest_path = data_root / "metadata" / "backfill_manifest.csv"
-    if not manifest_path.exists():
+    if not data_exists(manifest_path):
         return False
     try:
-        df = pd.read_csv(manifest_path)
+        df = data_read_csv(manifest_path)
     except Exception:
         return False
 
@@ -173,11 +174,11 @@ def compute_current_through(
 
     safe = normalize_season_type(season_type)
     games_path = data_root / "raw" / "games" / f"{season}_{safe}.csv"
-    if not games_path.exists():
+    if not data_exists(games_path):
         return None
 
     try:
-        df = pd.read_csv(games_path)
+        df = data_read_csv(games_path)
     except Exception:
         return None
 
@@ -224,7 +225,7 @@ def season_data_available(
     """Return True if the raw data file exists for this season/type/dataset."""
     safe = normalize_season_type(season_type)
     path = data_root / "raw" / dataset / f"{season}_{safe}.csv"
-    return path.exists()
+    return data_exists(path)
 
 
 def manifest_entry(
@@ -234,10 +235,10 @@ def manifest_entry(
 ) -> dict | None:
     """Return the manifest row for a season/type as a dict, or None."""
     manifest_path = data_root / "metadata" / "backfill_manifest.csv"
-    if not manifest_path.exists():
+    if not data_exists(manifest_path):
         return None
     try:
-        df = pd.read_csv(manifest_path)
+        df = data_read_csv(manifest_path)
     except Exception:
         return None
     mask = (df["season"] == season) & (df["season_type"] == season_type)
@@ -321,10 +322,10 @@ def read_refresh_log(data_root: Path = _DATA_ROOT) -> dict | None:
     import json
 
     path = _refresh_log_path(data_root)
-    if not path.exists():
+    if not data_exists(path):
         return None
     try:
-        return json.loads(path.read_text())
+        return json.loads(data_read_text(path))
     except Exception:
         return None
 
