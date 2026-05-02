@@ -32,9 +32,14 @@ more route's results.
 
 ## Status legend
 
-- `[ ]` — not audited yet (default)
-- `[~]` — audited, intent written, fix in progress or queued
-- `[x]` — audited, intent written, current display matches intent
+- `[ ]` — neither `Currently shows:` nor `Should show:` filled in
+- `[?]` — `Should show:` written but `Currently shows:` not yet observed against the deployed app
+- `[~]` — both `Currently shows:` and `Should show:` filled in; fix is queued or in flight
+- `[x]` — implementation matches `Should show:` and has been verified against the deployed app
+
+Routes with intent already written but current display not yet observed
+should be `[?]`, not `[ ]`. Mark them `[~]` once you've actually run the
+queries and recorded what shows up today.
 
 ---
 
@@ -57,8 +62,10 @@ debugging, validation, export, and future advanced-view layer.
 
 However, raw tables should **not** be part of the default visual answer.
 For every route, polished cards/lists/charts should be the primary display,
-and raw detail tables should be collapsed behind a consistent control such
-as `Show raw table`, `View details`, or `Show table`.
+and raw detail tables should be collapsed behind a consistent control
+labeled **`Show raw table`** (closed) and **`Hide raw table`** (open). Use
+this exact wording everywhere — do not vary the label per route or per
+component.
 
 Route entries may still mention which raw tables exist, but the default
 expectation is:
@@ -112,7 +119,7 @@ expectation is:
 - **Bugs filed:** none yet (candidate: "Recent Games hardcoded to 5 games and 4 stat columns — should show all requested games and richer stats for `last N games` queries")
 - **Notes:** Compound result. This route must show both summary stats AND full game logs when the query asks for a last-N sample. Single-stat or summary-only displays are wrong.
 
-### `player_summary`-style routes for season averages `[ ]`
+### `player_summary`-style routes for season averages `[?]`
 - **Example queries:**
   - `Jokic this season`
   - `Curry career averages`
@@ -155,7 +162,7 @@ expectation is:
      - Keep `Record Detail` and `By Season` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `team_split_summary` `[ ]`
+### `team_split_summary` `[?]`
 - **Section component:** `SplitSummaryCardsSection` or `TeamSummarySection`
 - **Example queries:**
   - `Lakers home vs away`
@@ -167,7 +174,7 @@ expectation is:
   - A difference/edge row is useful when there are exactly two buckets.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `game_summary` `[ ]`
+### `game_summary` `[?]`
 - **Example queries:**
   - `Lakers Celtics last night`
 - **Should show:**
@@ -178,7 +185,7 @@ expectation is:
   - Top player performers when available: points leader, rebounds leader, assists leader.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `playoff_round_record` `[ ]`
+### `playoff_round_record` `[?]`
 - **Section component:** `PlayoffSection`
 - **Example queries:**
   - `Celtics record in second round`
@@ -230,7 +237,7 @@ expectation is:
      - Keep `Player Summary Detail` and `Full Metric Detail` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `team_compare` `[ ]`
+### `team_compare` `[?]`
 - **Example queries:**
   - `Celtics vs Bucks this season`
 - **Should show:**
@@ -239,7 +246,7 @@ expectation is:
   - Metric comparison grid with leader highlight and edge/delta.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `team_matchup_record` `[ ]`
+### `team_matchup_record` `[?]`
 - **Section component:** `HeadToHeadSection`
 - **Example queries:**
   - `Lakers vs Celtics head-to-head`
@@ -251,7 +258,7 @@ expectation is:
   - Recent matchup list only if the data exists.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_on_off` `[ ]`
+### `player_on_off` `[?]`
 - **Example queries:**
   - `Lakers on/off LeBron`
 - **Should show:**
@@ -310,7 +317,7 @@ expectation is:
      - Keep `Player Game Detail` available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `game_finder` `[ ]`
+### `game_finder` `[?]`
 - **Example queries:**
   - `games where Lakers won by 20+`
 - **Should show:**
@@ -375,7 +382,7 @@ expectation is:
   - Do not show raw tables open by default.
 - **Bugs filed:** playoff min-games threshold (in flight), wins/losses missing as context (in flight)
 
-### `team_record_leaderboard` `[ ]`
+### `team_record_leaderboard` `[?]`
 - **Example queries:**
   - `best home records this season`
 - **Should show:**
@@ -383,7 +390,7 @@ expectation is:
   - Each row should show rank, team logo, team name, record, win pct, games, and split context such as home/away.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_stretch_leaderboard` `[ ]`
+### `player_stretch_leaderboard` `[?]`
 - **Example queries:**
   - `best 3-game scoring stretches this season`
 - **Should show:**
@@ -393,7 +400,7 @@ expectation is:
   - Optional expansion can show individual games inside the stretch.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `lineup_leaderboard` `[ ]`
+### `lineup_leaderboard` `[?]`
 - **Example queries:**
   - `best 3-man units this season`
 - **Should show:**
@@ -402,7 +409,7 @@ expectation is:
   - Primary metric should match the query: net rating, plus-minus, offensive rating, defensive rating, etc.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `lineup_summary` `[ ]`
+### `lineup_summary` `[?]`
 - **Example queries:**
   - `Lakers best lineup`
 - **Should show:**
@@ -410,7 +417,7 @@ expectation is:
   - Main lineup summary: minutes, games, net rating, offensive rating, defensive rating, pace, plus-minus, and any shooting/rebounding split available.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_occurrence_leaders` `[ ]`
+### `player_occurrence_leaders` `[?]`
 - **Section component:** `OccurrenceLeaderboardSection`
 - **Example queries:**
   - `most 30-point games this season`
@@ -420,7 +427,7 @@ expectation is:
   - Each row should show rank, player headshot, player name, occurrence count as the hero metric, games played, season/range, team if relevant, threshold/condition, and season type.
   - Keep `Full Occurrence Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `team_occurrence_leaders` `[ ]`
+### `team_occurrence_leaders` `[?]`
 - **Section component:** `OccurrenceLeaderboardSection`
 - **Example queries:**
   - `most 120-point games this season`
@@ -429,7 +436,7 @@ expectation is:
   - Each row should show rank, team logo, team name, occurrence count, season, games played, threshold/condition, and record when available.
   - Keep `Full Occurrence Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `top_player_games` `[ ]`
+### `top_player_games` `[?]`
 - **Example queries:**
   - `top 10 scoring games this season`
 - **Should show:**
@@ -438,7 +445,7 @@ expectation is:
   - Supporting stats should include REB, AST, MIN, FG, 3P, FT, STL, BLK, and TOV when available.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `top_team_games` `[ ]`
+### `top_team_games` `[?]`
 - **Example queries:**
   - `top 10 team scoring games this season`
 - **Should show:**
@@ -450,7 +457,7 @@ expectation is:
 
 ## streak
 
-### `player_streak_finder` `[ ]`
+### `player_streak_finder` `[?]`
 - **Section component:** `StreakSection`
 - **Example queries:**
   - `Jokic 25-point game streak`
@@ -460,7 +467,7 @@ expectation is:
   - During-streak averages should show when available: PTS, REB, AST, MIN, TS% or eFG%.
   - Keep `Full Streak Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `team_streak_finder` `[ ]`
+### `team_streak_finder` `[?]`
 - **Section component:** `StreakSection`
 - **Example queries:**
   - `Lakers longest win streak`
@@ -473,7 +480,7 @@ expectation is:
 
 ## count / playoff / other
 
-### Playoff routes `[ ]`
+### Playoff routes `[?]`
 - **Section component:** `PlayoffSection`
 - **Routes:** `playoff_appearances`, `playoff_history`, `playoff_matchup_history`, `playoff_round_record`
 - **Example queries:**
