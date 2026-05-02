@@ -84,3 +84,28 @@ The `frontend/` source directory remains excluded from runtime function
 bundles; only the generated `ui/dist` output is needed at runtime. If the
 bundle is unavailable locally, the root route intentionally falls back to the
 API-only "UI bundle not built" shell.
+
+## Deployment Smoke Monitoring
+
+Phase N3 adds a reusable smoke-report tool for deployed URLs. It is designed to
+work against either the current Vercel `*.vercel.app` deployment or the future
+custom domain by changing only the supplied base URL.
+
+Run it like this:
+
+```bash
+./.venv/bin/python tools/deployment_smoke.py \
+    --base-url https://nbatools-kn8wz220h-brents-projects-686e97fc.vercel.app \
+    --output outputs/deployment_smoke/preview.json
+```
+
+The JSON report records:
+
+- `GET /`
+- `GET /health`
+- `GET /freshness`
+- `POST /query` for the canonical N3 smoke queries
+
+Each case captures status, latency, selected deployment headers, a short body
+preview, and a compact payload summary so Phase N3 and the later custom-domain
+wrap-up can compare like-for-like evidence.
