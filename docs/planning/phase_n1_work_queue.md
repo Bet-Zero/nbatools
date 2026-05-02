@@ -20,7 +20,7 @@
 
 ---
 
-## 1. `[ ]` Sign up for Cloudflare R2 and provision the data bucket
+## 1. `[~]` Sign up for Cloudflare R2 and provision the data bucket — blocked: requires developer-owned Cloudflare account access, R2 bucket creation, scoped API token, and secure credential storage outside the repo.
 
 **Why:** Before any code can sync to R2, the bucket needs to exist and the
 developer needs API credentials. This is a one-time setup item that gates

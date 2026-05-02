@@ -16,11 +16,11 @@ pre-commit install
 Makefile targets provide deterministic test commands:
 
 ```bash
-make test-impacted    # Default: only tests affected by recent code changes (pytest-testmon, serial)
+make test-impacted    # Default for localized changes — tests affected by recent edits (testmon, serial)
+make test-preflight   # Default for cross-cutting changes — all tests except slow (parallel)
 make test-ci-fast     # Local equivalent of the PR CI fast gate
 make test-smoke-all   # Stable + phase natural-query smoke suites
 make test             # Full regression suite (parallel via xdist)
-make test-preflight   # All tests except slow — for broad, cross-cutting, or higher-risk changes only
 ```
 
 You can still invoke `pytest` directly with any flags you like.
@@ -29,13 +29,13 @@ explicitly, for example `make PYTEST=.venv/bin/pytest test-smoke-all`.
 
 ### When to use each
 
-| Command               | When                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| `make test-impacted`  | **Default** — during active development and as the normal finishing step for ordinary work |
-| `make test-ci-fast`   | Match the PR `test-fast` gate locally without using testmon                         |
-| `make test-smoke-all` | Parser/query phase closure when the queue asks for both smoke suites                |
-| `make test`           | Before merging, in CI, or when you want full confidence                                    |
-| `make test-preflight` | Broad, cross-cutting, or higher-risk changes only — not the default finishing step         |
+| Command               | When                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `make test-impacted`  | Default for **localized** changes — small, leaf-level edits in a single module                  |
+| `make test-preflight` | Default for **cross-cutting** changes — see "When to skip testmon" below                        |
+| `make test-ci-fast`   | Match the PR `test-fast` gate locally without using testmon                                     |
+| `make test-smoke-all` | Parser/query phase closure when the queue asks for both smoke suites                            |
+| `make test`           | Before merging, in CI, or when you want full confidence                                         |
 
 ### Domain / subset targets
 
@@ -75,6 +75,17 @@ Use this when you want the fastest possible feedback on a specific subsystem.
 The domain targets (`make test-parser`, etc.) deliberately do **not** combine with
 `--testmon`, so they always run the full subsystem slice.
 
+### When to skip testmon
+
+`make test-impacted` runs serial (`-n0`). When testmon selects a large number of tests, it costs more wall time than `make test-preflight` running in parallel. Skip `test-impacted` and use `make test-preflight` instead when **any** of these apply:
+
+- The diff touches a high fan-in module: `src/nbatools/query_service.py`, `src/nbatools/commands/natural_query.py`, parser core, the API layer, or shared fixtures/conftest files.
+- The diff exceeds ~50 lines in a single `src/` file.
+- A previous `test-impacted` run on the same change selected more than ~300 tests, or visibly stalls past ~2 minutes without finishing.
+- Data files, environment variables, or dynamically loaded modules changed (testmon does not track these).
+
+For tight iteration on a high fan-in change, use a domain slice (`make test-query`, `make test-api`, `make test-parser`, etc.) first — these run the whole slice in parallel without testmon — then run `make test-preflight` once before finishing.
+
 ### Testmon limitations
 
 `pytest-testmon` tracks file-level dependencies, not semantic ones.
@@ -85,12 +96,6 @@ It may miss tests affected by:
 - environment variable changes
 
 When in doubt, run `make test`.
-
-`make test-impacted` is serial by design (`-n0`). When a shared file such as
-`src/nbatools/commands/natural_query.py` changes, testmon can still select a
-large number of tests, so pytest progress percentages may advance slowly. For
-tight iteration, use `make test-impacted-parser` or `make test-impacted-query`
-first, then run the full required target once before finishing.
 
 ### Parser examples sweep
 
