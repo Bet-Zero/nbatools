@@ -186,19 +186,19 @@ the full philosophy.
 
 ## Capability Status
 
-| Area               | Current state                       | Done state                                                 | Owning track      |
-| ------------------ | ----------------------------------- | ---------------------------------------------------------- | ----------------- |
-| Deployment         | Localhost only                      | Real URL, custom domain, HTTPS, deploys on push            | Track B           |
-| Data sync          | Manual local refresh                | `sync-r2` command + cloud-read in production               | Track B           |
-| Design tokens      | Phase V1 tokenized frontend CSS baseline complete | Tokens consumed everywhere, no raw hex/sizes in components | Track A Part 1    |
-| Primitives library | Phase V2 primitives built and documented | Button, Card, Stat, DataTable, etc. as reusable primitives | Track A Part 1    |
-| App shell          | Phase V3 shell/layout complete      | Header, query bar, results region with real layout         | Track A Part 1    |
-| Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete | Headshots and team logos rendered consistently             | Track A Part 1    |
-| Component layouts  | Phase C1-C9 complete; Track A Part 2 closed by completion audit | Opinionated layouts per query class with charts            | Track A Part 2    |
-| Mobile             | Phase C8 component pass complete; Track A Part 3 Phase P3 broader mobile verification complete; P5 audit verified | Functional and visually clean on every component           | Track A Parts 2-3 |
-| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete; Track A Part 3 closed by P5 | Landing, starter queries, freshness banner                 | Track A Part 3    |
-| Errors / loading   | Track A Part 3 Phase P2 complete; Track A Part 3 closed by P5 | Designed states with helpful copy and skeletons            | Track A Part 3    |
-| Felt polish        | Track A Part 3 Phase P4 complete; Track A Part 3 closed by P5 | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
+| Area               | Current state                                                                                                                    | Done state                                                                             | Owning track      |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------- |
+| Deployment         | Localhost only                                                                                                                   | Real URL, custom domain, HTTPS, deploys on push                                        | Track B           |
+| Data sync          | Manual local refresh                                                                                                             | `sync-r2` command + cloud-read in production                                           | Track B           |
+| Design tokens      | Phase V1 tokenized frontend CSS baseline complete                                                                                | Tokens consumed everywhere, no raw hex/sizes in components                             | Track A Part 1    |
+| Primitives library | Phase V2 primitives built and documented                                                                                         | Button, Card, Stat, DataTable, etc. as reusable primitives                             | Track A Part 1    |
+| App shell          | Phase V3 shell/layout complete                                                                                                   | Header, query bar, results region with real layout                                     | Track A Part 1    |
+| Player imagery     | Phase V4 headshots, team logos, fallback behavior, and scoped team theming complete                                              | Headshots and team logos rendered consistently                                         | Track A Part 1    |
+| Component layouts  | Phase C1-C9 complete; Track A Part 2 closed by completion audit                                                                  | Opinionated layouts per query class with charts                                        | Track A Part 2    |
+| Mobile             | Phase C8 component pass complete; Track A Part 3 Phase P3 broader mobile verification complete; P5 audit verified                | Functional and visually clean on every component                                       | Track A Parts 2-3 |
+| First-run          | Phase P1 first-run surface, starter queries, freshness banner, and first-run mobile polish complete; Track A Part 3 closed by P5 | Landing, starter queries, freshness banner                                             | Track A Part 3    |
+| Errors / loading   | Track A Part 3 Phase P2 complete; Track A Part 3 closed by P5                                                                    | Designed states with helpful copy and skeletons                                        | Track A Part 3    |
+| Felt polish        | Track A Part 3 Phase P4 complete; Track A Part 3 closed by P5                                                                    | Keyboard shortcuts, copy/share feedback, stat help, transitions, and useful history UI | Track A Part 3    |
 
 ---
 
