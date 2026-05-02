@@ -267,7 +267,7 @@ function handlers. Use the inventory from item 4 as the punchlist.
 
 ---
 
-## 6. `[ ]` Verify deployed-mode works end-to-end against R2
+## 6. `[x]` Verify deployed-mode works end-to-end against R2 — completed: preview access was unblocked, deployed `/freshness` plus three representative `/query` calls returned HTTP `200`, matched local-mode results, and recorded first-observed/warm timings in `phase_n1_e2e_results.md`. A deployed-only player summary gap was found and fixed in PR #179 before the final passing run; `maxDuration: 60` was confirmed with no query-handler timeouts.
 
 **Why:** Before declaring the backend ready for Part 2, verify that the
 combination of (Vercel Functions + R2 data source + production env vars)

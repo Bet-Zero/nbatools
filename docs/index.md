@@ -108,6 +108,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/phase_p5_part3_completion_audit.md` — Track A Part 3 done-definition audit produced by Phase P5 item 1
 - `planning/phase_n1_work_queue.md` — active Track B deployment queue
 - `planning/phase_n1_api_inventory.md` — FastAPI route, state, cold-start, and Vercel-refactor inventory produced by Phase N1 item 4
+- `planning/phase_n1_e2e_results.md` — deployed R2/Vercel end-to-end verification results produced by Phase N1 item 6
 - `planning/data_freshness_plan.md` — data freshness design and implementation plan
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/roadmap.md` — planned and future capabilities
