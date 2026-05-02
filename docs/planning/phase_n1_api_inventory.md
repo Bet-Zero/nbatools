@@ -15,11 +15,11 @@ Measured from the primary local worktree on Python 3.13.2.
 - Python functions use the project root as the current working directory for
   relative file reads, not the function file directory. This matches the
   repo's local data-source assumption when `DATA_SOURCE=local`.
-- Python bundles have no automatic tree shaking and have a 500 MB uncompressed
-  bundle limit. The current checkout has about 279 MB in `data/`, 168 MB in
-  `frontend/`, and 8.8 MB in `tests/`, so production functions should use
-  `excludeFiles` for non-runtime folders and rely on `DATA_SOURCE=r2` instead
-  of bundling local data.
+- Python bundles have no automatic tree shaking, and Vercel's Python runtime
+  docs explicitly recommend `excludeFiles` for non-runtime folders. The current
+  checkout has about 279 MB in `data/`, 168 MB in `frontend/`, and 8.8 MB in
+  `tests/`, so production functions should exclude those folders and rely on
+  `DATA_SOURCE=r2` instead of bundling local data.
 - For Python, `maxDuration` is configured under the `functions` object in
   `vercel.json`. Current Vercel docs list Fluid Compute as enabled by default
   with a 300s Hobby default, but the Phase N1 kickoff still requires flagging
@@ -125,6 +125,26 @@ not Vercel timings.
 - R2 `/query` exceeded 10s by a lot in a cold local process. It should be
   treated as timeout-prone until item 5 either raises `maxDuration` for query
   functions, reduces first-request R2 downloads, or both.
+
+### Post-Refactor Function Check
+
+Item 5 remeasured the Vercel function entrypoints after adding route files,
+lazy package re-exports, and shared handler helpers.
+
+| Mode | Function | Import ms | First request ms | Total ms | Result |
+| --- | --- | ---: | ---: | ---: | --- |
+| `local` | `api/health.py` | 310.5 | 0.0 | 310.5 | `200` |
+| `local` | `api/routes.py` | 195.4 | 1067.2 | 1470.7 | `200` |
+| `local` | `api/freshness.py` | 202.5 | 978.4 | 1878.0 | `200` |
+| `local` | `api/query.py` with `Jokic last 10` | 185.7 | 3683.4 | 3869.1 | `200`, `player_game_summary` |
+| `local` | `api/structured_query.py` with `player_game_summary` | 197.2 | 3317.2 | 3508.0 | `200`, `player_game_summary` |
+| `r2` | `api/freshness.py` | 230.4 | 5123.7 | 5354.0 | `200`, `current_through=2026-04-04` |
+| `r2` | `api/query.py` isolated cold run | 335.1 | 13135.8 | 13470.9 | `200`, `player_game_summary` |
+
+The refactor removed most import-time cost from lightweight functions, but the
+R2 query path still exceeds the 10s safety bar. `vercel.json` sets query-class
+functions to `maxDuration: 60`; item 6 preview verification must confirm the
+deployed plan accepts that setting and that real preview requests complete.
 
 ---
 
