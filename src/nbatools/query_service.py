@@ -25,7 +25,6 @@ Both return one of the typed result classes defined in
 
 from __future__ import annotations
 
-import csv
 import unicodedata
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -62,12 +61,11 @@ from nbatools.commands.structured_results import (  # noqa: F401
     StreakResult,
     SummaryResult,
 )
+from nbatools.data_source import data_glob, data_read_csv_dicts
 
 # ---------------------------------------------------------------------------
 # Metadata helper
 # ---------------------------------------------------------------------------
-
-_DATA_ROOT = Path(__file__).resolve().parents[2] / "data"
 
 
 def _clean_text(value: Any) -> str | None:
@@ -93,17 +91,13 @@ def _coerce_int(value: Any) -> int | None:
 
 
 def _read_csv_dicts(path: Path) -> list[dict[str, str]]:
-    if not path.is_file():
-        return []
-    with path.open(newline="", encoding="utf-8") as handle:
-        return list(csv.DictReader(handle))
+    return data_read_csv_dicts(path)
 
 
 @lru_cache(maxsize=1)
 def _player_identity_lookup() -> dict[str, dict[str, Any]]:
     lookup: dict[str, dict[str, Any]] = {}
-    roster_dir = _DATA_ROOT / "raw" / "rosters"
-    for csv_path in sorted(roster_dir.glob("*.csv")):
+    for csv_path in data_glob("raw/rosters/*.csv"):
         for row in _read_csv_dicts(csv_path):
             player_id = _coerce_int(row.get("player_id"))
             player_name = _clean_text(row.get("player_name"))
@@ -147,11 +141,11 @@ def _team_identity_lookup() -> dict[str, dict[str, Any]]:
             if key:
                 lookup[key] = context
 
-    history_path = _DATA_ROOT / "raw" / "teams" / "team_history_reference.csv"
+    history_path = "data/raw/teams/team_history_reference.csv"
     for row in _read_csv_dicts(history_path):
         add_row(row)
 
-    teams_path = _DATA_ROOT / "raw" / "teams" / "teams_reference.csv"
+    teams_path = "data/raw/teams/teams_reference.csv"
     for row in _read_csv_dicts(teams_path):
         add_row(row)
 

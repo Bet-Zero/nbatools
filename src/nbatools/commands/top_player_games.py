@@ -4,6 +4,7 @@ import pandas as pd
 
 from nbatools.commands.freshness import compute_current_through
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
+from nbatools.data_source import data_exists, data_read_csv
 
 ALLOWED_STATS = {
     "pts": "pts",
@@ -42,7 +43,7 @@ def build_result(
     safe = season_type.lower().replace(" ", "_")
     path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
 
-    if not path.exists():
+    if not data_exists(path):
         return NoResult(query_class="leaderboard", reason="no_data")
 
     stat = stat.lower().strip()
@@ -63,14 +64,14 @@ def build_result(
             notes=["limit must be greater than 0"],
         )
 
-    df = pd.read_csv(path)
+    df = data_read_csv(path)
 
     # Player game logs lack a 'wl' column — derive it from team game stats
     # so that wins_only / losses_only filters can be applied.
     if (wins_only or losses_only) and "wl" not in df.columns:
         team_path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
-        if team_path.exists():
-            team_wl = pd.read_csv(team_path, usecols=["game_id", "team_id", "wl"])
+        if data_exists(team_path):
+            team_wl = data_read_csv(team_path, usecols=["game_id", "team_id", "wl"])
             team_wl = team_wl.drop_duplicates(subset=["game_id", "team_id"])
             df = df.merge(team_wl, on=["game_id", "team_id"], how="left")
 
