@@ -14,6 +14,7 @@ import styles from "./DataTable.module.css";
 interface Props {
   rows: SectionRow[];
   highlight?: boolean;
+  hiddenColumns?: Iterable<string>;
 }
 
 /** Column names that indicate a rank column. */
@@ -31,6 +32,83 @@ const TEAM_COLS = new Set([
 
 /** Column names that indicate an entity (player/team) column. */
 const ENTITY_COLS = new Set([...PLAYER_COLS, ...TEAM_COLS]);
+
+const PRIMARY_ENTITY_COL_PREFERENCE = [
+  "player_name",
+  "player",
+  "team_name",
+  "team",
+  "team_abbr",
+  "entity",
+  "name",
+  "lineup",
+  "lineup_members",
+  "members",
+];
+
+const COLLAPSIBLE_IDENTITY_GROUPS = [
+  ["player_name", "player"],
+  ["team_name", "team", "team_abbr"],
+];
+
+function normalizeColumnName(column: string): string {
+  return column.toLowerCase();
+}
+
+function selectVisibleColumns(
+  columns: string[],
+  hiddenColumns: Iterable<string> | undefined,
+): string[] {
+  if (!hiddenColumns) return columns;
+
+  const hidden = new Set(
+    Array.from(hiddenColumns, (column) => normalizeColumnName(column)),
+  );
+  const selected = new Set(
+    columns.filter((column) => !hidden.has(normalizeColumnName(column))),
+  );
+
+  for (const group of COLLAPSIBLE_IDENTITY_GROUPS) {
+    const visibleGroupColumns = columns.filter(
+      (column) =>
+        selected.has(column) && group.includes(normalizeColumnName(column)),
+    );
+    if (visibleGroupColumns.length <= 1) continue;
+
+    const preferred = group.find((columnName) =>
+      visibleGroupColumns.some(
+        (column) => normalizeColumnName(column) === columnName,
+      ),
+    );
+    if (!preferred) continue;
+
+    for (const column of visibleGroupColumns) {
+      if (normalizeColumnName(column) !== preferred) {
+        selected.delete(column);
+      }
+    }
+  }
+
+  const hasVisiblePrimaryEntityColumn = columns.some(
+    (column) =>
+      selected.has(column) &&
+      PRIMARY_ENTITY_COL_PREFERENCE.includes(normalizeColumnName(column)),
+  );
+
+  if (!hasVisiblePrimaryEntityColumn) {
+    const fallback = PRIMARY_ENTITY_COL_PREFERENCE.find((columnName) =>
+      columns.some((column) => normalizeColumnName(column) === columnName),
+    );
+    if (fallback) {
+      const fallbackColumn = columns.find(
+        (column) => normalizeColumnName(column) === fallback,
+      );
+      if (fallbackColumn) selected.add(fallbackColumn);
+    }
+  }
+
+  return columns.filter((column) => selected.has(column));
+}
 
 /** Check whether a column contains numeric values (sample first 5 rows). */
 function isNumericCol(col: string, rows: SectionRow[]): boolean {
@@ -142,18 +220,21 @@ function renderEntityValue(
   return formatted;
 }
 
-export default function DataTable({ rows, highlight = false }: Props) {
+export default function DataTable({
+  rows,
+  highlight = false,
+  hiddenColumns,
+}: Props) {
   if (!rows.length) return null;
-  const columns: DataTableColumn<SectionRow>[] = Object.keys(rows[0]).map(
-    (col) => ({
-      key: col,
-      header: formatColHeader(col),
-      align: columnAlignment(col, rows),
-      className: cellClass(col, rows),
-      numeric: isNumericCol(col, rows),
-      render: (row) => renderEntityValue(row[col], col, row),
-    }),
-  );
+  const visibleColumns = selectVisibleColumns(Object.keys(rows[0]), hiddenColumns);
+  const columns: DataTableColumn<SectionRow>[] = visibleColumns.map((col) => ({
+    key: col,
+    header: formatColHeader(col),
+    align: columnAlignment(col, rows),
+    className: cellClass(col, rows),
+    numeric: isNumericCol(col, rows),
+    render: (row) => renderEntityValue(row[col], col, row),
+  }));
 
   return (
     <DataTablePrimitive

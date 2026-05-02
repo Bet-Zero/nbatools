@@ -383,7 +383,7 @@ export default function OccurrenceLeaderboardSection({
       </div>
       <div className={styles.detailSection}>
         <SectionHeader title="Full Occurrence Detail" />
-        <DataTable rows={leaderboard} highlight />
+        <DataTable rows={leaderboard} highlight hiddenColumns={SYSTEM_COLUMNS} />
       </div>
     </div>
   );

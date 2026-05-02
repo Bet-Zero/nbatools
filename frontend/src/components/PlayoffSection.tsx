@@ -29,6 +29,16 @@ const DETAIL_LABELS: Record<string, string> = {
   leaderboard: "Playoff Leaderboard Detail",
 };
 
+const PLAYOFF_LEADERBOARD_HIDDEN_COLUMNS = new Set([
+  "rank",
+  "team_id",
+  "team_name",
+  "team_abbr",
+  "team",
+  "entity",
+  "name",
+]);
+
 function textValue(row: SectionRow | undefined, key: string): string | null {
   const value = row?.[key];
   if (typeof value !== "string") return null;
@@ -575,7 +585,11 @@ function PlayoffLeaderboardLayout({
       </div>
       <div className={styles.detailSection}>
         <SectionHeader title="Full Playoff Leaderboard" />
-        <DataTable rows={leaderboard} highlight />
+        <DataTable
+          rows={leaderboard}
+          highlight
+          hiddenColumns={PLAYOFF_LEADERBOARD_HIDDEN_COLUMNS}
+        />
       </div>
     </div>
   );

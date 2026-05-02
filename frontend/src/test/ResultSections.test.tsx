@@ -1149,6 +1149,125 @@ describe("ResultSections", () => {
     ).toBeNull();
   });
 
+  it("hides internal id columns from curated leaderboard detail tables", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Nikola Jokic",
+              player_id: 203999,
+              team_id: 1610612743,
+              team_abbr: "DEN",
+              win_pct: 0.719,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(
+      screen.queryByRole("columnheader", { name: "Player Id" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Team Id" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Player Name" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps a single visible team identity column in leaderboard detail tables", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Los Angeles Lakers",
+              team_abbr: "LAL",
+              team_id: 1610612747,
+              wins: 23,
+              losses: 12,
+              win_pct: 0.657,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(
+      screen.getByRole("columnheader", { name: "Team Name" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Team Abbr" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows wins and losses alongside win percentage leaderboard metrics", () => {
+    const data = makeResponse({
+      query: "best record since 2015",
+      route: "team_record",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "team_record",
+          start_season: "2015-16",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Golden State Warriors",
+              team_abbr: "GSW",
+              team_id: 1610612744,
+              season: "Since 2015",
+              wins: 23,
+              losses: 12,
+              win_pct: 0.657,
+            },
+            {
+              rank: 2,
+              team_name: "Boston Celtics",
+              team_abbr: "BOS",
+              team_id: 1610612738,
+              season: "Since 2015",
+              wins: 20,
+              losses: 15,
+              win_pct: 0.571,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    const ranked = screen.getByLabelText("Ranked leaderboard");
+    expect(within(ranked).getByText("23-12")).toBeInTheDocument();
+    expect(within(ranked).getByText("20-15")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("65.7%").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("57.1%").length).toBeGreaterThan(0);
+  });
+
   it("renders sparse leaderboard rows without identity fields", () => {
     const data = makeResponse({
       result: {
