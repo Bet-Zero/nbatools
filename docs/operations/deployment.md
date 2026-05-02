@@ -109,3 +109,16 @@ The JSON report records:
 Each case captures status, latency, selected deployment headers, a short body
 preview, and a compact payload summary so Phase N3 and the later custom-domain
 wrap-up can compare like-for-like evidence.
+
+## Custom-Domain Closure Checklist
+
+Phase N4 now keeps the custom-domain closure procedure in
+`docs/planning/phase_n4_domain_cutover_checklist.md`.
+
+Use that checklist for the remaining production-domain work:
+
+- choose or purchase the final domain
+- attach the domain in Vercel and copy the exact DNS records Vercel requires
+- verify DNS, HTTPS, and R2-backed production readiness
+- capture the deploy-on-main evidence record
+- run the post-cutover custom-domain smoke pass
