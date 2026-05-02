@@ -116,6 +116,46 @@ def test_r2_data_source_raises_without_silent_local_fallback(
     assert "Could not read R2 object raw/sample.csv" in str(excinfo.value)
 
 
+def test_player_advanced_team_context_loader_reads_from_r2(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    from nbatools.commands.player_advanced_metrics import load_team_games_for_seasons
+
+    client = FakeR2Client(
+        {
+            "raw/team_game_stats/2099-00_regular_season.csv": (
+                b"game_id,team_id,team_abbr,team_name,opponent_team_id,"
+                b"opponent_team_abbr,minutes,fgm,fga,fta,tov,reb,wl\n"
+                b"G1,100,AAA,A Team,200,BBB,240,40,85,20,12,50,W\n"
+            )
+        }
+    )
+    _configure_r2(monkeypatch, tmp_path, client)
+
+    df = load_team_games_for_seasons(["2099-00"], "Regular Season")
+
+    assert df.to_dict("records") == [
+        {
+            "game_id": "G1",
+            "team_id": 100,
+            "team_abbr": "AAA",
+            "team_name": "A Team",
+            "opponent_team_id": 200,
+            "opponent_team_abbr": "BBB",
+            "minutes": 240,
+            "fgm": 40,
+            "fga": 85,
+            "fta": 20,
+            "tov": 12,
+            "reb": 50,
+            "wl": "W",
+            "season": "2099-00",
+            "season_type": "Regular Season",
+        }
+    ]
+    assert client.get_calls == ["raw/team_game_stats/2099-00_regular_season.csv"]
+
+
 def _configure_r2(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
