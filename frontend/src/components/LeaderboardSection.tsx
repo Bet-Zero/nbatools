@@ -112,6 +112,13 @@ interface ContextItem {
   text: string;
 }
 
+const PERCENTAGE_COMPANION_COLUMNS: Record<string, string[]> = {
+  win_pct: ["wins", "losses"],
+  fg_pct: ["fgm", "fga"],
+  fg3_pct: ["fg3m", "fg3a"],
+  ft_pct: ["ftm", "fta"],
+};
+
 type RowIdentity =
   | {
       kind: "player";
@@ -138,6 +145,60 @@ function identityId(value: unknown): number | string | null {
 
 function hasValue(value: unknown): boolean {
   return value !== null && value !== undefined && value !== "";
+}
+
+function percentageCompanionColumns(metric: string, row: SectionRow): string[] {
+  const lc = metric.toLowerCase();
+  const explicitColumns = PERCENTAGE_COMPANION_COLUMNS[lc];
+  if (explicitColumns) {
+    return explicitColumns.filter((key) => hasValue(row[key]));
+  }
+
+  if (!lc.endsWith("_pct")) return [];
+
+  const base = lc.slice(0, -4);
+  const genericColumns = [`${base}m`, `${base}a`];
+  return genericColumns.filter((key) => hasValue(row[key]));
+}
+
+function metricCompanionItems(
+  row: SectionRow,
+  metric: string | null,
+): ContextItem[] {
+  if (!metric) return [];
+
+  const companionColumns = percentageCompanionColumns(metric, row);
+  if (companionColumns.length === 0) return [];
+
+  if (
+    metric.toLowerCase() === "win_pct" &&
+    companionColumns.includes("wins") &&
+    companionColumns.includes("losses")
+  ) {
+    return [
+      {
+        key: "record",
+        text: `${formatValue(row.wins, "wins")}-${formatValue(row.losses, "losses")}`,
+      },
+    ];
+  }
+
+  if (companionColumns.length === 2 && companionColumns[0].endsWith("m") && companionColumns[1].endsWith("a")) {
+    return [
+      {
+        key: `${companionColumns[0]}_${companionColumns[1]}`,
+        text: `${formatValue(row[companionColumns[0]], companionColumns[0])}/${formatValue(
+          row[companionColumns[1]],
+          companionColumns[1],
+        )} ${formatColHeader(metric).replace(/\s*Pct$/i, "")}`,
+      },
+    ];
+  }
+
+  return companionColumns.map((key) => ({
+    key,
+    text: `${formatValue(row[key], key)} ${metricLabel(key)}`,
+  }));
 }
 
 function addContextItem(items: ContextItem[], key: string, text: string | null) {
@@ -236,7 +297,7 @@ function metricLabel(metric: string): string {
   );
 }
 
-function contextItems(row: SectionRow): ContextItem[] {
+function contextItems(row: SectionRow, metric: string | null): ContextItem[] {
   const items: ContextItem[] = [];
   const hasPlayerIdentity = Boolean(
     textValue(row, "player_name") ?? textValue(row, "player"),
@@ -274,6 +335,10 @@ function contextItems(row: SectionRow): ContextItem[] {
 
   const result = textValue(row, "wl");
   if (result) addContextItem(items, "wl", result.toUpperCase());
+
+  for (const item of metricCompanionItems(row, metric)) {
+    addContextItem(items, item.key, item.text);
+  }
 
   for (const [key, label] of QUALIFIER_COLUMNS) {
     if (!hasValue(row[key])) continue;
@@ -336,7 +401,7 @@ export default function LeaderboardSection({
       <div className={styles.rankedList} aria-label="Ranked leaderboard">
         {leaderboard.map((row, index) => {
           const metric = metricColumn(row);
-          const context = contextItems(row);
+          const context = contextItems(row, metric);
           const isTopRank = index === 0;
           const identity = rowIdentity(row);
 
@@ -386,7 +451,7 @@ export default function LeaderboardSection({
       </div>
       <div className={styles.detailSection}>
         <SectionHeader title={detailTitle} />
-        <DataTable rows={leaderboard} highlight />
+        <DataTable rows={leaderboard} highlight hiddenColumns={SYSTEM_COLUMNS} />
       </div>
     </div>
   );
