@@ -34,6 +34,34 @@ ALLOWED_STATS = {
     "ts_pct": "ts_pct",
 }
 
+GAME_LOG_COLUMNS = [
+    "game_date",
+    "game_id",
+    "season",
+    "season_type",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "opponent_team_id",
+    "opponent_team_abbr",
+    "opponent_team_name",
+    "is_home",
+    "is_away",
+    "wl",
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "fg3a",
+    "tov",
+    "plus_minus",
+    "fg_pct",
+    "fg3_pct",
+    "ft_pct",
+    "efg_pct",
+    "ts_pct",
+]
+
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -118,6 +146,24 @@ def _apply_filters(
         )
 
     return out
+
+
+def _build_game_log_section(df: pd.DataFrame) -> pd.DataFrame:
+    cols = [col for col in GAME_LOG_COLUMNS if col in df.columns]
+    game_log = (
+        df.sort_values(["game_date", "game_id"], ascending=[True, True])
+        .loc[:, cols]
+        .reset_index(drop=True)
+        .copy()
+    )
+    if "pts" in game_log.columns and "plus_minus" in game_log.columns:
+        game_log["opponent_pts"] = (
+            pd.to_numeric(game_log["pts"], errors="coerce")
+            - pd.to_numeric(game_log["plus_minus"], errors="coerce")
+        ).round(3)
+    if "game_date" in game_log.columns:
+        game_log["game_date"] = pd.to_datetime(game_log["game_date"]).dt.strftime("%Y-%m-%d")
+    return game_log
 
 
 def build_result(
@@ -247,6 +293,10 @@ def build_result(
         summary_row[f"{col}_sum"] = round(df[col].sum(), 3)
 
     summary = pd.DataFrame([summary_row])
+    include_game_log = (
+        last_n is not None or start_date is not None or end_date is not None or total_games <= 5
+    )
+    game_log = _build_game_log_section(df) if include_game_log else None
 
     agg_map = {
         "games": ("game_id", "count"),
@@ -300,6 +350,7 @@ def build_result(
     return SummaryResult(
         summary=summary,
         by_season=by_season,
+        game_log=game_log,
         current_through=current_through,
         caveats=caveats,
     )

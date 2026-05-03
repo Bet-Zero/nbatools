@@ -183,9 +183,9 @@ expectation is:
 - **Example queries:**
   - `Lakers Celtics last night`
 - **Currently shows (shipped):**
-  - `TeamSummarySection` renders a team-summary style hero with team identity and summary stats when the response has a `summary` section.
-  - It does not yet render a true game box-score/final-score layout with both teams, top performers, and game context.
-- **Follow-up note:** Needs a dedicated `game_summary` display; queued in `result_display_followup_queue.md`.
+  - `GameSummarySection` renders `game_log` rows as team game cards with team/opponent logos, date, home/away matchup, W/L, score when available, margin, and core team stats.
+  - Aggregate-only summaries fall back to a team/opponent summary hero with record/sample and team stat context.
+- **Follow-up note:** The display still cannot show top player performers because `game_summary` does not return player leader rows yet.
 - **Should show:**
   - Game box-score style result.
   - Final score hero with team logos, team names, date, and W/L.
@@ -342,13 +342,12 @@ expectation is:
      - Keep `Player Game Detail` available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `game_finder` `[~]`
+### `game_finder` `[x]`
 - **Example queries:**
   - `games where Lakers won by 20+`
 - **Currently shows (shipped):**
-  - Generic `FinderSection` with count and a table of matching games. Shared table behavior hides internal IDs and provides identity visuals when columns exist.
-  - It does not yet have team/game cards with margin/score context as the primary display.
-- **Follow-up note:** Needs a team/game finder card layout; queued in `result_display_followup_queue.md`.
+  - `GameFinderSection` renders team game cards with count, condition/context chips, team/opponent logos, date, home/away matchup, W/L, score when available, margin, and key team stats.
+  - `Game Detail` remains available behind the shared collapsed raw-table toggle.
 - **Should show:**
   - Team/game equivalent of `player_game_finder`.
   - Count found and condition summary.

@@ -430,6 +430,95 @@ class TestBuildResultGameSummary:
         )
         assert isinstance(result, NoResult)
 
+    def test_to_dict_includes_team_game_log(self):
+        from nbatools.commands.game_summary import build_result
+
+        df = pd.DataFrame(
+            [
+                {
+                    "game_id": "002",
+                    "game_date": "2025-01-17",
+                    "season": "2024-25",
+                    "season_type": "Regular Season",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_id": 1610612747,
+                    "opponent_team_abbr": "LAL",
+                    "opponent_team_name": "Los Angeles Lakers",
+                    "is_home": 0,
+                    "is_away": 1,
+                    "wl": "L",
+                    "pts": 112,
+                    "reb": 41,
+                    "ast": 24,
+                    "fg3m": 13,
+                    "plus_minus": -5,
+                },
+                {
+                    "game_id": "001",
+                    "game_date": "2025-01-15",
+                    "season": "2024-25",
+                    "season_type": "Regular Season",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_id": 1610612748,
+                    "opponent_team_abbr": "MIA",
+                    "opponent_team_name": "Miami Heat",
+                    "is_home": 1,
+                    "is_away": 0,
+                    "wl": "W",
+                    "pts": 118,
+                    "reb": 44,
+                    "ast": 29,
+                    "fg3m": 16,
+                    "plus_minus": 8,
+                },
+            ]
+        )
+
+        result = build_result(season="2024-25", team="BOS", df=df)
+        d = result.to_dict()
+
+        assert list(d["sections"]) == ["summary", "by_season", "game_log"]
+        first_game = d["sections"]["game_log"][0]
+        assert first_game["game_date"] == "2025-01-15"
+        assert first_game["team_abbr"] == "BOS"
+        assert first_game["opponent_team_abbr"] == "MIA"
+        assert first_game["opponent_pts"] == 110
+
+    def test_to_dict_omits_game_log_for_unbounded_team_summary(self):
+        from nbatools.commands.game_summary import build_result
+
+        rows = []
+        for index in range(6):
+            rows.append(
+                {
+                    "game_id": f"00{index}",
+                    "game_date": f"2025-01-{index + 1:02d}",
+                    "season": "2024-25",
+                    "season_type": "Regular Season",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_id": 1610612747,
+                    "opponent_team_abbr": "LAL",
+                    "opponent_team_name": "Los Angeles Lakers",
+                    "is_home": index % 2,
+                    "is_away": int(index % 2 == 0),
+                    "wl": "W",
+                    "pts": 110 + index,
+                    "plus_minus": 5,
+                }
+            )
+        df = pd.DataFrame(rows)
+
+        result = build_result(season="2024-25", team="BOS", df=df)
+        d = result.to_dict()
+
+        assert "game_log" not in d["sections"]
+
 
 class TestBuildResultPlayerCompare:
     @pytest.mark.needs_data
