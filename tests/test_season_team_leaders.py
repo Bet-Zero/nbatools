@@ -81,6 +81,67 @@ def test_team_leaders_computes_fg3m_per_game_from_logs(tmp_path, monkeypatch):
     assert df.iloc[0]["fg3m_per_game"] == 15
 
 
+def test_team_win_pct_leaders_include_record_context_columns(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    rows = []
+    for game_id in range(1, 21):
+        rows.append(
+            {
+                "game_id": game_id,
+                "team_id": 1,
+                "team_name": "Alpha",
+                "team_abbr": "ALP",
+                "wl": "W" if game_id <= 16 else "L",
+                "pts": 100,
+                "reb": 40,
+                "ast": 25,
+                "fgm": 35,
+                "fga": 80,
+                "fg3m": 10,
+                "fg3a": 30,
+                "ftm": 15,
+                "fta": 20,
+            }
+        )
+    for game_id in range(21, 41):
+        rows.append(
+            {
+                "game_id": game_id,
+                "team_id": 2,
+                "team_name": "Beta",
+                "team_abbr": "BET",
+                "wl": "W" if game_id <= 32 else "L",
+                "pts": 100,
+                "reb": 40,
+                "ast": 25,
+                "fgm": 35,
+                "fga": 80,
+                "fg3m": 10,
+                "fg3a": 30,
+                "ftm": 15,
+                "fta": 20,
+            }
+        )
+
+    _write_csv(tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv", rows)
+
+    result = season_team_leaders_build_result(
+        season="2099-00",
+        stat="win_pct",
+        limit=10,
+        season_type="Regular Season",
+        min_games=1,
+        ascending=False,
+    )
+    df = result.leaders
+
+    assert {"wins", "losses", "win_pct"}.issubset(df.columns)
+    assert df.iloc[0]["team_name"] == "Alpha"
+    assert df.iloc[0]["wins"] == 16
+    assert df.iloc[0]["losses"] == 4
+
+
 def test_team_leaders_uses_latest_advanced_row(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -218,3 +279,6 @@ def test_team_leaders_computes_efg_pct_from_logs(tmp_path, monkeypatch):
     df = result.leaders
 
     assert df.iloc[0]["team_name"] == "Alpha"
+    assert {"efg_pct", "fgm_total", "fga_total"}.issubset(df.columns)
+    assert df.iloc[0]["fgm_total"] == 800
+    assert df.iloc[0]["fga_total"] == 1600
