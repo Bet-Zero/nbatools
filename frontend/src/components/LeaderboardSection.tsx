@@ -107,16 +107,49 @@ const STAT_LABELS: Record<string, string> = {
   tov: "TOV",
 };
 
+const METRIC_LABEL_OVERRIDES: Record<string, string> = {
+  efg_pct: "eFG Pct",
+  fg_pct: "FG Pct",
+  fg3_pct: "3P Pct",
+  ft_pct: "FT Pct",
+  ts_pct: "TS Pct",
+};
+
 interface ContextItem {
   key: string;
   text: string;
 }
 
 const PERCENTAGE_COMPANION_COLUMNS: Record<string, string[]> = {
-  win_pct: ["wins", "losses"],
   fg_pct: ["fgm", "fga"],
   fg3_pct: ["fg3m", "fg3a"],
   ft_pct: ["ftm", "fta"],
+};
+
+const PERCENTAGE_COMPANION_PAIRS: Record<
+  string,
+  Array<{ columns: [string, string]; label: string }>
+> = {
+  fg_pct: [
+    { columns: ["fgm", "fga"], label: "FG" },
+    { columns: ["fgm_total", "fga_total"], label: "FG" },
+  ],
+  fg3_pct: [
+    { columns: ["fg3m", "fg3a"], label: "3P" },
+    { columns: ["fg3m_total", "fg3a_total"], label: "3P" },
+  ],
+  ft_pct: [
+    { columns: ["ftm", "fta"], label: "FT" },
+    { columns: ["ftm_total", "fta_total"], label: "FT" },
+  ],
+  efg_pct: [
+    { columns: ["fgm", "fga"], label: "FG" },
+    { columns: ["fgm_total", "fga_total"], label: "FG" },
+  ],
+  ts_pct: [
+    { columns: ["fga", "fta"], label: "FGA/FTA" },
+    { columns: ["fga_total", "fta_total"], label: "FGA/FTA" },
+  ],
 };
 
 type RowIdentity =
@@ -161,29 +194,65 @@ function percentageCompanionColumns(metric: string, row: SectionRow): string[] {
   return genericColumns.filter((key) => hasValue(row[key]));
 }
 
+function percentageCompanionPair(
+  metric: string,
+  row: SectionRow,
+): { columns: [string, string]; label: string } | null {
+  const lc = metric.toLowerCase();
+  for (const candidate of PERCENTAGE_COMPANION_PAIRS[lc] ?? []) {
+    const [madeKey, attemptKey] = candidate.columns;
+    if (hasValue(row[madeKey]) && hasValue(row[attemptKey])) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
 function metricCompanionItems(
   row: SectionRow,
   metric: string | null,
 ): ContextItem[] {
   if (!metric) return [];
 
-  const companionColumns = percentageCompanionColumns(metric, row);
-  if (companionColumns.length === 0) return [];
-
+  const lc = metric.toLowerCase();
   if (
-    metric.toLowerCase() === "win_pct" &&
-    companionColumns.includes("wins") &&
-    companionColumns.includes("losses")
+    (lc === "win_pct" || lc === "wins" || lc === "losses") &&
+    hasValue(row.wins) &&
+    hasValue(row.losses)
   ) {
     return [
       {
         key: "record",
-        text: `${formatValue(row.wins, "wins")}-${formatValue(row.losses, "losses")}`,
+        text: `${formatValue(row.wins, "wins")}-${formatValue(
+          row.losses,
+          "losses",
+        )}`,
       },
     ];
   }
 
-  if (companionColumns.length === 2 && companionColumns[0].endsWith("m") && companionColumns[1].endsWith("a")) {
+  const companionPair = percentageCompanionPair(metric, row);
+  if (companionPair) {
+    const [madeKey, attemptKey] = companionPair.columns;
+    return [
+      {
+        key: `${madeKey}_${attemptKey}`,
+        text: `${formatValue(row[madeKey], madeKey)}/${formatValue(
+          row[attemptKey],
+          attemptKey,
+        )} ${companionPair.label}`,
+      },
+    ];
+  }
+
+  const companionColumns = percentageCompanionColumns(metric, row);
+  if (companionColumns.length === 0) return [];
+
+  if (
+    companionColumns.length === 2 &&
+    companionColumns[0].endsWith("m") &&
+    companionColumns[1].endsWith("a")
+  ) {
     return [
       {
         key: `${companionColumns[0]}_${companionColumns[1]}`,
@@ -291,6 +360,9 @@ function metricColumn(row: SectionRow): string | null {
 }
 
 function metricLabel(metric: string): string {
+  const override = METRIC_LABEL_OVERRIDES[metric.toLowerCase()];
+  if (override) return override;
+
   return formatColHeader(metric).replace(
     /\b(ast|blk|def|fga|fg3a|fg3m|fgm|fta|ftm|off|pts|reb|stl|tov)\b/gi,
     (stat) => STAT_LABELS[stat.toLowerCase()] ?? stat,

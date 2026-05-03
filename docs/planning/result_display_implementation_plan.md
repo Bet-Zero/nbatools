@@ -246,7 +246,7 @@ explicitly and is one of the most user-visible bugs.
 
 ---
 
-## 4. `[ ]` Leaderboard context completeness
+## 4. `[x]` Leaderboard context completeness
 
 **Why:** Leaderboards are the most-used class. After PR #200 merges
 (playoff min-games threshold + initial column-hiding + wins/losses

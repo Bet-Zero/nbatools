@@ -236,3 +236,6 @@ def test_season_leaders_percentage_guardrail_filters_low_attempt_outlier(tmp_pat
 
     assert "Tiny Volume Guy" not in df["player_name"].tolist()
     assert df.iloc[0]["player_name"] == "Real Volume Guy"
+    assert {"ts_pct", "fga_total", "fta_total"}.issubset(df.columns)
+    assert df.iloc[0]["fga_total"] == 300
+    assert df.iloc[0]["fta_total"] == 100

@@ -607,6 +607,18 @@ def _apply_default_guardrails(
     return df
 
 
+def _leaderboard_context_columns(target_col: str) -> list[str]:
+    if target_col in {"fg_pct", "efg_pct"}:
+        return ["fgm_total", "fga_total"]
+    if target_col == "ts_pct":
+        return ["fga_total", "fta_total"]
+    if target_col == "fg3_pct":
+        return ["fg3m_total", "fg3a_total"]
+    if target_col == "ft_pct":
+        return ["ftm_total", "fta_total"]
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Position group mappings
 # ---------------------------------------------------------------------------
@@ -918,6 +930,11 @@ def build_result(
     if "team_abbr" in df.columns:
         out_cols.append("team_abbr")
     out_cols.extend(["games_played", target_col])
+    out_cols.extend(
+        col
+        for col in _leaderboard_context_columns(target_col)
+        if col in df.columns and col not in out_cols
+    )
     if clutch_executed:
         out_cols.extend(
             [c for c in ["pts_total", "clutch_events", "clutch_seconds"] if c != target_col]

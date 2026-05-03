@@ -304,6 +304,24 @@ def _apply_default_guardrails(
     return df
 
 
+def _leaderboard_context_columns(target_col: str) -> list[str]:
+    if target_col == "win_pct":
+        return ["wins", "losses"]
+    if target_col == "wins":
+        return ["losses"]
+    if target_col == "losses":
+        return ["wins"]
+    if target_col in {"fg_pct", "efg_pct"}:
+        return ["fgm_total", "fga_total"]
+    if target_col == "ts_pct":
+        return ["fga_total", "fta_total"]
+    if target_col == "fg3_pct":
+        return ["fg3m_total", "fg3a_total"]
+    if target_col == "ft_pct":
+        return ["ftm_total", "fta_total"]
+    return []
+
+
 def build_result(
     season: str | None = None,
     stat: str = "pts",
@@ -454,6 +472,11 @@ def build_result(
         )
 
     out_cols = ["team_name", "team_abbr", "team_id", "games_played", target_col]
+    out_cols.extend(
+        col
+        for col in _leaderboard_context_columns(target_col)
+        if col in df.columns and col not in out_cols
+    )
     missing = [c for c in out_cols if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required output columns: {missing}")
