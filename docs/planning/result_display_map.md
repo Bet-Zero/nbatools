@@ -54,69 +54,160 @@ the answer requires multiple parts.
 
 ---
 
+## Default answer pattern (StatMuse baseline)
+
+Adopted 2026-05-03. Every route's `Should show:` should match this
+pattern unless the route entry explicitly opts out with a reason.
+
+**Two parts: a sentence-style hero card, then one dense table.**
+
+### Hero card (always present)
+
+- Colored background (per-route or per-domain hue is fine).
+- Subject illustration or headshot on the left (player headshot, team
+  logo, or a small composite for multi-subject queries).
+- One plain-English sentence stating the headline answer.
+  - Game/season summary: *"Nikola Jokić has averaged 26.7 points, 12.5
+    rebounds and 9.4 assists in his last 10 games."*
+  - Leaderboard: *"Giannis Antetokounmpo scored the most points per game
+    in the 2025 playoffs, with 33.0 per game."*
+  - Record: *"The Lakers are 31-12 this season."*
+- No stat tiles, no chip rows, no stacked metric blocks. Just the
+  sentence.
+- Optional small disambiguation note directly under the hero when the
+  parser picked one of multiple plausible interpretations:
+  *"Interpreted as: most ppg by a player in 2025 playoffs."*
+
+### Answer table (almost always present)
+
+- One tight, dense table. **The table is the answer**, not a secondary
+  detail layer.
+- One row per result entity (one game in a game log, one player or team
+  in a leaderboard, one matchup in a matchup history, etc.).
+- Inline headshot/logo per row, not a separate card.
+- The queried metric column gets visual emphasis (subtle background tint
+  on the column, slightly bolder).
+- Right-aligned numbers for scanning, left-aligned identity columns.
+- Horizontal scroll for long-tail columns rather than wrapping.
+- For game logs and similar windowed results, add `Average` and `Total`
+  footer rows inside the same table.
+- No card-per-row layouts for tabular data. Cards are reserved for the
+  hero only.
+- No redundant secondary tables below the answer table.
+
+### Multi-layer / compound queries
+
+The product supports queries beyond StatMuse's coverage (multi-filter,
+boolean-combined, compound). These may require additional sections
+beyond the hero + answer table, but those additions should feel cohesive
+with the baseline:
+
+- Additional context appears as new rows in the same table, additional
+  footer rows, or a small secondary section *below* the answer table —
+  not as a different visual style.
+- If a route genuinely needs a different shape (e.g., side-by-side
+  comparisons, multi-bucket splits), the route entry's `Should show:`
+  must call that out explicitly with a concrete description.
+
+### Goal
+
+Match StatMuse's answer shape as a baseline, then iterate per route to
+exceed it where the product's deeper queries warrant it. The baseline is
+the floor, not the ceiling.
+
+---
+
 ## Raw detail table policy
 
-Raw `DataTable` sections are still valuable. They should not be deleted,
-removed from responses, or treated as dead code. They are the inspection,
-debugging, validation, export, and future advanced-view layer.
+Under the StatMuse baseline, the **answer table is the primary display**
+— it should not be hidden behind a toggle. Raw `DataTable` sections that
+are *secondary* to the answer (e.g., a `by_season` breakdown when the
+query is single-season, a `comparison` detail dump when the hero
+comparison is sufficient) may still be collapsed behind a consistent
+control labeled **`Show raw table`** (closed) / **`Hide raw table`**
+(open). Use this exact wording.
 
-However, raw tables should **not** be part of the default visual answer.
-For every route, polished cards/lists/charts should be the primary display,
-and raw detail tables should be collapsed behind a consistent control
-labeled **`Show raw table`** (closed) and **`Hide raw table`** (open). Use
-this exact wording everywhere — do not vary the label per route or per
-component.
+Rules of thumb:
 
-Route entries may still mention which raw tables exist, but the default
-expectation is:
-
-- Keep raw table data and rendering support.
-- Hide/collapse raw tables by default.
-- Use one consistent reveal pattern across all result sections.
-- Do not duplicate already-visible card/list content in an always-open
-  table.
-- The primary display must answer the query without requiring the user to
-  open the raw table.
+- The table that *is* the answer (game log, leaderboard, finder list)
+  is open by default.
+- Tables that contain the same content as the hero in tabular form are
+  redundant and should be removed entirely, not just hidden.
+- Tables that contain genuinely additional / drill-down data may live
+  behind the toggle.
+- Never delete `DataTable` itself; it remains the substrate for both
+  always-open answer tables and toggled detail tables.
 
 ---
 
 # Routes by query class
 
+> **Pre-baseline notice.** Most route entries below were written before
+> the StatMuse-baseline pattern was adopted on 2026-05-03. Their
+> `Should show:` text describes card-per-row layouts, chip rows, and
+> stat-tile heroes that are now superseded by the baseline pattern.
+> Routes whose `Should show:` has been rewritten against the StatMuse
+> baseline are marked `[~]` and have an explicit `Reference:` line. All
+> other route entries should be considered stale until they are
+> rewritten against the baseline. The agent should default to the
+> baseline pattern (sentence hero + dense answer table) for any route
+> whose entry has not yet been rewritten.
+
 ## summary
 
-### `player_game_summary` `[x]`
+### `player_game_summary` `[~]`
 - **Section component:** `PlayerSummarySection`
 - **Example queries:**
   - `Jokic last 10 games`
   - `LeBron last 5 games`
   - `Curry this season`
-- **Currently shows (shipped):**
-  1. Player summary hero with headshot, team badge, query context, PTS/REB/AST, record/sample, and supporting stats.
-  2. Full requested recent-game list for last-N game-log queries, including matchup, opponent badge, W/L, score when available, and expanded box-score stats.
-  3. `Full Summary` and `By Season` raw tables retained behind the shared collapsed raw-table toggle.
-- **Should show:**
-  1. **Player summary hero**
-     - Player headshot
+- **Reference:** StatMuse for `jokic stats last 10 games`. Hero card with
+  player illustration on the left and the sentence
+  *"Nikola Jokić has averaged 26.7 points, 12.5 rebounds and 9.4 assists
+  in his last 10 games."* Below it, one dense game-log table with rank,
+  inline headshot, name, date, team, vs/@, opponent, then MIN / PTS /
+  REB / AST / STL / BLK / FG… columns. Footer rows for `Average` and
+  `Total` inside the same table.
+- **Currently shows (shipped, does NOT match the StatMuse baseline):**
+  1. Player summary hero with stacked stat tiles (PTS/REB/AST as
+     individual hero stats), record stat, and supporting stats grid.
+  2. "Recent Games" cards — one card per game with header, meta block,
+     and stat tiles. Card-per-row layout for tabular data.
+  3. `Full Summary` and `By Season` raw tables behind a toggle.
+- **Should show (locked to StatMuse baseline):**
+  1. **Hero card.** Colored background, player illustration/headshot on
+     the left, one-sentence answer:
+     *"{player} has averaged {pts_avg} points, {reb_avg} rebounds and
+     {ast_avg} assists in {games} games."*
+     For the `last N games` form, the sentence should specify the window
+     ("in his last 10 games"). For broader season/career queries, swap
+     the window phrase ("this season", "in his career"). No stat tiles,
+     no chip rows, no stacked metrics under the sentence.
+  2. **Game-log table.** Open by default, dense rows. Columns:
+     - `#` (rank within the window, 1..N)
+     - Inline headshot
      - Player name
-     - Team badge/logo when available
-     - Query context: `Last 10 games`, `2025-26 Regular Season`, `2025 Playoffs`, `Career`, etc.
-     - Main averages: PTS / REB / AST
-     - Secondary averages when available: MIN, FG%, 3P%, FT%, TS% or eFG%, STL, BLK, TOV, +/-
-     - Record/sample when available: W-L, win pct, game count
-  2. **Full game log for last-N game queries**
-     - For `last N games`, show all requested games, not only 5.
-     - Each game row/card should show date, matchup (`vs DEN` / `at BOS`), opponent logo, W/L badge, score if available, and core box stats.
-     - Core stats: PTS, REB, AST, MIN.
-     - Extra stats when available: FG, 3P, FT, STL, BLK, TOV, +/-.
-  3. **Season/career behavior**
-     - For broad season/career summaries, do not dump every game by default.
-     - Show the hero summary and, if useful, a short recent-games preview.
-     - Full game logs should be shown by default only when the query asks for a game sample or game logs.
-  4. **Raw tables**
-     - Keep `Full Summary` and `By Season` tables available behind the shared collapsed raw-table/detail toggle.
-     - Do not show raw tables open by default.
-- **Bugs filed:** none
-- **Notes:** Compound result. This route must show both summary stats AND full game logs when the query asks for a last-N sample. Single-stat or summary-only displays are wrong.
+     - Date
+     - Team abbr (with logo)
+     - Home/away marker (`vs` / `@`)
+     - Opponent abbr (with logo)
+     - MIN, PTS, REB, AST, STL, BLK, FG, 3P, FT, TOV (and +/- when
+       available, scrollable)
+     - Footer rows: `Average`, `Total`
+  3. **Behavior for non-last-N queries.** For broad `this season` /
+     `career` summaries that have no requested per-game window, omit the
+     game-log table. The hero sentence stands alone, optionally followed
+     by a `By Season` answer table when multi-season is implied.
+  4. **Raw tables.** Remove the redundant `Full Summary` and (when
+     single-season) `By Season` raw tables. They duplicate content
+     already in the hero/answer table. If a `by_season` breakdown is
+     genuinely additional context, render it as a secondary answer
+     table below the primary game log, not as a hidden raw dump.
+- **Bugs filed:** current shipped UI ≠ baseline; tracked under
+  StatMuse-baseline rebuild work.
+- **Notes:** Compound result. The hero answers the summary part; the
+  game-log table answers the per-game part. Both are required when the
+  query asks for a sample window.
 
 ### `player_summary`-style routes for season averages `[x]`
 - **Section component:** `PlayerSummarySection` via `player_game_summary`
@@ -355,57 +446,82 @@ expectation is:
 
 ## leaderboard
 
-### `season_leaders` `[x]`
+### `season_leaders` `[~]`
 - **Section component:** `LeaderboardSection`
 - **Example queries:**
   - `most ppg in 2025 playoffs`
   - `top 10 scorers 2025-26`
   - `assists leaders this season`
-- **Currently shows (shipped):**
-  1. Ranked list with rank, player/team identity, context chips, and the requested hero metric.
-  2. `Full Leaderboard` raw table retained behind the shared collapsed raw-table toggle.
-- **Should show:**
-  1. **Ranked leaderboard list**
-     - Rank
-     - Player headshot or team logo
+- **Reference:** StatMuse for `most ppg in 2025 playoffs`. Hero card
+  with the #1 player's illustration and the sentence
+  *"Giannis Antetokounmpo scored the most points per game in the 2025
+  playoffs, with 33.0 per game."* Subtitle directly under the hero:
+  *"Interpreted as: most ppg by a player in 2025 playoffs."* Below it,
+  one dense leaderboard table with rank, inline headshot, name, the
+  queried metric column visually highlighted (subtle background tint),
+  then SEASON, TM, GP, MPG, RPG, APG, SPG, BPG, FG… as supporting
+  columns.
+- **Currently shows (shipped, does NOT match the StatMuse baseline):**
+  1. Ranked card list — one card per row with rank, identity, context
+     chips, and one hero metric value. Card-per-row layout for tabular
+     data.
+  2. `Full Leaderboard` raw table behind a toggle.
+- **Should show (locked to StatMuse baseline):**
+  1. **Hero card.** Colored background, illustration of the #1 entity
+     on the left, one-sentence answer:
+     *"{leader} {verb} the most {metric_label} in the {season}
+     {season_type}, with {value} per game."*
+     Verb varies: "scored" for points, "averaged" for per-game stats,
+     "had" for counts. No stat tiles under the sentence.
+  2. **Disambiguation note (when applicable).** Small subtitle directly
+     under the hero when the parser picked one of several possible
+     interpretations: *"Interpreted as: most ppg by a player in 2025
+     playoffs."* Skip when the query was unambiguous.
+  3. **Leaderboard table.** Open by default, dense rows. Columns:
+     - `#` (rank)
+     - Inline headshot (player) or logo (team)
      - Entity name
-     - Team abbreviation/logo for player rows when available
-     - Main requested metric on the right, e.g. `32.4 PPG`, `11.2 AST`, `64.5% TS`
-  2. **Context chips**
-     - Games played
+     - **Queried metric column** (visually emphasized — subtle
+       background tint, slightly bolder)
      - Season
-     - Season type
-     - Team
-     - Qualifier/minimum when applicable
-     - Opponent/playoff round/context when applicable
-  3. **Metric companion context**
-     - For percentage leaderboards, show makes/attempts when available, e.g. `42.1% 3P` with `182/432 3P`.
-     - For record leaderboards, show W-L when available.
-  4. **Metric correctness**
-     - The hero metric must match what the user asked for.
-     - A query for `most PPG` must not accidentally feature games, wins, or another available numeric field as the primary metric.
-  5. **Raw tables**
-     - Keep `Full Leaderboard` available behind the shared collapsed raw-table/detail toggle.
-     - Do not show raw tables open by default.
-- **Bugs filed:** none
-- **Notes:** Most-used class. The raw leaderboard table is retained for inspection/export/future advanced views but should not be open by default.
+     - Team abbr (with logo) for player rows
+     - Games played
+     - Supporting per-game stats (MPG, RPG, APG, SPG, BPG)
+     - Shooting columns (FG, 3P, FT) — scrollable to the right
+  4. **Metric correctness.** The queried metric must be the highlighted
+     column. A query for `most PPG` must not accidentally feature
+     games or wins as the primary metric.
+  5. **Raw tables.** Remove the redundant `Full Leaderboard` raw table.
+     The leaderboard table above is the answer table — adding a second
+     raw dump below is redundant.
+- **Bugs filed:** current shipped UI ≠ baseline; tracked under
+  StatMuse-baseline rebuild work.
+- **Notes:** Most-used class. Visual quality of this route disproportionately
+  shapes the felt quality of the whole product.
 
-### `season_team_leaders` `[x]`
+### `season_team_leaders` `[~]`
 
 - **Section component:** `LeaderboardSection` (same component as `season_leaders`)
 - **Example queries:**
   - `best record since 2015`
   - `most wins by a team in a season`
-- **Currently shows (shipped):** Same ranked-list and collapsed-detail pattern as `season_leaders`, with team identity, requested metric, record/games context, and season/season-type chips when available.
-- **Should show:**
-  - Same ranked leaderboard pattern as `season_leaders`, but team-first.
-  - Each row should show rank, team logo, team name, season, and the requested metric.
-  - For `best record`, hero metric should be win pct and context must show W-L.
-  - For `most wins`, hero metric should be wins and context must show W-L and games.
-  - Context chips should include record, games played, season type, and playoffs/regular season context.
-  - Keep `Full Leaderboard` available behind the shared collapsed raw-table/detail toggle.
-  - Do not show raw tables open by default.
-- **Bugs filed:** none
+- **Should show (locked to StatMuse baseline):**
+  - Same hero + leaderboard-table pattern as `season_leaders`, but
+    team-first.
+  - Hero sentence variants:
+    - For `best record`: *"The {team} had the best record since {year},
+      going {wins}-{losses} ({win_pct})."*
+    - For `most wins`: *"The {team} won the most games in a season since
+      {year}, with {wins} wins."*
+  - Leaderboard table columns: rank, inline team logo, team name, the
+    queried metric column highlighted, plus W-L, GP, season, season type
+    (regular season / playoffs).
+  - Same metric-correctness rule as `season_leaders`: a query for
+    `most wins` features wins, not win pct.
+  - Remove the redundant `Full Leaderboard` raw table — the leaderboard
+    table above is the answer.
+- **Bugs filed:** current shipped UI ≠ baseline; tracked under
+  StatMuse-baseline rebuild work.
 
 ### `team_record_leaderboard` `[x]`
 - **Example queries:**
