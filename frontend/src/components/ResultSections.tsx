@@ -8,6 +8,7 @@ import GameFinderSection from "./GameFinderSection";
 import GameSummarySection from "./GameSummarySection";
 import HeadToHeadSection from "./HeadToHeadSection";
 import LeaderboardSection from "./LeaderboardSection";
+import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
 import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
 import PlayerComparisonSection from "./PlayerComparisonSection";
@@ -81,6 +82,16 @@ function isTeamRecord(data: QueryResponse): boolean {
 function isPlayerOnOff(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "player_on_off";
+}
+
+function isLineupSummary(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "lineup_summary";
+}
+
+function isLineupLeaderboard(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "lineup_leaderboard";
 }
 
 function isTeamComparison(data: QueryResponse): boolean {
@@ -172,6 +183,15 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           />
         );
       }
+      if (isLineupSummary(data)) {
+        return (
+          <LineupSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            mode="summary"
+          />
+        );
+      }
       if (isTeamRecord(data)) {
         return (
           <TeamRecordSection
@@ -258,6 +278,15 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <FinderSection sections={sections} />;
     case "leaderboard":
+      if (isLineupLeaderboard(data)) {
+        return (
+          <LineupSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            mode="leaderboard"
+          />
+        );
+      }
       if (isOccurrenceLeaderboard(data)) {
         return (
           <OccurrenceLeaderboardSection

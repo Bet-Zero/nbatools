@@ -430,28 +430,22 @@ expectation is:
   - Optional expansion can show individual games inside the stretch.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `lineup_leaderboard` `[~]`
+### `lineup_leaderboard` `[x]`
 - **Example queries:**
   - `best 3-man units this season`
 - **Currently shows (shipped):**
-  - No dedicated lineup branch in `ResultSections`; lineup results fall back to generic section/table rendering when returned with a lineup query class.
-- **Follow-up note:** Needs lineup cards/list with members, team, minutes/games/possessions, and metric context; queued in `result_display_followup_queue.md`.
-- **Should show:**
-  - Lineup cards/list rather than generic table rows.
-  - Each row should show rank, lineup members, team logo, minutes, games, possessions if available, season, and minimum threshold if applicable.
-  - Primary metric should match the query: net rating, plus-minus, offensive rating, defensive rating, etc.
-  - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
+  - Dedicated ranked lineup cards rather than generic table rows.
+  - Each row shows rank, lineup members, team badge, season, unit size, minute-minimum context, minutes, and games/possessions when those fields are present in the response.
+  - Primary metric follows the requested/stat-backed metric when present, with default fallback to net rating and related lineup rating fields.
+  - Raw leaderboard rows remain available behind the shared collapsed `RawDetailToggle`.
 
-### `lineup_summary` `[~]`
+### `lineup_summary` `[x]`
 - **Example queries:**
   - `Lakers best lineup`
 - **Currently shows (shipped):**
-  - No dedicated lineup summary branch in `ResultSections`; summary rows fall back to generic rendering.
-- **Follow-up note:** Needs a lineup summary hero/card display; queued in `result_display_followup_queue.md`.
-- **Should show:**
-  - Team logo/name and lineup members.
-  - Main lineup summary: minutes, games, net rating, offensive rating, defensive rating, pace, plus-minus, and any shooting/rebounding split available.
-  - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
+  - Dedicated lineup summary hero/card with team badge/name and lineup members.
+  - Main lineup summary shows unit size, season, minute-minimum context, minutes, games, possessions, net/offensive/defensive rating, pace, plus-minus, and shooting/rebounding split fields when present.
+  - Raw summary rows remain available behind the shared collapsed `RawDetailToggle`.
 
 ### `player_occurrence_leaders` `[x]`
 - **Section component:** `OccurrenceLeaderboardSection`

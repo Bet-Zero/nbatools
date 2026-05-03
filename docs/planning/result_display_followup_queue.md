@@ -92,7 +92,7 @@ the expected `On`/`Off` cards or impact row.
 
 ---
 
-## 4. `[ ]` Lineup displays
+## 4. `[x]` Lineup displays
 
 **Routes:** `lineup_leaderboard`, `lineup_summary`
 

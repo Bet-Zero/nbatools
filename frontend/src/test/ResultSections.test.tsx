@@ -242,6 +242,167 @@ describe("ResultSections", () => {
     expect(screen.getByText("On/Off Detail")).toBeInTheDocument();
   });
 
+  it("routes lineup summaries to a lineup hero with members and ratings", async () => {
+    const data = makeResponse({
+      route: "lineup_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "lineup_summary",
+          season: "2024-25",
+          season_type: "Regular Season",
+          lineup_members: ["Jayson Tatum", "Jaylen Brown"],
+          unit_size: 2,
+          minute_minimum: 25,
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              season: "2024-25",
+              season_type: "Regular Season",
+              team_abbr: "BOS",
+              unit_size: 2,
+              lineup_id: "-1628369-1627759-",
+              lineup_name: "Jayson Tatum - Jaylen Brown",
+              player_ids: "1628369|1627759",
+              player_names: "Jayson Tatum|Jaylen Brown",
+              minute_minimum: 25,
+              games: 42,
+              minutes: 1180.5,
+              possessions: 2440,
+              off_rating: 122.8,
+              def_rating: 111.4,
+              net_rating: 11.4,
+              pace: 99.2,
+              plus_minus: 214,
+              ts_pct: 0.628,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getAllByText("Lineup Summary").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Jayson Tatum / Jaylen Brown" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Jayson Tatum").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Jaylen Brown").length).toBeGreaterThan(0);
+    expect(screen.getByText("2-man")).toBeInTheDocument();
+    expect(screen.getByText("Min 25 minutes")).toBeInTheDocument();
+    expect(screen.getAllByText("MIN").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Poss").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("ORtg").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("DRtg").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Net").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Pace").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("+/-").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("TS%").length).toBeGreaterThan(0);
+    expect(screen.getByText("+11.4")).toBeInTheDocument();
+
+    const detail = screen.getByRole("region", { name: "Lineup Detail" });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("Lineup Detail");
+  });
+
+  it("routes lineup leaderboards to ranked lineup cards", async () => {
+    const data = makeResponse({
+      route: "lineup_leaderboard",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "lineup_leaderboard",
+          season: "2024-25",
+          season_type: "Regular Season",
+          stat: "net_rating",
+          unit_size: 2,
+          minute_minimum: 25,
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              season: "2024-25",
+              season_type: "Regular Season",
+              team_abbr: "DEN",
+              unit_size: 2,
+              lineup_id: "-203999-203932-",
+              lineup_name: "Nikola Jokic - Aaron Gordon",
+              player_ids: "203999|203932",
+              player_names: "Nikola Jokic|Aaron Gordon",
+              minute_minimum: 25,
+              minutes: 820.5,
+              possessions: 1710,
+              off_rating: 125.4,
+              def_rating: 110.2,
+              net_rating: 15.2,
+              pace: 98.1,
+              ts_pct: 0.641,
+            },
+            {
+              rank: 2,
+              season: "2024-25",
+              season_type: "Regular Season",
+              team_abbr: "BOS",
+              unit_size: 2,
+              lineup_id: "-1628369-1627759-",
+              lineup_name: "Jayson Tatum - Jaylen Brown",
+              player_ids: "1628369|1627759",
+              player_names: "Jayson Tatum|Jaylen Brown",
+              minute_minimum: 25,
+              minutes: 780.2,
+              possessions: 1602,
+              off_rating: 121.0,
+              def_rating: 111.1,
+              net_rating: 9.9,
+              pace: 97.8,
+              ts_pct: 0.618,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Lineup Leaderboard")).toBeInTheDocument();
+    const ranked = screen.getByLabelText("Ranked lineups");
+    expect(within(ranked).getByText("#1")).toBeInTheDocument();
+    expect(within(ranked).getByText("#2")).toBeInTheDocument();
+    expect(within(ranked).getByText("Nikola Jokic / Aaron Gordon")).toBeInTheDocument();
+    expect(within(ranked).getByText("Jayson Tatum / Jaylen Brown")).toBeInTheDocument();
+    expect(within(ranked).getAllByLabelText("DEN").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByLabelText("BOS").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("2-man").length).toBeGreaterThan(0);
+    expect(
+      within(ranked).getAllByText("Min 25 minutes").length,
+    ).toBeGreaterThan(0);
+    expect(within(ranked).getByText("+15.2")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("Net rating").length).toBeGreaterThan(0);
+    expect(within(ranked).getByText("820.5 minutes")).toBeInTheDocument();
+    expect(within(ranked).getByText("1,710 possessions")).toBeInTheDocument();
+
+    const detail = screen.getByRole("region", {
+      name: "Lineup Leaderboard Detail",
+    });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("Lineup Leaderboard Detail");
+  });
+
   it("renders a scoring sparkline and recent games from player game logs", () => {
     const data = makeResponse({
       result: {
