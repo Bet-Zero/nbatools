@@ -452,6 +452,9 @@ describe("ResultSections", () => {
         result_status: "ok",
         metadata: {
           route: "team_record",
+          start_season: "2023-24",
+          end_season: "2024-25",
+          season_type: "Regular Season",
           team_context: {
             team_id: 1610612738,
             team_abbr: "BOS",
@@ -476,7 +479,10 @@ describe("ResultSections", () => {
               pts_avg: 116.4,
             },
           ],
-          by_season: [{ season: "2024-25", wins: 4, losses: 1 }],
+          by_season: [
+            { season: "2023-24", wins: 2, losses: 1 },
+            { season: "2024-25", wins: 2, losses: 0 },
+          ],
         },
       },
     });
@@ -490,8 +496,10 @@ describe("ResultSections", () => {
     );
     expect(screen.getByLabelText("Los Angeles Lakers (LAL)")).toBeInTheDocument();
     expect(screen.getByText("4-1")).toBeInTheDocument();
-    expect(screen.getByText("5 games / 80.0% win pct")).toBeInTheDocument();
-    expect(screen.getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(screen.getByText("80.0% win pct")).toBeInTheDocument();
+    expect(screen.getByText("5 games")).toBeInTheDocument();
+    expect(screen.getByText("2023-24 to 2024-25")).toBeInTheDocument();
+    expect(screen.getAllByText("PPG").length).toBeGreaterThan(0);
     expect(screen.getByText("Record Detail")).toBeInTheDocument();
     expect(screen.getByText("By Season")).toBeInTheDocument();
   });
@@ -530,6 +538,7 @@ describe("ResultSections", () => {
     expect(screen.getByText("Team Record")).toBeInTheDocument();
     expect(screen.getByLabelText("LAL")).toBeInTheDocument();
     expect(screen.getByText("2-2")).toBeInTheDocument();
+    expect(screen.getByText("vs LAL")).toBeInTheDocument();
     expect(screen.getByText("Record Detail")).toBeInTheDocument();
   });
 

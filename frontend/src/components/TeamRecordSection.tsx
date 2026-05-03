@@ -45,22 +45,14 @@ function recordStat(
 ): StatProps | null {
   const wins = numericValue(row, "wins");
   const losses = numericValue(row, "losses");
-  const games = numericValue(row, "games");
   const winPct = numericValue(row, "win_pct");
 
   if (wins === null || losses === null) return null;
 
-  const context = [
-    games !== null ? `${formatValue(games, "games")} games` : null,
-    winPct !== null ? `${formatValue(winPct, "win_pct")} win pct` : null,
-  ]
-    .filter(Boolean)
-    .join(" / ");
-
   return {
     label: "Record",
     value: `${formatValue(wins, "wins")}-${formatValue(losses, "losses")}`,
-    context,
+    context: winPct !== null ? `${formatValue(winPct, "win_pct")} win pct` : null,
     semantic: wins >= losses ? "win" : "loss",
     size,
   };
@@ -69,23 +61,35 @@ function recordStat(
 function secondaryStats(row: SectionRow | undefined): StatProps[] {
   const stats: StatProps[] = [];
   const candidates: Array<{ key: string; label: string }> = [
-    { key: "pts_avg", label: "PTS" },
+    { key: "pts_avg", label: "PPG" },
+    { key: "ppg", label: "PPG" },
+    { key: "opponent_pts_avg", label: "Opp PPG" },
+    { key: "opp_pts_avg", label: "Opp PPG" },
+    { key: "opponent_ppg", label: "Opp PPG" },
+    { key: "opp_ppg", label: "Opp PPG" },
+    { key: "pts_allowed_avg", label: "Opp PPG" },
+    { key: "net_rating", label: "Net" },
+    { key: "net_rating_avg", label: "Net" },
+    { key: "plus_minus_avg", label: "+/-" },
+    { key: "plus_minus", label: "+/-" },
     { key: "reb_avg", label: "REB" },
     { key: "ast_avg", label: "AST" },
     { key: "fg3m_avg", label: "3PM" },
-    { key: "plus_minus_avg", label: "+/-" },
   ];
 
+  const seenLabels = new Set<string>();
   for (const { key, label } of candidates) {
+    if (seenLabels.has(label)) continue;
     const value = numericValue(row, key);
     if (value === null) continue;
+    seenLabels.add(label);
     stats.push({
       label,
       value: formatValue(value, key),
     });
   }
 
-  return stats.slice(0, 4);
+  return stats;
 }
 
 function seasonText(
@@ -119,6 +123,44 @@ function sampleContext(
   ];
 
   return parts.filter(Boolean).join(" / ");
+}
+
+function recordContextItems(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow | undefined,
+  opponent: ResolvedTeamIdentity | null,
+): string[] {
+  const games = numericValue(row, "games");
+  const opponentName = opponent?.teamName ?? opponent?.teamAbbr ?? null;
+  const parts = [
+    seasonText(metadata, row),
+    textValue(row, "season_type") ?? metadata?.season_type ?? null,
+    games !== null ? `${formatValue(games, "games")} games` : null,
+    opponentName ? `vs ${opponentName}` : null,
+  ];
+
+  return parts.filter((part): part is string => Boolean(part));
+}
+
+function isMultiSeasonRecord(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow | undefined,
+  bySeason: SectionRow[] | undefined,
+): boolean {
+  const start =
+    textValue(row, "season_start") ??
+    metadata?.start_season ??
+    metadata?.season ??
+    null;
+  const end =
+    textValue(row, "season_end") ??
+    metadata?.end_season ??
+    metadata?.season ??
+    null;
+
+  if (textValue(row, "seasons")) return true;
+  if (start && end && start !== end) return true;
+  return (bySeason?.length ?? 0) > 1;
 }
 
 function primaryTeam(
@@ -211,7 +253,9 @@ function SingleTeamRecord({
   const scopedTheme = resolveScopedTeamTheme(metadata);
   const record = recordStat(summaryRow, "hero");
   const stats = secondaryStats(summaryRow);
-  const context = sampleContext(metadata, summaryRow);
+  const context = recordContextItems(metadata, summaryRow, opponent);
+  const showBySeason =
+    bySeason && bySeason.length > 0 && isMultiSeasonRecord(metadata, summaryRow, bySeason);
   const hasRecordStats = Boolean(record) || stats.length > 0;
 
   return (
@@ -241,7 +285,18 @@ function SingleTeamRecord({
                 <h2 className={styles.teamName}>
                   {team.teamName ?? team.teamAbbr ?? "Team"}
                 </h2>
-                {context && <div className={styles.context}>{context}</div>}
+                {context.length > 0 && (
+                  <div
+                    className={styles.contextList}
+                    aria-label="Record context"
+                  >
+                    {context.map((item) => (
+                      <span className={styles.contextChip} key={item}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -251,7 +306,7 @@ function SingleTeamRecord({
                 {stats.length > 0 && (
                   <StatBlock
                     stats={stats}
-                    columns={stats.length >= 4 ? 4 : 2}
+                    columns={stats.length >= 4 ? 4 : stats.length === 1 ? 1 : 2}
                     className={styles.secondaryStats}
                   />
                 )}
@@ -267,7 +322,7 @@ function SingleTeamRecord({
           <SectionHeader title="Team Record" />
         </div>
       )}
-      {bySeason && bySeason.length > 0 && (
+      {showBySeason && (
         <div className={styles.section}>
           <RawDetailToggle title="By Season" rows={bySeason} />
         </div>
