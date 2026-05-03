@@ -21,3 +21,17 @@
   min-width: 0;
   max-width: 100%;
 }
+
+.stickyIdentity {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg-card);
+  box-shadow: var(--space-1) 0 0
+    color-mix(in srgb, var(--bg-card) 78%, transparent);
+}
+
+th.stickyIdentity {
+  z-index: 2;
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-card));
+}

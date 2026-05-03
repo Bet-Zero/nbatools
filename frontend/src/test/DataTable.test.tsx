@@ -96,6 +96,35 @@ describe("DataTable", () => {
     );
   });
 
+  it("hides internal identity columns by default while preserving identity art", () => {
+    const rows = [
+      {
+        player_name: "Nikola Jokic",
+        player_id: 203999,
+        team_name: "Denver Nuggets",
+        team_id: 1610612743,
+        team_abbr: "DEN",
+        pts: 25,
+      },
+    ];
+    const { container } = render(<DataTable rows={rows} />);
+
+    expect(
+      screen.queryByRole("columnheader", { name: "Player Id" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Team Id" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Team Abbr" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Nikola Jokic avatar")).toBeInTheDocument();
+    expect(screen.getByLabelText("Denver Nuggets (DEN)")).toBeInTheDocument();
+    expect(
+      container.getElementsByClassName(styles.stickyIdentity).length,
+    ).toBeGreaterThan(0);
+  });
+
   it("falls back to text badges for unknown teams", () => {
     const rows = [
       {
