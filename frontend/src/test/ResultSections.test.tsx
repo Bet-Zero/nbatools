@@ -2266,21 +2266,63 @@ describe("ResultSections", () => {
     expect(screen.queryByText("Full Metric Detail")).not.toBeInTheDocument();
   });
 
-  it("keeps team comparisons on the generic comparison renderer", () => {
+  it("routes aggregate team comparisons to the dedicated team renderer", () => {
     const data = makeResponse({
       route: "team_compare",
       result: {
         query_class: "comparison",
         result_status: "ok",
-        metadata: { route: "team_compare" },
+        metadata: {
+          route: "team_compare",
+          season: "2024-25",
+          season_type: "Regular Season",
+          teams_context: [
+            {
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+            },
+            {
+              team_id: 1610612747,
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+            },
+          ],
+        },
         notes: [],
         caveats: [],
         sections: {
           summary: [
-            { team_name: "Celtics", wins: 60 },
-            { team_name: "Lakers", wins: 47 },
+            {
+              team_name: "Boston Celtics",
+              games: 82,
+              wins: 60,
+              losses: 22,
+              win_pct: 0.732,
+              pts_avg: 120.6,
+              reb_avg: 45.1,
+              ast_avg: 26.7,
+              fg3m_avg: 16.5,
+              plus_minus_avg: 9.2,
+            },
+            {
+              team_name: "Los Angeles Lakers",
+              games: 82,
+              wins: 47,
+              losses: 35,
+              win_pct: 0.573,
+              pts_avg: 116.1,
+              reb_avg: 43.4,
+              ast_avg: 27.9,
+              fg3m_avg: 11.8,
+              plus_minus_avg: 1.2,
+            },
           ],
-          comparison: [{ metric: "wins", Celtics: 60, Lakers: 47 }],
+          comparison: [
+            { metric: "wins", BOS: 60, LAL: 47 },
+            { metric: "pts_avg", BOS: 120.6, LAL: 116.1 },
+            { metric: "tov_avg", BOS: 12.1, LAL: 14.4 },
+          ],
         },
       },
     });
@@ -2289,11 +2331,22 @@ describe("ResultSections", () => {
     expect(
       screen.queryByLabelText("Head-to-head result"),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Players")).toBeInTheDocument();
-    expect(screen.getByText("Comparison")).toBeInTheDocument();
+    expect(
+      screen.getByText("Boston Celtics vs Los Angeles Lakers"),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Compared teams")).toBeInTheDocument();
+    expect(screen.getByText("2024-25")).toBeInTheDocument();
+    expect(screen.getByText("Regular Season")).toBeInTheDocument();
+    expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Los Angeles Lakers (LAL)")).toBeInTheDocument();
+    expect(screen.getByText("60-22")).toBeInTheDocument();
+    expect(screen.getByText("47-35")).toBeInTheDocument();
+    expect(screen.getAllByText("PPG").length).toBeGreaterThan(0);
+    expect(screen.getByText("Metric Comparison")).toBeInTheDocument();
+    expect(screen.getByText("BOS +13")).toBeInTheDocument();
+    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Celtics").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Lakers").length).toBeGreaterThan(0);
   });
 
   it("routes team head-to-head comparisons to the C7 boundary owner", () => {

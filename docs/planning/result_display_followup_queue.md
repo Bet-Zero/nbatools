@@ -45,7 +45,7 @@ queries without opening raw rows.
 
 ---
 
-## 2. `[ ]` Aggregate `team_compare` display
+## 2. `[x]` Aggregate `team_compare` display
 
 **Route:** `team_compare`
 
