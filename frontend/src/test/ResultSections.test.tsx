@@ -172,7 +172,9 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
 
-    expect(screen.getByText("Recent Games")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Recent Games (3)" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("3 games")).toBeInTheDocument();
     expect(
       screen.getByRole("img", { name: "Points over 3 games" }),
@@ -236,7 +238,9 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
 
-    expect(screen.getByText("Recent Games")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Recent Games (1)" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("1 game")).toBeInTheDocument();
     expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
     expect(

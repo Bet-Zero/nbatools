@@ -188,7 +188,7 @@ default" rule everywhere with a single consistent treatment.
 
 ---
 
-## 3. `[ ]` Fix `player_game_summary` last-N truncation
+## 3. `[x]` Fix `player_game_summary` last-N truncation
 
 **Why:** `RecentGames` in `PlayerSummarySection.tsx` is hardcoded to
 `rows.slice(-5).reverse()` and shows only 4 stats per game. For
