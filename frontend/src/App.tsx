@@ -19,7 +19,7 @@ import QueryBar from "./components/QueryBar";
 import QueryHistory from "./components/QueryHistory";
 import RawJsonToggle from "./components/RawJsonToggle";
 import ResultEnvelope from "./components/ResultEnvelope";
-import ResultSections from "./components/ResultSections";
+import ResultRenderer from "./components/results/ResultRenderer";
 import SampleQueries from "./components/SampleQueries";
 import SavedQueries from "./components/SavedQueries";
 import SaveQueryDialog from "./components/SaveQueryDialog";
@@ -574,7 +574,7 @@ export default function App() {
                 " ",
               )}
             >
-              <ResultSections data={result} />
+              <ResultRenderer data={result} />
             </div>
 
             <RawJsonToggle data={result} />

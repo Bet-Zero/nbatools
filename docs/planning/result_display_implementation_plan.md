@@ -53,7 +53,7 @@ between them — this queue is structured to prevent that.
 Get the shared primitives and renderer scaffolding in place that all
 patterns will depend on.
 
-### 1. `[ ]` Add result primitives + ResultRenderer scaffold
+### 1. `[x]` Add result primitives + ResultRenderer scaffold
 
 **Why:** Every pattern composes the same set of primitives (hero card,
 result table, identity inline, etc.). Build them once, share across
