@@ -102,7 +102,17 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
         />
       );
     case "leaderboard":
-      return <LeaderboardResult data={data} sectionKey={pattern.sectionKey} />;
+      return (
+        <LeaderboardResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          metricKey={pattern.metricKey}
+          metricLabel={pattern.metricLabel}
+          sentenceMetricLabel={pattern.sentenceMetricLabel}
+          valueSuffix={pattern.valueSuffix}
+          verb={pattern.verb}
+        />
+      );
     case "fallback_table":
       return <FallbackTableResult data={data} />;
     default:

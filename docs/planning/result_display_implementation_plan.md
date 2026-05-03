@@ -214,7 +214,7 @@ query. Pattern feels right? Proceed.
 
 ---
 
-### 4. `[ ]` Migrate the rest of the leaderboard family
+### 4. `[x]` Migrate the rest of the leaderboard family
 
 **Why:** Now that `LeaderboardResult` is validated, batch-migrate the
 remaining leaderboard-family routes to it via config additions only.

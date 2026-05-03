@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { resolveTeamIdentity } from "../../../lib/identity";
 import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
@@ -15,6 +16,11 @@ import styles from "./LeaderboardResult.module.css";
 interface Props {
   data: QueryResponse;
   sectionKey?: string;
+  metricKey?: string;
+  metricLabel?: string;
+  sentenceMetricLabel?: string;
+  valueSuffix?: string;
+  verb?: string;
 }
 
 type EntityKind = "player" | "team" | "unknown";
@@ -47,6 +53,13 @@ const METRIC_EXCLUDED_COLUMNS = new Set([
   "seasons",
   "season_type",
   "game_date",
+  "window_size",
+  "stretch_metric",
+  "window_start_date",
+  "window_end_date",
+  "window_start_season",
+  "window_end_season",
+  "games_in_window",
   "is_home",
   "is_away",
   "wl",
@@ -169,19 +182,28 @@ const SENTENCE_LABELS: Record<string, string> = {
 export default function LeaderboardResult({
   data,
   sectionKey = "leaderboard",
+  metricKey,
+  metricLabel,
+  sentenceMetricLabel,
+  valueSuffix,
+  verb,
 }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
 
-  const metric = metricColumn(rows, data);
+  const metric = metricColumn(rows, data, metricKey);
   const firstRow = rows[0];
   const entityKind = rowEntityKind(firstRow);
-  const columns = tableColumns(rows, metric, entityKind);
+  const columns = tableColumns(rows, metric, entityKind, metricLabel);
 
   return (
     <section className={styles.pattern} aria-label="Leaderboard result">
       <ResultHero
-        sentence={heroSentence(firstRow, metric, data)}
+        sentence={heroSentence(firstRow, metric, data, {
+          sentenceMetricLabel,
+          valueSuffix,
+          verb,
+        })}
         subjectIllustration={heroIdentity(firstRow)}
         disambiguationNote={disambiguationNote(data.result?.metadata)}
         tone={entityKind === "team" ? "team" : "accent"}
@@ -201,6 +223,7 @@ function tableColumns(
   rows: SectionRow[],
   metric: string | null,
   entityKind: EntityKind,
+  metricLabel: string | undefined,
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
@@ -222,7 +245,7 @@ function tableColumns(
   ];
 
   if (metric) {
-    columns.push(valueColumn(metric, rows));
+    columns.push(valueColumn(metric, rows, metricLabel));
   }
 
   for (const key of displayColumnKeys(rows, metric, entityKind)) {
@@ -241,7 +264,7 @@ function displayColumnKeys(
   const visible = rowKeys.filter((key) => {
     if (key === metric) return false;
     if (INTERNAL_COLUMNS.has(key)) return false;
-    if (key === "team_abbr" && entityKind !== "player") return false;
+    if (key === "team_abbr" && entityKind === "team") return false;
     if (ENTITY_COLUMNS.has(key)) return key === "team_abbr";
     return rows.some((row) => hasValue(row[key]));
   });
@@ -257,11 +280,12 @@ function displayIndex(key: string): number {
 function valueColumn(
   key: string,
   rows: SectionRow[],
+  labelOverride?: string,
 ): ResultTableColumn<SectionRow> {
   const numeric = isNumericColumn(rows, key);
   return {
     key,
-    header: tableLabel(key),
+    header: labelOverride ?? tableLabel(key),
     numeric,
     align: numeric ? "right" : "left",
     render: (row) => renderValue(row, key),
@@ -291,9 +315,17 @@ function renderValue(row: SectionRow, key: string): ReactNode {
   return formatValue(row[key], key);
 }
 
-function metricColumn(rows: SectionRow[], data: QueryResponse): string | null {
+function metricColumn(
+  rows: SectionRow[],
+  data: QueryResponse,
+  metricKey: string | undefined,
+): string | null {
   const firstRow = rows[0];
   if (!firstRow) return null;
+
+  if (metricKey && rows.some((row) => hasValue(row[metricKey]))) {
+    return metricKey;
+  }
 
   const hinted = queryMetricHint(data);
   if (hinted && rows.some((row) => hasValue(row[hinted]))) {
@@ -355,6 +387,11 @@ function heroSentence(
   row: SectionRow,
   metric: string | null,
   data: QueryResponse,
+  options: {
+    sentenceMetricLabel?: string;
+    valueSuffix?: string;
+    verb?: string;
+  },
 ): string {
   const leader = entityLabel(row);
   const context = contextPhrase(row, data.result?.metadata, data.query);
@@ -364,13 +401,13 @@ function heroSentence(
   }
 
   if (rowEntityKind(row) === "team") {
-    return teamHeroSentence(row, metric, leader, context);
+    return teamHeroSentence(row, metric, leader, context, options);
   }
 
-  const value = metricValuePhrase(row, metric);
-  return `${leader} ${metricVerb(metric)} the most ${sentenceMetricLabel(
-    metric,
-  )}${context}, with ${value}.`;
+  const value = metricValuePhrase(row, metric, options.valueSuffix);
+  return `${leader} ${options.verb ?? metricVerb(metric)} the most ${
+    options.sentenceMetricLabel ?? sentenceMetricLabel(metric)
+  }${context}, with ${value}.`;
 }
 
 function teamHeroSentence(
@@ -378,6 +415,11 @@ function teamHeroSentence(
   metric: string,
   leader: string,
   context: string,
+  options: {
+    sentenceMetricLabel?: string;
+    valueSuffix?: string;
+    verb?: string;
+  },
 ): string {
   if (metric === "win_pct" && hasValue(row.wins) && hasValue(row.losses)) {
     return `The ${leader} had the best record${context}, going ${formatValue(
@@ -400,9 +442,9 @@ function teamHeroSentence(
     )} losses.`;
   }
 
-  return `The ${leader} had the most ${sentenceMetricLabel(
-    metric,
-  )}${context}, with ${metricValuePhrase(row, metric)}.`;
+  return `The ${leader} ${options.verb ?? "had"} the most ${
+    options.sentenceMetricLabel ?? sentenceMetricLabel(metric)
+  }${context}, with ${metricValuePhrase(row, metric, options.valueSuffix)}.`;
 }
 
 function metricVerb(metric: string): string {
@@ -411,8 +453,13 @@ function metricVerb(metric: string): string {
   return "had";
 }
 
-function metricValuePhrase(row: SectionRow, metric: string): string {
+function metricValuePhrase(
+  row: SectionRow,
+  metric: string,
+  suffix: string | undefined,
+): string {
   const formatted = formatValue(row[metric], metric);
+  if (suffix) return `${formatted} ${suffix}`;
   return metric.endsWith("_per_game") ? `${formatted} per game` : formatted;
 }
 
@@ -462,7 +509,9 @@ function playoffYear(season: string): string {
   const endTwoDigits = Number(match[2]);
   const startCentury = Math.floor(startYear / 100) * 100;
   const sameCenturyEnd = startCentury + endTwoDigits;
-  return String(sameCenturyEnd <= startYear ? sameCenturyEnd + 100 : sameCenturyEnd);
+  return String(
+    sameCenturyEnd <= startYear ? sameCenturyEnd + 100 : sameCenturyEnd,
+  );
 }
 
 function disambiguationNote(
@@ -536,6 +585,7 @@ function entityCell(row: SectionRow): ReactNode {
 
 function rowEntityKind(row: SectionRow): EntityKind {
   if (textValue(row, "player_name") ?? textValue(row, "player")) return "player";
+  if (hasLineupIdentity(row)) return "unknown";
   if (
     textValue(row, "team_name") ??
     textValue(row, "team_abbr") ??
@@ -547,6 +597,24 @@ function rowEntityKind(row: SectionRow): EntityKind {
 }
 
 function entityLabel(row: SectionRow): string {
+  const lineupLabel = lineupIdentityLabel(row);
+  if (lineupLabel) return lineupLabel;
+
+  if (!hasLineupIdentity(row) && rowEntityKind(row) === "team") {
+    const team = resolveTeamIdentity({
+      teamId: identityId(row.team_id),
+      teamAbbr: textValue(row, "team_abbr"),
+      teamName: textValue(row, "team_name") ?? textValue(row, "team"),
+    });
+    return (
+      team.teamName ??
+      textValue(row, "team_name") ??
+      team.teamAbbr ??
+      textValue(row, "team_abbr") ??
+      "Team"
+    );
+  }
+
   for (const key of ENTITY_COLUMNS) {
     const value = row[key];
     if (Array.isArray(value) && value.length > 0) {
@@ -556,6 +624,20 @@ function entityLabel(row: SectionRow): string {
     if (text) return text;
   }
   return "Leaderboard entry";
+}
+
+function hasLineupIdentity(row: SectionRow): boolean {
+  return Boolean(lineupIdentityLabel(row));
+}
+
+function lineupIdentityLabel(row: SectionRow): string | null {
+  for (const key of ["lineup_members", "members"]) {
+    const value = row[key];
+    if (Array.isArray(value) && value.length > 0) {
+      return value.map(String).join(" / ");
+    }
+  }
+  return textValue(row, "lineup");
 }
 
 function rankValue(row: SectionRow, index: number): string {

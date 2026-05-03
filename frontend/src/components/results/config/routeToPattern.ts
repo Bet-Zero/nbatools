@@ -15,7 +15,15 @@ import type { QueryResponse } from "../../../api/types";
 export type PatternConfig =
   | { type: "entity_summary"; sectionKey?: string }
   | { type: "game_log"; sectionKey?: string; summaryKey?: string }
-  | { type: "leaderboard"; sectionKey?: string }
+  | {
+      type: "leaderboard";
+      sectionKey?: string;
+      metricKey?: string;
+      metricLabel?: string;
+      sentenceMetricLabel?: string;
+      valueSuffix?: string;
+      verb?: string;
+    }
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
@@ -30,7 +38,38 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "season_leaders":
     case "season_team_leaders":
     case "team_record_leaderboard":
+    case "player_occurrence_leaders":
+    case "team_occurrence_leaders":
       return [{ type: "leaderboard", sectionKey: "leaderboard" }];
+    case "player_stretch_leaderboard":
+      return [
+        {
+          type: "leaderboard",
+          sectionKey: "leaderboard",
+          metricKey: "stretch_value",
+          metricLabel: "PPG",
+          sentenceMetricLabel: "points per game",
+          valueSuffix: "per game",
+          verb: "averaged",
+        },
+      ];
+    case "lineup_leaderboard":
+      return [
+        {
+          type: "leaderboard",
+          sectionKey: "leaderboard",
+          metricKey: "net_rating",
+        },
+      ];
+    case "playoff_appearances":
+      return [
+        {
+          type: "leaderboard",
+          sectionKey: "leaderboard",
+          metricKey: "appearances",
+          sentenceMetricLabel: "playoff appearances",
+        },
+      ];
     default:
       return [{ type: "fallback_table" }];
   }

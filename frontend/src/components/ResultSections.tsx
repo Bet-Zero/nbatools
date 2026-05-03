@@ -9,11 +9,9 @@ import GameSummarySection from "./GameSummarySection";
 import HeadToHeadSection from "./HeadToHeadSection";
 import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
-import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerOnOffSection from "./PlayerOnOffSection";
-import PlayerStretchLeaderboardSection from "./PlayerStretchLeaderboardSection";
 import PlayoffSection from "./PlayoffSection";
 import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
 import SplitSummarySection from "./SplitSummarySection";
@@ -82,16 +80,6 @@ function isLineupSummary(data: QueryResponse): boolean {
   return route === "lineup_summary";
 }
 
-function isLineupLeaderboard(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "lineup_leaderboard";
-}
-
-function isPlayerStretchLeaderboard(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "player_stretch_leaderboard";
-}
-
 function isTopPlayerGames(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "top_player_games";
@@ -120,14 +108,6 @@ function isOwnedSplitSummary(data: QueryResponse): boolean {
 function isOwnedStreak(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "player_streak_finder" || route === "team_streak_finder";
-}
-
-function isOccurrenceLeaderboard(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return (
-    route === "player_occurrence_leaders" ||
-    route === "team_occurrence_leaders"
-  );
 }
 
 function isPlayoffRoute(data: QueryResponse): boolean {
@@ -278,23 +258,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <FinderSection sections={sections} />;
     case "leaderboard":
-      if (isLineupLeaderboard(data)) {
-        return (
-          <LineupSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            mode="leaderboard"
-          />
-        );
-      }
-      if (isPlayerStretchLeaderboard(data)) {
-        return (
-          <PlayerStretchLeaderboardSection
-            sections={sections}
-            metadata={data.result?.metadata}
-          />
-        );
-      }
       if (isTopPlayerGames(data)) {
         return (
           <TopGamesSection
@@ -310,14 +273,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             sections={sections}
             metadata={data.result?.metadata}
             mode="team"
-          />
-        );
-      }
-      if (isOccurrenceLeaderboard(data)) {
-        return (
-          <OccurrenceLeaderboardSection
-            sections={sections}
-            metadata={data.result?.metadata}
           />
         );
       }
