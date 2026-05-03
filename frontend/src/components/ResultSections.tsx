@@ -12,6 +12,7 @@ import NoResultDisplay from "./NoResultDisplay";
 import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerGameFinderSection from "./PlayerGameFinderSection";
+import PlayerOnOffSection from "./PlayerOnOffSection";
 import PlayoffSection from "./PlayoffSection";
 import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
@@ -75,6 +76,11 @@ function isGameFinder(data: QueryResponse): boolean {
 function isTeamRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_record";
+}
+
+function isPlayerOnOff(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "player_on_off";
 }
 
 function isTeamComparison(data: QueryResponse): boolean {
@@ -153,6 +159,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       if (isGameSummary(data)) {
         return (
           <GameSummarySection
+            sections={sections}
+            metadata={data.result?.metadata}
+          />
+        );
+      }
+      if (isPlayerOnOff(data)) {
+        return (
+          <PlayerOnOffSection
             sections={sections}
             metadata={data.result?.metadata}
           />
