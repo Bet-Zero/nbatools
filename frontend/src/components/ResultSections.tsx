@@ -208,7 +208,12 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       return <SplitSummarySection sections={sections} />;
     case "finder":
       if (isPlayerGameFinder(data)) {
-        return <PlayerGameFinderSection sections={sections} />;
+        return (
+          <PlayerGameFinderSection
+            sections={sections}
+            metadata={data.result?.metadata}
+          />
+        );
       }
       return <FinderSection sections={sections} />;
     case "leaderboard":

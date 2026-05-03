@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { SectionRow } from "../api/types";
+import type { ResultMetadata, SectionRow } from "../api/types";
 import {
   Avatar,
   Badge,
@@ -16,14 +16,19 @@ import styles from "./PlayerGameFinderSection.module.css";
 
 interface Props {
   sections: Record<string, SectionRow[]>;
+  metadata?: ResultMetadata;
 }
 
 const STAT_LABELS: Record<string, string> = {
   ast: "AST",
   blk: "BLK",
   efg: "eFG",
-  fg3a: "FG3A",
-  fg3m: "FG3M",
+  fga: "FGA",
+  fg3a: "3PA",
+  fg3m: "3PM",
+  fgm: "FGM",
+  fta: "FTA",
+  ftm: "FTM",
   pts: "PTS",
   reb: "REB",
   stl: "STL",
@@ -37,10 +42,6 @@ const PROMOTED_STAT_CANDIDATES = [
   "reb",
   "ast",
   "fg3m",
-  "stl",
-  "blk",
-  "tov",
-  "fg3a",
 ];
 
 const DETAIL_OR_CONTEXT_KEYS = new Set([
@@ -64,10 +65,38 @@ const DETAIL_OR_CONTEXT_KEYS = new Set([
   "is_away",
   "wl",
   "minutes",
+  "fgm",
+  "fga",
+  "fg3m",
+  "fg3a",
+  "ftm",
+  "fta",
+  "stl",
+  "blk",
+  "tov",
   "plus_minus",
   "clutch_events",
   "clutch_seconds",
 ]);
+
+const STAT_ALIASES: Record<string, string> = {
+  "3pm": "fg3m",
+  "3p": "fg3m",
+  assists: "ast",
+  ast: "ast",
+  blocks: "blk",
+  blk: "blk",
+  points: "pts",
+  pts: "pts",
+  rebounds: "reb",
+  reb: "reb",
+  scoring: "pts",
+  steals: "stl",
+  stl: "stl",
+  threes: "fg3m",
+  turnovers: "tov",
+  tov: "tov",
+};
 
 function numericValue(row: SectionRow, key: string): number | null {
   const value = row[key];
@@ -97,6 +126,21 @@ function playerIdentity(row: SectionRow, index: number) {
       textValue(row, "player_name") ??
       textValue(row, "player") ??
       `Player ${index + 1}`,
+  });
+}
+
+function headerPlayerIdentity(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow,
+) {
+  return resolvePlayerIdentity({
+    playerId:
+      metadata?.player_context?.player_id ?? identityId(row.player_id),
+    playerName:
+      metadata?.player_context?.player_name ??
+      textValue(row, "player_name") ??
+      textValue(row, "player") ??
+      "Player",
   });
 }
 
@@ -147,7 +191,7 @@ function resultVariant(wl: string): "win" | "loss" | "neutral" {
 
 function statLabel(key: string): string {
   return formatColHeader(key).replace(
-    /\b(ast|blk|efg|fg3a|fg3m|pts|reb|stl|tov|ts|usg)\b/gi,
+    /\b(ast|blk|efg|fga|fg3a|fg3m|fgm|fta|ftm|pts|reb|stl|tov|ts|usg)\b/gi,
     (stat) => STAT_LABELS[stat.toLowerCase()] ?? stat,
   );
 }
@@ -188,9 +232,47 @@ function topLineStats(row: SectionRow): StatProps[] {
   return stats;
 }
 
+function madeAttemptLabel(
+  row: SectionRow,
+  madeKey: string,
+  attemptKey: string,
+  label: string,
+): string | null {
+  const made = numericValue(row, madeKey);
+  const attempts = numericValue(row, attemptKey);
+  if (made === null || attempts === null) return null;
+  return `${label} ${formatValue(made, madeKey)}/${formatValue(
+    attempts,
+    attemptKey,
+  )}`;
+}
+
 function signedValue(value: number, key: string): string {
   const formatted = formatValue(value, key);
   return value > 0 ? `+${formatted}` : formatted;
+}
+
+function secondaryStats(row: SectionRow): string[] {
+  const context: string[] = [];
+  const minutes = numericValue(row, "minutes");
+  const plusMinus = numericValue(row, "plus_minus");
+  const fg = madeAttemptLabel(row, "fgm", "fga", "FG");
+  const threes = madeAttemptLabel(row, "fg3m", "fg3a", "3P");
+  const freeThrows = madeAttemptLabel(row, "ftm", "fta", "FT");
+
+  if (minutes !== null) context.push(`MIN ${formatValue(minutes, "minutes")}`);
+  for (const item of [fg, threes, freeThrows]) {
+    if (item) context.push(item);
+  }
+  for (const key of ["stl", "blk", "tov"]) {
+    const value = numericValue(row, key);
+    if (value !== null) context.push(`${statLabel(key)} ${formatValue(value, key)}`);
+  }
+  if (plusMinus !== null) {
+    context.push(`+/- ${signedValue(plusMinus, "plus_minus")}`);
+  }
+
+  return context;
 }
 
 function secondaryContext(row: SectionRow): string[] {
@@ -198,15 +280,9 @@ function secondaryContext(row: SectionRow): string[] {
     textValue(row, "season"),
     textValue(row, "season_type"),
   ];
-  const minutes = numericValue(row, "minutes");
-  const plusMinus = numericValue(row, "plus_minus");
   const clutchEvents = numericValue(row, "clutch_events");
   const clutchSeconds = numericValue(row, "clutch_seconds");
 
-  if (minutes !== null) context.push(`MIN ${formatValue(minutes, "minutes")}`);
-  if (plusMinus !== null) {
-    context.push(`+/- ${signedValue(plusMinus, "plus_minus")}`);
-  }
   if (clutchEvents !== null) {
     context.push(`Clutch events ${formatValue(clutchEvents, "clutch_events")}`);
   }
@@ -219,6 +295,159 @@ function secondaryContext(row: SectionRow): string[] {
   return context.filter((item): item is string => Boolean(item));
 }
 
+function metadataText(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): string | null {
+  const value = metadata?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function metadataNumber(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): number | null {
+  const value = metadata?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function normalizeStatKey(value: string | null): string | null {
+  if (!value) return null;
+  const normalized = value.toLowerCase().replace(/[_\s-]+/g, " ").trim();
+  return STAT_ALIASES[normalized] ?? value.toLowerCase();
+}
+
+function formatCondition(stat: string, min: number | null, max: number | null): string {
+  const label = statLabel(normalizeStatKey(stat) ?? stat);
+  if (min !== null && max !== null) {
+    return `${formatValue(min, stat)}-${formatValue(max, stat)} ${label}`;
+  }
+  if (min !== null) return `${formatValue(min, stat)}+ ${label}`;
+  if (max !== null) return `<= ${formatValue(max, stat)} ${label}`;
+  return label;
+}
+
+function thresholdConditionsFromMetadata(
+  metadata: ResultMetadata | undefined,
+): string[] {
+  const conditions: string[] = [];
+  for (const key of ["threshold_conditions", "extra_conditions"]) {
+    const raw = metadata?.[key];
+    if (!Array.isArray(raw)) continue;
+    for (const condition of raw) {
+      if (!condition || typeof condition !== "object") continue;
+      const statValue = (condition as Record<string, unknown>).stat;
+      if (typeof statValue !== "string") continue;
+      const minValue = (condition as Record<string, unknown>).min_value;
+      const maxValue = (condition as Record<string, unknown>).max_value;
+      conditions.push(
+        formatCondition(
+          statValue,
+          typeof minValue === "number" ? minValue : null,
+          typeof maxValue === "number" ? maxValue : null,
+        ),
+      );
+    }
+  }
+
+  const occurrenceEvent = metadata?.occurrence_event;
+  if (
+    conditions.length === 0 &&
+    occurrenceEvent &&
+    typeof occurrenceEvent === "object" &&
+    !Array.isArray(occurrenceEvent)
+  ) {
+    const event = occurrenceEvent as Record<string, unknown>;
+    if (typeof event.stat === "string") {
+      const minValue =
+        typeof event.min_value === "number" ? event.min_value : null;
+      if (event.stat === "pts" && minValue !== null) {
+        conditions.push(`${formatValue(minValue, "pts")}-point games`);
+      } else {
+        conditions.push(
+          formatCondition(
+            event.stat,
+            minValue,
+            typeof event.max_value === "number" ? event.max_value : null,
+          ),
+        );
+      }
+    }
+  }
+
+  const stat = metadataText(metadata, "stat");
+  if (stat && conditions.length === 0) {
+    conditions.push(
+      formatCondition(
+        stat,
+        metadataNumber(metadata, "min_value"),
+        metadataNumber(metadata, "max_value"),
+      ),
+    );
+  }
+
+  return Array.from(new Set(conditions));
+}
+
+function finderCondition(metadata: ResultMetadata | undefined): string {
+  const metadataConditions = thresholdConditionsFromMetadata(metadata);
+  if (metadataConditions.length > 0) return metadataConditions.join(", ");
+  return "Matching games";
+}
+
+function sortMetric(metadata: ResultMetadata | undefined): string | null {
+  const metadataStat = normalizeStatKey(metadataText(metadata, "stat"));
+  if (
+    metadataText(metadata, "sort_by") === "stat" &&
+    metadata?.ranked_intent === true &&
+    metadataStat
+  ) {
+    return metadataStat;
+  }
+  return null;
+}
+
+function sortFinderRows(
+  rows: SectionRow[],
+  metadata: ResultMetadata | undefined,
+): SectionRow[] {
+  const metric = sortMetric(metadata);
+  const copy = [...rows];
+  if (metric) {
+    return copy.sort((a, b) => {
+      const aValue = numericValue(a, metric) ?? Number.NEGATIVE_INFINITY;
+      const bValue = numericValue(b, metric) ?? Number.NEGATIVE_INFINITY;
+      if (bValue !== aValue) return bValue - aValue;
+      return String(gameDate(b) ?? "").localeCompare(String(gameDate(a) ?? ""));
+    });
+  }
+  return copy.sort((a, b) => {
+    const dateCompare = String(gameDate(b) ?? "").localeCompare(
+      String(gameDate(a) ?? ""),
+    );
+    if (dateCompare !== 0) return dateCompare;
+    return String(textValue(b, "game_id") ?? "").localeCompare(
+      String(textValue(a, "game_id") ?? ""),
+    );
+  });
+}
+
+function scoreLabel(row: SectionRow): string | null {
+  const teamScore =
+    numericValue(row, "team_score") ??
+    numericValue(row, "pts_team") ??
+    numericValue(row, "team_pts");
+  const opponentScore =
+    numericValue(row, "opponent_score") ??
+    numericValue(row, "opp_pts") ??
+    numericValue(row, "opponent_pts");
+  if (teamScore === null || opponentScore === null) return null;
+  return `${formatValue(teamScore, "team_score")}-${formatValue(
+    opponentScore,
+    "opponent_score",
+  )}`;
+}
+
 function statColumns(count: number): 1 | 2 | 3 | 4 {
   if (count >= 4) return 4;
   if (count === 3) return 3;
@@ -226,18 +455,39 @@ function statColumns(count: number): 1 | 2 | 3 | 4 {
   return 1;
 }
 
-export default function PlayerGameFinderSection({ sections }: Props) {
+export default function PlayerGameFinderSection({ sections, metadata }: Props) {
   const finder = sections.finder;
   if (!finder || finder.length === 0) return null;
+  const displayRows = sortFinderRows(finder, metadata);
+  const headerPlayer = headerPlayerIdentity(metadata, displayRows[0]);
+  const condition = finderCondition(metadata);
+  const countText = `${displayRows.length} game${displayRows.length !== 1 ? "s" : ""} found`;
 
   return (
     <div className={styles.section}>
       <SectionHeader
         title="Player Games"
-        count={`${finder.length} game${finder.length !== 1 ? "s" : ""}`}
+        count={countText}
       />
+      <Card className={styles.finderHeader} depth="card" padding="md">
+        <Avatar
+          className={styles.headerAvatar}
+          name={headerPlayer.playerName ?? "Player"}
+          imageUrl={headerPlayer.headshotUrl}
+          size="md"
+        />
+        <div className={styles.finderHeaderText}>
+          <div className={styles.eyebrow}>{condition}</div>
+          <h2 className={styles.finderTitle}>
+            {headerPlayer.playerName ?? "Player"}
+          </h2>
+          <div className={styles.headerMeta}>
+            <span className={styles.contextChip}>{countText}</span>
+          </div>
+        </div>
+      </Card>
       <div className={styles.gameGrid} aria-label="Player game cards">
-        {finder.map((row, index) => {
+        {displayRows.map((row, index) => {
           const player = playerIdentity(row, index);
           const team = teamIdentity(row, "team");
           const opponent = teamIdentity(row, "opponent");
@@ -248,6 +498,8 @@ export default function PlayerGameFinderSection({ sections }: Props) {
           const date = gameDate(row);
           const stats = topLineStats(row);
           const context = secondaryContext(row);
+          const secondary = secondaryStats(row);
+          const score = scoreLabel(row);
 
           return (
             <Card
@@ -321,9 +573,24 @@ export default function PlayerGameFinderSection({ sections }: Props) {
                 </div>
               )}
 
+              {score && <div className={styles.scoreLabel}>{score}</div>}
+
               {context.length > 0 && (
                 <div className={styles.secondaryContext}>
                   {context.map((item) => (
+                    <span className={styles.contextChip} key={item}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {secondary.length > 0 && (
+                <div
+                  className={styles.secondaryStats}
+                  aria-label={`${player.playerName ?? `Player ${index + 1}`} secondary stats`}
+                >
+                  {secondary.map((item) => (
                     <span className={styles.contextChip} key={item}>
                       {item}
                     </span>
@@ -342,7 +609,7 @@ export default function PlayerGameFinderSection({ sections }: Props) {
           );
         })}
       </div>
-      <RawDetailToggle title="Player Game Detail" rows={finder} />
+      <RawDetailToggle title="Player Game Detail" rows={displayRows} />
     </div>
   );
 }
