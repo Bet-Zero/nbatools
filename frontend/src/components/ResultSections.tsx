@@ -4,6 +4,8 @@ import ComparisonSection from "./ComparisonSection";
 import CountSection from "./CountSection";
 import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
+import GameFinderSection from "./GameFinderSection";
+import GameSummarySection from "./GameSummarySection";
 import HeadToHeadSection from "./HeadToHeadSection";
 import LeaderboardSection from "./LeaderboardSection";
 import NoResultDisplay from "./NoResultDisplay";
@@ -17,7 +19,6 @@ import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
 import TeamRecordSection from "./TeamRecordSection";
-import TeamSummarySection from "./TeamSummarySection";
 import styles from "./ResultSections.module.css";
 
 interface Props {
@@ -60,9 +61,14 @@ function isPlayerGameFinder(data: QueryResponse): boolean {
   );
 }
 
-function isTeamSummary(data: QueryResponse): boolean {
+function isGameSummary(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "game_summary";
+}
+
+function isGameFinder(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "game_finder";
 }
 
 function isTeamRecord(data: QueryResponse): boolean {
@@ -138,12 +144,11 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           />
         );
       }
-      if (isTeamSummary(data)) {
+      if (isGameSummary(data)) {
         return (
-          <TeamSummarySection
+          <GameSummarySection
             sections={sections}
             metadata={data.result?.metadata}
-            route={data.route}
           />
         );
       }
@@ -210,6 +215,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       if (isPlayerGameFinder(data)) {
         return (
           <PlayerGameFinderSection
+            sections={sections}
+            metadata={data.result?.metadata}
+          />
+        );
+      }
+      if (isGameFinder(data)) {
+        return (
+          <GameFinderSection
             sections={sections}
             metadata={data.result?.metadata}
           />

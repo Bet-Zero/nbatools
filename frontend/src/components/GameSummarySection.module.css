@@ -1,0 +1,81 @@
+.section {
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: var(--space-4);
+}
+
+.heroCard {
+  position: relative;
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.heroCard::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--space-1);
+  background: linear-gradient(
+    180deg,
+    var(--team-primary),
+    var(--team-secondary)
+  );
+  content: "";
+}
+
+.identityRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.identityText {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.teamBadge {
+  max-width: min(100%, 24rem);
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.teamName {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h2);
+  font-weight: var(--weight-bold);
+  hyphens: auto;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.context {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .identityRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .teamBadge {
+    max-width: 100%;
+  }
+}

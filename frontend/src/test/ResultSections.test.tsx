@@ -330,7 +330,7 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Summary")).toBeInTheDocument();
   });
 
-  it("routes team summaries to the dedicated team summary renderer", () => {
+  it("routes game summaries to the dedicated game summary renderer", () => {
     const data = makeResponse({
       route: "game_summary",
       result: {
@@ -364,7 +364,7 @@ describe("ResultSections", () => {
       },
     });
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Team Summary")).toBeInTheDocument();
+    expect(screen.getAllByText("Game Summary").length).toBeGreaterThanOrEqual(1);
     expect(
       screen.getByRole("heading", { name: "Los Angeles Lakers" }),
     ).toBeInTheDocument();
@@ -376,11 +376,11 @@ describe("ResultSections", () => {
       screen.getByText("2024-25 / Regular Season / 82 games"),
     ).toBeInTheDocument();
     expect(screen.getAllByText("PTS").length).toBeGreaterThan(0);
-    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+    expect(screen.getByText("Summary Detail")).toBeInTheDocument();
     expect(screen.queryByText("Player Summary")).not.toBeInTheDocument();
   });
 
-  it("renders team summaries without team ids, logos, or optional stats", () => {
+  it("renders game summaries without team ids, logos, or optional stats", () => {
     const data = makeResponse({
       route: "game_summary",
       result: {
@@ -403,7 +403,7 @@ describe("ResultSections", () => {
       },
     });
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Team Summary")).toBeInTheDocument();
+    expect(screen.getAllByText("Game Summary").length).toBeGreaterThanOrEqual(1);
     expect(
       screen.getByRole("heading", { name: "Mystery Team" }),
     ).toBeInTheDocument();
@@ -412,7 +412,7 @@ describe("ResultSections", () => {
     );
     expect(screen.getByText("12 games")).toBeInTheDocument();
     expect(screen.queryByText("Record")).not.toBeInTheDocument();
-    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+    expect(screen.getByText("Summary Detail")).toBeInTheDocument();
   });
 
   it("keeps long team names readable in the team summary hero", () => {
@@ -441,7 +441,78 @@ describe("ResultSections", () => {
     render(<ResultSections data={data} />);
     expect(screen.getByRole("heading", { name: longName })).toBeInTheDocument();
     expect(screen.getByText("3-4")).toBeInTheDocument();
-    expect(screen.getByText("Full Summary")).toBeInTheDocument();
+    expect(screen.getByText("Summary Detail")).toBeInTheDocument();
+  });
+
+  it("renders game summary game logs as team game cards", () => {
+    const data = makeResponse({
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "game_summary",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+          opponent_context: {
+            team_id: 1610612748,
+            team_abbr: "MIA",
+            team_name: "Miami Heat",
+          },
+          start_date: "2025-01-15",
+          end_date: "2025-01-15",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              games: 1,
+              wins: 1,
+              losses: 0,
+              pts_avg: 118,
+              plus_minus_avg: 8,
+            },
+          ],
+          game_log: [
+            {
+              game_date: "2025-01-15",
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              opponent_team_id: 1610612748,
+              opponent_team_abbr: "MIA",
+              opponent_team_name: "Miami Heat",
+              is_home: 1,
+              wl: "W",
+              pts: 118,
+              opponent_pts: 110,
+              reb: 44,
+              ast: 29,
+              fg3m: 16,
+              plus_minus: 8,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Game Summary")).toBeInTheDocument();
+    expect(screen.getByText("2025-01-15")).toBeInTheDocument();
+    expect(screen.getByText("vs MIA")).toBeInTheDocument();
+    expect(screen.getByText("118-110")).toBeInTheDocument();
+    expect(screen.getByLabelText("Result W")).toBeInTheDocument();
+    expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(screen.getByLabelText("Miami Heat (MIA)")).toBeInTheDocument();
+    expect(screen.getByText("Game Detail")).toBeInTheDocument();
+    const detail = screen.getByRole("region", { name: "Game Detail" });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
   });
 
   it("routes team records to the dedicated record renderer", () => {
@@ -1815,21 +1886,39 @@ describe("ResultSections", () => {
     expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
   });
 
-  it("keeps team game finders on the generic finder renderer", () => {
+  it("routes team game finders to the dedicated game card renderer", () => {
     const data = makeResponse({
       route: "game_finder",
       result: {
         query_class: "finder",
         result_status: "ok",
-        metadata: { route: "game_finder" },
+        metadata: {
+          route: "game_finder",
+          season: "2024-25",
+          stat: "plus_minus",
+          min_value: 20,
+        },
         notes: [],
         caveats: [],
         sections: {
           finder: [
             {
               game_date: "2025-01-15",
+              team_id: 1610612738,
+              team_abbr: "BOS",
               team_name: "Boston Celtics",
+              opponent_team_id: 1610612747,
+              opponent_team_abbr: "LAL",
+              opponent_team_name: "Los Angeles Lakers",
+              is_home: 0,
+              is_away: 1,
+              wl: "W",
               pts: 118,
+              opponent_pts: 103,
+              reb: 44,
+              ast: 31,
+              fg3m: 18,
+              plus_minus: 15,
             },
           ],
         },
@@ -1837,10 +1926,17 @@ describe("ResultSections", () => {
     });
 
     render(<ResultSections data={data} />);
-    expect(screen.getByText("Matching Games")).toBeInTheDocument();
-    expect(screen.getByText("1 game")).toBeInTheDocument();
+    expect(screen.getByText("Team Games")).toBeInTheDocument();
+    expect(screen.getByText("1 game found")).toBeInTheDocument();
+    expect(screen.getByText("20+ Plus Minus")).toBeInTheDocument();
+    expect(screen.getByText("2024-25")).toBeInTheDocument();
     expect(screen.queryByText("Player Games")).not.toBeInTheDocument();
-    expect(screen.getByText("Boston Celtics")).toBeInTheDocument();
+    expect(screen.getByText("at LAL")).toBeInTheDocument();
+    expect(screen.getByText("118-103")).toBeInTheDocument();
+    expect(screen.getByLabelText("Result W")).toBeInTheDocument();
+    expect(screen.getByText("Game Detail")).toBeInTheDocument();
+    const detail = screen.getByRole("region", { name: "Game Detail" });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
   });
 
   it("routes count results to the dedicated count renderer with finder detail", () => {

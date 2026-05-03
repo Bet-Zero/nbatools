@@ -19,7 +19,7 @@ display implementation pass.
 
 ---
 
-## 1. `[ ]` `game_summary` and `game_finder` game displays
+## 1. `[x]` `game_summary` and `game_finder` game displays
 
 **Routes:** `game_summary`, `game_finder`
 
@@ -163,4 +163,32 @@ box-score context.
 **Suggested tests:**
 
 - `cd frontend && npm test -- ResultSections Leaderboard`
+- `cd frontend && npm run build`
+
+---
+
+## 7. `[ ]` `game_summary` top performers
+
+**Route:** `game_summary`
+
+**Why:** Item 1 added team game cards and a `game_log` section for team
+summary results, but the route still does not return player leader rows.
+The map's remaining `[~]` note is specifically about top player
+performers.
+
+**Acceptance criteria:**
+
+- Add engine/API support for top player performer rows when the requested
+  game or game sample can be tied to player box-score data.
+- Render points/rebounds/assists leaders in `GameSummarySection` when
+  those rows are present.
+- Keep the behavior explicit when player performer data is unavailable;
+  do not synthesize player leaders client-side.
+- Update `result_display_map.md` to `[x]` for `game_summary` if the full
+  display ships, or leave `[~]` with a narrower coverage note.
+
+**Suggested tests:**
+
+- focused pytest for the command/API contract changed
+- `cd frontend && npm test -- ResultSections GameSummary`
 - `cd frontend && npm run build`

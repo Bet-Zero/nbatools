@@ -1,0 +1,97 @@
+.cardList {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.gameCard {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.metaText {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+}
+
+.matchupRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.teamSlot {
+  min-width: 0;
+}
+
+.teamSlot:last-child {
+  justify-self: end;
+}
+
+.teamBadge {
+  max-width: min(100%, 20rem);
+}
+
+.scoreBlock {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  min-width: 6rem;
+  text-align: center;
+}
+
+.scoreValue {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-h2);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.margin {
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .metaRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .matchupRow {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+
+  .teamSlot:last-child {
+    justify-self: start;
+  }
+
+  .scoreBlock {
+    justify-items: start;
+    min-width: 0;
+    text-align: left;
+  }
+}
