@@ -542,7 +542,7 @@ is smaller in scope but should match its map entry's `Should show:`.
 
 ---
 
-## 10. `[ ]` Cross-cutting display rules sweep
+## 10. `[x]` Cross-cutting display rules sweep
 
 **Why:** The map's "Cross-cutting display rules" section names rules
 that should apply everywhere. Most are addressed by items above; this

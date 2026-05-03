@@ -49,7 +49,20 @@ const PRIMARY_ENTITY_COL_PREFERENCE = [
 const COLLAPSIBLE_IDENTITY_GROUPS = [
   ["player_name", "player"],
   ["team_name", "team", "team_abbr"],
+  ["opponent_team_name", "opponent", "opponent_team_abbr"],
 ];
+
+const DEFAULT_HIDDEN_COLUMNS = new Set([
+  "player_id",
+  "team_id",
+  "opponent_team_id",
+  "start_game_id",
+  "end_game_id",
+]);
+
+function joinClassNames(...classNames: Array<string | false | undefined>) {
+  return classNames.filter(Boolean).join(" ");
+}
 
 function normalizeColumnName(column: string): string {
   return column.toLowerCase();
@@ -59,11 +72,10 @@ function selectVisibleColumns(
   columns: string[],
   hiddenColumns: Iterable<string> | undefined,
 ): string[] {
-  if (!hiddenColumns) return columns;
-
-  const hidden = new Set(
-    Array.from(hiddenColumns, (column) => normalizeColumnName(column)),
-  );
+  const hidden = new Set(DEFAULT_HIDDEN_COLUMNS);
+  for (const column of hiddenColumns ?? []) {
+    hidden.add(normalizeColumnName(column));
+  }
   const selected = new Set(
     columns.filter((column) => !hidden.has(normalizeColumnName(column))),
   );
@@ -108,6 +120,14 @@ function selectVisibleColumns(
   }
 
   return columns.filter((column) => selected.has(column));
+}
+
+function stickyIdentityColumn(columns: string[]): string | null {
+  return (
+    columns.find((column) =>
+      ENTITY_COLS.has(normalizeColumnName(column)),
+    ) ?? null
+  );
 }
 
 /** Check whether a column contains numeric values (sample first 5 rows). */
@@ -226,12 +246,19 @@ export default function DataTable({
   hiddenColumns,
 }: Props) {
   if (!rows.length) return null;
-  const visibleColumns = selectVisibleColumns(Object.keys(rows[0]), hiddenColumns);
+  const visibleColumns = selectVisibleColumns(
+    Object.keys(rows[0]),
+    hiddenColumns,
+  );
+  const stickyColumn = stickyIdentityColumn(visibleColumns);
   const columns: DataTableColumn<SectionRow>[] = visibleColumns.map((col) => ({
     key: col,
     header: formatColHeader(col),
     align: columnAlignment(col, rows),
-    className: cellClass(col, rows),
+    className: joinClassNames(
+      cellClass(col, rows),
+      col === stickyColumn && styles.stickyIdentity,
+    ),
     numeric: isNumericCol(col, rows),
     render: (row) => renderEntityValue(row[col], col, row),
   }));
