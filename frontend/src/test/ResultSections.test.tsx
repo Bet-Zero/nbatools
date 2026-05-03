@@ -403,6 +403,103 @@ describe("ResultSections", () => {
     await openRawTable("Lineup Leaderboard Detail");
   });
 
+  it("routes player stretch leaderboards to stretch cards", async () => {
+    const data = makeResponse({
+      route: "player_stretch_leaderboard",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "player_stretch_leaderboard",
+          season: "2024-25",
+          season_type: "Regular Season",
+          stretch_metric: "pts",
+          window_size: 3,
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_id: 2544,
+              player_name: "LeBron James",
+              team_abbr: "LAL",
+              window_size: 3,
+              stretch_metric: "pts",
+              stretch_value: 41.667,
+              window_start_date: "2025-01-01",
+              window_end_date: "2025-01-05",
+              window_start_season: "2024-25",
+              window_end_season: "2024-25",
+              games_in_window: 3,
+              reb_avg: 8.7,
+              ast_avg: 9.3,
+              ts_pct: 0.646,
+              minutes_avg: 36.2,
+            },
+            {
+              rank: 2,
+              player_id: 201939,
+              player_name: "Stephen Curry",
+              team_abbr: "GSW",
+              window_size: 3,
+              stretch_metric: "pts",
+              stretch_value: 39.333,
+              window_start_date: "2025-02-10",
+              window_end_date: "2025-02-14",
+              window_start_season: "2024-25",
+              window_end_season: "2024-25",
+              games_in_window: 3,
+            },
+          ],
+          window_games: [
+            {
+              rank: 1,
+              player_name: "LeBron James",
+              game_date: "2025-01-01",
+              pts: 40,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Stretch Leaderboard")).toBeInTheDocument();
+    const ranked = screen.getByLabelText("Ranked stretches");
+    expect(within(ranked).getByText("#1")).toBeInTheDocument();
+    expect(within(ranked).getByText("#2")).toBeInTheDocument();
+    expect(within(ranked).getByText("LeBron James")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("LeBron James avatar")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("LAL")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("3-game stretch").length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      within(ranked).getByText("2025-01-01 to 2025-01-05"),
+    ).toBeInTheDocument();
+    expect(within(ranked).getAllByText("2024-25").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("3 games").length).toBeGreaterThan(0);
+    expect(within(ranked).getByText("41.7")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("PPG").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("REB").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("AST").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("TS%").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("MIN").length).toBeGreaterThan(0);
+
+    const detail = screen.getByRole("region", {
+      name: "Stretch Leaderboard Detail",
+    });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("Stretch Leaderboard Detail");
+
+    const games = screen.getByRole("region", { name: "Stretch Games" });
+    expect(within(games).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("Stretch Games");
+  });
+
   it("renders a scoring sparkline and recent games from player game logs", () => {
     const data = makeResponse({
       result: {

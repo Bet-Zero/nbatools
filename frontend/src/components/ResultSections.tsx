@@ -14,6 +14,7 @@ import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerOnOffSection from "./PlayerOnOffSection";
+import PlayerStretchLeaderboardSection from "./PlayerStretchLeaderboardSection";
 import PlayoffSection from "./PlayoffSection";
 import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
@@ -92,6 +93,11 @@ function isLineupSummary(data: QueryResponse): boolean {
 function isLineupLeaderboard(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "lineup_leaderboard";
+}
+
+function isPlayerStretchLeaderboard(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "player_stretch_leaderboard";
 }
 
 function isTeamComparison(data: QueryResponse): boolean {
@@ -284,6 +290,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             sections={sections}
             metadata={data.result?.metadata}
             mode="leaderboard"
+          />
+        );
+      }
+      if (isPlayerStretchLeaderboard(data)) {
+        return (
+          <PlayerStretchLeaderboardSection
+            sections={sections}
+            metadata={data.result?.metadata}
           />
         );
       }

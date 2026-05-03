@@ -416,19 +416,16 @@ expectation is:
   - Each row should show rank, team logo, team name, record, win pct, games, and split context such as home/away.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_stretch_leaderboard` `[~]`
+### `player_stretch_leaderboard` `[x]`
 - **Example queries:**
   - `best 3-game scoring stretches this season`
 - **Currently shows (shipped):**
-  - Generic `LeaderboardSection` ranked rows using the available metric and context columns.
-  - It does not yet expose stretch-specific date ranges, games included, or optional per-game expansion as a primary display.
-- **Follow-up note:** Needs a stretch-specific leaderboard row/card layout; queued in `result_display_followup_queue.md`.
-- **Should show:**
-  - Hybrid leaderboard/game-log display.
-  - Each row should show rank, player headshot, player name, stretch length, date range, team, season, games included, and primary stretch metric such as `41.7 PPG`.
-  - Supporting averages when available: REB, AST, TS%, MIN.
-  - Optional expansion can show individual games inside the stretch.
-  - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
+  - Dedicated stretch leaderboard rows/cards.
+  - Each row shows rank, player headshot/name, team badge, stretch length, date range, season, games included, and the primary stretch metric such as `41.7 PPG`.
+  - Supporting averages render when present: REB, AST, TS%, and MIN.
+  - Optional game expansion renders behind a collapsed `Stretch Games` raw-detail toggle when the response includes `window_games`, `game_log`, or `games` rows.
+  - Current execution returns stretch windows but not per-game expansion rows or supporting averages by default; the display is ready for those fields when the response adds them.
+  - Raw leaderboard rows remain available behind the shared collapsed `RawDetailToggle`.
 
 ### `lineup_leaderboard` `[x]`
 - **Example queries:**
