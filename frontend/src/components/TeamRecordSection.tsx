@@ -13,7 +13,7 @@ import {
   resolveTeamIdentity,
   type ResolvedTeamIdentity,
 } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatValue } from "./tableFormatting";
 import styles from "./TeamRecordSection.module.css";
 
@@ -259,10 +259,7 @@ function SingleTeamRecord({
             )}
           </Card>
 
-          <div className={styles.detailSection}>
-            <SectionHeader title="Record Detail" />
-            <DataTable rows={summary} />
-          </div>
+          <RawDetailToggle title="Record Detail" rows={summary} />
         </div>
       )}
       {(!summary || summary.length === 0) && (
@@ -272,8 +269,7 @@ function SingleTeamRecord({
       )}
       {bySeason && bySeason.length > 0 && (
         <div className={styles.section}>
-          <SectionHeader title="By Season" />
-          <DataTable rows={bySeason} />
+          <RawDetailToggle title="By Season" rows={bySeason} />
         </div>
       )}
     </>
@@ -331,16 +327,12 @@ function MatchupRecord({
             </div>
           </Card>
 
-          <div className={styles.detailSection}>
-            <SectionHeader title="Team Summary Detail" />
-            <DataTable rows={summary} />
-          </div>
+          <RawDetailToggle title="Team Summary Detail" rows={summary} />
         </div>
       )}
       {comparison && comparison.length > 0 && (
         <div className={styles.section}>
-          <SectionHeader title="Metric Detail" />
-          <DataTable rows={comparison} highlight />
+          <RawDetailToggle title="Metric Detail" rows={comparison} highlight />
         </div>
       )}
     </>

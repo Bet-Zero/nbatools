@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import ResultSections from "../components/ResultSections";
 import type { QueryResponse } from "../api/types";
@@ -26,6 +27,21 @@ function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
     },
     ...overrides,
   };
+}
+
+async function openRawTable(title: string) {
+  const user = userEvent.setup();
+  const detail = screen.getByRole("region", { name: title });
+
+  expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+  await user.click(
+    within(detail).getByRole("button", { name: "Show raw table" }),
+  );
+  expect(
+    within(detail).getByRole("button", { name: "Hide raw table" }),
+  ).toHaveAttribute("aria-expanded", "true");
+
+  return detail;
 }
 
 describe("ResultSections", () => {
@@ -1031,7 +1047,7 @@ describe("ResultSections", () => {
     expect(screen.queryByText("Player Split Summary")).not.toBeInTheDocument();
   });
 
-  it("renders leaderboard sections", () => {
+  it("renders leaderboard sections", async () => {
     const data = makeResponse({
       result: {
         query_class: "leaderboard",
@@ -1054,11 +1070,12 @@ describe("ResultSections", () => {
     expect(screen.getByText("#1")).toBeInTheDocument();
     expect(screen.getAllByText("Luka").length).toBeGreaterThan(0);
     expect(screen.getByText("Full Leaderboard")).toBeInTheDocument();
+    const detail = await openRawTable("Full Leaderboard");
     expect(
-      screen.getByRole("columnheader", { name: "Player Name" }),
+      within(detail).getByRole("columnheader", { name: "Player Name" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "PTS" }),
+      within(detail).getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
   });
 
@@ -1149,7 +1166,7 @@ describe("ResultSections", () => {
     ).toBeNull();
   });
 
-  it("hides internal id columns from curated leaderboard detail tables", () => {
+  it("hides internal id columns from curated leaderboard detail tables", async () => {
     const data = makeResponse({
       result: {
         query_class: "leaderboard",
@@ -1174,18 +1191,19 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
 
+    const detail = await openRawTable("Full Leaderboard");
     expect(
-      screen.queryByRole("columnheader", { name: "Player Id" }),
+      within(detail).queryByRole("columnheader", { name: "Player Id" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: "Team Id" }),
+      within(detail).queryByRole("columnheader", { name: "Team Id" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Player Name" }),
+      within(detail).getByRole("columnheader", { name: "Player Name" }),
     ).toBeInTheDocument();
   });
 
-  it("keeps a single visible team identity column in leaderboard detail tables", () => {
+  it("keeps a single visible team identity column in leaderboard detail tables", async () => {
     const data = makeResponse({
       result: {
         query_class: "leaderboard",
@@ -1211,11 +1229,12 @@ describe("ResultSections", () => {
 
     render(<ResultSections data={data} />);
 
+    const detail = await openRawTable("Full Leaderboard");
     expect(
-      screen.getByRole("columnheader", { name: "Team Name" }),
+      within(detail).getByRole("columnheader", { name: "Team Name" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: "Team Abbr" }),
+      within(detail).queryByRole("columnheader", { name: "Team Abbr" }),
     ).not.toBeInTheDocument();
   });
 
@@ -1594,7 +1613,7 @@ describe("ResultSections", () => {
     expect(screen.getByText("2 games")).toBeInTheDocument();
   });
 
-  it("routes player game finders to the dedicated renderer", () => {
+  it("routes player game finders to the dedicated renderer", async () => {
     const data = makeResponse({
       route: "player_game_finder",
       result: {
@@ -1689,8 +1708,9 @@ describe("ResultSections", () => {
     expect(within(cards).getByText("MIN 36")).toBeInTheDocument();
     expect(within(cards).getByText("+/- +12")).toBeInTheDocument();
     expect(within(cards).getByText("Clutch events 2")).toBeInTheDocument();
+    const detail = await openRawTable("Player Game Detail");
     expect(
-      screen.getByRole("columnheader", { name: "Player Name" }),
+      within(detail).getByRole("columnheader", { name: "Player Name" }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Stephen Curry").length).toBeGreaterThan(0);
   });
@@ -2305,7 +2325,7 @@ describe("ResultSections", () => {
     expect(screen.queryByText("Player Comparison")).not.toBeInTheDocument();
   });
 
-  it("routes matchup-by-decade comparisons to the C7 boundary owner", () => {
+  it("routes matchup-by-decade comparisons to the C7 boundary owner", async () => {
     const data = makeResponse({
       route: "matchup_by_decade",
       result: {
@@ -2343,7 +2363,8 @@ describe("ResultSections", () => {
     expect(within(participants).getByText("8-10")).toBeInTheDocument();
     expect(screen.getByText("Participant Detail")).toBeInTheDocument();
     expect(screen.getByText("Metric Detail")).toBeInTheDocument();
-    expect(screen.getByText("1980s")).toBeInTheDocument();
+    const detail = await openRawTable("Metric Detail");
+    expect(within(detail).getByText("1980s")).toBeInTheDocument();
     expect(screen.queryByText("Players")).not.toBeInTheDocument();
   });
 

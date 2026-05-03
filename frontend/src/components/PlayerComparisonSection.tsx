@@ -10,7 +10,7 @@ import {
   type StatProps,
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./PlayerComparisonSection.module.css";
 
@@ -305,10 +305,7 @@ export default function PlayerComparisonSection({ sections, metadata }: Props) {
               );
             })}
           </div>
-          <div className={styles.detailSection}>
-            <SectionHeader title="Player Summary Detail" />
-            <DataTable rows={summary} />
-          </div>
+          <RawDetailToggle title="Player Summary Detail" rows={summary} />
         </div>
       )}
       {comparison && comparison.length > 0 && (
@@ -368,10 +365,7 @@ export default function PlayerComparisonSection({ sections, metadata }: Props) {
               );
             })}
           </div>
-          <div className={styles.detailSection}>
-            <SectionHeader title="Full Metric Detail" />
-            <DataTable rows={comparison} highlight />
-          </div>
+          <RawDetailToggle title="Full Metric Detail" rows={comparison} highlight />
         </div>
       )}
     </>

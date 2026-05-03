@@ -2,7 +2,7 @@ import { type CSSProperties } from "react";
 import type { SectionRow } from "../api/types";
 import { Avatar, SectionHeader, TeamBadge } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
-import DataTable from "./DataTable";
+import RawDetailToggle from "./RawDetailToggle";
 import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./LeaderboardSection.module.css";
 
@@ -449,10 +449,12 @@ export default function LeaderboardSection({
           );
         })}
       </div>
-      <div className={styles.detailSection}>
-        <SectionHeader title={detailTitle} />
-        <DataTable rows={leaderboard} highlight hiddenColumns={SYSTEM_COLUMNS} />
-      </div>
+      <RawDetailToggle
+        title={detailTitle}
+        rows={leaderboard}
+        highlight
+        hiddenColumns={SYSTEM_COLUMNS}
+      />
     </div>
   );
 }
