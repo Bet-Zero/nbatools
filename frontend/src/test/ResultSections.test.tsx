@@ -2604,7 +2604,7 @@ describe("ResultSections", () => {
     expect(screen.getAllByLabelText("Nikola Jokic avatar").length).toBeGreaterThan(
       0,
     );
-    expect(screen.getAllByText("pts>=30").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("30+ PTS").length).toBeGreaterThan(0);
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.getByText("4-1")).toBeInTheDocument();
     expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
@@ -2655,7 +2655,7 @@ describe("ResultSections", () => {
       screen.getByRole("heading", { name: "Boston Celtics" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
-    expect(screen.getAllByText("wins").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Wins").length).toBeGreaterThan(0);
     expect(screen.getByText("Completed")).toBeInTheDocument();
     expect(screen.getByText("4-0")).toBeInTheDocument();
     expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
@@ -2717,7 +2717,7 @@ describe("ResultSections", () => {
       screen.getByRole("heading", { name: "Sparse Streak Player" }),
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText("very_long_condition_label_with_no_supplied_span")
+      screen.getAllByText("Very Long Condition Label With No Supplied Span")
         .length,
     ).toBeGreaterThan(0);
     expect(screen.queryByLabelText("Streak span")).not.toBeInTheDocument();

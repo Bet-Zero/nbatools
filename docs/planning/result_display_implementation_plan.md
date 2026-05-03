@@ -494,7 +494,7 @@ real split cards with edge/delta, not just stacked tables.
 
 ---
 
-## 9. `[ ]` Streak, occurrence, and playoff section polish
+## 9. `[x]` Streak, occurrence, and playoff section polish
 
 **Why:** Cover the remaining higher-frequency designed sections. Each
 is smaller in scope but should match its map entry's `Should show:`.

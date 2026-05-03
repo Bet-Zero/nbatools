@@ -205,15 +205,26 @@ function summaryStats(row: SectionRow | undefined): StatProps[] {
   const record = recordStat(row, primary ? "md" : "hero");
   if (record) stats.push(record);
 
-  if (!record) {
-    const games = scalarStat(
+  const games =
+    scalarStat(row, "games", "Games", primary || record ? "neutral" : "accent") ??
+    scalarStat(
       row,
-      "games",
+      "games_played",
       "Games",
-      primary ? "neutral" : "accent",
-      primary ? "md" : "hero",
+      primary || record ? "neutral" : "accent",
     );
-    if (games) stats.push(games);
+  if (games) stats.push(games);
+
+  for (const [key, label] of [
+    ["titles", "Titles"],
+    ["championships", "Titles"],
+    ["finals", "Finals"],
+    ["finals_appearances", "Finals"],
+    ["conference_finals", "Conf Finals"],
+  ] as const) {
+    if (stats.some((stat) => stat.label === label)) continue;
+    const stat = scalarStat(row, key, label);
+    if (stat) stats.push(stat);
   }
 
   const winPct = !record
@@ -221,7 +232,14 @@ function summaryStats(row: SectionRow | undefined): StatProps[] {
     : null;
   if (winPct) stats.push(winPct);
 
-  return stats.slice(0, 4);
+  return stats;
+}
+
+function statColumns(count: number): 1 | 2 | 3 | 4 {
+  if (count >= 4) return 4;
+  if (count === 3) return 3;
+  if (count === 2) return 2;
+  return 1;
 }
 
 function teamIdentity(
@@ -371,6 +389,50 @@ function Details({ sections }: { sections: Record<string, SectionRow[]> }) {
   );
 }
 
+function seasonBreakdownContext(row: SectionRow): string[] {
+  return [
+    textValue(row, "round_reached") ??
+      textValue(row, "deepest_round") ??
+      textValue(row, "round"),
+    textValue(row, "result"),
+    textValue(row, "opponent") ??
+      textValue(row, "opponent_team_name") ??
+      textValue(row, "opponent_team_abbr"),
+  ].filter((item): item is string => Boolean(item));
+}
+
+function SeasonBreakdown({ rows }: { rows: SectionRow[] }) {
+  if (rows.length === 0) return null;
+
+  return (
+    <div className={styles.breakdownPanel} aria-label="Playoff season breakdown">
+      <div className={styles.breakdownTitle}>Season Results</div>
+      <div className={styles.breakdownList}>
+        {rows.slice(0, 8).map((row, index) => {
+          const season = textValue(row, "season") ?? `Season ${index + 1}`;
+          const record = recordText(row);
+          const context = seasonBreakdownContext(row);
+          return (
+            <article className={styles.breakdownRow} key={`${season}-${index}`}>
+              <div className={styles.breakdownSeason}>{season}</div>
+              {context.length > 0 && (
+                <div className={styles.breakdownContext}>
+                  {context.map((item) => (
+                    <span className={styles.contextItem} key={item}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {record && <div className={styles.recordPill}>{record}</div>}
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function PlayoffSummaryLayout({
   sections,
   metadata,
@@ -421,11 +483,12 @@ function PlayoffSummaryLayout({
               >
                 <StatBlock
                   stats={stats}
-                  columns={stats.length >= 4 ? 4 : 2}
+                  columns={statColumns(stats.length)}
                 />
               </div>
             )}
           </Card>
+          <SeasonBreakdown rows={sections.by_season ?? []} />
         </>
       )}
 
