@@ -248,13 +248,12 @@ expectation is:
      - Keep `Player Summary Detail` and `Full Metric Detail` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `team_compare` `[~]`
+### `team_compare` `[x]`
 - **Example queries:**
   - `Celtics vs Bucks this season`
 - **Currently shows (shipped):**
   - Head-to-head-flavored `team_compare` responses render through `HeadToHeadSection`.
-  - Aggregate team comparison responses still fall back to generic comparison tables rather than a team-first side-by-side card/grid.
-- **Follow-up note:** Needs a dedicated aggregate `team_compare` layout; queued in `result_display_followup_queue.md`.
+  - Aggregate team comparison responses render through `TeamComparisonSection` with team logos/names, context chips, side-by-side team cards, record/win-pct/games context, core stats, metric deltas, and collapsed raw detail.
 - **Should show:**
   - Team A vs Team B header with team logos and context.
   - Side-by-side team cards showing record, win pct, games, PPG, opponent PPG, net rating or +/-, REB, AST, and 3PM.

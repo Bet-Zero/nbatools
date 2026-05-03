@@ -18,6 +18,7 @@ import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
+import TeamComparisonSection from "./TeamComparisonSection";
 import TeamRecordSection from "./TeamRecordSection";
 import styles from "./ResultSections.module.css";
 
@@ -74,6 +75,11 @@ function isGameFinder(data: QueryResponse): boolean {
 function isTeamRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_record";
+}
+
+function isTeamComparison(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "team_compare";
 }
 
 function isTeamMatchupRecord(data: QueryResponse): boolean {
@@ -179,6 +185,14 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             sections={sections}
             metadata={data.result?.metadata}
             route={data.route}
+          />
+        );
+      }
+      if (isTeamComparison(data)) {
+        return (
+          <TeamComparisonSection
+            sections={sections}
+            metadata={data.result?.metadata}
           />
         );
       }
