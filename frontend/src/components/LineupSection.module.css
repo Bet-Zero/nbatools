@@ -1,0 +1,242 @@
+.section {
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: var(--space-4);
+}
+
+.heroCard {
+  position: relative;
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.heroCard::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--space-1);
+  background: linear-gradient(
+    180deg,
+    var(--team-primary),
+    var(--team-secondary)
+  );
+  content: "";
+}
+
+.heroHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.teamBadge {
+  max-width: min(100%, 22rem);
+}
+
+.heroText,
+.lineupText,
+.lineupBlock {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.lineupTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-h2);
+  font-weight: var(--weight-bold);
+  hyphens: auto;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+  margin-top: var(--space-2);
+}
+
+.contextChip {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1px var(--space-1);
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-input) 72%, transparent);
+  font-size: var(--font-small);
+  line-height: 1.35;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.memberList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.memberChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+}
+
+.memberAvatar {
+  flex: 0 0 auto;
+}
+
+.memberName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rankedList {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: var(--space-4);
+}
+
+.rankedRow {
+  display: grid;
+  grid-template-columns:
+    var(--space-12) minmax(0, 1fr)
+    minmax(calc(var(--space-16) * 1.25), calc(var(--space-16) * 2.75));
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--bg-card);
+  overflow-wrap: anywhere;
+}
+
+.topRankedRow {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border-default));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-card));
+  box-shadow: inset var(--space-1) 0 0 var(--accent);
+}
+
+.rank {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.topRankedRow .rank {
+  color: var(--accent);
+}
+
+.lineupIdentity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.teamMark {
+  flex: 0 0 auto;
+}
+
+.lineupName {
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.lineupBlock {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.metricBlock {
+  display: grid;
+  justify-items: end;
+  gap: var(--space-1);
+  min-width: calc(var(--space-16) * 1.25);
+  max-width: calc(var(--space-16) * 2.75);
+  text-align: right;
+}
+
+.metricValue {
+  max-width: 100%;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-stat-md);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.topRankedRow .metricValue {
+  color: var(--accent);
+}
+
+.metricLabel {
+  max-width: 100%;
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .rankedRow {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .metricBlock {
+    grid-column: 1 / -1;
+    justify-items: start;
+    min-width: 0;
+    max-width: 100%;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-2);
+    text-align: left;
+  }
+}
+
+@media (max-width: 540px) {
+  .heroHeader,
+  .lineupIdentity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
