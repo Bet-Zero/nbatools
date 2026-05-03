@@ -123,6 +123,49 @@
   text-align: right;
 }
 
+.edgeRow {
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+}
+
+.edgeTitle {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.edgeList {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.edgeChip {
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 760px) {
   .bucketGrid {
     grid-template-columns: minmax(0, 1fr);
@@ -134,6 +177,10 @@
   .bucketHeader {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .edgeRow {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .bucketCount {
