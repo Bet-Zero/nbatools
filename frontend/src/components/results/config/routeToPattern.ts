@@ -14,7 +14,17 @@ import type { QueryResponse } from "../../../api/types";
  */
 export type PatternConfig =
   | { type: "entity_summary"; sectionKey?: string }
-  | { type: "game_log"; sectionKey?: string; summaryKey?: string }
+  | {
+      type: "game_log";
+      sectionKey?: string;
+      summaryKey?: string;
+      fallbackSectionKey?: string;
+      mode?: "auto" | "player" | "team";
+      metricKey?: string;
+      preserveOrder?: boolean;
+      rawDetailTitle?: string;
+      detailSectionKeys?: string[];
+    }
   | {
       type: "leaderboard";
       sectionKey?: string;
@@ -35,6 +45,56 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
             { type: "game_log", sectionKey: "game_log", summaryKey: "summary" },
           ]
         : [{ type: "entity_summary", sectionKey: "summary" }];
+    case "player_game_finder":
+      return [
+        {
+          type: "game_log",
+          sectionKey: "finder",
+          mode: "player",
+          rawDetailTitle: "Player Game Detail",
+        },
+      ];
+    case "game_finder":
+      return [
+        {
+          type: "game_log",
+          sectionKey: "finder",
+          mode: "team",
+          rawDetailTitle: "Game Detail",
+        },
+      ];
+    case "top_player_games":
+      return [
+        {
+          type: "game_log",
+          sectionKey: "leaderboard",
+          mode: "player",
+          preserveOrder: true,
+          rawDetailTitle: "Top Player Games Detail",
+        },
+      ];
+    case "top_team_games":
+      return [
+        {
+          type: "game_log",
+          sectionKey: "leaderboard",
+          mode: "team",
+          preserveOrder: true,
+          rawDetailTitle: "Top Team Games Detail",
+        },
+      ];
+    case "game_summary":
+      return [
+        {
+          type: "game_log",
+          sectionKey: "game_log",
+          fallbackSectionKey: "summary",
+          summaryKey: "summary",
+          mode: "team",
+          rawDetailTitle: "Game Detail",
+          detailSectionKeys: ["summary", "by_season", "top_performers"],
+        },
+      ];
     case "season_leaders":
     case "season_team_leaders":
     case "team_record_leaderboard":
