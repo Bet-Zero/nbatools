@@ -4,13 +4,10 @@ import ComparisonSection from "./ComparisonSection";
 import CountSection from "./CountSection";
 import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
-import GameFinderSection from "./GameFinderSection";
-import GameSummarySection from "./GameSummarySection";
 import HeadToHeadSection from "./HeadToHeadSection";
 import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
 import PlayerComparisonSection from "./PlayerComparisonSection";
-import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerOnOffSection from "./PlayerOnOffSection";
 import PlayoffSection from "./PlayoffSection";
 import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
@@ -19,7 +16,6 @@ import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
 import TeamComparisonSection from "./TeamComparisonSection";
 import TeamRecordSection from "./TeamRecordSection";
-import TopGamesSection from "./TopGamesSection";
 import styles from "./ResultSections.module.css";
 
 interface Props {
@@ -48,23 +44,6 @@ function isPlayerComparison(data: QueryResponse): boolean {
   );
 }
 
-function isPlayerGameFinder(data: QueryResponse): boolean {
-  return (
-    data.route === "player_game_finder" ||
-    data.result?.metadata?.route === "player_game_finder"
-  );
-}
-
-function isGameSummary(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "game_summary";
-}
-
-function isGameFinder(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "game_finder";
-}
-
 function isTeamRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_record";
@@ -78,16 +57,6 @@ function isPlayerOnOff(data: QueryResponse): boolean {
 function isLineupSummary(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "lineup_summary";
-}
-
-function isTopPlayerGames(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "top_player_games";
-}
-
-function isTopTeamGames(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "top_team_games";
 }
 
 function isTeamComparison(data: QueryResponse): boolean {
@@ -144,14 +113,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             metadata={data.result?.metadata}
             queryClass={queryClass}
             route={data.route}
-          />
-        );
-      }
-      if (isGameSummary(data)) {
-        return (
-          <GameSummarySection
-            sections={sections}
-            metadata={data.result?.metadata}
           />
         );
       }
@@ -240,42 +201,8 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <SplitSummarySection sections={sections} />;
     case "finder":
-      if (isPlayerGameFinder(data)) {
-        return (
-          <PlayerGameFinderSection
-            sections={sections}
-            metadata={data.result?.metadata}
-          />
-        );
-      }
-      if (isGameFinder(data)) {
-        return (
-          <GameFinderSection
-            sections={sections}
-            metadata={data.result?.metadata}
-          />
-        );
-      }
       return <FinderSection sections={sections} />;
     case "leaderboard":
-      if (isTopPlayerGames(data)) {
-        return (
-          <TopGamesSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            mode="player"
-          />
-        );
-      }
-      if (isTopTeamGames(data)) {
-        return (
-          <TopGamesSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            mode="team"
-          />
-        );
-      }
       if (isPlayoffRoute(data)) {
         return (
           <PlayoffSection

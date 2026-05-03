@@ -99,6 +99,12 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           data={data}
           sectionKey={pattern.sectionKey}
           summaryKey={pattern.summaryKey}
+          fallbackSectionKey={pattern.fallbackSectionKey}
+          mode={pattern.mode}
+          metricKey={pattern.metricKey}
+          preserveOrder={pattern.preserveOrder}
+          rawDetailTitle={pattern.rawDetailTitle}
+          detailSectionKeys={pattern.detailSectionKeys}
         />
       );
     case "leaderboard":

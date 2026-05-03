@@ -1,17 +1,30 @@
 import type { ReactNode } from "react";
-import type { QueryResponse, SectionRow } from "../../../api/types";
+import type {
+  QueryResponse,
+  ResultMetadata,
+  SectionRow,
+} from "../../../api/types";
 import { formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
+import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultTable, {
   type ResultTableColumn,
   type ResultTableFooterRow,
 } from "../primitives/ResultTable";
 import styles from "./GameLogResult.module.css";
 
+type GameLogMode = "auto" | "player" | "team";
+
 interface Props {
   data: QueryResponse;
   sectionKey?: string;
   summaryKey?: string;
+  fallbackSectionKey?: string;
+  mode?: GameLogMode;
+  metricKey?: string;
+  preserveOrder?: boolean;
+  rawDetailTitle?: string;
+  detailSectionKeys?: string[];
 }
 
 interface SummaryItem {
@@ -25,6 +38,7 @@ const STAT_COLUMNS = [
   "pts",
   "reb",
   "ast",
+  "fg3m",
   "stl",
   "blk",
   "fg",
@@ -39,6 +53,7 @@ const TABLE_LABELS: Record<string, string> = {
   blk: "BLK",
   date: "Date",
   fg: "FG",
+  fg3m: "3PM",
   fg3: "3P",
   ft: "FT",
   location: "",
@@ -47,6 +62,7 @@ const TABLE_LABELS: Record<string, string> = {
   plus_minus: "+/-",
   pts: "PTS",
   reb: "REB",
+  score: "Score",
   stl: "STL",
   team: "TM",
   tov: "TOV",
@@ -66,15 +82,23 @@ export default function GameLogResult({
   data,
   sectionKey = "game_log",
   summaryKey = "summary",
+  fallbackSectionKey,
+  mode = "auto",
+  metricKey,
+  preserveOrder = false,
+  rawDetailTitle,
+  detailSectionKeys = [],
 }: Props) {
-  const rawRows = data.result?.sections?.[sectionKey] ?? [];
+  const rawRows = sectionRows(data, sectionKey, fallbackSectionKey);
   if (rawRows.length === 0) return null;
 
-  const rows = orderedRows(rawRows);
+  const rows = orderedRows(rawRows, preserveOrder);
   const summary = data.result?.sections?.[summaryKey]?.[0];
-  const columns = tableColumns(rows);
-  const footerRows = tableFooters(rows, summary);
-  const items = summaryItems(summary);
+  const resolvedMode = gameLogMode(rows, mode);
+  const metric = metricColumn(rows, data.result?.metadata, metricKey);
+  const columns = tableColumns(rows, data, resolvedMode);
+  const footerRows = summary ? tableFooters(rows, summary) : [];
+  const items = summary ? summaryItems(summary) : contextItems(data, rows);
 
   return (
     <section className={styles.pattern} aria-label="Game log result">
@@ -91,16 +115,31 @@ export default function GameLogResult({
       <ResultTable
         rows={rows}
         columns={columns}
+        highlightColumnKey={metric ?? undefined}
         footerRows={footerRows}
         ariaLabel="Game log"
         getRowKey={rowKey}
       />
+      {rawDetailTitle && <RawDetailToggle title={rawDetailTitle} rows={rows} />}
+      {detailSectionKeys.map((key) => {
+        const detailRows = data.result?.sections?.[key] ?? [];
+        if (detailRows.length === 0) return null;
+        return (
+          <RawDetailToggle
+            key={key}
+            title={detailTitle(key)}
+            rows={detailRows}
+          />
+        );
+      })}
     </section>
   );
 }
 
 function tableColumns(
   rows: SectionRow[],
+  data: QueryResponse,
+  mode: Exclude<GameLogMode, "auto">,
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
@@ -114,16 +153,30 @@ function tableColumns(
       header: TABLE_LABELS.date,
       render: (row) => textValue(row, "game_date") ?? "—",
     },
-    {
-      key: "player",
-      header: "Player",
-      render: playerCell,
-    },
-    {
+  ];
+
+  if (mode === "player") {
+    columns.push(
+      {
+        key: "player",
+        header: "Player",
+        render: playerCell,
+      },
+      {
+        key: "team",
+        header: TABLE_LABELS.team,
+        render: (row) => teamCell(row, data),
+      },
+    );
+  } else {
+    columns.push({
       key: "team",
-      header: TABLE_LABELS.team,
-      render: teamCell,
-    },
+      header: "Team",
+      render: (row) => teamCell(row, data),
+    });
+  }
+
+  columns.push(
     {
       key: "location",
       header: TABLE_LABELS.location,
@@ -133,9 +186,18 @@ function tableColumns(
     {
       key: "opponent",
       header: TABLE_LABELS.opponent,
-      render: opponentCell,
+      render: (row) => opponentCell(row, data),
     },
-  ];
+  );
+
+  if (hasScoreColumn(rows, mode)) {
+    columns.push({
+      key: "score",
+      header: TABLE_LABELS.score,
+      align: "center",
+      render: scoreCell,
+    });
+  }
 
   if (rows.some((row) => hasValue(row.wl))) {
     columns.push({
@@ -264,13 +326,53 @@ function addSummaryItem(
   items.push({ key, label, value: formatValue(row[key], key) });
 }
 
-function orderedRows(rows: SectionRow[]): SectionRow[] {
+function sectionRows(
+  data: QueryResponse,
+  sectionKey: string,
+  fallbackSectionKey: string | undefined,
+): SectionRow[] {
+  const rows = data.result?.sections?.[sectionKey] ?? [];
+  if (rows.length > 0 || !fallbackSectionKey) return rows;
+  return data.result?.sections?.[fallbackSectionKey] ?? [];
+}
+
+function orderedRows(rows: SectionRow[], preserveOrder: boolean): SectionRow[] {
+  if (preserveOrder) return [...rows];
   return [...rows].sort((a, b) => {
     const aDate = textValue(a, "game_date");
     const bDate = textValue(b, "game_date");
     if (aDate && bDate && aDate !== bDate) return bDate.localeCompare(aDate);
     return 0;
   });
+}
+
+function gameLogMode(
+  rows: SectionRow[],
+  mode: GameLogMode,
+): Exclude<GameLogMode, "auto"> {
+  if (mode !== "auto") return mode;
+  return rows.some(
+    (row) =>
+      hasValue(row.player_name) ||
+      hasValue(row.player) ||
+      hasValue(row.player_id),
+  )
+    ? "player"
+    : "team";
+}
+
+function metricColumn(
+  rows: SectionRow[],
+  metadata: ResultMetadata | undefined,
+  explicitMetric: string | undefined,
+): string | null {
+  if (explicitMetric && rows.some((row) => hasValue(row[explicitMetric]))) {
+    return explicitMetric;
+  }
+
+  const stat = metadataText(metadata, "stat");
+  if (stat && rows.some((row) => hasValue(row[stat]))) return stat;
+  return null;
 }
 
 function playerCell(row: SectionRow): ReactNode {
@@ -285,32 +387,77 @@ function playerCell(row: SectionRow): ReactNode {
   );
 }
 
-function teamCell(row: SectionRow): ReactNode {
+function teamCell(row: SectionRow, data: QueryResponse): ReactNode {
+  const teamContext = data.result?.metadata?.team_context;
   return (
     <span className={styles.teamCell}>
       <EntityIdentity
         kind="team"
-        teamId={identityId(row.team_id)}
-        teamAbbr={textValue(row, "team_abbr")}
-        teamName={textValue(row, "team_name")}
+        teamId={identityId(row.team_id) ?? teamContext?.team_id}
+        teamAbbr={textValue(row, "team_abbr") ?? teamContext?.team_abbr}
+        teamName={
+          textValue(row, "team_name") ??
+          textValue(row, "team") ??
+          teamContext?.team_name
+        }
         size="sm"
       />
     </span>
   );
 }
 
-function opponentCell(row: SectionRow): ReactNode {
+function opponentCell(row: SectionRow, data: QueryResponse): ReactNode {
+  const opponentContext = data.result?.metadata?.opponent_context;
   return (
     <span className={styles.teamCell}>
       <EntityIdentity
         kind="team"
-        teamId={identityId(row.opponent_team_id)}
-        teamAbbr={textValue(row, "opponent_team_abbr")}
-        teamName={textValue(row, "opponent_team_name")}
+        teamId={identityId(row.opponent_team_id) ?? opponentContext?.team_id}
+        teamAbbr={
+          textValue(row, "opponent_team_abbr") ??
+          textValue(row, "opponent") ??
+          opponentContext?.team_abbr
+        }
+        teamName={
+          textValue(row, "opponent_team_name") ??
+          textValue(row, "opponent") ??
+          opponentContext?.team_name
+        }
         size="sm"
       />
     </span>
   );
+}
+
+function hasScoreColumn(
+  rows: SectionRow[],
+  mode: Exclude<GameLogMode, "auto">,
+): boolean {
+  return rows.some((row) => {
+    if (hasValue(row.team_score) && hasValue(row.opponent_score)) return true;
+    if (mode === "team" && hasValue(row.pts) && hasValue(row.opponent_pts)) {
+      return true;
+    }
+    return false;
+  });
+}
+
+function scoreCell(row: SectionRow): string {
+  const teamScore =
+    numericValue(row, "team_score") ??
+    numericValue(row, "pts_team") ??
+    numericValue(row, "team_pts") ??
+    numericValue(row, "pts");
+  const opponentScore =
+    numericValue(row, "opponent_score") ??
+    numericValue(row, "opponent_pts") ??
+    numericValue(row, "opp_pts");
+
+  if (teamScore === null || opponentScore === null) return "—";
+  return `${formatValue(teamScore, "team_score")}-${formatValue(
+    opponentScore,
+    "opponent_score",
+  )}`;
 }
 
 function locationCell(row: SectionRow): string {
@@ -376,7 +523,15 @@ function numericValues(rows: SectionRow[], key: string): number[] {
 }
 
 function rowKey(row: SectionRow, index: number): string {
-  return String(row.game_id ?? `${row.game_date ?? "game"}-${index}`);
+  return [
+    row.game_id,
+    row.player_id,
+    row.team_id,
+    row.game_date,
+    index,
+  ]
+    .filter(hasValue)
+    .join("-");
 }
 
 function textValue(row: SectionRow, key: string): string | null {
@@ -390,6 +545,11 @@ function identityId(value: unknown): number | string | null {
   return typeof value === "number" || typeof value === "string" ? value : null;
 }
 
+function numericValue(row: SectionRow, key: string): number | null {
+  const value = row[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
 function isTruthyFlag(value: unknown): boolean {
   if (value === true || value === 1) return true;
   if (typeof value === "string") {
@@ -400,4 +560,137 @@ function isTruthyFlag(value: unknown): boolean {
 
 function hasValue(value: unknown): boolean {
   return value !== null && value !== undefined && value !== "";
+}
+
+function contextItems(data: QueryResponse, rows: SectionRow[]): SummaryItem[] {
+  const metadata = data.result?.metadata;
+  const items: SummaryItem[] = [
+    {
+      key: "games",
+      label: rows.length === 1 ? "Game" : "Games",
+      value: formatValue(rows.length, "games"),
+    },
+  ];
+
+  const condition = conditionText(metadata);
+  if (condition) {
+    items.push({ key: "condition", label: "Filter", value: condition });
+  }
+
+  const season = seasonText(metadata);
+  if (season) items.push({ key: "season", label: "Season", value: season });
+
+  const seasonType = metadataText(metadata, "season_type");
+  if (seasonType) {
+    items.push({ key: "season_type", label: "Type", value: seasonType });
+  }
+
+  return items;
+}
+
+function conditionText(metadata: ResultMetadata | undefined): string | null {
+  const conditions: string[] = [];
+  for (const key of ["threshold_conditions", "extra_conditions"]) {
+    const raw = metadata?.[key];
+    if (!Array.isArray(raw)) continue;
+    for (const condition of raw) {
+      if (!condition || typeof condition !== "object") continue;
+      const conditionRow = condition as Record<string, unknown>;
+      if (typeof conditionRow.stat !== "string") continue;
+      conditions.push(
+        formatCondition(
+          conditionRow.stat,
+          typeof conditionRow.min_value === "number"
+            ? conditionRow.min_value
+            : null,
+          typeof conditionRow.max_value === "number"
+            ? conditionRow.max_value
+            : null,
+        ),
+      );
+    }
+  }
+
+  if (conditions.length === 0) {
+    const occurrenceEvent = metadata?.occurrence_event;
+    if (
+      occurrenceEvent &&
+      typeof occurrenceEvent === "object" &&
+      !Array.isArray(occurrenceEvent)
+    ) {
+      const event = occurrenceEvent as Record<string, unknown>;
+      if (typeof event.stat === "string") {
+        conditions.push(
+          formatCondition(
+            event.stat,
+            typeof event.min_value === "number" ? event.min_value : null,
+            typeof event.max_value === "number" ? event.max_value : null,
+          ),
+        );
+      }
+    }
+  }
+
+  if (conditions.length === 0) {
+    const stat = metadataText(metadata, "stat");
+    if (stat) {
+      conditions.push(
+        formatCondition(
+          stat,
+          metadataNumber(metadata, "min_value"),
+          metadataNumber(metadata, "max_value"),
+        ),
+      );
+    }
+  }
+
+  return conditions.length > 0 ? Array.from(new Set(conditions)).join(", ") : null;
+}
+
+function formatCondition(
+  stat: string,
+  minValue: number | null,
+  maxValue: number | null,
+): string {
+  const label = TABLE_LABELS[stat] ?? stat.toUpperCase();
+  if (minValue !== null && maxValue !== null) {
+    return `${formatValue(minValue, stat)}-${formatValue(maxValue, stat)} ${label}`;
+  }
+  if (minValue !== null) return `${formatValue(minValue, stat)}+ ${label}`;
+  if (maxValue !== null) return `<= ${formatValue(maxValue, stat)} ${label}`;
+  return label;
+}
+
+function seasonText(metadata: ResultMetadata | undefined): string | null {
+  const start = metadataText(metadata, "start_season");
+  const end = metadataText(metadata, "end_season");
+  if (start && end) return start === end ? start : `${start} to ${end}`;
+  return metadataText(metadata, "season") ?? start ?? end;
+}
+
+function metadataText(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): string | null {
+  const value = metadata?.[key];
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function metadataNumber(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): number | null {
+  const value = metadata?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function detailTitle(key: string): string {
+  const labels: Record<string, string> = {
+    by_season: "By Season Detail",
+    summary: "Summary Detail",
+    top_performers: "Top Performers Detail",
+  };
+  return labels[key] ?? `${key.replace(/_/g, " ")} Detail`;
 }

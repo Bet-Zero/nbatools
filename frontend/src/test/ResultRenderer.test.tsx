@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { QueryResponse } from "../api/types";
 import ResultRenderer from "../components/results/ResultRenderer";
@@ -520,5 +520,302 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "Appearances" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Playoff leaderboard rankings")).not.toBeInTheDocument();
+  });
+
+  it("renders player game finder rows through the game-log pattern", () => {
+    const data = makeResponse({
+      query: "games where Jokic had over 25 points and 10 rebounds",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {
+          query_text: "games where Jokic had over 25 points and 10 rebounds",
+          route: "player_game_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "pts",
+          min_value: 25.0001,
+          threshold_conditions: [
+            { stat: "pts", min_value: 25.0001, max_value: null },
+          ],
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              rank: 1,
+              game_id: 1,
+              game_date: "2026-03-22",
+              player_id: 203999,
+              player_name: "Nikola Jokic",
+              team_id: 1610612743,
+              team_abbr: "DEN",
+              team_name: "Denver Nuggets",
+              opponent_team_id: 1610612757,
+              opponent_team_abbr: "POR",
+              opponent_team_name: "Portland Trail Blazers",
+              is_home: 1,
+              wl: "W",
+              minutes: 35,
+              pts: 32,
+              reb: 14,
+              ast: 10,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Player" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "PTS" })).toBeInTheDocument();
+    expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
+    expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Player game cards")).not.toBeInTheDocument();
+  });
+
+  it("renders team game finder rows without a player column", () => {
+    const data = makeResponse({
+      query: "Celtics recent games",
+      route: "game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {
+          query_text: "Celtics recent games",
+          route: "game_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              rank: 1,
+              game_id: 1,
+              game_date: "2026-04-12",
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              opponent_team_abbr: "ORL",
+              opponent_team_name: "Orlando Magic",
+              is_home: 1,
+              wl: "W",
+              pts: 113,
+              opponent_pts: 108,
+              reb: 46,
+              ast: 24,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByRole("columnheader", { name: "Team" })).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Player" })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Score" })).toBeInTheDocument();
+    expect(screen.getByText("113-108")).toBeInTheDocument();
+    expect(screen.getByText("Game Detail")).toBeInTheDocument();
+  });
+
+  it("renders top player games in leaderboard order through the game-log pattern", () => {
+    const data = makeResponse({
+      query: "highest scoring games this season",
+      route: "top_player_games",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "highest scoring games this season",
+          route: "top_player_games",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "pts",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Bam Adebayo",
+              player_id: 1628389,
+              team_abbr: "MIA",
+              game_date: "2026-03-10",
+              game_id: 1,
+              pts: 83,
+              reb: 9,
+              ast: 3,
+              opponent_team_abbr: "WAS",
+              is_home: 1,
+              wl: "W",
+            },
+            {
+              rank: 2,
+              player_name: "Luka Doncic",
+              player_id: 1629029,
+              team_abbr: "LAL",
+              game_date: "2026-03-19",
+              game_id: 2,
+              pts: 60,
+              reb: 7,
+              ast: 3,
+              opponent_team_abbr: "MIA",
+              is_away: 1,
+              wl: "W",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const rows = screen.getAllByRole("row");
+    expect(within(rows[1]).getByText("Bam Adebayo")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("Luka Doncic")).toBeInTheDocument();
+    expect(screen.getByText("Top Player Games Detail")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Ranked player games")).not.toBeInTheDocument();
+  });
+
+  it("renders top team games with team identity and score", () => {
+    const data = makeResponse({
+      query: "top team scoring games",
+      route: "top_team_games",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "top team scoring games",
+          route: "top_team_games",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "pts",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Denver Nuggets",
+              team_abbr: "DEN",
+              game_date: "2026-02-20",
+              game_id: 1,
+              pts: 157,
+              opponent_pts: 103,
+              opponent_team_abbr: "POR",
+              is_away: 1,
+              wl: "W",
+              reb: 60,
+              ast: 41,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByRole("columnheader", { name: "Team" })).toBeInTheDocument();
+    expect(screen.getByText("Denver Nuggets")).toBeInTheDocument();
+    expect(screen.getByText("157-103")).toBeInTheDocument();
+    expect(screen.getByText("Top Team Games Detail")).toBeInTheDocument();
+  });
+
+  it("renders single-game team summaries as game logs with detail sections", () => {
+    const data = makeResponse({
+      query: "Celtics recent game",
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Celtics recent game",
+          route: "game_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              games: 1,
+              wins: 1,
+              losses: 0,
+              pts_avg: 113,
+              pts_sum: 113,
+              reb_avg: 46,
+              reb_sum: 46,
+              ast_avg: 24,
+              ast_sum: 24,
+            },
+          ],
+          by_season: [{ season: "2025-26", games: 1, pts_avg: 113 }],
+          game_log: [
+            {
+              game_date: "2026-04-12",
+              game_id: 1,
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              opponent_team_abbr: "ORL",
+              opponent_team_name: "Orlando Magic",
+              is_home: 1,
+              wl: "W",
+              pts: 113,
+              opponent_pts: 108,
+              reb: 46,
+              ast: 24,
+            },
+          ],
+          top_performers: [
+            {
+              leader_type: "pts",
+              leader_label: "Points",
+              player_name: "Baylor Scheierman",
+              value: 30,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByText("Boston Celtics")).toBeInTheDocument();
+    expect(screen.getByText("113-108")).toBeInTheDocument();
+    expect(screen.getByText("Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("By Season Detail")).toBeInTheDocument();
+    expect(screen.getByText("Top Performers Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Top player performers")).not.toBeInTheDocument();
   });
 });

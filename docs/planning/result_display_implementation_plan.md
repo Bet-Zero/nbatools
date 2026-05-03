@@ -244,7 +244,7 @@ No new pattern code unless a route exposes a real gap.
 
 ---
 
-### 5. `[ ]` Migrate the game-log family
+### 5. `[x]` Migrate the game-log family
 
 **Scope:**
 
