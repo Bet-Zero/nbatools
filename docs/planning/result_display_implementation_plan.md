@@ -304,7 +304,7 @@ context), some context still needs polish to match the map's
 
 ---
 
-## 5. `[ ]` `team_record` route polish
+## 5. `[x]` `team_record` route polish
 
 **Why:** Match the map's `Should show:` for `team_record`: tighter hero,
 opponent-scoped context surfaced clearly, no duplicate detail blocks
