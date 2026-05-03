@@ -347,4 +347,178 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("882")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
   });
+
+  it("renders player stretch leaderboards through the leaderboard pattern", () => {
+    const data = makeResponse({
+      query: "best 3-game scoring stretches this season",
+      route: "player_stretch_leaderboard",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "best 3-game scoring stretches this season",
+          route: "player_stretch_leaderboard",
+          season: "2025-26",
+          season_type: "Regular Season",
+          window_size: 3,
+          stretch_metric: "pts",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Luka Doncic",
+              player_id: 1629029,
+              team_abbr: "LAL",
+              window_size: 3,
+              stretch_metric: "pts",
+              window_start_date: "2026-03-16",
+              window_end_date: "2026-03-19",
+              games_in_window: 3,
+              stretch_value: 45.333,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Luka Doncic averaged the most points per game in the 2025-26 regular season, with 45.3 per game.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "PPG" })).toBeInTheDocument();
+    expect(screen.queryByText("Stretch Games")).not.toBeInTheDocument();
+  });
+
+  it("renders occurrence leaderboards without the old card-row detail toggle", () => {
+    const data = makeResponse({
+      query: "teams with most 120-point games this season",
+      route: "team_occurrence_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "teams with most 120-point games this season",
+          route: "team_occurrence_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_abbr: "DEN",
+              games_played: 82,
+              "games_pts_120+": 55,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Games PTS 120+" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("DEN").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+  });
+
+  it("renders lineup leaderboards as dense rows with the lineup identity", () => {
+    const data = makeResponse({
+      query: "best 3-man units this season",
+      route: "lineup_leaderboard",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "best 3-man units this season",
+          route: "lineup_leaderboard",
+          season: "2025-26",
+          season_type: "Regular Season",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              lineup_members: ["Jayson Tatum", "Jaylen Brown", "Derrick White"],
+              team_abbr: "BOS",
+              games: 22,
+              minutes: 240,
+              net_rating: 18.5,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText("Jayson Tatum / Jaylen Brown / Derrick White"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Net" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "TM" })).toBeInTheDocument();
+  });
+
+  it("renders playoff appearances as a leaderboard pattern", () => {
+    const data = makeResponse({
+      query: "most playoff appearances",
+      route: "playoff_appearances",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "most playoff appearances",
+          route: "playoff_appearances",
+          season_type: "Playoffs",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_abbr: "MIA",
+              team_name: "Miami Heat",
+              appearances: 23,
+              round: "Playoffs",
+              seasons: "1996-97 to 2024-25",
+            },
+          ],
+        },
+        current_through: "2025-06-22",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Miami Heat had the most playoff appearances from 1996-97 to 2024-25, with 23.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Appearances" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Playoff leaderboard rankings")).not.toBeInTheDocument();
+  });
 });
