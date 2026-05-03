@@ -7,7 +7,6 @@ import FinderSection from "./FinderSection";
 import GameFinderSection from "./GameFinderSection";
 import GameSummarySection from "./GameSummarySection";
 import HeadToHeadSection from "./HeadToHeadSection";
-import LeaderboardSection from "./LeaderboardSection";
 import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
 import OccurrenceLeaderboardSection from "./OccurrenceLeaderboardSection";
@@ -348,7 +347,7 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           />
         );
       }
-      return <LeaderboardSection sections={sections} />;
+      return renderFallback(sections);
     case "streak":
       if (isOwnedStreak(data)) {
         return (

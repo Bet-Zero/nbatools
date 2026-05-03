@@ -125,7 +125,7 @@ intentional and short-term.
 Each item below builds one pattern, migrates its target routes, ships,
 and pauses for user validation before the next item.
 
-### 2. `[ ]` `LeaderboardResult` + migrate `season_leaders`, `season_team_leaders`
+### 2. `[x]` `LeaderboardResult` + migrate `season_leaders`, `season_team_leaders`
 
 **Why:** Most-used class. Cleanest StatMuse reference (`most ppg in
 2025 playoffs`). If this pattern can't be made to feel right, the

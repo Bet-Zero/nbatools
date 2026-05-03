@@ -1,0 +1,19 @@
+.pattern {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.entityFallback {
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.teamCell {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 16rem;
+}
