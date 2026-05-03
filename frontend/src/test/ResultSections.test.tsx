@@ -500,6 +500,157 @@ describe("ResultSections", () => {
     await openRawTable("Stretch Games");
   });
 
+  it("routes top player games to ranked game cards", async () => {
+    const data = makeResponse({
+      route: "top_player_games",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "top_player_games",
+          season: "2005-06",
+          season_type: "Regular Season",
+          stat: "pts",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_id: 977,
+              player_name: "Kobe Bryant",
+              team_id: 1610612747,
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+              game_date: "2006-01-22",
+              game_id: "0020500591",
+              pts: 81,
+              opponent_team_abbr: "TOR",
+              opponent_team_name: "Toronto Raptors",
+              is_home: 1,
+              is_away: 0,
+              wl: "W",
+              season: "2005-06",
+              season_type: "Regular Season",
+              minutes: 42,
+              reb: 6,
+              ast: 2,
+              fgm: 28,
+              fga: 46,
+              fg3m: 7,
+              fg3a: 13,
+              ftm: 18,
+              fta: 20,
+              stl: 3,
+              blk: 1,
+              tov: 3,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Top Player Games")).toBeInTheDocument();
+    const ranked = screen.getByLabelText("Ranked player games");
+    expect(within(ranked).getByText("#1")).toBeInTheDocument();
+    expect(within(ranked).getByText("Kobe Bryant")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("Kobe Bryant avatar")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("Los Angeles Lakers (LAL)")).toBeInTheDocument();
+    expect(within(ranked).getByText("2006-01-22")).toBeInTheDocument();
+    expect(within(ranked).getByText("vs TOR")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("Result W")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("81").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("REB").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("AST").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("MIN").length).toBeGreaterThan(0);
+    expect(within(ranked).getByText("28/46")).toBeInTheDocument();
+    expect(within(ranked).getByText("7/13")).toBeInTheDocument();
+    expect(within(ranked).getByText("18/20")).toBeInTheDocument();
+
+    const detail = screen.getByRole("region", {
+      name: "Top Player Games Detail",
+    });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("Top Player Games Detail");
+  });
+
+  it("routes top team games to ranked team game cards", async () => {
+    const data = makeResponse({
+      route: "top_team_games",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "top_team_games",
+          season: "2024-25",
+          season_type: "Regular Season",
+          stat: "pts",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              game_date: "2025-03-01",
+              game_id: "0022400888",
+              pts: 150,
+              opponent_pts: 112,
+              opponent_team_id: 1610612748,
+              opponent_team_abbr: "MIA",
+              opponent_team_name: "Miami Heat",
+              is_home: 0,
+              is_away: 1,
+              wl: "W",
+              season: "2024-25",
+              season_type: "Regular Season",
+              reb: 51,
+              ast: 38,
+              fgm: 55,
+              fga: 93,
+              fg3m: 22,
+              fg3a: 49,
+              ftm: 18,
+              fta: 20,
+              tov: 10,
+              plus_minus: 38,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Top Team Games")).toBeInTheDocument();
+    const ranked = screen.getByLabelText("Ranked team games");
+    expect(within(ranked).getByText("#1")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("Miami Heat (MIA)")).toBeInTheDocument();
+    expect(within(ranked).getByText("150-112")).toBeInTheDocument();
+    expect(within(ranked).getByText("at MIA")).toBeInTheDocument();
+    expect(within(ranked).getByLabelText("Result W")).toBeInTheDocument();
+    expect(within(ranked).getAllByText("150").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("REB").length).toBeGreaterThan(0);
+    expect(within(ranked).getAllByText("AST").length).toBeGreaterThan(0);
+    expect(within(ranked).getByText("22/49")).toBeInTheDocument();
+    expect(within(ranked).getByText("+38")).toBeInTheDocument();
+
+    const detail = screen.getByRole("region", {
+      name: "Top Team Games Detail",
+    });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("Top Team Games Detail");
+  });
+
   it("renders a scoring sparkline and recent games from player game logs", () => {
     const data = makeResponse({
       result: {

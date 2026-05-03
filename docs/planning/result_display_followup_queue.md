@@ -143,7 +143,7 @@ stretch length, date range, or included games visually obvious.
 
 ---
 
-## 6. `[ ]` Top game leaderboards
+## 6. `[x]` Top game leaderboards
 
 **Routes:** `top_player_games`, `top_team_games`
 

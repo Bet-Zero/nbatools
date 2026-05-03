@@ -467,30 +467,22 @@ expectation is:
   - Each row should show rank, team logo, team name, occurrence count, season, games played, threshold/condition, and record when available.
   - Keep `Full Occurrence Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `top_player_games` `[~]`
+### `top_player_games` `[x]`
 - **Example queries:**
   - `top 10 scoring games this season`
 - **Currently shows (shipped):**
-  - Generic `LeaderboardSection` ranked rows with identity and requested metric.
-  - It does not yet use a game-log leaderboard layout with date, matchup, W/L, and box-score stat context as the primary display.
-- **Follow-up note:** Needs a dedicated top-player-games display; queued in `result_display_followup_queue.md`.
-- **Should show:**
-  - Ranked game-log leaderboard.
-  - Each row should show rank, player headshot, player name, date, team/opponent, W/L, main metric, and supporting box-score stats.
-  - Supporting stats should include REB, AST, MIN, FG, 3P, FT, STL, BLK, and TOV when available.
-  - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
+  - Dedicated ranked player-game leaderboard cards.
+  - Each row shows rank, player headshot/name, team badge, date, opponent/location, W/L when available, requested metric, and supporting box-score stats.
+  - Supporting stats include REB, AST, MIN, FG, 3P, FT, STL, BLK, and TOV when available.
+  - Raw rows remain available behind the shared collapsed `RawDetailToggle`.
 
-### `top_team_games` `[~]`
+### `top_team_games` `[x]`
 - **Example queries:**
   - `top 10 team scoring games this season`
 - **Currently shows (shipped):**
-  - Generic `LeaderboardSection` ranked rows with team identity and requested metric.
-  - It does not yet use a team-game leaderboard layout with date, opponent, W/L, score, and supporting team stats as the primary display.
-- **Follow-up note:** Needs a dedicated top-team-games display; queued in `result_display_followup_queue.md`.
-- **Should show:**
-  - Team version of `top_player_games`.
-  - Each row should show rank, team logo, team name, date, opponent, W/L, score, main metric, and supporting team stats.
-  - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
+  - Dedicated ranked team-game leaderboard cards.
+  - Each row shows rank, team badge/name, date, opponent/location, W/L, score when available, requested metric, and supporting team stats.
+  - Raw rows remain available behind the shared collapsed `RawDetailToggle`.
 
 ---
 

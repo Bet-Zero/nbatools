@@ -667,6 +667,27 @@ class TestTopPlayerGamesEmptySample:
         assert result.notes == ["No games matched the specified filters"]
 
 
+class TestTopPlayerGamesOutputContext:
+    def test_output_includes_game_context_and_supporting_stats(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv",
+            _make_player_game_rows(),
+        )
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_player_team_wl_rows(),
+        )
+
+        result = top_player_games_build(season="2099-00", stat="pts", limit=5)
+
+        assert isinstance(result, LeaderboardResult)
+        columns = set(result.leaders.columns)
+        assert {"wl", "minutes", "reb", "ast", "fgm", "fga", "fg3m", "fg3a", "tov"}.issubset(
+            columns
+        )
+
+
 # ---------------------------------------------------------------------------
 # top_team_games filter contract tests
 # ---------------------------------------------------------------------------
@@ -707,3 +728,18 @@ class TestTopTeamGamesEmptySample:
         assert isinstance(result, NoResult)
         assert result.result_reason == "no_match"
         assert result.notes == ["No games matched the specified filters"]
+
+
+class TestTopTeamGamesOutputContext:
+    def test_output_includes_score_context_and_supporting_stats(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_csv(
+            tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv",
+            _make_team_game_rows(),
+        )
+
+        result = top_team_games_build(season="2099-00", stat="ast", limit=5)
+
+        assert isinstance(result, LeaderboardResult)
+        columns = set(result.leaders.columns)
+        assert {"pts", "reb", "fgm", "fga", "fg3m", "fg3a", "tov", "plus_minus"}.issubset(columns)
