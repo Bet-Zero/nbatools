@@ -118,7 +118,7 @@ rating metrics to be primary.
 
 ---
 
-## 5. `[ ]` `player_stretch_leaderboard` display
+## 5. `[x]` `player_stretch_leaderboard` display
 
 **Route:** `player_stretch_leaderboard`
 
