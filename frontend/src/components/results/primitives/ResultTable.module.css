@@ -1,0 +1,101 @@
+.tableScroll {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--font-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.table tbody tr:first-child td {
+  border-top: none;
+}
+
+.table tbody tr:hover td {
+  background: color-mix(
+    in srgb,
+    var(--accent) 8%,
+    var(--surface-elevated)
+  );
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.alignLeft {
+  text-align: left;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+/* Visual emphasis for the queried metric column. */
+.highlightCell {
+  background: color-mix(
+    in srgb,
+    var(--accent) 12%,
+    transparent
+  );
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.table thead th.highlightCell {
+  background: color-mix(
+    in srgb,
+    var(--accent) 18%,
+    var(--surface-elevated)
+  );
+}
+
+/* Footer rows for Average / Total in game-log style tables. */
+.footerRow td {
+  background: color-mix(
+    in srgb,
+    var(--surface-base) 60%,
+    var(--surface-elevated)
+  );
+  border-top: 1px solid var(--border-subtle);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.footerRow:first-of-type td {
+  border-top: 2px solid var(--border-subtle);
+}
