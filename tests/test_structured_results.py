@@ -488,6 +488,162 @@ class TestBuildResultGameSummary:
         assert first_game["opponent_team_abbr"] == "MIA"
         assert first_game["opponent_pts"] == 110
 
+    def test_to_dict_includes_top_player_performers(self):
+        from nbatools.commands.game_summary import build_result
+
+        team_df = pd.DataFrame(
+            [
+                {
+                    "game_id": "001",
+                    "game_date": "2025-01-15",
+                    "season": "2024-25",
+                    "season_type": "Regular Season",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_id": 1610612748,
+                    "opponent_team_abbr": "MIA",
+                    "opponent_team_name": "Miami Heat",
+                    "is_home": 1,
+                    "is_away": 0,
+                    "wl": "W",
+                    "pts": 118,
+                    "reb": 44,
+                    "ast": 29,
+                    "plus_minus": 8,
+                }
+            ]
+        )
+        player_df = pd.DataFrame(
+            [
+                {
+                    "game_id": "001",
+                    "game_date": "2025-01-15",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_abbr": "MIA",
+                    "wl": "W",
+                    "player_id": 1628369,
+                    "player_name": "Jayson Tatum",
+                    "pts": 38,
+                    "reb": 5,
+                    "ast": 4,
+                    "minutes": 36,
+                },
+                {
+                    "game_id": "001",
+                    "game_date": "2025-01-15",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_abbr": "MIA",
+                    "wl": "W",
+                    "player_id": 201143,
+                    "player_name": "Al Horford",
+                    "pts": 12,
+                    "reb": 16,
+                    "ast": 2,
+                    "minutes": 31,
+                },
+                {
+                    "game_id": "001",
+                    "game_date": "2025-01-15",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_abbr": "MIA",
+                    "wl": "W",
+                    "player_id": 1627759,
+                    "player_name": "Jaylen Brown",
+                    "pts": 20,
+                    "reb": 6,
+                    "ast": 13,
+                    "minutes": 34,
+                },
+            ]
+        )
+
+        result = build_result(
+            season="2024-25",
+            team="BOS",
+            df=team_df,
+            player_df=player_df,
+        )
+        d = result.to_dict()
+
+        assert list(d["sections"]) == [
+            "summary",
+            "by_season",
+            "game_log",
+            "top_performers",
+        ]
+        rows = d["sections"]["top_performers"]
+        assert [row["leader_type"] for row in rows] == ["pts", "reb", "ast"]
+        assert rows[0]["leader_label"] == "Points"
+        assert rows[0]["player_name"] == "Jayson Tatum"
+        assert rows[0]["value"] == 38
+        assert rows[1]["player_name"] == "Al Horford"
+        assert rows[1]["value"] == 16
+        assert rows[2]["player_name"] == "Jaylen Brown"
+        assert rows[2]["value"] == 13
+
+        sections = parse_labeled_sections(result.to_labeled_text())
+        assert "TOP_PERFORMERS" in sections
+
+    def test_to_dict_caveats_when_top_player_performers_unavailable(self):
+        from nbatools.commands.game_summary import build_result
+
+        team_df = pd.DataFrame(
+            [
+                {
+                    "game_id": "001",
+                    "game_date": "2025-01-15",
+                    "season": "2024-25",
+                    "season_type": "Regular Season",
+                    "team_id": 1610612738,
+                    "team_abbr": "BOS",
+                    "team_name": "Boston Celtics",
+                    "opponent_team_id": 1610612748,
+                    "opponent_team_abbr": "MIA",
+                    "opponent_team_name": "Miami Heat",
+                    "is_home": 1,
+                    "is_away": 0,
+                    "wl": "W",
+                    "pts": 118,
+                    "plus_minus": 8,
+                }
+            ]
+        )
+        player_df = pd.DataFrame(
+            [
+                {
+                    "game_id": "999",
+                    "game_date": "2025-01-15",
+                    "team_id": 1610612747,
+                    "player_id": 2544,
+                    "player_name": "LeBron James",
+                    "pts": 30,
+                    "reb": 8,
+                    "ast": 9,
+                }
+            ]
+        )
+
+        result = build_result(
+            season="2024-25",
+            team="BOS",
+            df=team_df,
+            player_df=player_df,
+        )
+        d = result.to_dict()
+
+        assert "top_performers" not in d["sections"]
+        assert any(
+            "top player performers unavailable: no player rows matched" in caveat
+            for caveat in d["caveats"]
+        )
+
     def test_to_dict_omits_game_log_for_unbounded_team_summary(self):
         from nbatools.commands.game_summary import build_result
 

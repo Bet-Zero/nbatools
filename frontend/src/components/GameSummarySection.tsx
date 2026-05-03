@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { ResultMetadata, SectionRow } from "../api/types";
 import {
+  Avatar,
   Card,
   SectionHeader,
   StatBlock,
@@ -8,12 +9,13 @@ import {
   type StatProps,
 } from "../design-system";
 import {
+  resolvePlayerIdentity,
   resolveScopedTeamTheme,
   resolveTeamIdentity,
 } from "../lib/identity";
 import RawDetailToggle from "./RawDetailToggle";
 import TeamGameCards from "./TeamGameCards";
-import { formatValue } from "./tableFormatting";
+import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./GameSummarySection.module.css";
 
 interface Props {
@@ -173,6 +175,131 @@ function summaryStats(row: SectionRow | undefined): StatProps[] {
   return stats.slice(0, 6);
 }
 
+function playerIdentity(row: SectionRow) {
+  const name = textValue(row, "player_name") ?? "Player";
+  return resolvePlayerIdentity({
+    playerId: identityId(row.player_id),
+    playerName: name,
+  });
+}
+
+function performerTeamIdentity(row: SectionRow) {
+  const abbr = textValue(row, "team_abbr") ?? textValue(row, "team");
+  const name = textValue(row, "team_name") ?? abbr ?? "Team";
+  return resolveTeamIdentity({
+    teamId: identityId(row.team_id),
+    teamAbbr: abbr,
+    teamName: name,
+  });
+}
+
+function statColumns(count: number): 1 | 2 | 3 | 4 {
+  if (count >= 4) return 4;
+  if (count === 3) return 3;
+  if (count === 2) return 2;
+  return 1;
+}
+
+function performerStats(row: SectionRow): StatProps[] {
+  const leaderType = textValue(row, "leader_type");
+  const stats: StatProps[] = [];
+  const candidates = [
+    { key: "pts", label: "PTS" },
+    { key: "reb", label: "REB" },
+    { key: "ast", label: "AST" },
+    { key: "minutes", label: "MIN" },
+  ];
+
+  for (const { key, label } of candidates) {
+    if (numericValue(row, key) === null) continue;
+    stats.push({
+      label,
+      value: formatValue(row[key], key),
+      semantic: leaderType === key ? "accent" : "neutral",
+    });
+  }
+
+  return stats;
+}
+
+function performerContext(row: SectionRow): string[] {
+  const opponent = textValue(row, "opponent_team_abbr");
+  return [
+    textValue(row, "game_date"),
+    opponent ? `vs ${opponent}` : null,
+    textValue(row, "wl"),
+  ].filter((item): item is string => Boolean(item));
+}
+
+function performerKey(row: SectionRow, index: number): string {
+  return `${textValue(row, "leader_type") ?? "leader"}-${textValue(row, "player_name") ?? "player"}-${index}`;
+}
+
+function TopPerformers({ rows }: { rows: SectionRow[] }) {
+  return (
+    <div className={styles.performerGrid} aria-label="Top player performers">
+      {rows.map((row, index) => {
+        const leaderType = textValue(row, "leader_type") ?? "value";
+        const label =
+          textValue(row, "leader_label") ?? formatColHeader(leaderType);
+        const value = row.value ?? row[leaderType];
+        const player = playerIdentity(row);
+        const playerName = player.playerName ?? "Player";
+        const team = performerTeamIdentity(row);
+        const teamName = team.teamName ?? team.teamAbbr ?? "Team";
+        const stats = performerStats(row);
+        const context = performerContext(row);
+
+        return (
+          <article className={styles.performerCard} key={performerKey(row, index)}>
+            <div className={styles.performerTopline}>
+              <div className={styles.performerLabel}>{label}</div>
+              <div className={styles.performerValue}>
+                {formatValue(value, leaderType)}
+              </div>
+            </div>
+            <div className={styles.performerIdentity}>
+              <Avatar
+                className={styles.performerAvatar}
+                name={playerName}
+                imageUrl={player.headshotUrl}
+                size="md"
+              />
+              <div className={styles.performerText}>
+                <div className={styles.performerName}>{playerName}</div>
+                <div className={styles.performerTeam}>
+                  <TeamBadge
+                    abbreviation={team.teamAbbr ?? undefined}
+                    name={teamName}
+                    logoUrl={team.logoUrl}
+                    size="sm"
+                    className={styles.performerTeamBadge}
+                    style={(team.styleVars ?? undefined) as
+                      | CSSProperties
+                      | undefined}
+                  />
+                </div>
+                {context.length > 0 && (
+                  <div className={styles.performerContext}>
+                    {context.map((item) => (
+                      <span className={styles.performerContextChip} key={item}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            {stats.length > 0 && (
+              <StatBlock stats={stats} columns={statColumns(stats.length)} />
+            )}
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 function AggregateSummary({
   metadata,
   row,
@@ -231,6 +358,7 @@ export default function GameSummarySection({ sections, metadata }: Props) {
   const summary = sections.summary;
   const bySeason = sections.by_season;
   const gameLog = sections.game_log;
+  const topPerformers = sections.top_performers;
   const summaryRow = summary?.[0];
 
   return (
@@ -250,6 +378,19 @@ export default function GameSummarySection({ sections, metadata }: Props) {
           <AggregateSummary metadata={metadata} row={summaryRow} />
         ) : null}
       </div>
+
+      {topPerformers && topPerformers.length > 0 && (
+        <div className={styles.section}>
+          <SectionHeader
+            title="Top Performers"
+            count={`${topPerformers.length} leader${
+              topPerformers.length !== 1 ? "s" : ""
+            }`}
+          />
+          <TopPerformers rows={topPerformers} />
+          <RawDetailToggle title="Top Performers Detail" rows={topPerformers} />
+        </div>
+      )}
 
       {summary && summary.length > 0 && (
         <div className={styles.section}>

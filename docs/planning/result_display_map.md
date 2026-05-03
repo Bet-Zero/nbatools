@@ -179,13 +179,14 @@ expectation is:
   - A difference/edge row is useful when there are exactly two buckets.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `game_summary` `[~]`
+### `game_summary` `[x]`
 - **Example queries:**
   - `Lakers Celtics last night`
 - **Currently shows (shipped):**
   - `GameSummarySection` renders `game_log` rows as team game cards with team/opponent logos, date, home/away matchup, W/L, score when available, margin, and core team stats.
   - Aggregate-only summaries fall back to a team/opponent summary hero with record/sample and team stat context.
-- **Follow-up note:** The display still cannot show top player performers because `game_summary` does not return player leader rows yet.
+  - When the game sample can be matched to player box-score rows, `GameSummarySection` renders supplied points, rebounds, and assists leaders as top performer cards with player headshots, team identity, context, and supporting PTS/REB/AST/MIN stats.
+  - When player box-score rows are unavailable or cannot be matched, the engine reports an explicit caveat instead of synthesizing client-side leaders.
 - **Should show:**
   - Game box-score style result.
   - Final score hero with team logos, team names, date, and W/L.

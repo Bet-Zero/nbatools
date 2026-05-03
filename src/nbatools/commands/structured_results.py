@@ -138,6 +138,7 @@ class SummaryResult:
     summary: pd.DataFrame = field(default_factory=lambda: pd.DataFrame())
     by_season: pd.DataFrame | None = None
     game_log: pd.DataFrame | None = None
+    top_performers: pd.DataFrame | None = None
     result_status: str = "ok"
     result_reason: str | None = None
     current_through: str | None = None
@@ -154,6 +155,9 @@ class SummaryResult:
         if self.by_season is not None and not self.by_season.empty:
             parts.append("BY_SEASON\n")
             parts.append(self.by_season.to_csv(index=False))
+        if self.top_performers is not None and not self.top_performers.empty:
+            parts.append("TOP_PERFORMERS\n")
+            parts.append(self.top_performers.to_csv(index=False))
         return "".join(parts)
 
     def to_dict(self) -> dict[str, Any]:
@@ -174,6 +178,8 @@ class SummaryResult:
             out["sections"]["by_season"] = _df_to_records(self.by_season)
         if self.game_log is not None and not self.game_log.empty:
             out["sections"]["game_log"] = _df_to_records(self.game_log)
+        if self.top_performers is not None and not self.top_performers.empty:
+            out["sections"]["top_performers"] = _df_to_records(self.top_performers)
         return out
 
     def to_sections_dict(self) -> dict[str, str]:
@@ -183,6 +189,8 @@ class SummaryResult:
         }
         if self.by_season is not None and not self.by_season.empty:
             sections["BY_SEASON"] = self.by_season.to_csv(index=False).strip()
+        if self.top_performers is not None and not self.top_performers.empty:
+            sections["TOP_PERFORMERS"] = self.top_performers.to_csv(index=False).strip()
         return sections
 
 
