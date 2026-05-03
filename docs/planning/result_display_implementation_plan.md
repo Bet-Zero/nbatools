@@ -352,7 +352,7 @@ opponent-scoped context surfaced clearly, no duplicate detail blocks
 
 ---
 
-## 6. `[ ]` `player_compare` route polish
+## 6. `[x]` `player_compare` route polish
 
 **Why:** Match the map's `Should show:` for `player_compare`: cleaner
 side-by-side cards, real metric-comparison grid with leader highlight
