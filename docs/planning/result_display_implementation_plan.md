@@ -1,648 +1,388 @@
-# Result Display Implementation Queue
+# Result Display Implementation Queue (Pattern-Based)
 
-> **Role:** Sequenced, PR-sized work items to make polished cards/lists the
-> default output of every result display, while keeping every raw table
-> available behind a collapsed toggle.
+> **Role:** Sequenced, PR-sized work items to migrate result rendering
+> from one-component-per-route to the pattern-based architecture
+> described in [`result_display_patterns.md`](./result_display_patterns.md).
 >
-> **Source of truth:** [`result_display_map.md`](./result_display_map.md).
-> Every fix below should match the `Should show:` intent for the route(s)
-> it touches. If the map and this queue ever disagree, the map wins.
+> **Spec source of truth:** [`result_display_map.md`](./result_display_map.md)
+> defines the StatMuse-baseline answer shape every pattern is built to
+> match. [`result_display_patterns.md`](./result_display_patterns.md)
+> defines the code architecture. This file is the build sequence.
 >
-> **How to work this file:** Find the first unchecked item below. Review
-> the reference docs it cites and the matching map entries. Execute per
-> its acceptance criteria. Run the test commands. Check the item off,
-> commit, open a PR, wait for CI, merge when green, then immediately move
-> on to the next unchecked item and repeat. Continue working items in
-> order without stopping until every item is checked `[x]` or you hit a
-> genuine blocker. If blocked, leave the item marked `[~]` with an inline
-> note and stop. Do not stop merely because one item finished — the
-> default is to keep going.
+> **Adopted:** 2026-05-03. Replaces the earlier route-by-route polish
+> queue.
 >
-> **Branching rule:** Every item branches off `main`, not off the docs
-> branch this plan was first drafted on. Open one PR per item.
+> **How to work this file:** Find the first unchecked item below.
+> Implement it per its acceptance criteria. Ship it (one PR per item),
+> validate against the deployed app, then move to the next item.
+>
+> **Important:** Do **not** run this as a continuous autonomous loop.
+> Each item ships, the user looks at the result against the deployed
+> app, decides whether the pattern is right, and only then does the
+> next item start. Visual quality cannot be verified by tests; it
+> requires human eyes between items.
+>
+> **Branching rule:** Every item branches off `main`. One PR per item.
 
 ---
 
 ## Status legend
 
 - `[ ]` — not started
-- `[~]` — in progress (or blocked, with an inline note)
+- `[~]` — in progress (or paused for user validation)
 - `[x]` — complete and merged
-- `[-]` — skipped (with inline note explaining why)
+- `[-]` — skipped (with inline note)
 
 ---
 
-## Reusable kickoff prompt
+## Guiding principle
 
-Paste this to start a continuous-loop session against this queue.
+Build one pattern at a time. Migrate the routes that fit. Validate
+against the deployed app. Then build the next pattern.
 
-```text
-Read docs/planning/result_display_implementation_plan.md and find the
-first unchecked item. Open the route's matching entry in
-docs/planning/result_display_map.md as your spec. Branch off main, execute
-the item per its acceptance criteria, run the test commands, check the
-item off, commit, open a PR, wait for CI, merge when green, then move
-directly to the next unchecked item. Do not stop merely because one item
-finished. Stop only on a genuine blocker (failing tests you cannot
-resolve, an ambiguous decision that needs the user) — in which case mark
-the item [~] with an inline note. Branch off main for every item. Use
-focused pytest or focused npm tests per the AGENTS.md testing guidance,
-not full local suites.
-```
+Do not pre-build all patterns before any route uses them. Do not
+migrate all routes for a pattern before the pattern itself is validated
+on at least one route. The earlier polish loop failed because it
+shipped 18 PRs of visual change without a human checking quality
+between them — this queue is structured to prevent that.
 
 ---
 
-## Shipped reconciliation
+## Phase 1 — Substrate
 
-Some related work shipped before or during this queue. Items below
-already account for it:
+Get the shared primitives and renderer scaffolding in place that all
+patterns will depend on.
 
-- **PR #200** — leaderboard column hiding + wins/losses context.
-  Item 4 covered remaining leaderboard polish after that baseline.
-- **PR #199** — AGENTS.md test guidance. Item kickoff
-  guidance in this file already follows the updated rules.
-- **PR #201** — added the result display map and this queue.
+### 1. `[ ]` Add result primitives + ResultRenderer scaffold
 
----
-
-## 1. `[x]` Add the shared `RawDetailToggle` primitive
-
-**Why:** Every section component currently embeds raw `DataTable`
-sections inline and always-open. Without a shared collapsed primitive,
-the route-by-route polish work has nothing to compose against, and each
-route would invent its own toggle. The `Show raw table` policy in the
-map requires one consistent reveal pattern across every section.
+**Why:** Every pattern composes the same set of primitives (hero card,
+result table, identity inline, etc.). Build them once, share across
+patterns. Establish the new render path before any pattern is built.
 
 **Scope:**
 
-- Create `frontend/src/components/RawDetailToggle.tsx` and matching
-  `RawDetailToggle.module.css`.
-- Props:
-  - `title: string`
-  - `rows: SectionRow[]`
-  - `highlight?: boolean`
-  - `hiddenColumns?: Set<string>`
-  - `defaultOpen?: boolean` (default `false`)
-- Behavior:
-  - Renders nothing when `rows.length === 0`.
-  - Closed by default. Closed control labeled `Show raw table`. Open
-    control labeled `Hide raw table`. Use these exact labels per the
-    map's policy.
-  - When open, renders a `DataTable` inside with the existing
-    `highlight` and `hiddenColumns` behavior intact.
-  - Keyboard accessible (toggle is a real `<button>`, focusable, aria
-    state).
-  - Mobile-clean (no overflow, no layout shift on toggle).
-- Add a focused unit test covering: empty rows render nothing, closed
-  state hides the table, open state shows it, hiddenColumns are
-  respected when open.
-- Do not yet wire it into any section component. That happens in item 2.
+- Create `frontend/src/components/results/` directory structure per
+  [`result_display_patterns.md`](./result_display_patterns.md) "File
+  layout" section.
+- Implement primitives:
+  - `ResultShell` — outer container, freshness banner placement, mobile
+    padding
+  - `ResultHero` — colored hero card; props: `subjectIllustration`,
+    `sentence`, `disambiguationNote?`, `tone` (color theme)
+  - `ResultTable` — styled answer table (extends or wraps the existing
+    `DataTable`); supports queried-column highlight, footer rows
+    (`<tfoot>` for Average/Total), inline cell content
+  - `EntityIdentity` — inline headshot/logo + name treatment used inside
+    table cells
+  - Move `RawDetailToggle` into `results/primitives/` (already exists
+    at `frontend/src/components/RawDetailToggle.tsx`)
+- Add `ResultRenderer.tsx` — entry component; reads route, calls
+  `routeToPattern(data)`, renders the returned pattern array.
+- Add `config/routeToPattern.ts` with `default → [{type: "fallback_table"}]`.
+  No real route mappings yet — those land with each pattern PR.
+- Add `patterns/FallbackTableResult.tsx` — generic raw-table renderer
+  used until other patterns migrate routes off it.
+- Wire `ResultRenderer` into the result-display path so every result
+  hits the new code path. Initially every result will render as the
+  fallback table; that is correct.
 
 **Files likely touched:**
 
-- `frontend/src/components/RawDetailToggle.tsx` (new)
-- `frontend/src/components/RawDetailToggle.module.css` (new)
-- `frontend/src/components/RawDetailToggle.test.tsx` (new)
+- All new files under `frontend/src/components/results/`
+- `frontend/src/App.tsx` (or wherever results are currently rendered)
+  to swap in `ResultRenderer`
+- Frontend tests
 - `docs/planning/result_display_implementation_plan.md` — check this
-  item when complete
+  item
 
 **Acceptance criteria:**
 
-- Component exists, builds clean, tests pass.
-- No other components changed (the wire-up is item 2).
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- RawDetailToggle`
-- `cd frontend && npm run build`
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — "Raw detail table policy"
-  section
-- `frontend/src/components/DataTable.tsx`
-
----
-
-## 2. `[x]` Wire `RawDetailToggle` into every existing always-open raw table
-
-**Why:** Make the toggle live across every result page in one sweep,
-rather than route-by-route. This delivers the map's "raw tables hidden by
-default" rule everywhere with a single consistent treatment.
-
-**Scope:**
-
-- Replace every always-open raw `DataTable` rendered under a polished
-  section with `<RawDetailToggle ... />`. Preserve existing `highlight`
-  and `hiddenColumns` props.
-- Affected components (verify by grepping
-  `frontend/src/components/*Section.tsx` for `<DataTable`):
-  - `PlayerSummarySection` — `Full Summary`, `By Season`
-  - `TeamRecordSection` — `Record Detail`, `By Season`
-  - `PlayerComparisonSection` — `Player Summary Detail`, `Metric
-    Comparison`, `Full Metric Detail`
-  - `LeaderboardSection` — `Full Leaderboard`
-  - `OccurrenceLeaderboardSection` — equivalent detail tables
-  - `TeamSummarySection`, `SplitSummaryCardsSection`, `StreakSection`,
-    `PlayoffSection`, `HeadToHeadSection`, `PlayerGameFinderSection` —
-    audit each and convert any always-open detail tables
-- Do **not** change `renderFallback` in `ResultSections.tsx` — fallback
-  paths exist for query classes with no designed view, and there the
-  raw table IS the primary answer. Leave those as-is.
-- Do not change backend response shape, do not delete `DataTable`, do
-  not remove any data from any section.
-
-**Files likely touched:**
-
-- All `frontend/src/components/*Section.tsx` files listed above
-- `docs/planning/result_display_implementation_plan.md` — check this item
-  when complete
-
-**Acceptance criteria:**
-
-- No polished result page shows a raw detail table open by default.
-- Every former raw detail table is reachable via `Show raw table` and
-  contains the same data as before.
-- `hiddenColumns` and `highlight` behavior preserved everywhere.
-- Fallback rendering for query classes without a designed view is
-  unchanged.
+- Every query routes through `ResultRenderer` and renders via
+  `FallbackTableResult` (a plain table). Content unchanged; a
+  short-term regression in *polish* is expected and acceptable —
+  patterns land in subsequent items.
+- Existing section components are still in the tree but no longer
+  reachable from `ResultRenderer`. They will be deleted as their routes
+  migrate.
 - Build, typecheck, and tests pass.
 
 **Tests to run:**
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
-- Manual: deploy the branch (or run locally) and confirm `Jokic last 10
-  games`, `most ppg in 2025 playoffs`, `Lakers record this season`,
-  `Jokic vs Embiid this season` all hide raw tables by default and
-  reveal them on toggle.
+- Manual: deploy and verify any query renders without errors.
 
-**Reference docs:**
+**User validation gate:**
 
-- `docs/planning/result_display_map.md` — "Raw detail table policy"
-- Item 1's `RawDetailToggle` API
+After merge, confirm the deployed app still functions before item 2
+starts. Expect every query to look like a raw table dump — that is
+intentional and short-term.
 
 ---
 
-## 3. `[x]` Fix `player_game_summary` last-N truncation
+## Phase 2 — Build patterns one at a time
 
-**Why:** `RecentGames` in `PlayerSummarySection.tsx` is hardcoded to
-`rows.slice(-5).reverse()` and shows only 4 stats per game. For
-`Jokic last 10 games`-style queries, the user expects the full
-requested set with richer per-game stats. Map entry calls this out
-explicitly and is one of the most user-visible bugs.
+Each item below builds one pattern, migrates its target routes, ships,
+and pauses for user validation before the next item.
 
-**Scope:**
+### 2. `[ ]` `LeaderboardResult` + migrate `season_leaders`, `season_team_leaders`
 
-- In `PlayerSummarySection.tsx`'s `RecentGames` component:
-  - Remove the `slice(-5)` truncation. Show all rows the backend
-    returned, most recent first.
-  - Cap defensively at, say, 30 rows to avoid pathological DOM sizes
-    when a season query accidentally returns hundreds of games. If the
-    backend returned more than the cap, render the first N and show a
-    small "showing X of Y games" note.
-  - Expand the per-row stat line beyond `pts/reb/ast/minutes`. Add at
-    minimum FG, 3P, FT, STL, BLK, TOV when available in the row. Keep
-    the existing card style; just fill in more stat tiles.
-- Make the section header and count reflect the actual number of games
-  rendered, e.g. `Recent Games (10)` — match the map's `Should show:`
-  intent.
-- Do not change the hero block or other sections in
-  `PlayerSummarySection`. Other sections come in item 5.
-
-**Files likely touched:**
-
-- `frontend/src/components/PlayerSummarySection.tsx`
-- `frontend/src/components/PlayerSummarySection.module.css` (only if
-  layout adjustments needed for more stat tiles)
-- `docs/planning/result_display_implementation_plan.md` — check this item
-
-**Acceptance criteria:**
-
-- `Jokic last 10 games` renders 10 game rows.
-- `LeBron last 5 games` renders 5 game rows.
-- `Curry this season` does not balloon — capped to 30, with a clear
-  "showing 30 of N" note.
-- Each game row shows date, W/L badge, opponent, score if available,
-  and at least PTS/REB/AST/MIN/FG/3P/FT/STL/BLK/TOV when those fields
-  are present.
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- PlayerSummary`
-- `cd frontend && npm run build`
-- Manual: hit the deployed app with `Jokic last 10 games` and
-  `LeBron last 5 games` after merge.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — `player_game_summary` entry
-- Existing `PlayerSummarySection.tsx`
-
----
-
-## 4. `[x]` Leaderboard context completeness
-
-**Why:** Leaderboards are the most-used class. After PR #200 merges
-(playoff min-games threshold + initial column-hiding + wins/losses
-context), some context still needs polish to match the map's
-`Should show:` for `season_leaders` and `season_team_leaders`.
+**Why:** Most-used class. Cleanest StatMuse reference (`most ppg in
+2025 playoffs`). If this pattern can't be made to feel right, the
+architecture itself is wrong and we want to know early.
 
 **Scope:**
 
-- Re-read `LeaderboardSection.tsx` after PR #200 has merged. Identify
-  any remaining gaps vs. the map's `Should show:` for `season_leaders`
-  and `season_team_leaders`. Likely candidates:
-  - When metric is `win_pct`, ensure the W-L chip shows in
-    `contextItems` if not already added by #200.
-  - When metric is a percentage stat (FG%, 3P%, FT%, TS%, eFG%) and a
-    companion volume column is present (FGM/FGA, FG3M/FG3A, FTM/FTA),
-    add a companion chip showing makes/attempts.
-  - When the rendered "metric" priority picks the wrong column for the
-    query intent (e.g., `most wins` should show wins as hero, not
-    win_pct), wire `metadata.target_metric` (or equivalent) through so
-    `metricColumn` honors the query intent rather than priority
-    heuristics alone.
-- If anything in this scope is already done by #200, skip with an
-  inline note `[-]` (skipped, already shipped in #200) instead of
-  duplicating.
-- Add regression tests for any new behavior.
-
-**Files likely touched:**
-
-- `frontend/src/components/LeaderboardSection.tsx`
-- `frontend/src/components/LeaderboardSection.module.css` (only if
-  layout)
-- Frontend tests
-- `docs/planning/result_display_implementation_plan.md` — check this item
+- Build `patterns/LeaderboardResult.tsx`:
+  - Hero card: sentence-style answer using the leaderboard's #1 row
+    ("{leader} {verb} the most {metric_label} in the {context}, with
+    {value}.")
+  - Disambiguation note slot (rendered when present in metadata)
+  - Answer table: rank, inline headshot/logo, name, **queried metric
+    column highlighted**, season, team, supporting per-game stats,
+    scrollable long-tail columns
+- Add `routeToPattern.ts` mappings for `season_leaders` and
+  `season_team_leaders` returning `LeaderboardResult`.
+- Delete `LeaderboardSection.tsx`. Decide on `OccurrenceLeaderboardSection.tsx`:
+  if occurrence routes fit `LeaderboardResult` cleanly, migrate them in
+  this PR; otherwise leave them on the fallback for item 4.
 
 **Acceptance criteria:**
 
-- `best record since 2015` shows W-L context for each row.
-- `most wins by a team in a season` shows wins as the hero metric and
-  W-L plus games as context.
-- `best fg%` (or similar) shows FGM/FGA companion when the row
-  has it.
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- Leaderboard`
-- `cd frontend && npm run build`
-- Manual: run the queries above against the deployed app after merge.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — `season_leaders` and
-  `season_team_leaders` entries
-- PR #200 (read its merged diff first)
-
----
-
-## 5. `[x]` `team_record` route polish
-
-**Why:** Match the map's `Should show:` for `team_record`: tighter hero,
-opponent-scoped context surfaced clearly, no duplicate detail blocks
-(now that raw tables are toggled).
-
-**Scope:**
-
-- In `TeamRecordSection.tsx`:
-  - Tighten hero to: team logo, team name, opponent logo+name when the
-    query is opponent-scoped, primary record (W-L), win pct, sample
-    size, season label, regular/playoff badge.
-  - Add supporting team stats when present: PPG, opponent PPG, net
-    rating or +/-, REB, AST, 3PM. Use `StatBlock` similar to existing
-    treatment, just the right set of fields.
-  - For multi-season queries, keep `By Season` available via the raw
-    toggle. For single-season queries, the by-season block should not
-    appear at all (the underlying `by_season` section may be empty
-    anyway — confirm and gate on length).
-- No change to backend response shape.
-
-**Files likely touched:**
-
-- `frontend/src/components/TeamRecordSection.tsx`
-- `frontend/src/components/TeamRecordSection.module.css`
-- Frontend tests
-- `docs/planning/result_display_implementation_plan.md` — check this item
-
-**Acceptance criteria:**
-
-- `Lakers record this season` renders hero with team identity, W-L,
-  win pct, games, season label.
-- `Celtics record vs Bucks` adds opponent identity to the hero.
-- No always-open raw `DataTable` under the hero.
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- TeamRecord`
-- `cd frontend && npm run build`
-- Manual: the example queries above against the deployed app.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — `team_record` entry
-
----
-
-## 6. `[x]` `player_compare` route polish
-
-**Why:** Match the map's `Should show:` for `player_compare`: cleaner
-side-by-side cards, real metric-comparison grid with leader highlight
-and edge/delta, no duplicated metric tables.
-
-**Scope:**
-
-- In `PlayerComparisonSection.tsx`:
-  - Side-by-side player cards: headshot, name, team badge, sample
-    size/games, record if available, plus PTS/REB/AST/MIN/TS%/+/-
-    when present.
-  - Build a real metric-comparison grid (component or inline): metric
-    label, Player A value, Player B value, leader highlight, and an
-    edge value such as `Jokic +4.9 AST`.
-  - Career-vs-season distinction surfaced in the header context.
-  - Keep `Player Summary Detail` and `Full Metric Detail` reachable
-    only via the raw toggle.
-- No backend changes.
-
-**Files likely touched:**
-
-- `frontend/src/components/PlayerComparisonSection.tsx`
-- `frontend/src/components/PlayerComparisonSection.module.css`
-- Frontend tests
-- `docs/planning/result_display_implementation_plan.md` — check this item
-
-**Acceptance criteria:**
-
-- `Jokic vs Embiid this season` shows two player cards with hero stats
-  and a metric comparison grid with leader highlights and deltas.
-- `LeBron vs MJ career` distinguishes career averages clearly in the
-  header.
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- PlayerComparison`
-- `cd frontend && npm run build`
-- Manual: example queries above.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — `player_compare` entry
-
----
-
-## 7. `[x]` `player_game_finder` route polish
-
-**Why:** Match the map's `Should show:` for `player_game_finder`: a
-finder header with condition + count, richer per-game cards, sensible
-default sort.
-
-**Scope:**
-
-- In `PlayerGameFinderSection.tsx`:
-  - Add finder summary header: player identity (when player-scoped),
-    condition string built from query metadata (e.g., `25+ PTS, 10+ REB`
-    or `50-point games`), and a `N games found` count.
-  - Per-row card: date, player headshot (when player-scoped), team
-    badge, opponent badge with home/away prefix, W/L, score when
-    available, PTS/REB/AST/3PM as primary; MIN/FG/3P/FT/STL/BLK/TOV
-    when present.
-  - Default sort: most recent first; if metadata indicates the query
-    is ranked by a metric (e.g., "top scoring games"), sort by that
-    metric descending.
-- Add minimal query-service metadata plumbing for finder thresholds and
-  ranked/top sort hints so the frontend does not parse natural-language
-  query text.
-
-**Files likely touched:**
-
-- `frontend/src/components/PlayerGameFinderSection.tsx`
-- `frontend/src/components/PlayerGameFinderSection.module.css`
-- `src/nbatools/query_service.py`
-- Frontend tests
-- Focused query-service metadata tests
-- `docs/planning/result_display_implementation_plan.md` — check this item
-
-**Acceptance criteria:**
-
-- `games where Jokic had over 25 points and over 10 rebounds` renders a
-  header with the condition and count, plus richer per-game cards.
-- `Curry's 50-point games` renders correctly with the same shape.
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- PlayerGameFinder`
-- `.venv/bin/pytest tests/test_query_service.py -n0 -k "player_finder_metadata"`
-- `cd frontend && npm run build`
-- Manual: example queries.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — `player_game_finder` entry
-
----
-
-## 8. `[x]` `player_split_summary` route polish
-
-**Why:** Match the map's `Should show:` for `player_split_summary`:
-real split cards with edge/delta, not just stacked tables.
-
-**Scope:**
-
-- In `SplitSummaryCardsSection.tsx` (or `SplitSummarySection.tsx` if
-  that's where this route renders today — confirm by reading
-  `ResultSections.tsx` `case "split_summary"`):
-  - Split cards: per-bucket card showing bucket label, games, record
-    when available, PTS/REB/AST/MIN/TS%/3P%/+/-.
-  - For two-bucket splits (home vs away, wins vs losses, etc.) add a
-    small difference row, e.g. `Home +3.2 PPG`.
-  - Player identity in a header above the cards.
-
-**Files likely touched:**
-
-- `frontend/src/components/SplitSummaryCardsSection.tsx` and/or
-  `SplitSummarySection.tsx`
-- Matching CSS modules
-- Frontend tests
-- `docs/planning/result_display_implementation_plan.md` — check this item
-
-**Acceptance criteria:**
-
-- `Jokic home vs away` renders two split cards with stat tiles and a
-  diff row.
-- `Curry in wins vs losses` renders correctly with the same shape.
-- Build, typecheck, and tests pass.
-
-**Tests to run:**
-
-- `cd frontend && npm test -- Split`
-- `cd frontend && npm run build`
-- Manual: example queries.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — `player_split_summary` entry
-
----
-
-## 9. `[x]` Streak, occurrence, and playoff section polish
-
-**Why:** Cover the remaining higher-frequency designed sections. Each
-is smaller in scope but should match its map entry's `Should show:`.
-
-**Scope:**
-
-- `StreakSection.tsx` — match map entries for `player_streak_finder`
-  and `team_streak_finder`. Streak cards with hero length, active vs
-  completed badge, date range, during-streak averages.
-- `OccurrenceLeaderboardSection.tsx` — match
-  `player_occurrence_leaders` and `team_occurrence_leaders`. Hero
-  metric is the occurrence count; threshold/condition surfaced as a
-  chip.
-- `PlayoffSection.tsx` — match the map's `Playoff routes` entry for
-  whichever of `playoff_appearances`, `playoff_history`,
-  `playoff_matchup_history`, `playoff_round_record` are routed through
-  this component. Per-route polish, not one mega-rewrite.
-- These can be one PR if the changes per file are small, or split into
-  three PRs if any one file's change is non-trivial. Use judgment.
-
-**Files likely touched:**
-
-- The three section files above and their CSS modules
-- Frontend tests
-- `docs/planning/result_display_implementation_plan.md` — check this item
-
-**Acceptance criteria:**
-
-- `Jokic 25-point game streak` renders streak card per the map.
-- `most 30-point games this season` renders the occurrence leaderboard
-  per the map.
-- `Lakers playoff history` renders a playoff history layout per the map.
+- `most ppg in 2025 playoffs` matches the StatMuse reference shape:
+  sentence hero + dense table with PPG column highlighted.
+- `best record since 2015` shows the team-first variant with W-L
+  context.
+- No card-per-row layout. No redundant secondary table. The leaderboard
+  table IS the answer.
 - Build, typecheck, and tests pass.
 
 **Tests to run:**
 
 - `cd frontend && npm test`
 - `cd frontend && npm run build`
-- Manual: example queries.
+- Manual: run both example queries against the deployed app.
 
-**Reference docs:**
+**User validation gate:**
 
-- `docs/planning/result_display_map.md` — streak, occurrence, and
-  playoff entries
+Run `most ppg in 2025 playoffs` and `best record since 2015`. If the
+pattern feels right, proceed to item 3. If not, iterate on
+`LeaderboardResult` before any other pattern is built.
 
 ---
 
-## 10. `[x]` Cross-cutting display rules sweep
+### 3. `[ ]` `EntitySummaryResult` + `GameLogResult` + migrate `player_game_summary`
 
-**Why:** The map's "Cross-cutting display rules" section names rules
-that should apply everywhere. Most are addressed by items above; this
-item closes any remaining gaps in one targeted sweep.
+**Why:** First compound-pattern test. `player_game_summary` for last-N
+queries needs *both* an entity summary hero AND a game-log table — the
+composition model from
+[`result_display_patterns.md`](./result_display_patterns.md). Validates
+that composition works as designed.
 
 **Scope:**
 
-- Audit every section component and `DataTable` for compliance with:
-  - Hide internal columns (`player_id`, `team_id`, redundant
-    `team_abbr`).
-  - Identity treatment: headshots/logos when available, fallback to
-    initials/abbreviations.
-  - Mobile responsiveness with sticky identity column on horizontally
-    scrolling tables.
-  - Numeric formatting: per-game stats to 1 decimal, percentages as
-    `xx.x%`, counts as integers.
-  - Freshness banner appears on every result page.
-- Fix any drifters in one PR (or split per area if the diff is large).
-
-**Files likely touched:**
-
-- Various `frontend/src/components/*Section.tsx`,
-  `DataTable.tsx`, `tableFormatting.ts`
-- `docs/planning/result_display_implementation_plan.md` — check this item
+- Build `patterns/EntitySummaryResult.tsx`:
+  - Hero card with subject illustration + sentence + optional
+    disambiguation
+  - Optional small "summary strip" of headline averages below the
+    sentence (single horizontal row, not a stat block)
+- Build `patterns/GameLogResult.tsx`:
+  - Compact summary strip of key averages over the window
+  - Game-log table: date, inline headshot, name, team, vs/@, opp, MIN,
+    PTS, REB, AST, STL, BLK, FG, 3P, FT, TOV, +/-
+  - `<tfoot>` footer rows for `Average` and `Total`
+- Add `routeToPattern.ts` mapping for `player_game_summary`:
+  - Last-N variant → `[entity_summary, game_log]`
+  - Broad season/career variant → `[entity_summary]`
+- Delete `PlayerSummarySection.tsx`.
 
 **Acceptance criteria:**
 
-- A representative query for each query class passes a quick mobile QA
-  pass.
-- No section renders raw internal id columns by default.
-- Numeric formatting consistent across surfaces.
+- `Jokic last 10 games` matches the StatMuse reference: sentence hero +
+  dense game-log table with Average/Total footer rows. No "Recent
+  Games" cards.
+- `Curry this season` (or similar broad query) shows just the entity
+  summary, no game log.
+- Visibly belongs to the same family as `LeaderboardResult` from item
+  2 (consistent shell, hero treatment, table styling).
 - Build, typecheck, and tests pass.
 
-**Tests to run:**
+**User validation gate:**
 
-- `cd frontend && npm test`
-- `cd frontend && npm run build`
-- Manual: 1 query per class on phone-sized viewport.
-
-**Reference docs:**
-
-- `docs/planning/result_display_map.md` — "Cross-cutting display rules"
+Run `Jokic last 10 games`, `LeBron last 5 games`, and a broad season
+query. Pattern feels right? Proceed.
 
 ---
 
-## 11. `[x]` Reconcile map statuses and close out
+### 4. `[ ]` Migrate the rest of the leaderboard family
 
-**Why:** Self-propagating final task. After items 1-10, every audited
-route entry in the map should reflect what shipped. This task closes
-the loop and decides what's next.
+**Why:** Now that `LeaderboardResult` is validated, batch-migrate the
+remaining leaderboard-family routes to it via config additions only.
+No new pattern code unless a route exposes a real gap.
 
 **Scope:**
 
-- For each route entry in `result_display_map.md`:
-  - Re-run the example queries against the deployed app.
-  - If the rendered display matches the entry's `Should show:`, mark
-    the entry `[x]`.
-  - If it does not, leave it `[~]` and add an inline note about the
-    remaining gap.
-- Sweep for any routes still `[?]` (intent written, current display not
-  observed) and decide: either flip to `[x]` if intent now matches
-  what's rendered, or `[~]` with a follow-up note.
-- If meaningful gaps remain, draft a follow-up queue
-  (`result_display_followup_queue.md`) listing only the remaining
-  per-route work; otherwise, write a short retrospective at the bottom
-  of this file noting the queue is closed.
-- Update `docs/index.md` if needed.
-
-**Files likely touched:**
-
-- `docs/planning/result_display_map.md`
-- `docs/planning/result_display_implementation_plan.md` — check this
-  item, add closing retrospective if applicable
-- `docs/planning/result_display_followup_queue.md` (new, only if
-  needed)
-- `docs/index.md`
+- Add `routeToPattern.ts` mappings for:
+  - `team_record_leaderboard`
+  - `player_stretch_leaderboard`
+  - `player_occurrence_leaders` (if not already in item 2)
+  - `team_occurrence_leaders`
+  - `lineup_leaderboard`
+  - `playoff_appearances`
+- Per-route config tweaks (which columns are primary, which is
+  highlighted). No pattern code changes.
+- Delete now-orphaned per-route components.
 
 **Acceptance criteria:**
 
-- Every audited route in the map is `[x]` or `[~]` with a note.
-- This file's items are all `[x]` (or `[-]` with notes).
-- Either the queue is formally closed or a follow-up queue exists.
+- All listed routes render via `LeaderboardResult` with appropriate
+  per-route columns.
+- No routes lose access to data they previously had visible.
+- Build, typecheck, tests pass.
 
-**Tests to run:**
+**User validation gate:** representative query per migrated route.
 
-- None (docs only)
+---
 
-**Reference docs:**
+### 5. `[ ]` Migrate the game-log family
 
-- `docs/planning/result_display_map.md`
-- This file's items
+**Scope:**
+
+- Add `routeToPattern.ts` mappings for:
+  - `player_game_finder`
+  - `game_finder`
+  - `top_player_games`
+  - `top_team_games`
+  - `game_summary` (single-game = 1-row game log)
+- Per-route config tweaks.
+- Delete `PlayerGameFinderSection.tsx` and other orphaned game-log
+  components.
+
+**User validation gate:** `games where Jokic had over 25 points and 10
+rebounds`, `Curry's 50-point games`, `top 10 scoring games this season`.
+
+---
+
+### 6. `[ ]` `SplitResult` + migrate split routes
+
+**Why:** Splits have a distinct shape (multi-bucket comparison of one
+subject) that doesn't fit `LeaderboardResult` or `GameLogResult`.
+
+**Scope:**
+
+- Build `patterns/SplitResult.tsx`:
+  - Hero card with subject + split-type sentence
+  - One bucket card or table-row per bucket showing per-bucket stats
+  - Diff/edge row when exactly two buckets
+- Mappings for `player_split_summary`, `team_split_summary`,
+  `player_on_off`.
+- Delete `SplitSummaryCardsSection.tsx`, `SplitSummarySection.tsx`.
+
+**User validation gate:** `Jokic home vs away`, `Lakers on/off LeBron`.
+
+---
+
+### 7. `[ ]` `StreakResult` + migrate streak routes
+
+**Scope:**
+
+- Build `patterns/StreakResult.tsx`:
+  - Hero card with subject + streak-type sentence
+  - Streak length as the dominant value
+  - Date range, active/completed badge
+  - During-streak averages
+- Mappings for `player_streak_finder`, `team_streak_finder`.
+- Delete `StreakSection.tsx`.
+
+**User validation gate:** representative streak queries.
+
+---
+
+### 8. `[ ]` `PlayoffHistoryResult` + migrate playoff routes
+
+**Scope:**
+
+- Build `patterns/PlayoffHistoryResult.tsx`:
+  - Hero card with team + summary sentence (appearances, championships,
+    etc.)
+  - Season-by-season table: season, round reached, record, result,
+    opponent
+- Mappings for `playoff_history`, `playoff_round_record`,
+  `playoff_matchup_history`.
+- Delete `PlayoffSection.tsx`.
+
+**User validation gate:** `Lakers playoff history`,
+`Celtics vs Heat playoff matchups`.
+
+---
+
+### 9. `[ ]` `ComparisonResult` + migrate comparison routes (LAST)
+
+**Why:** Comparisons are the most complex shape. Built last so the
+pattern set is stable and the hardest case has the benefit of all prior
+pattern lessons.
+
+**Scope:**
+
+- Build `patterns/ComparisonResult.tsx`:
+  - Header with both subjects
+  - Side-by-side subject cards with hero stats per subject
+  - Metric grid: rows = metrics, columns = subjects + edge/delta
+- Mappings for `player_compare`, `team_compare`,
+  `team_matchup_record`.
+- Delete `PlayerComparisonSection.tsx`, `ComparisonSection.tsx`,
+  `HeadToHeadSection.tsx`, `TeamSummarySection.tsx`.
+
+**User validation gate:** `Jokic vs Embiid this season`,
+`Celtics vs Bucks`, `Lakers vs Celtics head-to-head`.
+
+---
+
+## Phase 3 — Cleanup and close
+
+### 10. `[ ]` Delete dead per-route components and `ResultSections.tsx`
+
+**Why:** Once every route maps to a pattern (or to `FallbackTableResult`
+intentionally), old components and the old router are dead code.
+
+**Scope:**
+
+- Verify no imports remain to the old per-route section components.
+- Delete `frontend/src/components/ResultSections.tsx`.
+- Delete any orphaned section components.
+- Delete CSS modules for deleted components.
+- Update `docs/operations/ui_guide.md` if it referenced the old
+  components.
+
+**Acceptance criteria:**
+
+- `git grep "PlayerSummarySection\|LeaderboardSection"` and similar
+  return zero results outside this doc / git history.
+- Build, tests pass.
+
+---
+
+### 11. `[ ]` Reconcile map statuses and close out
+
+**Why:** Self-propagating final task. Ensure
+[`result_display_map.md`](./result_display_map.md) entries reflect
+shipped reality.
+
+**Scope:**
+
+- For every route entry in the map, run the example queries against the
+  deployed app.
+- Mark entries `[x]` when rendering matches the entry's `Should show:`.
+  Mark `[~]` with a follow-up note if a gap remains.
+- If meaningful gaps remain, draft `result_display_followup_queue.md`.
+  Otherwise close this plan with a short retrospective at the bottom of
+  this file.
 
 ---
 
 ## Appendix: progress tracking
 
 When all items above are checked `[x]` (or `[-]` with notes), the queue
-is complete. The retrospective on item 11 is the closure artifact.
-
-## Item 11 Closeout Retrospective
-
-Items 1-11 are complete for the first result-display implementation pass.
-`result_display_map.md` now has every route entry marked `[x]` or `[~]`
-with a shipped-display note. The unresolved route-level gaps are carried
-forward in `result_display_followup_queue.md`; that queue is the
-continuation path for the remaining display work.
+is complete. The architecture in
+[`result_display_patterns.md`](./result_display_patterns.md) is the
+ongoing reference for any future result-rendering work.
