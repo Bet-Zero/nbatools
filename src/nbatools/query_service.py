@@ -259,6 +259,10 @@ def _build_query_metadata(
         else:
             team = team_a or team_b
 
+    route_kwargs = parsed.get("route_kwargs")
+    if not isinstance(route_kwargs, dict):
+        route_kwargs = {}
+
     notes = parsed.get("notes") or []
 
     # current_through from season info
@@ -299,6 +303,26 @@ def _build_query_metadata(
         "minute_minimum": parsed.get("minute_minimum"),
         "window_size": parsed.get("window_size"),
         "stretch_metric": parsed.get("stretch_metric"),
+        "stat": parsed.get("stat") or route_kwargs.get("stat"),
+        "min_value": (
+            parsed.get("min_value")
+            if parsed.get("min_value") is not None
+            else route_kwargs.get("min_value")
+        ),
+        "max_value": (
+            parsed.get("max_value")
+            if parsed.get("max_value") is not None
+            else route_kwargs.get("max_value")
+        ),
+        "sort_by": parsed.get("sort_by") or route_kwargs.get("sort_by"),
+        "ranked_intent": bool(
+            parsed.get("leaderboard_intent")
+            or parsed.get("season_high_intent")
+            or parsed.get("top_n")
+        ),
+        "threshold_conditions": parsed.get("threshold_conditions"),
+        "extra_conditions": parsed.get("extra_conditions"),
+        "occurrence_event": parsed.get("occurrence_event"),
         "split_type": parsed.get("split_type"),
         "clutch": parsed.get("clutch"),
         "back_to_back": parsed.get("back_to_back"),
@@ -842,6 +866,11 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "minute_minimum": kwargs.get("minute_minimum"),
         "window_size": kwargs.get("window_size"),
         "stretch_metric": kwargs.get("stretch_metric"),
+        "stat": kwargs.get("stat"),
+        "min_value": kwargs.get("min_value"),
+        "max_value": kwargs.get("max_value"),
+        "sort_by": kwargs.get("sort_by"),
+        "ranked_intent": kwargs.get("sort_by") == "stat",
         "split_type": kwargs.get("split"),
         "clutch": kwargs.get("clutch"),
         "back_to_back": kwargs.get("back_to_back"),

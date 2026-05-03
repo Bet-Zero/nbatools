@@ -399,7 +399,7 @@ and edge/delta, no duplicated metric tables.
 
 ---
 
-## 7. `[ ]` `player_game_finder` route polish
+## 7. `[x]` `player_game_finder` route polish
 
 **Why:** Match the map's `Should show:` for `player_game_finder`: a
 finder header with condition + count, richer per-game cards, sensible
@@ -418,13 +418,17 @@ default sort.
   - Default sort: most recent first; if metadata indicates the query
     is ranked by a metric (e.g., "top scoring games"), sort by that
     metric descending.
-- No backend changes.
+- Add minimal query-service metadata plumbing for finder thresholds and
+  ranked/top sort hints so the frontend does not parse natural-language
+  query text.
 
 **Files likely touched:**
 
 - `frontend/src/components/PlayerGameFinderSection.tsx`
 - `frontend/src/components/PlayerGameFinderSection.module.css`
+- `src/nbatools/query_service.py`
 - Frontend tests
+- Focused query-service metadata tests
 - `docs/planning/result_display_implementation_plan.md` — check this item
 
 **Acceptance criteria:**
@@ -437,6 +441,7 @@ default sort.
 **Tests to run:**
 
 - `cd frontend && npm test -- PlayerGameFinder`
+- `.venv/bin/pytest tests/test_query_service.py -n0 -k "player_finder_metadata"`
 - `cd frontend && npm run build`
 - Manual: example queries.
 

@@ -1632,7 +1632,15 @@ describe("ResultSections", () => {
       result: {
         query_class: "finder",
         result_status: "ok",
-        metadata: { route: "player_game_finder" },
+        metadata: {
+          route: "player_game_finder",
+          query_text: "Curry's 35-point games",
+          player_context: {
+            player_id: 201939,
+            player_name: "Stephen Curry",
+          },
+          occurrence_event: { stat: "pts", min_value: 35 },
+        },
         notes: [],
         caveats: [],
         sections: {
@@ -1686,7 +1694,8 @@ describe("ResultSections", () => {
     render(<ResultSections data={data} />);
     const cards = screen.getByLabelText("Player game cards");
     expect(screen.getByText("Player Games")).toBeInTheDocument();
-    expect(screen.getByText("2 games")).toBeInTheDocument();
+    expect(screen.getByText("35-point games")).toBeInTheDocument();
+    expect(screen.getAllByText("2 games found").length).toBeGreaterThan(0);
     expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
     expect(screen.queryByText("Matching Games")).not.toBeInTheDocument();
     expect(within(cards).getAllByText("Stephen Curry").length).toBeGreaterThan(
@@ -1711,7 +1720,7 @@ describe("ResultSections", () => {
     expect(within(cards).getByText("at LAL")).toBeInTheDocument();
     expect(within(cards).getByText("W")).toBeInTheDocument();
     expect(within(cards).getAllByText("PTS").length).toBeGreaterThan(0);
-    expect(within(cards).getAllByText("FG3M").length).toBeGreaterThan(0);
+    expect(within(cards).getAllByText("3PM").length).toBeGreaterThan(0);
     expect(within(cards).getByText("42")).toBeInTheDocument();
     expect(within(cards).getAllByText("7").length).toBeGreaterThan(0);
     expect(within(cards).getAllByText("2024-25").length).toBeGreaterThan(0);

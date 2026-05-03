@@ -561,6 +561,73 @@ class TestMetadataPreservation:
         assert qr.metadata["season"] == "2024-25"
         assert qr.metadata["player"] == "Nikola Jokić"
 
+    def test_natural_player_finder_metadata_preserves_threshold_context(self, monkeypatch):
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: FinderResult(
+                games=pd.DataFrame([{"player_name": "Nikola Jokić", "pts": 28}])
+            ),
+        )
+
+        qr = execute_natural_query("Jokic games with 25+ points and 10+ rebounds 2024-25")
+
+        assert qr.metadata["route"] == "player_game_finder"
+        assert qr.metadata["query_class"] == "finder"
+        assert qr.metadata["player"] == "Nikola Jokić"
+        assert qr.metadata["stat"] == "pts"
+        assert qr.metadata["min_value"] == 25.0
+        assert qr.metadata["sort_by"] == "stat"
+        assert qr.metadata["ranked_intent"] is False
+        assert qr.metadata["threshold_conditions"] == [
+            {
+                "stat": "pts",
+                "min_value": 25.0,
+                "max_value": None,
+                "text": "25+ points",
+            },
+            {
+                "stat": "reb",
+                "min_value": 10.0,
+                "max_value": None,
+                "text": "10+ rebounds",
+            },
+        ]
+        assert qr.metadata["extra_conditions"] == [
+            {
+                "stat": "reb",
+                "min_value": 10.0,
+                "max_value": None,
+                "text": "10+ rebounds",
+            }
+        ]
+
+    def test_structured_player_finder_metadata_preserves_sort_context(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs: FinderResult(
+                games=pd.DataFrame([{"player_name": "Nikola Jokić", "pts": 28}])
+            ),
+        )
+
+        qr = execute_structured_query(
+            "player_game_finder",
+            season="2024-25",
+            player="Nikola Jokić",
+            stat="pts",
+            min_value=25,
+            sort_by="stat",
+        )
+
+        assert qr.metadata["route"] == "player_game_finder"
+        assert qr.metadata["query_class"] == "finder"
+        assert qr.metadata["stat"] == "pts"
+        assert qr.metadata["min_value"] == 25
+        assert qr.metadata["sort_by"] == "stat"
+        assert qr.metadata["ranked_intent"] is True
+
     def test_structured_player_metadata_has_player_context(self, monkeypatch):
         _patch_identity_contexts(monkeypatch)
         monkeypatch.setattr(
