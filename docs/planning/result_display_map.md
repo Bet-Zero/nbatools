@@ -84,17 +84,16 @@ expectation is:
 
 ## summary
 
-### `player_game_summary` `[~]`
+### `player_game_summary` `[x]`
 - **Section component:** `PlayerSummarySection`
 - **Example queries:**
   - `Jokic last 10 games`
   - `LeBron last 5 games`
   - `Curry this season`
-- **Currently shows (4 stacked sections):**
-  1. **Hero card:** player headshot (Avatar), team logo (TeamBadge), player name, three "hero" stats (PTS/REB/AST as averages), optional W-L record stat, supporting stats grid (StatBlock, 2 or 4 columns)
-  2. **"Recent Games" card** (only if `game_log` section exists): scoring sparkline (line graph of points per game) + a list of game rows. **Hardcoded to show only the last 5 games** regardless of how many were requested. Each row shows: date, W/L badge, opponent logo, and exactly 4 stats: PTS / REB / AST / MIN
-  3. **"Full Summary" data table:** raw DataTable dump of the `summary` section
-  4. **"By Season" data table** (only if `by_season` section exists): DataTable dump of the `by_season` section
+- **Currently shows (shipped):**
+  1. Player summary hero with headshot, team badge, query context, PTS/REB/AST, record/sample, and supporting stats.
+  2. Full requested recent-game list for last-N game-log queries, including matchup, opponent badge, W/L, score when available, and expanded box-score stats.
+  3. `Full Summary` and `By Season` raw tables retained behind the shared collapsed raw-table toggle.
 - **Should show:**
   1. **Player summary hero**
      - Player headshot
@@ -116,13 +115,17 @@ expectation is:
   4. **Raw tables**
      - Keep `Full Summary` and `By Season` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
-- **Bugs filed:** none yet (candidate: "Recent Games hardcoded to 5 games and 4 stat columns — should show all requested games and richer stats for `last N games` queries")
+- **Bugs filed:** none
 - **Notes:** Compound result. This route must show both summary stats AND full game logs when the query asks for a last-N sample. Single-stat or summary-only displays are wrong.
 
-### `player_summary`-style routes for season averages `[?]`
+### `player_summary`-style routes for season averages `[x]`
+- **Section component:** `PlayerSummarySection` via `player_game_summary`
 - **Example queries:**
   - `Jokic this season`
   - `Curry career averages`
+- **Currently shows (shipped):**
+  - Same player summary hero as `player_game_summary`, emphasizing season/career context and sample size.
+  - Raw summary/by-season rows stay available behind collapsed raw-table toggles.
 - **Should show:**
   - Player summary hero similar to `player_game_summary`.
   - Emphasize the season/career context and sample size.
@@ -130,15 +133,14 @@ expectation is:
   - Do not show full game logs by default unless the query explicitly asks for games.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `team_record` `[~]`
+### `team_record` `[x]`
 - **Section component:** `TeamRecordSection`
 - **Example queries:**
   - `Lakers record this season`
   - `Celtics record vs Bucks`
-- **Currently shows (3 stacked sections):**
-  1. **Hero card:** team logo (TeamBadge), team name (h2), primary record stat (large W-L display), supporting stats grid (StatBlock)
-  2. **"Record Detail" data table:** raw DataTable dump of the `summary` section
-  3. **"By Season" data table** (only if `by_season` section exists): DataTable dump of the `by_season` section, under "Team Record" / "By Season" headers
+- **Currently shows (shipped):**
+  1. Team record hero with logo, team/opponent context, W-L, win pct, games/sample, and supporting team stats.
+  2. `Record Detail` and `By Season` raw tables retained behind the shared collapsed raw-table toggle.
 - **Should show:**
   1. **Single team record hero**
      - Team logo
@@ -162,10 +164,13 @@ expectation is:
      - Keep `Record Detail` and `By Season` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `team_split_summary` `[?]`
+### `team_split_summary` `[x]`
 - **Section component:** `SplitSummaryCardsSection` or `TeamSummarySection`
 - **Example queries:**
   - `Lakers home vs away`
+- **Currently shows (shipped):**
+  - Team identity hero with split context, bucket cards, games/record/win pct, core stats, and two-bucket edge chips.
+  - `Split Summary Detail` and `Split Comparison Detail` raw tables retained behind collapsed raw-table toggles.
 - **Should show:**
   - Team logo and team name.
   - Split type: home/away, wins/losses, before/after, regular/playoffs, etc.
@@ -174,9 +179,13 @@ expectation is:
   - A difference/edge row is useful when there are exactly two buckets.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `game_summary` `[?]`
+### `game_summary` `[~]`
 - **Example queries:**
   - `Lakers Celtics last night`
+- **Currently shows (shipped):**
+  - `TeamSummarySection` renders a team-summary style hero with team identity and summary stats when the response has a `summary` section.
+  - It does not yet render a true game box-score/final-score layout with both teams, top performers, and game context.
+- **Follow-up note:** Needs a dedicated `game_summary` display; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Game box-score style result.
   - Final score hero with team logos, team names, date, and W/L.
@@ -185,10 +194,12 @@ expectation is:
   - Top player performers when available: points leader, rebounds leader, assists leader.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `playoff_round_record` `[?]`
+### `playoff_round_record` `[x]`
 - **Section component:** `PlayoffSection`
 - **Example queries:**
   - `Celtics record in second round`
+- **Currently shows (shipped):**
+  - `PlayoffSection` renders playoff round/team context, record/win pct/sample stats, season/range context, and collapsed raw playoff details.
 - **Should show:**
   - Playoff round record card or leaderboard depending query shape.
   - Team logo/name, round, record, win pct, series/game count, and season/range context.
@@ -198,16 +209,16 @@ expectation is:
 
 ## comparison
 
-### `player_compare` `[~]`
+### `player_compare` `[x]`
 - **Section component:** `PlayerComparisonSection`
 - **Example queries:**
   - `Jokic vs Embiid this season`
   - `LeBron vs MJ career`
-- **Currently shows (4 stacked sections):**
-  1. **Header section** (SectionHeader)
-  2. **Side-by-side player blocks:** each block has player name (h3), supporting stats grid (StatBlock), optional record stat
-  3. **"Player Summary Detail" data table:** raw DataTable dump of the `summary` section
-  4. **"Metric Comparison" + "Full Metric Detail" data tables:** raw DataTable dumps of the `comparison` section (one with `highlight` styling)
+- **Currently shows (shipped):**
+  1. Comparison header with player identities and query context.
+  2. Side-by-side player cards with headshots, team context, sample/record, PTS/REB/AST, and supporting stats when available.
+  3. Metric comparison grid with leader/delta treatment.
+  4. `Player Summary Detail` and `Full Metric Detail` raw tables retained behind the shared collapsed raw-table toggle.
 - **Should show:**
   1. **Comparison header**
      - Player A vs Player B title.
@@ -237,19 +248,25 @@ expectation is:
      - Keep `Player Summary Detail` and `Full Metric Detail` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `team_compare` `[?]`
+### `team_compare` `[~]`
 - **Example queries:**
   - `Celtics vs Bucks this season`
+- **Currently shows (shipped):**
+  - Head-to-head-flavored `team_compare` responses render through `HeadToHeadSection`.
+  - Aggregate team comparison responses still fall back to generic comparison tables rather than a team-first side-by-side card/grid.
+- **Follow-up note:** Needs a dedicated aggregate `team_compare` layout; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Team A vs Team B header with team logos and context.
   - Side-by-side team cards showing record, win pct, games, PPG, opponent PPG, net rating or +/-, REB, AST, and 3PM.
   - Metric comparison grid with leader highlight and edge/delta.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `team_matchup_record` `[?]`
+### `team_matchup_record` `[x]`
 - **Section component:** `HeadToHeadSection`
 - **Example queries:**
   - `Lakers vs Celtics head-to-head`
+- **Currently shows (shipped):**
+  - `HeadToHeadSection` renders a matchup card with team logos/names, context chips, participant record/sample stats, and collapsed detail tables.
 - **Should show:**
   - Matchup scoreboard style display.
   - Team A logo/name vs Team B logo/name.
@@ -258,9 +275,12 @@ expectation is:
   - Recent matchup list only if the data exists.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_on_off` `[?]`
+### `player_on_off` `[~]`
 - **Example queries:**
   - `Lakers on/off LeBron`
+- **Currently shows (shipped):**
+  - The route does not have a dedicated frontend branch. Depending on response class, it falls through to count/fallback-style rendering rather than on/off cards.
+- **Follow-up note:** Needs a dedicated on/off split display; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - On/off split display with player identity and team context.
   - Separate `On` and `Off` cards.
@@ -272,11 +292,14 @@ expectation is:
 
 ## split_summary
 
-### `player_split_summary` `[~]`
+### `player_split_summary` `[x]`
 - **Section component:** `SplitSummaryCardsSection` or `SplitSummarySection`
 - **Example queries:**
   - `Jokic home vs away`
   - `Curry in wins vs losses`
+- **Currently shows (shipped):**
+  - Player identity hero with split context, bucket cards, games/record, core and efficiency stats, and two-bucket edge chips.
+  - `Split Summary Detail` and `Split Comparison Detail` raw tables retained behind collapsed raw-table toggles.
 - **Should show:**
   - Player headshot, player name, and split type.
   - Split context: season, season type, game count, and filter.
@@ -290,11 +313,13 @@ expectation is:
 
 ## finder
 
-### `player_game_finder` `[~]`
+### `player_game_finder` `[x]`
 - **Section component:** `PlayerGameFinderSection`
 - **Example queries:**
   - `games where Jokic had over 25 points and over 10 rebounds`
   - `Curry's 50-point games`
+- **Currently shows (shipped):**
+  - Player finder header with headshot, condition/threshold chips, count found, season/range context, rich game-card list, recent/ranked sorting, and collapsed `Player Game Detail`.
 - **Should show:**
   1. **Finder summary header**
      - Player name/headshot when player-scoped.
@@ -317,9 +342,13 @@ expectation is:
      - Keep `Player Game Detail` available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
 
-### `game_finder` `[?]`
+### `game_finder` `[~]`
 - **Example queries:**
   - `games where Lakers won by 20+`
+- **Currently shows (shipped):**
+  - Generic `FinderSection` with count and a table of matching games. Shared table behavior hides internal IDs and provides identity visuals when columns exist.
+  - It does not yet have team/game cards with margin/score context as the primary display.
+- **Follow-up note:** Needs a team/game finder card layout; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Team/game equivalent of `player_game_finder`.
   - Count found and condition summary.
@@ -330,22 +359,22 @@ expectation is:
 
 ## leaderboard
 
-### `season_leaders` `[~]`
+### `season_leaders` `[x]`
 - **Section component:** `LeaderboardSection`
 - **Example queries:**
   - `most ppg in 2025 playoffs`
   - `top 10 scorers 2025-26`
   - `assists leaders this season`
-- **Currently shows (2 stacked sections):**
-  1. **Ranked list:** SectionHeader "Leaderboard" + "{N} entries" count. Per-row card with: rank (#1, #2, ...), identity mark (player headshot via Avatar, or team logo via TeamBadge), entity name, context chips (games played, season, season_type, team abbr, opponent if applicable, qualifier columns), one hero metric value (PTS/AST/PPG/etc.) on the right
-  2. **"Full Leaderboard" data table:** DataTable of the same `leaderboard` rows. After PR #200 (in flight) hides system columns, this table shows the same content as the ranked list above — redundant by design until you decide otherwise
+- **Currently shows (shipped):**
+  1. Ranked list with rank, player/team identity, context chips, and the requested hero metric.
+  2. `Full Leaderboard` raw table retained behind the shared collapsed raw-table toggle.
 - **Should show:**
   1. **Ranked leaderboard list**
      - Rank
      - Player headshot or team logo
      - Entity name
      - Team abbreviation/logo for player rows when available
-     - Main requested metric on the right, e.g. `32.4 PPG`, `11.2 AST`, `.645 TS%`
+     - Main requested metric on the right, e.g. `32.4 PPG`, `11.2 AST`, `64.5% TS`
   2. **Context chips**
      - Games played
      - Season
@@ -354,7 +383,7 @@ expectation is:
      - Qualifier/minimum when applicable
      - Opponent/playoff round/context when applicable
   3. **Metric companion context**
-     - For percentage leaderboards, show makes/attempts when available, e.g. `.421 3P%` with `182/432 3P`.
+     - For percentage leaderboards, show makes/attempts when available, e.g. `42.1% 3P` with `182/432 3P`.
      - For record leaderboards, show W-L when available.
   4. **Metric correctness**
      - The hero metric must match what the user asked for.
@@ -362,16 +391,16 @@ expectation is:
   5. **Raw tables**
      - Keep `Full Leaderboard` available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
-- **Bugs filed:** playoff min-games threshold (in flight), redundant Full Leaderboard table (decision: keep but hide by default)
+- **Bugs filed:** none
 - **Notes:** Most-used class. The raw leaderboard table is retained for inspection/export/future advanced views but should not be open by default.
 
-### `season_team_leaders` `[~]`
+### `season_team_leaders` `[x]`
 
 - **Section component:** `LeaderboardSection` (same component as `season_leaders`)
 - **Example queries:**
   - `best record since 2015`
   - `most wins by a team in a season`
-- **Currently shows:** Same 2-section layout as `season_leaders` (ranked list + Full Leaderboard data table). For "best record" queries the hero metric is `win_pct`. **Wins and losses are not surfaced as context chips** because `contextItems` in `LeaderboardSection.tsx` doesn't know about them.
+- **Currently shows (shipped):** Same ranked-list and collapsed-detail pattern as `season_leaders`, with team identity, requested metric, record/games context, and season/season-type chips when available.
 - **Should show:**
   - Same ranked leaderboard pattern as `season_leaders`, but team-first.
   - Each row should show rank, team logo, team name, season, and the requested metric.
@@ -380,19 +409,25 @@ expectation is:
   - Context chips should include record, games played, season type, and playoffs/regular season context.
   - Keep `Full Leaderboard` available behind the shared collapsed raw-table/detail toggle.
   - Do not show raw tables open by default.
-- **Bugs filed:** playoff min-games threshold (in flight), wins/losses missing as context (in flight)
+- **Bugs filed:** none
 
-### `team_record_leaderboard` `[?]`
+### `team_record_leaderboard` `[x]`
 - **Example queries:**
   - `best home records this season`
+- **Currently shows (shipped):**
+  - `LeaderboardSection` renders team-ranked rows with logo/name, requested record metric, W-L/games context, split context when present, and collapsed raw detail.
 - **Should show:**
   - Team leaderboard focused on record splits.
   - Each row should show rank, team logo, team name, record, win pct, games, and split context such as home/away.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_stretch_leaderboard` `[?]`
+### `player_stretch_leaderboard` `[~]`
 - **Example queries:**
   - `best 3-game scoring stretches this season`
+- **Currently shows (shipped):**
+  - Generic `LeaderboardSection` ranked rows using the available metric and context columns.
+  - It does not yet expose stretch-specific date ranges, games included, or optional per-game expansion as a primary display.
+- **Follow-up note:** Needs a stretch-specific leaderboard row/card layout; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Hybrid leaderboard/game-log display.
   - Each row should show rank, player headshot, player name, stretch length, date range, team, season, games included, and primary stretch metric such as `41.7 PPG`.
@@ -400,54 +435,72 @@ expectation is:
   - Optional expansion can show individual games inside the stretch.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `lineup_leaderboard` `[?]`
+### `lineup_leaderboard` `[~]`
 - **Example queries:**
   - `best 3-man units this season`
+- **Currently shows (shipped):**
+  - No dedicated lineup branch in `ResultSections`; lineup results fall back to generic section/table rendering when returned with a lineup query class.
+- **Follow-up note:** Needs lineup cards/list with members, team, minutes/games/possessions, and metric context; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Lineup cards/list rather than generic table rows.
   - Each row should show rank, lineup members, team logo, minutes, games, possessions if available, season, and minimum threshold if applicable.
   - Primary metric should match the query: net rating, plus-minus, offensive rating, defensive rating, etc.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `lineup_summary` `[?]`
+### `lineup_summary` `[~]`
 - **Example queries:**
   - `Lakers best lineup`
+- **Currently shows (shipped):**
+  - No dedicated lineup summary branch in `ResultSections`; summary rows fall back to generic rendering.
+- **Follow-up note:** Needs a lineup summary hero/card display; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Team logo/name and lineup members.
   - Main lineup summary: minutes, games, net rating, offensive rating, defensive rating, pace, plus-minus, and any shooting/rebounding split available.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_occurrence_leaders` `[?]`
+### `player_occurrence_leaders` `[x]`
 - **Section component:** `OccurrenceLeaderboardSection`
 - **Example queries:**
   - `most 30-point games this season`
   - `most triple-doubles all-time`
+- **Currently shows (shipped):**
+  - `OccurrenceLeaderboardSection` renders ranked player occurrence rows with headshots, event count hero metric, games/season/team/threshold context, and collapsed `Full Occurrence Detail`.
 - **Should show:**
   - Ranked occurrence leaderboard.
   - Each row should show rank, player headshot, player name, occurrence count as the hero metric, games played, season/range, team if relevant, threshold/condition, and season type.
   - Keep `Full Occurrence Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `team_occurrence_leaders` `[?]`
+### `team_occurrence_leaders` `[x]`
 - **Section component:** `OccurrenceLeaderboardSection`
 - **Example queries:**
   - `most 120-point games this season`
+- **Currently shows (shipped):**
+  - `OccurrenceLeaderboardSection` renders team occurrence rows with logo/name, occurrence count hero metric, season/games/condition/record context when present, and collapsed `Full Occurrence Detail`.
 - **Should show:**
   - Team-first occurrence leaderboard.
   - Each row should show rank, team logo, team name, occurrence count, season, games played, threshold/condition, and record when available.
   - Keep `Full Occurrence Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `top_player_games` `[?]`
+### `top_player_games` `[~]`
 - **Example queries:**
   - `top 10 scoring games this season`
+- **Currently shows (shipped):**
+  - Generic `LeaderboardSection` ranked rows with identity and requested metric.
+  - It does not yet use a game-log leaderboard layout with date, matchup, W/L, and box-score stat context as the primary display.
+- **Follow-up note:** Needs a dedicated top-player-games display; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Ranked game-log leaderboard.
   - Each row should show rank, player headshot, player name, date, team/opponent, W/L, main metric, and supporting box-score stats.
   - Supporting stats should include REB, AST, MIN, FG, 3P, FT, STL, BLK, and TOV when available.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `top_team_games` `[?]`
+### `top_team_games` `[~]`
 - **Example queries:**
   - `top 10 team scoring games this season`
+- **Currently shows (shipped):**
+  - Generic `LeaderboardSection` ranked rows with team identity and requested metric.
+  - It does not yet use a team-game leaderboard layout with date, opponent, W/L, score, and supporting team stats as the primary display.
+- **Follow-up note:** Needs a dedicated top-team-games display; queued in `result_display_followup_queue.md`.
 - **Should show:**
   - Team version of `top_player_games`.
   - Each row should show rank, team logo, team name, date, opponent, W/L, score, main metric, and supporting team stats.
@@ -457,20 +510,24 @@ expectation is:
 
 ## streak
 
-### `player_streak_finder` `[?]`
+### `player_streak_finder` `[x]`
 - **Section component:** `StreakSection`
 - **Example queries:**
   - `Jokic 25-point game streak`
+- **Currently shows (shipped):**
+  - `StreakSection` renders player streak cards with headshot, condition, streak length, active/completed badge, start/end dates, season/season-type context, supporting averages, and collapsed `Full Streak Detail`.
 - **Should show:**
   - Streak cards.
   - Each card should show player headshot, player name, streak condition, streak length as the hero value, active/completed badge, start date, end date, season, and regular/playoffs context.
   - During-streak averages should show when available: PTS, REB, AST, MIN, TS% or eFG%.
   - Keep `Full Streak Detail` available behind the shared collapsed raw-table/detail toggle.
 
-### `team_streak_finder` `[?]`
+### `team_streak_finder` `[x]`
 - **Section component:** `StreakSection`
 - **Example queries:**
   - `Lakers longest win streak`
+- **Currently shows (shipped):**
+  - `StreakSection` renders team streak cards with logo/name, streak type/condition, length, active/completed badge, span/context, record/supporting stats, and collapsed `Full Streak Detail`.
 - **Should show:**
   - Team streak cards.
   - Each card should show team logo, team name, streak type, length, active/completed badge, start/end dates, record/sample, and supporting stats when available.
@@ -480,12 +537,14 @@ expectation is:
 
 ## count / playoff / other
 
-### Playoff routes `[?]`
+### Playoff routes `[x]`
 - **Section component:** `PlayoffSection`
 - **Routes:** `playoff_appearances`, `playoff_history`, `playoff_matchup_history`, `playoff_round_record`
 - **Example queries:**
   - `Lakers playoff history`
   - `Celtics vs Heat playoff matchups`
+- **Currently shows (shipped):**
+  - `PlayoffSection` routes summary, comparison, and leaderboard playoff responses to playoff-specific layouts with team identity, record/appearance/matchup context, season breakdown or series list when present, and collapsed playoff detail tables.
 - **Should show:**
   - `playoff_history`: team logo/name, appearances, total playoff games, playoff record, win pct, titles/finals/conference finals if data exists, plus season breakdown with season, round reached, record, result/opponent when available.
   - `playoff_appearances`: leaderboard with rank, team logo, team name, appearances, era/range, seasons, and record if available.
@@ -553,8 +612,8 @@ These apply to every section and don't belong to any single route entry:
 - Hide internal columns (`player_id`, `team_id`, `team_abbr` when
   redundant with `team_name`) from any rendered table.
 - Raw detail tables are retained for every route but hidden/collapsed by
-  default. They should render behind a consistent `Show raw table` / `View
-  details` toggle so the clean display remains primary while the full
+  default. They should render behind a consistent `Show raw table` / `Hide
+  raw table` toggle so the clean display remains primary while the full
   underlying rows remain available for inspection, debugging, exports, or
   future advanced features.
 - Identity treatment: every player row should show headshot if available,
@@ -563,7 +622,8 @@ These apply to every section and don't belong to any single route entry:
 - Mobile: every layout must work on a phone-sized viewport. Tables that
   need horizontal scroll should keep the identity column sticky.
 - Numeric formatting: per-game averages to 1 decimal. Percentages as
-  `.xxx` (not `xx.x%`). Counts as integers.
+  `xx.x%`, matching the shipped `DataTable`/stat formatting contract.
+  Counts as integers.
 - Freshness: the freshness banner should always show on results, honestly
   reflecting `current_through`.
 - Primary display must answer the query without requiring the raw table.

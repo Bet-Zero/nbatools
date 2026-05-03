@@ -70,6 +70,9 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/product_polish_master_plan.md` — single top-level authority for the product polish push from engineering-complete to friends-tier-production-grade
 - `planning/visual_foundation_plan.md` — Track A Part 1 plan for design tokens, primitives, app shell, imagery, and team theming foundations
 - `planning/component_experience_plan.md` — Track A Part 2 plan for query-class-specific result layouts
+- `planning/result_display_map.md` — route-by-route display intent and reconciliation map for result rendering
+- `planning/result_display_implementation_plan.md` — completed first-pass result display implementation queue
+- `planning/result_display_followup_queue.md` — active follow-up queue for remaining route-level result display gaps
 - `planning/phase_v2_work_queue.md` — completed Track A visual-foundation primitives queue and Phase V2 retrospective
 - `planning/phase_v2_primitives_inventory.md` — primitive needs inventory and API-boundary record produced by Phase V2 item 1
 - `planning/phase_v3_work_queue.md` — completed Track A visual-foundation queue for app shell and layout work

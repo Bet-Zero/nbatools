@@ -52,19 +52,16 @@ not full local suites.
 
 ---
 
-## In-flight reconciliation
+## Shipped reconciliation
 
-Some related work was already shipped or is in flight. Items below
-already account for this:
+Some related work shipped before or during this queue. Items below
+already account for it:
 
-- **PR #200 (in flight)** — leaderboard column hiding + wins/losses
-  context. Item 4 below covers any leaderboard polish remaining after
-  #200 merges. Re-read the leaderboard section component before starting
-  item 4 to see what's already there.
-- **PR #199 (in flight)** — AGENTS.md test guidance. Item kickoff
+- **PR #200** — leaderboard column hiding + wins/losses context.
+  Item 4 covered remaining leaderboard polish after that baseline.
+- **PR #199** — AGENTS.md test guidance. Item kickoff
   guidance in this file already follows the updated rules.
-- **PR #201 (this PR's parent docs branch)** — adds the result display
-  map and this queue. Items below assume this PR has merged.
+- **PR #201** — added the result display map and this queue.
 
 ---
 
@@ -558,7 +555,7 @@ item closes any remaining gaps in one targeted sweep.
   - Mobile responsiveness with sticky identity column on horizontally
     scrolling tables.
   - Numeric formatting: per-game stats to 1 decimal, percentages as
-    `.xxx`, counts as integers.
+    `xx.x%`, counts as integers.
   - Freshness banner appears on every result page.
 - Fix any drifters in one PR (or split per area if the diff is large).
 
@@ -588,7 +585,7 @@ item closes any remaining gaps in one targeted sweep.
 
 ---
 
-## 11. `[ ]` Reconcile map statuses and close out
+## 11. `[x]` Reconcile map statuses and close out
 
 **Why:** Self-propagating final task. After items 1-10, every audited
 route entry in the map should reflect what shipped. This task closes
@@ -641,3 +638,11 @@ the loop and decides what's next.
 
 When all items above are checked `[x]` (or `[-]` with notes), the queue
 is complete. The retrospective on item 11 is the closure artifact.
+
+## Item 11 Closeout Retrospective
+
+Items 1-11 are complete for the first result-display implementation pass.
+`result_display_map.md` now has every route entry marked `[x]` or `[~]`
+with a shipped-display note. The unresolved route-level gaps are carried
+forward in `result_display_followup_queue.md`; that queue is the
+continuation path for the remaining display work.
