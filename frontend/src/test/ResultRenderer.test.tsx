@@ -32,6 +32,7 @@ function makeResponse(overrides: Partial<QueryResponse> = {}): QueryResponse {
 describe("ResultRenderer (substrate)", () => {
   it("routes every result through the fallback table by default", () => {
     const data = makeResponse({
+      route: "unmapped_route",
       result: {
         query_class: "summary",
         result_status: "ok",
@@ -74,6 +75,7 @@ describe("ResultRenderer (substrate)", () => {
 
   it("renders a fallback for every non-empty section", () => {
     const data = makeResponse({
+      route: "unmapped_route",
       result: {
         query_class: "summary",
         result_status: "ok",
@@ -91,6 +93,152 @@ describe("ResultRenderer (substrate)", () => {
     render(<ResultRenderer data={data} />);
     expect(screen.getByText("Summary")).toBeInTheDocument();
     expect(screen.getByText("By Season")).toBeInTheDocument();
+  });
+
+  it("composes player last-N summaries with a game-log answer table", () => {
+    const data = makeResponse({
+      query: "Jokic last 10 games",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic last 10 games",
+          route: "player_game_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              games: 10,
+              wins: 10,
+              losses: 0,
+              pts_avg: 25.3,
+              pts_sum: 253,
+              reb_avg: 14.5,
+              reb_sum: 145,
+              ast_avg: 11.9,
+              ast_sum: 119,
+              minutes_avg: 35.2,
+              minutes_sum: 352,
+            },
+          ],
+          game_log: [
+            {
+              game_id: 1,
+              game_date: "2026-03-22",
+              player_id: 203999,
+              player_name: "Nikola Jokic",
+              team_id: 1610612743,
+              team_abbr: "DEN",
+              team_name: "Denver Nuggets",
+              opponent_team_id: 1610612757,
+              opponent_team_abbr: "POR",
+              opponent_team_name: "Portland Trail Blazers",
+              is_home: 1,
+              wl: "W",
+              minutes: 35,
+              pts: 22,
+              reb: 14,
+              ast: 14,
+            },
+            {
+              game_id: 2,
+              game_date: "2026-03-24",
+              player_id: 203999,
+              player_name: "Nikola Jokic",
+              team_id: 1610612743,
+              team_abbr: "DEN",
+              team_name: "Denver Nuggets",
+              opponent_team_id: 1610612756,
+              opponent_team_abbr: "PHX",
+              opponent_team_name: "Phoenix Suns",
+              is_away: 1,
+              wl: "W",
+              minutes: 35,
+              pts: 23,
+              reb: 17,
+              ast: 17,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Nikola Jokic has averaged 25.3 points, 14.5 rebounds and 11.9 assists in his last 10 games.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "PTS" })).toBeInTheDocument();
+    expect(screen.getByText("Average")).toBeInTheDocument();
+    expect(screen.getByText("Total")).toBeInTheDocument();
+    expect(screen.getByText("253")).toBeInTheDocument();
+    expect(screen.queryByText("Recent Games")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+  });
+
+  it("keeps broad player summaries to the entity summary pattern only", () => {
+    const data = makeResponse({
+      query: "Curry this season",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Curry this season",
+          route: "player_game_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          player_context: {
+            player_id: 201939,
+            player_name: "Stephen Curry",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Stephen Curry",
+              games: 43,
+              pts_avg: 26.558,
+              reb_avg: 3.581,
+              ast_avg: 4.721,
+            },
+          ],
+          game_log: [
+            {
+              game_date: "2025-10-21",
+              player_name: "Stephen Curry",
+              pts: 23,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Stephen Curry has averaged 26.6 points, 3.6 rebounds and 4.7 assists this season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "Game log" })).not.toBeInTheDocument();
   });
 
   it("renders season leaderboards as a sentence hero and dense answer table", () => {

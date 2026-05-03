@@ -13,11 +13,20 @@ import type { QueryResponse } from "../../../api/types";
  * sequence.
  */
 export type PatternConfig =
+  | { type: "entity_summary"; sectionKey?: string }
+  | { type: "game_log"; sectionKey?: string; summaryKey?: string }
   | { type: "leaderboard"; sectionKey?: string }
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
   switch (data.route ?? data.result?.metadata?.route) {
+    case "player_game_summary":
+      return isLastNPlayerSummary(data)
+        ? [
+            { type: "entity_summary", sectionKey: "summary" },
+            { type: "game_log", sectionKey: "game_log", summaryKey: "summary" },
+          ]
+        : [{ type: "entity_summary", sectionKey: "summary" }];
     case "season_leaders":
     case "season_team_leaders":
     case "team_record_leaderboard":
@@ -25,4 +34,14 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     default:
       return [{ type: "fallback_table" }];
   }
+}
+
+function isLastNPlayerSummary(data: QueryResponse): boolean {
+  const windowSize = data.result?.metadata?.window_size;
+  if (typeof windowSize === "number" && Number.isFinite(windowSize)) {
+    return true;
+  }
+
+  const query = `${data.query ?? ""} ${data.result?.metadata?.query_text ?? ""}`;
+  return /\blast\s+\d+\s*(?:games?|gms?)?\b/i.test(query);
 }

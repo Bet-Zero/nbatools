@@ -171,7 +171,7 @@ pattern feels right, proceed to item 3. If not, iterate on
 
 ---
 
-### 3. `[ ]` `EntitySummaryResult` + `GameLogResult` + migrate `player_game_summary`
+### 3. `[x]` `EntitySummaryResult` + `GameLogResult` + migrate `player_game_summary`
 
 **Why:** First compound-pattern test. `player_game_summary` for last-N
 queries needs *both* an entity summary hero AND a game-log table — the

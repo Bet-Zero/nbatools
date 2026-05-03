@@ -1,7 +1,9 @@
 import type { QueryResponse } from "../../api/types";
 import NoResultDisplay from "../NoResultDisplay";
 import { routeToPattern, type PatternConfig } from "./config/routeToPattern";
+import EntitySummaryResult from "./patterns/EntitySummaryResult";
 import FallbackTableResult from "./patterns/FallbackTableResult";
+import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
 import ResultShell from "./primitives/ResultShell";
 
@@ -89,6 +91,16 @@ interface PatternBlockProps {
 
 function PatternBlock({ data, pattern }: PatternBlockProps) {
   switch (pattern.type) {
+    case "entity_summary":
+      return <EntitySummaryResult data={data} sectionKey={pattern.sectionKey} />;
+    case "game_log":
+      return (
+        <GameLogResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          summaryKey={pattern.summaryKey}
+        />
+      );
     case "leaderboard":
       return <LeaderboardResult data={data} sectionKey={pattern.sectionKey} />;
     case "fallback_table":
