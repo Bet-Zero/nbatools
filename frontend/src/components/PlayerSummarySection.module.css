@@ -125,6 +125,12 @@
   overflow-wrap: anywhere;
 }
 
+.gameSeriesNote {
+  color: var(--text-tertiary);
+  font-size: var(--font-small);
+  overflow-wrap: anywhere;
+}
+
 .sparklinePanel {
   min-width: 0;
   max-width: 100%;
@@ -195,7 +201,7 @@
   min-width: 0;
   max-width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(148px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: var(--space-2);
   align-items: stretch;
 }
@@ -235,11 +241,42 @@
   max-width: 100%;
 }
 
+.gameMeta {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.gameContext {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.matchupText,
+.scoreText {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.scoreText {
+  color: var(--text-primary);
+}
+
 .gameStats {
   min-width: 0;
   max-width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--space-12), 1fr));
   gap: var(--space-2);
 }
 
@@ -282,6 +319,7 @@
   }
 
   .gameSeriesHeader,
+  .gameMeta,
   .sparklineMeta {
     align-items: flex-start;
     flex-direction: column;
@@ -293,7 +331,7 @@
 }
 
 @media (max-width: 420px) {
-  .gameStats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .gameContext {
+    justify-content: flex-start;
   }
 }

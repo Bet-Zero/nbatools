@@ -122,6 +122,14 @@ interface GamePoint {
   pts: number;
 }
 
+interface GameStat {
+  key: string;
+  label: string;
+  value: string;
+}
+
+const RECENT_GAME_LIMIT = 30;
+
 function rowKey(row: SectionRow, index: number): string {
   return (
     textValue(row, "game_id") ??
@@ -231,24 +239,169 @@ function outcomeVariant(row: SectionRow): "win" | "loss" | "neutral" {
   return "neutral";
 }
 
-function statLine(): Array<{ key: string; label: string }> {
-  return [
-    { key: "pts", label: "PTS" },
-    { key: "reb", label: "REB" },
-    { key: "ast", label: "AST" },
-    { key: "minutes", label: "MIN" },
+function hasDisplayValue(row: SectionRow, key: string): boolean {
+  const value = row[key];
+  if (value === null || value === undefined) return false;
+  return typeof value !== "string" || value.trim().length > 0;
+}
+
+function madeAttemptStat(
+  row: SectionRow,
+  madeKey: string,
+  attemptKey: string,
+  pctKey: string,
+): string | null {
+  if (hasDisplayValue(row, madeKey) && hasDisplayValue(row, attemptKey)) {
+    return `${formatValue(row[madeKey], madeKey)}-${formatValue(
+      row[attemptKey],
+      attemptKey,
+    )}`;
+  }
+  if (hasDisplayValue(row, pctKey)) return formatValue(row[pctKey], pctKey);
+  if (hasDisplayValue(row, madeKey)) return formatValue(row[madeKey], madeKey);
+  return null;
+}
+
+function signedValue(value: number, key: string): string {
+  const formatted = formatValue(value, key);
+  return value > 0 ? `+${formatted}` : formatted;
+}
+
+function optionalStatValue(row: SectionRow, key: string): string | null {
+  if (!hasDisplayValue(row, key)) return null;
+  const value = row[key];
+  if (key === "plus_minus" && typeof value === "number") {
+    return signedValue(value, key);
+  }
+  return formatValue(value, key);
+}
+
+function statLine(row: SectionRow): GameStat[] {
+  const stats: GameStat[] = [
+    { key: "pts", label: "PTS", value: formatValue(row.pts, "pts") },
+    { key: "reb", label: "REB", value: formatValue(row.reb, "reb") },
+    { key: "ast", label: "AST", value: formatValue(row.ast, "ast") },
+    {
+      key: "minutes",
+      label: "MIN",
+      value: formatValue(row.minutes, "minutes"),
+    },
   ];
+  const optionalStats: Array<GameStat | null> = [
+    statOrNull("fg", "FG", madeAttemptStat(row, "fgm", "fga", "fg_pct")),
+    statOrNull("fg3", "3P", madeAttemptStat(row, "fg3m", "fg3a", "fg3_pct")),
+    statOrNull("ft", "FT", madeAttemptStat(row, "ftm", "fta", "ft_pct")),
+    statOrNull("stl", "STL", optionalStatValue(row, "stl")),
+    statOrNull("blk", "BLK", optionalStatValue(row, "blk")),
+    statOrNull("tov", "TOV", optionalStatValue(row, "tov")),
+    statOrNull("plus_minus", "+/-", optionalStatValue(row, "plus_minus")),
+  ];
+
+  return stats.concat(
+    optionalStats.filter((stat): stat is GameStat => stat !== null),
+  );
+}
+
+function statOrNull(
+  key: string,
+  label: string,
+  value: string | null,
+): GameStat | null {
+  return value === null ? null : { key, label, value };
+}
+
+function isTruthyFlag(value: unknown): boolean {
+  if (value === true || value === 1) return true;
+  if (typeof value === "string") {
+    return ["1", "true", "yes", "y"].includes(value.trim().toLowerCase());
+  }
+  return false;
+}
+
+function matchupText(
+  row: SectionRow,
+  team: ReturnType<typeof opponentIdentity>,
+): string | null {
+  const opponent = team.teamAbbr ?? team.teamName;
+  if (!opponent) return null;
+  if (isTruthyFlag(row.is_away)) return `at ${opponent}`;
+  if (isTruthyFlag(row.is_home)) return `vs ${opponent}`;
+  return String(opponent);
+}
+
+function scorePair(
+  row: SectionRow,
+  firstKey: string,
+  secondKey: string,
+): string | null {
+  if (!hasDisplayValue(row, firstKey) || !hasDisplayValue(row, secondKey)) {
+    return null;
+  }
+  return `${formatValue(row[firstKey], firstKey)}-${formatValue(
+    row[secondKey],
+    secondKey,
+  )}`;
+}
+
+function scoreText(row: SectionRow): string | null {
+  const directScore = textValue(row, "score");
+  if (directScore) return directScore;
+
+  const teamScore =
+    scorePair(row, "team_score", "opponent_score") ??
+    scorePair(row, "team_pts", "opponent_pts") ??
+    scorePair(row, "pts_team", "pts_opponent");
+  if (teamScore) return teamScore;
+
+  if (
+    !hasDisplayValue(row, "score_home") ||
+    !hasDisplayValue(row, "score_away")
+  ) {
+    return null;
+  }
+  if (isTruthyFlag(row.is_away)) {
+    return scorePair(row, "score_away", "score_home");
+  }
+  return scorePair(row, "score_home", "score_away");
+}
+
+function compareRecentRows(
+  a: { row: SectionRow; index: number },
+  b: { row: SectionRow; index: number },
+): number {
+  const aDate = textValue(a.row, "game_date");
+  const bDate = textValue(b.row, "game_date");
+  if (aDate && bDate && aDate !== bDate) return bDate.localeCompare(aDate);
+  if (aDate && !bDate) return -1;
+  if (!aDate && bDate) return 1;
+
+  const aGameId = textValue(a.row, "game_id");
+  const bGameId = textValue(b.row, "game_id");
+  if (aGameId && bGameId && aGameId !== bGameId) {
+    return bGameId.localeCompare(aGameId);
+  }
+
+  return b.index - a.index;
+}
+
+function recentGameRows(rows: SectionRow[]): SectionRow[] {
+  return rows
+    .map((row, index) => ({ row, index }))
+    .sort(compareRecentRows)
+    .slice(0, RECENT_GAME_LIMIT)
+    .map(({ row }) => row);
 }
 
 function RecentGames({ rows }: { rows: SectionRow[] }) {
-  const visibleRows = rows.slice(-5).reverse();
-
   return (
     <div className={styles.recentList} aria-label="Recent games">
-      {visibleRows.map((row, index) => {
+      {rows.map((row, index) => {
         const team = opponentIdentity(row);
         const outcome = textValue(row, "wl")?.toUpperCase() ?? "—";
         const date = textValue(row, "game_date") ?? "Date TBD";
+        const matchup = matchupText(row, team);
+        const score = scoreText(row);
+        const stats = statLine(row);
 
         return (
           <div className={styles.recentGame} key={rowKey(row, index)}>
@@ -263,23 +416,31 @@ function RecentGames({ rows }: { rows: SectionRow[] }) {
                 {outcome}
               </Badge>
             </div>
-            <TeamBadge
-              className={styles.opponentBadge}
-              abbreviation={team.teamAbbr ?? undefined}
-              name={team.teamName ?? team.teamAbbr ?? "Opponent"}
-              logoUrl={team.logoUrl}
-              size="sm"
-              showName={false}
-              style={(team.styleVars ?? undefined) as
-                | CSSProperties
-                | undefined}
-            />
+            <div className={styles.gameMeta}>
+              <TeamBadge
+                className={styles.opponentBadge}
+                abbreviation={team.teamAbbr ?? undefined}
+                name={team.teamName ?? team.teamAbbr ?? "Opponent"}
+                logoUrl={team.logoUrl}
+                size="sm"
+                showName={false}
+                style={(team.styleVars ?? undefined) as
+                  | CSSProperties
+                  | undefined}
+              />
+              {(matchup || score) && (
+                <div className={styles.gameContext}>
+                  {matchup && (
+                    <span className={styles.matchupText}>{matchup}</span>
+                  )}
+                  {score && <span className={styles.scoreText}>{score}</span>}
+                </div>
+              )}
+            </div>
             <div className={styles.gameStats}>
-              {statLine().map(({ key, label }) => (
+              {stats.map(({ key, label, value }) => (
                 <div className={styles.gameStat} key={key}>
-                  <span className={styles.gameStatValue}>
-                    {formatValue(row[key], key)}
-                  </span>
+                  <span className={styles.gameStatValue}>{value}</span>
                   <span className={styles.gameStatLabel}>{label}</span>
                 </div>
               ))}
@@ -309,7 +470,10 @@ export default function PlayerSummarySection({ sections, metadata }: Props) {
   const primaryStats = heroStats(summaryRow);
   const record = recordStat(summaryRow);
   const supportingStats = secondaryStats(summaryRow);
-  const points = scoringPoints(gameLog);
+  const visibleGameLog = recentGameRows(gameLog);
+  const sparklineRows = [...visibleGameLog].reverse();
+  const points = scoringPoints(sparklineRows);
+  const gameLogIsCapped = gameLog.length > visibleGameLog.length;
 
   return (
     <>
@@ -354,14 +518,21 @@ export default function PlayerSummarySection({ sections, metadata }: Props) {
               <div className={styles.gameSeriesHeader}>
                 <div className={styles.gameSeriesTitleBlock}>
                   <div className={styles.eyebrow}>Game Log</div>
-                  <h3 className={styles.gameSeriesTitle}>Recent Games</h3>
+                  <h3 className={styles.gameSeriesTitle}>
+                    Recent Games ({visibleGameLog.length})
+                  </h3>
                 </div>
                 <span className={styles.gameSeriesCount}>
-                  {pluralizeGames(gameLog.length)}
+                  {pluralizeGames(visibleGameLog.length)}
                 </span>
               </div>
+              {gameLogIsCapped && (
+                <div className={styles.gameSeriesNote}>
+                  showing {visibleGameLog.length} of {gameLog.length} games
+                </div>
+              )}
               <ScoringSparkline points={points} />
-              <RecentGames rows={gameLog} />
+              <RecentGames rows={visibleGameLog} />
             </Card>
           )}
 
