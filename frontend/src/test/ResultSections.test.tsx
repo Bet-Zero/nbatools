@@ -2077,7 +2077,7 @@ describe("ResultSections", () => {
     expect(
       screen.queryByLabelText("Head-to-head result"),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("Player Comparison")).toBeInTheDocument();
+    expect(screen.getByText("Nikola Jokic vs Joel Embiid")).toBeInTheDocument();
     expect(screen.getByText("2 players")).toBeInTheDocument();
     expect(screen.getByText("Metric Comparison")).toBeInTheDocument();
     expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
@@ -2099,7 +2099,7 @@ describe("ResultSections", () => {
     expect(within(compared).getByText("7-3")).toBeInTheDocument();
     expect(within(metricCards).getByText("PTS Avg")).toBeInTheDocument();
     expect(
-      within(metricCards).getByText("Joel Embiid leads by 3.7"),
+      within(metricCards).getByText("Joel Embiid +3.7 PTS"),
     ).toBeInTheDocument();
   });
 
