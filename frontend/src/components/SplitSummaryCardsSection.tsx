@@ -62,6 +62,67 @@ function pluralizeGames(count: number): string {
   return `${formatValue(count, "games")} ${count === 1 ? "game" : "games"}`;
 }
 
+function metadataText(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): string | null {
+  const value = metadata?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function metadataNumber(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): number | null {
+  const value = metadata?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function compactStatLabel(stat: string): string {
+  const known: Record<string, string> = {
+    ast: "AST",
+    efg_pct: "eFG%",
+    fg3_pct: "3P%",
+    fg3m: "3PM",
+    plus_minus: "+/-",
+    pts: "PTS",
+    reb: "REB",
+    ts_pct: "TS%",
+  };
+  return known[stat.toLowerCase()] ?? formatColHeader(stat);
+}
+
+function statFilterContext(metadata: ResultMetadata | undefined): string | null {
+  const stat = metadataText(metadata, "stat");
+  if (!stat) return null;
+
+  const label = compactStatLabel(stat);
+  const min = metadataNumber(metadata, "min_value");
+  const max = metadataNumber(metadata, "max_value");
+
+  if (min !== null && max !== null) {
+    return `${formatValue(min, stat)}-${formatValue(max, stat)} ${label}`;
+  }
+  if (min !== null) return `${formatValue(min, stat)}+ ${label}`;
+  if (max !== null) return `<= ${formatValue(max, stat)} ${label}`;
+  return label;
+}
+
+function filterContext(metadata: ResultMetadata | undefined): string | null {
+  const parts = [
+    metadataText(metadata, "team"),
+    metadataText(metadata, "opponent")
+      ? `vs ${metadataText(metadata, "opponent")}`
+      : null,
+    metadataNumber(metadata, "last_n") !== null
+      ? `Last ${formatValue(metadataNumber(metadata, "last_n"), "last_n")} games`
+      : null,
+    statFilterContext(metadata),
+  ];
+
+  return parts.filter(Boolean).join(" / ") || null;
+}
+
 function sampleContext(row: SectionRow | undefined): string {
   const games = numericValue(row, "games_total") ?? numericValue(row, "games");
   const parts = [
@@ -167,27 +228,124 @@ function recordStat(row: SectionRow): StatProps | null {
   };
 }
 
+type MetricCandidate = {
+  options: Array<{
+    key: string;
+    label: string;
+    edgeLabel: string;
+  }>;
+};
+
+const BUCKET_METRICS: MetricCandidate[] = [
+  { options: [{ key: "pts_avg", label: "PTS", edgeLabel: "PPG" }] },
+  { options: [{ key: "reb_avg", label: "REB", edgeLabel: "REB" }] },
+  { options: [{ key: "ast_avg", label: "AST", edgeLabel: "AST" }] },
+  { options: [{ key: "minutes_avg", label: "MIN", edgeLabel: "MIN" }] },
+  {
+    options: [
+      { key: "ts_pct_avg", label: "TS%", edgeLabel: "TS%" },
+      { key: "efg_pct_avg", label: "eFG%", edgeLabel: "eFG%" },
+    ],
+  },
+  {
+    options: [
+      { key: "fg3_pct_avg", label: "3P%", edgeLabel: "3P%" },
+      { key: "fg3_pct", label: "3P%", edgeLabel: "3P%" },
+    ],
+  },
+  { options: [{ key: "fg3m_avg", label: "3PM", edgeLabel: "3PM" }] },
+  { options: [{ key: "plus_minus_avg", label: "+/-", edgeLabel: "+/-" }] },
+];
+const EDGE_METRICS = [
+  BUCKET_METRICS[0],
+  BUCKET_METRICS[2],
+  BUCKET_METRICS[7],
+  BUCKET_METRICS[4],
+  BUCKET_METRICS[5],
+  BUCKET_METRICS[1],
+  BUCKET_METRICS[3],
+];
+
+function metricValue(
+  row: SectionRow,
+  candidate: MetricCandidate,
+): { key: string; value: number; label: string; edgeLabel: string } | null {
+  for (const option of candidate.options) {
+    const value = numericValue(row, option.key);
+    if (value !== null) return { ...option, value };
+  }
+  return null;
+}
+
+function pairedMetricValues(
+  first: SectionRow,
+  second: SectionRow,
+  candidate: MetricCandidate,
+): {
+  key: string;
+  firstValue: number;
+  secondValue: number;
+  edgeLabel: string;
+} | null {
+  for (const option of candidate.options) {
+    const firstValue = numericValue(first, option.key);
+    const secondValue = numericValue(second, option.key);
+    if (firstValue !== null && secondValue !== null) {
+      return {
+        key: option.key,
+        firstValue,
+        secondValue,
+        edgeLabel: option.edgeLabel,
+      };
+    }
+  }
+  return null;
+}
+
 function bucketStats(row: SectionRow): StatProps[] {
   const stats: StatProps[] = [];
   const record = recordStat(row);
   if (record) stats.push(record);
 
-  const candidates: Array<{ key: string; label: string }> = [
-    { key: "pts_avg", label: "PTS" },
-    { key: "reb_avg", label: "REB" },
-    { key: "ast_avg", label: "AST" },
-    { key: "minutes_avg", label: "MIN" },
-    { key: "fg3m_avg", label: "3PM" },
-    { key: "plus_minus_avg", label: "+/-" },
-  ];
-
-  for (const { key, label } of candidates) {
-    const value = numericValue(row, key);
-    if (value === null) continue;
-    stats.push({ label, value: formatValue(value, key) });
+  for (const candidate of BUCKET_METRICS) {
+    const metric = metricValue(row, candidate);
+    if (!metric) continue;
+    stats.push({
+      label: metric.label,
+      value: formatValue(metric.value, metric.key),
+    });
   }
 
-  return stats.slice(0, 4);
+  return stats;
+}
+
+function statColumns(count: number): 1 | 2 | 3 | 4 {
+  if (count >= 4) return 4;
+  if (count === 3) return 3;
+  if (count === 2) return 2;
+  return 1;
+}
+
+function edgeRows(rows: SectionRow[]): string[] {
+  if (rows.length !== 2) return [];
+  const [first, second] = rows;
+  const firstLabel = bucketLabel(first.bucket);
+  const secondLabel = bucketLabel(second.bucket);
+  const edges: string[] = [];
+
+  for (const candidate of EDGE_METRICS) {
+    const metric = pairedMetricValues(first, second, candidate);
+    if (!metric) continue;
+
+    const delta = metric.firstValue - metric.secondValue;
+    if (Math.abs(delta) < 0.05) continue;
+
+    const leader = delta >= 0 ? firstLabel : secondLabel;
+    const value = formatValue(Math.abs(delta), metric.key);
+    edges.push(`${leader} +${value} ${metric.edgeLabel}`);
+  }
+
+  return edges.slice(0, 4);
 }
 
 export default function SplitSummaryCardsSection({
@@ -201,6 +359,8 @@ export default function SplitSummaryCardsSection({
   const resolvedRoute = route ?? metadata?.route;
   const name = entityName(resolvedRoute, metadata, summaryRow);
   const context = sampleContext(summaryRow);
+  const filters = filterContext(metadata);
+  const splitEdges = edgeRows(splitComparison ?? []);
   const scopedTheme = resolveScopedTeamTheme(metadata);
   const title =
     resolvedRoute === "team_split_summary"
@@ -228,7 +388,7 @@ export default function SplitSummaryCardsSection({
                 <div className={styles.eyebrow}>{title}</div>
                 <h2 className={styles.entityName}>{name}</h2>
                 <div className={styles.context}>
-                  {[split, context].filter(Boolean).join(" / ")}
+                  {[split, context, filters].filter(Boolean).join(" / ")}
                 </div>
               </div>
             </div>
@@ -257,13 +417,25 @@ export default function SplitSummaryCardsSection({
                   {stats.length > 0 && (
                     <StatBlock
                       stats={stats}
-                      columns={stats.length >= 4 ? 4 : 2}
+                      columns={statColumns(stats.length)}
                     />
                   )}
                 </div>
               );
             })}
           </div>
+          {splitEdges.length > 0 && (
+            <div className={styles.edgeRow} aria-label="Split edges">
+              <span className={styles.edgeTitle}>Edge</span>
+              <div className={styles.edgeList}>
+                {splitEdges.map((edge) => (
+                  <span className={styles.edgeChip} key={edge}>
+                    {edge}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

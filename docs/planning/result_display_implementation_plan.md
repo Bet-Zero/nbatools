@@ -451,7 +451,7 @@ default sort.
 
 ---
 
-## 8. `[ ]` `player_split_summary` route polish
+## 8. `[x]` `player_split_summary` route polish
 
 **Why:** Match the map's `Should show:` for `player_split_summary`:
 real split cards with edge/delta, not just stacked tables.
