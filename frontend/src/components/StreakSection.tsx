@@ -15,7 +15,7 @@ import {
   resolveTeamIdentity,
 } from "../lib/identity";
 import RawDetailToggle from "./RawDetailToggle";
-import { formatValue } from "./tableFormatting";
+import { formatColHeader, formatValue } from "./tableFormatting";
 import styles from "./StreakSection.module.css";
 
 interface Props {
@@ -40,6 +40,30 @@ function numericValue(row: SectionRow | undefined, key: string): number | null {
 
 function identityId(value: unknown): number | string | null {
   return typeof value === "number" || typeof value === "string" ? value : null;
+}
+
+function metadataText(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): string | null {
+  const value = metadata?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function compactStatLabel(stat: string): string {
+  const known: Record<string, string> = {
+    ast: "AST",
+    blk: "BLK",
+    efg_pct: "eFG%",
+    fg3m: "3PM",
+    plus_minus: "+/-",
+    pts: "PTS",
+    reb: "REB",
+    stl: "STL",
+    tov: "TOV",
+    ts_pct: "TS%",
+  };
+  return known[stat.toLowerCase()] ?? formatColHeader(stat);
 }
 
 function entityKind(route: string | null | undefined, row: SectionRow): EntityKind {
@@ -118,7 +142,38 @@ function entityMark(
 }
 
 function conditionLabel(row: SectionRow): string {
-  return textValue(row, "condition") ?? "Streak";
+  const raw = textValue(row, "condition");
+  if (!raw) return "Streak";
+
+  if (raw === "triple_double") return "Triple-double";
+  if (raw === "made_three") return "Made three";
+  if (raw === "wins") return "Wins";
+  if (raw === "losses") return "Losses";
+
+  const minimumMatch = raw.match(/^([a-z0-9_]+)>=(\d+(?:\.\d+)?)$/i);
+  if (minimumMatch) {
+    const [, stat, value] = minimumMatch;
+    return `${formatValue(Number(value), stat)}+ ${compactStatLabel(stat)}`;
+  }
+
+  const maximumMatch = raw.match(/^([a-z0-9_]+)<=(\d+(?:\.\d+)?)$/i);
+  if (maximumMatch) {
+    const [, stat, value] = maximumMatch;
+    return `<= ${formatValue(Number(value), stat)} ${compactStatLabel(stat)}`;
+  }
+
+  const rangeMatch = raw.match(
+    /^([a-z0-9_]+):(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/i,
+  );
+  if (rangeMatch) {
+    const [, stat, min, max] = rangeMatch;
+    return `${formatValue(Number(min), stat)}-${formatValue(
+      Number(max),
+      stat,
+    )} ${compactStatLabel(stat)}`;
+  }
+
+  return formatColHeader(raw);
 }
 
 function pluralizeGames(value: number): string {
@@ -180,9 +235,9 @@ function secondaryStats(row: SectionRow): StatProps[] {
     { key: "reb_avg", label: "REB" },
     { key: "ast_avg", label: "AST" },
     { key: "minutes_avg", label: "MIN" },
-    { key: "fg3m_avg", label: "3PM" },
-    { key: "efg_pct_avg", label: "eFG%" },
     { key: "ts_pct_avg", label: "TS%" },
+    { key: "efg_pct_avg", label: "eFG%" },
+    { key: "fg3m_avg", label: "3PM" },
     { key: "plus_minus_avg", label: "+/-" },
   ];
 
@@ -192,7 +247,7 @@ function secondaryStats(row: SectionRow): StatProps[] {
     stats.push({ label, value: formatValue(value, key) });
   }
 
-  return stats.slice(0, 4);
+  return stats;
 }
 
 function dateSpan(row: SectionRow): ReactNode {
@@ -217,9 +272,27 @@ function dateSpan(row: SectionRow): ReactNode {
   );
 }
 
-function contextText(row: SectionRow): string {
+function contextText(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+): string {
   const games = numericValue(row, "games");
-  return games !== null ? pluralizeGames(games) : "";
+  const season =
+    textValue(row, "seasons") ??
+    textValue(row, "season") ??
+    metadataText(metadata, "season") ??
+    (metadata?.start_season && metadata?.end_season
+      ? metadata.start_season === metadata.end_season
+        ? metadata.start_season
+        : `${metadata.start_season} to ${metadata.end_season}`
+      : null);
+  const parts = [
+    games !== null ? pluralizeGames(games) : null,
+    season,
+    textValue(row, "season_type") ?? metadataText(metadata, "season_type"),
+  ];
+
+  return parts.filter(Boolean).join(" / ");
 }
 
 export default function StreakSection({ sections, metadata, route }: Props) {
@@ -238,7 +311,7 @@ export default function StreakSection({ sections, metadata, route }: Props) {
           const name = entityName(kind, metadata, row);
           const stats = secondaryStats(row);
           const status = activeBadge(row);
-          const context = contextText(row);
+          const context = contextText(row, metadata);
           const span = dateSpan(row);
           const hasSpanContext = Boolean(context || span);
           return (
@@ -284,7 +357,7 @@ export default function StreakSection({ sections, metadata, route }: Props) {
               {stats.length > 0 && (
                 <StatBlock
                   stats={stats}
-                  columns={stats.length >= 4 ? 4 : 2}
+                  columns={stats.length >= 4 ? 4 : stats.length >= 2 ? 2 : 1}
                   className={styles.statBlock}
                 />
               )}

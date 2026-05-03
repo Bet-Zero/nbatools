@@ -118,6 +118,57 @@
   min-width: 0;
 }
 
+.breakdownPanel {
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.breakdownTitle {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.breakdownList {
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.breakdownRow {
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: minmax(var(--space-16), auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.breakdownSeason {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.breakdownContext {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
 .leaderboardList {
   min-width: 0;
   max-width: 100%;
@@ -270,6 +321,15 @@
 }
 
 @media (max-width: 520px) {
+  .breakdownRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .breakdownRow .recordPill {
+    grid-column: auto;
+    justify-self: start;
+  }
+
   .leaderboardEntity,
   .participantIdentity {
     align-items: flex-start;

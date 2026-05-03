@@ -130,6 +130,76 @@ function metadataText(
   return trimmed ? trimmed : null;
 }
 
+function metadataNumber(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): number | null {
+  const value = metadata?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function compactStatLabel(stat: string): string {
+  return occurrenceMetricLabel(stat).replace(/^Games /, "");
+}
+
+function formatCondition(stat: string, min: number | null, max: number | null): string {
+  const label = compactStatLabel(stat);
+  if (min !== null && max !== null) {
+    return `${formatValue(min, stat)}-${formatValue(max, stat)} ${label}`;
+  }
+  if (min !== null) return `${formatValue(min, stat)}+ ${label}`;
+  if (max !== null) return `<= ${formatValue(max, stat)} ${label}`;
+  return label;
+}
+
+function metadataCondition(metadata: ResultMetadata | undefined): string | null {
+  for (const key of ["threshold_conditions", "extra_conditions"]) {
+    const raw = metadata?.[key];
+    if (!Array.isArray(raw)) continue;
+
+    const conditions = raw
+      .map((condition) => {
+        if (!condition || typeof condition !== "object") return null;
+        const value = condition as Record<string, unknown>;
+        if (typeof value.stat !== "string") return null;
+        return formatCondition(
+          value.stat,
+          typeof value.min_value === "number" ? value.min_value : null,
+          typeof value.max_value === "number" ? value.max_value : null,
+        );
+      })
+      .filter((value): value is string => Boolean(value));
+
+    if (conditions.length > 0) {
+      return Array.from(new Set(conditions)).join(", ");
+    }
+  }
+
+  const occurrenceEvent = metadata?.occurrence_event;
+  if (
+    occurrenceEvent &&
+    typeof occurrenceEvent === "object" &&
+    !Array.isArray(occurrenceEvent)
+  ) {
+    const value = occurrenceEvent as Record<string, unknown>;
+    if (typeof value.stat === "string") {
+      return formatCondition(
+        value.stat,
+        typeof value.min_value === "number" ? value.min_value : null,
+        typeof value.max_value === "number" ? value.max_value : null,
+      );
+    }
+  }
+
+  const stat = metadataText(metadata, "stat");
+  if (!stat) return null;
+  return formatCondition(
+    stat,
+    metadataNumber(metadata, "min_value"),
+    metadataNumber(metadata, "max_value"),
+  );
+}
+
 function seasonLabel(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
@@ -243,6 +313,7 @@ function occurrenceMetricLabel(metric: string): string {
 function contextItems(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
+  metric: string | null,
 ): ContextItem[] {
   const items: ContextItem[] = [];
   const hasPlayerIdentity = Boolean(
@@ -264,13 +335,27 @@ function contextItems(
     textValue(row, "season_type") ?? metadataText(metadata, "season_type"),
   );
   addContextItem(items, "date", dateLabel(row, metadata));
+  addContextItem(items, "condition", metadataCondition(metadata));
 
   const team = textValue(row, "team_abbr");
   if (team && hasPlayerIdentity) {
     addContextItem(items, "team_abbr", team);
   }
 
+  const wins = row.wins;
+  const losses = row.losses;
+  if (
+    (typeof wins === "number" || typeof wins === "string") &&
+    (typeof losses === "number" || typeof losses === "string")
+  ) {
+    addContextItem(items, "record", `${formatValue(wins, "wins")}-${formatValue(
+      losses,
+      "losses",
+    )}`);
+  }
+
   for (const [key, label] of QUALIFIER_COLUMNS) {
+    if (key === metric) continue;
     if (!hasValue(row[key])) continue;
     const formatted = formatValue(row[key], key);
     addContextItem(items, key, label ? `${label} ${formatted}` : formatted);
@@ -334,7 +419,7 @@ export default function OccurrenceLeaderboardSection({
         {leaderboard.map((row, index) => {
           const metric = occurrenceMetricColumn(row);
           const identity = rowIdentity(row);
-          const context = contextItems(row, metadata);
+          const context = contextItems(row, metadata, metric);
           const label = identity?.label ?? entityLabel(row);
           const isTopRank = index === 0;
 
