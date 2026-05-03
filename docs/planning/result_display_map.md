@@ -274,18 +274,15 @@ expectation is:
   - Recent matchup list only if the data exists.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_on_off` `[~]`
+### `player_on_off` `[x]`
 - **Example queries:**
   - `Lakers on/off LeBron`
 - **Currently shows (shipped):**
-  - The route does not have a dedicated frontend branch. Depending on response class, it falls through to count/fallback-style rendering rather than on/off cards.
-- **Follow-up note:** Needs a dedicated on/off split display; queued in `result_display_followup_queue.md`.
-- **Should show:**
-  - On/off split display with player identity and team context.
-  - Separate `On` and `Off` cards.
-  - Show minutes/possessions, net rating, offensive rating, defensive rating, pace, plus-minus, and primary box-score rates if available.
-  - Include a clear difference/impact row: `On +X.X net rating`, etc.
-  - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
+  - Dedicated on/off split display with player identity, player headshot fallback, and team badge/context.
+  - Separate `On` and `Off` cards when both split rows are returned; single-state queries render the available split card.
+  - Cards show games, minutes, possessions, offensive rating, defensive rating, net rating, pace, plus-minus, and primary box-score rates when those fields are present in the response.
+  - When both `On` and `Off` rows include net rating, an impact row identifies the larger side, e.g. `On +X.X net rating`; plus-minus is used as the fallback comparison metric.
+  - Raw split rows remain available behind the shared collapsed `RawDetailToggle`.
 
 ---
 

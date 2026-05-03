@@ -107,6 +107,141 @@ describe("ResultSections", () => {
     expect(screen.getByText("Full Summary")).toBeInTheDocument();
   });
 
+  it("routes player on/off summaries to split cards with impact detail", async () => {
+    const data = makeResponse({
+      route: "player_on_off",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "player_on_off",
+          season: "2024-25",
+          season_type: "Regular Season",
+          presence_state: "both",
+          player_context: {
+            player_id: 2544,
+            player_name: "LeBron James",
+          },
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              season: "2024-25",
+              season_type: "Regular Season",
+              player_name: "LeBron James",
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+              presence_state: "on",
+              gp: 54,
+              minutes: 1820.5,
+              possessions: 3921,
+              off_rating: 116.8,
+              def_rating: 109.4,
+              net_rating: 7.4,
+              pace: 99.6,
+              plus_minus: 312,
+              pts_avg: 25.7,
+              reb_avg: 7.3,
+              ast_avg: 8.2,
+            },
+            {
+              season: "2024-25",
+              season_type: "Regular Season",
+              player_name: "LeBron James",
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+              presence_state: "off",
+              gp: 54,
+              minutes: 779.2,
+              possessions: 1640,
+              off_rating: 109.2,
+              def_rating: 112.3,
+              net_rating: -3.1,
+              pace: 98.4,
+              plus_minus: -88,
+              pts_avg: 21.4,
+              reb_avg: 6.1,
+              ast_avg: 6.4,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Player On/Off")).toBeInTheDocument();
+    expect(screen.getByText("On/Off Split")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "LeBron James" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("LeBron James avatar")).toBeInTheDocument();
+    expect(screen.getByLabelText("Los Angeles Lakers (LAL)")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "On" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Off" })).toBeInTheDocument();
+    expect(screen.getByText("On Court")).toBeInTheDocument();
+    expect(screen.getByText("Off Court")).toBeInTheDocument();
+    expect(screen.getAllByText("MIN").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Poss").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("ORtg").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("DRtg").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Net").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Pace").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("+/-").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("PTS").length).toBeGreaterThan(0);
+    expect(screen.getByText("On +10.5 net rating")).toBeInTheDocument();
+
+    const detail = screen.getByRole("region", { name: "On/Off Detail" });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+    await openRawTable("On/Off Detail");
+  });
+
+  it("renders a single player on/off split without an impact row", () => {
+    const data = makeResponse({
+      route: "player_on_off",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "player_on_off",
+          player: "Mystery Player",
+          team: "LAL",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Mystery Player",
+              team_abbr: "LAL",
+              presence_state: "off",
+              minutes: 200,
+              net_rating: -4.2,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Player On/Off")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Mystery Player" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Off" })).toBeInTheDocument();
+    expect(screen.getByText("Off Court")).toBeInTheDocument();
+    expect(screen.queryByText("Impact")).not.toBeInTheDocument();
+    expect(screen.getByText("On/Off Detail")).toBeInTheDocument();
+  });
+
   it("renders a scoring sparkline and recent games from player game logs", () => {
     const data = makeResponse({
       result: {

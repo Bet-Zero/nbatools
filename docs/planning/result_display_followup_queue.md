@@ -68,7 +68,7 @@ aggregate team comparisons still fall back to generic comparison tables.
 
 ---
 
-## 3. `[ ]` `player_on_off` split display
+## 3. `[x]` `player_on_off` split display
 
 **Route:** `player_on_off`
 
