@@ -5,6 +5,7 @@ import EntitySummaryResult from "./patterns/EntitySummaryResult";
 import FallbackTableResult from "./patterns/FallbackTableResult";
 import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
+import SplitResult from "./patterns/SplitResult";
 import ResultShell from "./primitives/ResultShell";
 
 interface Props {
@@ -117,6 +118,19 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           sentenceMetricLabel={pattern.sentenceMetricLabel}
           valueSuffix={pattern.valueSuffix}
           verb={pattern.verb}
+        />
+      );
+    case "split":
+      return (
+        <SplitResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          summaryKey={pattern.summaryKey}
+          subject={pattern.subject}
+          bucketKey={pattern.bucketKey}
+          splitLabelOverride={pattern.splitLabelOverride}
+          primaryDetailTitle={pattern.primaryDetailTitle}
+          summaryDetailTitle={pattern.summaryDetailTitle}
         />
       );
     case "fallback_table":

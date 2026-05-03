@@ -34,6 +34,16 @@ export type PatternConfig =
       valueSuffix?: string;
       verb?: string;
     }
+  | {
+      type: "split";
+      sectionKey?: string;
+      summaryKey?: string | null;
+      subject?: "player" | "team";
+      bucketKey?: string;
+      splitLabelOverride?: string;
+      primaryDetailTitle?: string;
+      summaryDetailTitle?: string | null;
+    }
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
@@ -93,6 +103,23 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           mode: "team",
           rawDetailTitle: "Game Detail",
           detailSectionKeys: ["summary", "by_season", "top_performers"],
+        },
+      ];
+    case "player_split_summary":
+      return [{ type: "split", subject: "player" }];
+    case "team_split_summary":
+      return [{ type: "split", subject: "team" }];
+    case "player_on_off":
+      return [
+        {
+          type: "split",
+          sectionKey: "summary",
+          summaryKey: "summary",
+          subject: "player",
+          bucketKey: "presence_state",
+          splitLabelOverride: "On/Off",
+          primaryDetailTitle: "On/Off Detail",
+          summaryDetailTitle: null,
         },
       ];
     case "season_leaders":

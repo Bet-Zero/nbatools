@@ -818,4 +818,223 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("Top Performers Detail")).toBeInTheDocument();
     expect(screen.queryByText("Top player performers")).not.toBeInTheDocument();
   });
+
+  it("renders player split summaries through the split pattern", () => {
+    const data = makeResponse({
+      query: "Jokic home vs away",
+      route: "player_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic home vs away",
+          route: "player_split_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          split_type: "home_away",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              season_start: "2025-26",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              split: "home_away",
+              games_total: 8,
+            },
+          ],
+          split_comparison: [
+            {
+              bucket: "home",
+              games: 4,
+              wins: 3,
+              losses: 1,
+              win_pct: 0.75,
+              pts_avg: 31.4,
+              reb_avg: 12.1,
+              ast_avg: 8.2,
+              minutes_avg: 34.6,
+              ts_pct_avg: 0.668,
+              fg3_pct_avg: 0.412,
+              plus_minus_avg: 8.5,
+            },
+            {
+              bucket: "away",
+              games: 4,
+              wins: 2,
+              losses: 2,
+              win_pct: 0.5,
+              pts_avg: 28.2,
+              reb_avg: 10,
+              ast_avg: 9.4,
+              minutes_avg: 35.1,
+              ts_pct_avg: 0.631,
+              fg3_pct_avg: 0.356,
+              plus_minus_avg: 1.2,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText("Nikola Jokic's home/away split for 2025-26 Regular Season."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Split buckets" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "PTS" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "+/-" })).toBeInTheDocument();
+    expect(screen.getByText("Home +3.2 PPG")).toBeInTheDocument();
+    expect(screen.getByText("Split Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Split Comparison Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Player Split Summary")).not.toBeInTheDocument();
+  });
+
+  it("renders team split summaries with team identity", () => {
+    const data = makeResponse({
+      query: "Lakers home vs away",
+      route: "team_split_summary",
+      result: {
+        query_class: "split_summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers home vs away",
+          route: "team_split_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          split_type: "home_away",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              season_start: "2025-26",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              split: "home_away",
+              games_total: 10,
+            },
+          ],
+          split_comparison: [
+            {
+              bucket: "home",
+              games: 5,
+              wins: 4,
+              losses: 1,
+              pts_avg: 118,
+              ast_avg: 28,
+              plus_minus_avg: 7.4,
+            },
+            {
+              bucket: "away",
+              games: 5,
+              wins: 2,
+              losses: 3,
+              pts_avg: 110,
+              ast_avg: 23,
+              plus_minus_avg: -2.1,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Los Angeles Lakers' home/away split for 2025-26 Regular Season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Los Angeles Lakers")).toBeInTheDocument();
+    expect(screen.getByText("Home +8 PPG")).toBeInTheDocument();
+  });
+
+  it("renders player on-off summaries as split results", () => {
+    const data = makeResponse({
+      query: "Lakers on/off LeBron",
+      route: "player_on_off",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers on/off LeBron",
+          route: "player_on_off",
+          season: "2025-26",
+          season_type: "Regular Season",
+          player_context: {
+            player_id: 2544,
+            player_name: "LeBron James",
+          },
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              season: "2025-26",
+              season_type: "Regular Season",
+              player_name: "LeBron James",
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+              presence_state: "on",
+              gp: 20,
+              minutes: 640,
+              off_rating: 120.4,
+              def_rating: 108,
+              net_rating: 12.4,
+              plus_minus: 180,
+            },
+            {
+              season: "2025-26",
+              season_type: "Regular Season",
+              player_name: "LeBron James",
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+              presence_state: "off",
+              gp: 20,
+              minutes: 320,
+              off_rating: 106.2,
+              def_rating: 109.1,
+              net_rating: -2.9,
+              plus_minus: -42,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText("LeBron James' on/off split for 2025-26 Regular Season."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Net" })).toBeInTheDocument();
+    expect(screen.getByText("On +15.3 net rating")).toBeInTheDocument();
+    expect(screen.getByText("On/Off Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Player On/Off")).not.toBeInTheDocument();
+  });
 });

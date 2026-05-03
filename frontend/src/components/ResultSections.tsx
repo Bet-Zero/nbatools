@@ -8,10 +8,7 @@ import HeadToHeadSection from "./HeadToHeadSection";
 import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
 import PlayerComparisonSection from "./PlayerComparisonSection";
-import PlayerOnOffSection from "./PlayerOnOffSection";
 import PlayoffSection from "./PlayoffSection";
-import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
-import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
 import TeamComparisonSection from "./TeamComparisonSection";
@@ -49,11 +46,6 @@ function isTeamRecord(data: QueryResponse): boolean {
   return route === "team_record";
 }
 
-function isPlayerOnOff(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "player_on_off";
-}
-
 function isLineupSummary(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "lineup_summary";
@@ -67,11 +59,6 @@ function isTeamComparison(data: QueryResponse): boolean {
 function isTeamMatchupRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_matchup_record";
-}
-
-function isOwnedSplitSummary(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "team_split_summary" || route === "player_split_summary";
 }
 
 function isOwnedStreak(data: QueryResponse): boolean {
@@ -113,14 +100,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             metadata={data.result?.metadata}
             queryClass={queryClass}
             route={data.route}
-          />
-        );
-      }
-      if (isPlayerOnOff(data)) {
-        return (
-          <PlayerOnOffSection
-            sections={sections}
-            metadata={data.result?.metadata}
           />
         );
       }
@@ -190,16 +169,7 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <ComparisonSection sections={sections} />;
     case "split_summary":
-      if (isOwnedSplitSummary(data)) {
-        return (
-          <SplitSummaryCardsSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            route={data.route}
-          />
-        );
-      }
-      return <SplitSummarySection sections={sections} />;
+      return renderFallback(sections);
     case "finder":
       return <FinderSection sections={sections} />;
     case "leaderboard":

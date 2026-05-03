@@ -263,7 +263,7 @@ rebounds`, `Curry's 50-point games`, `top 10 scoring games this season`.
 
 ---
 
-### 6. `[ ]` `SplitResult` + migrate split routes
+### 6. `[x]` `SplitResult` + migrate split routes
 
 **Why:** Splits have a distinct shape (multi-bucket comparison of one
 subject) that doesn't fit `LeaderboardResult` or `GameLogResult`.
