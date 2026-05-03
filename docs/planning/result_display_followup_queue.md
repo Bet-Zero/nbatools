@@ -167,7 +167,7 @@ box-score context.
 
 ---
 
-## 7. `[ ]` `game_summary` top performers
+## 7. `[x]` `game_summary` top performers
 
 **Route:** `game_summary`
 

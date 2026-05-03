@@ -1059,6 +1059,113 @@ describe("ResultSections", () => {
     expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
   });
 
+  it("renders game summary top player performers from supplied rows", () => {
+    const data = makeResponse({
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "game_summary",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Boston Celtics",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ team_name: "Boston Celtics", games: 1 }],
+          game_log: [
+            {
+              game_date: "2025-01-15",
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              opponent_team_abbr: "MIA",
+              wl: "W",
+              pts: 118,
+              opponent_pts: 110,
+            },
+          ],
+          top_performers: [
+            {
+              leader_type: "pts",
+              leader_label: "Points",
+              player_id: 1628369,
+              player_name: "Jayson Tatum",
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              game_date: "2025-01-15",
+              opponent_team_abbr: "MIA",
+              wl: "W",
+              value: 38,
+              pts: 38,
+              reb: 5,
+              ast: 4,
+              minutes: 36,
+            },
+            {
+              leader_type: "reb",
+              leader_label: "Rebounds",
+              player_id: 201143,
+              player_name: "Al Horford",
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              game_date: "2025-01-15",
+              opponent_team_abbr: "MIA",
+              wl: "W",
+              value: 16,
+              pts: 12,
+              reb: 16,
+              ast: 2,
+              minutes: 31,
+            },
+            {
+              leader_type: "ast",
+              leader_label: "Assists",
+              player_id: 1627759,
+              player_name: "Jaylen Brown",
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+              game_date: "2025-01-15",
+              opponent_team_abbr: "MIA",
+              wl: "W",
+              value: 13,
+              pts: 20,
+              reb: 6,
+              ast: 13,
+              minutes: 34,
+            },
+          ],
+        },
+      },
+    });
+
+    render(<ResultSections data={data} />);
+
+    expect(screen.getByText("Top Performers")).toBeInTheDocument();
+    const performers = screen.getByLabelText("Top player performers");
+    expect(within(performers).getByText("Points")).toBeInTheDocument();
+    expect(within(performers).getByText("Rebounds")).toBeInTheDocument();
+    expect(within(performers).getByText("Assists")).toBeInTheDocument();
+    expect(within(performers).getByText("Jayson Tatum")).toBeInTheDocument();
+    expect(within(performers).getByText("Al Horford")).toBeInTheDocument();
+    expect(within(performers).getByText("Jaylen Brown")).toBeInTheDocument();
+    expect(within(performers).getAllByText("38").length).toBeGreaterThan(0);
+    expect(within(performers).getAllByText("16").length).toBeGreaterThan(0);
+    expect(within(performers).getAllByText("13").length).toBeGreaterThan(0);
+    expect(screen.getByText("Top Performers Detail")).toBeInTheDocument();
+    const detail = screen.getByRole("region", {
+      name: "Top Performers Detail",
+    });
+    expect(within(detail).queryByRole("table")).not.toBeInTheDocument();
+  });
+
   it("routes team records to the dedicated record renderer", () => {
     const data = makeResponse({
       route: null,

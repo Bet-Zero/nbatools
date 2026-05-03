@@ -7,6 +7,7 @@ from nbatools.commands.data_utils import (
     build_opponent_mask,
     describe_opponent_filter,
     filter_without_player,
+    load_player_games_for_seasons,
     load_team_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
@@ -60,6 +61,31 @@ GAME_LOG_COLUMNS = [
     "ft_pct",
     "efg_pct",
     "ts_pct",
+]
+
+TOP_PERFORMER_METRICS = [
+    ("pts", "Points"),
+    ("reb", "Rebounds"),
+    ("ast", "Assists"),
+]
+
+TOP_PERFORMER_COLUMNS = [
+    "leader_type",
+    "leader_label",
+    "player_name",
+    "player_id",
+    "team_id",
+    "team_abbr",
+    "team_name",
+    "game_id",
+    "game_date",
+    "opponent_team_abbr",
+    "wl",
+    "value",
+    "pts",
+    "reb",
+    "ast",
+    "minutes",
 ]
 
 
@@ -166,6 +192,77 @@ def _build_game_log_section(df: pd.DataFrame) -> pd.DataFrame:
     return game_log
 
 
+def _build_top_performers_section(
+    team_games: pd.DataFrame,
+    *,
+    seasons: list[str],
+    season_type: str,
+    player_df: pd.DataFrame | None = None,
+) -> tuple[pd.DataFrame | None, str | None]:
+    team_required = {"game_id", "team_id"}
+    missing_team = sorted(team_required - set(team_games.columns))
+    if missing_team:
+        return None, f"top player performers unavailable: game rows missing {missing_team}"
+
+    if player_df is None:
+        try:
+            player_df = load_player_games_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            return None, "top player performers unavailable: player box-score data is missing"
+
+    required = {"game_id", "team_id", "player_name", "player_id"}
+    missing = sorted(required - set(player_df.columns))
+    if missing:
+        return None, f"top player performers unavailable: player rows missing {missing}"
+
+    game_keys = team_games[["game_id", "team_id"]].drop_duplicates()
+    players = player_df.merge(game_keys, on=["game_id", "team_id"], how="inner")
+    if players.empty:
+        return None, "top player performers unavailable: no player rows matched the game sample"
+
+    if "game_date" in players.columns:
+        players["game_date"] = pd.to_datetime(players["game_date"], errors="coerce")
+
+    rows: list[dict[str, object]] = []
+    for metric, label in TOP_PERFORMER_METRICS:
+        if metric not in players.columns:
+            continue
+        candidates = players[players[metric].notna()].copy()
+        if candidates.empty:
+            continue
+        sort_columns = [metric, "player_name"]
+        sort_ascending = [False, True]
+        if "game_date" in candidates.columns:
+            sort_columns.insert(1, "game_date")
+            sort_ascending.insert(1, True)
+        leader = candidates.sort_values(
+            sort_columns,
+            ascending=sort_ascending,
+        ).iloc[0]
+
+        row = {
+            "leader_type": metric,
+            "leader_label": label,
+            "value": leader[metric],
+        }
+        for col in TOP_PERFORMER_COLUMNS:
+            if col in row:
+                continue
+            if col in leader.index:
+                row[col] = leader[col]
+        rows.append(row)
+
+    if not rows:
+        return None, "top player performers unavailable: points/rebounds/assists columns missing"
+
+    out = pd.DataFrame(rows)
+    cols = [col for col in TOP_PERFORMER_COLUMNS if col in out.columns]
+    out = out.loc[:, cols].copy()
+    if "game_date" in out.columns:
+        out["game_date"] = pd.to_datetime(out["game_date"]).dt.strftime("%Y-%m-%d")
+    return out, None
+
+
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -185,8 +282,10 @@ def build_result(
     start_date: str | None = None,
     end_date: str | None = None,
     df: pd.DataFrame | None = None,
+    player_df: pd.DataFrame | None = None,
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
+    df_was_supplied = df is not None
 
     if home_only and away_only:
         raise ValueError("Cannot use both home_only and away_only")
@@ -297,6 +396,15 @@ def build_result(
         last_n is not None or start_date is not None or end_date is not None or total_games <= 5
     )
     game_log = _build_game_log_section(df) if include_game_log else None
+    top_performers: pd.DataFrame | None = None
+    top_performer_note: str | None = None
+    if include_game_log and (player_df is not None or not df_was_supplied):
+        top_performers, top_performer_note = _build_top_performers_section(
+            df,
+            seasons=seasons,
+            season_type=season_type,
+            player_df=player_df,
+        )
 
     agg_map = {
         "games": ("game_id", "count"),
@@ -346,11 +454,14 @@ def build_result(
         if max_value is not None:
             threshold_parts.append(f"<= {max_value}")
         caveats.append(" ".join(threshold_parts))
+    if top_performer_note:
+        caveats.append(top_performer_note)
 
     return SummaryResult(
         summary=summary,
         by_season=by_season,
         game_log=game_log,
+        top_performers=top_performers,
         current_through=current_through,
         caveats=caveats,
     )
