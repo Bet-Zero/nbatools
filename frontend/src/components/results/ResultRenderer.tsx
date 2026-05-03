@@ -2,6 +2,7 @@ import type { QueryResponse } from "../../api/types";
 import NoResultDisplay from "../NoResultDisplay";
 import { routeToPattern, type PatternConfig } from "./config/routeToPattern";
 import FallbackTableResult from "./patterns/FallbackTableResult";
+import LeaderboardResult from "./patterns/LeaderboardResult";
 import ResultShell from "./primitives/ResultShell";
 
 interface Props {
@@ -88,6 +89,8 @@ interface PatternBlockProps {
 
 function PatternBlock({ data, pattern }: PatternBlockProps) {
   switch (pattern.type) {
+    case "leaderboard":
+      return <LeaderboardResult data={data} sectionKey={pattern.sectionKey} />;
     case "fallback_table":
       return <FallbackTableResult data={data} />;
     default:

@@ -12,10 +12,17 @@ import type { QueryResponse } from "../../../api/types";
  * `docs/planning/result_display_implementation_plan.md` for the build
  * sequence.
  */
-export type PatternConfig = { type: "fallback_table" };
+export type PatternConfig =
+  | { type: "leaderboard"; sectionKey?: string }
+  | { type: "fallback_table" };
 
-export function routeToPattern(_data: QueryResponse): PatternConfig[] {
-  // Intentionally empty switch for now. Pattern mappings will be added
-  // here as patterns ship — one route per case, no speculation.
-  return [{ type: "fallback_table" }];
+export function routeToPattern(data: QueryResponse): PatternConfig[] {
+  switch (data.route ?? data.result?.metadata?.route) {
+    case "season_leaders":
+    case "season_team_leaders":
+    case "team_record_leaderboard":
+      return [{ type: "leaderboard", sectionKey: "leaderboard" }];
+    default:
+      return [{ type: "fallback_table" }];
+  }
 }
