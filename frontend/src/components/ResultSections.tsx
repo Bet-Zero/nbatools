@@ -15,7 +15,6 @@ import PlayerGameFinderSection from "./PlayerGameFinderSection";
 import PlayerOnOffSection from "./PlayerOnOffSection";
 import PlayerStretchLeaderboardSection from "./PlayerStretchLeaderboardSection";
 import PlayoffSection from "./PlayoffSection";
-import PlayerSummarySection from "./PlayerSummarySection";
 import SplitSummaryCardsSection from "./SplitSummaryCardsSection";
 import SplitSummarySection from "./SplitSummarySection";
 import StreakSection from "./StreakSection";
@@ -42,13 +41,6 @@ const SECTION_LABELS: Record<string, string> = {
 
 function sectionLabel(key: string): string {
   return SECTION_LABELS[key] ?? key.replace(/_/g, " ");
-}
-
-function isPlayerSummary(data: QueryResponse): boolean {
-  return (
-    data.route === "player_game_summary" ||
-    data.result?.metadata?.route === "player_game_summary"
-  );
 }
 
 function isPlayerComparison(data: QueryResponse): boolean {
@@ -172,14 +164,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
             metadata={data.result?.metadata}
             queryClass={queryClass}
             route={data.route}
-          />
-        );
-      }
-      if (isPlayerSummary(data)) {
-        return (
-          <PlayerSummarySection
-            sections={sections}
-            metadata={data.result?.metadata}
           />
         );
       }
