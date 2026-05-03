@@ -25,6 +25,23 @@ ALLOWED_STATS = {
 }
 
 
+def _select_output_columns(
+    df: pd.DataFrame,
+    required: list[str],
+    optional: list[str],
+) -> list[str]:
+    missing = [col for col in required if col not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns for output: {missing}")
+
+    selected: list[str] = []
+    for col in [*required, *optional]:
+        if col not in df.columns or col in selected:
+            continue
+        selected.append(col)
+    return selected
+
+
 def build_result(
     season: str,
     stat: str,
@@ -66,9 +83,9 @@ def build_result(
 
     df = data_read_csv(path)
 
-    # Player game logs lack a 'wl' column — derive it from team game stats
-    # so that wins_only / losses_only filters can be applied.
-    if (wins_only or losses_only) and "wl" not in df.columns:
+    # Some player game logs lack a 'wl' column. Derive it from team game stats
+    # when available so filters and result displays can share the same context.
+    if "wl" not in df.columns:
         team_path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
         if data_exists(team_path):
             team_wl = data_read_csv(team_path, usecols=["game_id", "team_id", "wl"])
@@ -118,7 +135,7 @@ def build_result(
             notes=["No games matched the specified filters"],
         )
 
-    out_cols = [
+    required_cols = [
         "player_name",
         "player_id",
         "team_abbr",
@@ -131,10 +148,34 @@ def build_result(
         "season",
         "season_type",
     ]
-
-    missing = [c for c in out_cols if c not in df.columns]
-    if missing:
-        raise ValueError(f"Missing required columns for output: {missing}")
+    optional_cols = [
+        "team_id",
+        "team_name",
+        "opponent_team_id",
+        "opponent_team_name",
+        "wl",
+        "minutes",
+        "pts",
+        "reb",
+        "ast",
+        "stl",
+        "blk",
+        "fgm",
+        "fga",
+        "fg3m",
+        "fg3a",
+        "ftm",
+        "fta",
+        "tov",
+        "pf",
+        "plus_minus",
+        "fg_pct",
+        "fg3_pct",
+        "ft_pct",
+        "efg_pct",
+        "ts_pct",
+    ]
+    out_cols = _select_output_columns(df, required_cols, optional_cols)
 
     result = (
         df[out_cols]

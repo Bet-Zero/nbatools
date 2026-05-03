@@ -23,6 +23,7 @@ import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
 import TeamComparisonSection from "./TeamComparisonSection";
 import TeamRecordSection from "./TeamRecordSection";
+import TopGamesSection from "./TopGamesSection";
 import styles from "./ResultSections.module.css";
 
 interface Props {
@@ -98,6 +99,16 @@ function isLineupLeaderboard(data: QueryResponse): boolean {
 function isPlayerStretchLeaderboard(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "player_stretch_leaderboard";
+}
+
+function isTopPlayerGames(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "top_player_games";
+}
+
+function isTopTeamGames(data: QueryResponse): boolean {
+  const route = data.route ?? data.result?.metadata?.route;
+  return route === "top_team_games";
 }
 
 function isTeamComparison(data: QueryResponse): boolean {
@@ -298,6 +309,24 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           <PlayerStretchLeaderboardSection
             sections={sections}
             metadata={data.result?.metadata}
+          />
+        );
+      }
+      if (isTopPlayerGames(data)) {
+        return (
+          <TopGamesSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            mode="player"
+          />
+        );
+      }
+      if (isTopTeamGames(data)) {
+        return (
+          <TopGamesSection
+            sections={sections}
+            metadata={data.result?.metadata}
+            mode="team"
           />
         );
       }
