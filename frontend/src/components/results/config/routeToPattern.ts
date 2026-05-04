@@ -45,6 +45,7 @@ export type PatternConfig =
       summaryDetailTitle?: string | null;
     }
   | { type: "streak"; sectionKey?: string }
+  | { type: "playoff_history"; mode?: "history" | "round_record" | "matchup" }
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
@@ -126,6 +127,12 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "player_streak_finder":
     case "team_streak_finder":
       return [{ type: "streak", sectionKey: "streak" }];
+    case "playoff_history":
+      return [{ type: "playoff_history", mode: "history" }];
+    case "playoff_round_record":
+      return [{ type: "playoff_history", mode: "round_record" }];
+    case "playoff_matchup_history":
+      return [{ type: "playoff_history", mode: "matchup" }];
     case "season_leaders":
     case "season_team_leaders":
     case "team_record_leaderboard":

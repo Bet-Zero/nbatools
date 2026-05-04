@@ -5,6 +5,7 @@ import EntitySummaryResult from "./patterns/EntitySummaryResult";
 import FallbackTableResult from "./patterns/FallbackTableResult";
 import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
+import PlayoffHistoryResult from "./patterns/PlayoffHistoryResult";
 import SplitResult from "./patterns/SplitResult";
 import StreakResult from "./patterns/StreakResult";
 import ResultShell from "./primitives/ResultShell";
@@ -136,6 +137,8 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
       );
     case "streak":
       return <StreakResult data={data} sectionKey={pattern.sectionKey} />;
+    case "playoff_history":
+      return <PlayoffHistoryResult data={data} mode={pattern.mode} />;
     case "fallback_table":
       return <FallbackTableResult data={data} />;
     default:

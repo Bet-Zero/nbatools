@@ -8,7 +8,6 @@ import HeadToHeadSection from "./HeadToHeadSection";
 import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
 import PlayerComparisonSection from "./PlayerComparisonSection";
-import PlayoffSection from "./PlayoffSection";
 import SummarySection from "./SummarySection";
 import TeamComparisonSection from "./TeamComparisonSection";
 import TeamRecordSection from "./TeamRecordSection";
@@ -60,16 +59,6 @@ function isTeamMatchupRecord(data: QueryResponse): boolean {
   return route === "team_matchup_record";
 }
 
-function isPlayoffRoute(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return (
-    route === "playoff_history" ||
-    route === "playoff_appearances" ||
-    route === "playoff_matchup_history" ||
-    route === "playoff_round_record"
-  );
-}
-
 function isHeadToHeadComparison(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   if (route === "team_matchup_record" || route === "matchup_by_decade") {
@@ -87,16 +76,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
 
   switch (queryClass) {
     case "summary":
-      if (isPlayoffRoute(data)) {
-        return (
-          <PlayoffSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            queryClass={queryClass}
-            route={data.route}
-          />
-        );
-      }
       if (isLineupSummary(data)) {
         return (
           <LineupSection
@@ -117,16 +96,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <SummarySection sections={sections} />;
     case "comparison":
-      if (isPlayoffRoute(data)) {
-        return (
-          <PlayoffSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            queryClass={queryClass}
-            route={data.route}
-          />
-        );
-      }
       if (isHeadToHeadComparison(data)) {
         return (
           <HeadToHeadSection
@@ -167,16 +136,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
     case "finder":
       return <FinderSection sections={sections} />;
     case "leaderboard":
-      if (isPlayoffRoute(data)) {
-        return (
-          <PlayoffSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            queryClass={queryClass}
-            route={data.route}
-          />
-        );
-      }
       return renderFallback(sections);
     case "streak":
       return renderFallback(sections);

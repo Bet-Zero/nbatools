@@ -298,7 +298,7 @@ subject) that doesn't fit `LeaderboardResult` or `GameLogResult`.
 
 ---
 
-### 8. `[ ]` `PlayoffHistoryResult` + migrate playoff routes
+### 8. `[x]` `PlayoffHistoryResult` + migrate playoff routes
 
 **Scope:**
 
