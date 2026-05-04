@@ -41,6 +41,12 @@ Routes with intent already written but current display not yet observed
 should be `[?]`, not `[ ]`. Mark them `[~]` once you've actually run the
 queries and recorded what shows up today.
 
+> **Closeout audit — 2026-05-04.** The route entries below were reconciled
+> against the deployed main URL
+> `https://nbatools-git-main-brents-projects-686e97fc.vercel.app`. Examples
+> that no longer route to their documented entry were replaced with stable
+> route examples or marked with the remaining gap.
+
 ---
 
 ## Compound results — important
@@ -224,14 +230,17 @@ Rules of thumb:
   - Do not show full game logs by default unless the query explicitly asks for games.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `team_record` `[x]`
+### `team_record` `[~]`
 - **Pattern:** `FallbackTableResult` (pending dedicated record pattern)
 - **Example queries:**
   - `Lakers record this season`
   - `Celtics record vs Bucks`
-- **Currently shows (shipped):**
-  1. Team record hero with logo, team/opponent context, W-L, win pct, games/sample, and supporting team stats.
-  2. `Record Detail` and `By Season` raw tables retained behind the shared collapsed raw-table toggle.
+- **Currently shows (deployed 2026-05-04):**
+  1. The deployed route returns `summary` and `by_season` sections.
+  2. The frontend intentionally falls through to `FallbackTableResult`
+     because `team_record` is not yet mapped to a dedicated record pattern.
+  3. No record hero, team-logo treatment, or collapsed record-detail
+     treatment ships after the legacy per-route section removal.
 - **Should show:**
   1. **Single team record hero**
      - Team logo
@@ -254,6 +263,8 @@ Rules of thumb:
   4. **Raw tables**
      - Keep `Record Detail` and `By Season` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
+- **Follow-up:** `result_display_followup_queue.md` tracks the record/fallback
+  pattern work.
 
 ### `team_split_summary` `[x]`
 - **Pattern:** `SplitResult`
@@ -272,7 +283,8 @@ Rules of thumb:
 
 ### `game_summary` `[x]`
 - **Example queries:**
-  - `Lakers Celtics last night`
+  - `Celtics summary 2024-25`
+  - `Celtics recent form`
 - **Currently shows (shipped):**
   - `GameLogResult` renders `game_log` rows as a dense team game table with team/opponent identity, date, home/away matchup, W/L, score when available, margin, and core team stats.
   - Aggregate-only summaries fall back to a team/opponent summary hero with record/sample and team stat context.
@@ -289,7 +301,8 @@ Rules of thumb:
 ### `playoff_round_record` `[x]`
 - **Pattern:** `PlayoffHistoryResult`
 - **Example queries:**
-  - `Celtics record in second round`
+  - `best second round record`
+  - `best finals record since 1980`
 - **Currently shows (shipped):**
   - `PlayoffHistoryResult` renders playoff round/team context, record/win pct/sample stats, season/range context, and collapsed raw playoff details.
 - **Should show:**
@@ -355,7 +368,8 @@ Rules of thumb:
 ### `team_matchup_record` `[x]`
 - **Pattern:** `ComparisonResult`
 - **Example queries:**
-  - `Lakers vs Celtics head-to-head`
+  - `Lakers vs Celtics all-time record`
+  - `Lakers vs Celtics matchup record since 2010`
 - **Currently shows (shipped):**
   - `ComparisonResult` renders a matchup hero with team logos/names, participant record/sample stats, metric rows, and collapsed detail tables.
 - **Should show:**
@@ -366,15 +380,32 @@ Rules of thumb:
   - Recent matchup list only if the data exists.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `player_on_off` `[x]`
+### `player_on_off` `[~]`
 - **Example queries:**
+  - `Jokic on/off`
   - `Lakers on/off LeBron`
-- **Currently shows (shipped):**
-  - Dedicated on/off split display with player identity, player headshot fallback, and team badge/context.
-  - Separate `On` and `Off` cards when both split rows are returned; single-state queries render the available split card.
-  - Cards show games, minutes, possessions, offensive rating, defensive rating, net rating, pace, plus-minus, and primary box-score rates when those fields are present in the response.
-  - When both `On` and `Off` rows include net rating, an impact row identifies the larger side, e.g. `On +X.X net rating`; plus-minus is used as the fallback comparison metric.
-  - Raw split rows remain available behind the shared collapsed `RawDetailToggle`.
+- **Currently shows (deployed 2026-05-04):**
+  - Route recognition works, but deployed examples return `no_result` with
+    an `unsupported` reason because the current data layer lacks trusted
+    play-by-play or lineup-stint coverage.
+  - `SplitResult` is mapped for row-bearing `player_on_off` responses, but
+    the deployed app cannot yet verify the card/impact display against live
+    rows.
+- **Should show:**
+  - Dedicated on/off split display with player identity, player headshot
+    fallback, and team badge/context.
+  - Separate `On` and `Off` cards when both split rows are returned;
+    single-state queries render the available split card.
+  - Cards show games, minutes, possessions, offensive rating, defensive
+    rating, net rating, pace, plus-minus, and primary box-score rates when
+    those fields are present in the response.
+  - When both `On` and `Off` rows include net rating, an impact row
+    identifies the larger side, e.g. `On +X.X net rating`; plus-minus is
+    used as the fallback comparison metric.
+  - Raw split rows remain available behind the shared collapsed
+    `RawDetailToggle`.
+- **Follow-up:** data-backed verification remains open in
+  `result_display_followup_queue.md`.
 
 ---
 
@@ -503,8 +534,8 @@ Rules of thumb:
 
 - **Pattern:** `LeaderboardResult`
 - **Example queries:**
-  - `best record since 2015`
-  - `most wins by a team in a season`
+  - `best team ppg this season`
+  - `team assists leaders this season`
 - **Should show (locked to StatMuse baseline):**
   - Same hero + leaderboard-table pattern as `season_leaders`, but
     team-first.
@@ -525,7 +556,8 @@ Rules of thumb:
 
 ### `team_record_leaderboard` `[x]`
 - **Example queries:**
-  - `best home records this season`
+  - `best record since 2015`
+  - `most home wins over the last 10 seasons`
 - **Currently shows (shipped):**
   - `LeaderboardResult` renders team-ranked rows with logo/name, requested record metric, W-L/games context, split context when present, and collapsed raw detail.
 - **Should show:**
@@ -544,27 +576,53 @@ Rules of thumb:
   - Current execution returns stretch windows but not per-game expansion rows or supporting averages by default; the display is ready for those fields when the response adds them.
   - Raw leaderboard rows remain available behind the shared collapsed `RawDetailToggle`.
 
-### `lineup_leaderboard` `[x]`
+### `lineup_leaderboard` `[~]`
 - **Example queries:**
   - `best 3-man units this season`
-- **Currently shows (shipped):**
-  - Dedicated ranked lineup cards rather than generic table rows.
-  - Each row shows rank, lineup members, team badge, season, unit size, minute-minimum context, minutes, and games/possessions when those fields are present in the response.
-  - Primary metric follows the requested/stat-backed metric when present, with default fallback to net rating and related lineup rating fields.
-  - Raw leaderboard rows remain available behind the shared collapsed `RawDetailToggle`.
+- **Currently shows (deployed 2026-05-04):**
+  - Route recognition works, but the deployed example returns `no_result`
+    with an `unsupported` reason because trusted `league_lineup_viz`
+    coverage is unavailable for the requested slice.
+  - `LeaderboardResult` is mapped for row-bearing `lineup_leaderboard`
+    responses, but deployed data cannot yet verify the lineup rows.
+- **Should show:**
+  - Dedicated ranked lineup rows/cards rather than generic table rows.
+  - Each row shows rank, lineup members, team badge, season, unit size,
+    minute-minimum context, minutes, and games/possessions when those fields
+    are present in the response.
+  - Primary metric follows the requested/stat-backed metric when present,
+    with default fallback to net rating and related lineup rating fields.
+  - Raw leaderboard rows remain available behind the shared collapsed
+    `RawDetailToggle`.
+- **Follow-up:** data-backed verification remains open in
+  `result_display_followup_queue.md`.
 
-### `lineup_summary` `[x]`
+### `lineup_summary` `[~]`
 - **Example queries:**
-  - `Lakers best lineup`
-- **Currently shows (shipped):**
-  - Dedicated lineup summary hero/card with team badge/name and lineup members.
-  - Main lineup summary shows unit size, season, minute-minimum context, minutes, games, possessions, net/offensive/defensive rating, pace, plus-minus, and shooting/rebounding split fields when present.
-  - Raw summary rows remain available behind the shared collapsed `RawDetailToggle`.
+  - `lineup with Tatum and Jaylen Brown`
+- **Currently shows (deployed 2026-05-04):**
+  - Route recognition works, but the deployed example returns `no_result`
+    with an `unsupported` reason because trusted lineup coverage is
+    unavailable.
+  - If row-bearing `lineup_summary` data is returned, the route currently
+    falls through to `FallbackTableResult`; it is not mapped to a dedicated
+    lineup summary pattern after the legacy cleanup.
+- **Should show:**
+  - Dedicated lineup summary hero/card with team badge/name and lineup
+    members.
+  - Main lineup summary shows unit size, season, minute-minimum context,
+    minutes, games, possessions, net/offensive/defensive rating, pace,
+    plus-minus, and shooting/rebounding split fields when present.
+  - Raw summary rows remain available behind the shared collapsed
+    `RawDetailToggle`.
+- **Follow-up:** pattern mapping and data-backed verification remain open in
+  `result_display_followup_queue.md`.
 
 ### `player_occurrence_leaders` `[x]`
 - **Pattern:** `LeaderboardResult`
 - **Example queries:**
-  - `most 30-point games this season`
+  - `most 50 point games since 2020`
+  - `how many Jokic games with 30+ points and 10+ rebounds since 2021`
   - `most triple-doubles all-time`
 - **Currently shows (shipped):**
   - `LeaderboardResult` renders ranked player occurrence rows with headshots, event count hero metric, games/season/team/threshold context, and collapsed detail.
@@ -576,7 +634,8 @@ Rules of thumb:
 ### `team_occurrence_leaders` `[x]`
 - **Pattern:** `LeaderboardResult`
 - **Example queries:**
-  - `most 120-point games this season`
+  - `teams with most 130 point games since 2020`
+  - `how many Celtics games with 120+ points and 15+ threes since 2022`
 - **Currently shows (shipped):**
   - `LeaderboardResult` renders team occurrence rows with logo/name, occurrence count hero metric, season/games/condition/record context when present, and collapsed detail.
 - **Should show:**
@@ -586,7 +645,8 @@ Rules of thumb:
 
 ### `top_player_games` `[x]`
 - **Example queries:**
-  - `top 10 scoring games this season`
+  - `highest scoring games this season`
+  - `season high games`
 - **Currently shows (shipped):**
   - Dedicated ranked player-game leaderboard cards.
   - Each row shows rank, player headshot/name, team badge, date, opponent/location, W/L when available, requested metric, and supporting box-score stats.
@@ -595,7 +655,8 @@ Rules of thumb:
 
 ### `top_team_games` `[x]`
 - **Example queries:**
-  - `top 10 team scoring games this season`
+  - `top team scoring games this season`
+  - `top team games`
 - **Currently shows (shipped):**
   - Dedicated ranked team-game leaderboard cards.
   - Each row shows rank, team badge/name, date, opponent/location, W/L, score when available, requested metric, and supporting team stats.
@@ -620,7 +681,8 @@ Rules of thumb:
 ### `team_streak_finder` `[x]`
 - **Pattern:** `StreakResult`
 - **Example queries:**
-  - `Lakers longest win streak`
+  - `longest Lakers winning streak`
+  - `longest Lakers winning streak 2024-25`
 - **Currently shows (shipped):**
   - `StreakResult` renders team streak rows with logo/name, streak type/condition, length, active/completed badge, span/context, record/supporting stats, and collapsed `Full Streak Detail`.
 - **Should show:**
@@ -632,12 +694,64 @@ Rules of thumb:
 
 ## count / playoff / other
 
+### `record_by_decade` `[~]`
+- **Pattern:** `FallbackTableResult`
+- **Example queries:**
+  - `Lakers by decade`
+- **Currently shows (deployed 2026-05-04):**
+  - The route returns `summary` and `by_season` sections, then falls through
+    to `FallbackTableResult`.
+- **Should show:**
+  - Historical team record display grouped by decade.
+  - Team logo/name, covered season range, total record/win pct, and one
+    dense decade table with decade, seasons, wins, losses, win pct, games,
+    and season-type context.
+  - Raw sections remain available behind the shared collapsed raw-table
+    toggle when they add debug/detail value.
+- **Follow-up:** historical record display work is tracked in
+  `result_display_followup_queue.md`.
+
+### `record_by_decade_leaderboard` `[~]`
+- **Pattern:** `FallbackTableResult`
+- **Example queries:**
+  - `most wins by decade since 1980`
+  - `winningest team of the 2010s`
+- **Currently shows (deployed 2026-05-04):**
+  - The route returns a `leaderboard` section, then falls through to
+    `FallbackTableResult`.
+- **Should show:**
+  - Dense historical leaderboard grouped by decade.
+  - Rank, team logo/name, highlighted requested metric, decade, W-L, games,
+    win pct, season range, and season type.
+  - The primary display must make the decade and requested metric obvious
+    without opening raw JSON.
+- **Follow-up:** historical record display work is tracked in
+  `result_display_followup_queue.md`.
+
+### `matchup_by_decade` `[~]`
+- **Pattern:** `FallbackTableResult`
+- **Example queries:**
+  - `Lakers vs Celtics by decade`
+- **Currently shows (deployed 2026-05-04):**
+  - The route returns `summary` and `comparison` sections, then falls
+    through to `FallbackTableResult`.
+- **Should show:**
+  - Historical matchup display grouped by decade.
+  - Team A vs Team B identity header, overall matchup record, covered season
+    range, and a dense decade-by-decade comparison table with each team's
+    wins, games, win pct, and average points when available.
+  - Raw sections remain available behind the shared collapsed raw-table
+    toggle when they add debug/detail value.
+- **Follow-up:** historical matchup display work is tracked in
+  `result_display_followup_queue.md`.
+
 ### Playoff routes `[x]`
 - **Pattern:** `PlayoffHistoryResult` / `LeaderboardResult`
 - **Routes:** `playoff_appearances`, `playoff_history`, `playoff_matchup_history`, `playoff_round_record`
 - **Example queries:**
   - `Lakers playoff history`
-  - `Celtics vs Heat playoff matchups`
+  - `knicks vs heat playoff history since 1999`
+  - `most playoff appearances by team`
 - **Currently shows (shipped):**
   - `PlayoffHistoryResult` and `LeaderboardResult` route playoff responses to playoff-specific layouts with team identity, record/appearance/matchup context, season breakdown or series list when present, and collapsed playoff detail tables.
 - **Should show:**

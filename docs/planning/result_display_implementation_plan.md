@@ -362,7 +362,7 @@ intentionally), old components and the old router are dead code.
 
 ---
 
-### 11. `[ ]` Reconcile map statuses and close out
+### 11. `[x]` Reconcile map statuses and close out
 
 **Why:** Self-propagating final task. Ensure
 [`result_display_map.md`](./result_display_map.md) entries reflect
@@ -378,6 +378,18 @@ shipped reality.
   Otherwise close this plan with a short retrospective at the bottom of
   this file.
 
+**Completed 2026-05-04:**
+
+- Audited the deployed main app at
+  `https://nbatools-git-main-brents-projects-686e97fc.vercel.app`.
+- Reconciled stale route examples and statuses in
+  [`result_display_map.md`](./result_display_map.md).
+- Confirmed the first-pass pattern renderer is shipped and the legacy
+  per-route sections are gone.
+- Left remaining display/data gaps as `[~]` entries and appended active
+  follow-up items to
+  [`result_display_followup_queue.md`](./result_display_followup_queue.md).
+
 ---
 
 ## Appendix: progress tracking
@@ -386,3 +398,15 @@ When all items above are checked `[x]` (or `[-]` with notes), the queue
 is complete. The architecture in
 [`result_display_patterns.md`](./result_display_patterns.md) is the
 ongoing reference for any future result-rendering work.
+
+## Retrospective — 2026-05-04
+
+Items 2 through 10 shipped the first pattern-based result renderer:
+leaderboard, entity summary, game-log, split, streak, playoff, and comparison
+patterns now sit behind `ResultRenderer`, and the old route-specific sections
+were removed. Item 11 closed the implementation pass by checking the deployed
+route catalog against the map. The architecture is complete for this queue,
+but product polish remains open for StatMuse-baseline summaries/leaderboards,
+record and historical fallback displays, and data-backed on/off/lineup
+verification. Those residuals now live in
+[`result_display_followup_queue.md`](./result_display_followup_queue.md).

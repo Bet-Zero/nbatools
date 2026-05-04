@@ -40,7 +40,7 @@ queries without opening raw rows.
 
 **Suggested tests:**
 
-- `cd frontend && npm test -- ResultSections TeamSummary Finder`
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
 
 ---
@@ -49,21 +49,23 @@ queries without opening raw rows.
 
 **Route:** `team_compare`
 
-**Why:** Head-to-head `team_compare` paths use `HeadToHeadSection`, but
-aggregate team comparisons still fall back to generic comparison tables.
+**Why:** Head-to-head `team_compare` paths need the same pattern renderer
+coverage as aggregate team comparisons instead of falling back to generic
+comparison tables.
 
 **Acceptance criteria:**
 
 - Aggregate team comparison responses render a team-first header,
   side-by-side team cards, record/win-pct/games context, core team stats,
   and metric deltas with leader treatment.
-- Head-to-head behavior keeps using `HeadToHeadSection`.
+- Head-to-head behavior stays covered by `ComparisonResult` in head-to-head
+  mode.
 - Raw summary/comparison rows remain behind `RawDetailToggle`.
 - `result_display_map.md` reflects the shipped behavior.
 
 **Suggested tests:**
 
-- `cd frontend && npm test -- ResultSections Comparison`
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
 
 ---
@@ -87,7 +89,7 @@ the expected `On`/`Off` cards or impact row.
 
 **Suggested tests:**
 
-- `cd frontend && npm test -- ResultSections Count`
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
 
 ---
@@ -113,7 +115,7 @@ rating metrics to be primary.
 
 **Suggested tests:**
 
-- `cd frontend && npm test -- ResultSections Leaderboard`
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
 
 ---
@@ -138,7 +140,7 @@ stretch length, date range, or included games visually obvious.
 
 **Suggested tests:**
 
-- `cd frontend && npm test -- ResultSections Leaderboard`
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
 
 ---
@@ -162,7 +164,7 @@ box-score context.
 
 **Suggested tests:**
 
-- `cd frontend && npm test -- ResultSections Leaderboard`
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
 
 ---
@@ -180,7 +182,7 @@ performers.
 
 - Add engine/API support for top player performer rows when the requested
   game or game sample can be tied to player box-score data.
-- Render points/rebounds/assists leaders in `GameSummarySection` when
+- Render points/rebounds/assists leaders in the game-summary display when
   those rows are present.
 - Keep the behavior explicit when player performer data is unavailable;
   do not synthesize player leaders client-side.
@@ -190,5 +192,126 @@ performers.
 **Suggested tests:**
 
 - focused pytest for the command/API contract changed
-- `cd frontend && npm test -- ResultSections GameSummary`
+- `cd frontend && npm test -- ResultRenderer`
+- `cd frontend && npm run build`
+
+---
+
+## Closeout Additions — 2026-05-04
+
+These items were added by the `result_display_implementation_plan.md` item
+11 reconciliation pass. They are the remaining `[~]` entries in
+`result_display_map.md` after the first pattern-based renderer pass shipped
+and the deployed main app was audited.
+
+## 8. `[ ]` StatMuse-baseline player summaries
+
+**Routes:** `player_game_summary`
+
+**Why:** Last-N player summaries now compose `EntitySummaryResult` and
+`GameLogResult`, but the map's locked baseline calls for a sentence-style
+hero, one dense game-log answer table, and `Average` / `Total` footer rows
+inside that table. The current first-pass result still leans on summary-stat
+hero treatment and retained raw details.
+
+**Acceptance criteria:**
+
+- Last-N player summaries render one sentence-style player hero without stat
+  tiles or chip rows.
+- The game-log table is the primary open answer table, with all requested
+  games and `Average` / `Total` footer rows.
+- Redundant single-season `Full Summary` / `By Season` raw dumps are removed
+  or moved into true secondary answer tables only when they add information.
+- `result_display_map.md` marks `player_game_summary` `[x]` or narrows the
+  remaining gap.
+
+**Suggested tests:**
+
+- `cd frontend && npm test -- ResultRenderer`
+- `cd frontend && npm run build`
+
+---
+
+## 9. `[ ]` StatMuse-baseline leaderboards
+
+**Routes:** `season_leaders`, `season_team_leaders`
+
+**Why:** `LeaderboardResult` is wired and functional, but the two highest-use
+leaderboard routes still need the locked StatMuse baseline: a sentence hero,
+disambiguation note when useful, dense answer table open by default, visually
+highlighted queried metric, and no redundant raw leaderboard dump.
+
+**Acceptance criteria:**
+
+- Player and team leaderboards render a sentence-style hero for the #1 result.
+- The answer table is dense, open by default, and highlights the queried
+  metric column.
+- Metric selection is correct for `ppg`, wins, win pct, and common team stats.
+- Raw detail is removed when it duplicates the answer table.
+- `result_display_map.md` marks `season_leaders` and
+  `season_team_leaders` `[x]` or narrows any remaining route-specific gap.
+
+**Suggested tests:**
+
+- `cd frontend && npm test -- ResultRenderer`
+- `cd frontend && npm run build`
+
+---
+
+## 10. `[ ]` Record and historical fallback displays
+
+**Routes:** `team_record`, `record_by_decade`,
+`record_by_decade_leaderboard`, `matchup_by_decade`
+
+**Why:** These routes return useful structured sections in the deployed app,
+but they currently fall through to `FallbackTableResult`. The user-facing
+answer should surface team identities, records, win pct, decade/range context,
+and dense record or matchup tables without forcing raw-table reading.
+
+**Acceptance criteria:**
+
+- `team_record` has a dedicated record display with team logo, W-L, win pct,
+  games/sample, filters, and collapsed supporting details.
+- `record_by_decade` shows an identity header and decade table.
+- `record_by_decade_leaderboard` shows a dense ranked historical leaderboard
+  with the requested metric highlighted.
+- `matchup_by_decade` shows a team-vs-team historical matchup header and
+  decade comparison table.
+- Raw sections remain available behind the shared collapsed raw-table toggle
+  when they add debug/detail value.
+- `result_display_map.md` marks these routes `[x]` or narrows any remaining
+  route-specific gap.
+
+**Suggested tests:**
+
+- `cd frontend && npm test -- ResultRenderer`
+- `cd frontend && npm run build`
+
+---
+
+## 11. `[ ]` Data-backed on/off and lineup verification
+
+**Routes:** `player_on_off`, `lineup_leaderboard`, `lineup_summary`
+
+**Why:** The deployed route examples are recognized, but they return
+`no_result` / `unsupported` because the current data layer lacks trusted
+play-by-play, stint, or lineup coverage for those slices. The frontend must
+continue to render honest no-result states until the engine/API can return
+trusted rows; once that happens, the row-bearing displays need deployment
+verification.
+
+**Acceptance criteria:**
+
+- Do not synthesize on/off or lineup values in React.
+- If engine/API coverage remains unavailable, keep the no-result messaging
+  explicit and leave the map `[~]` with the data-coverage reason.
+- If trusted rows become available, verify `player_on_off` through
+  `SplitResult`, `lineup_leaderboard` through `LeaderboardResult`, and add or
+  map a dedicated `lineup_summary` display as needed.
+- `result_display_map.md` reflects the shipped behavior after verification.
+
+**Suggested tests:**
+
+- focused pytest for any engine/API contract changed
+- `cd frontend && npm test -- ResultRenderer`
 - `cd frontend && npm run build`
