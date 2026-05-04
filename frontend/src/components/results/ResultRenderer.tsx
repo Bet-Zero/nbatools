@@ -20,10 +20,8 @@ interface Props {
  * route, asks `routeToPattern` which patterns to compose, and stacks
  * them vertically inside a `ResultShell`.
  *
- * Replaces `components/ResultSections.tsx`. The old per-route section
- * components are still in the tree but no longer reachable from this
- * renderer; they will be deleted as their routes migrate to dedicated
- * patterns.
+ * This is the only route-aware result display entry point; route-specific
+ * presentation lives in reusable pattern components under `patterns/`.
  */
 export default function ResultRenderer({ data }: Props) {
   const result = data.result;
