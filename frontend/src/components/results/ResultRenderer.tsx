@@ -6,6 +6,7 @@ import FallbackTableResult from "./patterns/FallbackTableResult";
 import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
 import SplitResult from "./patterns/SplitResult";
+import StreakResult from "./patterns/StreakResult";
 import ResultShell from "./primitives/ResultShell";
 
 interface Props {
@@ -133,6 +134,8 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           summaryDetailTitle={pattern.summaryDetailTitle}
         />
       );
+    case "streak":
+      return <StreakResult data={data} sectionKey={pattern.sectionKey} />;
     case "fallback_table":
       return <FallbackTableResult data={data} />;
     default:

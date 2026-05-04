@@ -1037,4 +1037,115 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("On/Off Detail")).toBeInTheDocument();
     expect(screen.queryByText("Player On/Off")).not.toBeInTheDocument();
   });
+
+  it("renders player streaks through the streak pattern", () => {
+    const data = makeResponse({
+      query: "Jokic 25-point game streak",
+      route: "player_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic 25-point game streak",
+          route: "player_streak_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              player_name: "Nikola Jokic",
+              player_id: 203999,
+              condition: "pts>=25",
+              streak_length: 6,
+              games: 6,
+              start_date: "2026-01-01",
+              end_date: "2026-01-12",
+              is_active: true,
+              wins: 5,
+              losses: 1,
+              pts_avg: 31.5,
+              reb_avg: 12.2,
+              ast_avg: 9.1,
+              minutes_avg: 35.4,
+              ts_pct_avg: 0.672,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getAllByText("6 games").length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/Nikola Jokic's active 25\+ pts streak/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "TS%" })).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Streak results")).not.toBeInTheDocument();
+  });
+
+  it("renders team streaks with team identity and completed status", () => {
+    const data = makeResponse({
+      query: "Lakers longest win streak",
+      route: "team_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers longest win streak",
+          route: "team_streak_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              team_name: "Los Angeles Lakers",
+              team_abbr: "LAL",
+              team_id: 1610612747,
+              condition: "wins",
+              streak_length: 4,
+              games: 4,
+              start_date: "2026-02-01",
+              end_date: "2026-02-08",
+              is_active: false,
+              wins: 4,
+              losses: 0,
+              pts_avg: 118.2,
+              plus_minus_avg: 7.5,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getAllByText("Los Angeles Lakers").length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/Los Angeles Lakers' completed wins streak/),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Completed")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "+/-" })).toBeInTheDocument();
+    expect(screen.getByText("4-0")).toBeInTheDocument();
+  });
 });
