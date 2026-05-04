@@ -1,6 +1,7 @@
 import type { QueryResponse } from "../../api/types";
 import NoResultDisplay from "../NoResultDisplay";
 import { routeToPattern, type PatternConfig } from "./config/routeToPattern";
+import ComparisonResult from "./patterns/ComparisonResult";
 import EntitySummaryResult from "./patterns/EntitySummaryResult";
 import FallbackTableResult from "./patterns/FallbackTableResult";
 import GameLogResult from "./patterns/GameLogResult";
@@ -139,6 +140,14 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
       return <StreakResult data={data} sectionKey={pattern.sectionKey} />;
     case "playoff_history":
       return <PlayoffHistoryResult data={data} mode={pattern.mode} />;
+    case "comparison":
+      return (
+        <ComparisonResult
+          data={data}
+          subject={pattern.subject}
+          headToHead={pattern.headToHead}
+        />
+      );
     case "fallback_table":
       return <FallbackTableResult data={data} />;
     default:

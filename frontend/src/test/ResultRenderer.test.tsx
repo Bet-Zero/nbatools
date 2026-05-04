@@ -1333,4 +1333,217 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getAllByText("4-3").length).toBeGreaterThan(0);
     expect(screen.getByText("Series Detail")).toBeInTheDocument();
   });
+
+  it("renders player comparisons with subject panels and metric edges", () => {
+    const data = makeResponse({
+      query: "Jokic vs Embiid this season",
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic vs Embiid this season",
+          route: "player_compare",
+          season: "2025-26",
+          season_type: "Regular Season",
+          players_context: [
+            { player_id: 203999, player_name: "Nikola Jokic" },
+            { player_id: 203954, player_name: "Joel Embiid" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              team_abbr: "DEN",
+              games: 72,
+              wins: 51,
+              losses: 21,
+              win_pct: 0.708,
+              pts_avg: 26.4,
+              reb_avg: 12.1,
+              ast_avg: 9.3,
+            },
+            {
+              player_name: "Joel Embiid",
+              team_abbr: "PHI",
+              games: 68,
+              wins: 44,
+              losses: 24,
+              win_pct: 0.647,
+              pts_avg: 30.1,
+              reb_avg: 10.8,
+              ast_avg: 5.7,
+            },
+          ],
+          comparison: [
+            {
+              metric: "pts_avg",
+              "Nikola Jokic": 26.4,
+              "Joel Embiid": 30.1,
+            },
+            {
+              metric: "ast_avg",
+              "Nikola Jokic": 9.3,
+              "Joel Embiid": 5.7,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const compared = screen.getByLabelText("Compared players");
+    expect(screen.getByLabelText("Comparison result")).toBeInTheDocument();
+    expect(screen.getAllByText("Nikola Jokic").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Joel Embiid").length).toBeGreaterThan(0);
+    expect(within(compared).getByText("51-21")).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Comparison metrics" })).toBeInTheDocument();
+    expect(screen.getByText("PTS Avg")).toBeInTheDocument();
+    expect(screen.getAllByText("Joel Embiid +3.7 PTS").length).toBeGreaterThan(0);
+    expect(screen.getByText("Nikola Jokic +3.6 AST")).toBeInTheDocument();
+    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+  });
+
+  it("renders team comparisons with team identity and metric deltas", () => {
+    const data = makeResponse({
+      query: "Celtics vs Lakers",
+      route: "team_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          query_text: "Celtics vs Lakers",
+          route: "team_compare",
+          season: "2024-25",
+          season_type: "Regular Season",
+          teams_context: [
+            {
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+            },
+            {
+              team_id: 1610612747,
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+            },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              games: 82,
+              wins: 60,
+              losses: 22,
+              win_pct: 0.732,
+              pts_avg: 120.6,
+            },
+            {
+              team_name: "Los Angeles Lakers",
+              games: 82,
+              wins: 47,
+              losses: 35,
+              win_pct: 0.573,
+              pts_avg: 116.1,
+            },
+          ],
+          comparison: [
+            { metric: "wins", BOS: 60, LAL: 47 },
+            { metric: "pts_avg", BOS: 120.6, LAL: 116.1 },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const compared = screen.getByLabelText("Compared teams");
+    expect(within(compared).getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(
+      within(compared).getByLabelText("Los Angeles Lakers (LAL)"),
+    ).toBeInTheDocument();
+    expect(within(compared).getByText("60-22")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "BOS" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "LAL" })).toBeInTheDocument();
+    expect(screen.getAllByText("BOS +13 Wins").length).toBeGreaterThan(0);
+    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
+    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+  });
+
+  it("renders matchup records as head-to-head comparisons", () => {
+    const data = makeResponse({
+      query: "Lakers vs Celtics head-to-head",
+      route: "team_matchup_record",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers vs Celtics head-to-head",
+          route: "team_matchup_record",
+          teams_context: [
+            {
+              team_id: 1610612747,
+              team_abbr: "LAL",
+              team_name: "Los Angeles Lakers",
+            },
+            {
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Boston Celtics",
+            },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              games: 4,
+              wins: 1,
+              losses: 3,
+              pts_avg: 109.8,
+            },
+            {
+              team_name: "Boston Celtics",
+              games: 4,
+              wins: 3,
+              losses: 1,
+              pts_avg: 118.2,
+            },
+          ],
+          comparison: [
+            {
+              metric: "wins",
+              "Los Angeles Lakers": 1,
+              "Boston Celtics": 3,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const participants = screen.getByLabelText("Head-to-head participants");
+    expect(
+      screen.getByText(/Boston Celtics leads Los Angeles Lakers/),
+    ).toBeInTheDocument();
+    expect(within(participants).getByText("1-3")).toBeInTheDocument();
+    expect(within(participants).getByText("3-1")).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Comparison metrics" })).toBeInTheDocument();
+    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
+    expect(screen.getByText("Metric Detail")).toBeInTheDocument();
+  });
 });
