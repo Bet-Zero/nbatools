@@ -282,7 +282,7 @@ subject) that doesn't fit `LeaderboardResult` or `GameLogResult`.
 
 ---
 
-### 7. `[ ]` `StreakResult` + migrate streak routes
+### 7. `[x]` `StreakResult` + migrate streak routes
 
 **Scope:**
 

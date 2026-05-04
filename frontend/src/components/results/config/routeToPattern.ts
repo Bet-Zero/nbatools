@@ -44,6 +44,7 @@ export type PatternConfig =
       primaryDetailTitle?: string;
       summaryDetailTitle?: string | null;
     }
+  | { type: "streak"; sectionKey?: string }
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
@@ -122,6 +123,9 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           summaryDetailTitle: null,
         },
       ];
+    case "player_streak_finder":
+    case "team_streak_finder":
+      return [{ type: "streak", sectionKey: "streak" }];
     case "season_leaders":
     case "season_team_leaders":
     case "team_record_leaderboard":

@@ -9,7 +9,6 @@ import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
 import PlayerComparisonSection from "./PlayerComparisonSection";
 import PlayoffSection from "./PlayoffSection";
-import StreakSection from "./StreakSection";
 import SummarySection from "./SummarySection";
 import TeamComparisonSection from "./TeamComparisonSection";
 import TeamRecordSection from "./TeamRecordSection";
@@ -59,11 +58,6 @@ function isTeamComparison(data: QueryResponse): boolean {
 function isTeamMatchupRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_matchup_record";
-}
-
-function isOwnedStreak(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "player_streak_finder" || route === "team_streak_finder";
 }
 
 function isPlayoffRoute(data: QueryResponse): boolean {
@@ -185,15 +179,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return renderFallback(sections);
     case "streak":
-      if (isOwnedStreak(data)) {
-        return (
-          <StreakSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            route={data.route}
-          />
-        );
-      }
       return renderFallback(sections);
     case "count":
       return (
