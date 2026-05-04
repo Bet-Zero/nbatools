@@ -316,7 +316,7 @@ subject) that doesn't fit `LeaderboardResult` or `GameLogResult`.
 
 ---
 
-### 9. `[ ]` `ComparisonResult` + migrate comparison routes (LAST)
+### 9. `[x]` `ComparisonResult` + migrate comparison routes (LAST)
 
 **Why:** Comparisons are the most complex shape. Built last so the
 pattern set is stable and the hardest case has the benefit of all prior

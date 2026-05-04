@@ -1,15 +1,11 @@
 import type { QueryResponse, SectionRow } from "../api/types";
 import { Card, SectionHeader } from "../design-system";
-import ComparisonSection from "./ComparisonSection";
 import CountSection from "./CountSection";
 import DataTable from "./DataTable";
 import FinderSection from "./FinderSection";
-import HeadToHeadSection from "./HeadToHeadSection";
 import LineupSection from "./LineupSection";
 import NoResultDisplay from "./NoResultDisplay";
-import PlayerComparisonSection from "./PlayerComparisonSection";
 import SummarySection from "./SummarySection";
-import TeamComparisonSection from "./TeamComparisonSection";
 import TeamRecordSection from "./TeamRecordSection";
 import styles from "./ResultSections.module.css";
 
@@ -32,13 +28,6 @@ function sectionLabel(key: string): string {
   return SECTION_LABELS[key] ?? key.replace(/_/g, " ");
 }
 
-function isPlayerComparison(data: QueryResponse): boolean {
-  return (
-    data.route === "player_compare" ||
-    data.result?.metadata?.route === "player_compare"
-  );
-}
-
 function isTeamRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_record";
@@ -49,25 +38,9 @@ function isLineupSummary(data: QueryResponse): boolean {
   return route === "lineup_summary";
 }
 
-function isTeamComparison(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  return route === "team_compare";
-}
-
 function isTeamMatchupRecord(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
   return route === "team_matchup_record";
-}
-
-function isHeadToHeadComparison(data: QueryResponse): boolean {
-  const route = data.route ?? data.result?.metadata?.route;
-  if (route === "team_matchup_record" || route === "matchup_by_decade") {
-    return true;
-  }
-  if (route === "player_compare" || route === "team_compare") {
-    return data.result?.metadata?.head_to_head_used === true;
-  }
-  return false;
 }
 
 function renderByQueryClass(data: QueryResponse): React.ReactNode {
@@ -96,31 +69,6 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
       }
       return <SummarySection sections={sections} />;
     case "comparison":
-      if (isHeadToHeadComparison(data)) {
-        return (
-          <HeadToHeadSection
-            sections={sections}
-            metadata={data.result?.metadata}
-            route={data.route}
-          />
-        );
-      }
-      if (isTeamComparison(data)) {
-        return (
-          <TeamComparisonSection
-            sections={sections}
-            metadata={data.result?.metadata}
-          />
-        );
-      }
-      if (isPlayerComparison(data)) {
-        return (
-          <PlayerComparisonSection
-            sections={sections}
-            metadata={data.result?.metadata}
-          />
-        );
-      }
       if (isTeamMatchupRecord(data)) {
         return (
           <TeamRecordSection
@@ -130,7 +78,7 @@ function renderByQueryClass(data: QueryResponse): React.ReactNode {
           />
         );
       }
-      return <ComparisonSection sections={sections} />;
+      return renderFallback(sections);
     case "split_summary":
       return renderFallback(sections);
     case "finder":
