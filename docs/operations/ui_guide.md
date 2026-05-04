@@ -163,122 +163,36 @@ CORS middleware is enabled for flexibility if someone wants to open the HTML fil
 
 ## Result types rendered
 
-| Route / query_class             | Sections displayed                                                                 |
-| ------------------------------- | ---------------------------------------------------------------------------------- |
-| `player_game_summary` / summary | Player hero, Game Log trend/recent games when present, Full Summary, By Season     |
-| `game_summary` / summary        | Team hero, record/headline stats when present, Full Summary, By Season             |
-| `team_record` / summary         | Record-first team card, opponent identity when present, Record Detail, By Season   |
-| generic summary                 | Summary, By Season (if present)                                                    |
-| `player_compare` / comparison   | Player Comparison, Metric Comparison, Player Summary Detail, Full Metric Detail     |
-| `team_matchup_record`, head-to-head `player_compare`/`team_compare`, `matchup_by_decade` / comparison | Head-to-head card, Participant Detail, Metric Detail |
-| `playoff_history`, team-scoped `playoff_appearances` / summary | Playoff history/appearance card, Postseason Summary Detail, Season Breakdown |
-| `playoff_matchup_history` / comparison | Playoff matchup card, Postseason Summary Detail, Series Detail |
-| generic comparison              | Summary/Players, Comparison                                                        |
-| `player_game_finder` / finder   | Player Games, Player Game Detail                                                   |
-| generic finder                  | Matching Games                                                                     |
-| `team_split_summary` / split_summary | Team split hero, bucket cards, Split Summary Detail, Split Comparison Detail    |
-| `player_split_summary` / split_summary | Player split hero, bucket cards, Split Summary Detail, Split Comparison Detail |
-| generic split_summary           | Summary, Split Comparison                                                          |
-| generic leaderboard             | Ranked Leaderboard, Full Leaderboard detail table                                  |
-| `player_occurrence_leaders` / leaderboard | Occurrence Leaderboard, Full Occurrence Detail                           |
-| `team_occurrence_leaders` / leaderboard | Occurrence Leaderboard, Full Occurrence Detail                             |
-| `playoff_appearances`, `playoff_round_record` / leaderboard | Playoff leaderboard rankings, Full Playoff Leaderboard |
-| `player_streak_finder` / streak | Streak cards, Full Streak Detail                                                   |
-| `team_streak_finder` / streak   | Streak cards, Full Streak Detail                                                   |
-| count                           | Count answer, Count Detail, optional matching/detail sections                       |
-| unknown streak/leaderboard routes | Generic fallback or generic leaderboard path                                      |
-| (no result)                     | Status message with reason                                                         |
+| Route / query_class             | Pattern rendered                                                                  |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| `season_leaders`, `season_team_leaders`, `team_record_leaderboard` | `LeaderboardResult` with highlighted queried metric |
+| `player_occurrence_leaders`, `team_occurrence_leaders`, `player_stretch_leaderboard`, `lineup_leaderboard`, `playoff_appearances` | `LeaderboardResult` with route-specific metric config |
+| `player_game_summary` / last-N summary | `EntitySummaryResult` plus `GameLogResult`                                |
+| broad `player_game_summary` summary | `EntitySummaryResult`                                                         |
+| `player_game_finder`, `game_finder`, `top_player_games`, `top_team_games`, `game_summary` | `GameLogResult` |
+| `player_split_summary`, `team_split_summary`, `player_on_off` | `SplitResult`                                  |
+| `player_streak_finder`, `team_streak_finder` | `StreakResult`                                             |
+| `playoff_history`, `playoff_round_record`, `playoff_matchup_history` | `PlayoffHistoryResult`              |
+| `player_compare`, `team_compare`, `team_matchup_record` | `ComparisonResult`                                |
+| unmapped routes                 | `FallbackTableResult`                                                             |
+| (no result)                     | Status message with reason                                                        |
 
-`PlayerSummarySection.tsx` owns only `player_game_summary` rendering. Team
-record, split, playoff, and unknown routes continue through their route-specific
-or generic paths so player-specific layout choices do not leak into other
-summary-shaped responses.
+All result rendering now enters through
+`frontend/src/components/results/ResultRenderer.tsx`. The renderer reads the
+API route, resolves an ordered pattern list in
+`frontend/src/components/results/config/routeToPattern.ts`, and stacks those
+patterns inside `ResultShell`.
 
-`LeaderboardSection.tsx` owns `query_class: "leaderboard"` rendering. It
-promotes only fields already present in `sections.leaderboard`: rank, a
-player/team/entity label, one best available ranked metric, and secondary
-metadata such as games played, season, team, game date, opponent, result, and
-qualifier fields. Ranking, filters, qualifiers, and metric computation remain
-engine/API responsibilities. The full `DataTable` detail stays visible below
-the ranked rows so unpromoted columns and sparse/unknown leaderboard shapes are
-still inspectable.
+Patterns are presentation-only. They can choose which supplied section rows and
+columns to emphasize, but they do not parse queries, calculate NBA facts, rank
+rows, infer winners, or synthesize missing values. Raw/detail tables remain
+available through the shared `RawDetailToggle` primitive when a pattern hides
+secondary columns behind a focused answer view.
 
-`OccurrenceLeaderboardSection.tsx` owns only leaderboard results whose route is
-`player_occurrence_leaders` or `team_occurrence_leaders`. It promotes the
-dynamic supplied event-count column, row rank, player/team identity, games
-played, season/date filters, and qualifier context. It does not parse the
-event definition, rank rows, or calculate qualifying games in React. Ordinary
-season leaders, top-game leaderboards, record leaderboards, and unknown
-leaderboard-shaped responses stay on `LeaderboardSection.tsx`.
-
-`PlayerComparisonSection.tsx` owns only comparison results whose route is
-`player_compare`. It promotes supplied summary rows into player cards and
-supplied comparison rows into metric cards, but it does not calculate new NBA
-facts, choose routes, or transform generic comparison payloads. Full summary
-and comparison `DataTable` detail remains visible below the promoted layout.
-Ordinary team comparisons and unknown comparison-shaped routes continue through
-`ComparisonSection.tsx`.
-
-`HeadToHeadSection.tsx` owns `team_matchup_record`, `matchup_by_decade`, and
-only those `player_compare` / `team_compare` responses whose metadata marks
-`head_to_head_used: true`. It promotes supplied participant identity,
-records/samples, season/date context, and selected supplied stat values while
-keeping mixed-player and mixed-team surfaces neutral except for row-level
-identity accents. It does not calculate records, winners, game lists, or
-comparison metrics in React. The full participant summary, metric, finder, and
-unknown detail sections stay visible below the matchup card.
-
-`PlayerGameFinderSection.tsx` owns only finder results whose route is
-`player_game_finder`. It promotes supplied finder rows into player game cards
-with player identity, date/rank context, opponent badges, home/away labels,
-W/L badges, supplied stat values, and secondary context chips. It does not
-parse thresholds, reconstruct natural-query intent, calculate new metrics, or
-take over team game finders, count detail, top-game leaderboards, or unknown
-finder-shaped routes. The full finder `DataTable` detail remains visible below
-the cards.
-
-`TeamSummarySection.tsx` owns summary results whose route is `game_summary`.
-It promotes supplied team identity, season/sample context, record, and headline
-stat values into a team hero card, then keeps the full summary and by-season
-tables visible. Playoff summaries route to `PlayoffSection.tsx`, while unknown
-summary-shaped routes remain on `SummarySection.tsx`.
-
-`TeamRecordSection.tsx` owns `team_record` results.
-Single-team records use scoped team treatment only when `team_context` marks a
-safe single-team result; opponent identity is shown as a badge or text fallback.
-Record math is not computed in React; the renderer displays only supplied wins,
-losses, win percentage, sample size, and secondary stats. Full summary and
-by-season detail tables remain visible.
-
-`PlayoffSection.tsx` owns playoff routes: `playoff_history`,
-`playoff_appearances`, `playoff_matchup_history`, and `playoff_round_record`.
-Summary and comparison routes promote supplied postseason team identity,
-appearance counts, records, round/series/season context, and neutral matchup
-cards. Playoff leaderboard routes promote supplied ranks, team identity,
-appearance or record metrics, round labels, season span, and qualifier context.
-It does not infer playoff series, winners, round hierarchy, rankings, or target
-metrics; the engine/API must supply those values. Full postseason summary,
-season, series, and leaderboard detail tables remain visible.
-
-`SplitSummaryCardsSection.tsx` owns `team_split_summary` and
-`player_split_summary` results. It renders the entity context first, then bucket
-cards for supplied split rows such as home/away, wins/losses, or custom bucket
-labels. Bucket labels are formatted for display without changing the underlying
-payload. Full split summary and split-comparison detail tables remain visible,
-and unknown split-shaped routes continue through `SplitSummarySection.tsx`.
-
-`StreakSection.tsx` owns only `player_streak_finder` and
-`team_streak_finder` streak results. It promotes the supplied streak length or
-game count, condition label, entity identity, active/completed status, record,
-date span, and selected average stats. It does not reconstruct game-level
-streak events or calculate streak lengths. Unknown streak-shaped routes stay on
-the generic fallback renderer.
-
-`CountSection.tsx` owns `query_class: "count"` results. It promotes the
-supplied count value, metadata query text, entity context, season/date/filter
-context, and route label, then keeps `Count Detail` and any non-count detail
-sections visible below. It does not derive count values, parse events, or infer
-missing matching games.
+The legacy per-query-class dispatcher and one-component-per-route section
+renderers have been removed. New result UI work should add a focused pattern or
+a small config extension to an existing pattern rather than creating another
+route-specific section component.
 
 ## Identity imagery and team theming
 
@@ -368,8 +282,8 @@ Player-comparison edge-case fallbacks:
 - Long player names, long team labels, and long custom metric labels are
   constrained within their cards. At mobile widths, player cards and metric
   cards stack to preserve detail.
-- Non-player comparison routes remain on the generic `ComparisonSection.tsx`
-  path.
+- Unmapped comparison routes render through the generic fallback table until
+  they are intentionally added to the pattern map.
 
 Player-game-finder edge-case fallbacks:
 
@@ -419,8 +333,8 @@ Head-to-head and playoff edge-case fallbacks:
   wrap inside cards. At mobile widths, identity, context, record, and metric
   regions stack vertically.
 - Playoff matchup/history rows do not include series winners or bracket objects
-  today; `PlayoffSection.tsx` does not infer them. Dynamic team-prefixed
-  columns remain available in the detail table.
+  today; result patterns do not infer them. Dynamic team-prefixed columns remain
+  available in the detail table.
 - Playoff leaderboard rows without team identity render a text fallback such
   as "Playoff Entry 2"; sparse rows still expose the full leaderboard table.
 - Ordinary comparisons, ordinary leaderboards, occurrence leaderboards,
@@ -436,7 +350,8 @@ Split-summary edge-case fallbacks:
   table below.
 - Long custom bucket labels wrap within the bucket card. At mobile widths, the
   bucket count stacks below the label.
-- Unknown split routes remain on the generic `SplitSummarySection.tsx` path.
+- Unknown split routes render through `FallbackTableResult` unless they are
+  explicitly mapped to `SplitResult`.
 
 Streak/count/occurrence edge-case fallbacks:
 
@@ -459,7 +374,8 @@ Streak/count/occurrence edge-case fallbacks:
   without threshold parsing. Long compound labels wrap inside the metric column;
   at mobile widths the event-count block stacks below identity/context.
 - Ordinary leaderboards, finder routes, unknown streak routes, and generic
-  fallback sections remain available for shapes not explicitly owned by C6.
+  fallback sections remain available through the pattern map and
+  `FallbackTableResult`.
 
 ## File locations
 
@@ -467,28 +383,15 @@ Streak/count/occurrence edge-case fallbacks:
 - Build output: `src/nbatools/ui/dist/` (served by FastAPI)
 - API serving: `src/nbatools/api.py` → `GET /` + `/assets` static mount
 - Vite config: `frontend/vite.config.ts` (proxy + build output path)
-- Player summary renderer: `frontend/src/components/PlayerSummarySection.tsx`
-- Leaderboard renderer: `frontend/src/components/LeaderboardSection.tsx`
-- Player comparison renderer:
-  `frontend/src/components/PlayerComparisonSection.tsx`
-- Player game finder renderer:
-  `frontend/src/components/PlayerGameFinderSection.tsx`
-- Team summary renderer:
-  `frontend/src/components/TeamSummarySection.tsx`
-- Team record renderer:
-  `frontend/src/components/TeamRecordSection.tsx`
-- Head-to-head renderer:
-  `frontend/src/components/HeadToHeadSection.tsx`
-- Playoff renderer:
-  `frontend/src/components/PlayoffSection.tsx`
-- Team/player split card renderer:
-  `frontend/src/components/SplitSummaryCardsSection.tsx`
-- Streak renderer: `frontend/src/components/StreakSection.tsx`
-- Count renderer: `frontend/src/components/CountSection.tsx`
-- Occurrence leaderboard renderer:
-  `frontend/src/components/OccurrenceLeaderboardSection.tsx`
-- Generic summary fallback: `frontend/src/components/SummarySection.tsx`
-- Generic split fallback: `frontend/src/components/SplitSummarySection.tsx`
+- Result renderer: `frontend/src/components/results/ResultRenderer.tsx`
+- Route-to-pattern config:
+  `frontend/src/components/results/config/routeToPattern.ts`
+- Pattern components:
+  `frontend/src/components/results/patterns/`
+- Shared result primitives:
+  `frontend/src/components/results/primitives/`
+- Generic fallback table pattern:
+  `frontend/src/components/results/patterns/FallbackTableResult.tsx`
 
 ## Tech stack
 
@@ -596,20 +499,12 @@ frontend/src/
     QueryHistory.tsx      # In-session query history list
     FreshnessStatus.tsx   # Collapsible freshness panel (status, current_through, details)
     ResultEnvelope.tsx    # Envelope metadata (status, route, notes, caveats)
-    ResultSections.tsx    # Dispatcher — routes to per-query-class renderers
-    SummarySection.tsx    # Summary + By Season tables
-    TeamSummarySection.tsx # Team summary hero + detail tables
-    ComparisonSection.tsx # Players + Comparison tables
-    TeamRecordSection.tsx # Team record cards + detail tables
-    HeadToHeadSection.tsx # Head-to-head matchup cards + detail tables
-    PlayoffSection.tsx    # Playoff history/matchup/leaderboard layouts + detail tables
-    SplitSummarySection.tsx # Summary + Split Comparison tables
-    SplitSummaryCardsSection.tsx # Team/player split bucket cards + detail tables
-    FinderSection.tsx     # Matching Games table with count
-    LeaderboardSection.tsx # Generic leaderboard ranked rows + detail table
-    OccurrenceLeaderboardSection.tsx # Occurrence event-count ranked rows + detail
-    StreakSection.tsx      # Player/team streak cards + detail table
-    CountSection.tsx       # Count answer card + detail sections
+    results/
+      ResultRenderer.tsx  # Route-to-pattern result display entry point
+      config/
+        routeToPattern.ts # API route -> pattern config map
+      patterns/           # Shared result-pattern components
+      primitives/         # ResultHero, ResultTable, EntityIdentity, RawDetailToggle
     DataTable.tsx         # NBA-specific wrapper over the generic table primitive
     NoResultDisplay.tsx   # No-result and error state display
     RawJsonToggle.tsx     # Raw JSON toggle
@@ -637,7 +532,7 @@ frontend/src/
     setup.ts             # Vitest + jest-dom setup
     client.test.ts       # API client tests
     DataTable.test.tsx   # DataTable component tests
-    ResultSections.test.tsx # Result rendering tests for all query classes
+    ResultRenderer.test.tsx # Pattern-based result rendering tests
     UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
     FreshnessStatus.test.tsx # Freshness panel rendering and status display tests
     useUrlState.test.ts  # URL state parsing, building, and hook behavior tests

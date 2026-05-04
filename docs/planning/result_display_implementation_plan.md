@@ -340,7 +340,7 @@ pattern lessons.
 
 ## Phase 3 — Cleanup and close
 
-### 10. `[ ]` Delete dead per-route components and `ResultSections.tsx`
+### 10. `[x]` Delete dead per-route components and `ResultSections.tsx`
 
 **Why:** Once every route maps to a pattern (or to `FallbackTableResult`
 intentionally), old components and the old router are dead code.

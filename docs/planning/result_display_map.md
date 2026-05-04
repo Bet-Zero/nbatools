@@ -6,8 +6,8 @@
 > **How to use:** When you run a real query that doesn't display the way
 > you want, find its route's entry. Fill in `Currently shows`, fill in
 > `Should show` (your curated intent), then file an agent task to make the
-> displayed output match the intent. This doc is the spec; the section
-> components in `frontend/src/components/` are the implementation.
+> displayed output match the intent. This doc is the spec; the pattern
+> components in `frontend/src/components/results/` are the implementation.
 >
 > **How to find a route:** Run the query in the deployed UI, click the raw
 > JSON toggle (or hit `/query` directly), and read the `route` field. That
@@ -23,10 +23,10 @@ Each query response carries two fields that determine display:
   `split_summary`, `finder`, `leaderboard`, `streak`, `count`).
 - `route` — the specific routing within that class.
 
-The frontend's `ResultSections.tsx` switch dispatches by `query_class`,
-then refines by `route` (or by data-shape predicates) to pick a section
-component. Each section component is responsible for rendering one or
-more route's results.
+The frontend's `ResultRenderer.tsx` entry point dispatches by `route` through
+`results/config/routeToPattern.ts`. Each mapped route returns one or more
+pattern configs (`LeaderboardResult`, `GameLogResult`, `ComparisonResult`,
+etc.). Unmapped routes intentionally fall through to `FallbackTableResult`.
 
 ---
 
@@ -156,7 +156,7 @@ Rules of thumb:
 ## summary
 
 ### `player_game_summary` `[~]`
-- **Section component:** `PlayerSummarySection`
+- **Pattern:** `EntitySummaryResult` / `GameLogResult`
 - **Example queries:**
   - `Jokic last 10 games`
   - `LeBron last 5 games`
@@ -210,7 +210,7 @@ Rules of thumb:
   query asks for a sample window.
 
 ### `player_summary`-style routes for season averages `[x]`
-- **Section component:** `PlayerSummarySection` via `player_game_summary`
+- **Pattern:** `EntitySummaryResult` via `player_game_summary`
 - **Example queries:**
   - `Jokic this season`
   - `Curry career averages`
@@ -225,7 +225,7 @@ Rules of thumb:
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
 ### `team_record` `[x]`
-- **Section component:** `TeamRecordSection`
+- **Pattern:** `FallbackTableResult` (pending dedicated record pattern)
 - **Example queries:**
   - `Lakers record this season`
   - `Celtics record vs Bucks`
@@ -256,7 +256,7 @@ Rules of thumb:
      - Do not show raw tables open by default.
 
 ### `team_split_summary` `[x]`
-- **Section component:** `SplitSummaryCardsSection` or `TeamSummarySection`
+- **Pattern:** `SplitResult`
 - **Example queries:**
   - `Lakers home vs away`
 - **Currently shows (shipped):**
@@ -274,9 +274,9 @@ Rules of thumb:
 - **Example queries:**
   - `Lakers Celtics last night`
 - **Currently shows (shipped):**
-  - `GameSummarySection` renders `game_log` rows as team game cards with team/opponent logos, date, home/away matchup, W/L, score when available, margin, and core team stats.
+  - `GameLogResult` renders `game_log` rows as a dense team game table with team/opponent identity, date, home/away matchup, W/L, score when available, margin, and core team stats.
   - Aggregate-only summaries fall back to a team/opponent summary hero with record/sample and team stat context.
-  - When the game sample can be matched to player box-score rows, `GameSummarySection` renders supplied points, rebounds, and assists leaders as top performer cards with player headshots, team identity, context, and supporting PTS/REB/AST/MIN stats.
+  - When the game sample can be matched to player box-score rows, supplied top-performer rows remain available in the route's detail sections.
   - When player box-score rows are unavailable or cannot be matched, the engine reports an explicit caveat instead of synthesizing client-side leaders.
 - **Should show:**
   - Game box-score style result.
@@ -287,11 +287,11 @@ Rules of thumb:
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
 ### `playoff_round_record` `[x]`
-- **Section component:** `PlayoffSection`
+- **Pattern:** `PlayoffHistoryResult`
 - **Example queries:**
   - `Celtics record in second round`
 - **Currently shows (shipped):**
-  - `PlayoffSection` renders playoff round/team context, record/win pct/sample stats, season/range context, and collapsed raw playoff details.
+  - `PlayoffHistoryResult` renders playoff round/team context, record/win pct/sample stats, season/range context, and collapsed raw playoff details.
 - **Should show:**
   - Playoff round record card or leaderboard depending query shape.
   - Team logo/name, round, record, win pct, series/game count, and season/range context.
@@ -302,7 +302,7 @@ Rules of thumb:
 ## comparison
 
 ### `player_compare` `[x]`
-- **Section component:** `PlayerComparisonSection`
+- **Pattern:** `ComparisonResult`
 - **Example queries:**
   - `Jokic vs Embiid this season`
   - `LeBron vs MJ career`
@@ -344,8 +344,8 @@ Rules of thumb:
 - **Example queries:**
   - `Celtics vs Bucks this season`
 - **Currently shows (shipped):**
-  - Head-to-head-flavored `team_compare` responses render through `HeadToHeadSection`.
-  - Aggregate team comparison responses render through `TeamComparisonSection` with team logos/names, context chips, side-by-side team cards, record/win-pct/games context, core stats, metric deltas, and collapsed raw detail.
+  - Head-to-head-flavored `team_compare` responses render through `ComparisonResult` in head-to-head mode.
+  - Aggregate team comparison responses render through `ComparisonResult` with team logos/names, side-by-side team panels, record/win-pct/games context, core stats, metric deltas, and collapsed raw detail.
 - **Should show:**
   - Team A vs Team B header with team logos and context.
   - Side-by-side team cards showing record, win pct, games, PPG, opponent PPG, net rating or +/-, REB, AST, and 3PM.
@@ -353,11 +353,11 @@ Rules of thumb:
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
 ### `team_matchup_record` `[x]`
-- **Section component:** `HeadToHeadSection`
+- **Pattern:** `ComparisonResult`
 - **Example queries:**
   - `Lakers vs Celtics head-to-head`
 - **Currently shows (shipped):**
-  - `HeadToHeadSection` renders a matchup card with team logos/names, context chips, participant record/sample stats, and collapsed detail tables.
+  - `ComparisonResult` renders a matchup hero with team logos/names, participant record/sample stats, metric rows, and collapsed detail tables.
 - **Should show:**
   - Matchup scoreboard style display.
   - Team A logo/name vs Team B logo/name.
@@ -381,7 +381,7 @@ Rules of thumb:
 ## split_summary
 
 ### `player_split_summary` `[x]`
-- **Section component:** `SplitSummaryCardsSection` or `SplitSummarySection`
+- **Pattern:** `SplitResult`
 - **Example queries:**
   - `Jokic home vs away`
   - `Curry in wins vs losses`
@@ -402,7 +402,7 @@ Rules of thumb:
 ## finder
 
 ### `player_game_finder` `[x]`
-- **Section component:** `PlayerGameFinderSection`
+- **Pattern:** `GameLogResult`
 - **Example queries:**
   - `games where Jokic had over 25 points and over 10 rebounds`
   - `Curry's 50-point games`
@@ -434,7 +434,7 @@ Rules of thumb:
 - **Example queries:**
   - `games where Lakers won by 20+`
 - **Currently shows (shipped):**
-  - `GameFinderSection` renders team game cards with count, condition/context chips, team/opponent logos, date, home/away matchup, W/L, score when available, margin, and key team stats.
+  - `GameLogResult` renders team game rows with team/opponent identity, date, home/away matchup, W/L, score when available, margin, and key team stats.
   - `Game Detail` remains available behind the shared collapsed raw-table toggle.
 - **Should show:**
   - Team/game equivalent of `player_game_finder`.
@@ -447,7 +447,7 @@ Rules of thumb:
 ## leaderboard
 
 ### `season_leaders` `[~]`
-- **Section component:** `LeaderboardSection`
+- **Pattern:** `LeaderboardResult`
 - **Example queries:**
   - `most ppg in 2025 playoffs`
   - `top 10 scorers 2025-26`
@@ -501,7 +501,7 @@ Rules of thumb:
 
 ### `season_team_leaders` `[~]`
 
-- **Section component:** `LeaderboardSection` (same component as `season_leaders`)
+- **Pattern:** `LeaderboardResult`
 - **Example queries:**
   - `best record since 2015`
   - `most wins by a team in a season`
@@ -527,7 +527,7 @@ Rules of thumb:
 - **Example queries:**
   - `best home records this season`
 - **Currently shows (shipped):**
-  - `LeaderboardSection` renders team-ranked rows with logo/name, requested record metric, W-L/games context, split context when present, and collapsed raw detail.
+  - `LeaderboardResult` renders team-ranked rows with logo/name, requested record metric, W-L/games context, split context when present, and collapsed raw detail.
 - **Should show:**
   - Team leaderboard focused on record splits.
   - Each row should show rank, team logo, team name, record, win pct, games, and split context such as home/away.
@@ -562,23 +562,23 @@ Rules of thumb:
   - Raw summary rows remain available behind the shared collapsed `RawDetailToggle`.
 
 ### `player_occurrence_leaders` `[x]`
-- **Section component:** `OccurrenceLeaderboardSection`
+- **Pattern:** `LeaderboardResult`
 - **Example queries:**
   - `most 30-point games this season`
   - `most triple-doubles all-time`
 - **Currently shows (shipped):**
-  - `OccurrenceLeaderboardSection` renders ranked player occurrence rows with headshots, event count hero metric, games/season/team/threshold context, and collapsed `Full Occurrence Detail`.
+  - `LeaderboardResult` renders ranked player occurrence rows with headshots, event count hero metric, games/season/team/threshold context, and collapsed detail.
 - **Should show:**
   - Ranked occurrence leaderboard.
   - Each row should show rank, player headshot, player name, occurrence count as the hero metric, games played, season/range, team if relevant, threshold/condition, and season type.
   - Keep `Full Occurrence Detail` available behind the shared collapsed raw-table/detail toggle.
 
 ### `team_occurrence_leaders` `[x]`
-- **Section component:** `OccurrenceLeaderboardSection`
+- **Pattern:** `LeaderboardResult`
 - **Example queries:**
   - `most 120-point games this season`
 - **Currently shows (shipped):**
-  - `OccurrenceLeaderboardSection` renders team occurrence rows with logo/name, occurrence count hero metric, season/games/condition/record context when present, and collapsed `Full Occurrence Detail`.
+  - `LeaderboardResult` renders team occurrence rows with logo/name, occurrence count hero metric, season/games/condition/record context when present, and collapsed detail.
 - **Should show:**
   - Team-first occurrence leaderboard.
   - Each row should show rank, team logo, team name, occurrence count, season, games played, threshold/condition, and record when available.
@@ -606,11 +606,11 @@ Rules of thumb:
 ## streak
 
 ### `player_streak_finder` `[x]`
-- **Section component:** `StreakSection`
+- **Pattern:** `StreakResult`
 - **Example queries:**
   - `Jokic 25-point game streak`
 - **Currently shows (shipped):**
-  - `StreakSection` renders player streak cards with headshot, condition, streak length, active/completed badge, start/end dates, season/season-type context, supporting averages, and collapsed `Full Streak Detail`.
+  - `StreakResult` renders player streak rows with headshot, condition, streak length, active/completed badge, start/end dates, season/season-type context, supporting averages, and collapsed `Full Streak Detail`.
 - **Should show:**
   - Streak cards.
   - Each card should show player headshot, player name, streak condition, streak length as the hero value, active/completed badge, start date, end date, season, and regular/playoffs context.
@@ -618,11 +618,11 @@ Rules of thumb:
   - Keep `Full Streak Detail` available behind the shared collapsed raw-table/detail toggle.
 
 ### `team_streak_finder` `[x]`
-- **Section component:** `StreakSection`
+- **Pattern:** `StreakResult`
 - **Example queries:**
   - `Lakers longest win streak`
 - **Currently shows (shipped):**
-  - `StreakSection` renders team streak cards with logo/name, streak type/condition, length, active/completed badge, span/context, record/supporting stats, and collapsed `Full Streak Detail`.
+  - `StreakResult` renders team streak rows with logo/name, streak type/condition, length, active/completed badge, span/context, record/supporting stats, and collapsed `Full Streak Detail`.
 - **Should show:**
   - Team streak cards.
   - Each card should show team logo, team name, streak type, length, active/completed badge, start/end dates, record/sample, and supporting stats when available.
@@ -633,13 +633,13 @@ Rules of thumb:
 ## count / playoff / other
 
 ### Playoff routes `[x]`
-- **Section component:** `PlayoffSection`
+- **Pattern:** `PlayoffHistoryResult` / `LeaderboardResult`
 - **Routes:** `playoff_appearances`, `playoff_history`, `playoff_matchup_history`, `playoff_round_record`
 - **Example queries:**
   - `Lakers playoff history`
   - `Celtics vs Heat playoff matchups`
 - **Currently shows (shipped):**
-  - `PlayoffSection` routes summary, comparison, and leaderboard playoff responses to playoff-specific layouts with team identity, record/appearance/matchup context, season breakdown or series list when present, and collapsed playoff detail tables.
+  - `PlayoffHistoryResult` and `LeaderboardResult` route playoff responses to playoff-specific layouts with team identity, record/appearance/matchup context, season breakdown or series list when present, and collapsed playoff detail tables.
 - **Should show:**
   - `playoff_history`: team logo/name, appearances, total playoff games, playoff record, win pct, titles/finals/conference finals if data exists, plus season breakdown with season, round reached, record, result/opponent when available.
   - `playoff_appearances`: leaderboard with rank, team logo, team name, appearances, era/range, seasons, and record if available.
