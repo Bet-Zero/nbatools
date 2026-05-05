@@ -480,7 +480,7 @@ Rules of thumb:
 
 ## leaderboard
 
-### `season_leaders` `[~]`
+### `season_leaders` `[x]`
 - **Pattern:** `LeaderboardResult`
 - **Example queries:**
   - `most ppg in 2025 playoffs`
@@ -495,11 +495,16 @@ Rules of thumb:
   queried metric column visually highlighted (subtle background tint),
   then SEASON, TM, GP, MPG, RPG, APG, SPG, BPG, FG… as supporting
   columns.
-- **Currently shows (shipped, does NOT match the StatMuse baseline):**
-  1. Ranked card list — one card per row with rank, identity, context
-     chips, and one hero metric value. Card-per-row layout for tabular
-     data.
-  2. `Full Leaderboard` raw table behind a toggle.
+- **Currently shows (shipped):**
+  1. Sentence-style hero card for the #1 player, with player identity on the
+     left and an optional `Interpreted as:` note directly below the sentence.
+  2. Dense leaderboard answer table open by default. The table includes rank,
+     player identity, highlighted queried metric, team, games, season/context,
+     and supporting stat columns when present.
+  3. Metric selection keeps `ppg`, assists, rebounds, wins, win pct, and other
+     common stat queries focused on the requested metric instead of a fallback
+     sample-size column.
+  4. Redundant `Full Leaderboard` raw dumps no longer render under this route.
 - **Should show (locked to StatMuse baseline):**
   1. **Hero card.** Colored background, illustration of the #1 entity
      on the left, one-sentence answer:
@@ -528,17 +533,23 @@ Rules of thumb:
   5. **Raw tables.** Remove the redundant `Full Leaderboard` raw table.
      The leaderboard table above is the answer table — adding a second
      raw dump below is redundant.
-- **Bugs filed:** current shipped UI ≠ baseline; tracked under
-  StatMuse-baseline rebuild work.
 - **Notes:** Most-used class. Visual quality of this route disproportionately
   shapes the felt quality of the whole product.
 
-### `season_team_leaders` `[~]`
+### `season_team_leaders` `[x]`
 
 - **Pattern:** `LeaderboardResult`
 - **Example queries:**
   - `best team ppg this season`
   - `team assists leaders this season`
+- **Currently shows (shipped):**
+  - Same sentence-hero plus dense answer-table pattern as `season_leaders`,
+    but team-first.
+  - Team rows render with team logo/name identity, highlighted queried metric,
+    season/context, games, and supporting record/stat columns when present.
+  - Wins queries keep `wins` as the primary metric; common team-stat queries
+    such as PPG and APG highlight the matching per-game stat.
+  - Redundant `Full Leaderboard` raw dumps do not render under this route.
 - **Should show (locked to StatMuse baseline):**
   - Same hero + leaderboard-table pattern as `season_leaders`, but
     team-first.
@@ -554,8 +565,6 @@ Rules of thumb:
     `most wins` features wins, not win pct.
   - Remove the redundant `Full Leaderboard` raw table — the leaderboard
     table above is the answer.
-- **Bugs filed:** current shipped UI ≠ baseline; tracked under
-  StatMuse-baseline rebuild work.
 
 ### `team_record_leaderboard` `[x]`
 - **Example queries:**

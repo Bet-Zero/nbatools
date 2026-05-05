@@ -256,6 +256,7 @@ describe("ResultRenderer (substrate)", () => {
           route: "season_leaders",
           season: "2024-25",
           season_type: "Playoffs",
+          interpreted_as: "most ppg by a player in 2025 playoffs",
         },
         notes: [],
         caveats: [],
@@ -294,10 +295,108 @@ describe("ResultRenderer (substrate)", () => {
         "Shai Gilgeous-Alexander scored the most points per game in the 2025 playoffs, with 29.9 per game.",
       ),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText("Interpreted as: most ppg by a player in 2025 playoffs"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "PPG" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "TM" })).toBeInTheDocument();
     expect(screen.getByText("Jalen Williams")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+  });
+
+  it("renders season team leaderboards with a team-first sentence and highlighted metric", () => {
+    const data = makeResponse({
+      query: "team assists leaders this season",
+      route: "season_team_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "team assists leaders this season",
+          route: "season_team_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Denver Nuggets",
+              team_abbr: "DEN",
+              team_id: 1610612743,
+              games_played: 82,
+              ast_per_game: 29.7,
+              pts_per_game: 120.8,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Denver Nuggets had the most assists per game in the 2025-26 regular season, with 29.7 per game.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "APG" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "PPG" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+  });
+
+  it("keeps wins as the primary metric for team season wins leaderboards", () => {
+    const data = makeResponse({
+      query: "most wins by a team in 2025-26",
+      route: "season_team_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "most wins by a team in 2025-26",
+          route: "season_team_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Oklahoma City Thunder",
+              team_abbr: "OKC",
+              team_id: 1610612760,
+              games_played: 82,
+              wins: 68,
+              losses: 14,
+              win_pct: 0.829,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Oklahoma City Thunder won the most games in the 2025-26 regular season, with 68 wins.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Wins" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Losses" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Win %" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
   });
 

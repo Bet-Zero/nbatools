@@ -236,7 +236,11 @@ hero treatment and retained raw details.
 
 ---
 
-## 9. `[ ]` StatMuse-baseline leaderboards
+## 9. `[x]` StatMuse-baseline leaderboards — completed on 2026-05-05:
+player and team season leaderboards now have focused renderer coverage for
+sentence heroes, disambiguation notes, dense open answer tables, highlighted
+queried metrics, common team stat metrics, wins, and no redundant raw-table
+dump.
 
 **Routes:** `season_leaders`, `season_team_leaders`
 
