@@ -266,7 +266,12 @@ highlighted queried metric, and no redundant raw leaderboard dump.
 
 ---
 
-## 10. `[ ]` Record and historical fallback displays
+## 10. `[x]` Record and historical fallback displays — completed on
+2026-05-05: team records, team records by decade, decade record
+leaderboards, and matchup-by-decade results now render through a dedicated
+record pattern with sentence heroes, team identity treatment, dense answer
+tables, highlighted requested metrics where applicable, and collapsed raw
+detail sections for supporting/debug rows.
 
 **Routes:** `team_record`, `record_by_decade`,
 `record_by_decade_leaderboard`, `matchup_by_decade`
