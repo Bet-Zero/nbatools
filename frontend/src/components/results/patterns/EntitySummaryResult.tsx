@@ -14,20 +14,12 @@ interface Props {
   sectionKey?: string;
 }
 
-interface SummaryItem {
-  key: string;
-  label: string;
-  value: string;
-}
-
 export default function EntitySummaryResult({
   data,
   sectionKey = "summary",
 }: Props) {
   const row = data.result?.sections?.[sectionKey]?.[0];
   if (!row) return null;
-
-  const items = summaryItems(row);
 
   return (
     <section className={styles.pattern} aria-label="Player summary result">
@@ -37,16 +29,6 @@ export default function EntitySummaryResult({
         disambiguationNote={disambiguationNote(data.result?.metadata)}
         tone="accent"
       />
-      {items.length > 0 && (
-        <div className={styles.summaryStrip} aria-label="Summary averages">
-          {items.map((item) => (
-            <span className={styles.summaryItem} key={item.key}>
-              <span className={styles.summaryValue}>{item.value}</span>
-              <span className={styles.summaryLabel}>{item.label}</span>
-            </span>
-          ))}
-        </div>
-      )}
     </section>
   );
 }
@@ -120,38 +102,6 @@ function summaryContext(
   }
 
   return "";
-}
-
-function summaryItems(row: SectionRow): SummaryItem[] {
-  const items: SummaryItem[] = [];
-  addItem(items, row, "games", "GP");
-
-  if (hasValue(row.wins) && hasValue(row.losses)) {
-    items.push({
-      key: "record",
-      label: "Record",
-      value: `${formatValue(row.wins, "wins")}-${formatValue(
-        row.losses,
-        "losses",
-      )}`,
-    });
-  }
-
-  addItem(items, row, "pts_avg", "PTS");
-  addItem(items, row, "reb_avg", "REB");
-  addItem(items, row, "ast_avg", "AST");
-  addItem(items, row, "minutes_avg", "MIN");
-  return items;
-}
-
-function addItem(
-  items: SummaryItem[],
-  row: SectionRow,
-  key: string,
-  label: string,
-) {
-  if (!hasValue(row[key])) return;
-  items.push({ key, label, value: formatValue(row[key], key) });
 }
 
 function heroIdentity(

@@ -204,7 +204,11 @@ These items were added by the `result_display_implementation_plan.md` item
 `result_display_map.md` after the first pattern-based renderer pass shipped
 and the deployed main app was audited.
 
-## 8. `[ ]` StatMuse-baseline player summaries
+## 8. `[x]` StatMuse-baseline player summaries — completed on 2026-05-05:
+last-N player summaries now render a sentence-only hero, suppress extra
+summary strips, keep the game-log table open with `Average` / `Total` footer
+rows, and remove redundant raw summary/by-season dumps from the primary
+player summary route.
 
 **Routes:** `player_game_summary`
 

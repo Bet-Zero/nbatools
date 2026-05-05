@@ -161,7 +161,7 @@ Rules of thumb:
 
 ## summary
 
-### `player_game_summary` `[~]`
+### `player_game_summary` `[x]`
 - **Pattern:** `EntitySummaryResult` / `GameLogResult`
 - **Example queries:**
   - `Jokic last 10 games`
@@ -174,12 +174,17 @@ Rules of thumb:
   inline headshot, name, date, team, vs/@, opponent, then MIN / PTS /
   REB / AST / STL / BLK / FG… columns. Footer rows for `Average` and
   `Total` inside the same table.
-- **Currently shows (shipped, does NOT match the StatMuse baseline):**
-  1. Player summary hero with stacked stat tiles (PTS/REB/AST as
-     individual hero stats), record stat, and supporting stats grid.
-  2. "Recent Games" cards — one card per game with header, meta block,
-     and stat tiles. Card-per-row layout for tabular data.
-  3. `Full Summary` and `By Season` raw tables behind a toggle.
+- **Currently shows (shipped):**
+  1. Sentence-style player hero with the player identity on the left and no
+     stat tiles, chip rows, or stacked metrics under the sentence.
+  2. For `last N games` queries, `GameLogResult` renders one dense game-log
+     answer table open by default, including all returned game rows plus
+     `Average` and `Total` footer rows inside the table.
+  3. For broad season/career summaries, the renderer keeps the display to the
+     entity-summary hero and omits game-log rows unless the query explicitly
+     asks for a game window.
+  4. Redundant `Full Summary` and single-season `By Season` raw dumps no
+     longer render under this route.
 - **Should show (locked to StatMuse baseline):**
   1. **Hero card.** Colored background, player illustration/headshot on
      the left, one-sentence answer:
@@ -209,8 +214,6 @@ Rules of thumb:
      already in the hero/answer table. If a `by_season` breakdown is
      genuinely additional context, render it as a secondary answer
      table below the primary game log, not as a hidden raw dump.
-- **Bugs filed:** current shipped UI ≠ baseline; tracked under
-  StatMuse-baseline rebuild work.
 - **Notes:** Compound result. The hero answers the summary part; the
   game-log table answers the per-game part. Both are required when the
   query asks for a sample window.

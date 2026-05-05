@@ -22,6 +22,7 @@ export type PatternConfig =
       mode?: "auto" | "player" | "team";
       metricKey?: string;
       preserveOrder?: boolean;
+      showSummaryStrip?: boolean;
       rawDetailTitle?: string;
       detailSectionKeys?: string[];
     }
@@ -55,7 +56,12 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
       return isLastNPlayerSummary(data)
         ? [
             { type: "entity_summary", sectionKey: "summary" },
-            { type: "game_log", sectionKey: "game_log", summaryKey: "summary" },
+            {
+              type: "game_log",
+              sectionKey: "game_log",
+              summaryKey: "summary",
+              showSummaryStrip: false,
+            },
           ]
         : [{ type: "entity_summary", sectionKey: "summary" }];
     case "player_game_finder":
