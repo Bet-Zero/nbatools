@@ -105,6 +105,7 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           mode={pattern.mode}
           metricKey={pattern.metricKey}
           preserveOrder={pattern.preserveOrder}
+          showSummaryStrip={pattern.showSummaryStrip}
           rawDetailTitle={pattern.rawDetailTitle}
           detailSectionKeys={pattern.detailSectionKeys}
         />

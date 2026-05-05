@@ -186,6 +186,8 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("Average")).toBeInTheDocument();
     expect(screen.getByText("Total")).toBeInTheDocument();
     expect(screen.getByText("253")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Summary averages")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Game-log averages")).not.toBeInTheDocument();
     expect(screen.queryByText("Recent Games")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
   });
@@ -238,6 +240,7 @@ describe("ResultRenderer (substrate)", () => {
         "Stephen Curry has averaged 26.6 points, 3.6 rebounds and 4.7 assists this season.",
       ),
     ).toBeInTheDocument();
+    expect(screen.queryByLabelText("Summary averages")).not.toBeInTheDocument();
     expect(screen.queryByRole("table", { name: "Game log" })).not.toBeInTheDocument();
   });
 

@@ -23,6 +23,7 @@ interface Props {
   mode?: GameLogMode;
   metricKey?: string;
   preserveOrder?: boolean;
+  showSummaryStrip?: boolean;
   rawDetailTitle?: string;
   detailSectionKeys?: string[];
 }
@@ -86,6 +87,7 @@ export default function GameLogResult({
   mode = "auto",
   metricKey,
   preserveOrder = false,
+  showSummaryStrip = true,
   rawDetailTitle,
   detailSectionKeys = [],
 }: Props) {
@@ -102,7 +104,7 @@ export default function GameLogResult({
 
   return (
     <section className={styles.pattern} aria-label="Game log result">
-      {items.length > 0 && (
+      {showSummaryStrip && items.length > 0 && (
         <div className={styles.summaryStrip} aria-label="Game-log averages">
           {items.map((item) => (
             <span className={styles.summaryItem} key={item.key}>
@@ -148,11 +150,6 @@ function tableColumns(
       align: "center",
       render: (_row, index) => index + 1,
     },
-    {
-      key: "date",
-      header: TABLE_LABELS.date,
-      render: (row) => textValue(row, "game_date") ?? "—",
-    },
   ];
 
   if (mode === "player") {
@@ -163,17 +160,29 @@ function tableColumns(
         render: playerCell,
       },
       {
+        key: "date",
+        header: TABLE_LABELS.date,
+        render: (row) => textValue(row, "game_date") ?? "—",
+      },
+      {
         key: "team",
         header: TABLE_LABELS.team,
         render: (row) => teamCell(row, data),
       },
     );
   } else {
-    columns.push({
-      key: "team",
-      header: "Team",
-      render: (row) => teamCell(row, data),
-    });
+    columns.push(
+      {
+        key: "date",
+        header: TABLE_LABELS.date,
+        render: (row) => textValue(row, "game_date") ?? "—",
+      },
+      {
+        key: "team",
+        header: "Team",
+        render: (row) => teamCell(row, data),
+      },
+    );
   }
 
   columns.push(
