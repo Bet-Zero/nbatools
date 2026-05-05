@@ -182,14 +182,20 @@ describe("ResultRenderer (substrate)", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "PTS" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PTS" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Average")).toBeInTheDocument();
     expect(screen.getByText("Total")).toBeInTheDocument();
     expect(screen.getByText("253")).toBeInTheDocument();
     expect(screen.queryByLabelText("Summary averages")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Game-log averages")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Game-log averages"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Recent Games")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps broad player summaries to the entity summary pattern only", () => {
@@ -241,7 +247,9 @@ describe("ResultRenderer (substrate)", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByLabelText("Summary averages")).not.toBeInTheDocument();
-    expect(screen.queryByRole("table", { name: "Game log" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("table", { name: "Game log" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders season leaderboards as a sentence hero and dense answer table", () => {
@@ -298,11 +306,19 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByText("Interpreted as: most ppg by a player in 2025 playoffs"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "PPG" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "TM" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Leaderboard" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PPG" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "TM" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Jalen Williams")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders season team leaderboards with a team-first sentence and highlighted metric", () => {
@@ -346,10 +362,18 @@ describe("ResultRenderer (substrate)", () => {
         "The Denver Nuggets had the most assists per game in the 2025-26 regular season, with 29.7 per game.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "APG" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "PPG" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Leaderboard" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "APG" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PPG" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps wins as the primary metric for team season wins leaderboards", () => {
@@ -394,10 +418,18 @@ describe("ResultRenderer (substrate)", () => {
         "The Oklahoma City Thunder won the most games in the 2025-26 regular season, with 68 wins.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Wins" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Losses" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Win %" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Wins" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Losses" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Win %" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders team record leaderboards with W-L context in the hero and table", () => {
@@ -443,11 +475,310 @@ describe("ResultRenderer (substrate)", () => {
         "The Boston Celtics had the best record since 2015, going 578-304 (65.5%).",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Win %" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Wins" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Losses" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Win %" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Wins" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Losses" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("882")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders team records with a team hero, record table, and collapsed details", () => {
+    const data = makeResponse({
+      query: "Lakers record this season",
+      route: "team_record",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers record this season",
+          route: "team_record",
+          season: "2025-26",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              season_start: "2025-26",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              games: 82,
+              wins: 53,
+              losses: 29,
+              win_pct: 0.646,
+              pts_avg: 116.341,
+              reb_avg: 40.988,
+              ast_avg: 25.878,
+              fg3m_avg: 11.829,
+              plus_minus_avg: 1.751,
+            },
+          ],
+          by_season: [
+            {
+              season: "2025-26",
+              games: 82,
+              wins: 53,
+              losses: 29,
+              win_pct: 0.646,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Los Angeles Lakers are 53-29 this season, a 64.6% win rate.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Team record" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "W-L" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Win %" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "3PM" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Record Detail")).toBeInTheDocument();
+    expect(screen.getByText("By Season Detail")).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: "Show raw table" }),
+    ).toHaveLength(2);
+  });
+
+  it("renders team records grouped by decade as a dedicated decade table", () => {
+    const data = makeResponse({
+      query: "Lakers by decade",
+      route: "record_by_decade",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers by decade",
+          route: "record_by_decade",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              season_start: "1996-97",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              games: 2391,
+              wins: 1361,
+              losses: 1030,
+              win_pct: 0.569,
+            },
+          ],
+          by_season: [
+            {
+              decade: "1990s",
+              games: 296,
+              wins: 215,
+              losses: 81,
+              seasons_appeared: 4,
+              win_pct: 0.726,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Los Angeles Lakers are 1,361-1,030 (56.9%) from 1996-97 to 2025-26 in the regular season, grouped by decade.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Record by decade" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Decade" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("1990s")).toBeInTheDocument();
+    expect(screen.getByText("72.6%")).toBeInTheDocument();
+    expect(screen.getByText("Record Detail")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Show raw table" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("By Season")).not.toBeInTheDocument();
+  });
+
+  it("renders record-by-decade leaderboards with decade and requested metric highlighted", () => {
+    const data = makeResponse({
+      query: "most wins by decade since 1980",
+      route: "record_by_decade_leaderboard",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "most wins by decade since 1980",
+          route: "record_by_decade_leaderboard",
+          start_season: "1980-81",
+          end_season: "2025-26",
+          season_type: "Regular Season",
+          stat: "wins",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Utah Jazz",
+              team_abbr: "UTA",
+              decade: "1990s",
+              games_played: 296,
+              wins: 218,
+              losses: 78,
+              win_pct: 0.736,
+              season_type: "Regular Season",
+              seasons: "1980-81 to 2025-26",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Utah Jazz won the most games in the 1990s since 1980, with 218 wins.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Record by decade leaderboard" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Wins" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Decade" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "W-L" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders matchup-by-decade results with team identities and decade comparison rows", () => {
+    const data = makeResponse({
+      query: "Lakers vs Celtics by decade",
+      route: "matchup_by_decade",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers vs Celtics by decade",
+          route: "matchup_by_decade",
+          season_type: "Regular Season",
+          teams_context: [
+            {
+              team_id: 1610612747,
+              team_abbr: "LAL",
+              team_name: "Lakers",
+            },
+            {
+              team_id: 1610612738,
+              team_abbr: "BOS",
+              team_name: "Celtics",
+            },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              games: 58,
+              wins: 31,
+              losses: 27,
+              win_pct: 0.534,
+            },
+            {
+              team_name: "Boston Celtics",
+              games: 58,
+              wins: 27,
+              losses: 31,
+              win_pct: 0.466,
+            },
+          ],
+          comparison: [
+            {
+              decade: "1990s",
+              LAL_wins: 4,
+              LAL_losses: 2,
+              LAL_win_pct: 0.667,
+              BOS_wins: 2,
+              BOS_losses: 4,
+              BOS_win_pct: 0.333,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Los Angeles Lakers lead the Boston Celtics 31-27 in regular season games, grouped by decade.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Matchup by decade" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "LAL W-L" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "BOS W-L" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("4-2")).toBeInTheDocument();
+    expect(screen.getByText("2-4")).toBeInTheDocument();
+    expect(screen.getByText("Matchup Summary Detail")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Show raw table" }),
+    ).toBeInTheDocument();
   });
 
   it("renders player stretch leaderboards through the leaderboard pattern", () => {
@@ -494,7 +825,9 @@ describe("ResultRenderer (substrate)", () => {
         "Luka Doncic averaged the most points per game in the 2025-26 regular season, with 45.3 per game.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "PPG" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PPG" }),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Stretch Games")).not.toBeInTheDocument();
   });
 
@@ -531,12 +864,16 @@ describe("ResultRenderer (substrate)", () => {
 
     render(<ResultRenderer data={data} />);
 
-    expect(screen.getByRole("table", { name: "Leaderboard" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Leaderboard" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Games PTS 120+" }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("DEN").length).toBeGreaterThan(0);
-    expect(screen.queryByRole("button", { name: "Show raw table" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders lineup leaderboards as dense rows with the lineup identity", () => {
@@ -577,8 +914,12 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByText("Jayson Tatum / Jaylen Brown / Derrick White"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Net" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "TM" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Net" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "TM" }),
+    ).toBeInTheDocument();
   });
 
   it("renders playoff appearances as a leaderboard pattern", () => {
@@ -621,7 +962,9 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "Appearances" }),
     ).toBeInTheDocument();
-    expect(screen.queryByText("Playoff leaderboard rankings")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Playoff leaderboard rankings"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders player game finder rows through the game-log pattern", () => {
@@ -678,11 +1021,17 @@ describe("ResultRenderer (substrate)", () => {
     render(<ResultRenderer data={data} />);
 
     expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Player" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "PTS" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Player" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PTS" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
     expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
-    expect(screen.queryByLabelText("Player game cards")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Player game cards"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders team game finder rows without a player column", () => {
@@ -731,9 +1080,15 @@ describe("ResultRenderer (substrate)", () => {
 
     render(<ResultRenderer data={data} />);
 
-    expect(screen.getByRole("columnheader", { name: "Team" })).toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: "Player" })).not.toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Score" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Team" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Player" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Score" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("113-108")).toBeInTheDocument();
     expect(screen.getByText("Game Detail")).toBeInTheDocument();
   });
@@ -796,7 +1151,9 @@ describe("ResultRenderer (substrate)", () => {
     expect(within(rows[1]).getByText("Bam Adebayo")).toBeInTheDocument();
     expect(within(rows[2]).getByText("Luka Doncic")).toBeInTheDocument();
     expect(screen.getByText("Top Player Games Detail")).toBeInTheDocument();
-    expect(screen.queryByLabelText("Ranked player games")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Ranked player games"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders top team games with team identity and score", () => {
@@ -839,7 +1196,9 @@ describe("ResultRenderer (substrate)", () => {
 
     render(<ResultRenderer data={data} />);
 
-    expect(screen.getByRole("columnheader", { name: "Team" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Team" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Denver Nuggets")).toBeInTheDocument();
     expect(screen.getByText("157-103")).toBeInTheDocument();
     expect(screen.getByText("Top Team Games Detail")).toBeInTheDocument();
@@ -990,11 +1349,19 @@ describe("ResultRenderer (substrate)", () => {
     render(<ResultRenderer data={data} />);
 
     expect(
-      screen.getByText("Nikola Jokic's home/away split for 2025-26 Regular Season."),
+      screen.getByText(
+        "Nikola Jokic's home/away split for 2025-26 Regular Season.",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Split buckets" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "PTS" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "+/-" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Split buckets" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "PTS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "+/-" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Home +3.2 PPG")).toBeInTheDocument();
     expect(screen.getByText("Split Summary Detail")).toBeInTheDocument();
     expect(screen.getByText("Split Comparison Detail")).toBeInTheDocument();
@@ -1132,9 +1499,13 @@ describe("ResultRenderer (substrate)", () => {
     render(<ResultRenderer data={data} />);
 
     expect(
-      screen.getByText("LeBron James' on/off split for 2025-26 Regular Season."),
+      screen.getByText(
+        "LeBron James' on/off split for 2025-26 Regular Season.",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Net" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Net" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("On +15.3 net rating")).toBeInTheDocument();
     expect(screen.getByText("On/Off Detail")).toBeInTheDocument();
     expect(screen.queryByText("Player On/Off")).not.toBeInTheDocument();
@@ -1191,7 +1562,9 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByText(/Nikola Jokic's active 25\+ pts streak/),
     ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "TS%" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "TS%" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
     expect(screen.queryByLabelText("Streak results")).not.toBeInTheDocument();
@@ -1247,7 +1620,9 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByText(/Los Angeles Lakers' completed wins streak/),
     ).toBeInTheDocument();
     expect(screen.getByText("Completed")).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "+/-" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "+/-" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("4-0")).toBeInTheDocument();
   });
 
@@ -1318,7 +1693,9 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("table", { name: "Playoff season breakdown" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Round" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Round" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("First Round")).toBeInTheDocument();
     expect(screen.getByText("1-4")).toBeInTheDocument();
     expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
@@ -1365,8 +1742,12 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       within(roundRecord).getByText("finals playoff mark", { exact: false }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Playoff round records" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Win Pct" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Playoff round records" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Win Pct" }),
+    ).toBeInTheDocument();
     expect(screen.getAllByText("66.7%").length).toBeGreaterThan(0);
     expect(screen.getAllByText("28-14").length).toBeGreaterThan(0);
     expect(screen.getByText("Playoff Round Detail")).toBeInTheDocument();
@@ -1425,11 +1806,19 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getAllByText("Boston Celtics").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Miami Heat").length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Boston Celtics and Miami Heat have a playoff matchup history/),
+      screen.getByText(
+        /Boston Celtics and Miami Heat have a playoff matchup history/,
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Playoff series" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "BOS" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "MIA" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Playoff series" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "BOS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "MIA" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("MIA won 4-3")).toBeInTheDocument();
     expect(screen.getByText("3-4")).toBeInTheDocument();
     expect(screen.getAllByText("4-3").length).toBeGreaterThan(0);
@@ -1504,9 +1893,13 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getAllByText("Nikola Jokic").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Joel Embiid").length).toBeGreaterThan(0);
     expect(within(compared).getByText("51-21")).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Comparison metrics" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Comparison metrics" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("PTS Avg")).toBeInTheDocument();
-    expect(screen.getAllByText("Joel Embiid +3.7 PTS").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Joel Embiid +3.7 PTS").length).toBeGreaterThan(
+      0,
+    );
     expect(screen.getByText("Nikola Jokic +3.6 AST")).toBeInTheDocument();
     expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
     expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
@@ -1570,13 +1963,19 @@ describe("ResultRenderer (substrate)", () => {
     render(<ResultRenderer data={data} />);
 
     const compared = screen.getByLabelText("Compared teams");
-    expect(within(compared).getByLabelText("Boston Celtics (BOS)")).toBeInTheDocument();
+    expect(
+      within(compared).getByLabelText("Boston Celtics (BOS)"),
+    ).toBeInTheDocument();
     expect(
       within(compared).getByLabelText("Los Angeles Lakers (LAL)"),
     ).toBeInTheDocument();
     expect(within(compared).getByText("60-22")).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "BOS" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "LAL" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "BOS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "LAL" }),
+    ).toBeInTheDocument();
     expect(screen.getAllByText("BOS +13 Wins").length).toBeGreaterThan(0);
     expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
     expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
@@ -1644,7 +2043,9 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(within(participants).getByText("1-3")).toBeInTheDocument();
     expect(within(participants).getByText("3-1")).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Comparison metrics" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Comparison metrics" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Participant Detail")).toBeInTheDocument();
     expect(screen.getByText("Metric Detail")).toBeInTheDocument();
   });

@@ -48,6 +48,14 @@ export type PatternConfig =
   | { type: "streak"; sectionKey?: string }
   | { type: "playoff_history"; mode?: "history" | "round_record" | "matchup" }
   | { type: "comparison"; subject?: "player" | "team"; headToHead?: boolean }
+  | {
+      type: "record";
+      mode:
+        | "team_record"
+        | "record_by_decade"
+        | "record_by_decade_leaderboard"
+        | "matchup_by_decade";
+    }
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
@@ -158,6 +166,14 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
       ];
     case "team_matchup_record":
       return [{ type: "comparison", subject: "team", headToHead: true }];
+    case "team_record":
+      return [{ type: "record", mode: "team_record" }];
+    case "record_by_decade":
+      return [{ type: "record", mode: "record_by_decade" }];
+    case "record_by_decade_leaderboard":
+      return [{ type: "record", mode: "record_by_decade_leaderboard" }];
+    case "matchup_by_decade":
+      return [{ type: "record", mode: "matchup_by_decade" }];
     case "season_leaders":
     case "season_team_leaders":
     case "team_record_leaderboard":

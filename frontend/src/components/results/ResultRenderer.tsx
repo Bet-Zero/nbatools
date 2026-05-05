@@ -7,6 +7,7 @@ import FallbackTableResult from "./patterns/FallbackTableResult";
 import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
 import PlayoffHistoryResult from "./patterns/PlayoffHistoryResult";
+import RecordResult from "./patterns/RecordResult";
 import SplitResult from "./patterns/SplitResult";
 import StreakResult from "./patterns/StreakResult";
 import ResultShell from "./primitives/ResultShell";
@@ -147,6 +148,8 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           headToHead={pattern.headToHead}
         />
       );
+    case "record":
+      return <RecordResult data={data} mode={pattern.mode} />;
     case "fallback_table":
       return <FallbackTableResult data={data} />;
     default:

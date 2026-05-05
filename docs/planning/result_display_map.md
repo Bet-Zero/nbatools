@@ -233,17 +233,18 @@ Rules of thumb:
   - Do not show full game logs by default unless the query explicitly asks for games.
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
-### `team_record` `[~]`
-- **Pattern:** `FallbackTableResult` (pending dedicated record pattern)
+### `team_record` `[x]`
+- **Pattern:** `RecordResult` (`team_record` mode)
 - **Example queries:**
   - `Lakers record this season`
   - `Celtics record vs Bucks`
-- **Currently shows (deployed 2026-05-04):**
-  1. The deployed route returns `summary` and `by_season` sections.
-  2. The frontend intentionally falls through to `FallbackTableResult`
-     because `team_record` is not yet mapped to a dedicated record pattern.
-  3. No record hero, team-logo treatment, or collapsed record-detail
-     treatment ships after the legacy per-route section removal.
+- **Currently shows (shipped 2026-05-05):**
+  1. Team record hero with team logo/name, opponent identity when scoped,
+     W-L, win pct, games/sample, and season/filter context.
+  2. Dense one-row team record answer table with W-L, win pct, games, and
+     supporting team stats when present.
+  3. `Record Detail` and `By Season Detail` raw tables retained behind the
+     shared collapsed raw-table toggle.
 - **Should show:**
   1. **Single team record hero**
      - Team logo
@@ -266,8 +267,6 @@ Rules of thumb:
   4. **Raw tables**
      - Keep `Record Detail` and `By Season` tables available behind the shared collapsed raw-table/detail toggle.
      - Do not show raw tables open by default.
-- **Follow-up:** `result_display_followup_queue.md` tracks the record/fallback
-  pattern work.
 
 ### `team_split_summary` `[x]`
 - **Pattern:** `SplitResult`
@@ -706,13 +705,15 @@ Rules of thumb:
 
 ## count / playoff / other
 
-### `record_by_decade` `[~]`
-- **Pattern:** `FallbackTableResult`
+### `record_by_decade` `[x]`
+- **Pattern:** `RecordResult` (`record_by_decade` mode)
 - **Example queries:**
   - `Lakers by decade`
-- **Currently shows (deployed 2026-05-04):**
-  - The route returns `summary` and `by_season` sections, then falls through
-    to `FallbackTableResult`.
+- **Currently shows (shipped 2026-05-05):**
+  - Team identity hero with covered range, total record, and win pct.
+  - Dense decade table with decade, seasons, W-L, win pct, and games.
+  - Overall `Record Detail` raw table retained behind the shared collapsed
+    raw-table toggle.
 - **Should show:**
   - Historical team record display grouped by decade.
   - Team logo/name, covered season range, total record/win pct, and one
@@ -720,33 +721,36 @@ Rules of thumb:
     and season-type context.
   - Raw sections remain available behind the shared collapsed raw-table
     toggle when they add debug/detail value.
-- **Follow-up:** historical record display work is tracked in
-  `result_display_followup_queue.md`.
 
-### `record_by_decade_leaderboard` `[~]`
-- **Pattern:** `FallbackTableResult`
+### `record_by_decade_leaderboard` `[x]`
+- **Pattern:** `RecordResult` (`record_by_decade_leaderboard` mode)
 - **Example queries:**
   - `most wins by decade since 1980`
   - `winningest team of the 2010s`
-- **Currently shows (deployed 2026-05-04):**
-  - The route returns a `leaderboard` section, then falls through to
-    `FallbackTableResult`.
+- **Currently shows (shipped 2026-05-05):**
+  - Historical leaderboard hero naming the leading team, decade, and
+    requested metric.
+  - Dense ranked table with rank, team identity, decade, highlighted
+    requested metric, W-L, games, win pct, seasons, and season type when
+    present.
 - **Should show:**
   - Dense historical leaderboard grouped by decade.
   - Rank, team logo/name, highlighted requested metric, decade, W-L, games,
     win pct, season range, and season type.
   - The primary display must make the decade and requested metric obvious
     without opening raw JSON.
-- **Follow-up:** historical record display work is tracked in
-  `result_display_followup_queue.md`.
 
-### `matchup_by_decade` `[~]`
-- **Pattern:** `FallbackTableResult`
+### `matchup_by_decade` `[x]`
+- **Pattern:** `RecordResult` (`matchup_by_decade` mode)
 - **Example queries:**
   - `Lakers vs Celtics by decade`
-- **Currently shows (deployed 2026-05-04):**
-  - The route returns `summary` and `comparison` sections, then falls
-    through to `FallbackTableResult`.
+- **Currently shows (shipped 2026-05-05):**
+  - Team-vs-team identity hero with overall matchup record and season-type
+    context.
+  - Dense decade comparison table with each team's W-L, win pct, and PPG
+    columns when present.
+  - `Matchup Summary Detail` raw table retained behind the shared collapsed
+    raw-table toggle.
 - **Should show:**
   - Historical matchup display grouped by decade.
   - Team A vs Team B identity header, overall matchup record, covered season
@@ -754,8 +758,6 @@ Rules of thumb:
     wins, games, win pct, and average points when available.
   - Raw sections remain available behind the shared collapsed raw-table
     toggle when they add debug/detail value.
-- **Follow-up:** historical matchup display work is tracked in
-  `result_display_followup_queue.md`.
 
 ### Playoff routes `[x]`
 - **Pattern:** `PlayoffHistoryResult` / `LeaderboardResult`
