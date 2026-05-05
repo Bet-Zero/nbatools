@@ -302,7 +302,13 @@ and dense record or matchup tables without forcing raw-table reading.
 
 ---
 
-## 11. `[ ]` Data-backed on/off and lineup verification
+## 11. `[x]` Data-backed on/off and lineup verification — completed on
+2026-05-05: deployed main was re-checked for `player_on_off`,
+`lineup_leaderboard`, and `lineup_summary`. All three route families still
+return `no_result` / `unsupported` with empty sections because trusted
+play-by-play, stint, and lineup coverage is unavailable. The frontend keeps
+rendering the shared honest no-result state, does not synthesize values in
+React, and the map remains `[~]` with the data-coverage reason.
 
 **Routes:** `player_on_off`, `lineup_leaderboard`, `lineup_summary`
 
