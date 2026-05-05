@@ -383,12 +383,15 @@ Rules of thumb:
   - Keep raw tables available behind the shared collapsed raw-table/detail toggle.
 
 ### `player_on_off` `[~]`
+- **Pattern:** `NoResultDisplay` for deployed `no_result`; `SplitResult`
+  is mapped for future row-bearing responses.
 - **Example queries:**
   - `Jokic on/off`
   - `Lakers on/off LeBron`
-- **Currently shows (deployed 2026-05-04):**
-  - Route recognition works, but deployed examples return `no_result` with
-    an `unsupported` reason because the current data layer lacks trusted
+- **Currently shows (re-verified on deployed main 2026-05-05):**
+  - Route recognition works, but deployed examples (`Jokic on/off`,
+    `Lakers on/off LeBron`) return `no_result` with an `unsupported` reason
+    and empty sections because the current data layer lacks trusted
     play-by-play or lineup-stint coverage.
   - `SplitResult` is mapped for row-bearing `player_on_off` responses, but
     the deployed app cannot yet verify the card/impact display against live
@@ -406,8 +409,8 @@ Rules of thumb:
     used as the fallback comparison metric.
   - Raw split rows remain available behind the shared collapsed
     `RawDetailToggle`.
-- **Follow-up:** data-backed verification remains open in
-  `result_display_followup_queue.md`.
+- **Follow-up:** Product completion still requires adding trusted on/off data
+  coverage and then verifying the row-bearing `SplitResult` display.
 
 ---
 
@@ -588,12 +591,15 @@ Rules of thumb:
   - Raw leaderboard rows remain available behind the shared collapsed `RawDetailToggle`.
 
 ### `lineup_leaderboard` `[~]`
+- **Pattern:** `NoResultDisplay` for deployed `no_result`; `LeaderboardResult`
+  is mapped for future row-bearing responses.
 - **Example queries:**
   - `best 3-man units this season`
-- **Currently shows (deployed 2026-05-04):**
-  - Route recognition works, but the deployed example returns `no_result`
-    with an `unsupported` reason because trusted `league_lineup_viz`
-    coverage is unavailable for the requested slice.
+- **Currently shows (re-verified on deployed main 2026-05-05):**
+  - Route recognition works, but the deployed example
+    (`best 3-man units this season`) returns `no_result` with an
+    `unsupported` reason and empty sections because trusted
+    `league_lineup_viz` coverage is unavailable for the requested slice.
   - `LeaderboardResult` is mapped for row-bearing `lineup_leaderboard`
     responses, but deployed data cannot yet verify the lineup rows.
 - **Should show:**
@@ -605,16 +611,19 @@ Rules of thumb:
     with default fallback to net rating and related lineup rating fields.
   - Raw leaderboard rows remain available behind the shared collapsed
     `RawDetailToggle`.
-- **Follow-up:** data-backed verification remains open in
-  `result_display_followup_queue.md`.
+- **Follow-up:** Product completion still requires adding trusted lineup data
+  coverage and then verifying the row-bearing `LeaderboardResult` display.
 
 ### `lineup_summary` `[~]`
+- **Pattern:** `NoResultDisplay` for deployed `no_result`; row-bearing
+  responses still need a dedicated summary mapping once trusted data exists.
 - **Example queries:**
   - `lineup with Tatum and Jaylen Brown`
-- **Currently shows (deployed 2026-05-04):**
-  - Route recognition works, but the deployed example returns `no_result`
-    with an `unsupported` reason because trusted lineup coverage is
-    unavailable.
+- **Currently shows (re-verified on deployed main 2026-05-05):**
+  - Route recognition works, but the deployed example
+    (`lineup with Tatum and Jaylen Brown`) returns `no_result` with an
+    `unsupported` reason and empty sections because trusted lineup coverage
+    is unavailable.
   - If row-bearing `lineup_summary` data is returned, the route currently
     falls through to `FallbackTableResult`; it is not mapped to a dedicated
     lineup summary pattern after the legacy cleanup.
@@ -626,8 +635,8 @@ Rules of thumb:
     plus-minus, and shooting/rebounding split fields when present.
   - Raw summary rows remain available behind the shared collapsed
     `RawDetailToggle`.
-- **Follow-up:** pattern mapping and data-backed verification remain open in
-  `result_display_followup_queue.md`.
+- **Follow-up:** Product completion still requires adding trusted lineup data
+  coverage, then mapping and verifying a row-bearing lineup summary display.
 
 ### `player_occurrence_leaders` `[x]`
 - **Pattern:** `LeaderboardResult`
