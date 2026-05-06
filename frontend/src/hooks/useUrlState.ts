@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 
 /** State derived from / synced to the URL search params. */
 export interface UrlParams {
@@ -38,16 +38,15 @@ export default function useUrlState(onNavigate?: (params: UrlParams) => void) {
   const [params, setParams] = useState<UrlParams>(() =>
     parseUrlParams(window.location.search),
   );
-
-  // Store the latest callback in a ref so the popstate listener never goes stale.
-  const onNavRef = useRef(onNavigate);
-  onNavRef.current = onNavigate;
+  const handleNavigate = useEffectEvent((next: UrlParams) => {
+    onNavigate?.(next);
+  });
 
   useEffect(() => {
     function handlePopState() {
       const next = parseUrlParams(window.location.search);
       setParams(next);
-      onNavRef.current?.(next);
+      handleNavigate(next);
     }
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);

@@ -117,7 +117,6 @@ export function importSavedQueries(json: string): SavedQuery[] {
   const existingIds = new Set(existing.map((q) => q.id));
 
   // Merge: skip duplicates by id
-  let added = 0;
   for (const item of incoming) {
     if (
       typeof item === "object" &&
@@ -129,7 +128,6 @@ export function importSavedQueries(json: string): SavedQuery[] {
     ) {
       existing.push(item as SavedQuery);
       existingIds.add(item.id);
-      added++;
     }
   }
 

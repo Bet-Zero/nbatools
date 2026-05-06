@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import styles from "./Stat.module.css";
 
 export type StatSemantic =
@@ -48,6 +48,8 @@ const STAT_HELP: Record<string, string> = {
   "+/-": "Plus-minus",
 };
 
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
 function normalizeStatLabel(label: ReactNode): string | null {
   return typeof label === "string" ? label.trim().toUpperCase() : null;
 }
@@ -56,28 +58,28 @@ function readReducedMotion(enabled: boolean): boolean {
   if (!enabled || typeof window === "undefined" || !window.matchMedia) {
     return false;
   }
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
+function subscribeToReducedMotion(
+  enabled: boolean,
+  onStoreChange: () => void,
+): () => void {
+  if (!enabled || typeof window === "undefined" || !window.matchMedia) {
+    return () => {};
+  }
+
+  const media = window.matchMedia(REDUCED_MOTION_QUERY);
+  media.addEventListener("change", onStoreChange);
+  return () => media.removeEventListener("change", onStoreChange);
 }
 
 function useReducedMotion(enabled: boolean): boolean {
-  const [reducedMotion, setReducedMotion] = useState(() =>
-    readReducedMotion(enabled),
+  return useSyncExternalStore(
+    (onStoreChange) => subscribeToReducedMotion(enabled, onStoreChange),
+    () => readReducedMotion(enabled),
+    () => false,
   );
-
-  useEffect(() => {
-    if (!enabled || typeof window === "undefined" || !window.matchMedia) {
-      setReducedMotion(false);
-      return;
-    }
-
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, [enabled]);
-
-  return reducedMotion;
 }
 
 export function Stat({

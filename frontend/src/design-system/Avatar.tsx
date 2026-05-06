@@ -1,4 +1,4 @@
-import { useEffect, useState, type HTMLAttributes } from "react";
+import { useState, type HTMLAttributes, type ReactNode } from "react";
 import styles from "./Avatar.module.css";
 
 export type AvatarSize = "sm" | "md" | "lg";
@@ -27,6 +27,28 @@ function initials(name: string): string {
     .join("");
 }
 
+interface AvatarImageProps {
+  imageUrl: string;
+  fallback: ReactNode;
+}
+
+function AvatarImage({ imageUrl, fallback }: AvatarImageProps) {
+  const [imageUnavailable, setImageUnavailable] = useState(false);
+
+  if (imageUnavailable) {
+    return fallback;
+  }
+
+  return (
+    <img
+      className={styles.image}
+      src={imageUrl}
+      alt=""
+      onError={() => setImageUnavailable(true)}
+    />
+  );
+}
+
 export function Avatar({
   name,
   imageUrl = null,
@@ -35,13 +57,8 @@ export function Avatar({
   className,
   ...props
 }: AvatarProps) {
-  const [imageUnavailable, setImageUnavailable] = useState(false);
-
-  useEffect(() => {
-    setImageUnavailable(false);
-  }, [imageUrl]);
-
-  const showImage = Boolean(imageUrl) && !unavailable && !imageUnavailable;
+  const fallback = <span aria-hidden="true">{initials(name)}</span>;
+  const showImage = Boolean(imageUrl) && !unavailable;
 
   return (
     <span
@@ -54,15 +71,10 @@ export function Avatar({
       )}
       {...props}
     >
-      {showImage ? (
-        <img
-          className={styles.image}
-          src={imageUrl ?? undefined}
-          alt=""
-          onError={() => setImageUnavailable(true)}
-        />
+      {showImage && imageUrl ? (
+        <AvatarImage key={imageUrl} imageUrl={imageUrl} fallback={fallback} />
       ) : (
-        <span aria-hidden="true">{initials(name)}</span>
+        fallback
       )}
     </span>
   );
