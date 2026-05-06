@@ -10,6 +10,10 @@ from nbatools.commands._natural_query_execution import _route_context_filters_fo
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.pipeline.pull_player_game_starter_roles import (
     build_starter_role_backfill,
+    normalize_boxscore_player_roles,
+)
+from nbatools.commands.pipeline.pull_player_game_starter_roles import (
+    run as pull_player_game_starter_roles_run,
 )
 from nbatools.commands.player_game_finder import build_result as build_player_finder_result
 from nbatools.commands.player_game_summary import build_result as build_player_summary_result
@@ -330,6 +334,56 @@ def test_build_starter_role_backfill_marks_untrusted_rows_when_count_is_not_five
     assert df["role_source_trusted"].eq(0).all()
     assert df["starter_count_for_team_game"].eq(6).all()
     assert df["role_validation_reason"].eq("starter_count_not_five").all()
+
+
+def test_pull_player_game_starter_roles_run_resumes_from_partial_cache(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    games_path = tmp_path / "data/raw/games/2099-00_regular_season.csv"
+    games_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"game_id": 1}, {"game_id": 2}]).to_csv(games_path, index=False)
+
+    partial_path = (
+        tmp_path / "data/raw/player_game_starter_roles/2099-00_regular_season.partial.csv"
+    )
+    partial_path.parent.mkdir(parents=True, exist_ok=True)
+    cached = normalize_boxscore_player_roles(
+        _boxscore_player_rows(
+            game_id="0000000001",
+            starter_positions=["G", "G", "F", "F", "C", "", "", ""],
+        )
+    )
+    cached["game_id"] = 1
+    cached["season"] = "2099-00"
+    cached["season_type"] = "Regular Season"
+    cached.to_csv(partial_path, index=False)
+
+    seen_game_ids: list[int] = []
+
+    def fake_fetch(game_id):
+        seen_game_ids.append(int(game_id))
+        return _boxscore_player_rows(
+            game_id=str(int(game_id)).zfill(10),
+            starter_positions=["G", "G", "F", "F", "C", "", "", ""],
+        )
+
+    monkeypatch.setattr(
+        "nbatools.commands.pipeline.pull_player_game_starter_roles.fetch_starter_role_rows_for_game",
+        fake_fetch,
+    )
+    monkeypatch.setattr(
+        "nbatools.commands.pipeline.pull_player_game_starter_roles.REQUEST_PAUSE_SECONDS",
+        0.0,
+    )
+
+    pull_player_game_starter_roles_run("2099-00", "Regular Season")
+
+    out_path = tmp_path / "data/raw/player_game_starter_roles/2099-00_regular_season.csv"
+    out = pd.read_csv(out_path)
+
+    assert seen_game_ids == [2]
+    assert set(out["game_id"]) == {1, 2}
+    assert not partial_path.exists()
 
 
 def test_supported_role_route_keeps_kwarg_without_transport_note():

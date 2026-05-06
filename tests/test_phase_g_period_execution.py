@@ -11,6 +11,7 @@ from nbatools.commands.data_utils import (
     load_team_game_period_stats_for_seasons,
 )
 from nbatools.commands.pipeline.pull_game_period_stats import build_period_backfill
+from nbatools.commands.pipeline.pull_game_period_stats import run as pull_game_period_stats_run
 from nbatools.commands.pipeline.validate_raw import (
     validate_player_game_period_stats_df,
     validate_team_game_period_stats_df,
@@ -800,6 +801,161 @@ def test_build_period_backfill_merges_player_advanced_fields(tmp_path, monkeypat
     assert player_df["ts_pct"].notna().all()
 
 
+def test_build_period_backfill_derives_player_wl_from_team_context_when_missing(
+    tmp_path, monkeypatch
+):
+    _write_period_builder_fixture(tmp_path, monkeypatch)
+
+    player_path = tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv"
+    player_context = pd.read_csv(player_path).drop(columns=["wl"])
+    player_context.to_csv(player_path, index=False)
+
+    def fake_traditional(game_id, *, start_period, end_period):
+        del start_period, end_period
+        return _traditional_player_rows(game_id=game_id, pts=12), _traditional_team_rows(
+            game_id=game_id,
+            pts=55,
+        )
+
+    def fake_advanced(game_id, *, start_period, end_period):
+        del start_period, end_period
+        return _advanced_player_rows(game_id=game_id, usg_pct=0.25)
+
+    with (
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_traditional_period_rows_for_game",
+            side_effect=fake_traditional,
+        ),
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_advanced_period_rows_for_game",
+            side_effect=fake_advanced,
+        ),
+    ):
+        player_df, _team_df = build_period_backfill("2099-00", "Regular Season")
+
+    assert player_df.loc[player_df["player_id"] == 10, "wl"].eq("W").all()
+    assert player_df.loc[player_df["player_id"] == 20, "wl"].eq("L").all()
+
+
+def test_build_period_backfill_drops_unmatched_dnp_rows(tmp_path, monkeypatch):
+    _write_period_builder_fixture(tmp_path, monkeypatch)
+
+    def fake_traditional(game_id, *, start_period, end_period):
+        del start_period, end_period
+        dnp_row = pd.DataFrame(
+            [
+                {
+                    "gameId": str(game_id).zfill(10),
+                    "teamId": 1,
+                    "personId": 999,
+                    "comment": "DNP - Coach's Decision",
+                    "minutes": "",
+                    "points": 0,
+                    "fieldGoalsMade": 0,
+                    "fieldGoalsAttempted": 0,
+                    "fieldGoalsPercentage": 0.0,
+                    "threePointersMade": 0,
+                    "threePointersAttempted": 0,
+                    "threePointersPercentage": 0.0,
+                    "freeThrowsMade": 0,
+                    "freeThrowsAttempted": 0,
+                    "freeThrowsPercentage": 0.0,
+                    "reboundsOffensive": 0,
+                    "reboundsDefensive": 0,
+                    "reboundsTotal": 0,
+                    "assists": 0,
+                    "steals": 0,
+                    "blocks": 0,
+                    "turnovers": 0,
+                    "foulsPersonal": 0,
+                    "plusMinusPoints": 0,
+                }
+            ]
+        )
+        player_rows = pd.concat(
+            [_traditional_player_rows(game_id=game_id, pts=12), dnp_row],
+            ignore_index=True,
+        )
+        return player_rows, _traditional_team_rows(game_id=game_id, pts=55)
+
+    def fake_advanced(game_id, *, start_period, end_period):
+        del start_period, end_period
+        return _advanced_player_rows(game_id=game_id, usg_pct=0.25)
+
+    with (
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_traditional_period_rows_for_game",
+            side_effect=fake_traditional,
+        ),
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_advanced_period_rows_for_game",
+            side_effect=fake_advanced,
+        ),
+    ):
+        player_df, _team_df = build_period_backfill("2099-00", "Regular Season")
+
+    assert 999 not in set(player_df["player_id"])
+
+
+def test_build_period_backfill_rejects_unmatched_playing_rows(tmp_path, monkeypatch):
+    _write_period_builder_fixture(tmp_path, monkeypatch)
+
+    def fake_traditional(game_id, *, start_period, end_period):
+        del start_period, end_period
+        missing_player_row = pd.DataFrame(
+            [
+                {
+                    "gameId": str(game_id).zfill(10),
+                    "teamId": 1,
+                    "personId": 999,
+                    "comment": "",
+                    "minutes": "PT1M00.00S",
+                    "points": 2,
+                    "fieldGoalsMade": 1,
+                    "fieldGoalsAttempted": 1,
+                    "fieldGoalsPercentage": 1.0,
+                    "threePointersMade": 0,
+                    "threePointersAttempted": 0,
+                    "threePointersPercentage": 0.0,
+                    "freeThrowsMade": 0,
+                    "freeThrowsAttempted": 0,
+                    "freeThrowsPercentage": 0.0,
+                    "reboundsOffensive": 0,
+                    "reboundsDefensive": 1,
+                    "reboundsTotal": 1,
+                    "assists": 0,
+                    "steals": 0,
+                    "blocks": 0,
+                    "turnovers": 0,
+                    "foulsPersonal": 0,
+                    "plusMinusPoints": 1,
+                }
+            ]
+        )
+        player_rows = pd.concat(
+            [_traditional_player_rows(game_id=game_id, pts=12), missing_player_row],
+            ignore_index=True,
+        )
+        return player_rows, _traditional_team_rows(game_id=game_id, pts=55)
+
+    def fake_advanced(game_id, *, start_period, end_period):
+        del start_period, end_period
+        return _advanced_player_rows(game_id=game_id, usg_pct=0.25)
+
+    with (
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_traditional_period_rows_for_game",
+            side_effect=fake_traditional,
+        ),
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_advanced_period_rows_for_game",
+            side_effect=fake_advanced,
+        ),
+    ):
+        with pytest.raises(ValueError, match="joined back to player_game_stats context"):
+            build_period_backfill("2099-00", "Regular Season")
+
+
 def test_build_period_backfill_skips_inactive_overtime_window(tmp_path, monkeypatch):
     _write_period_builder_fixture(tmp_path, monkeypatch)
 
@@ -884,3 +1040,188 @@ def test_build_period_backfill_skips_inactive_overtime_window(tmp_path, monkeypa
 
     assert "overtime" not in set(player_df["period_family"])
     assert "overtime" not in set(team_df["period_family"])
+
+
+def test_build_period_backfill_retries_deferred_windows_within_same_run(tmp_path, monkeypatch):
+    _write_period_builder_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(
+        "nbatools.commands.pipeline.pull_game_period_stats.WINDOW_PASS_SLEEP_SECONDS",
+        0.0,
+    )
+
+    advanced_call_counts: dict[tuple[int, int, int], int] = {}
+
+    def fake_traditional(game_id, *, start_period, end_period):
+        return _traditional_player_rows(game_id=game_id, pts=12), _traditional_team_rows(
+            game_id=game_id,
+            pts=55,
+        )
+
+    def fake_advanced(game_id, *, start_period, end_period):
+        key = (int(game_id), start_period, end_period)
+        advanced_call_counts[key] = advanced_call_counts.get(key, 0) + 1
+        if key == (1, 3, 4) and advanced_call_counts[key] == 1:
+            raise RuntimeError("transient advanced timeout")
+        return _advanced_player_rows(game_id=game_id, usg_pct=0.25)
+
+    with (
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_traditional_period_rows_for_game",
+            side_effect=fake_traditional,
+        ),
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_advanced_period_rows_for_game",
+            side_effect=fake_advanced,
+        ),
+    ):
+        player_df, team_df = build_period_backfill("2099-00", "Regular Season")
+
+    assert advanced_call_counts[(1, 3, 4)] == 2
+    assert {"quarter", "half", "overtime"} == set(player_df["period_family"])
+    assert {"quarter", "half", "overtime"} == set(team_df["period_family"])
+
+
+def test_pull_game_period_stats_run_resumes_from_partial_cache(tmp_path, monkeypatch):
+    _write_period_builder_fixture(tmp_path, monkeypatch)
+
+    player_partial_path = (
+        tmp_path / "data/raw/player_game_period_stats/2099-00_regular_season.partial.csv"
+    )
+    team_partial_path = (
+        tmp_path / "data/raw/team_game_period_stats/2099-00_regular_season.partial.csv"
+    )
+    progress_path = (
+        tmp_path / "data/raw/player_game_period_stats/2099-00_regular_season.windows.partial.csv"
+    )
+    player_partial_path.parent.mkdir(parents=True, exist_ok=True)
+    team_partial_path.parent.mkdir(parents=True, exist_ok=True)
+
+    cached_player = pd.DataFrame(
+        [
+            {
+                **_player_period_row(
+                    game_id=1,
+                    game_date="2099-10-01",
+                    player_id=10,
+                    player_name="Period Star",
+                    pts=12,
+                    period_family="quarter",
+                    period_value="1",
+                    source_start_period=1,
+                    source_end_period=1,
+                )
+            },
+            {
+                **_player_period_row(
+                    game_id=1,
+                    game_date="2099-10-01",
+                    player_id=20,
+                    player_name="Bench Wing",
+                    pts=8,
+                    period_family="quarter",
+                    period_value="1",
+                    source_start_period=1,
+                    source_end_period=1,
+                ),
+                "team_id": 2,
+                "team_abbr": "BBB",
+                "team_name": "Beta",
+                "opponent_team_id": 1,
+                "opponent_team_abbr": "AAA",
+                "opponent_team_name": "Alpha",
+                "is_home": 0,
+                "is_away": 1,
+                "wl": "L",
+                "plus_minus": -2,
+            },
+        ]
+    )
+    cached_team = pd.DataFrame(
+        [
+            _team_period_row(
+                game_id=1,
+                game_date="2099-10-01",
+                pts=55,
+                wl="W",
+                plus_minus=5,
+                period_family="quarter",
+                period_value="1",
+                source_start_period=1,
+                source_end_period=1,
+            ),
+            {
+                **_team_period_row(
+                    game_id=1,
+                    game_date="2099-10-01",
+                    pts=49,
+                    wl="L",
+                    plus_minus=-5,
+                    period_family="quarter",
+                    period_value="1",
+                    source_start_period=1,
+                    source_end_period=1,
+                ),
+                "team_id": 2,
+                "team_abbr": "BBB",
+                "team_name": "Beta",
+                "opponent_team_id": 1,
+                "opponent_team_abbr": "AAA",
+                "opponent_team_name": "Alpha",
+                "is_home": 0,
+                "is_away": 1,
+            },
+        ]
+    )
+    cached_player.to_csv(player_partial_path, index=False)
+    cached_team.to_csv(team_partial_path, index=False)
+    pd.DataFrame(
+        [
+            {
+                "game_id": 1,
+                "period_family": "quarter",
+                "period_value": "1",
+                "has_activity": True,
+            }
+        ]
+    ).to_csv(progress_path, index=False)
+
+    seen_traditional_calls: list[tuple[int, int, int]] = []
+    seen_advanced_calls: list[tuple[int, int, int]] = []
+
+    def fake_traditional(game_id, *, start_period, end_period):
+        seen_traditional_calls.append((int(game_id), start_period, end_period))
+        return _traditional_player_rows(game_id=game_id, pts=12), _traditional_team_rows(
+            game_id=game_id,
+            pts=55,
+        )
+
+    def fake_advanced(game_id, *, start_period, end_period):
+        seen_advanced_calls.append((int(game_id), start_period, end_period))
+        return _advanced_player_rows(game_id=game_id, usg_pct=0.25)
+
+    with (
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_traditional_period_rows_for_game",
+            side_effect=fake_traditional,
+        ),
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_advanced_period_rows_for_game",
+            side_effect=fake_advanced,
+        ),
+    ):
+        pull_game_period_stats_run("2099-00", "Regular Season")
+
+    assert (1, 1, 1) not in seen_traditional_calls
+    assert (1, 1, 1) not in seen_advanced_calls
+    assert len(seen_traditional_calls) == len(seen_advanced_calls)
+
+    player_out = pd.read_csv(
+        tmp_path / "data/raw/player_game_period_stats/2099-00_regular_season.csv"
+    )
+    team_out = pd.read_csv(tmp_path / "data/raw/team_game_period_stats/2099-00_regular_season.csv")
+
+    assert set(player_out["period_family"]) == {"quarter", "half", "overtime"}
+    assert set(team_out["period_family"]) == {"quarter", "half", "overtime"}
+    assert not player_partial_path.exists()
+    assert not team_partial_path.exists()
+    assert not progress_path.exists()
