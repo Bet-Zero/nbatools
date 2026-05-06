@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Card } from "../../../design-system";
 import styles from "./ResultHero.module.css";
 
 export type HeroTone =
@@ -56,7 +57,11 @@ export default function ResultHero({
   tone = "neutral",
 }: Props) {
   return (
-    <div className={`${styles.hero} ${styles[`tone_${tone}`]}`}>
+    <Card
+      className={`${styles.hero} ${styles[`tone_${tone}`]}`}
+      depth="elevated"
+      padding="none"
+    >
       {subjectIllustration && (
         <div className={styles.illustration}>{subjectIllustration}</div>
       )}
@@ -66,6 +71,6 @@ export default function ResultHero({
           <p className={styles.disambiguation}>{disambiguationNote}</p>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

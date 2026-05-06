@@ -4,26 +4,31 @@
   min-width: 0;
   max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
-  background: var(--surface-elevated);
+  background: var(--bg-card);
 }
 
 .table {
   border-collapse: collapse;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
+  background: var(--bg-card);
+  font-family: var(--font-sans);
   font-size: var(--font-small);
-  font-variant-numeric: tabular-nums;
 }
 
 .table thead th {
   position: sticky;
   top: 0;
-  background: var(--surface-elevated);
+  background: var(--bg-elevated);
   color: var(--text-secondary);
   font-weight: var(--weight-semibold);
-  font-size: var(--font-xs);
-  letter-spacing: 0.04em;
+  font-size: var(--font-micro);
+  letter-spacing: var(--tracking-uppercase);
   text-transform: uppercase;
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
@@ -44,13 +49,15 @@
 .table tbody tr:hover td {
   background: color-mix(
     in srgb,
-    var(--accent) 8%,
-    var(--surface-elevated)
+    var(--text-primary) 3%,
+    var(--bg-card)
   );
 }
 
 .numeric {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 .alignLeft {
@@ -69,7 +76,7 @@
 .highlightCell {
   background: color-mix(
     in srgb,
-    var(--accent) 12%,
+    var(--accent) 8%,
     transparent
   );
   font-weight: var(--weight-semibold);
@@ -79,17 +86,18 @@
 .table thead th.highlightCell {
   background: color-mix(
     in srgb,
-    var(--accent) 18%,
-    var(--surface-elevated)
+    var(--accent) 12%,
+    var(--bg-elevated)
   );
+  color: var(--accent);
 }
 
 /* Footer rows for Average / Total in game-log style tables. */
 .footerRow td {
   background: color-mix(
     in srgb,
-    var(--surface-base) 60%,
-    var(--surface-elevated)
+    var(--bg-input) 64%,
+    var(--bg-card)
   );
   border-top: 1px solid var(--border-subtle);
   font-weight: var(--weight-semibold);

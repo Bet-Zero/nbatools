@@ -1,10 +1,30 @@
+.tableSurface table {
+  font-family: var(--font-sans);
+}
+
+.tableSurface thead th {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  letter-spacing: var(--tracking-uppercase);
+}
+
+.tableSurface tbody tr:hover .stickyIdentity {
+  background: color-mix(in srgb, var(--text-primary) 3%, var(--bg-card));
+}
+
 .num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
 .rankCell {
   font-weight: var(--weight-bold);
-  color: var(--accent);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
   text-align: center;
 }
 
@@ -33,5 +53,5 @@
 
 th.stickyIdentity {
   z-index: 2;
-  background: color-mix(in srgb, var(--accent) 8%, var(--bg-card));
+  background: var(--bg-elevated);
 }

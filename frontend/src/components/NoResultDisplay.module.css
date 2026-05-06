@@ -5,6 +5,7 @@
   overflow: hidden;
   display: grid;
   gap: var(--space-4);
+  font-family: var(--font-sans);
   text-align: left;
   color: var(--text-secondary);
 }
@@ -26,7 +27,7 @@
 }
 
 .ambiguous::before {
-  background: color-mix(in srgb, var(--warning) 68%, var(--accent));
+  background: var(--warning);
 }
 
 .error {
@@ -58,11 +59,11 @@
 .stateLabel {
   min-width: 0;
   color: var(--text-tertiary);
-  font-size: var(--font-label);
+  font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-uppercase);
   overflow-wrap: anywhere;
 }
 
@@ -77,8 +78,7 @@
 
 .message {
   min-width: 0;
-  max-width: 680px;
-  font-size: var(--font-body-sm);
+  font-size: var(--font-body);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -98,11 +98,11 @@
 .sectionTitle {
   min-width: 0;
   color: var(--text-primary);
-  font-size: var(--font-label);
+  font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-uppercase);
   overflow-wrap: anywhere;
 }
 
@@ -115,11 +115,11 @@
 .detailKind {
   min-width: 0;
   color: var(--text-tertiary);
-  font-size: var(--font-label);
+  font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-uppercase);
   overflow-wrap: anywhere;
 }
 
@@ -146,7 +146,7 @@
   color: var(--text-primary);
   font-size: var(--font-small);
   line-height: 1.35;
-  background: color-mix(in srgb, var(--surface-elevated) 72%, transparent);
+  background: var(--bg-elevated);
   overflow-wrap: anywhere;
 }
 

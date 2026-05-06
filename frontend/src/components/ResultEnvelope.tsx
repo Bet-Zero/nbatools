@@ -160,12 +160,12 @@ export default function ResultEnvelope({
             {statusLabel(data.result_status)}
           </Badge>
           {data.route && (
-            <Badge className={styles.routeBadge} variant="accent" size="sm">
+            <Badge className={styles.routeBadge} variant="neutral" size="sm">
               {routeLabel(data.route)}
             </Badge>
           )}
           {queryClass && queryClass !== data.route && (
-            <Badge className={styles.routeBadge} variant="accent" size="sm">
+            <Badge className={styles.routeBadge} variant="neutral" size="sm">
               {queryClass}
             </Badge>
           )}

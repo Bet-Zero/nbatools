@@ -3,6 +3,9 @@
   align-items: center;
   gap: var(--space-2);
   min-width: 0;
+  max-width: 100%;
+  font-family: var(--font-sans);
+  vertical-align: middle;
 }
 
 .mark {
@@ -15,6 +18,7 @@
   align-items: flex-start;
   gap: 0;
   min-width: 0;
+  max-width: 100%;
   line-height: 1.2;
 }
 
@@ -24,12 +28,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 14ch;
+  max-width: calc(var(--space-16) * 3);
 }
 
 .secondary {
   color: var(--text-secondary);
-  font-size: var(--font-xs);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-medium);
 }
 
 .size_sm .primary {
@@ -37,5 +42,5 @@
 }
 
 .size_md .primary {
-  font-size: var(--font-base);
+  font-size: var(--font-body);
 }

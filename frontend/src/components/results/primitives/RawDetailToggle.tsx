@@ -27,7 +27,12 @@ export default function RawDetailToggle({
   return (
     <section className={styles.rawDetail} aria-label={title}>
       <div className={styles.header}>
-        <h3 className={styles.title}>{title}</h3>
+        <div className={styles.titleGroup}>
+          <h3 className={styles.title}>{title}</h3>
+          <span className={styles.count}>
+            {rows.length} {rows.length === 1 ? "row" : "rows"}
+          </span>
+        </div>
         <Button
           type="button"
           onClick={() => setOpen((value) => !value)}

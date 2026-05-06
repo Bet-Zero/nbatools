@@ -37,32 +37,31 @@
   color: var(--text-secondary);
   font-size: var(--font-micro);
   text-transform: uppercase;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-uppercase);
 }
 
 .infoBlock {
   min-width: 0;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3);
   border-radius: var(--radius-md);
-  margin-top: var(--space-2);
   font-size: var(--font-small);
 }
 
 .notesBlock {
   background: color-mix(in srgb, var(--accent) 6%, transparent);
-  border-left: 3px solid var(--accent);
+  box-shadow: inset var(--space-1) 0 0 var(--accent);
 }
 
 .caveatsBlock {
   background: color-mix(in srgb, var(--warning) 6%, transparent);
-  border-left: 3px solid var(--warning);
+  box-shadow: inset var(--space-1) 0 0 var(--warning);
 }
 
 .infoBlockLabel {
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-uppercase);
   margin-bottom: var(--space-1);
 }
 
@@ -105,14 +104,7 @@
 
 .alternateChip {
   max-width: 100%;
-  border: 1px solid var(--accent);
-  color: var(--accent);
   white-space: normal;
-}
-
-.alternateChip:hover {
-  background: var(--accent);
-  color: var(--text-on-accent);
 }
 
 @media (max-width: 520px) {

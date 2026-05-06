@@ -265,6 +265,7 @@ export default function DataTable({
 
   return (
     <DataTablePrimitive
+      className={styles.tableSurface}
       columns={columns}
       rows={rows}
       highlight={highlight}

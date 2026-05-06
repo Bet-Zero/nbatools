@@ -180,6 +180,7 @@ Point-in-time audit snapshots and historical records.
 ## Review Artifacts
 
 - `output_shapes.md` — exhaustive result-renderer shape taxonomy with current parser-example sweep counts
+- `primitive_audit_report.md` — shared result-rendering primitive design-system compliance audit
 
 ## Verdicts
 

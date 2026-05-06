@@ -3,12 +3,13 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
+  padding: var(--space-6);
+  border-color: var(--border-default);
 }
 
 .illustration {
@@ -28,7 +29,8 @@
 
 .sentence {
   margin: 0;
-  font-size: var(--font-large);
+  font-family: var(--font-sans);
+  font-size: var(--font-h3);
   line-height: 1.4;
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
@@ -37,6 +39,7 @@
 
 .disambiguation {
   margin: 0;
+  font-family: var(--font-sans);
   font-size: var(--font-small);
   color: var(--text-secondary);
   line-height: 1.4;
@@ -46,50 +49,44 @@
 /* Tones — intentionally limited. Add new tones with care. */
 
 .tone_neutral {
-  background: var(--surface-elevated);
+  background: var(--bg-elevated);
 }
 
-.tone_warm {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 18%, var(--surface-elevated)),
-    var(--surface-elevated)
-  );
+.tone_warm,
+.tone_accent {
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg-elevated));
 }
 
 .tone_cool {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--info, #3b82f6) 14%, var(--surface-elevated)),
-    var(--surface-elevated)
-  );
+  background: color-mix(in srgb, var(--info) 5%, var(--bg-elevated));
 }
 
 .tone_team {
-  /* Patterns set --hero-team-tint inline based on the subject team. */
-  background: linear-gradient(
-    135deg,
-    color-mix(
-      in srgb,
-      var(--hero-team-tint, var(--accent)) 22%,
-      var(--surface-elevated)
-    ),
-    var(--surface-elevated)
-  );
+  background: var(--bg-elevated);
 }
 
-.tone_accent {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 28%, var(--surface-elevated)),
-    var(--surface-elevated)
-  );
+.tone_warm::before,
+.tone_accent::before,
+.tone_cool::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--space-1);
+  background: var(--accent);
+}
+
+.tone_cool::before {
+  background: var(--info);
 }
 
 @media (max-width: 560px) {
   .hero {
     flex-direction: column;
     align-items: flex-start;
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .sentence {
+    font-size: var(--font-body);
   }
 }
