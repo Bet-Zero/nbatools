@@ -27,7 +27,10 @@ function fallbackAbbreviation(name: string | undefined): string {
     .join("");
 }
 
-function accessibleLabel(name: string | undefined, abbreviation: string): string {
+function accessibleLabel(
+  name: string | undefined,
+  abbreviation: string,
+): string {
   if (!name) return abbreviation;
   if (name.toUpperCase() === abbreviation.toUpperCase()) return name;
   return `${name} (${abbreviation})`;

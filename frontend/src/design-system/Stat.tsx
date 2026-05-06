@@ -107,10 +107,15 @@ export function Stat({
       )}
     >
       <span
-        className={joinClassNames(styles.label, resolvedHelp && styles.helpLabel)}
+        className={joinClassNames(
+          styles.label,
+          resolvedHelp && styles.helpLabel,
+        )}
         title={resolvedHelp}
         aria-label={
-          resolvedHelp && labelText ? `${labelText}: ${resolvedHelp}` : undefined
+          resolvedHelp && labelText
+            ? `${labelText}: ${resolvedHelp}`
+            : undefined
         }
       >
         {label}
