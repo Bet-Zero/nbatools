@@ -793,7 +793,8 @@ def build_period_backfill(
                 ):
                     if pass_index == 1:
                         print(
-                            f"Period backfill fetching game {game_index}/{total_pass_games} ({game_id})..."
+                            "Period backfill fetching game "
+                            f"{game_index}/{total_pass_games} ({game_id})..."
                         )
                     else:
                         print(
