@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
 
@@ -68,23 +68,45 @@ describe("ReviewPage", () => {
     render(<ReviewPage />);
 
     expect(await screen.findByText("0 / 2 loaded")).toBeInTheDocument();
-    expect(screen.getAllByText("Loading result...")).toHaveLength(2);
+    expect(
+      screen.getByText("2 fixtures are still loading."),
+    ).toBeInTheDocument();
 
     second.resolve(makeNoResult("Second fixture"));
 
     await waitFor(() =>
       expect(screen.getByText("1 / 2 loaded")).toBeInTheDocument(),
     );
-    await screen.findByText("Unsupported Query");
-    expect(screen.getAllByText("Loading result...")).toHaveLength(1);
+    await screen.findByRole("button", { name: /Message No Result/i });
+    expect(
+      screen.getByRole("heading", { name: "Second fixture", level: 3 }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("1 fixture is still loading.")).toBeInTheDocument();
 
     first.resolve(makeNoResult("First fixture"));
 
     await waitFor(() =>
       expect(screen.getByText("2 / 2 loaded")).toBeInTheDocument(),
     );
-    await waitFor(() => {
-      expect(screen.queryByText("Loading result...")).not.toBeInTheDocument();
-    });
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: /Message No Result/i }),
+      ).toHaveTextContent("2 fixtures"),
+    );
+    expect(
+      screen.getByRole("heading", { name: "First fixture", level: 3 }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Second fixture", level: 3 }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("Show one example per shape"));
+
+    expect(
+      screen.getByRole("heading", { name: "First fixture", level: 3 }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Second fixture", level: 3 }),
+    ).toBeInTheDocument();
   });
 });

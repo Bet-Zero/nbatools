@@ -30,25 +30,124 @@
 }
 
 .header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .header p {
   color: rgba(15, 23, 42, 0.7);
 }
 
-.block {
-  margin-bottom: 1.5rem;
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 0.875rem;
+  background: rgba(255, 255, 255, 0.78);
 }
 
-.block h2 {
+.toggle {
+  display: inline-flex;
+  gap: 0.625rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+.toggle input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.meta,
+.caseMeta {
+  color: rgba(15, 23, 42, 0.68);
+  font-size: 0.9rem;
+}
+
+.statusPanel,
+.group {
   margin-bottom: 1rem;
-  font-size: 1.125rem;
+  padding: 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+.statusPanel h2,
+.groupHeading {
+  margin: 0;
+}
+
+.groupToggle {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.groupTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.groupCount {
+  color: rgba(15, 23, 42, 0.75);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.groupDescription {
+  margin: 0.5rem 0 0;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.groupBody {
+  margin-top: 1rem;
+}
+
+.block {
+  padding: 1rem 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.block:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.queryTitle {
+  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
   line-height: 1.4;
 }
 
 .resultSections {
   margin-top: 1rem;
+}
+
+.failureList {
+  padding-left: 1.25rem;
+}
+
+.failureList li {
+  margin-top: 0.5rem;
+}
+
+.failureList span {
+  display: block;
+  color: rgba(15, 23, 42, 0.72);
 }
 
 .placeholder,
@@ -60,12 +159,6 @@
   color: #b42318;
 }
 
-.divider {
-  margin-top: 1.5rem;
-  border: 0;
-  border-top: 1px solid rgba(15, 23, 42, 0.12);
-}
-
 @media (max-width: 720px) {
   .progressBar {
     flex-direction: column;
@@ -75,5 +168,11 @@
   .content {
     width: min(100%, calc(100% - 1rem));
     padding-top: 5.75rem;
+  }
+
+  .controls,
+  .groupToggle {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

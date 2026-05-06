@@ -177,6 +177,10 @@ Point-in-time audit snapshots and historical records.
 - `audits/result_contracts_audit.md` — result contracts audit (pre-structured-result-layer)
 - `audits/scripts_retirement.md` — scripts retirement decision record
 
+## Review Artifacts
+
+- `output_shapes.md` — exhaustive result-renderer shape taxonomy with current parser-example sweep counts
+
 ## Verdicts
 
 - `repo_structure_final_verdict.md` — final assessment: is the repo-structure phase done enough to stop?
