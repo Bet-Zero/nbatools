@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Badge } from "../../../design-system";
 import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -88,6 +89,7 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
         sentence={teamRecordSentence(team, opponent, row, data)}
         subjectIllustration={teamIdentity(team)}
         tone="team"
+        teamAccentAbbr={team.abbr}
       />
       <ResultTable
         rows={summary}
@@ -120,6 +122,7 @@ function RecordByDecadeResult({ data }: { data: QueryResponse }) {
         sentence={recordByDecadeSentence(team, row, data)}
         subjectIllustration={teamIdentity(team)}
         tone="team"
+        teamAccentAbbr={team.abbr}
       />
       <ResultTable
         rows={rows}
@@ -152,6 +155,7 @@ function RecordByDecadeLeaderboardResult({ data }: { data: QueryResponse }) {
         sentence={recordLeaderboardSentence(team, first, metric, data)}
         subjectIllustration={teamIdentity(team)}
         tone="team"
+        teamAccentAbbr={team.abbr}
       />
       <ResultTable
         rows={rows}
@@ -181,7 +185,7 @@ function MatchupByDecadeResult({ data }: { data: QueryResponse }) {
       <ResultHero
         sentence={matchupByDecadeSentence(teams, summary, data)}
         subjectIllustration={<MatchupIdentity teams={teams} />}
-        tone="team"
+        tone="neutral"
       />
       <ResultTable
         rows={comparison}
@@ -534,7 +538,11 @@ function MatchupIdentity({ teams }: { teams: TeamDisplay[] }) {
   return (
     <span className={styles.matchupIdentity}>
       {teams[0] && teamIdentity(teams[0])}
-      {teams[1] && <span className={styles.vsBadge}>vs</span>}
+      {teams[1] && (
+        <Badge variant="neutral" size="sm" uppercase>
+          vs
+        </Badge>
+      )}
       {teams[1] && teamIdentity(teams[1])}
     </span>
   );

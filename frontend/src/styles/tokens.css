@@ -41,6 +41,12 @@
      Defaults to neutral when no team context is present. */
   --team-primary: var(--accent);
   --team-secondary: var(--text-secondary);
+  --team-accent: var(--team-primary);
+  --team-accent-muted: color-mix(
+    in srgb,
+    var(--team-primary) 6%,
+    var(--bg-elevated)
+  );
 
   /* Spacing (4px base) */
   --space-1: 4px;

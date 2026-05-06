@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Badge } from "../../../design-system";
 import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -56,6 +57,7 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
         sentence={heroSentence(firstRow, entity.name)}
         subjectIllustration={heroIdentity(kind, entity)}
         tone={kind === "team" ? "team" : "accent"}
+        teamAccentAbbr={kind === "team" ? entity.teamAbbr : null}
       />
       <ResultTable
         rows={rows}
@@ -302,9 +304,15 @@ function lengthValue(row: SectionRow): string {
 function statusCell(row: SectionRow): ReactNode {
   const status = statusText(row);
   if (!status) return "—";
-  const className =
-    status === "Active" ? styles.statusActive : styles.statusCompleted;
-  return <span className={`${styles.statusPill} ${className}`}>{status}</span>;
+  return (
+    <Badge
+      variant={status === "Active" ? "success" : "neutral"}
+      size="sm"
+      uppercase
+    >
+      {status}
+    </Badge>
+  );
 }
 
 function statusText(row: SectionRow): string | null {

@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Badge } from "../../../design-system";
 import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -68,6 +69,7 @@ function PlayoffTeamHistoryResult({ data }: { data: QueryResponse }) {
         sentence={historySentence(team.name, data.result?.metadata, summary)}
         subjectIllustration={teamIdentity(team)}
         tone="team"
+        teamAccentAbbr={team.teamAbbr}
       />
       <ResultTable
         rows={rows}
@@ -98,6 +100,7 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
         sentence={roundRecordSentence(team.name, data.result?.metadata, leader)}
         subjectIllustration={teamIdentity(team)}
         tone="team"
+        teamAccentAbbr={team.teamAbbr}
       />
       <ResultTable
         rows={rows}
@@ -125,7 +128,7 @@ function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
       <ResultHero
         sentence={matchupSentence(teams, summaryRows)}
         subjectIllustration={<MatchupIdentity teams={teams} />}
-        tone="team"
+        tone="neutral"
       />
       <ResultTable
         rows={rows}
@@ -427,7 +430,11 @@ function MatchupIdentity({ teams }: { teams: TeamDisplay[] }) {
   return (
     <span className={styles.matchupIdentity}>
       {teamIdentity(teams[0])}
-      {teams[1] && <span className={styles.vsBadge}>vs</span>}
+      {teams[1] && (
+        <Badge variant="neutral" size="sm" uppercase>
+          vs
+        </Badge>
+      )}
       {teams[1] && teamIdentity(teams[1])}
     </span>
   );

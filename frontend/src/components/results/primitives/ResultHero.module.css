@@ -65,9 +65,14 @@
   background: var(--bg-elevated);
 }
 
+.hasTeamAccent {
+  background: var(--team-accent-muted);
+}
+
 .tone_warm::before,
 .tone_accent::before,
-.tone_cool::before {
+.tone_cool::before,
+.hasTeamAccent::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
@@ -77,6 +82,10 @@
 
 .tone_cool::before {
   background: var(--info);
+}
+
+.hasTeamAccent::before {
+  background: var(--team-accent);
 }
 
 @media (max-width: 560px) {

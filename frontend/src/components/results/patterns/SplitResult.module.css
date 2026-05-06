@@ -14,12 +14,12 @@
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--surface-elevated);
+  background: var(--bg-elevated);
 }
 
 .edgeTitle {
   color: var(--text-secondary);
-  font-size: var(--font-xs);
+  font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
 }
@@ -32,15 +32,6 @@
 }
 
 .edgeChip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.75rem;
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--text-primary);
-  font-size: var(--font-small);
-  font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;
 }
 

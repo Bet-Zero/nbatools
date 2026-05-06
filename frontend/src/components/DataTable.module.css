@@ -3,6 +3,7 @@
 }
 
 .tableSurface thead th {
+  /* Result fallback/raw tables keep neutral headers by default. */
   background: var(--bg-elevated);
   color: var(--text-secondary);
   letter-spacing: var(--tracking-uppercase);

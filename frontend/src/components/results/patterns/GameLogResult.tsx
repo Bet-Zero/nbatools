@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Stat } from "../../../design-system";
 import { formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -107,10 +108,12 @@ export default function GameLogResult({
       {showSummaryStrip && items.length > 0 && (
         <div className={styles.summaryStrip} aria-label="Game-log averages">
           {items.map((item) => (
-            <span className={styles.summaryItem} key={item.key}>
-              <span className={styles.summaryValue}>{item.value}</span>
-              <span className={styles.summaryLabel}>{item.label}</span>
-            </span>
+            <Stat
+              className={styles.summaryItem}
+              key={item.key}
+              label={item.label}
+              value={item.value}
+            />
           ))}
         </div>
       )}

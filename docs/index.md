@@ -181,6 +181,7 @@ Point-in-time audit snapshots and historical records.
 
 - `output_shapes.md` — exhaustive result-renderer shape taxonomy with current parser-example sweep counts
 - `primitive_audit_report.md` — shared result-rendering primitive design-system compliance audit
+- `shape_cleanup_report.md` — follow-up renderer shape cleanup and team-context hero accent report
 
 ## Verdicts
 

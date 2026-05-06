@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Badge } from "../../../design-system";
 import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -150,6 +151,7 @@ export default function SplitResult({
         sentence={heroSentence(entity.name, splitName, data.result?.metadata, summaryRow)}
         subjectIllustration={heroIdentity(entity, resolvedSubject)}
         tone={resolvedSubject === "team" ? "team" : "accent"}
+        teamAccentAbbr={resolvedSubject === "team" ? entity.teamAbbr : null}
       />
       <ResultTable
         rows={rows}
@@ -162,9 +164,14 @@ export default function SplitResult({
           <span className={styles.edgeTitle}>Edge</span>
           <div className={styles.edgeList}>
             {edges.map((edge) => (
-              <span className={styles.edgeChip} key={edge}>
+              <Badge
+                className={styles.edgeChip}
+                key={edge}
+                variant="accent"
+                size="sm"
+              >
                 {edge}
-              </span>
+              </Badge>
             ))}
           </div>
         </div>

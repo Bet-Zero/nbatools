@@ -10,29 +10,9 @@
 .heroValue {
   display: inline-block;
   color: var(--text-primary);
-  font-size: var(--font-xl);
+  font-family: var(--font-mono);
+  font-size: var(--font-stat-md);
   font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   line-height: 1;
-}
-
-.statusPill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.5rem;
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-semibold);
-  text-transform: uppercase;
-}
-
-.statusActive {
-  background: color-mix(in srgb, var(--success, #22c55e) 18%, transparent);
-  color: var(--success-strong, var(--text-primary));
-}
-
-.statusCompleted {
-  background: var(--surface-muted);
-  color: var(--text-secondary);
 }

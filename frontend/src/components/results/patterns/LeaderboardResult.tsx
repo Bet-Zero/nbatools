@@ -207,6 +207,9 @@ export default function LeaderboardResult({
         subjectIllustration={heroIdentity(firstRow)}
         disambiguationNote={disambiguationNote(data.result?.metadata)}
         tone={entityKind === "team" ? "team" : "accent"}
+        teamAccentAbbr={
+          entityKind === "team" ? textValue(firstRow, "team_abbr") : null
+        }
       />
       <ResultTable
         rows={rows}

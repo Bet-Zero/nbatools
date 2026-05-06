@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Card } from "../../../design-system";
+import { getTeamColorVars } from "../../../lib/identity";
 import styles from "./ResultHero.module.css";
 
 export type HeroTone =
@@ -38,6 +39,12 @@ interface Props {
    * colors.
    */
   tone?: HeroTone;
+
+  /**
+   * Single-team context used for the scoped team accent stripe. Two-team
+   * and league-wide heroes should omit this so the hero stays neutral.
+   */
+  teamAccentAbbr?: string | null;
 }
 
 /**
@@ -55,12 +62,25 @@ export default function ResultHero({
   subjectIllustration,
   disambiguationNote,
   tone = "neutral",
+  teamAccentAbbr,
 }: Props) {
+  const teamAccentVars = teamAccentAbbr
+    ? getTeamColorVars(teamAccentAbbr)
+    : null;
+  const hasTeamAccent = tone === "team" && Boolean(teamAccentVars);
+
   return (
     <Card
-      className={`${styles.hero} ${styles[`tone_${tone}`]}`}
+      className={`${styles.hero} ${styles[`tone_${tone}`]} ${
+        hasTeamAccent ? styles.hasTeamAccent : ""
+      }`}
       depth="elevated"
       padding="none"
+      style={
+        hasTeamAccent
+          ? (teamAccentVars as CSSProperties | undefined)
+          : undefined
+      }
     >
       {subjectIllustration && (
         <div className={styles.illustration}>{subjectIllustration}</div>

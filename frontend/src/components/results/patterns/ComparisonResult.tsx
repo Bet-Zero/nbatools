@@ -4,6 +4,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Badge, Card, Stat, type StatSemantic } from "../../../design-system";
 import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -32,7 +33,7 @@ type StatChip = {
   label: string;
   value: ReactNode;
   context?: string | null;
-  semantic?: "accent" | "positive" | "negative" | "neutral";
+  semantic?: StatSemantic;
 };
 
 type LeaderInfo =
@@ -110,6 +111,8 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
   const entities = summary.map((row, index) =>
     entityDisplay(kind, data.result?.metadata, row, index),
   );
+  const teamAccentAbbr =
+    kind === "team" && entities.length === 1 ? entities[0]?.teamAbbr : null;
 
   if (summary.length === 0 && comparison.length === 0) return null;
 
@@ -118,10 +121,16 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
       <ResultHero
         sentence={heroSentence(data, entities, comparison, isHeadToHead)}
         subjectIllustration={<MatchupIdentity entities={entities} />}
-        tone={kind === "team" ? "team" : "accent"}
+        tone={
+          kind === "team" ? (teamAccentAbbr ? "team" : "neutral") : "accent"
+        }
+        teamAccentAbbr={teamAccentAbbr}
       />
       {summary.length > 0 && (
-        <div className={styles.subjectGrid} aria-label={subjectGridLabel(kind, isHeadToHead)}>
+        <div
+          className={styles.subjectGrid}
+          aria-label={subjectGridLabel(kind, isHeadToHead)}
+        >
           {summary.map((row, index) => (
             <SubjectPanel
               entity={entities[index]}
@@ -157,30 +166,33 @@ function SubjectPanel({
   const stats = subjectStats(row);
 
   return (
-    <article className={styles.subjectCard}>
+    <Card
+      as="article"
+      className={styles.subjectCard}
+      depth="card"
+      padding="sm"
+    >
       <div className={styles.subjectHeader}>
         {entityIdentity(entity)}
-        <span className={styles.subjectIndex}>
+        <Badge variant="neutral" size="sm" uppercase>
           {entity.kind === "player" ? "Player" : "Team"} {index + 1}
-        </span>
+        </Badge>
       </div>
       {stats.length > 0 && (
         <div className={styles.statGrid} aria-label={`${entity.name} stats`}>
           {stats.map((stat) => (
-            <span
-              className={`${styles.statChip} ${styles[`stat_${stat.semantic ?? "neutral"}`]}`}
+            <Stat
+              className={styles.statChip}
               key={stat.label}
-            >
-              <span className={styles.statValue}>{stat.value}</span>
-              <span className={styles.statLabel}>{stat.label}</span>
-              {stat.context && (
-                <span className={styles.statContext}>{stat.context}</span>
-              )}
-            </span>
+              label={stat.label}
+              value={stat.value}
+              context={stat.context}
+              semantic={stat.semantic ?? "neutral"}
+            />
           ))}
         </div>
       )}
-    </article>
+    </Card>
   );
 }
 
@@ -190,7 +202,11 @@ function MatchupIdentity({ entities }: { entities: EntityDisplay[] }) {
   return (
     <span className={styles.matchupIdentity}>
       {entityIdentity(entities[0])}
-      {entities[1] && <span className={styles.vsBadge}>vs</span>}
+      {entities[1] && (
+        <Badge variant="neutral" size="sm" uppercase>
+          vs
+        </Badge>
+      )}
       {entities[1] && entityIdentity(entities[1])}
     </span>
   );
@@ -349,8 +365,8 @@ function subjectStats(row: SectionRow): StatChip[] {
       semantic:
         candidate.key === "plus_minus_avg"
           ? value >= 0
-            ? "positive"
-            : "negative"
+            ? "success"
+            : "danger"
           : candidate.semantic,
     });
   }
@@ -374,7 +390,7 @@ function recordStat(row: SectionRow): StatChip | null {
       ]
         .filter(Boolean)
         .join(" / "),
-      semantic: wins > losses ? "positive" : wins < losses ? "negative" : "neutral",
+      semantic: wins > losses ? "success" : wins < losses ? "danger" : "neutral",
     };
   }
 

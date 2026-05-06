@@ -22,6 +22,7 @@
 }
 
 .table thead th {
+  /* Headers stay neutral unless the column is the highlighted metric. */
   position: sticky;
   top: 0;
   background: var(--bg-elevated);
