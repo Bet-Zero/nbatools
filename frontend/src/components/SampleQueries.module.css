@@ -1,59 +1,86 @@
 /*
- * Compact, dense layout: every preset is a single-line chip and every
- * group is a horizontal row. Optimized for click-through testing of
- * many presets at once, not for visual polish.
+ * Sidebar panel: lives in the right-hand secondary column above
+ * SavedQueries. The list is internally scrollable with a fixed
+ * max-height so 31 presets stay accessible without pushing the
+ * neighboring panels (SavedQueries, History, DevTools) off-screen.
+ *
+ * Sidebar is narrow (~20rem), so groups stack vertically and chips
+ * fill the row width.
  */
 
 .sampleQueries {
   min-width: 0;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border-subtle);
   display: grid;
-  gap: var(--space-2);
+  gap: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panelTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+}
+
+.scrollList {
+  min-width: 0;
+  max-height: min(70vh, 36rem);
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  display: grid;
+  gap: var(--space-3);
 }
 
 .group {
   min-width: 0;
   display: grid;
-  grid-template-columns: 6.5rem 1fr;
-  align-items: start;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .groupTitle {
   margin: 0;
-  padding-top: 0.35rem;
   color: var(--text-tertiary);
   font-size: var(--font-micro);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   line-height: 1.2;
 }
 
 .samples {
   min-width: 0;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: var(--space-1);
 }
 
 .sampleButton {
-  width: auto;
+  width: 100%;
   min-height: 0;
-  padding: 0.35rem 0.6rem;
-  align-items: center;
+  padding: 0.4rem 0.6rem;
+  align-items: stretch;
   justify-content: flex-start;
   border-color: var(--border-default);
   background: var(--bg-elevated);
-  white-space: nowrap;
-  flex: 0 0 auto;
 }
 
 .sampleButton > span {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.35rem;
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  gap: 0.1rem;
   text-align: left;
 }
 
@@ -61,7 +88,8 @@
   color: var(--text-primary);
   font-size: var(--font-small);
   font-weight: var(--weight-semibold);
-  line-height: 1.2;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .resultHint {
@@ -69,19 +97,14 @@
   font-size: var(--font-micro);
   font-weight: var(--weight-regular);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 640px) {
-  .group {
-    grid-template-columns: 1fr;
-    gap: var(--space-1);
-  }
-
-  .groupTitle {
-    padding-top: 0;
-  }
-
-  .sampleButton {
-    white-space: normal;
+@media (max-width: 900px) {
+  /* Sidebar collapses below the main column at this breakpoint. Cap
+   * height tighter so the whole secondary stack is still browsable
+   * without dominating the viewport. */
+  .scrollList {
+    max-height: 22rem;
   }
 }

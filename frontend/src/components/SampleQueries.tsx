@@ -244,37 +244,48 @@ interface Props {
 
 export default function SampleQueries({ onSelect }: Props) {
   return (
-    <section className={styles.sampleQueries} aria-label="Starter queries">
-      {STARTER_QUERY_GROUPS.map((group) => (
-        <section
-          key={group.id}
-          className={styles.group}
-          aria-labelledby={`starter-group-${group.id}`}
-        >
-          <h3
-            id={`starter-group-${group.id}`}
-            className={styles.groupTitle}
+    <section
+      className={styles.sampleQueries}
+      aria-labelledby="starter-queries-heading"
+    >
+      <header className={styles.panelHeader}>
+        <h2 id="starter-queries-heading" className={styles.panelTitle}>
+          Starter queries
+        </h2>
+      </header>
+      <div className={styles.scrollList}>
+        {STARTER_QUERY_GROUPS.map((group) => (
+          <section
+            key={group.id}
+            className={styles.group}
+            aria-labelledby={`starter-group-${group.id}`}
           >
-            {group.title}
-          </h3>
-          <div className={styles.samples}>
-            {group.queries.map((sample) => (
-              <Button
-                key={sample.query}
-                type="button"
-                className={styles.sampleButton}
-                onClick={() => onSelect(sample.query)}
-                size="sm"
-                variant="secondary"
-                aria-label={`Run starter query: ${sample.query}`}
-              >
-                <span className={styles.sampleQuery}>{sample.query}</span>
-                <span className={styles.resultHint}>· {sample.resultHint}</span>
-              </Button>
-            ))}
-          </div>
-        </section>
-      ))}
+            <h3
+              id={`starter-group-${group.id}`}
+              className={styles.groupTitle}
+            >
+              {group.title}
+            </h3>
+            <div className={styles.samples}>
+              {group.queries.map((sample) => (
+                <Button
+                  key={sample.query}
+                  type="button"
+                  className={styles.sampleButton}
+                  onClick={() => onSelect(sample.query)}
+                  size="sm"
+                  variant="secondary"
+                  aria-label={`Run starter query: ${sample.query}`}
+                  fullWidth
+                >
+                  <span className={styles.sampleQuery}>{sample.query}</span>
+                  <span className={styles.resultHint}>{sample.resultHint}</span>
+                </Button>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </section>
   );
 }

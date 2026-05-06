@@ -426,22 +426,20 @@ export default function App() {
   );
 
   const queryRegion = (
-    <>
-      <QueryBar
-        value={queryText}
-        onChange={handleQueryTextChange}
-        onSubmit={handleSubmit}
-        onHistoryPrevious={recallPreviousQuery}
-        onHistoryNext={recallNextQuery}
-        disabled={loading}
-        ref={inputRef}
-      />
-      <SampleQueries onSelect={handleSampleSelect} />
-    </>
+    <QueryBar
+      value={queryText}
+      onChange={handleQueryTextChange}
+      onSubmit={handleSubmit}
+      onHistoryPrevious={recallPreviousQuery}
+      onHistoryNext={recallNextQuery}
+      disabled={loading}
+      ref={inputRef}
+    />
   );
 
   const secondaryPanels = (
     <>
+      <SampleQueries onSelect={handleSampleSelect} />
       <SavedQueries
         queries={saved.queries}
         onRun={handleSavedQueryRun}
