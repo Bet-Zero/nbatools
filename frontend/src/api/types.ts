@@ -165,6 +165,16 @@ export interface StructuredQueryRequest {
   kwargs: Record<string, unknown>;
 }
 
+export interface DevFixture {
+  case_id: string;
+  query: string;
+}
+
+export interface DevFixturesResponse {
+  source_path: string;
+  fixtures: DevFixture[];
+}
+
 // --- Query history ---
 
 export interface QueryHistoryEntry {

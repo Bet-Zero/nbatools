@@ -7,6 +7,7 @@
  */
 
 import type {
+  DevFixturesResponse,
   ErrorResponse,
   FreshnessResponse,
   HealthResponse,
@@ -56,4 +57,8 @@ export async function postStructuredQuery(
 
 export async function fetchFreshness(): Promise<FreshnessResponse> {
   return request<FreshnessResponse>("/freshness");
+}
+
+export async function fetchDevFixtures(): Promise<DevFixturesResponse> {
+  return request<DevFixturesResponse>("/api/dev/fixtures");
 }

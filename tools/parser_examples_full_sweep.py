@@ -4,22 +4,20 @@ from __future__ import annotations
 
 import csv
 import json
-import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from typer.testing import CliRunner
 
+from nbatools.parser_examples import Case, SOURCE_PATH, extract_cases
 from nbatools.cli import app as cli_app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE_PATH = ROOT / "docs/architecture/parser/examples.md"
 OUT_DIR = ROOT / "outputs/parser_examples_full_sweep"
 RAW_DIR = OUT_DIR / "raw"
 RESULTS_PATH = OUT_DIR / "results.csv"
@@ -48,46 +46,6 @@ RESULT_FIELDS = [
     "pass_fail_reason",
     "raw_json_path",
 ]
-
-
-@dataclass(frozen=True)
-class Case:
-    case_id: str
-    source_section: str
-    source_subsection: str
-    case_kind: str
-    query_text: str
-    expected_behavior_category: str
-    expected_notes: str
-    pair_key: str = ""
-    equivalence_group: str = ""
-
-
-def slug_subsection(title: str) -> str:
-    match = re.match(r"^(\d+(?:\.\d+)*)", title)
-    if not match:
-        return "unknown"
-    return match.group(1).replace(".", "_")
-
-
-def clean_query(text: str) -> str:
-    text = text.strip()
-    text = text.strip("|")
-    text = re.sub(r"\s+", " ", text)
-    return text.strip()
-
-
-def md_section(lines: list[str], start: str, end: str | None) -> list[str]:
-    start_idx = next(i for i, line in enumerate(lines) if line.startswith(start))
-    if end is None:
-        end_idx = len(lines)
-    else:
-        end_idx = next(
-            i
-            for i, line in enumerate(lines[start_idx + 1 :], start_idx + 1)
-            if line.startswith(end)
-        )
-    return lines[start_idx:end_idx]
 
 
 def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
@@ -246,224 +204,6 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
         "supported_exact",
         "Documented shipped query surface or canonical parser example without an explicit fallback/unsupported note.",
     )
-
-
-def add_case(
-    cases: list[Case],
-    case_id: str,
-    section: str,
-    subsection: str,
-    kind: str,
-    query: str,
-    pair_key: str = "",
-    equivalence_group: str = "",
-) -> None:
-    query = clean_query(query)
-    if not query:
-        return
-    category, notes = expected_for(query, section, subsection)
-    cases.append(
-        Case(
-            case_id=case_id,
-            source_section=section,
-            source_subsection=subsection,
-            case_kind=kind,
-            query_text=query,
-            expected_behavior_category=category,
-            expected_notes=notes,
-            pair_key=pair_key,
-            equivalence_group=equivalence_group,
-        )
-    )
-
-
-def extract_cases() -> list[Case]:
-    lines = SOURCE_PATH.read_text().splitlines()
-    cases: list[Case] = []
-
-    # Section 2 numbered canonical examples.
-    current_sub = ""
-    sub_counts: Counter[str] = Counter()
-    for line in md_section(lines, "## 2.", "## 3."):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        match = re.match(r"^(\d+)\.\s+(.+)$", line)
-        if match and current_sub:
-            slug = slug_subsection(current_sub)
-            sub_counts[slug] += 1
-            add_case(
-                cases,
-                f"S2_{slug}_{sub_counts[slug]:02d}",
-                "2. Canonical example set",
-                current_sub,
-                "canonical_numbered",
-                match.group(2),
-            )
-
-    # Section 3 paired tables.
-    current_sub = ""
-    for line in md_section(lines, "## 3.", "## 4."):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        if not line.startswith("|"):
-            continue
-        cells = [clean_query(c) for c in line.strip().strip("|").split("|")]
-        if len(cells) != 3 or not cells[0].isdigit():
-            continue
-        slug = slug_subsection(current_sub)
-        pair_num = int(cells[0])
-        pair_key = f"S3_{slug}_{pair_num:02d}"
-        add_case(
-            cases,
-            f"{pair_key}_Q",
-            "3. Paired examples",
-            current_sub,
-            "paired_question",
-            cells[1],
-            pair_key=pair_key,
-        )
-        add_case(
-            cases,
-            f"{pair_key}_S",
-            "3. Paired examples",
-            current_sub,
-            "paired_search",
-            cells[2],
-            pair_key=pair_key,
-        )
-
-    # Section 4 cluster bullet queries.
-    current_sub = ""
-    sub_counts = Counter()
-    for line in md_section(lines, "## 4.", "## 5."):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        if not line.startswith("- "):
-            continue
-        queries = re.findall(r"`([^`]+)`", line)
-        for query in queries:
-            slug = slug_subsection(current_sub)
-            sub_counts[slug] += 1
-            add_case(
-                cases,
-                f"S4_{slug}_{sub_counts[slug]:02d}",
-                "4. Capability clusters",
-                current_sub,
-                "cluster_bullet",
-                query,
-            )
-
-    # Section 5 stress inputs. Split slash-delimited phrase sets into separate members.
-    current_sub = ""
-    sub_counts = Counter()
-    for line in md_section(lines, "## 5.", "## 6."):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        if not line.startswith("- "):
-            continue
-        queries = re.findall(r"`([^`]+)`", line)
-        for query in queries:
-            parts = [clean_query(part) for part in re.split(r"\s+/\s+", query)]
-            if len(parts) > 1:
-                for part in parts:
-                    slug = slug_subsection(current_sub)
-                    sub_counts[slug] += 1
-                    add_case(
-                        cases,
-                        f"S5_{slug}_{sub_counts[slug]:02d}",
-                        "5. Stress test inputs",
-                        current_sub,
-                        "stress_fragment",
-                        part,
-                    )
-            else:
-                slug = slug_subsection(current_sub)
-                sub_counts[slug] += 1
-                add_case(
-                    cases,
-                    f"S5_{slug}_{sub_counts[slug]:02d}",
-                    "5. Stress test inputs",
-                    current_sub,
-                    "stress_input",
-                    query,
-                )
-
-    # Section 6 worked raw inputs.
-    current_sub = ""
-    sub_counts = Counter()
-    for line in md_section(lines, "## 6.", "## 7."):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        match = re.match(r"^\*\*Raw input:\*\*\s+`([^`]+)`", line)
-        if match:
-            slug = slug_subsection(current_sub)
-            sub_counts[slug] += 1
-            add_case(
-                cases,
-                f"S6_{slug}_{sub_counts[slug]:02d}",
-                "6. End-to-end worked examples",
-                current_sub,
-                "worked_raw_input",
-                match.group(1),
-            )
-
-    # Section 7 equivalence group members.
-    current_sub = ""
-    sub_counts = Counter()
-    for line in md_section(lines, "## 7.", "## 8."):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        if not line.startswith("- ") or line.startswith("- _"):
-            continue
-        queries = re.findall(r"`([^`]+)`", line)
-        for query in queries:
-            slug = slug_subsection(current_sub)
-            sub_counts[slug] += 1
-            add_case(
-                cases,
-                f"S7_{slug}_{sub_counts[slug]:02d}",
-                f"7.{slug.split('_', 1)[1] if '_' in slug else ''} Equivalence groups",
-                current_sub,
-                "equivalence_member",
-                query,
-                equivalence_group=f"S7_{slug}",
-            )
-
-    # Section 8 boundary examples and templates.
-    current_sub = ""
-    sub_counts = Counter()
-    for line in md_section(lines, "## 8.", None):
-        if line.startswith("### "):
-            current_sub = line.removeprefix("### ").strip()
-        if not line.startswith("- "):
-            continue
-        if line.startswith("- _") or "See equivalence" in line or "specification.md" in line:
-            continue
-        queries = re.findall(r"`([^`]+)`", line)
-        for query in queries:
-            if query.startswith("specification.md") or query in {
-                "team_record",
-                "player_game_summary",
-                "player_game_finder",
-            }:
-                continue
-            slug = slug_subsection(current_sub)
-            sub_counts[slug] += 1
-            add_case(
-                cases,
-                f"S8_{slug}_{sub_counts[slug]:02d}",
-                "8. Expansion patterns and explicit boundaries",
-                current_sub,
-                "boundary_example",
-                query,
-            )
-
-    seen: set[str] = set()
-    for case in cases:
-        if case.case_id in seen:
-            raise RuntimeError(f"duplicate case id: {case.case_id}")
-        seen.add(case.case_id)
-    return cases
 
 
 def get_git_sha() -> str:

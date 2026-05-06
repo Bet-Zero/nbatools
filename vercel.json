@@ -54,6 +54,10 @@
       "destination": "/api"
     },
     {
+      "source": "/review",
+      "destination": "/api/review"
+    },
+    {
       "source": "/assets/index-fallback.js",
       "destination": "/api/ui_fallback_asset"
     },
@@ -88,6 +92,10 @@
     {
       "source": "/structured-query",
       "destination": "/api/structured_query"
+    },
+    {
+      "source": "/api/dev/fixtures",
+      "destination": "/api/dev/fixtures"
     }
   ]
 }

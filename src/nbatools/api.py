@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from nbatools import __version__, api_ui
-from nbatools.api_handlers import query_result_to_payload
+from nbatools.api_handlers import dev_fixtures_payload, query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
 from nbatools.query_service import (
     VALID_ROUTES,
@@ -103,6 +103,16 @@ class RoutesResponse(BaseModel):
     routes: list[str]
 
 
+class DevFixture(BaseModel):
+    case_id: str
+    query: str
+
+
+class DevFixturesResponse(BaseModel):
+    source_path: str
+    fixtures: list[DevFixture] = Field(default_factory=list)
+
+
 class SeasonFreshnessResponse(BaseModel):
     season: str
     season_type: str
@@ -151,6 +161,12 @@ def ui() -> HTMLResponse:
     return HTMLResponse(content=_load_ui_html())
 
 
+@app.get("/review", response_class=HTMLResponse, include_in_schema=False)
+def review_ui() -> HTMLResponse:
+    """Serve the internal review UI shell."""
+    return HTMLResponse(content=_load_ui_html())
+
+
 @app.get(_UI_FALLBACK_ASSET, include_in_schema=False)
 def ui_fallback_asset() -> Response:
     """Serve a minimal JS module when the frontend bundle is unavailable."""
@@ -187,6 +203,12 @@ def freshness() -> FreshnessResponse:
 def routes() -> RoutesResponse:
     """List all supported structured query routes."""
     return RoutesResponse(routes=sorted(VALID_ROUTES))
+
+
+@app.get("/api/dev/fixtures", response_model=DevFixturesResponse)
+def dev_fixtures() -> DevFixturesResponse:
+    """Return parser example fixtures for the internal review page."""
+    return DevFixturesResponse(**dev_fixtures_payload())
 
 
 @app.post("/query", response_model=QueryResponse)

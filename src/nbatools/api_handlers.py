@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -55,6 +56,20 @@ def freshness_payload() -> dict[str, Any]:
     from nbatools.commands.freshness import build_freshness_info
 
     return build_freshness_info().to_dict()
+
+
+def dev_fixtures_payload() -> dict[str, Any]:
+    """Return the parser examples fixture list for internal review tooling."""
+    from nbatools.parser_examples import SOURCE_PATH, extract_cases
+
+    root = Path(__file__).resolve().parents[2]
+    source_path = str(SOURCE_PATH.relative_to(root))
+    return {
+        "source_path": source_path,
+        "fixtures": [
+            {"case_id": case.case_id, "query": case.query_text} for case in extract_cases()
+        ],
+    }
 
 
 def natural_query_payload(query: str) -> dict[str, Any]:

@@ -6,6 +6,7 @@ from http import HTTPStatus
 from typing import Any
 
 from nbatools.api_handlers import (
+    dev_fixtures_payload,
     freshness_payload,
     health_payload,
     natural_query_payload,
@@ -45,6 +46,11 @@ def routes_response() -> tuple[int, dict[str, Any]]:
 def freshness_response() -> tuple[int, dict[str, Any]]:
     """Return the freshness endpoint response."""
     return HTTPStatus.OK, freshness_payload()
+
+
+def dev_fixtures_response() -> tuple[int, dict[str, Any]]:
+    """Return the parser example fixture list for the internal review UI."""
+    return HTTPStatus.OK, dev_fixtures_payload()
 
 
 def query_response(body: dict[str, Any]) -> tuple[int, dict[str, Any]]:

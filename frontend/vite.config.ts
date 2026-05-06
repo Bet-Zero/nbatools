@@ -10,6 +10,7 @@ export default defineConfig({
       // Proxy API calls to the FastAPI backend during development
       "/health": "http://127.0.0.1:8000",
       "/routes": "http://127.0.0.1:8000",
+      "/api/dev/fixtures": "http://127.0.0.1:8000",
       "/query": "http://127.0.0.1:8000",
       "/structured-query": "http://127.0.0.1:8000",
     },

@@ -475,6 +475,12 @@ class TestUI:
         assert "text/html" in resp.headers["content-type"]
         assert "<title>nbatools</title>" in resp.text
 
+    def test_review_ui_serves_html(self):
+        resp = client.get("/review")
+        assert resp.status_code == 200
+        assert "text/html" in resp.headers["content-type"]
+        assert "<title>nbatools</title>" in resp.text
+
     def test_ui_contains_react_root(self):
         resp = client.get("/")
         assert 'id="root"' in resp.text
@@ -499,6 +505,28 @@ class TestUI:
         assert resp.status_code == 200
         assert "application/javascript" in resp.headers["content-type"]
         assert "UI bundle not built" in resp.text
+
+
+# ---------------------------------------------------------------------------
+# /api/dev/fixtures
+# ---------------------------------------------------------------------------
+
+
+class TestDevFixtures:
+    @patch("nbatools.api.dev_fixtures_payload")
+    def test_dev_fixtures_returns_parser_example_list(self, mock_payload):
+        mock_payload.return_value = {
+            "source_path": "docs/architecture/parser/examples.md",
+            "fixtures": [
+                {"case_id": "S2_2_1_01", "query": "First query"},
+                {"case_id": "S2_2_1_02", "query": "Second query"},
+            ],
+        }
+
+        resp = client.get("/api/dev/fixtures")
+
+        assert resp.status_code == 200
+        assert resp.json() == mock_payload.return_value
 
 
 # ---------------------------------------------------------------------------

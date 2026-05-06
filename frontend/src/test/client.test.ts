@@ -6,6 +6,7 @@ globalThis.fetch = mockFetch as unknown as typeof fetch;
 
 // Import after mock is set up
 const {
+  fetchDevFixtures,
   fetchHealth,
   fetchRoutes,
   postQuery,
@@ -167,5 +168,25 @@ describe("fetchFreshness", () => {
         Promise.resolve({ error: "internal", detail: "server error" }),
     });
     await expect(fetchFreshness()).rejects.toThrow("server error");
+  });
+});
+
+describe("fetchDevFixtures", () => {
+  it("returns the parser example fixture list", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          source_path: "docs/architecture/parser/examples.md",
+          fixtures: [{ case_id: "S2_2_1_01", query: "First query" }],
+        }),
+    });
+
+    const result = await fetchDevFixtures();
+    expect(result.source_path).toBe("docs/architecture/parser/examples.md");
+    expect(result.fixtures).toEqual([
+      { case_id: "S2_2_1_01", query: "First query" },
+    ]);
+    expect(mockFetch).toHaveBeenCalledWith("/api/dev/fixtures", undefined);
   });
 });

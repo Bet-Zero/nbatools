@@ -1,0 +1,79 @@
+.page {
+  min-height: 100vh;
+}
+
+.progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(245, 247, 250, 0.95);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.source {
+  color: rgba(15, 23, 42, 0.7);
+  font-size: 0.875rem;
+}
+
+.content {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 4.75rem 0 2rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header p {
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.block {
+  margin-bottom: 1.5rem;
+}
+
+.block h2 {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.4;
+}
+
+.resultSections {
+  margin-top: 1rem;
+}
+
+.placeholder,
+.error {
+  padding: 1rem 0;
+}
+
+.error {
+  color: #b42318;
+}
+
+.divider {
+  margin-top: 1.5rem;
+  border: 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+@media (max-width: 720px) {
+  .progressBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .content {
+    width: min(100%, calc(100% - 1rem));
+    padding-top: 5.75rem;
+  }
+}
