@@ -306,8 +306,6 @@ class TestAmbiguousRecovery:
         """Ambiguous fragment: 'jokic triple doubles' → suggested_queries present."""
         from nbatools.query_service import _build_suggested_queries_for_fragment
 
-        parsed = parse_query("Jokic career scoring summary")
-        # Build suggestions directly
         parsed_with_occurrence = {
             "player": "Nikola Jokić",
             "occurrence_event": "triple_double",
