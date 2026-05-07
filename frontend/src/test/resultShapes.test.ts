@@ -60,6 +60,20 @@ describe("classifyResultShape", () => {
     );
   });
 
+  it("classifies top performances and rolling stretches as dedicated shapes", () => {
+    const topGames = makeResponse({
+      route: "top_player_games",
+      sections: { leaderboard: [{ rank: 1, player_name: "Bam Adebayo" }] },
+    });
+    const stretches = makeResponse({
+      route: "player_stretch_leaderboard",
+      sections: { leaderboard: [{ rank: 1, player_name: "Luka Doncic" }] },
+    });
+
+    expect(classifyResultShape(topGames)).toBe(RESULT_SHAPES.top_performances);
+    expect(classifyResultShape(stretches)).toBe(RESULT_SHAPES.rolling_stretch);
+  });
+
   it("distinguishes plain player summaries from recent-game stacks", () => {
     const summary = makeResponse({
       route: "player_game_summary",

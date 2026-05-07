@@ -185,6 +185,7 @@ Point-in-time audit snapshots and historical records.
 - `primitive_audit_report.md` — shared result-rendering primitive design-system compliance audit
 - `shape_cleanup_report.md` — follow-up renderer shape cleanup and team-context hero accent report
 - `frontend_apply_report.md` — frontend display pass report for query-intent audit backend patterns
+- `new_shapes_apply_report.md` — frontend implementation report for Top Performances and Rolling Stretch result shapes
 
 ## Verdicts
 

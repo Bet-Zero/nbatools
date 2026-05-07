@@ -8,8 +8,10 @@ import GameLogResult from "./patterns/GameLogResult";
 import LeaderboardResult from "./patterns/LeaderboardResult";
 import PlayoffHistoryResult from "./patterns/PlayoffHistoryResult";
 import RecordResult from "./patterns/RecordResult";
+import RollingStretchResult from "./patterns/RollingStretchResult";
 import SplitResult from "./patterns/SplitResult";
 import StreakResult from "./patterns/StreakResult";
+import TopPerformancesResult from "./patterns/TopPerformancesResult";
 import ResultShell from "./primitives/ResultShell";
 
 interface Props {
@@ -127,6 +129,16 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           verb={pattern.verb}
         />
       );
+    case "top_performances":
+      return (
+        <TopPerformancesResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          subject={pattern.subject}
+        />
+      );
+    case "rolling_stretch":
+      return <RollingStretchResult data={data} sectionKey={pattern.sectionKey} />;
     case "split":
       return (
         <SplitResult

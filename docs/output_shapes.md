@@ -50,10 +50,10 @@ Scope:
 
 - Description: summary strip plus player-first game table.
 - Components: `frontend/src/components/results/patterns/GameLogResult.tsx`, `frontend/src/components/results/primitives/ResultTable.tsx`, `frontend/src/components/results/primitives/RawDetailToggle.tsx`, `frontend/src/components/results/primitives/EntityIdentity.tsx`.
-- Sweep fixtures: `34`.
-- Representative queries: `What were the biggest scoring games this season?`; `Which players had the best games by Game Score this year?`; `What are the biggest triple-double games this season?`.
-- Data fields read: `result.sections.finder` or `result.sections.leaderboard`, optional `result.sections.summary`, `result.metadata.stat`, `result.metadata.team_context`, `result.metadata.opponent_context`, and per-row player, team, date, opponent, score, result, and stat fields.
-- Conditional sub-variants: `player_game_finder` and `top_player_games` share the same layout while changing row order and raw-detail title; the summary strip can come from a real summary row or derived context items.
+- Sweep fixtures: `28`.
+- Representative queries: `Curry 5+ threes`; `Jokic 30 point games`; `Luka Doncic games with 40+ points`.
+- Data fields read: `result.sections.finder`, optional `result.sections.summary`, `result.metadata.stat`, `result.metadata.team_context`, `result.metadata.opponent_context`, and per-row player, team, date, opponent, score, result, and stat fields.
+- Conditional sub-variants: the summary strip can come from a real summary row or derived context items; top-player-game routes now render through the dedicated Top Performances shape.
 
 ## Team Game Log
 
@@ -62,7 +62,16 @@ Scope:
 - Sweep fixtures: `7`.
 - Representative queries: `How often have the Lakers held opponents under 100 points this year?`; `Lakers opponents under 100 this year`; `Celtics (over 120 points and over 15 threes) or under 10 turnovers`.
 - Data fields read: `result.sections.finder` or `result.sections.leaderboard`, optional `result.sections.summary`, `result.metadata.team_context`, `result.metadata.opponent_context`, and per-row date, team, opponent, score, W/L, and stat columns.
-- Conditional sub-variants: `game_finder` and `top_team_games` share the same table shape; score and W/L columns only render when present.
+- Conditional sub-variants: score and W/L columns only render when present; top-team-game routes now render through the dedicated Top Performances shape.
+
+## Top Performances
+
+- Description: league-wide ranked single-game performance table with a hero sentence, prominent rank badges, entity identity, date/opponent/result context, and a highlighted primary metric column.
+- Components: `frontend/src/components/results/config/routeToPattern.ts`, `frontend/src/components/results/patterns/TopPerformancesResult.tsx`, `frontend/src/components/results/primitives/ResultHero.tsx`, `frontend/src/components/results/primitives/ResultTable.tsx`, `frontend/src/components/results/primitives/EntityIdentity.tsx`.
+- Sweep fixtures: `6`.
+- Representative queries: `What were the biggest scoring games this season?`; `Which players had the best games by Game Score this year?`; `What are the biggest triple-double games this season?`.
+- Data fields read: `result.sections.leaderboard`, `result.metadata.stat`, `result.metadata.metric`, `result.metadata.target_stat`, `result.metadata.target_metric`, `result.metadata.occurrence_event`, season metadata, optional total-count metadata, and per-row rank, player/team identity, game date, opponent, W/L, primary stat, and supporting stat fields.
+- Conditional sub-variants: player vs team identity, standard stat metric vs composite triple-double metric when rows include `pts`/`reb`/`ast`, optional count note when total-count metadata is available.
 
 ## Game Summary Log
 
@@ -176,10 +185,19 @@ Scope:
 
 - Description: hero sentence over a ranked leaderboard table.
 - Components: `frontend/src/components/results/patterns/LeaderboardResult.tsx`, `frontend/src/components/results/primitives/ResultHero.tsx`, `frontend/src/components/results/primitives/ResultTable.tsx`, `frontend/src/components/results/primitives/EntityIdentity.tsx`.
-- Sweep fixtures: `146`.
+- Sweep fixtures: `138`.
 - Representative queries: `Who leads the NBA in points per game this season?`; `Which players have the most total rebounds this year?`; `What team has the highest offensive rating this season?`.
 - Data fields read: `result.sections.leaderboard`, `result.metadata.stat`, `result.metadata.metric`, `result.metadata.target_stat`, `result.metadata.target_metric`, `result.metadata.season`, `result.metadata.season_type`, `result.metadata.start_season`, `result.metadata.end_season`, `result.metadata.query_text`, optional disambiguation metadata, and row-level rank, entity identity, metric, and context columns.
-- Conditional sub-variants: player vs team vs lineup/unknown entity identity, generic auto-detected metric vs explicit stretch/net-rating/appearance config, optional team-abbreviation column, and hero context that changes for season ranges, playoffs, or `since` phrases.
+- Conditional sub-variants: player vs team vs lineup/unknown entity identity, generic auto-detected metric vs explicit net-rating/appearance config, optional team-abbreviation column, and hero context that changes for season ranges, playoffs, or `since` phrases.
+
+## Rolling Stretch
+
+- Description: rolling-window leaderboard or named-player top-window table with a hero sentence emphasizing window size, rolling metric value, and date range.
+- Components: `frontend/src/components/results/config/routeToPattern.ts`, `frontend/src/components/results/patterns/RollingStretchResult.tsx`, `frontend/src/components/results/primitives/ResultHero.tsx`, `frontend/src/components/results/primitives/ResultTable.tsx`, `frontend/src/components/results/primitives/EntityIdentity.tsx`.
+- Sweep fixtures: `8`.
+- Representative queries: `Which players have the hottest 3-game scoring stretch this year?`; `3-game scoring stretch leaders this year`; `most efficient 10-game rolling stretch`.
+- Data fields read: `result.sections.leaderboard`, optional `result.sections.best_window_game_log`, optional `result.sections.window_game_log`, optional `result.sections.game_log`, `result.metadata.player_context`, `result.metadata.window_size`, `result.metadata.stretch_metric`, season metadata, optional total-count metadata, and per-row rank, player identity, window size, stretch value, window start/end dates, and supporting stat fields.
+- Conditional sub-variants: league-wide table when no single resolved player exists, named-player top-window table when `metadata.player_context` exists, optional game-log section only when the response includes game-level rows for the best window.
 
 ## Fallback Tables
 
@@ -207,8 +225,9 @@ Scope:
 | Message No Result             |         81 | `ResultRenderer.tsx`, `NoResultDisplay.tsx`                          | `unsupported`, `ambiguous`, `error`, `empty_sections`                                   |
 | Entity Summary                |         45 | `EntitySummaryResult.tsx`, `ResultHero.tsx`                          | average sentence fallback, context variants, optional disambiguation                    |
 | Entity Summary + Recent Games |          7 | `EntitySummaryResult.tsx`, `GameLogResult.tsx`                       | hero variants plus metric-highlighted recent-game table                                 |
-| Player Game Log               |         34 | `GameLogResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`        | finder vs top-games ordering, summary-strip source, optional score/W-L                  |
-| Team Game Log                 |          7 | `GameLogResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`        | finder vs top-games ordering, optional score/W-L                                        |
+| Player Game Log               |         28 | `GameLogResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`        | summary-strip source, optional score/W-L                                                |
+| Team Game Log                 |          7 | `GameLogResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`        | optional score/W-L                                                                      |
+| Top Performances              |          6 | `TopPerformancesResult.tsx`, `ResultTable.tsx`                       | player vs team, standard stat vs composite triple-double, optional count note           |
 | Game Summary Log              |          4 | `GameLogResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`        | `game_log` vs summary fallback, optional extra drawers                                  |
 | Split Comparison              |          0 | `SplitResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`          | player vs team, optional summary drawer, two-bucket edge chips                          |
 | On/Off Split                  |          0 | `SplitResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`          | fixed on/off labels, no summary drawer                                                  |
@@ -221,6 +240,7 @@ Scope:
 | Record By Decade              |          1 | `RecordResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`         | optional seasons/games/type columns                                                     |
 | Record By Decade Leaderboard  |          1 | `RecordResult.tsx`, `ResultTable.tsx`                                | dynamic highlighted metric, duplicate-column suppression                                |
 | Matchup By Decade             |          1 | `RecordResult.tsx`, `ResultTable.tsx`, `RawDetailToggle.tsx`         | real-team prefix detection vs generic fallback                                          |
-| Leaderboard Table             |        146 | `LeaderboardResult.tsx`, `ResultTable.tsx`                           | player/team/lineup identity, generic vs custom metric config, context sentence variants |
+| Leaderboard Table             |        138 | `LeaderboardResult.tsx`, `ResultTable.tsx`                           | player/team/lineup identity, generic vs custom metric config, context sentence variants |
+| Rolling Stretch               |          8 | `RollingStretchResult.tsx`, `ResultTable.tsx`                        | league-wide vs named-player, optional best-window game log                              |
 | Fallback Tables               |          0 | `FallbackTableResult.tsx`, `DataTable.tsx`                           | section-card count and columns depend on populated sections                             |
 | Unclassified                  |          0 | `resultShapes.ts`                                                    | reserved for future unmapped branches                                                   |

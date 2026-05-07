@@ -21,6 +21,8 @@ export type ResultShapeKey =
   | "record_by_decade_leaderboard"
   | "matchup_by_decade"
   | "leaderboard_table"
+  | "top_performances"
+  | "rolling_stretch"
   | "fallback_table"
   | "unclassified";
 
@@ -50,6 +52,8 @@ export const RESULT_SHAPE_ORDER: ResultShapeKey[] = [
   "record_by_decade_leaderboard",
   "matchup_by_decade",
   "leaderboard_table",
+  "top_performances",
+  "rolling_stretch",
   "fallback_table",
   "unclassified",
 ];
@@ -151,6 +155,16 @@ export const RESULT_SHAPES: Record<ResultShapeKey, ResultShapeDefinition> = {
     name: "Leaderboard Table",
     description: "Hero sentence over a ranked leaderboard table.",
   },
+  top_performances: {
+    key: "top_performances",
+    name: "Top Performances",
+    description: "League-wide ranked single-game performance table.",
+  },
+  rolling_stretch: {
+    key: "rolling_stretch",
+    name: "Rolling Stretch",
+    description: "Rolling-window leaderboard or named-player stretch table.",
+  },
   fallback_table: {
     key: "fallback_table",
     name: "Fallback Tables",
@@ -229,6 +243,10 @@ export function classifyResultShape(
       }
     case "leaderboard":
       return RESULT_SHAPES.leaderboard_table;
+    case "top_performances":
+      return RESULT_SHAPES.top_performances;
+    case "rolling_stretch":
+      return RESULT_SHAPES.rolling_stretch;
     case "fallback_table":
       return RESULT_SHAPES.fallback_table;
     default:

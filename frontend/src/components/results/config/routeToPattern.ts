@@ -36,6 +36,12 @@ export type PatternConfig =
       verb?: string;
     }
   | {
+      type: "top_performances";
+      sectionKey?: string;
+      subject: "player" | "team";
+    }
+  | { type: "rolling_stretch"; sectionKey?: string }
+  | {
       type: "split";
       sectionKey?: string;
       summaryKey?: string | null;
@@ -93,21 +99,17 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "top_player_games":
       return [
         {
-          type: "game_log",
+          type: "top_performances",
           sectionKey: "leaderboard",
-          mode: "player",
-          preserveOrder: true,
-          rawDetailTitle: "Top Player Games Detail",
+          subject: "player",
         },
       ];
     case "top_team_games":
       return [
         {
-          type: "game_log",
+          type: "top_performances",
           sectionKey: "leaderboard",
-          mode: "team",
-          preserveOrder: true,
-          rawDetailTitle: "Top Team Games Detail",
+          subject: "team",
         },
       ];
     case "game_summary":
@@ -183,13 +185,8 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "player_stretch_leaderboard":
       return [
         {
-          type: "leaderboard",
+          type: "rolling_stretch",
           sectionKey: "leaderboard",
-          metricKey: "stretch_value",
-          metricLabel: "PPG",
-          sentenceMetricLabel: "points per game",
-          valueSuffix: "per game",
-          verb: "averaged",
         },
       ];
     case "lineup_leaderboard":

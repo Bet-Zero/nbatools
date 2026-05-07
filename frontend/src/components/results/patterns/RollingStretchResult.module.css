@@ -1,0 +1,54 @@
+.pattern {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.section {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-uppercase);
+  text-transform: uppercase;
+}
+
+.rankBadge {
+  min-width: 2rem;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.teamCell {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 16rem;
+}
+
+.metricValue,
+.dateRange {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.resultBadge {
+  min-width: 2rem;
+  justify-content: center;
+}
+
+.tableNote {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+}
