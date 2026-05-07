@@ -45,9 +45,9 @@ def _print_sync_progress(progress: SyncProgress) -> None:
 @app.command("refresh")
 def refresh(
     include_playoffs: bool = typer.Option(
-        False,
-        "--include-playoffs",
-        help="Also refresh the latest playoff season.",
+        True,
+        "--include-playoffs/--no-playoffs",
+        help="Refresh the latest playoff season too. Enabled by default.",
     ),
     dry_run: bool = typer.Option(
         False,
@@ -243,9 +243,9 @@ def auto_refresh(
         help="Time between refresh cycles (e.g. '6h', '30m', '90s').",
     ),
     include_playoffs: bool = typer.Option(
-        False,
-        "--include-playoffs",
-        help="Also refresh the latest playoff season each cycle.",
+        True,
+        "--include-playoffs/--no-playoffs",
+        help="Refresh the latest playoff season on each cycle too. Enabled by default.",
     ),
 ):
     """Run an automated refresh loop for the current season.

@@ -343,6 +343,111 @@ def _build_query_metadata(
     if notes:
         meta["notes"] = notes
 
+    # ---- Pattern 1: scope_kind — how many seasons / career context ----
+    career_intent = parsed.get("career_intent", False)
+    by_decade_intent = parsed.get("by_decade_intent", False)
+    if career_intent:
+        # career = player-specific arc; all_time = cross-entity (no specific player)
+        scope_kind = "career" if parsed.get("player") else "all_time"
+    elif by_decade_intent:
+        scope_kind = "decade"
+    elif start_season and end_season:
+        scope_kind = "season_range"
+    elif season:
+        scope_kind = "playoffs" if season_type == "Playoffs" else "single_season"
+    else:
+        scope_kind = "single_season"
+    meta["scope_kind"] = scope_kind
+
+    # ---- Pattern 2: applied_filters — structured list of active filters ----
+    applied_filters: list[dict[str, str]] = []
+    if parsed.get("opponent"):
+        applied_filters.append({"label": "Opponent", "value": parsed["opponent"], "kind": "team"})
+    if parsed.get("without_player"):
+        applied_filters.append(
+            {"label": "Without player", "value": parsed["without_player"], "kind": "player"}
+        )
+    if parsed.get("home_only"):
+        applied_filters.append({"label": "Location", "value": "Home", "kind": "location"})
+    if parsed.get("away_only"):
+        applied_filters.append({"label": "Location", "value": "Away", "kind": "location"})
+    if parsed.get("wins_only"):
+        applied_filters.append({"label": "Outcome", "value": "Wins", "kind": "outcome"})
+    if parsed.get("losses_only"):
+        applied_filters.append({"label": "Outcome", "value": "Losses", "kind": "outcome"})
+    if parsed.get("clutch"):
+        applied_filters.append({"label": "Clutch", "value": "True", "kind": "situation"})
+    if parsed.get("back_to_back"):
+        applied_filters.append({"label": "Back-to-back", "value": "True", "kind": "schedule"})
+    if parsed.get("rest_days") is not None:
+        applied_filters.append(
+            {"label": "Rest days", "value": str(parsed["rest_days"]), "kind": "schedule"}
+        )
+    if parsed.get("one_possession"):
+        applied_filters.append(
+            {"label": "One-possession game", "value": "True", "kind": "situation"}
+        )
+    if parsed.get("nationally_televised"):
+        applied_filters.append(
+            {"label": "Nationally televised", "value": "True", "kind": "schedule"}
+        )
+    if parsed.get("role"):
+        applied_filters.append({"label": "Role", "value": parsed["role"], "kind": "role"})
+    if parsed.get("quarter") is not None:
+        applied_filters.append(
+            {"label": "Quarter", "value": str(parsed["quarter"]), "kind": "period"}
+        )
+    if parsed.get("half") is not None:
+        applied_filters.append({"label": "Half", "value": str(parsed["half"]), "kind": "period"})
+    if parsed.get("position_filter"):
+        applied_filters.append(
+            {"label": "Position", "value": parsed["position_filter"], "kind": "position"}
+        )
+    if parsed.get("opponent_quality"):
+        applied_filters.append(
+            {
+                "label": "Opponent quality",
+                "value": parsed["opponent_quality"],
+                "kind": "quality",
+            }
+        )
+    stat = parsed.get("stat") or route_kwargs.get("stat")
+    min_value = (
+        parsed.get("min_value")
+        if parsed.get("min_value") is not None
+        else route_kwargs.get("min_value")
+    )
+    max_value = (
+        parsed.get("max_value")
+        if parsed.get("max_value") is not None
+        else route_kwargs.get("max_value")
+    )
+    if stat and min_value is not None:
+        applied_filters.append(
+            {"label": f"{stat} min", "value": str(min_value), "kind": "threshold"}
+        )
+    if stat and max_value is not None:
+        applied_filters.append(
+            {"label": f"{stat} max", "value": str(max_value), "kind": "threshold"}
+        )
+    if start_season and end_season:
+        applied_filters.append(
+            {
+                "label": "Season range",
+                "value": f"{start_season} – {end_season}",
+                "kind": "season",
+            }
+        )
+    if parsed.get("start_date") or parsed.get("end_date"):
+        date_value = " – ".join(filter(None, [parsed.get("start_date"), parsed.get("end_date")]))
+        applied_filters.append({"label": "Date range", "value": date_value, "kind": "date"})
+    if route_kwargs.get("last_n") is not None:
+        applied_filters.append(
+            {"label": "Last N games", "value": str(route_kwargs["last_n"]), "kind": "window"}
+        )
+    if applied_filters:
+        meta["applied_filters"] = applied_filters
+
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:
         player_values = [player]
@@ -380,13 +485,82 @@ def _merge_metadata_notes(metadata: dict[str, Any], result_notes: list[str]) -> 
         metadata["notes"] = merged
 
 
+def _build_count_phrase(count: int, parsed: dict, metadata: dict) -> str:
+    """Build a natural-language count phrase for count-intent queries (Pattern 3).
+
+    Example: "Nikola Jokić: 47 times (triple_double; 2023-24, Regular Season)"
+    """
+    player = metadata.get("player")
+    team = metadata.get("team")
+    entity = player or team or "Result"
+    occurrence = parsed.get("occurrence_event") or parsed.get("stat") or "game"
+    count_word = "1 time" if count == 1 else f"{count} times"
+    season = metadata.get("season")
+    start_s = metadata.get("start_season")
+    end_s = metadata.get("end_season")
+    if season:
+        season_label = season
+    elif start_s and end_s:
+        season_label = f"{start_s} \u2013 {end_s}"
+    else:
+        season_label = "career"
+    season_type = metadata.get("season_type") or "Regular Season"
+    return f"{entity}: {count_word} ({occurrence}; {season_label}, {season_type})"
+
+
+def _build_suggested_queries_for_fragment(parsed: dict) -> list[str]:
+    """Build concrete rephrasing suggestions for ambiguous-fragment queries (Pattern 8).
+
+    Inspects the parsed slot context (player / team / stat / occurrence) and
+    returns 2-4 concrete alternative query strings the user could run instead
+    of the ambiguous fragment.
+    """
+    player = parsed.get("player")
+    team = parsed.get("team")
+    stat = parsed.get("stat")
+    occurrence = parsed.get("occurrence_event")
+    season = parsed.get("season") or "this season"
+
+    suggestions: list[str] = []
+
+    if player:
+        base = player
+        if occurrence:
+            suggestions.append(f"how many {occurrence}s has {base} had {season}")
+            suggestions.append(f"{base} {occurrence} games {season}")
+            suggestions.append(f"most {occurrence}s this season leaderboard")
+        elif stat:
+            suggestions.append(f"{base} {stat} summary {season}")
+            suggestions.append(f"{base} games with high {stat} {season}")
+        else:
+            suggestions.append(f"{base} summary {season}")
+            suggestions.append(f"{base} game log {season}")
+            suggestions.append(f"{base} last 10 games")
+    elif team:
+        base = team
+        if occurrence:
+            suggestions.append(f"{base} {occurrence} games {season}")
+            suggestions.append(f"{base} game log {season}")
+        else:
+            suggestions.append(f"{base} record {season}")
+            suggestions.append(f"{base} summary {season}")
+            suggestions.append(f"{base} last 10 games")
+    else:
+        # Generic fallback — minimal but honest
+        suggestions.append("add a player name, team name, or stat to your query")
+
+    return suggestions[:4]
+
+
 # ---------------------------------------------------------------------------
 # Query envelope
 # ---------------------------------------------------------------------------
 
 # Reasons that represent expected/anticipated failures → no_result status.
 # All other reasons represent system-level failures → error status.
-_EXPECTED_REASONS: frozenset[str] = frozenset({"unsupported", "no_data", "no_match", "ambiguous"})
+_EXPECTED_REASONS: frozenset[str] = frozenset(
+    {"unsupported", "no_data", "no_match", "ambiguous", "filter_not_supported"}
+)
 
 
 def reason_to_status(reason: str) -> str:
@@ -574,13 +748,38 @@ def execute_natural_query(query: str) -> QueryResult:
     if entity_ambiguity and route is None:
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         notes = parsed.get("notes", [])
+
+        # Pattern 8: enrich the entity_ambiguity payload.
+        enriched_ambiguity = dict(entity_ambiguity)
+        ambiguity_source = entity_ambiguity.get("source", "")
+        if ambiguity_source not in ("ambiguous_fragment", "placeholder_template"):
+            # Player / team name matched multiple candidates — add structured
+            # candidate list so callers can present a disambiguation picker.
+            raw_candidates = entity_ambiguity.get("candidates", [])
+            structured_candidates = []
+            for name in raw_candidates:
+                ctx = _resolve_player_context(name) or {}
+                structured_candidates.append(
+                    {
+                        "id": ctx.get("player_id"),
+                        "display_name": ctx.get("player_name", name),
+                        "team_abbr": ctx.get("team_abbr"),
+                        "position": ctx.get("position"),
+                    }
+                )
+            enriched_ambiguity["candidates"] = structured_candidates
+        else:
+            # Ambiguous fragment / intent — add suggested_queries so callers
+            # can surface concrete alternatives.
+            enriched_ambiguity["suggested_queries"] = _build_suggested_queries_for_fragment(parsed)
+
         result = NoResult(
             query_class="unknown",
             reason="ambiguous",
             result_status="no_result",
             result_reason="ambiguous",
             notes=list(notes),
-            metadata={"entity_ambiguity": entity_ambiguity},
+            metadata={"entity_ambiguity": enriched_ambiguity},
         )
         return QueryResult(
             result=result,
@@ -721,6 +920,10 @@ def execute_natural_query(query: str) -> QueryResult:
     # Override query_class in metadata when count intent is active
     if count_intent:
         metadata["query_class"] = "count"
+    # Pattern 3: expose primary_count and count_phrase for count-flavored queries.
+    if count_intent and isinstance(result, CountResult):
+        metadata["primary_count"] = result.count
+        metadata["count_phrase"] = _build_count_phrase(result.count, parsed, metadata)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(

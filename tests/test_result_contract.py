@@ -57,7 +57,7 @@ class TestResultEnums:
         assert ResultReason.ERROR == "error"
 
     def test_result_reason_has_six_values(self):
-        assert len(ResultReason) == 6
+        assert len(ResultReason) == 7
 
 
 # ===================================================================

@@ -236,7 +236,13 @@ def build_team_record_result(
     if clutch:
         df, clutch_note = apply_team_clutch_filter(df, seasons, season_type)
         if clutch_note:
-            notes.append(clutch_note)
+            # Data unavailable for this clutch filter — return an honest no-result
+            # rather than executing unfiltered and returning misleading data.
+            return NoResult(
+                query_class="summary",
+                reason="filter_not_supported",
+                notes=[clutch_note],
+            )
         else:
             clutch_executed = True
 
@@ -259,7 +265,13 @@ def build_team_record_result(
         one_possession=one_possession,
         nationally_televised=nationally_televised,
     )
-    notes.extend(schedule_notes)
+    if schedule_notes:
+        # Data unavailable for schedule-context filter — honest no-result.
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=list(schedule_notes),
+        )
 
     tied_period_rows = 0
     if period_execution_backed and not df.empty:

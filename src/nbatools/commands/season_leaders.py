@@ -824,7 +824,12 @@ def build_result(
         try:
             clutch_rows = load_player_game_clutch_stats_for_seasons(seasons, season_type)
         except FileNotFoundError:
-            notes.append(build_clutch_filter_coverage_note("missing player clutch dataset"))
+            # Data unavailable — honest no-result instead of unfiltered fallback.
+            return NoResult(
+                query_class="leaderboard",
+                reason="filter_not_supported",
+                notes=[build_clutch_filter_coverage_note("missing player clutch dataset")],
+            )
         else:
             keys = ["season", "season_type", "game_id", "team_id", "player_id"]
             basic_keys = basic[keys].drop_duplicates().copy()
@@ -834,7 +839,11 @@ def build_result(
             scoped = clutch_rows.merge(basic_keys, on=keys, how="inner")
             trusted, failures = select_trusted_clutch_stats(scoped)
             if failures:
-                notes.append(build_clutch_filter_coverage_note("; ".join(failures)))
+                return NoResult(
+                    query_class="leaderboard",
+                    reason="filter_not_supported",
+                    notes=[build_clutch_filter_coverage_note("; ".join(failures))],
+                )
             elif trusted.empty:
                 return NoResult(query_class="leaderboard", reason="no_match")
             else:

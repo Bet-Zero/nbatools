@@ -26,10 +26,7 @@ import pandas as pd
 
 from nbatools.commands._constants import BOOLEAN_OR_PATTERN, contains_boolean_or, normalize_text
 from nbatools.commands._parse_helpers import (
-    build_game_context_filter_notes,
     build_opponent_quality_note,
-    build_period_filter_note,
-    build_role_filter_note,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import resolve_opponent_quality_teams
@@ -280,13 +277,20 @@ def _append_result_notes(result, notes: list[str]):
     return new_result
 
 
-def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict, list[str]]:
+def _route_context_filters_for_execution(
+    route: str, kwargs: dict
+) -> tuple[dict, list[str], list[str]]:
     """Route context-filter kwargs through capability-aware transport.
 
     Phase G routes keep clutch / period / role kwargs so later execution-backed
-    work can happen on a single shared path. Unsupported families still append
-    the current honest fallback notes instead of silently pretending execution
-    exists.
+    work can happen on a single shared path.
+
+    Returns ``(sanitized_kwargs, notes, blocked_filters)`` where
+    ``blocked_filters`` is a non-empty list when at least one parsed filter
+    cannot be applied on this route (route not in the relevant transport set).
+    The caller should return ``NoResult(reason="filter_not_supported")`` when
+    ``blocked_filters`` is non-empty instead of executing unfiltered, so users
+    get an honest signal rather than silently wrong results.
     """
     routed = dict(kwargs)
 
@@ -300,41 +304,41 @@ def _route_context_filters_for_execution(route: str, kwargs: dict) -> tuple[dict
     nationally_televised = routed.get("nationally_televised", False)
 
     notes: list[str] = []
+    blocked_filters: list[str] = []
 
     if route not in _PHASE_G_CLUTCH_TRANSPORT_ROUTES:
         clutch = routed.pop("clutch", False)
     if clutch and route not in _PHASE_G_CLUTCH_TRANSPORT_ROUTES:
-        notes.append(
-            "clutch: filter detected but play-by-play clutch splits not yet available; "
-            "results are unfiltered"
-        )
+        blocked_filters.append("clutch")
 
     if route not in _PHASE_G_PERIOD_TRANSPORT_ROUTES:
         quarter = routed.pop("quarter", None)
         half = routed.pop("half", None)
-        if period_note := build_period_filter_note(quarter=quarter, half=half):
-            notes.append(period_note)
+        if quarter is not None:
+            blocked_filters.append("quarter")
+        if half is not None:
+            blocked_filters.append("half")
 
     if route not in _PHASE_G_ROLE_TRANSPORT_ROUTES:
         role = routed.pop("role", None)
-        if role_note := build_role_filter_note(role=role):
-            notes.append(role_note)
+        if role is not None:
+            blocked_filters.append("role")
 
     if route not in _PHASE_H_SCHEDULE_CONTEXT_ROUTES:
         back_to_back = routed.pop("back_to_back", False)
         rest_days = routed.pop("rest_days", None)
         one_possession = routed.pop("one_possession", False)
         nationally_televised = routed.pop("nationally_televised", False)
-        notes.extend(
-            build_game_context_filter_notes(
-                back_to_back=back_to_back,
-                rest_days=rest_days,
-                one_possession=one_possession,
-                nationally_televised=nationally_televised,
-            )
-        )
+        if back_to_back:
+            blocked_filters.append("back_to_back")
+        if rest_days is not None:
+            blocked_filters.append("rest_days")
+        if one_possession:
+            blocked_filters.append("one_possession")
+        if nationally_televised:
+            blocked_filters.append("nationally_televised")
 
-    return routed, notes
+    return routed, notes, blocked_filters
 
 
 def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, list[str]]:
@@ -415,8 +419,29 @@ def _execute_build_result(
 
     build_fn = _get_build_result_map()[route]
     sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
-    sanitized_kwargs, context_notes = _route_context_filters_for_execution(route, sanitized_kwargs)
+    sanitized_kwargs, context_notes, blocked_filters = _route_context_filters_for_execution(
+        route, sanitized_kwargs
+    )
     notes.extend(context_notes)
+
+    # If any parsed filter cannot be applied on this route, return an honest
+    # no-result rather than executing unfiltered and returning misleading data.
+    if blocked_filters:
+        primary = blocked_filters[0]
+        filter_list = ", ".join(blocked_filters)
+        note = (
+            f"{primary}: filter recognised but not applicable on this query type with current "
+            f"data; try removing the filter or using a query type that supports it "
+            f"(blocked: {filter_list})"
+        )
+        return NoResult(
+            query_class=route_to_query_class(route),
+            reason="filter_not_supported",
+            result_status="no_result",
+            result_reason="filter_not_supported",
+            notes=[note],
+        )
+
     result = build_fn(**sanitized_kwargs)
     result = _append_result_notes(result, notes)
 

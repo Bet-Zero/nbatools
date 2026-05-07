@@ -1112,7 +1112,15 @@ def _finalize_route(parsed: dict) -> dict:
             "head_to_head": head_to_head,
         }
     # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     # Record-oriented routing: team-vs-team matchup record
+    #
+    # Rule: two teams + any W/L-outcome keyword (record, win, lose, record,
+    # head-to-head, matchup) → team_matchup_record.
+    # Without a record-intent keyword the query is treated as a side-by-side
+    # stat comparison → team_compare.
+    # The ``record_intent`` flag (set by ``detect_record_intent``) is the
+    # canonical gate; do not add duplicate guards here.
     # ---------------------------------------------------------------------------
     elif team_a and team_b and record_intent:
         route = "team_matchup_record"
@@ -1134,6 +1142,7 @@ def _finalize_route(parsed: dict) -> dict:
             "max_value": max_value,
         }
     elif team_a and team_b:
+        # Two teams without a record-intent keyword → side-by-side stat comparison.
         route = "team_compare"
         route_kwargs = {
             "team_a": team_a,
@@ -1204,7 +1213,17 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         notes.append("default: top games ranked by " + (stat or "pts"))
-    elif "top team" in q or ("top" in q and "team games" in q):
+    elif (
+        "top team" in q
+        or ("top" in q and "team games" in q)
+        or re.search(
+            r"\b(highest.?scoring|best team perf|biggest team scor|top scoring team)",
+            q,
+        )
+    ):
+        # Expanded trigger: catches "highest-scoring team games", "best team
+        # performances", "biggest team scoring nights" in addition to the
+        # literal "top team" / "top ... team games" phrasings.
         route = "top_team_games"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
@@ -1463,6 +1482,8 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
         }
     elif team and record_intent and _multi_player_availability_boundary(q):
+        # Explicit "record" keyword present and a player availability boundary
+        # ("without", "w/o", "when X out") → team_record with without_player.
         route = "team_record"
         route_kwargs = {
             "team": team,
@@ -1516,9 +1537,16 @@ def _finalize_route(parsed: dict) -> dict:
             "min_value": min_value,
             "max_value": max_value,
             "last_n": last_n,
+            "career_intent": career_intent,
         }
     # ---------------------------------------------------------------------------
     # Record-oriented routing: single team record
+    #
+    # Rule: single team + (explicit record intent OR a without-player clause
+    # with no stat filter) → team_record.
+    # A "without" clause alone (e.g. "Lakers without LeBron record") qualifies
+    # only when the query has no stat threshold, so the result is a W/L record
+    # rather than a stat finder.
     # ---------------------------------------------------------------------------
     elif (
         team

@@ -225,6 +225,7 @@ def build_result(
     rest_days: str | int | None = None,
     one_possession: bool = False,
     nationally_televised: bool = False,
+    career_intent: bool = False,
     df: pd.DataFrame | None = None,
 ) -> SummaryResult | NoResult:
     seasons = resolve_seasons(season, start_season, end_season)
@@ -276,6 +277,17 @@ def build_result(
         if missing:
             raise ValueError(f"Missing required columns: {missing}")
 
+        # For career queries capture all seasons the player appeared in before
+        # applying secondary filters (opponent, home/away, etc.) so that
+        # by_season can be reindexed to include the full career arc even when
+        # some seasons have zero matching filtered games.
+        _player_arc_seasons: list[str] | None = None
+        if career_intent and player:
+            _pk = _player_name_key(player)
+            _player_arc_seasons = sorted(
+                df[df["player_name"].map(_player_name_key) == _pk]["season"].unique().tolist()
+            )
+
         df = _apply_filters(
             df=df,
             player=player,
@@ -300,6 +312,7 @@ def build_result(
         if without_player and not df.empty:
             df = filter_without_player(df, without_player, seasons, season_type, team=team)
     else:
+        _player_arc_seasons = None
         df = df.copy()
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
@@ -308,7 +321,13 @@ def build_result(
     if clutch:
         df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)
         if clutch_note:
-            notes.append(clutch_note)
+            # Data unavailable for this clutch filter — return an honest no-result
+            # rather than executing unfiltered and returning misleading data.
+            return NoResult(
+                query_class="summary",
+                reason="filter_not_supported",
+                notes=[clutch_note],
+            )
         else:
             clutch_executed = True
 
@@ -321,11 +340,22 @@ def build_result(
         one_possession=one_possession,
         nationally_televised=nationally_televised,
     )
-    notes.extend(schedule_notes)
+    if schedule_notes:
+        # Data unavailable for schedule-context filter — honest no-result.
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=list(schedule_notes),
+        )
 
     df, role_note = apply_player_role_filter(df, seasons, season_type, role)
     if role_note:
-        notes.append(role_note)
+        # Role data unavailable — honest no-result.
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=[role_note],
+        )
 
     if df.empty:
         return NoResult(query_class="summary", notes=notes)
@@ -413,6 +443,15 @@ def build_result(
 
     season_adv = compute_season_grouped_sample_advanced_metrics(context_df)
     by_season = by_season.merge(season_adv, on="season", how="left")
+
+    # Reindex by_season to cover the player's full career arc. Some seasons may
+    # have zero matching games after secondary filters (opponent, home/away,
+    # etc.) — they still need to appear so the frontend can render the full arc.
+    if _player_arc_seasons:
+        arc_index = pd.DataFrame({"season": _player_arc_seasons})
+        by_season = arc_index.merge(by_season, on="season", how="left")
+        num_cols = [c for c in by_season.columns if c != "season"]
+        by_season[num_cols] = by_season[num_cols].fillna(0)
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 

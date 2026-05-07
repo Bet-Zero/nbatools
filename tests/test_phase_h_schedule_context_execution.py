@@ -353,8 +353,11 @@ def test_schedule_context_filters_fall_back_when_dataset_missing(tmp_path, monke
         back_to_back=True,
     )
 
-    assert result.summary.iloc[0]["games"] == 3
-    assert any("back_to_back" in note and "unfiltered" in note for note in result.notes)
+    from nbatools.commands.structured_results import NoResult
+
+    assert isinstance(result, NoResult)
+    assert result.result_reason == "filter_not_supported"
+    assert result.result_status == "no_result"
 
 
 def test_national_tv_filter_falls_back_when_source_is_placeholder(tmp_path, monkeypatch):
@@ -367,19 +370,24 @@ def test_national_tv_filter_falls_back_when_source_is_placeholder(tmp_path, monk
         nationally_televised=True,
     )
 
-    assert result.summary.iloc[0]["games"] == 3
-    assert any("national_tv" in note and "unfiltered" in note for note in result.notes)
+    from nbatools.commands.structured_results import NoResult
+
+    assert isinstance(result, NoResult)
+    assert result.result_reason == "filter_not_supported"
+    assert result.result_status == "no_result"
 
 
 def test_supported_schedule_context_route_keeps_kwargs_without_transport_note():
-    routed, notes = _route_context_filters_for_execution(
+    routed, notes, blocked = _route_context_filters_for_execution(
         "team_record",
         {"team": "AAA", "back_to_back": True, "rest_days": 0},
     )
 
     assert routed["back_to_back"] is True
     assert routed["rest_days"] == 0
-    assert not any("schedule/context" in note or "unfiltered" in note for note in notes)
+    assert "back_to_back" not in blocked
+    assert "rest_days" not in blocked
+    assert blocked == []
 
 
 def test_parse_query_supported_schedule_context_route_has_no_unfiltered_note():

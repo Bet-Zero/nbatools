@@ -72,6 +72,10 @@ class ResultReason(StrEnum):
     UNROUTED = "unrouted"
     AMBIGUOUS = "ambiguous"
     UNSUPPORTED = "unsupported"
+    # A filter was parsed and recognised but cannot be applied with current data.
+    # Distinct from ``unsupported`` (query type not built) and ``no_data``
+    # (the underlying season data file is absent).
+    FILTER_NOT_SUPPORTED = "filter_not_supported"
     ERROR = "error"
 
 
@@ -189,6 +193,9 @@ class SummaryResult:
         }
         if self.by_season is not None and not self.by_season.empty:
             sections["BY_SEASON"] = self.by_season.to_csv(index=False).strip()
+        # Include game_log to match to_dict — resolves to_dict/to_sections_dict divergence.
+        if self.game_log is not None and not self.game_log.empty:
+            sections["GAME_LOG"] = self.game_log.to_csv(index=False).strip()
         if self.top_performers is not None and not self.top_performers.empty:
             sections["TOP_PERFORMERS"] = self.top_performers.to_csv(index=False).strip()
         return sections

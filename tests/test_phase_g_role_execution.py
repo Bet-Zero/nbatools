@@ -274,8 +274,11 @@ def test_summary_role_filter_falls_back_when_role_dataset_is_missing(tmp_path, m
         role="starter",
     )
 
-    assert result.summary.iloc[0]["games"] == 3
-    assert any("role" in note and "unfiltered" in note for note in result.notes)
+    from nbatools.commands.structured_results import NoResult
+
+    assert isinstance(result, NoResult)
+    assert result.result_reason == "filter_not_supported"
+    assert result.result_status == "no_result"
 
 
 def test_finder_role_filter_falls_back_when_coverage_is_untrusted(tmp_path, monkeypatch):
@@ -387,13 +390,14 @@ def test_pull_player_game_starter_roles_run_resumes_from_partial_cache(tmp_path,
 
 
 def test_supported_role_route_keeps_kwarg_without_transport_note():
-    routed, notes = _route_context_filters_for_execution(
+    routed, notes, blocked = _route_context_filters_for_execution(
         "player_game_finder",
         {"player": "Role Star", "role": "bench"},
     )
 
     assert routed["role"] == "bench"
-    assert not any("role" in note and "unfiltered" in note for note in notes)
+    assert "role" not in blocked
+    assert blocked == []
 
 
 def test_parse_query_supported_role_route_no_longer_appends_unfiltered_note():

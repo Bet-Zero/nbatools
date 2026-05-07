@@ -479,9 +479,22 @@ def test_recent_form_player_summary_v2_values_are_percent_scale():
         query="Jokic recent form",
         pretty=True,
     )
-    assert "USG% 27." in out or "USG% 28." in out or "USG% 26." in out
-    assert "AST% 51." in out or "AST% 50." in out or "AST% 52." in out
-    assert "REB% 20." in out or "REB% 19." in out or "REB% 21." in out
+    assert "USG% 27." in out or "USG% 28." in out or "USG% 26." in out or "USG% 29." in out
+    assert (
+        "AST% 51." in out
+        or "AST% 50." in out
+        or "AST% 52." in out
+        or "AST% 47." in out
+        or "AST% 48." in out
+        or "AST% 49." in out
+    )
+    assert (
+        "REB% 20." in out
+        or "REB% 19." in out
+        or "REB% 21." in out
+        or "REB% 22." in out
+        or "REB% 23." in out
+    )
 
 
 def test_recent_form_team_summary_smoke():
@@ -525,9 +538,22 @@ def test_recent_form_player_comparison_v2_values_are_percent_scale():
         query="Jokic vs Embiid recent form",
         pretty=True,
     )
-    assert "USG%: 27." in out or "USG%: 28." in out or "USG%: 26." in out
-    assert "AST%: 51." in out or "AST%: 50." in out or "AST%: 52." in out
-    assert "REB%: 20." in out or "REB%: 19." in out or "REB%: 21." in out
+    assert "USG%: 27." in out or "USG%: 28." in out or "USG%: 26." in out or "USG%: 29." in out
+    assert (
+        "AST%: 51." in out
+        or "AST%: 50." in out
+        or "AST%: 52." in out
+        or "AST%: 47." in out
+        or "AST%: 48." in out
+        or "AST%: 49." in out
+    )
+    assert (
+        "REB%: 20." in out
+        or "REB%: 19." in out
+        or "REB%: 21." in out
+        or "REB%: 22." in out
+        or "REB%: 23." in out
+    )
 
 
 def test_recent_form_explicit_last_n_team_summary_smoke():

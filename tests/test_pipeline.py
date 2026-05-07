@@ -524,6 +524,40 @@ class TestCLISurface:
         result = runner.invoke(app, ["refresh", "--dry-run"])
         assert result.exit_code == 0
         assert "current_season_refresh" in result.output
+        assert "Seasons processed: 2" in result.output
+
+    def test_refresh_dry_run_no_playoffs(self):
+        from typer.testing import CliRunner
+
+        from nbatools.cli_apps.pipeline import app
+
+        runner = CliRunner()
+        result = runner.invoke(app, ["refresh", "--no-playoffs", "--dry-run"])
+        assert result.exit_code == 0
+        assert "current_season_refresh" in result.output
+        assert "Seasons processed: 1" in result.output
+
+    @patch("nbatools.commands.pipeline.auto_refresh.run_auto_refresh")
+    def test_auto_refresh_defaults_include_playoffs(self, mock_run_auto_refresh):
+        from typer.testing import CliRunner
+
+        from nbatools.cli_apps.pipeline import app
+
+        runner = CliRunner()
+        result = runner.invoke(app, ["auto-refresh", "--interval", "60s"])
+        assert result.exit_code == 0
+        mock_run_auto_refresh.assert_called_once_with(60, include_playoffs=True)
+
+    @patch("nbatools.commands.pipeline.auto_refresh.run_auto_refresh")
+    def test_auto_refresh_no_playoffs(self, mock_run_auto_refresh):
+        from typer.testing import CliRunner
+
+        from nbatools.cli_apps.pipeline import app
+
+        runner = CliRunner()
+        result = runner.invoke(app, ["auto-refresh", "--interval", "60s", "--no-playoffs"])
+        assert result.exit_code == 0
+        mock_run_auto_refresh.assert_called_once_with(60, include_playoffs=False)
 
     def test_rebuild_dry_run(self):
         from typer.testing import CliRunner

@@ -267,7 +267,8 @@ class TestStructuredQueryExecution:
         assert qr.route == "player_game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["quarter"] == "4"
-        assert any("quarter" in note and "unfiltered" in note for note in qr.result.notes)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.result.result_status == "no_result"
 
     def test_structured_query_accepts_half_filter_with_unfiltered_note(self):
         qr = execute_structured_query(
@@ -279,7 +280,8 @@ class TestStructuredQueryExecution:
         assert qr.route == "game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["half"] == "first"
-        assert any("half" in note and "unfiltered" in note for note in qr.result.notes)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.result.result_status == "no_result"
 
     def test_structured_query_accepts_back_to_back_filter_with_unfiltered_note(self):
         qr = execute_structured_query(
@@ -291,7 +293,8 @@ class TestStructuredQueryExecution:
         assert qr.route == "game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["back_to_back"] is True
-        assert any("back_to_back" in note and "unfiltered" in note for note in qr.result.notes)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.result.result_status == "no_result"
 
     def test_structured_query_accepts_rest_filter_with_unfiltered_note(self):
         qr = execute_structured_query(
@@ -315,7 +318,8 @@ class TestStructuredQueryExecution:
         assert qr.route == "game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["one_possession"] is True
-        assert any("one_possession" in note and "unfiltered" in note for note in qr.result.notes)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.result.result_status == "no_result"
 
     def test_structured_query_accepts_national_tv_filter_with_unfiltered_note(self):
         qr = execute_structured_query(
@@ -327,7 +331,8 @@ class TestStructuredQueryExecution:
         assert qr.route == "game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["nationally_televised"] is True
-        assert any("national_tv" in note and "unfiltered" in note for note in qr.result.notes)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.result.result_status == "no_result"
 
     def test_structured_query_accepts_role_filter_in_metadata(self):
         qr = execute_structured_query(
