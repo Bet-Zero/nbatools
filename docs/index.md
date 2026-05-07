@@ -180,6 +180,8 @@ Point-in-time audit snapshots and historical records.
 ## Review Artifacts
 
 - `output_shapes.md` — exhaustive result-renderer shape taxonomy with current parser-example sweep counts
+- `query_intent_audit.md` — fine-grained query intent → answer shape audit: every distinct intent, its current route, current shape, available data, and gap notes
+- `determination_layer_audit.md` — per-shape field selection, tie-handling, qualifiers, truncation, and context disambiguation
 - `primitive_audit_report.md` — shared result-rendering primitive design-system compliance audit
 - `shape_cleanup_report.md` — follow-up renderer shape cleanup and team-context hero accent report
 
