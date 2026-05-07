@@ -166,7 +166,7 @@ class TestCountMetadata:
             {"occurrence_event": "triple_double"},
             {"player": "Nikola Jokić", "season": "2023-24", "season_type": "Regular Season"},
         )
-        assert "1 time" in phrase
+        assert "1 triple-double" in phrase
         assert "Nikola Jokić" in phrase
 
     def test_build_count_phrase_plural(self):
@@ -177,7 +177,7 @@ class TestCountMetadata:
             {"occurrence_event": "triple_double"},
             {"player": "Nikola Jokić", "season": "2023-24", "season_type": "Regular Season"},
         )
-        assert "47 times" in phrase
+        assert "47 triple-doubles" in phrase
         assert "Nikola Jokić" in phrase
 
     def test_build_count_phrase_season_range(self):
@@ -345,6 +345,22 @@ class TestAmbiguousRecovery:
             }
         )
         assert len(suggestions) <= 4
+
+    def test_entity_ambiguity_candidates_reach_response_metadata(self):
+        from nbatools.query_service import execute_natural_query
+
+        metadata = execute_natural_query("Brown last 10").to_dict()["metadata"]
+        candidates = metadata.get("candidates", [])
+        assert candidates
+        assert all("display_name" in candidate for candidate in candidates)
+
+    def test_fragment_suggestions_reach_response_metadata(self):
+        from nbatools.query_service import execute_natural_query
+
+        metadata = execute_natural_query("Jokic triple doubles").to_dict()["metadata"]
+        suggestions = metadata.get("suggested_queries", [])
+        assert suggestions
+        assert all("{" not in suggestion for suggestion in suggestions)
 
 
 # ---------------------------------------------------------------------------

@@ -306,7 +306,11 @@ class TestStructuredQueryExecution:
         assert qr.route == "player_game_summary"
         assert isinstance(qr.result, NoResult)
         assert qr.metadata["rest_days"] == "advantage"
-        assert any("rest" in note and "unfiltered" in note for note in qr.result.notes)
+        assert any(
+            "rest filter is not supported with current data" in note
+            and "try removing this filter" in note
+            for note in qr.result.notes
+        )
 
     def test_structured_query_accepts_one_possession_filter_with_unfiltered_note(self):
         qr = execute_structured_query(

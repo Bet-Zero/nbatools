@@ -292,7 +292,11 @@ def test_finder_role_filter_falls_back_when_coverage_is_untrusted(tmp_path, monk
     )
 
     assert list(result.games["game_id"]) == [3, 2, 1]
-    assert any("role" in note and "unfiltered" in note for note in result.notes)
+    assert any(
+        "role filter (bench) is not supported with current data" in note
+        and "try removing this filter" in note
+        for note in result.notes
+    )
 
 
 def test_build_starter_role_backfill_marks_trusted_rows(tmp_path, monkeypatch):

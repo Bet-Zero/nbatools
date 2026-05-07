@@ -30,6 +30,10 @@ def test_supported_period_routes_no_longer_append_parser_note():
     assert not any("quarter" in note and "unfiltered" in note for note in parsed.get("notes", []))
 
 
-def test_unsupported_period_route_still_appends_unfiltered_note():
+def test_unsupported_period_route_still_appends_not_supported_note():
     parsed = parse_query("most 4th quarter points this season")
-    assert any("quarter" in note and "unfiltered" in note for note in parsed.get("notes", []))
+    assert any(
+        "quarter filter is not supported with current data" in note
+        and "try removing this filter" in note
+        for note in parsed.get("notes", [])
+    )

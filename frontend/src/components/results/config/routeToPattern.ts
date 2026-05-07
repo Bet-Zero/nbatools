@@ -61,7 +61,7 @@ export type PatternConfig =
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
   switch (data.route ?? data.result?.metadata?.route) {
     case "player_game_summary":
-      return isLastNPlayerSummary(data)
+      return isLastNPlayerSummary(data) || isOpponentPlayerSummary(data)
         ? [
             { type: "entity_summary", sectionKey: "summary" },
             {
@@ -222,4 +222,21 @@ function isLastNPlayerSummary(data: QueryResponse): boolean {
 
   const query = `${data.query ?? ""} ${data.result?.metadata?.query_text ?? ""}`;
   return /\blast\s+\d+\s*(?:games?|gms?)?\b/i.test(query);
+}
+
+function isOpponentPlayerSummary(data: QueryResponse): boolean {
+  const rows = data.result?.sections?.game_log ?? [];
+  if (rows.length === 0) return false;
+  const metadata = data.result?.metadata;
+
+  if (metadata?.opponent_context) return true;
+
+  const filters = metadata?.applied_filters;
+  if (!Array.isArray(filters)) return false;
+
+  return filters.some((filter) => {
+    const kind = filter.kind.toLowerCase();
+    const label = filter.label.toLowerCase();
+    return kind === "team" && label.includes("opponent");
+  });
 }

@@ -9,6 +9,7 @@ from nbatools.commands.data_utils import (
     apply_player_clutch_filter,
     apply_player_role_filter,
     apply_schedule_context_filters,
+    build_clutch_filter_coverage_note,
     build_opponent_mask,
     build_schedule_context_filter_coverage_notes,
     describe_opponent_filter,
@@ -242,10 +243,7 @@ def build_result(
             df = load_player_games_for_seasons(seasons, season_type)
         except FileNotFoundError:
             if clutch:
-                notes.append(
-                    "clutch: trusted play-by-play-derived clutch coverage is unavailable "
-                    "for the requested slice (missing player game dataset); results are unfiltered"
-                )
+                notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
             notes.extend(
                 build_schedule_context_filter_coverage_notes(
                     back_to_back=back_to_back,

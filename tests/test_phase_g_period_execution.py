@@ -676,7 +676,11 @@ def test_player_finder_period_filter_falls_back_when_dataset_missing(tmp_path, m
     )
 
     assert list(result.games["pts"]) == [18, 24, 30]
-    assert any("quarter" in note and "unfiltered" in note for note in result.notes)
+    assert any(
+        "quarter filter is not supported with current data" in note
+        and "try removing this filter" in note
+        for note in result.notes
+    )
 
 
 def test_team_record_period_filter_uses_period_dataset_and_excludes_ties(tmp_path, monkeypatch):
@@ -713,7 +717,11 @@ def test_team_record_period_filter_falls_back_when_dataset_missing(tmp_path, mon
 
     row = result.summary.iloc[0]
     assert int(row["games"]) == 3
-    assert any("half" in note and "unfiltered" in note for note in result.notes)
+    assert any(
+        "half filter is not supported with current data" in note
+        and "try removing this filter" in note
+        for note in result.notes
+    )
 
 
 def test_load_player_period_stats_requires_all_requested_seasons(tmp_path, monkeypatch):

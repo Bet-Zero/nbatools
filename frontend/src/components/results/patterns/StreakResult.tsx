@@ -47,14 +47,14 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
 
-  const firstRow = rows[0];
-  const kind = entityKind(data, firstRow);
-  const entity = entityDisplay(kind, data.result?.metadata, firstRow);
+  const headlineRow = activeRow(rows) ?? rows[0];
+  const kind = entityKind(data, headlineRow);
+  const entity = entityDisplay(kind, data.result?.metadata, headlineRow);
 
   return (
     <section className={styles.pattern} aria-label="Streak result">
       <ResultHero
-        sentence={heroSentence(firstRow, entity.name)}
+        sentence={heroSentence(headlineRow, entity.name)}
         subjectIllustration={heroIdentity(kind, entity)}
         tone={kind === "team" ? "team" : "accent"}
         teamAccentAbbr={kind === "team" ? entity.teamAbbr : null}
@@ -68,6 +68,10 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
       <RawDetailToggle title="Full Streak Detail" rows={rows} highlight />
     </section>
   );
+}
+
+function activeRow(rows: SectionRow[]): SectionRow | null {
+  return rows.find((row) => statusText(row) === "Active") ?? null;
 }
 
 function tableColumns(
@@ -160,6 +164,12 @@ function tableColumns(
 }
 
 function heroSentence(row: SectionRow, entityName: string): ReactNode {
+  if (statusText(row) === "Active") {
+    return `${entityName} is on a ${gameCountForSentence(row)} streak of ${activeConditionPhrase(
+      row,
+    )}, ongoing.`;
+  }
+
   const condition = conditionLabel(row);
   const length = lengthValue(row);
   const status = statusText(row);
@@ -173,6 +183,61 @@ function heroSentence(row: SectionRow, entityName: string): ReactNode {
       {condition.toLowerCase()} streak{span ? ` from ${span}` : ""}.
     </>
   );
+}
+
+function gameCountForSentence(row: SectionRow): string {
+  const length = numericValue(row, "streak_length") ?? numericValue(row, "games");
+  if (length === null) return lengthValue(row);
+  return `${formatValue(length, "streak_length")}-game`;
+}
+
+function activeConditionPhrase(row: SectionRow): string {
+  const raw = textValue(row, "condition");
+  if (raw === "made_three") return "making at least one three";
+  if (raw === "triple_double") return "recording a triple-double";
+  if (raw === "wins") return "winning";
+  if (raw === "losses") return "losing";
+
+  const minimumMatch = raw?.match(/^([a-z0-9_]+)>=(\d+(?:\.\d+)?)$/i);
+  if (minimumMatch) {
+    const [, stat, value] = minimumMatch;
+    return `${conditionVerb(stat)} ${formatValue(Number(value), stat)}+ ${conditionNoun(
+      stat,
+    )}`;
+  }
+
+  const maximumMatch = raw?.match(/^([a-z0-9_]+)<=(\d+(?:\.\d+)?)$/i);
+  if (maximumMatch) {
+    const [, stat, value] = maximumMatch;
+    return `${conditionVerb(stat)} <= ${formatValue(Number(value), stat)} ${conditionNoun(
+      stat,
+    )}`;
+  }
+
+  return conditionLabel(row).toLowerCase();
+}
+
+function conditionVerb(stat: string): string {
+  const normalized = stat.toLowerCase();
+  if (normalized === "pts") return "scoring";
+  if (normalized === "reb") return "grabbing";
+  if (normalized === "ast") return "recording";
+  if (normalized === "fg3m") return "making";
+  return "recording";
+}
+
+function conditionNoun(stat: string): string {
+  const normalized = stat.toLowerCase();
+  const labels: Record<string, string> = {
+    ast: "assists",
+    blk: "blocks",
+    fg3m: "threes",
+    pts: "points",
+    reb: "rebounds",
+    stl: "steals",
+    tov: "turnovers",
+  };
+  return labels[normalized] ?? compactStatLabel(stat).toLowerCase();
 }
 
 function heroIdentity(

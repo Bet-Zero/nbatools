@@ -350,8 +350,8 @@ def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, li
 
     if route not in _SUPPORTED_OPPONENT_QUALITY_ROUTES:
         return sanitized, [
-            "opponent_quality: filter detected but opponent-quality filtering is unsupported "
-            "on this route; results are unfiltered"
+            "opponent_quality filter is not supported with current data; try removing "
+            "this filter or asking for standard player, team, or game stats."
         ]
 
     season = sanitized.get("season")
@@ -430,8 +430,8 @@ def _execute_build_result(
         primary = blocked_filters[0]
         filter_list = ", ".join(blocked_filters)
         note = (
-            f"{primary}: filter recognised but not applicable on this query type with current "
-            f"data; try removing the filter or using a query type that supports it "
+            f"{primary} filter is not supported with current data; try removing this filter "
+            f"or asking for standard player, team, or game stats "
             f"(blocked: {filter_list})"
         )
         return NoResult(

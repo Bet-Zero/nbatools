@@ -8,6 +8,7 @@ import { Stat } from "../../../design-system";
 import { formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
+import ResultHero from "../primitives/ResultHero";
 import ResultTable, {
   type ResultTableColumn,
   type ResultTableFooterRow,
@@ -102,9 +103,11 @@ export default function GameLogResult({
   const columns = tableColumns(rows, data, resolvedMode);
   const footerRows = summary ? tableFooters(rows, summary) : [];
   const items = summary ? summaryItems(summary) : contextItems(data, rows);
+  const countSentence = countHeadline(data.result?.metadata);
 
   return (
     <section className={styles.pattern} aria-label="Game log result">
+      {countSentence && <ResultHero sentence={countSentence} tone="neutral" />}
       {showSummaryStrip && items.length > 0 && (
         <div className={styles.summaryStrip} aria-label="Game-log averages">
           {items.map((item) => (
@@ -139,6 +142,12 @@ export default function GameLogResult({
       })}
     </section>
   );
+}
+
+function countHeadline(metadata: ResultMetadata | undefined): string | null {
+  if (typeof metadata?.primary_count !== "number") return null;
+  const phrase = metadata.count_phrase;
+  return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
 }
 
 function tableColumns(

@@ -431,7 +431,10 @@ def test_supported_quarter_route_no_longer_appends_parser_note():
 def test_unsupported_half_route_still_appends_parser_note():
     parsed = parse_query("Celtics first half stats")
     notes = parsed.get("notes", [])
-    assert any("half" in n and "unfiltered" in n for n in notes)
+    assert any(
+        "half filter is not supported with current data" in n and "try removing this filter" in n
+        for n in notes
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -487,7 +490,11 @@ def test_nationally_televised_surface_form_sets_flag():
 def test_back_to_back_note_appended():
     parsed = parse_query("Lakers on back-to-backs")
     notes = parsed.get("notes", [])
-    assert any("back_to_back" in n and "unfiltered" in n for n in notes)
+    assert any(
+        "back_to_back filter is not supported with current data" in n
+        and "try removing this filter" in n
+        for n in notes
+    )
 
 
 def test_supported_rest_route_no_parse_time_unfiltered_note():

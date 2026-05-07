@@ -475,4 +475,8 @@ def test_clutch_route_falls_back_unfiltered_when_coverage_missing(tmp_path, monk
     )
 
     assert len(result.games) == 2
-    assert any("clutch" in note and "unfiltered" in note for note in result.notes)
+    assert any(
+        "clutch filter is not supported with current data" in note
+        and "try removing this filter" in note
+        for note in result.notes
+    )

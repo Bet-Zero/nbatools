@@ -199,11 +199,14 @@ export default function LeaderboardResult({
   return (
     <section className={styles.pattern} aria-label="Leaderboard result">
       <ResultHero
-        sentence={heroSentence(firstRow, metric, data, {
-          sentenceMetricLabel,
-          valueSuffix,
-          verb,
-        })}
+        sentence={
+          countHeadline(data.result?.metadata) ??
+          heroSentence(firstRow, metric, data, {
+            sentenceMetricLabel,
+            valueSuffix,
+            verb,
+          })
+        }
         subjectIllustration={heroIdentity(firstRow)}
         disambiguationNote={disambiguationNote(data.result?.metadata)}
         tone={entityKind === "team" ? "team" : "accent"}
@@ -220,6 +223,12 @@ export default function LeaderboardResult({
       />
     </section>
   );
+}
+
+function countHeadline(metadata: ResultMetadata | undefined): string | null {
+  if (typeof metadata?.primary_count !== "number") return null;
+  const phrase = metadata.count_phrase;
+  return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
 }
 
 function tableColumns(

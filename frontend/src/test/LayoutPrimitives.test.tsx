@@ -407,4 +407,29 @@ describe("migrated result envelope", () => {
         "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
       );
   });
+
+  it("renders applied filters as envelope chips", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {
+          applied_filters: [
+            { label: "Opponent", value: "Lakers", kind: "team" },
+            { label: "pts min", value: "30.0001", kind: "threshold" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    expect(screen.getByText("Opponent")).toBeInTheDocument();
+    expect(screen.getByText("Lakers")).toBeInTheDocument();
+    expect(screen.getByText("Stat")).toBeInTheDocument();
+    expect(screen.getByText("30+ PTS")).toBeInTheDocument();
+  });
 });

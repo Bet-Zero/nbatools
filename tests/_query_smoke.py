@@ -27,7 +27,7 @@ class QuerySmokeCase:
     alternates: AlternateExpectation = "optional"
 
 
-CLUTCH_NOTE_SUBSTRINGS = ("clutch", "unfiltered")
+CLUTCH_NOTE_SUBSTRINGS = ("clutch filter is not supported", "try removing this filter")
 QUARTER_NOTE_SUBSTRINGS = ("quarter", "unfiltered")
 HALF_NOTE_SUBSTRINGS = ("half", "unfiltered")
 BACK_TO_BACK_NOTE_SUBSTRINGS = ("back_to_back", "unfiltered")

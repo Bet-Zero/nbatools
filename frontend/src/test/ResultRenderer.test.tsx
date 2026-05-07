@@ -252,6 +252,186 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders by-season breakdowns for multi-period entity summaries", () => {
+    const data = makeResponse({
+      query: "Jokic career vs Lakers",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic career vs Lakers",
+          route: "player_game_summary",
+          scope_kind: "career",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              games: 2,
+              pts_avg: 25.5,
+              reb_avg: 11,
+              ast_avg: 8,
+            },
+          ],
+          by_season: [
+            {
+              season: "2024-25",
+              games: 0,
+              pts_avg: 0,
+              reb_avg: 0,
+              ast_avg: 0,
+              fg_pct_avg: 0,
+            },
+            {
+              season: "2025-26",
+              games: 2,
+              pts_avg: 25.5,
+              reb_avg: 11,
+              ast_avg: 8,
+              fg_pct_avg: 0.545,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const table = screen.getByRole("table", { name: "Season breakdown" });
+    expect(table).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "PPG" }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "FG%" }),
+    ).toBeInTheDocument();
+
+    const rows = within(table).getAllByRole("row");
+    expect(within(rows[1]).getByText("2025-26")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("2024-25")).toBeInTheDocument();
+    expect(within(rows[2]).getAllByText("—").length).toBeGreaterThan(0);
+  });
+
+  it("keeps single-season entity summaries hero-only even when by_season exists", () => {
+    const data = makeResponse({
+      query: "Curry this season",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Curry this season",
+          route: "player_game_summary",
+          scope_kind: "single_season",
+          player_context: {
+            player_id: 201939,
+            player_name: "Stephen Curry",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ player_name: "Stephen Curry", pts_avg: 26.5 }],
+          by_season: [{ season: "2025-26", games: 60, pts_avg: 26.5 }],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.queryByRole("table", { name: "Season breakdown" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders opponent-scoped player summaries with the matchup game log", () => {
+    const data = makeResponse({
+      query: "Jokic vs Lakers this season",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic vs Lakers this season",
+          route: "player_game_summary",
+          scope_kind: "single_season",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+          opponent_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Los Angeles Lakers",
+          },
+          applied_filters: [
+            { label: "Opponent", value: "Lakers", kind: "team" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokic",
+              games: 2,
+              pts_avg: 28,
+              reb_avg: 12,
+              ast_avg: 9,
+            },
+          ],
+          game_log: [
+            {
+              game_id: 1,
+              game_date: "2026-01-02",
+              player_name: "Nikola Jokic",
+              team_abbr: "DEN",
+              opponent_team_abbr: "LAL",
+              is_home: 1,
+              wl: "W",
+              pts: 26,
+              reb: 11,
+              ast: 10,
+            },
+            {
+              game_id: 2,
+              game_date: "2026-03-01",
+              player_name: "Nikola Jokic",
+              team_abbr: "DEN",
+              opponent_team_abbr: "LAL",
+              is_away: 1,
+              wl: "L",
+              pts: 30,
+              reb: 13,
+              ast: 8,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const gameLog = screen.getByRole("table", { name: "Game log" });
+    expect(gameLog).toBeInTheDocument();
+    const rows = within(gameLog).getAllByRole("row");
+    expect(within(rows[1]).getByText("2026-03-01")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("2026-01-02")).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Game-log averages"),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders season leaderboards as a sentence hero and dense answer table", () => {
     const data = makeResponse({
       query: "most ppg in 2025 playoffs",
@@ -568,6 +748,76 @@ describe("ResultRenderer (substrate)", () => {
     ).toHaveLength(2);
   });
 
+  it("renders multi-season team record by-season tables in the body", () => {
+    const data = makeResponse({
+      query: "Lakers record since 2024",
+      route: "team_record",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Lakers record since 2024",
+          route: "team_record",
+          scope_kind: "season_range",
+          start_season: "2024-25",
+          end_season: "2025-26",
+          season_type: "Regular Season",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Los Angeles Lakers",
+              season_start: "2024-25",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              games: 164,
+              wins: 100,
+              losses: 64,
+              win_pct: 0.61,
+            },
+          ],
+          by_season: [
+            {
+              season: "2024-25",
+              games: 82,
+              wins: 47,
+              losses: 35,
+              win_pct: 0.573,
+              pts_avg: 113.4,
+            },
+            {
+              season: "2025-26",
+              games: 82,
+              wins: 53,
+              losses: 29,
+              win_pct: 0.646,
+              pts_avg: 116.3,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const table = screen.getByRole("table", { name: "Team record by season" });
+    expect(table).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "W-L" }),
+    ).toBeInTheDocument();
+    const rows = within(table).getAllByRole("row");
+    expect(within(rows[1]).getByText("2025-26")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("2024-25")).toBeInTheDocument();
+  });
+
   it("renders team records grouped by decade as a dedicated decade table", () => {
     const data = makeResponse({
       query: "Lakers by decade",
@@ -843,6 +1093,9 @@ describe("ResultRenderer (substrate)", () => {
           route: "team_occurrence_leaders",
           season: "2025-26",
           season_type: "Regular Season",
+          primary_count: 55,
+          count_phrase:
+            "The Nuggets had 55 games with at least 120 points this season.",
         },
         notes: [],
         caveats: [],
@@ -864,6 +1117,11 @@ describe("ResultRenderer (substrate)", () => {
 
     render(<ResultRenderer data={data} />);
 
+    expect(
+      screen.getByText(
+        "The Nuggets had 55 games with at least 120 points this season.",
+      ),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("table", { name: "Leaderboard" }),
     ).toBeInTheDocument();
@@ -1032,6 +1290,59 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.queryByLabelText("Player game cards"),
     ).not.toBeInTheDocument();
+  });
+
+  it("uses count_phrase as the primary finder headline when count metadata is present", () => {
+    const data = makeResponse({
+      query: "how many Jokic 30 point games this season",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {
+          query_text: "how many Jokic 30 point games this season",
+          route: "player_game_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "pts",
+          min_value: 30.0001,
+          primary_count: 2,
+          count_phrase:
+            "Nikola Jokic has had 2 games with at least 30 points this season.",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              game_id: 1,
+              game_date: "2026-03-22",
+              player_id: 203999,
+              player_name: "Nikola Jokic",
+              team_abbr: "DEN",
+              opponent_team_abbr: "POR",
+              is_home: 1,
+              wl: "W",
+              pts: 32,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Nikola Jokic has had 2 games with at least 30 points this season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
   });
 
   it("renders team game finder rows without a player column", () => {
@@ -1559,7 +1870,9 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(screen.getAllByText("6 games").length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Nikola Jokic's active 25\+ pts streak/),
+      screen.getByText(
+        "Nikola Jokic is on a 6-game streak of scoring 25+ points, ongoing.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
     expect(
@@ -1624,6 +1937,61 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "+/-" }),
     ).toBeInTheDocument();
     expect(screen.getByText("4-0")).toBeInTheDocument();
+  });
+
+  it("promotes an active streak row into the headline even when it is not first", () => {
+    const data = makeResponse({
+      query: "Curry made three streak",
+      route: "player_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: {
+          query_text: "Curry made three streak",
+          route: "player_streak_finder",
+          player_context: {
+            player_id: 201939,
+            player_name: "Stephen Curry",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              player_name: "Stephen Curry",
+              player_id: 201939,
+              condition: "made_three",
+              streak_length: 268,
+              games: 268,
+              is_active: false,
+              start_date: "2018-12-01",
+              end_date: "2023-12-17",
+            },
+            {
+              player_name: "Stephen Curry",
+              player_id: 201939,
+              condition: "made_three",
+              streak_length: 47,
+              games: 47,
+              is_active: true,
+              start_date: "2025-01-01",
+              end_date: "2026-04-12",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Stephen Curry is on a 47-game streak of making at least one three, ongoing.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
   });
 
   it("renders playoff history as a hero plus season table", () => {

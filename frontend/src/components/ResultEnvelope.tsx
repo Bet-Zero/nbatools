@@ -43,6 +43,8 @@ function reasonLabel(reason: string | null): string | null {
       return "ambiguous entity";
     case "unsupported":
       return "unsupported";
+    case "filter_not_supported":
+      return "filter not supported";
     case "error":
       return "error";
     default:
@@ -71,6 +73,7 @@ export default function ResultEnvelope({
 }: Props) {
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
+  const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
 
   // Build context chips from metadata
   const contextChips: {
@@ -186,8 +189,9 @@ export default function ResultEnvelope({
       }
       query={<>&ldquo;{data.query}&rdquo;</>}
       context={
-        contextChips.length > 0
-          ? contextChips.map((chip, i) => (
+        contextChips.length > 0 || appliedFilters.length > 0 ? (
+          <>
+            {contextChips.map((chip, i) => (
               <Badge
                 key={i}
                 className={styles.contextChip}
@@ -217,8 +221,20 @@ export default function ResultEnvelope({
                 <span className={styles.contextChipLabel}>{chip.label}</span>
                 {chip.value}
               </Badge>
-            ))
-          : null
+            ))}
+            {appliedFilters.map((filter) => (
+              <Badge
+                key={filter.key}
+                className={styles.contextChip}
+                variant="accent"
+                size="sm"
+              >
+                <span className={styles.contextChipLabel}>{filter.label}</span>
+                {filter.value}
+              </Badge>
+            ))}
+          </>
+        ) : null
       }
       notices={
         data.notes.length > 0 || data.caveats.length > 0 ? (
@@ -269,4 +285,107 @@ export default function ResultEnvelope({
       }
     />
   );
+}
+
+function appliedFilterLabels(
+  rawFilters: unknown,
+): Array<{ key: string; label: string; value: string }> {
+  if (!Array.isArray(rawFilters)) return [];
+
+  return rawFilters
+    .map((filter, index) => {
+      if (!filter || typeof filter !== "object") return null;
+      const row = filter as Record<string, unknown>;
+      const label = stringValue(row.label);
+      const value = stringValue(row.value);
+      const kind = stringValue(row.kind);
+      if (!label || !value) return null;
+
+      const display = formatAppliedFilter(label, value, kind);
+      return {
+        key: `${display.label}-${display.value}-${index}`,
+        label: display.label,
+        value: display.value,
+      };
+    })
+    .filter(
+      (filter): filter is { key: string; label: string; value: string } =>
+        filter !== null,
+    );
+}
+
+function formatAppliedFilter(
+  label: string,
+  value: string,
+  kind: string | null,
+): { label: string; value: string } {
+  if (kind === "threshold") {
+    const threshold = thresholdFilterValue(label, value);
+    if (threshold) return { label: "Stat", value: threshold };
+  }
+
+  const normalizedValue =
+    value.toLowerCase() === "true"
+      ? "Yes"
+      : value.toLowerCase() === "false"
+        ? "No"
+        : value;
+  return { label, value: normalizedValue };
+}
+
+function thresholdFilterValue(label: string, value: string): string | null {
+  const match = label.match(/^(.+)\s+(min|max)$/i);
+  if (!match) return null;
+
+  const [, stat, direction] = match;
+  const threshold = compactThresholdValue(value);
+  const suffix = statLabel(stat);
+  return direction.toLowerCase() === "min"
+    ? `${threshold}+ ${suffix}`
+    : `<= ${threshold} ${suffix}`;
+}
+
+function compactThresholdValue(value: string): string {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return value;
+  const rounded = Math.round(numeric);
+  if (Math.abs(numeric - rounded) < 0.001 || Math.abs(numeric - rounded - 0.0001) < 0.001) {
+    return String(rounded);
+  }
+  return Number(numeric.toFixed(1)).toString();
+}
+
+function statLabel(stat: string): string {
+  const normalized = stat.trim().toLowerCase();
+  const labels: Record<string, string> = {
+    ast: "AST",
+    ast_avg: "APG",
+    ast_per_game: "APG",
+    blk: "BLK",
+    blk_avg: "BPG",
+    blk_per_game: "BPG",
+    fg3m: "3PM",
+    pts: "PTS",
+    pts_avg: "PPG",
+    pts_per_game: "PPG",
+    reb: "REB",
+    reb_avg: "RPG",
+    reb_per_game: "RPG",
+    stl: "STL",
+    stl_avg: "SPG",
+    stl_per_game: "SPG",
+    tov: "TOV",
+  };
+  return labels[normalized] ?? normalized.replace(/_/g, " ").toUpperCase();
+}
+
+function stringValue(value: unknown): string | null {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return null;
 }

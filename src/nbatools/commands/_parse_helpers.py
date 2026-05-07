@@ -925,13 +925,13 @@ def build_period_filter_note(
     """
     if quarter is not None:
         return (
-            "quarter: filter detected but quarter/half splits are not yet available "
-            "in the current game-log data; results are unfiltered"
+            "quarter filter is not supported with current data; try removing this filter "
+            "or asking for full-game stats."
         )
     if half is not None:
         return (
-            "half: filter detected but quarter/half splits are not yet available "
-            "in the current game-log data; results are unfiltered"
+            "half filter is not supported with current data; try removing this filter "
+            "or asking for full-game stats."
         )
     return None
 
@@ -1137,23 +1137,23 @@ def build_game_context_filter_notes(
 
     if back_to_back:
         notes.append(
-            "back_to_back: filter detected but schedule/context feature tables are not yet "
-            "joined into the current query engine; results are unfiltered"
+            "back_to_back filter is not supported with current data; try removing this "
+            "filter or asking for games without schedule-context filters."
         )
     if rest_days is not None:
         notes.append(
-            "rest: filter detected but schedule/context feature tables are not yet joined "
-            "into the current query engine; results are unfiltered"
+            "rest filter is not supported with current data; try removing this filter "
+            "or asking for games without schedule-context filters."
         )
     if one_possession:
         notes.append(
-            "one_possession: filter detected but schedule/context feature tables are not yet "
-            "joined into the current query engine; results are unfiltered"
+            "one_possession filter is not supported with current data; try removing this "
+            "filter or asking for games without close-game filters."
         )
     if nationally_televised:
         notes.append(
-            "national_tv: filter detected but national-TV schedule metadata is not yet joined "
-            "into the current query engine; results are unfiltered"
+            "national_tv filter is not supported with current data; try removing this "
+            "filter or asking for games without national-TV filters."
         )
 
     return notes
@@ -1164,8 +1164,8 @@ def build_role_filter_note(role: str | None = None) -> str | None:
     if role is None:
         return None
     return (
-        f"role: {role} filter detected but starter/bench filtering is not yet wired into "
-        "the current query engine; results are unfiltered"
+        f"role filter ({role}) is not supported with current data; try removing this "
+        "filter or asking for player stats without starter/bench role filters."
     )
 
 

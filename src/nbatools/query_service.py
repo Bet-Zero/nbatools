@@ -488,24 +488,76 @@ def _merge_metadata_notes(metadata: dict[str, Any], result_notes: list[str]) -> 
 def _build_count_phrase(count: int, parsed: dict, metadata: dict) -> str:
     """Build a natural-language count phrase for count-intent queries (Pattern 3).
 
-    Example: "Nikola Jokić: 47 times (triple_double; 2023-24, Regular Season)"
+    Example: "Nikola Jokić has had 47 triple-doubles in the 2023-24 regular season."
     """
     player = metadata.get("player")
     team = metadata.get("team")
     entity = player or team or "Result"
-    occurrence = parsed.get("occurrence_event") or parsed.get("stat") or "game"
-    count_word = "1 time" if count == 1 else f"{count} times"
+    occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
+    count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
     season = metadata.get("season")
     start_s = metadata.get("start_season")
     end_s = metadata.get("end_season")
+    season_type = (metadata.get("season_type") or "Regular Season").lower()
     if season:
-        season_label = season
+        context = f"in the {season} {season_type}"
     elif start_s and end_s:
-        season_label = f"{start_s} \u2013 {end_s}"
+        context = f"from {start_s} to {end_s} in the {season_type}"
     else:
-        season_label = "career"
-    season_type = metadata.get("season_type") or "Regular Season"
-    return f"{entity}: {count_word} ({occurrence}; {season_label}, {season_type})"
+        context = f"in his {season_type} career" if player else f"all time in the {season_type}"
+    return f"{entity} has had {count} {count_noun} {context}."
+
+
+def _occurrence_label(occurrence: Any) -> str:
+    if isinstance(occurrence, dict):
+        special = occurrence.get("special_event")
+        if special == "triple_double":
+            return "triple-double"
+        if special == "double_double":
+            return "double-double"
+
+        stat = occurrence.get("stat")
+        min_value = occurrence.get("min_value")
+        max_value = occurrence.get("max_value")
+        if isinstance(stat, str):
+            stat_name = stat_phrase_label(stat)
+            if isinstance(min_value, (int, float)):
+                return f"games with {compact_number(min_value)}+ {stat_name}"
+            if isinstance(max_value, (int, float)):
+                return f"games with <= {compact_number(max_value)} {stat_name}"
+            return f"games with {stat_name}"
+
+    if isinstance(occurrence, str) and occurrence:
+        return occurrence.replace("_", "-")
+    return "game"
+
+
+def pluralize_occurrence(label: str) -> str:
+    if label.startswith("games with "):
+        return label
+    if label.endswith("s"):
+        return label
+    return f"{label}s"
+
+
+def stat_phrase_label(stat: str) -> str:
+    labels = {
+        "ast": "assists",
+        "blk": "blocks",
+        "fg3m": "threes",
+        "pts": "points",
+        "reb": "rebounds",
+        "stl": "steals",
+        "tov": "turnovers",
+    }
+    return labels.get(stat.lower(), stat.replace("_", " "))
+
+
+def compact_number(value: int | float) -> str:
+    numeric = float(value)
+    if numeric.is_integer():
+        return str(int(numeric))
+    return f"{numeric:g}"
 
 
 def _build_suggested_queries_for_fragment(parsed: dict) -> list[str]:
@@ -526,9 +578,14 @@ def _build_suggested_queries_for_fragment(parsed: dict) -> list[str]:
     if player:
         base = player
         if occurrence:
-            suggestions.append(f"how many {occurrence}s has {base} had {season}")
-            suggestions.append(f"{base} {occurrence} games {season}")
-            suggestions.append(f"most {occurrence}s this season leaderboard")
+            occurrence_label = _occurrence_label(occurrence)
+            suggestions.append(
+                f"how many {pluralize_occurrence(occurrence_label)} has {base} had {season}"
+            )
+            suggestions.append(f"{base} {occurrence_label} games {season}")
+            suggestions.append(
+                f"most {pluralize_occurrence(occurrence_label)} this season leaderboard"
+            )
         elif stat:
             suggestions.append(f"{base} {stat} summary {season}")
             suggestions.append(f"{base} games with high {stat} {season}")
@@ -768,10 +825,16 @@ def execute_natural_query(query: str) -> QueryResult:
                     }
                 )
             enriched_ambiguity["candidates"] = structured_candidates
+            if structured_candidates:
+                metadata["candidates"] = structured_candidates
         else:
             # Ambiguous fragment / intent — add suggested_queries so callers
             # can surface concrete alternatives.
-            enriched_ambiguity["suggested_queries"] = _build_suggested_queries_for_fragment(parsed)
+            suggested_queries = _build_suggested_queries_for_fragment(parsed)
+            enriched_ambiguity["suggested_queries"] = suggested_queries
+            if suggested_queries:
+                metadata["suggested_queries"] = suggested_queries
+        metadata["entity_ambiguity"] = enriched_ambiguity
 
         result = NoResult(
             query_class="unknown",

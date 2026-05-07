@@ -356,13 +356,13 @@ def build_period_filter_coverage_note(
 ) -> str | None:
     if quarter is not None:
         return (
-            "quarter: filter detected but trustworthy period-window coverage is unavailable "
-            "for the requested slice; results are unfiltered"
+            "quarter filter is not supported with current data; try removing this filter "
+            "or asking for full-game stats."
         )
     if half is not None:
         return (
-            "half: filter detected but trustworthy period-window coverage is unavailable "
-            "for the requested slice; results are unfiltered"
+            "half filter is not supported with current data; try removing this filter "
+            "or asking for full-game stats."
         )
     return None
 
@@ -1303,8 +1303,8 @@ def select_trusted_clutch_stats(df: pd.DataFrame) -> tuple[pd.DataFrame, list[st
 def build_clutch_filter_coverage_note(reason: str | None = None) -> str:
     detail = f" ({reason})" if reason else ""
     return (
-        "clutch: trusted play-by-play-derived clutch coverage is unavailable "
-        f"for the requested slice{detail}; results are unfiltered"
+        "clutch filter is not supported with current data; try removing this filter "
+        f"or asking for standard game-log stats{detail}."
     )
 
 
@@ -1428,23 +1428,23 @@ def build_schedule_context_filter_coverage_notes(
     notes: list[str] = []
     if back_to_back:
         notes.append(
-            "back_to_back: filter detected but trustworthy schedule-context coverage is "
-            "unavailable for the requested slice; results are unfiltered for this filter"
+            "back_to_back filter is not supported with current data; try removing this "
+            "filter or asking for games without schedule-context filters."
         )
     if rest_days is not None:
         notes.append(
-            "rest: filter detected but trustworthy schedule-context coverage is unavailable "
-            "for the requested slice; results are unfiltered for this filter"
+            "rest filter is not supported with current data; try removing this filter "
+            "or asking for games without schedule-context filters."
         )
     if one_possession:
         notes.append(
-            "one_possession: filter detected but trustworthy schedule-context coverage is "
-            "unavailable for the requested slice; results are unfiltered for this filter"
+            "one_possession filter is not supported with current data; try removing this "
+            "filter or asking for games without close-game filters."
         )
     if nationally_televised:
         notes.append(
-            "national_tv: filter detected but trustworthy national-TV coverage is unavailable "
-            "for the requested slice; results are unfiltered for this filter"
+            "national_tv filter is not supported with current data; try removing this "
+            "filter or asking for games without national-TV filters."
         )
     return notes
 
@@ -1596,8 +1596,8 @@ def build_role_filter_coverage_note(role: str | None = None) -> str | None:
     if role is None:
         return None
     return (
-        f"role: {role} filter detected but trustworthy starter-role coverage is unavailable "
-        "for the requested slice; results are unfiltered"
+        f"role filter ({role}) is not supported with current data; try removing this "
+        "filter or asking for player stats without starter/bench role filters."
     )
 
 

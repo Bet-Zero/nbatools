@@ -7,6 +7,9 @@ import type {
 import { formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
+import ResultTable, {
+  type ResultTableColumn,
+} from "../primitives/ResultTable";
 import styles from "./EntitySummaryResult.module.css";
 
 interface Props {
@@ -20,6 +23,8 @@ export default function EntitySummaryResult({
 }: Props) {
   const row = data.result?.sections?.[sectionKey]?.[0];
   if (!row) return null;
+  const bySeasonRows = sortedBySeasonRows(data.result?.sections?.by_season ?? []);
+  const showBySeason = shouldShowBySeason(data.result?.metadata, bySeasonRows);
 
   return (
     <section className={styles.pattern} aria-label="Player summary result">
@@ -29,8 +34,179 @@ export default function EntitySummaryResult({
         disambiguationNote={disambiguationNote(data.result?.metadata)}
         tone="accent"
       />
+      {showBySeason && (
+        <ResultTable
+          rows={bySeasonRows}
+          columns={bySeasonColumns(bySeasonRows)}
+          ariaLabel="Season breakdown"
+          getRowKey={bySeasonRowKey}
+        />
+      )}
     </section>
   );
+}
+
+const MULTI_PERIOD_SCOPES = new Set([
+  "career",
+  "season_range",
+  "all_time",
+  "decade",
+]);
+
+const BY_SEASON_LABELS: Record<string, string> = {
+  ast_avg: "APG",
+  ast_pct_avg: "AST%",
+  blk_avg: "BPG",
+  def_rating: "DRtg",
+  efg_pct_avg: "eFG%",
+  fg_pct_avg: "FG%",
+  fg3_pct_avg: "3P%",
+  ft_pct_avg: "FT%",
+  games: "GP",
+  games_played: "GP",
+  minutes_avg: "MPG",
+  net_rating: "Net",
+  off_rating: "ORtg",
+  plus_minus_avg: "+/-",
+  pts_avg: "PPG",
+  reb_avg: "RPG",
+  reb_pct_avg: "REB%",
+  stl_avg: "SPG",
+  tov_avg: "TOV",
+  tov_pct_avg: "TOV%",
+  ts_pct_avg: "TS%",
+  usg_pct_avg: "USG%",
+};
+
+const BY_SEASON_STAT_COLUMNS = [
+  "pts_avg",
+  "reb_avg",
+  "ast_avg",
+  "minutes_avg",
+  "fg_pct_avg",
+  "fg3_pct_avg",
+  "ft_pct_avg",
+  "ts_pct_avg",
+  "efg_pct_avg",
+  "usg_pct_avg",
+  "reb_pct_avg",
+  "ast_pct_avg",
+  "tov_pct_avg",
+  "stl_avg",
+  "blk_avg",
+  "tov_avg",
+  "plus_minus_avg",
+  "off_rating",
+  "def_rating",
+  "net_rating",
+];
+
+function shouldShowBySeason(
+  metadata: ResultMetadata | undefined,
+  rows: SectionRow[],
+): boolean {
+  return (
+    rows.length > 0 &&
+    typeof metadata?.scope_kind === "string" &&
+    MULTI_PERIOD_SCOPES.has(metadata.scope_kind)
+  );
+}
+
+function sortedBySeasonRows(rows: SectionRow[]): SectionRow[] {
+  return [...rows].sort((a, b) => {
+    const aSeason = textValue(a, "season") ?? textValue(a, "seasons") ?? "";
+    const bSeason = textValue(b, "season") ?? textValue(b, "seasons") ?? "";
+    return bSeason.localeCompare(aSeason);
+  });
+}
+
+function bySeasonColumns(
+  rows: SectionRow[],
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [
+    {
+      key: "season",
+      header: "Season",
+      render: (row) => mutedCell(row, textValue(row, "season") ?? "—"),
+    },
+  ];
+
+  const gamesKey = rows.some((row) => hasValue(row.games))
+    ? "games"
+    : rows.some((row) => hasValue(row.games_played))
+      ? "games_played"
+      : null;
+
+  if (gamesKey) {
+    columns.push({
+      key: gamesKey,
+      header: BY_SEASON_LABELS[gamesKey],
+      numeric: true,
+      render: (row) => mutedCell(row, formatValue(row[gamesKey], gamesKey)),
+    });
+  }
+
+  if (rows.some((row) => hasValue(row.wins) || hasValue(row.losses))) {
+    columns.push({
+      key: "record",
+      header: "W-L",
+      align: "center",
+      render: (row) => mutedCell(row, recordValue(row)),
+    });
+  }
+
+  for (const key of BY_SEASON_STAT_COLUMNS) {
+    if (!rows.some((row) => hasValue(row[key]))) continue;
+    columns.push({
+      key,
+      header: BY_SEASON_LABELS[key] ?? key,
+      numeric: true,
+      render: (row) => averageCell(row, key),
+    });
+  }
+
+  return columns;
+}
+
+function averageCell(row: SectionRow, key: string): ReactNode {
+  if (isZeroGameRow(row)) {
+    return <span className={styles.mutedCell}>—</span>;
+  }
+  return mutedCell(row, signedValue(row[key], key));
+}
+
+function mutedCell(row: SectionRow, value: ReactNode): ReactNode {
+  return isZeroGameRow(row) ? (
+    <span className={styles.mutedCell}>{value}</span>
+  ) : (
+    value
+  );
+}
+
+function isZeroGameRow(row: SectionRow): boolean {
+  const games = numericValue(row, "games") ?? numericValue(row, "games_played");
+  return games === 0;
+}
+
+function recordValue(row: SectionRow): string {
+  if (!hasValue(row.wins) && !hasValue(row.losses)) return "—";
+  return `${formatValue(row.wins, "wins")}-${formatValue(row.losses, "losses")}`;
+}
+
+function signedValue(value: unknown, key: string): string {
+  if (
+    typeof value === "number" &&
+    (key === "plus_minus_avg" || key === "net_rating") &&
+    Number.isFinite(value)
+  ) {
+    const formatted = formatValue(value, key);
+    return value > 0 ? `+${formatted}` : formatted;
+  }
+  return formatValue(value, key);
+}
+
+function bySeasonRowKey(row: SectionRow, index: number): string {
+  return `${textValue(row, "season") ?? "season"}-${index}`;
 }
 
 function summarySentence(
@@ -178,6 +354,11 @@ function metadataText(
 
 function identityId(value: unknown): number | string | null {
   return typeof value === "number" || typeof value === "string" ? value : null;
+}
+
+function numericValue(row: SectionRow, key: string): number | null {
+  const value = row[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function hasValue(value: unknown): boolean {

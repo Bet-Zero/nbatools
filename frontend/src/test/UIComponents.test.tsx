@@ -104,6 +104,51 @@ describe("NoResultDisplay", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows entity disambiguation candidates when provided", () => {
+    render(
+      <NoResultDisplay
+        reason="ambiguous"
+        status="no_result"
+        metadata={{
+          candidates: [
+            { display_name: "Jaylen Brown", team_abbr: "BOS" },
+            { display_name: "Bruce Brown", team_abbr: "NOP" },
+            { display_name: "Anthony Brown", team_abbr: null },
+          ],
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText("Disambiguation suggestions")).toHaveTextContent(
+      "Did you mean: Jaylen Brown (BOS), Bruce Brown (NOP), or Anthony Brown (free agent)?",
+    );
+  });
+
+  it("shows suggested query text for fragment ambiguity", () => {
+    render(
+      <NoResultDisplay
+        reason="ambiguous"
+        status="no_result"
+        metadata={{
+          suggested_queries: [
+            "how many triple doubles has Jokic had this season",
+            "list Jokic triple doubles this season",
+          ],
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "Try one of these:",
+    );
+    expect(
+      screen.getByText("how many triple doubles has Jokic had this season"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("list Jokic triple doubles this season"),
+    ).toBeInTheDocument();
+  });
+
   it("does not show suggestions for unsupported reason", () => {
     render(<NoResultDisplay reason="unsupported" status="no_result" />);
     expect(

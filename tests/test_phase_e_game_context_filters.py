@@ -37,6 +37,10 @@ def test_rest_days_count_propagates_to_route_kwargs():
     assert parsed["route_kwargs"]["rest_days"] == 2
 
 
-def test_game_context_filters_append_unfiltered_note():
+def test_game_context_filters_append_not_supported_note():
     parsed = parse_query("Lakers on back-to-backs")
-    assert any("back_to_back" in note and "unfiltered" in note for note in parsed.get("notes", []))
+    assert any(
+        "back_to_back filter is not supported with current data" in note
+        and "try removing this filter" in note
+        for note in parsed.get("notes", [])
+    )

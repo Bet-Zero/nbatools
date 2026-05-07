@@ -20,6 +20,7 @@ export type ResultReason =
   | "unrouted"
   | "ambiguous"
   | "unsupported"
+  | "filter_not_supported"
   | "error"
   | null;
 
@@ -77,6 +78,19 @@ export interface TeamIdentityContext {
   team_name: string;
 }
 
+export interface AppliedFilter {
+  label: string;
+  value: string;
+  kind: string;
+}
+
+export interface DisambiguationCandidate {
+  id?: number | string | null;
+  display_name?: string | null;
+  team_abbr?: string | null;
+  position?: string | null;
+}
+
 export interface ResultMetadata {
   query_text?: string;
   route?: string | null;
@@ -101,6 +115,12 @@ export interface ResultMetadata {
   grouped_boolean_used?: boolean;
   head_to_head_used?: boolean;
   current_through?: string | null;
+  scope_kind?: string | null;
+  applied_filters?: AppliedFilter[];
+  primary_count?: number | null;
+  count_phrase?: string | null;
+  candidates?: DisambiguationCandidate[];
+  suggested_queries?: string[];
   notes?: string[];
   [key: string]: unknown;
 }

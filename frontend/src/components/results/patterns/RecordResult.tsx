@@ -42,10 +42,42 @@ const TEAM_RECORD_STATS = [
   "season_type",
 ];
 
+const TEAM_RECORD_BY_SEASON_STATS = [
+  "win_pct",
+  "pts_avg",
+  "opponent_pts_avg",
+  "plus_minus_avg",
+  "net_rating",
+  "off_rating",
+  "def_rating",
+  "reb_avg",
+  "ast_avg",
+  "fg_pct_avg",
+  "fg3_pct_avg",
+  "ft_pct_avg",
+  "ts_pct_avg",
+  "efg_pct_avg",
+  "fg3m_avg",
+  "pace",
+  "season_type",
+];
+
+const MULTI_PERIOD_SCOPES = new Set([
+  "career",
+  "season_range",
+  "all_time",
+  "decade",
+]);
+
 const RECORD_LABELS: Record<string, string> = {
   ast_avg: "AST",
   decade: "Decade",
+  def_rating: "DRtg",
+  efg_pct_avg: "eFG%",
   fg3m_avg: "3PM",
+  fg3_pct_avg: "3P%",
+  fg_pct_avg: "FG%",
+  ft_pct_avg: "FT%",
   games: "Games",
   games_played: "Games",
   losses: "Losses",
@@ -57,6 +89,7 @@ const RECORD_LABELS: Record<string, string> = {
   season_type: "Type",
   seasons: "Seasons",
   seasons_appeared: "Seasons",
+  ts_pct_avg: "TS%",
   win_pct: "Win %",
   wins: "Wins",
 };
@@ -77,11 +110,13 @@ export default function RecordResult({ data, mode }: Props) {
 function TeamRecordResult({ data }: { data: QueryResponse }) {
   const sections = data.result?.sections ?? {};
   const summary = sections.summary ?? [];
+  const bySeasonRows = sortedBySeasonRows(sections.by_season ?? []);
   const row = summary[0];
   if (!row) return null;
 
   const team = teamDisplay(data.result?.metadata, row);
   const opponent = opponentDisplay(data.result?.metadata);
+  const showBySeason = shouldShowBySeason(data.result?.metadata, bySeasonRows);
 
   return (
     <section className={styles.pattern} aria-label="Team record result">
@@ -98,6 +133,17 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
         ariaLabel="Team record"
         getRowKey={(_summaryRow, index) => `${team.name}-${index}`}
       />
+      {showBySeason && (
+        <ResultTable
+          rows={bySeasonRows}
+          columns={teamRecordBySeasonColumns(bySeasonRows)}
+          highlightColumnKey="win_pct"
+          ariaLabel="Team record by season"
+          getRowKey={(seasonRow, index) =>
+            `${textValue(seasonRow, "season") ?? "season"}-${index}`
+          }
+        />
+      )}
       <RawDetailToggle title="Record Detail" rows={summary} />
       <RawDetailToggle
         title="By Season Detail"
@@ -241,6 +287,35 @@ function teamRecordColumns(
   return columns;
 }
 
+function teamRecordBySeasonColumns(
+  rows: SectionRow[],
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [valueColumn("season")];
+  const gamesColumn =
+    optionalValueColumn("games", rows) ?? optionalValueColumn("games_played", rows);
+  if (gamesColumn) {
+    columns.push(gamesColumn);
+  }
+
+  if (rows.some((row) => hasValue(row.wins) || hasValue(row.losses))) {
+    columns.push({
+      key: "record",
+      header: "W-L",
+      align: "center",
+      render: (row) => recordText(row) ?? "—",
+    });
+  }
+
+  for (const key of TEAM_RECORD_BY_SEASON_STATS) {
+    if (key === "games" || key === "games_played") continue;
+    if (rows.some((row) => hasValue(row[key]))) {
+      columns.push(valueColumn(key));
+    }
+  }
+
+  return columns;
+}
+
 function decadeRecordColumns(
   rows: SectionRow[],
 ): Array<ResultTableColumn<SectionRow>> {
@@ -329,6 +404,25 @@ function matchupColumns(
   }
 
   return columns;
+}
+
+function shouldShowBySeason(
+  metadata: ResultMetadata | undefined,
+  rows: SectionRow[],
+): boolean {
+  return (
+    rows.length > 0 &&
+    typeof metadata?.scope_kind === "string" &&
+    MULTI_PERIOD_SCOPES.has(metadata.scope_kind)
+  );
+}
+
+function sortedBySeasonRows(rows: SectionRow[]): SectionRow[] {
+  return [...rows].sort((a, b) => {
+    const aSeason = textValue(a, "season") ?? textValue(a, "seasons") ?? "";
+    const bSeason = textValue(b, "season") ?? textValue(b, "seasons") ?? "";
+    return bSeason.localeCompare(aSeason);
+  });
 }
 
 function valueColumn(

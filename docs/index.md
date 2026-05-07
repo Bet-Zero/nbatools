@@ -184,6 +184,7 @@ Point-in-time audit snapshots and historical records.
 - `determination_layer_audit.md` — per-shape field selection, tie-handling, qualifiers, truncation, and context disambiguation
 - `primitive_audit_report.md` — shared result-rendering primitive design-system compliance audit
 - `shape_cleanup_report.md` — follow-up renderer shape cleanup and team-context hero accent report
+- `frontend_apply_report.md` — frontend display pass report for query-intent audit backend patterns
 
 ## Verdicts
 

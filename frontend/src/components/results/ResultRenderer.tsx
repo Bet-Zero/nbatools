@@ -33,6 +33,7 @@ export default function ResultRenderer({ data }: Props) {
         <NoResultDisplay
           reason={data.result_reason}
           status={data.result_status}
+          metadata={data.result?.metadata}
           notes={data.notes}
           caveats={data.caveats}
         />
@@ -43,6 +44,7 @@ export default function ResultRenderer({ data }: Props) {
         <NoResultDisplay
           reason="empty_sections"
           status={data.result_status}
+          metadata={data.result?.metadata}
           notes={data.notes}
           caveats={data.caveats}
         />
@@ -61,6 +63,7 @@ export default function ResultRenderer({ data }: Props) {
         <NoResultDisplay
           reason={data.result_reason}
           status={data.result_status}
+          metadata={data.result?.metadata}
           notes={data.notes}
           caveats={data.caveats}
         />
@@ -70,6 +73,7 @@ export default function ResultRenderer({ data }: Props) {
       <NoResultDisplay
         reason="empty_sections"
         status={data.result_status}
+        metadata={data.result?.metadata}
         notes={data.notes}
         caveats={data.caveats}
       />
