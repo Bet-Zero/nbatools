@@ -1579,7 +1579,9 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.queryByRole("table", { name: "Game log" }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText("Top Player Games Detail")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Top Player Games Detail"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders top player triple-double games with a composite primary metric", () => {

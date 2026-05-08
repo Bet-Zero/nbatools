@@ -14,9 +14,7 @@ import {
 } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import styles from "./RollingStretchResult.module.css";
 
 interface Props {
@@ -361,8 +359,12 @@ function opponentCell(row: SectionRow): ReactNode {
       <EntityIdentity
         kind="team"
         teamId={identityId(row.opponent_team_id)}
-        teamAbbr={textValue(row, "opponent_team_abbr") ?? textValue(row, "opponent")}
-        teamName={textValue(row, "opponent_team_name") ?? textValue(row, "opponent")}
+        teamAbbr={
+          textValue(row, "opponent_team_abbr") ?? textValue(row, "opponent")
+        }
+        teamName={
+          textValue(row, "opponent_team_name") ?? textValue(row, "opponent")
+        }
         size="sm"
       />
     </span>
@@ -491,7 +493,10 @@ function supportingWindowKeys(
   ).slice(0, limit);
 }
 
-function gameLogHighlightKey(rows: SectionRow[], metric: string): string | undefined {
+function gameLogHighlightKey(
+  rows: SectionRow[],
+  metric: string,
+): string | undefined {
   return rows.some((row) => hasValue(row[metric])) ? metric : undefined;
 }
 
@@ -517,11 +522,7 @@ function stretchMetric(
   return "stretch_value";
 }
 
-function stretchValue(
-  row: SectionRow,
-  metric: string,
-  table = false,
-): string {
+function stretchValue(row: SectionRow, metric: string, table = false): string {
   const value = hasValue(row.stretch_value) ? row.stretch_value : row[metric];
   const formatted = hasValue(row.stretch_value)
     ? formatAverageValue(value, metric)
@@ -532,7 +533,9 @@ function stretchValue(
 }
 
 function metricPhrase(metric: string): string {
-  return STRETCH_PHRASES[metric] ?? `${tableLabel(metric).toLowerCase()} stretch`;
+  return (
+    STRETCH_PHRASES[metric] ?? `${tableLabel(metric).toLowerCase()} stretch`
+  );
 }
 
 function windowSize(
@@ -635,7 +638,9 @@ function windowRowKey(row: SectionRow, index: number): string {
 }
 
 function gameRowKey(row: SectionRow, index: number): string {
-  return [row.game_id, row.game_date, row.player_id, index].filter(hasValue).join("-");
+  return [row.game_id, row.game_date, row.player_id, index]
+    .filter(hasValue)
+    .join("-");
 }
 
 function textValue(row: SectionRow, key: string): string | null {
@@ -667,7 +672,11 @@ function metadataNumber(
   for (const key of keys) {
     const value = metadata?.[key];
     if (typeof value === "number" && Number.isFinite(value)) return value;
-    if (typeof value === "string" && value.trim() && Number.isFinite(Number(value))) {
+    if (
+      typeof value === "string" &&
+      value.trim() &&
+      Number.isFinite(Number(value))
+    ) {
       return Number(value);
     }
   }

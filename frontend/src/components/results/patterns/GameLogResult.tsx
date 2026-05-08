@@ -550,7 +550,9 @@ function formatStatValue(
       kind === "avg" ? formatAverageValue(value, key) : formatValue(value, key);
     return value > 0 ? `+${formatted}` : formatted;
   }
-  return kind === "avg" ? formatAverageValue(value, key) : formatValue(value, key);
+  return kind === "avg"
+    ? formatAverageValue(value, key)
+    : formatValue(value, key);
 }
 
 function summaryPrefix(key: string): string {
@@ -564,13 +566,7 @@ function numericValues(rows: SectionRow[], key: string): number[] {
 }
 
 function rowKey(row: SectionRow, index: number): string {
-  return [
-    row.game_id,
-    row.player_id,
-    row.team_id,
-    row.game_date,
-    index,
-  ]
+  return [row.game_id, row.player_id, row.team_id, row.game_date, index]
     .filter(hasValue)
     .join("-");
 }
@@ -685,7 +681,9 @@ function conditionText(metadata: ResultMetadata | undefined): string | null {
     }
   }
 
-  return conditions.length > 0 ? Array.from(new Set(conditions)).join(", ") : null;
+  return conditions.length > 0
+    ? Array.from(new Set(conditions)).join(", ")
+    : null;
 }
 
 function formatCondition(

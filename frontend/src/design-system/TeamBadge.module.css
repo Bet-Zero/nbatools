@@ -24,7 +24,8 @@
   justify-content: center;
   flex: 0 0 auto;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--team-secondary) 35%, var(--border-default));
+  border: 1px solid
+    color-mix(in srgb, var(--team-secondary) 35%, var(--border-default));
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--team-primary) 24%, var(--bg-input));
   color: var(--text-primary);

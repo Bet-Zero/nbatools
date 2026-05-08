@@ -13,9 +13,7 @@ import {
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import styles from "./ComparisonResult.module.css";
 
 type SubjectKind = "player" | "team";
@@ -170,12 +168,7 @@ function SubjectPanel({
   const stats = subjectStats(row);
 
   return (
-    <Card
-      as="article"
-      className={styles.subjectCard}
-      depth="card"
-      padding="sm"
-    >
+    <Card as="article" className={styles.subjectCard} depth="card" padding="sm">
       <div className={styles.subjectHeader}>
         {entityIdentity(entity)}
         <Badge variant="neutral" size="sm" uppercase>
@@ -394,7 +387,8 @@ function recordStat(row: SectionRow): StatChip | null {
       ]
         .filter(Boolean)
         .join(" / "),
-      semantic: wins > losses ? "success" : wins < losses ? "danger" : "neutral",
+      semantic:
+        wins > losses ? "success" : wins < losses ? "danger" : "neutral",
     };
   }
 
@@ -505,7 +499,10 @@ function subjectKind(data: QueryResponse): SubjectKind {
 
 function isHeadToHeadResult(data: QueryResponse): boolean {
   const route = data.route ?? data.result?.metadata?.route;
-  return route === "team_matchup_record" || data.result?.metadata?.head_to_head_used === true;
+  return (
+    route === "team_matchup_record" ||
+    data.result?.metadata?.head_to_head_used === true
+  );
 }
 
 function metricRowKey(row: SectionRow, index: number): string {
@@ -523,7 +520,9 @@ function metricLabel(metric: string): string {
 function edgeMetricLabel(metric: string): string {
   return (
     EDGE_LABEL_OVERRIDES[metric] ??
-    metricLabel(metric).replace(/\s+Avg$/i, "").replace(/\s+Total$/i, "")
+    metricLabel(metric)
+      .replace(/\s+Avg$/i, "")
+      .replace(/\s+Total$/i, "")
   );
 }
 
@@ -545,7 +544,9 @@ function leaderInfo(row: SectionRow, columns: string[]): LeaderInfo | null {
   const metric = metricKey(row);
   const values = columns
     .map((column) => ({ column, value: numericValue(row, column) }))
-    .filter((item): item is { column: string; value: number } => item.value !== null);
+    .filter(
+      (item): item is { column: string; value: number } => item.value !== null,
+    );
 
   if (values.length < 2) return null;
 

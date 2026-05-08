@@ -13,9 +13,7 @@ import {
 } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import styles from "./TopPerformancesResult.module.css";
 
 interface Props {
@@ -362,18 +360,16 @@ function heroSentence(
   subject: "player" | "team",
 ): string {
   const leader = subject === "team" ? teamLabel(row) : entityLabel(row);
-  const scope = scopePhrase(
-    row,
-    data.result?.metadata,
-    data.query,
-  );
+  const scope = scopePhrase(row, data.result?.metadata, data.query);
   return `The top ${metricPhrase(metric)}${
     scope ? ` ${scope}` : ""
   }: ${leader} with ${metricSentenceValue(row, metric)}.`;
 }
 
 function metricPhrase(metric: string): string {
-  return STAT_SENTENCE_LABELS[metric] ?? `${statLabel(metric).toLowerCase()} games`;
+  return (
+    STAT_SENTENCE_LABELS[metric] ?? `${statLabel(metric).toLowerCase()} games`
+  );
 }
 
 function metricSentenceValue(row: SectionRow, metric: string): string {
@@ -414,10 +410,7 @@ function scopePhrase(
   return "";
 }
 
-function heroIdentity(
-  row: SectionRow,
-  subject: "player" | "team",
-): ReactNode {
+function heroIdentity(row: SectionRow, subject: "player" | "team"): ReactNode {
   if (subject === "team") {
     return (
       <EntityIdentity
@@ -440,11 +433,7 @@ function heroIdentity(
 }
 
 function entityLabel(row: SectionRow): string {
-  return (
-    textValue(row, "player_name") ??
-    textValue(row, "player") ??
-    "Player"
-  );
+  return textValue(row, "player_name") ?? textValue(row, "player") ?? "Player";
 }
 
 function teamLabel(row: SectionRow): string {
@@ -483,7 +472,11 @@ function isTripleDoubleIntent(
   query: string,
 ): boolean {
   const occurrence = metadata?.occurrence_event;
-  if (occurrence && typeof occurrence === "object" && !Array.isArray(occurrence)) {
+  if (
+    occurrence &&
+    typeof occurrence === "object" &&
+    !Array.isArray(occurrence)
+  ) {
     const event = occurrence as Record<string, unknown>;
     if (event.special_event === "triple_double") return true;
   }
@@ -495,8 +488,7 @@ function isTripleDoubleIntent(
     Array.isArray(notes) &&
     notes.some(
       (note) =>
-        typeof note === "string" &&
-        note.includes("unsupported_boundary"),
+        typeof note === "string" && note.includes("unsupported_boundary"),
     );
   return (
     !unsupportedFallback &&
@@ -525,7 +517,14 @@ function rankValue(row: SectionRow, index: number): string {
 }
 
 function rowKey(row: SectionRow, index: number): string {
-  return [row.rank, row.game_id, row.player_id, row.team_id, row.game_date, index]
+  return [
+    row.rank,
+    row.game_id,
+    row.player_id,
+    row.team_id,
+    row.game_date,
+    index,
+  ]
     .filter(hasValue)
     .join("-");
 }

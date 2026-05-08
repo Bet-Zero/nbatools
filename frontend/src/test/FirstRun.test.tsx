@@ -261,13 +261,13 @@ describe("first-run starter queries", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
 
-    expect(container.querySelector("[data-app-state='loading']")).not.toBeNull();
+    expect(
+      container.querySelector("[data-app-state='loading']"),
+    ).not.toBeNull();
     expect(
       container.querySelector("[data-state-surface='loading']"),
     ).not.toBeNull();
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Searching NBA data",
-    );
+    expect(screen.getByRole("status")).toHaveTextContent("Searching NBA data");
     expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
 
     resolveQuery(makeResponse("Jokic last 10 games"));
@@ -312,9 +312,7 @@ describe("first-run starter queries", () => {
     expect(postStructuredQuery).toHaveBeenCalledWith("season_leaders", {
       stat: "pts",
     });
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Searching NBA data",
-    );
+    expect(screen.getByRole("status")).toHaveTextContent("Searching NBA data");
     expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
 
     resolveStructured(makeResponse("structured query"));
