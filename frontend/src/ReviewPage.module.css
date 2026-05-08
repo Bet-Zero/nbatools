@@ -77,9 +77,15 @@
 }
 
 .meta,
-.caseMeta {
+.caseMeta,
+.controlError {
   color: var(--text-secondary);
   font-size: 0.9rem;
+}
+
+.controlError {
+  flex-basis: 100%;
+  color: var(--danger);
 }
 
 .statusPanel,

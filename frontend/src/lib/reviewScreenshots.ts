@@ -1,6 +1,9 @@
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
 
+const TRANSPARENT_IMAGE_PLACEHOLDER =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
 export interface ReviewScreenshotTarget {
   element: HTMLElement;
   shapeName: string;
@@ -90,6 +93,8 @@ export async function downloadReviewScreenshots(
     const dataUrl = await toPng(target.element, {
       cacheBust: true,
       fontEmbedCSS: "",
+      imagePlaceholder: TRANSPARENT_IMAGE_PLACEHOLDER,
+      onImageErrorHandler: () => undefined,
       pixelRatio: 2,
     });
     const prefix = String(index + 1).padStart(prefixWidth, "0");

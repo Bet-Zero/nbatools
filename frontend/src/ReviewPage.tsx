@@ -48,6 +48,7 @@ export default function ReviewPage() {
   const [fixturesError, setFixturesError] = useState<string | null>(null);
   const [captureProgress, setCaptureProgress] =
     useState<ReviewScreenshotProgress | null>(null);
+  const [captureError, setCaptureError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -144,8 +145,11 @@ export default function ReviewPage() {
     if (targets.length === 0) return;
 
     setCaptureProgress({ current: 0, total: targets.length });
+    setCaptureError(null);
     try {
       await downloadReviewScreenshots(targets, setCaptureProgress);
+    } catch (error) {
+      setCaptureError(safeErrorMessage(error));
     } finally {
       setCaptureProgress(null);
     }
@@ -198,6 +202,11 @@ export default function ReviewPage() {
             <p className={styles.meta}>
               {sortedShapeGroups.length} shapes loaded
             </p>
+            {captureError && (
+              <p className={styles.controlError}>
+                Screenshot download failed: {captureError}
+              </p>
+            )}
           </div>
         )}
 

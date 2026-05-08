@@ -201,4 +201,33 @@ describe("ReviewPage", () => {
     const targets = vi.mocked(downloadReviewScreenshots).mock.calls[0]?.[0];
     expect(targets).toHaveLength(1);
   });
+
+  it("shows a capture error when screenshot generation fails", async () => {
+    vi.mocked(fetchDevFixtures).mockResolvedValue({
+      source_path: "docs/architecture/parser/examples.md",
+      fixtures: [{ case_id: "A", query: "First fixture" }],
+    });
+    vi.mocked(postQuery).mockResolvedValue(makeNoResult("First fixture"));
+    vi.mocked(downloadReviewScreenshots).mockRejectedValue(
+      new Error("Remote image failed"),
+    );
+
+    render(<ReviewPage />);
+
+    await waitFor(() =>
+      expect(screen.getByText("1 / 1 loaded")).toBeInTheDocument(),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Download all screenshots" }),
+    );
+
+    expect(
+      await screen.findByText(
+        "Screenshot download failed: Remote image failed",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Download all screenshots" }),
+    ).not.toBeDisabled();
+  });
 });
