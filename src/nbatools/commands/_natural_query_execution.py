@@ -368,8 +368,8 @@ def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, li
         notes.append(opponent_quality_note)
     if len(seasons) > 1:
         notes.append(
-            "opponent_quality: multi-season queries use the union of qualifying opponents "
-            "across selected seasons"
+            "Multi-season opponent-quality filters use the union of qualifying teams "
+            "across the selected seasons."
         )
 
     return sanitized, notes

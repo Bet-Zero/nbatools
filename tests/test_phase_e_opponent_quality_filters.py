@@ -51,7 +51,13 @@ def test_natural_query_filters_player_summary_against_contenders():
 
     assert actual_games == filtered_games
     assert actual_games < baseline_games
-    assert any("opponent_quality" in note for note in qr.result.notes)
+    assert not any("opponent_quality" in note for note in qr.result.notes)
+    quality_filters = [
+        f for f in qr.metadata.get("applied_filters", []) if f.get("kind") == "quality"
+    ]
+    assert quality_filters == [
+        {"label": "Opponent quality", "value": "contenders", "kind": "quality"}
+    ]
 
 
 @pytest.mark.needs_data
@@ -84,4 +90,10 @@ def test_natural_query_filters_team_record_against_top_ten_defenses():
     assert int(actual_row["wins"]) == int(expected_row["wins"])
     assert int(actual_row["losses"]) == int(expected_row["losses"])
     assert int(actual_row["games"]) < baseline_games
-    assert any("opponent_quality" in note for note in qr.result.notes)
+    assert not any("opponent_quality" in note for note in qr.result.notes)
+    quality_filters = [
+        f for f in qr.metadata.get("applied_filters", []) if f.get("kind") == "quality"
+    ]
+    assert quality_filters == [
+        {"label": "Opponent quality", "value": "top-10 defenses", "kind": "quality"}
+    ]

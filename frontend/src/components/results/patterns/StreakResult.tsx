@@ -12,6 +12,7 @@ import ResultHero from "../primitives/ResultHero";
 import ResultTable, {
   type ResultTableColumn,
 } from "../primitives/ResultTable";
+import { hasPinnedEntity } from "./entityBinding";
 import styles from "./StreakResult.module.css";
 
 type EntityKind = "player" | "team";
@@ -79,20 +80,14 @@ function tableColumns(
   data: QueryResponse,
   kind: EntityKind,
 ): Array<ResultTableColumn<SectionRow>> {
+  const hidePinnedPlayerColumn =
+    kind === "player" && hasPinnedEntity(data.result?.metadata, "player");
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "rank",
       header: "#",
       align: "center",
       render: (_row, index) => index + 1,
-    },
-    {
-      key: "entity",
-      header: kind === "team" ? "Team" : "Player",
-      render: (row) => {
-        const entity = entityDisplay(kind, data.result?.metadata, row);
-        return heroIdentity(kind, entity);
-      },
     },
     {
       key: "condition",
@@ -106,6 +101,17 @@ function tableColumns(
       render: lengthValue,
     },
   ];
+
+  if (!hidePinnedPlayerColumn) {
+    columns.splice(1, 0, {
+      key: "entity",
+      header: kind === "team" ? "Team" : "Player",
+      render: (row) => {
+        const entity = entityDisplay(kind, data.result?.metadata, row);
+        return heroIdentity(kind, entity);
+      },
+    });
+  }
 
   if (rows.some((row) => hasValue(row.is_active))) {
     columns.push({

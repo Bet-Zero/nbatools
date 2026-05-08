@@ -74,6 +74,7 @@ export default function ResultEnvelope({
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
   const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
+  const showNotes = data.result_status !== "no_result" && data.notes.length > 0;
 
   // Build context chips from metadata
   const contextChips: {
@@ -237,9 +238,9 @@ export default function ResultEnvelope({
         ) : null
       }
       notices={
-        data.notes.length > 0 || data.caveats.length > 0 ? (
+          showNotes || data.caveats.length > 0 ? (
           <>
-            {data.notes.length > 0 && (
+              {showNotes && (
               <div className={[styles.infoBlock, styles.notesBlock].join(" ")}>
                 <div className={styles.infoBlockLabel}>Notes</div>
                 <ul>
@@ -319,6 +320,10 @@ function formatAppliedFilter(
   value: string,
   kind: string | null,
 ): { label: string; value: string } {
+  if (kind === "quality") {
+    return { label: "VS", value: opponentQualityChipValue(value) };
+  }
+
   if (kind === "threshold") {
     const threshold = thresholdFilterValue(label, value);
     if (threshold) return { label: "Stat", value: threshold };
@@ -331,6 +336,20 @@ function formatAppliedFilter(
         ? "No"
         : value;
   return { label, value: normalizedValue };
+}
+
+function opponentQualityChipValue(value: string): string {
+  const normalized = value.trim().toLowerCase();
+  const labels: Record<string, string> = {
+    contenders: "CONTENDERS",
+    "good teams": "GOOD TEAMS",
+    "playoff teams": "PLAYOFF TEAMS",
+    "teams over .500": "WINNING TEAMS",
+    "top teams": "TOP TEAMS",
+    "top-10 defenses": "TOP-10 DEFENSES",
+    "winning teams": "WINNING TEAMS",
+  };
+  return labels[normalized] ?? normalized.toUpperCase();
 }
 
 function thresholdFilterValue(label: string, value: string): string | null {

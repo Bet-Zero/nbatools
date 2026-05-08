@@ -432,4 +432,53 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("Stat")).toBeInTheDocument();
     expect(screen.getByText("30+ PTS")).toBeInTheDocument();
   });
+
+  it("formats opponent-quality filters as VS chips", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          applied_filters: [
+            { label: "Opponent quality", value: "good teams", kind: "quality" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    expect(screen.getByText("VS")).toBeInTheDocument();
+    expect(screen.getByText("GOOD TEAMS")).toBeInTheDocument();
+    expect(screen.queryByText("Opponent quality")).not.toBeInTheDocument();
+  });
+
+  it("suppresses notes in the envelope for no-result outcomes", () => {
+    const data = makeResponse({
+      result_status: "no_result",
+      result_reason: "no_match",
+      notes: ["No games matched the specified filters"],
+      caveats: ["Recent games may not be loaded yet"],
+      result: {
+        query_class: "summary",
+        result_status: "no_result",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    expect(screen.queryByText("Notes")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No games matched the specified filters"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Caveats")).toBeInTheDocument();
+    expect(screen.getByText("Recent games may not be loaded yet")).toBeInTheDocument();
+  });
 });

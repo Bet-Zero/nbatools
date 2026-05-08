@@ -770,23 +770,11 @@ def detect_opponent_quality(text: str) -> dict | None:
 
 
 def build_opponent_quality_note(opponent_quality: dict | None = None) -> str | None:
-    if opponent_quality is None:
-        return None
-
-    surface_term = opponent_quality.get("surface_term", "opponent-quality bucket")
-    definition = opponent_quality.get("definition") or {}
-    metric = definition.get("metric")
-    value = definition.get("value")
-
-    if metric == "conference_rank":
-        return f"opponent_quality: {surface_term} -> conference rank <= {value}"
-    if metric == "win_pct":
-        return f"opponent_quality: {surface_term} -> win_pct {definition.get('operator')} {value}"
-    if metric == "def_rating_rank":
-        return f"opponent_quality: {surface_term} -> top {value} by defensive rating"
-    if metric == "off_rating_rank":
-        return f"opponent_quality: {surface_term} -> top {value} by offensive rating"
-    return f"opponent_quality: {surface_term}"
+    del opponent_quality
+    # Opponent-quality filters are represented as applied-filter chips in
+    # result metadata, so repeating them as notes only leaks implementation
+    # detail into the user-facing UI.
+    return None
 
 
 def detect_wins_losses(text: str) -> tuple[bool, bool]:

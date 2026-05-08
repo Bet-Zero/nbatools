@@ -225,6 +225,112 @@ def _add_identity_contexts(
         meta["opponent_context"] = opponent_context
 
 
+def _opponent_quality_surface_term(value: Any) -> str | None:
+    if isinstance(value, dict):
+        return _clean_text(value.get("surface_term"))
+    return _clean_text(value)
+
+
+def _build_applied_filters(
+    source: dict[str, Any],
+    *,
+    route_kwargs: dict[str, Any] | None = None,
+) -> list[dict[str, str]]:
+    route_kwargs = route_kwargs or {}
+    applied_filters: list[dict[str, str]] = []
+
+    if source.get("opponent"):
+        applied_filters.append({"label": "Opponent", "value": source["opponent"], "kind": "team"})
+    if source.get("without_player"):
+        applied_filters.append(
+            {"label": "Without player", "value": source["without_player"], "kind": "player"}
+        )
+    if source.get("home_only"):
+        applied_filters.append({"label": "Location", "value": "Home", "kind": "location"})
+    if source.get("away_only"):
+        applied_filters.append({"label": "Location", "value": "Away", "kind": "location"})
+    if source.get("wins_only"):
+        applied_filters.append({"label": "Outcome", "value": "Wins", "kind": "outcome"})
+    if source.get("losses_only"):
+        applied_filters.append({"label": "Outcome", "value": "Losses", "kind": "outcome"})
+    if source.get("clutch"):
+        applied_filters.append({"label": "Clutch", "value": "True", "kind": "situation"})
+    if source.get("back_to_back"):
+        applied_filters.append({"label": "Back-to-back", "value": "True", "kind": "schedule"})
+    if source.get("rest_days") is not None:
+        applied_filters.append(
+            {"label": "Rest days", "value": str(source["rest_days"]), "kind": "schedule"}
+        )
+    if source.get("one_possession"):
+        applied_filters.append(
+            {"label": "One-possession game", "value": "True", "kind": "situation"}
+        )
+    if source.get("nationally_televised"):
+        applied_filters.append(
+            {"label": "Nationally televised", "value": "True", "kind": "schedule"}
+        )
+    if source.get("role"):
+        applied_filters.append({"label": "Role", "value": source["role"], "kind": "role"})
+    if source.get("quarter") is not None:
+        applied_filters.append(
+            {"label": "Quarter", "value": str(source["quarter"]), "kind": "period"}
+        )
+    if source.get("half") is not None:
+        applied_filters.append({"label": "Half", "value": str(source["half"]), "kind": "period"})
+    if source.get("position_filter"):
+        applied_filters.append(
+            {"label": "Position", "value": source["position_filter"], "kind": "position"}
+        )
+    opponent_quality_value = _opponent_quality_surface_term(source.get("opponent_quality"))
+    if opponent_quality_value:
+        applied_filters.append(
+            {
+                "label": "Opponent quality",
+                "value": opponent_quality_value,
+                "kind": "quality",
+            }
+        )
+
+    stat = source.get("stat") or route_kwargs.get("stat")
+    min_value = (
+        source.get("min_value")
+        if source.get("min_value") is not None
+        else route_kwargs.get("min_value")
+    )
+    max_value = (
+        source.get("max_value")
+        if source.get("max_value") is not None
+        else route_kwargs.get("max_value")
+    )
+    if stat and min_value is not None:
+        applied_filters.append(
+            {"label": f"{stat} min", "value": str(min_value), "kind": "threshold"}
+        )
+    if stat and max_value is not None:
+        applied_filters.append(
+            {"label": f"{stat} max", "value": str(max_value), "kind": "threshold"}
+        )
+    if source.get("start_season") and source.get("end_season"):
+        applied_filters.append(
+            {
+                "label": "Season range",
+                "value": f"{source['start_season']} – {source['end_season']}",
+                "kind": "season",
+            }
+        )
+    if source.get("start_date") or source.get("end_date"):
+        date_value = " – ".join(filter(None, [source.get("start_date"), source.get("end_date")]))
+        applied_filters.append({"label": "Date range", "value": date_value, "kind": "date"})
+
+    last_n = source.get("last_n")
+    if last_n is None:
+        last_n = route_kwargs.get("last_n")
+    if last_n is not None:
+        applied_filters.append({"label": "Last N games", "value": str(last_n), "kind": "window"})
+
+    return applied_filters
+
+
 def _build_query_metadata(
     parsed: dict,
     query: str,
@@ -360,91 +466,7 @@ def _build_query_metadata(
     meta["scope_kind"] = scope_kind
 
     # ---- Pattern 2: applied_filters — structured list of active filters ----
-    applied_filters: list[dict[str, str]] = []
-    if parsed.get("opponent"):
-        applied_filters.append({"label": "Opponent", "value": parsed["opponent"], "kind": "team"})
-    if parsed.get("without_player"):
-        applied_filters.append(
-            {"label": "Without player", "value": parsed["without_player"], "kind": "player"}
-        )
-    if parsed.get("home_only"):
-        applied_filters.append({"label": "Location", "value": "Home", "kind": "location"})
-    if parsed.get("away_only"):
-        applied_filters.append({"label": "Location", "value": "Away", "kind": "location"})
-    if parsed.get("wins_only"):
-        applied_filters.append({"label": "Outcome", "value": "Wins", "kind": "outcome"})
-    if parsed.get("losses_only"):
-        applied_filters.append({"label": "Outcome", "value": "Losses", "kind": "outcome"})
-    if parsed.get("clutch"):
-        applied_filters.append({"label": "Clutch", "value": "True", "kind": "situation"})
-    if parsed.get("back_to_back"):
-        applied_filters.append({"label": "Back-to-back", "value": "True", "kind": "schedule"})
-    if parsed.get("rest_days") is not None:
-        applied_filters.append(
-            {"label": "Rest days", "value": str(parsed["rest_days"]), "kind": "schedule"}
-        )
-    if parsed.get("one_possession"):
-        applied_filters.append(
-            {"label": "One-possession game", "value": "True", "kind": "situation"}
-        )
-    if parsed.get("nationally_televised"):
-        applied_filters.append(
-            {"label": "Nationally televised", "value": "True", "kind": "schedule"}
-        )
-    if parsed.get("role"):
-        applied_filters.append({"label": "Role", "value": parsed["role"], "kind": "role"})
-    if parsed.get("quarter") is not None:
-        applied_filters.append(
-            {"label": "Quarter", "value": str(parsed["quarter"]), "kind": "period"}
-        )
-    if parsed.get("half") is not None:
-        applied_filters.append({"label": "Half", "value": str(parsed["half"]), "kind": "period"})
-    if parsed.get("position_filter"):
-        applied_filters.append(
-            {"label": "Position", "value": parsed["position_filter"], "kind": "position"}
-        )
-    if parsed.get("opponent_quality"):
-        applied_filters.append(
-            {
-                "label": "Opponent quality",
-                "value": parsed["opponent_quality"],
-                "kind": "quality",
-            }
-        )
-    stat = parsed.get("stat") or route_kwargs.get("stat")
-    min_value = (
-        parsed.get("min_value")
-        if parsed.get("min_value") is not None
-        else route_kwargs.get("min_value")
-    )
-    max_value = (
-        parsed.get("max_value")
-        if parsed.get("max_value") is not None
-        else route_kwargs.get("max_value")
-    )
-    if stat and min_value is not None:
-        applied_filters.append(
-            {"label": f"{stat} min", "value": str(min_value), "kind": "threshold"}
-        )
-    if stat and max_value is not None:
-        applied_filters.append(
-            {"label": f"{stat} max", "value": str(max_value), "kind": "threshold"}
-        )
-    if start_season and end_season:
-        applied_filters.append(
-            {
-                "label": "Season range",
-                "value": f"{start_season} – {end_season}",
-                "kind": "season",
-            }
-        )
-    if parsed.get("start_date") or parsed.get("end_date"):
-        date_value = " – ".join(filter(None, [parsed.get("start_date"), parsed.get("end_date")]))
-        applied_filters.append({"label": "Date range", "value": date_value, "kind": "date"})
-    if route_kwargs.get("last_n") is not None:
-        applied_filters.append(
-            {"label": "Last N games", "value": str(route_kwargs["last_n"]), "kind": "window"}
-        )
+    applied_filters = _build_applied_filters(parsed, route_kwargs=route_kwargs)
     if applied_filters:
         meta["applied_filters"] = applied_filters
 
@@ -1151,6 +1173,10 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     }
     if current_through is not None:
         metadata["current_through"] = current_through
+
+    applied_filters = _build_applied_filters(kwargs)
+    if applied_filters:
+        metadata["applied_filters"] = applied_filters
 
     player_values = [value for value in [player_a, player_b] if value]
     if not player_values and player:

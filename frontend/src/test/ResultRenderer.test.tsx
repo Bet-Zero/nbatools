@@ -1378,12 +1378,12 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Player" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("columnheader", { name: "Player" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
+    expect(screen.getByText("Mar 22")).toBeInTheDocument();
     expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
     expect(
       screen.queryByLabelText("Player game cards"),
@@ -2054,6 +2054,9 @@ describe("ResultRenderer (substrate)", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Streaks" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Player" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "TS%" }),
     ).toBeInTheDocument();

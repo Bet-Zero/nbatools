@@ -149,6 +149,17 @@ class TestAppliedFilters:
         assert "2018-19" in range_filters[0]["value"]
         assert "2022-23" in range_filters[0]["value"]
 
+    def test_opponent_quality_filter_uses_surface_term(self):
+        from nbatools.query_service import _build_query_metadata
+
+        parsed = parse_query("How has Jayson Tatum played against good teams")
+        meta = _build_query_metadata(parsed, "How has Jayson Tatum played against good teams")
+        filters = meta.get("applied_filters", [])
+        quality_filters = [f for f in filters if f["kind"] == "quality"]
+        assert quality_filters, "Opponent-quality applied_filter expected"
+        assert quality_filters[0]["label"] == "Opponent quality"
+        assert quality_filters[0]["value"] == "good teams"
+
 
 # ---------------------------------------------------------------------------
 # Pattern 3 — primary_count and count_phrase

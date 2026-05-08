@@ -17,6 +17,7 @@ import ResultTable, {
   type ResultTableColumn,
   type ResultTableFooterRow,
 } from "../primitives/ResultTable";
+import { hasPinnedEntity } from "./entityBinding";
 import styles from "./GameLogResult.module.css";
 
 type GameLogMode = "auto" | "player" | "team";
@@ -165,6 +166,8 @@ function tableColumns(
   data: QueryResponse,
   mode: Exclude<GameLogMode, "auto">,
 ): Array<ResultTableColumn<SectionRow>> {
+  const hidePinnedPlayerColumn =
+    mode === "player" && hasPinnedEntity(data.result?.metadata, "player");
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "rank",
@@ -175,12 +178,14 @@ function tableColumns(
   ];
 
   if (mode === "player") {
-    columns.push(
-      {
+    if (!hidePinnedPlayerColumn) {
+      columns.push({
         key: "player",
         header: "Player",
         render: playerCell,
-      },
+      });
+    }
+    columns.push(
       {
         key: "date",
         header: TABLE_LABELS.date,
