@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import { fetchDevFixtures, postQuery } from "./api/client";
 import type { DevFixture, QueryResponse } from "./api/types";
 import ResultEnvelope from "./components/ResultEnvelope";
@@ -8,6 +8,11 @@ import {
   resultShapeOrderIndex,
   type ResultShapeKey,
 } from "./components/results/resultShapes";
+import { Button } from "./design-system";
+import {
+  downloadReviewScreenshots,
+  type ReviewScreenshotProgress,
+} from "./lib/reviewScreenshots";
 import styles from "./ReviewPage.module.css";
 
 interface ReviewResultState {
@@ -30,6 +35,7 @@ function safeErrorMessage(err: unknown): string {
 }
 
 export default function ReviewPage() {
+  const captureTargetsRef = useRef(new Map<ResultShapeKey, HTMLElement>());
   const [fixtures, setFixtures] = useState<DevFixture[]>([]);
   const [sourcePath, setSourcePath] = useState<string | null>(null);
   const [results, setResults] = useState<Record<number, ReviewResultState>>({});
@@ -40,6 +46,8 @@ export default function ReviewPage() {
   >({});
   const [fixturesLoading, setFixturesLoading] = useState(true);
   const [fixturesError, setFixturesError] = useState<string | null>(null);
+  const [captureProgress, setCaptureProgress] =
+    useState<ReviewScreenshotProgress | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -118,6 +126,30 @@ export default function ReviewPage() {
     ([left], [right]) =>
       resultShapeOrderIndex(left) - resultShapeOrderIndex(right),
   );
+  const isCapturing = captureProgress !== null;
+  const screenshotsReady = sortedShapeGroups.length > 0;
+  const screenshotButtonLabel = captureProgress
+    ? `Capturing ${captureProgress.current}/${captureProgress.total}...`
+    : "Download all screenshots";
+
+  async function handleDownloadScreenshots() {
+    if (isCapturing) return;
+
+    const targets = sortedShapeGroups.flatMap(([shapeKey, entries]) => {
+      const element = captureTargetsRef.current.get(shapeKey);
+      const firstEntry = entries[0];
+      if (!element || !firstEntry) return [];
+      return [{ element, shapeName: firstEntry.shape.name }];
+    });
+    if (targets.length === 0) return;
+
+    setCaptureProgress({ current: 0, total: targets.length });
+    try {
+      await downloadReviewScreenshots(targets, setCaptureProgress);
+    } finally {
+      setCaptureProgress(null);
+    }
+  }
 
   return (
     <main className={styles.page}>
@@ -141,16 +173,28 @@ export default function ReviewPage() {
 
         {!fixturesLoading && !fixturesError && (
           <div className={styles.controls}>
-            <label className={styles.toggle}>
-              <input
-                type="checkbox"
-                checked={showOneExamplePerShape}
-                onChange={(event) =>
-                  setShowOneExamplePerShape(event.target.checked)
-                }
-              />
-              <span>Show one example per shape</span>
-            </label>
+            <div className={styles.controlGroup}>
+              <label className={styles.toggle}>
+                <input
+                  type="checkbox"
+                  checked={showOneExamplePerShape}
+                  onChange={(event) =>
+                    setShowOneExamplePerShape(event.target.checked)
+                  }
+                />
+                <span>Show one example per shape</span>
+              </label>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                loading={isCapturing}
+                disabled={!screenshotsReady}
+                onClick={handleDownloadScreenshots}
+              >
+                {screenshotButtonLabel}
+              </Button>
+            </div>
             <p className={styles.meta}>
               {sortedShapeGroups.length} shapes loaded
             </p>
@@ -193,7 +237,11 @@ export default function ReviewPage() {
             : entries;
 
           return (
-            <section key={shapeKey} className={styles.group}>
+            <section
+              key={shapeKey}
+              className={styles.group}
+              data-review-visible-shape={shapeKey}
+            >
               <h2 className={styles.groupHeading}>
                 <button
                   type="button"
@@ -243,6 +291,54 @@ export default function ReviewPage() {
             </section>
           );
         })}
+
+        <div className={styles.captureStage} aria-hidden="true">
+          {sortedShapeGroups.map(([shapeKey, entries]) => {
+            const entry = entries[0];
+            if (!entry) return null;
+
+            return (
+              <section
+                key={shapeKey}
+                ref={(node) => {
+                  if (node) {
+                    captureTargetsRef.current.set(shapeKey, node);
+                  } else {
+                    captureTargetsRef.current.delete(shapeKey);
+                  }
+                }}
+                className={styles.group}
+                data-review-capture-shape={shapeKey}
+              >
+                <h2 className={styles.groupHeading}>
+                  <span className={styles.captureHeading}>
+                    <span className={styles.groupTitle}>
+                      {entry.shape.name}
+                    </span>
+                    <span className={styles.groupCount}>
+                      {entries.length} fixture{entries.length === 1 ? "" : "s"}
+                    </span>
+                  </span>
+                </h2>
+
+                <p className={styles.groupDescription}>
+                  {entry.shape.description}
+                </p>
+
+                <div className={styles.groupBody}>
+                  <article className={styles.block}>
+                    <h3 className={styles.queryTitle}>{entry.fixture.query}</h3>
+                    <p className={styles.caseMeta}>Fixture {entry.index + 1}</p>
+                    <ResultEnvelope data={entry.result} />
+                    <div className={styles.resultSections}>
+                      <ResultRenderer data={entry.result} />
+                    </div>
+                  </article>
+                </div>
+              </section>
+            );
+          })}
+        </div>
       </div>
     </main>
   );

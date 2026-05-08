@@ -7,8 +7,13 @@ vi.mock("../api/client", () => ({
   postQuery: vi.fn(),
 }));
 
+vi.mock("../lib/reviewScreenshots", () => ({
+  downloadReviewScreenshots: vi.fn(),
+}));
+
 import ReviewPage from "../ReviewPage";
 import { fetchDevFixtures, postQuery } from "../api/client";
+import { downloadReviewScreenshots } from "../lib/reviewScreenshots";
 
 function deferred<T>() {
   let resolve: (value: T) => void = () => {};
@@ -47,6 +52,7 @@ function makeNoResult(query: string): QueryResponse {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(downloadReviewScreenshots).mockResolvedValue();
 });
 
 describe("ReviewPage", () => {
@@ -108,5 +114,91 @@ describe("ReviewPage", () => {
     expect(
       screen.getByRole("heading", { name: "Second fixture", level: 3 }),
     ).toBeInTheDocument();
+  });
+
+  it("renders the screenshot download button", async () => {
+    vi.mocked(fetchDevFixtures).mockResolvedValue({
+      source_path: "docs/architecture/parser/examples.md",
+      fixtures: [{ case_id: "A", query: "First fixture" }],
+    });
+    vi.mocked(postQuery).mockResolvedValue(makeNoResult("First fixture"));
+
+    render(<ReviewPage />);
+
+    await waitFor(() =>
+      expect(screen.getByText("1 / 1 loaded")).toBeInTheDocument(),
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Download all screenshots" }),
+    ).toBeInTheDocument();
+  });
+
+  it("disables the screenshot download button during capture", async () => {
+    const capture = deferred<void>();
+
+    vi.mocked(fetchDevFixtures).mockResolvedValue({
+      source_path: "docs/architecture/parser/examples.md",
+      fixtures: [{ case_id: "A", query: "First fixture" }],
+    });
+    vi.mocked(postQuery).mockResolvedValue(makeNoResult("First fixture"));
+    vi.mocked(downloadReviewScreenshots).mockImplementation(
+      async (_targets, onProgress) => {
+        onProgress({ current: 1, total: 1 });
+        return capture.promise;
+      },
+    );
+
+    render(<ReviewPage />);
+
+    await waitFor(() =>
+      expect(screen.getByText("1 / 1 loaded")).toBeInTheDocument(),
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Download all screenshots" }),
+    );
+
+    const capturingButton = await screen.findByRole("button", {
+      name: "Capturing 1/1...",
+    });
+    expect(capturingButton).toBeDisabled();
+
+    capture.resolve();
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Download all screenshots" }),
+      ).not.toBeDisabled(),
+    );
+  });
+
+  it("captures one target per shape even when all examples are visible", async () => {
+    vi.mocked(fetchDevFixtures).mockResolvedValue({
+      source_path: "docs/architecture/parser/examples.md",
+      fixtures: [
+        { case_id: "A", query: "First fixture" },
+        { case_id: "B", query: "Second fixture" },
+      ],
+    });
+    vi.mocked(postQuery)
+      .mockResolvedValueOnce(makeNoResult("First fixture"))
+      .mockResolvedValueOnce(makeNoResult("Second fixture"));
+
+    render(<ReviewPage />);
+
+    await waitFor(() =>
+      expect(screen.getByText("2 / 2 loaded")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByLabelText("Show one example per shape"));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Download all screenshots" }),
+    );
+
+    await waitFor(() =>
+      expect(downloadReviewScreenshots).toHaveBeenCalledTimes(1),
+    );
+    const targets = vi.mocked(downloadReviewScreenshots).mock.calls[0]?.[0];
+    expect(targets).toHaveLength(1);
   });
 });
