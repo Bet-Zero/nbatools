@@ -16,10 +16,10 @@
 
 .routeBadge,
 .contextChip {
-  min-width: 0;
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: anywhere;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .freshness {
@@ -34,10 +34,12 @@
 }
 
 .contextChipLabel {
+  flex-shrink: 0;
   color: var(--text-secondary);
   font-size: var(--font-micro);
   text-transform: uppercase;
   letter-spacing: var(--tracking-uppercase);
+  white-space: nowrap;
 }
 
 .infoBlock {
@@ -103,8 +105,11 @@
 }
 
 .alternateChip {
-  max-width: 100%;
-  white-space: normal;
+  flex: 0 0 auto;
+  max-width: none;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 @media (max-width: 520px) {
@@ -113,7 +118,7 @@
   }
 
   .freshness,
-  .contextChip {
+  .freshness {
     flex-basis: 100%;
   }
 }

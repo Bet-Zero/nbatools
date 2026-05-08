@@ -6,7 +6,12 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { Badge } from "../../../design-system";
-import { formatColHeader, formatValue } from "../../tableFormatting";
+import {
+  formatAverageValue,
+  formatColHeader,
+  formatCompactDate,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, {
@@ -224,12 +229,12 @@ function leagueColumns(
     {
       key: "window_start_date",
       header: "Start",
-      render: (row) => compactDate(textValue(row, "window_start_date")),
+      render: (row) => formatCompactDate(textValue(row, "window_start_date")),
     },
     {
       key: "window_end_date",
       header: "End",
-      render: (row) => compactDate(textValue(row, "window_end_date")),
+      render: (row) => formatCompactDate(textValue(row, "window_end_date")),
     },
   ];
 
@@ -262,8 +267,8 @@ function namedWindowColumns(
       header: "Dates",
       render: (row) => (
         <span className={styles.dateRange}>
-          {compactDate(textValue(row, "window_start_date"))} to{" "}
-          {compactDate(textValue(row, "window_end_date"))}
+          {formatCompactDate(textValue(row, "window_start_date"))} to{" "}
+          {formatCompactDate(textValue(row, "window_end_date"))}
         </span>
       ),
     },
@@ -284,7 +289,7 @@ function gameLogColumns(
     {
       key: "date",
       header: "Date",
-      render: (row) => compactDate(textValue(row, "game_date")),
+      render: (row) => formatCompactDate(textValue(row, "game_date")),
     },
     {
       key: "opponent",
@@ -394,9 +399,9 @@ function leagueSentence(
     scope ? ` ${scope}` : ""
   }: ${playerName(
     row,
-  )} averaged ${stretchValue(row, metric)} from ${compactDate(
+  )} averaged ${stretchValue(row, metric)} from ${formatCompactDate(
     textValue(row, "window_start_date"),
-  )} to ${compactDate(textValue(row, "window_end_date"))}.`;
+  )} to ${formatCompactDate(textValue(row, "window_end_date"))}.`;
 }
 
 function namedPlayerSentence(
@@ -412,7 +417,7 @@ function namedPlayerSentence(
   )}${scope ? ` ${scope}` : ""}: ${stretchValue(
     row,
     metric,
-  )} from ${compactDate(textValue(row, "window_start_date"))} to ${compactDate(
+  )} from ${formatCompactDate(textValue(row, "window_start_date"))} to ${formatCompactDate(
     textValue(row, "window_end_date"),
   )}.`;
 }
@@ -518,7 +523,9 @@ function stretchValue(
   table = false,
 ): string {
   const value = hasValue(row.stretch_value) ? row.stretch_value : row[metric];
-  const formatted = formatTableValue(value, metric);
+  const formatted = hasValue(row.stretch_value)
+    ? formatAverageValue(value, metric)
+    : formatTableValue(value, metric);
   if (table) return formatted;
   const label = STRETCH_METRIC_LABELS[metric];
   return label ? `${formatted} ${label}` : formatted;
@@ -581,29 +588,6 @@ function topCountNote(
   );
   if (total === null || total <= shown) return null;
   return `Showing top ${shown} of ${formatValue(total, "total_count")}`;
-}
-
-function compactDate(value: string | null): string {
-  if (!value) return "—";
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (!match) return value;
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${months[month - 1] ?? match[2]} ${day}`;
 }
 
 function tableLabel(key: string): string {

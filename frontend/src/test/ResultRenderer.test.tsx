@@ -425,8 +425,8 @@ describe("ResultRenderer (substrate)", () => {
     const gameLog = screen.getByRole("table", { name: "Game log" });
     expect(gameLog).toBeInTheDocument();
     const rows = within(gameLog).getAllByRole("row");
-    expect(within(rows[1]).getByText("2026-03-01")).toBeInTheDocument();
-    expect(within(rows[2]).getByText("2026-01-02")).toBeInTheDocument();
+    expect(within(rows[1]).getByText("Mar 1")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("Jan 2")).toBeInTheDocument();
     expect(
       screen.queryByLabelText("Game-log averages"),
     ).not.toBeInTheDocument();
@@ -1921,7 +1921,7 @@ describe("ResultRenderer (substrate)", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Los Angeles Lakers")).toBeInTheDocument();
-    expect(screen.getByText("Home +8 PPG")).toBeInTheDocument();
+    expect(screen.getByText("Home +8.0 PPG")).toBeInTheDocument();
   });
 
   it("renders player on-off summaries as split results", () => {

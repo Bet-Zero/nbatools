@@ -5,7 +5,11 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { Stat } from "../../../design-system";
-import { formatValue } from "../../tableFormatting";
+import {
+  formatAverageValue,
+  formatCompactDate,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
@@ -102,7 +106,13 @@ export default function GameLogResult({
   const metric = metricColumn(rows, data.result?.metadata, metricKey);
   const columns = tableColumns(rows, data, resolvedMode);
   const footerRows = summary ? tableFooters(rows, summary) : [];
-  const items = summary ? summaryItems(summary) : contextItems(data, rows);
+  const items = summary
+    ? summaryItems(summary, {
+        hideMinutes:
+          (data.route ?? data.result?.metadata?.route) === "game_summary" &&
+          resolvedMode === "team",
+      })
+    : contextItems(data, rows);
   const countSentence = countHeadline(data.result?.metadata);
 
   return (
@@ -174,7 +184,7 @@ function tableColumns(
       {
         key: "date",
         header: TABLE_LABELS.date,
-        render: (row) => textValue(row, "game_date") ?? "—",
+        render: (row) => formatCompactDate(textValue(row, "game_date")),
       },
       {
         key: "team",
@@ -187,7 +197,7 @@ function tableColumns(
       {
         key: "date",
         header: TABLE_LABELS.date,
-        render: (row) => textValue(row, "game_date") ?? "—",
+        render: (row) => formatCompactDate(textValue(row, "game_date")),
       },
       {
         key: "team",
@@ -277,7 +287,7 @@ function footerValue(
 
   const summaryKey = `${summaryPrefix(key)}_${kind}`;
   if (summary && hasValue(summary[summaryKey])) {
-    return formatStatValue(summary[summaryKey], key);
+    return formatStatValue(summary[summaryKey], key, kind);
   }
 
   const values = rows
@@ -287,7 +297,7 @@ function footerValue(
 
   const total = values.reduce((sum, value) => sum + value, 0);
   const value = kind === "avg" ? total / values.length : total;
-  return formatStatValue(value, key);
+  return formatStatValue(value, key, kind);
 }
 
 function compositeFooterValue(
@@ -320,20 +330,25 @@ function compositeFooterValue(
     )}`;
   }
 
-  return `${formatValue(madeTotal / made.length, config.made)}-${formatValue(
+  return `${formatAverageValue(madeTotal / made.length, config.made)}-${formatAverageValue(
     attemptTotal / attempts.length,
     config.attempt,
   )}`;
 }
 
-function summaryItems(summary: SectionRow | undefined): SummaryItem[] {
+function summaryItems(
+  summary: SectionRow | undefined,
+  options?: { hideMinutes?: boolean },
+): SummaryItem[] {
   if (!summary) return [];
   const items: SummaryItem[] = [];
   addSummaryItem(items, summary, "games", "GP");
   addSummaryItem(items, summary, "pts_avg", "PTS");
   addSummaryItem(items, summary, "reb_avg", "REB");
   addSummaryItem(items, summary, "ast_avg", "AST");
-  addSummaryItem(items, summary, "minutes_avg", "MIN");
+  if (!options?.hideMinutes) {
+    addSummaryItem(items, summary, "minutes_avg", "MIN");
+  }
   return items;
 }
 
@@ -525,12 +540,17 @@ function madeAttemptStat(
   return "—";
 }
 
-function formatStatValue(value: unknown, key: string): string {
+function formatStatValue(
+  value: unknown,
+  key: string,
+  kind: "avg" | "sum" = "sum",
+): string {
   if (key === "plus_minus" && typeof value === "number") {
-    const formatted = formatValue(value, key);
+    const formatted =
+      kind === "avg" ? formatAverageValue(value, key) : formatValue(value, key);
     return value > 0 ? `+${formatted}` : formatted;
   }
-  return formatValue(value, key);
+  return kind === "avg" ? formatAverageValue(value, key) : formatValue(value, key);
 }
 
 function summaryPrefix(key: string): string {

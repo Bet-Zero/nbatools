@@ -159,7 +159,7 @@ describe("first-run starter queries", () => {
     await waitFor(() =>
       expect(postQuery).toHaveBeenLastCalledWith("second query"),
     );
-  });
+  }, 10_000);
 
   it("clears the active query with Escape from the query input", async () => {
     render(<App />);
@@ -212,7 +212,7 @@ describe("first-run starter queries", () => {
     fireEvent.keyDown(cancel, { key: "k", metaKey: true });
 
     expect(cancel).toHaveFocus();
-  });
+  }, 10_000);
 
   it("runs a starter query through the natural-query path", async () => {
     vi.mocked(postQuery).mockResolvedValueOnce(

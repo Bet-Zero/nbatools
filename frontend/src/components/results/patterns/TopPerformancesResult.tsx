@@ -6,7 +6,11 @@ import type {
 } from "../../../api/types";
 import { Badge } from "../../../design-system";
 import { resolveTeamIdentity } from "../../../lib/identity";
-import { formatColHeader, formatValue } from "../../tableFormatting";
+import {
+  formatColHeader,
+  formatCompactDate,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, {
@@ -149,7 +153,7 @@ function tableColumns(
     {
       key: "date",
       header: "Date",
-      render: (row) => compactDate(textValue(row, "game_date")),
+      render: (row) => formatCompactDate(textValue(row, "game_date")),
     },
     {
       key: "opponent",
@@ -524,29 +528,6 @@ function rowKey(row: SectionRow, index: number): string {
   return [row.rank, row.game_id, row.player_id, row.team_id, row.game_date, index]
     .filter(hasValue)
     .join("-");
-}
-
-function compactDate(value: string | null): string {
-  if (!value) return "—";
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (!match) return value;
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${months[month - 1] ?? match[2]} ${day}`;
 }
 
 function textValue(row: SectionRow, key: string): string | null {

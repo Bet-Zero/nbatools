@@ -5,7 +5,11 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { Badge, Card, Stat, type StatSemantic } from "../../../design-system";
-import { formatColHeader, formatValue } from "../../tableFormatting";
+import {
+  formatColHeader,
+  formatLongDateRange,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
@@ -566,9 +570,6 @@ function edgeLabel(leader: Extract<LeaderInfo, { type: "leader" }>): string {
 }
 
 function formatEdgeDelta(delta: number, metric: string): string {
-  if (metric.endsWith("_avg") && !metric.includes("pct")) {
-    return delta.toFixed(1);
-  }
   return formatValue(delta, metric);
 }
 
@@ -607,8 +608,7 @@ function seasonLabel(metadata: ResultMetadata | undefined): string | null {
 function dateLabel(metadata: ResultMetadata | undefined): string | null {
   const start = metadataText(metadata, "start_date");
   const end = metadataText(metadata, "end_date");
-  if (start && end) return start === end ? start : `${start} to ${end}`;
-  return start ?? end;
+  return formatLongDateRange(start, end);
 }
 
 function numericValue(row: SectionRow | undefined, key: string): number | null {
