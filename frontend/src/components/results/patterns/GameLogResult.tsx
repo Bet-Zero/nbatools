@@ -69,6 +69,7 @@ const TABLE_LABELS: Record<string, string> = {
   opponent: "Opp",
   plus_minus: "+/-",
   pts: "PTS",
+  opponent_pts: "OPP PTS",
   reb: "REB",
   score: "Score",
   stl: "STL",
@@ -99,10 +100,10 @@ export default function GameLogResult({
   detailSectionKeys = [],
 }: Props) {
   const rawRows = sectionRows(data, sectionKey, fallbackSectionKey);
-  if (rawRows.length === 0) return null;
-
   const rows = orderedRows(rawRows, preserveOrder);
   const summary = data.result?.sections?.[summaryKey]?.[0];
+  if (rows.length === 0 && !summary) return null;
+
   const resolvedMode = gameLogMode(rows, mode);
   const metric = metricColumn(rows, data.result?.metadata, metricKey);
   const columns = tableColumns(rows, data, resolvedMode);
@@ -115,11 +116,15 @@ export default function GameLogResult({
       })
     : contextItems(data, rows);
   const countSentence = countHeadline(data.result?.metadata);
+  const answerSentence = answerHeadline(data.result?.metadata);
+  const heroSentence = countSentence ?? answerSentence;
+  const showStrip = showSummaryStrip && !countSentence && items.length > 0;
+  const showDetails = rows.length > 0;
 
   return (
     <section className={styles.pattern} aria-label="Game log result">
-      {countSentence && <ResultHero sentence={countSentence} tone="neutral" />}
-      {showSummaryStrip && items.length > 0 && (
+      {heroSentence && <ResultHero sentence={heroSentence} tone="neutral" />}
+      {showStrip && (
         <div className={styles.summaryStrip} aria-label="Game-log averages">
           {items.map((item) => (
             <Stat
@@ -131,26 +136,31 @@ export default function GameLogResult({
           ))}
         </div>
       )}
-      <ResultTable
-        rows={rows}
-        columns={columns}
-        highlightColumnKey={metric ?? undefined}
-        footerRows={footerRows}
-        ariaLabel="Game log"
-        getRowKey={rowKey}
-      />
-      {rawDetailTitle && <RawDetailToggle title={rawDetailTitle} rows={rows} />}
-      {detailSectionKeys.map((key) => {
-        const detailRows = data.result?.sections?.[key] ?? [];
-        if (detailRows.length === 0) return null;
-        return (
-          <RawDetailToggle
-            key={key}
-            title={detailTitle(key)}
-            rows={detailRows}
-          />
-        );
-      })}
+      {rows.length > 0 && (
+        <ResultTable
+          rows={rows}
+          columns={columns}
+          highlightColumnKey={metric ?? undefined}
+          footerRows={footerRows}
+          ariaLabel="Game log"
+          getRowKey={rowKey}
+        />
+      )}
+      {showDetails && rawDetailTitle && (
+        <RawDetailToggle title={rawDetailTitle} rows={rows} />
+      )}
+      {showDetails &&
+        detailSectionKeys.map((key) => {
+          const detailRows = data.result?.sections?.[key] ?? [];
+          if (detailRows.length === 0) return null;
+          return (
+            <RawDetailToggle
+              key={key}
+              title={detailTitle(key)}
+              rows={detailRows}
+            />
+          );
+        })}
     </section>
   );
 }
@@ -158,6 +168,11 @@ export default function GameLogResult({
 function countHeadline(metadata: ResultMetadata | undefined): string | null {
   if (typeof metadata?.primary_count !== "number") return null;
   const phrase = metadata.count_phrase;
+  return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
+}
+
+function answerHeadline(metadata: ResultMetadata | undefined): string | null {
+  const phrase = metadata?.answer_phrase;
   return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
 }
 
@@ -696,6 +711,19 @@ function formatCondition(
   minValue: number | null,
   maxValue: number | null,
 ): string {
+  if (stat === "opponent_pts") {
+    const minDisplay =
+      minValue !== null ? formatThresholdValue(minValue, stat) : null;
+    const maxDisplay =
+      maxValue !== null ? formatThresholdValue(maxValue, stat) : null;
+    if (minDisplay !== null && maxDisplay !== null) {
+      return `OPP ${minDisplay}-${maxDisplay} PTS`;
+    }
+    if (minDisplay !== null) return `OPP >= ${minDisplay} PTS`;
+    if (maxDisplay !== null) return `OPP <= ${maxDisplay} PTS`;
+    return "OPP PTS";
+  }
+
   const label = TABLE_LABELS[stat] ?? stat.toUpperCase();
   if (minValue !== null && maxValue !== null) {
     return `${formatValue(minValue, stat)}-${formatValue(maxValue, stat)} ${label}`;
@@ -703,6 +731,14 @@ function formatCondition(
   if (minValue !== null) return `${formatValue(minValue, stat)}+ ${label}`;
   if (maxValue !== null) return `<= ${formatValue(maxValue, stat)} ${label}`;
   return label;
+}
+
+function formatThresholdValue(value: number, stat: string): string {
+  const rounded = Math.round(value);
+  if (Math.abs(value + 0.0001 - rounded) < 0.001) {
+    return formatValue(rounded, stat);
+  }
+  return formatValue(value, stat);
 }
 
 function seasonText(metadata: ResultMetadata | undefined): string | null {

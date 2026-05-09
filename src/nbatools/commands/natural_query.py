@@ -144,6 +144,9 @@ from nbatools.commands._parse_helpers import (
     extract_min_value as extract_min_value,
 )
 from nbatools.commands._parse_helpers import (
+    extract_opponent_points_allowed_conditions as extract_opponent_points_allowed_conditions,
+)
+from nbatools.commands._parse_helpers import (
     extract_position_filter as extract_position_filter,
 )
 from nbatools.commands._parse_helpers import (
@@ -166,6 +169,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     extract_top_n as extract_top_n,
+)
+from nbatools.commands._parse_helpers import (
+    merge_opponent_points_allowed_conditions as merge_opponent_points_allowed_conditions,
 )
 from nbatools.commands._parse_helpers import (
     wants_count as wants_count,
@@ -339,6 +345,7 @@ __all__ = [
     "extract_last_n",
     "extract_last_n_seasons",
     "extract_min_value",
+    "extract_opponent_points_allowed_conditions",
     "extract_position_filter",
     "extract_season",
     "extract_season_range",
@@ -346,6 +353,7 @@ __all__ = [
     "extract_streak_request",
     "extract_team_streak_request",
     "extract_threshold_conditions",
+    "merge_opponent_points_allowed_conditions",
     "extract_top_n",
     "wants_count",
     "wants_finder",
@@ -453,7 +461,10 @@ def _build_parse_state(query: str) -> dict:
         or by_round_intent
     )
 
-    threshold_conditions = extract_threshold_conditions(q)
+    threshold_conditions = merge_opponent_points_allowed_conditions(
+        extract_threshold_conditions(q),
+        extract_opponent_points_allowed_conditions(q),
+    )
 
     extra_conditions = []
     if threshold_conditions:
@@ -804,6 +815,11 @@ def _finalize_route(parsed: dict) -> dict:
             stat = occ_stat
         if min_value is None and occ_min is not None:
             min_value = occ_min
+    special_event = (
+        occurrence_event.get("special_event")
+        if isinstance(occurrence_event, dict) and occurrence_event.get("special_event") is not None
+        else None
+    )
 
     # -- Entity ambiguity: short-circuit if we can't resolve a required entity --
     entity_ambiguity = parsed.get("entity_ambiguity")
@@ -1443,6 +1459,7 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
             "opponent_player": opponent_player,
             "without_player": without_player,
+            "special_event": special_event,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,
@@ -1622,6 +1639,7 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
             "opponent_player": opponent_player,
             "without_player": without_player,
+            "special_event": special_event,
             "home_only": home_only,
             "away_only": away_only,
             "wins_only": wins_only,

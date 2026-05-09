@@ -25,11 +25,14 @@ Both return one of the typed result classes defined in
 
 from __future__ import annotations
 
+import re
 import unicodedata
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+
+import pandas as pd
 
 from nbatools.commands._constants import contains_boolean_or
 from nbatools.commands._natural_query_execution import (
@@ -62,6 +65,8 @@ from nbatools.commands.structured_results import (  # noqa: F401
     SummaryResult,
 )
 from nbatools.data_source import data_glob, data_read_csv_dicts
+
+_COUNT_THRESHOLD_EPSILON = 0.0001
 
 # ---------------------------------------------------------------------------
 # Metadata helper
@@ -303,13 +308,11 @@ def _build_applied_filters(
         else route_kwargs.get("max_value")
     )
     if stat and min_value is not None:
-        applied_filters.append(
-            {"label": f"{stat} min", "value": str(min_value), "kind": "threshold"}
-        )
+        label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
+        applied_filters.append({"label": label, "value": str(min_value), "kind": "threshold"})
     if stat and max_value is not None:
-        applied_filters.append(
-            {"label": f"{stat} max", "value": str(max_value), "kind": "threshold"}
-        )
+        label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
+        applied_filters.append({"label": label, "value": str(max_value), "kind": "threshold"})
     if source.get("start_season") and source.get("end_season"):
         applied_filters.append(
             {
@@ -402,6 +405,7 @@ def _build_query_metadata(
         "player": player,
         "team": team,
         "opponent": parsed.get("opponent"),
+        "without_player": parsed.get("without_player"),
         "opponent_quality": parsed.get("opponent_quality"),
         "lineup_members": parsed.get("lineup_members"),
         "presence_state": parsed.get("presence_state"),
@@ -507,27 +511,135 @@ def _merge_metadata_notes(metadata: dict[str, Any], result_notes: list[str]) -> 
         metadata["notes"] = merged
 
 
-def _build_count_phrase(count: int, parsed: dict, metadata: dict) -> str:
+def _build_count_phrase(
+    count: int,
+    parsed: dict,
+    metadata: dict,
+    games: Any = None,
+) -> str:
     """Build a natural-language count phrase for count-intent queries (Pattern 3).
 
     Example: "Nikola Jokić has had 47 triple-doubles in the 2023-24 regular season."
     """
     player = metadata.get("player")
     team = metadata.get("team")
-    entity = player or team or "Result"
+    if metadata.get("stat") == "opponent_pts" and team:
+        threshold = _count_threshold_text(metadata.get("max_value"))
+        entity = _team_subject(metadata)
+        context = _count_context(metadata, player=bool(player))
+        times = "time" if count == 1 else "times"
+        record = _record_suffix(games)
+        return (
+            f"{entity} have held opponents under {threshold} points "
+            f"{count} {times} {context}{record}."
+        )
+
+    entity = player or _team_subject(metadata) or "Result"
     occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
+    context = _count_context(metadata, player=bool(player))
+    verb = "has had" if count_noun.startswith("games with ") else "has recorded"
+    return f"{entity} {verb} {count} {count_noun} {context}."
+
+
+def _team_subject(metadata: dict) -> str | None:
+    team_context = metadata.get("team_context")
+    if isinstance(team_context, dict):
+        team_name = _clean_text(team_context.get("team_name"))
+        if team_name:
+            return f"The {team_name}"
+    team = _clean_text(metadata.get("team"))
+    return f"The {team}" if team else None
+
+
+def _count_context(metadata: dict, *, player: bool) -> str:
+    query_text = (_clean_text(metadata.get("query_text")) or "").lower()
     season = metadata.get("season")
     start_s = metadata.get("start_season")
     end_s = metadata.get("end_season")
     season_type = (metadata.get("season_type") or "Regular Season").lower()
+
+    if re.search(r"\bthis\s+(?:season|year)\b", query_text):
+        return "this season"
     if season:
-        context = f"in the {season} {season_type}"
-    elif start_s and end_s:
-        context = f"from {start_s} to {end_s} in the {season_type}"
-    else:
-        context = f"in his {season_type} career" if player else f"all time in the {season_type}"
-    return f"{entity} has had {count} {count_noun} {context}."
+        if season_type == "playoffs":
+            return f"in the {season} playoffs"
+        return f"in the {season} {season_type}"
+    if start_s and end_s:
+        return f"from {start_s} to {end_s} in the {season_type}"
+    return f"in his {season_type} career" if player else f"all time in the {season_type}"
+
+
+def _count_threshold_text(value: Any) -> str:
+    if isinstance(value, (int, float)):
+        numeric = float(value)
+        rounded = round(numeric)
+        if abs((numeric + _COUNT_THRESHOLD_EPSILON) - rounded) < 0.001:
+            return str(int(rounded))
+    return compact_number(value) if isinstance(value, (int, float)) else "the threshold"
+
+
+def _record_suffix(games: Any) -> str:
+    if games is None or not hasattr(games, "empty") or games.empty or "wl" not in games.columns:
+        return ""
+    wins = int((games["wl"] == "W").sum())
+    losses = int((games["wl"] == "L").sum())
+    if wins + losses == 0:
+        return ""
+    return f", going {wins}-{losses}"
+
+
+def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    if not isinstance(result, SummaryResult) or metadata.get("route") != "game_summary":
+        return
+    if result.summary.empty:
+        return
+
+    row = result.summary.iloc[0]
+    games = _series_int(row, "games")
+    wins = _series_int(row, "wins")
+    losses = _series_int(row, "losses")
+    pts_avg = _series_float(row, "pts_avg")
+    if games is None or wins is None or losses is None:
+        return
+
+    metadata["record_wins"] = wins
+    metadata["record_losses"] = losses
+    metadata["record"] = f"{wins}-{losses}"
+    metadata["primary_count"] = games
+
+    team = _team_subject(metadata) or _clean_text(row.get("team_name")) or "The team"
+    game_word = "game" if games == 1 else "games"
+    without_player = _clean_text(metadata.get("without_player"))
+    context = f" without {without_player}" if without_player else ""
+    ppg = f", averaging {_format_one_decimal(pts_avg)} PPG" if pts_avg is not None else ""
+    metadata["answer_phrase"] = f"{team} are {wins}-{losses} in {games} {game_word}{context}{ppg}."
+
+
+def _series_int(row: Any, key: str) -> int | None:
+    value = row.get(key)
+    if pd.notna(value):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _series_float(row: Any, key: str) -> float | None:
+    value = row.get(key)
+    if pd.notna(value):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _format_one_decimal(value: float | None) -> str:
+    if value is None:
+        return ""
+    return f"{value:.1f}"
 
 
 def _occurrence_label(occurrence: Any) -> str:
@@ -1008,7 +1120,13 @@ def execute_natural_query(query: str) -> QueryResult:
     # Pattern 3: expose primary_count and count_phrase for count-flavored queries.
     if count_intent and isinstance(result, CountResult):
         metadata["primary_count"] = result.count
-        metadata["count_phrase"] = _build_count_phrase(result.count, parsed, metadata)
+        metadata["count_phrase"] = _build_count_phrase(
+            result.count,
+            parsed,
+            metadata,
+            result.games,
+        )
+    _add_game_summary_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -1147,6 +1265,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "player": player,
         "team": team,
         "opponent": kwargs.get("opponent"),
+        "without_player": kwargs.get("without_player"),
         "opponent_quality": kwargs.get("opponent_quality"),
         "lineup_members": kwargs.get("lineup_members"),
         "presence_state": kwargs.get("presence_state"),
@@ -1216,6 +1335,8 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
             query=query_desc,
             route=route,
         )
+
+    _add_game_summary_answer_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))

@@ -417,6 +417,7 @@ describe("migrated result envelope", () => {
           applied_filters: [
             { label: "Opponent", value: "Lakers", kind: "team" },
             { label: "pts min", value: "30.0001", kind: "threshold" },
+            { label: "OPP PTS max", value: "99.9999", kind: "threshold" },
           ],
         },
         notes: [],
@@ -431,6 +432,8 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("Lakers")).toBeInTheDocument();
     expect(screen.getByText("Stat")).toBeInTheDocument();
     expect(screen.getByText("30+ PTS")).toBeInTheDocument();
+    expect(screen.getByText("OPP")).toBeInTheDocument();
+    expect(screen.getByText("<= 100 PTS")).toBeInTheDocument();
   });
 
   it("formats opponent-quality filters as VS chips", () => {

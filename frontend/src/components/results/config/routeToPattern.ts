@@ -117,11 +117,10 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
         {
           type: "game_log",
           sectionKey: "game_log",
-          fallbackSectionKey: "summary",
           summaryKey: "summary",
           mode: "team",
           rawDetailTitle: "Game Detail",
-          detailSectionKeys: ["summary", "by_season", "top_performers"],
+          detailSectionKeys: ["top_performers"],
         },
       ];
     case "player_split_summary":

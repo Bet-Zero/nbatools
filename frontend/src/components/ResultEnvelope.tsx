@@ -326,7 +326,12 @@ function formatAppliedFilter(
 
   if (kind === "threshold") {
     const threshold = thresholdFilterValue(label, value);
-    if (threshold) return { label: "Stat", value: threshold };
+    if (threshold) {
+      if (label.trim().toLowerCase().startsWith("opp pts ")) {
+        return { label: "OPP", value: threshold.replace(/^<=\s+/, "<= ") };
+      }
+      return { label: "Stat", value: threshold };
+    }
   }
 
   const normalizedValue =
@@ -387,6 +392,8 @@ function statLabel(stat: string): string {
     pts: "PTS",
     pts_avg: "PPG",
     pts_per_game: "PPG",
+    "opp pts": "PTS",
+    opponent_pts: "PTS",
     reb: "REB",
     reb_avg: "RPG",
     reb_per_game: "RPG",

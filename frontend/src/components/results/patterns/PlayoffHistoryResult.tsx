@@ -37,6 +37,8 @@ const MATCHUP_DETAIL_TITLES: Record<string, string> = {
   comparison: "Series Detail",
 };
 
+const EMPTY_CELL = "—";
+
 export default function PlayoffHistoryResult({ data, mode }: Props) {
   const route = data.route ?? data.result?.metadata?.route;
   const resolvedMode = mode ?? modeFromRoute(route);
@@ -160,7 +162,7 @@ function historySentence(
 
   return (
     <>
-      {teamName} has{" "}
+      {teamName} have{" "}
       {appearances !== null ? (
         <>
           <span className={styles.heroValue}>{formatValue(appearances, "appearances")}</span>{" "}
@@ -196,7 +198,7 @@ function roundRecordSentence(
 
   return (
     <>
-      {teamName} owns{" "}
+      {teamName} own{" "}
       {metric ? <span className={styles.heroValue}>{metric}</span> : "the top"}{" "}
       {round ? `${round.toLowerCase()} playoff mark` : "playoff round mark"}
       {record ? ` (${record})` : ""}
@@ -236,18 +238,13 @@ function historyColumns(
     {
       key: "round",
       header: "Round",
-      render: (row) =>
-        textValue(row, "round_reached") ??
-        textValue(row, "deepest_round") ??
-        textValue(row, "playoff_round") ??
-        textValue(row, "round") ??
-        "-",
+      render: (row) => roundCell(row),
     },
     {
       key: "record",
       header: "Record",
       align: "center",
-      render: (row) => recordText(row) ?? gameCount(row) ?? "-",
+      render: (row) => recordText(row) ?? gameCount(row) ?? EMPTY_CELL,
     },
   ];
 
@@ -287,13 +284,13 @@ function roundRecordColumns(
     {
       key: "round",
       header: "Round",
-      render: (row) => roundLabel(metadata, row) ?? "-",
+      render: (row) => roundLabel(metadata, row) ?? EMPTY_CELL,
     },
     {
       key: "record",
       header: "Record",
       align: "center",
-      render: (row) => recordText(row) ?? "-",
+      render: (row) => recordText(row) ?? EMPTY_CELL,
     },
   ];
 
@@ -319,7 +316,7 @@ function matchupColumns(
     columns.push({
       key: "round",
       header: "Round",
-      render: (row) => textValue(row, "round") ?? textValue(row, "playoff_round") ?? "-",
+      render: (row) => roundCell(row),
     });
   }
 
@@ -336,7 +333,7 @@ function matchupColumns(
       key: "result",
       header: "Result",
       render: (row) =>
-        textValue(row, "series_result") ?? textValue(row, "result") ?? "-",
+        textValue(row, "series_result") ?? textValue(row, "result") ?? EMPTY_CELL,
     });
   }
 
@@ -351,7 +348,7 @@ function matchupColumns(
       key: `${team.teamAbbr}_record`,
       header: team.teamAbbr,
       align: "center",
-      render: (row) => recordText(row, winsKey, lossesKey) ?? "-",
+      render: (row) => recordText(row, winsKey, lossesKey) ?? EMPTY_CELL,
     });
   }
 
@@ -366,7 +363,7 @@ function matchupColumns(
         key: "record",
         header: "Record",
         align: "center",
-        render: (row) => recordText(row) ?? "-",
+        render: (row) => recordText(row) ?? EMPTY_CELL,
       },
     ];
   }
@@ -404,7 +401,7 @@ function textColumn(key: string, label: string): ResultTableColumn<SectionRow> {
   return {
     key,
     header: label,
-    render: (row) => textValue(row, key) ?? "-",
+    render: (row) => textValue(row, key) ?? EMPTY_CELL,
   };
 }
 
@@ -526,14 +523,32 @@ function roundLabel(
   metadata: ResultMetadata | undefined,
   row: SectionRow | undefined,
 ): string | null {
-  return (
+  const label =
     textValue(row, "playoff_round") ??
     textValue(row, "round") ??
     textValue(row, "round_reached") ??
     textValue(row, "deepest_round") ??
     metadataText(metadata, "playoff_round") ??
-    metadataText(metadata, "round")
+    metadataText(metadata, "round");
+  return cleanRoundLabel(label);
+}
+
+function roundCell(row: SectionRow): string {
+  return (
+    cleanRoundLabel(
+      textValue(row, "round_reached") ??
+        textValue(row, "deepest_round") ??
+        textValue(row, "playoff_round") ??
+        textValue(row, "round"),
+    ) ?? EMPTY_CELL
   );
+}
+
+function cleanRoundLabel(label: string | null): string | null {
+  if (!label) return null;
+  const normalized = label.trim().toLowerCase();
+  if (normalized === "unknown" || normalized === "unknown round") return null;
+  return label;
 }
 
 function roundRecordMetricKey(rows: SectionRow[]): string | undefined {
@@ -547,7 +562,7 @@ function opponentValue(row: SectionRow): string {
     textValue(row, "opponent") ??
     textValue(row, "opponent_team_name") ??
     textValue(row, "opponent_team_abbr") ??
-    "-"
+    EMPTY_CELL
   );
 }
 
@@ -556,7 +571,7 @@ function winnerValue(row: SectionRow): string {
     textValue(row, "winner") ??
     textValue(row, "winner_team_name") ??
     textValue(row, "winner_team_abbr") ??
-    "-"
+    EMPTY_CELL
   );
 }
 

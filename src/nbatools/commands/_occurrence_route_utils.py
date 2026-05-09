@@ -533,6 +533,7 @@ def try_occurrence_count_route(parsed: dict) -> tuple[str, dict] | None:
     player = parsed["player"]
     player_a = parsed["player_a"]
     player_b = parsed["player_b"]
+    normalized_query = parsed.get("normalized_query", "")
 
     if not (
         count_intent
@@ -542,6 +543,9 @@ def try_occurrence_count_route(parsed: dict) -> tuple[str, dict] | None:
         and not player_a
         and not player_b
     ):
+        return None
+
+    if re.search(r"\bhow\s+often\b", normalized_query):
         return None
 
     season = parsed["season"]

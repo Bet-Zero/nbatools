@@ -120,6 +120,7 @@ export interface ResultMetadata {
   applied_filters?: AppliedFilter[];
   primary_count?: number | null;
   count_phrase?: string | null;
+  answer_phrase?: string | null;
   candidates?: DisambiguationCandidate[];
   suggested_queries?: string[];
   notes?: string[];

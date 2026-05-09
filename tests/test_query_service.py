@@ -52,6 +52,7 @@ def _patch_identity_contexts(monkeypatch) -> None:
     team_contexts = {
         "BOS": {"team_id": 1610612738, "team_abbr": "BOS", "team_name": "Celtics"},
         "LAL": {"team_id": 1610612747, "team_abbr": "LAL", "team_name": "Lakers"},
+        "PHX": {"team_id": 1610612756, "team_abbr": "PHX", "team_name": "Suns"},
     }
 
     monkeypatch.setattr(
@@ -610,6 +611,92 @@ class TestMetadataPreservation:
                 "text": "10+ rebounds",
             }
         ]
+
+    def test_how_often_player_special_event_gets_count_phrase(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert route == "player_game_finder"
+            assert kwargs["special_event"] == "triple_double"
+            assert kwargs["limit"] is None
+            return FinderResult(
+                games=pd.DataFrame(
+                    [
+                        {"player_name": "Nikola Jokić", "wl": "W"},
+                        {"player_name": "Nikola Jokić", "wl": "W"},
+                    ]
+                )
+            )
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute)
+
+        qr = execute_natural_query(
+            "How often has Nikola Jokić recorded a triple-double this season?"
+        )
+
+        assert qr.metadata["query_class"] == "count"
+        assert qr.metadata["primary_count"] == 2
+        assert (
+            qr.metadata["count_phrase"] == "Nikola Jokić has recorded 2 triple-doubles this season."
+        )
+
+    def test_team_opponent_points_count_phrase_includes_record(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert route == "game_finder"
+            assert kwargs["stat"] == "opponent_pts"
+            assert kwargs["limit"] is None
+            return FinderResult(
+                games=pd.DataFrame(
+                    [
+                        {"team_abbr": "LAL", "opponent_pts": 99, "wl": "W"},
+                        {"team_abbr": "LAL", "opponent_pts": 92, "wl": "W"},
+                        {"team_abbr": "LAL", "opponent_pts": 95, "wl": "L"},
+                    ]
+                )
+            )
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute)
+
+        qr = execute_natural_query(
+            "How often have the Lakers held opponents under 100 points this year?"
+        )
+
+        assert qr.metadata["primary_count"] == 3
+        assert (
+            qr.metadata["count_phrase"]
+            == "The Lakers have held opponents under 100 points 3 times this season, going 2-1."
+        )
+
+    def test_game_summary_answer_phrase_uses_filtered_record(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: SummaryResult(
+                summary=pd.DataFrame(
+                    [
+                        {
+                            "team_name": "Suns",
+                            "games": 18,
+                            "wins": 8,
+                            "losses": 10,
+                            "pts_avg": 103.778,
+                        }
+                    ]
+                )
+            ),
+        )
+
+        qr = execute_natural_query("How do the Suns perform when Devin Booker didn't play?")
+
+        assert qr.metadata["record"] == "8-10"
+        assert qr.metadata["primary_count"] == 18
+        assert (
+            qr.metadata["answer_phrase"]
+            == "The Suns are 8-10 in 18 games without Devin Booker, averaging 103.8 PPG."
+        )
 
     def test_structured_player_finder_metadata_preserves_sort_context(self, monkeypatch):
         _patch_identity_contexts(monkeypatch)

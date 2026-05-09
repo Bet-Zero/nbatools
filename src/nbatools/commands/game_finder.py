@@ -32,6 +32,7 @@ ALLOWED_STATS = {
     "ft_pct": "ft_pct",
     "efg_pct": "efg_pct",
     "ts_pct": "ts_pct",
+    "opponent_pts": "opponent_pts",
 }
 
 
@@ -100,6 +101,14 @@ def _apply_filters(
         if stat not in ALLOWED_STATS:
             raise ValueError(f"Unsupported stat: {stat}")
         stat_col = ALLOWED_STATS[stat]
+
+        if stat_col == "opponent_pts" and "opponent_pts" not in out.columns:
+            if {"pts", "plus_minus"}.issubset(out.columns):
+                out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
+                    out["plus_minus"], errors="coerce"
+                )
+            else:
+                raise ValueError("Missing required columns for opponent_pts")
 
         if min_value is not None:
             out = out[out[stat_col] >= min_value].copy()
@@ -245,6 +254,7 @@ def build_result(
         "is_away",
         "wl",
         "pts",
+        "opponent_pts",
         "reb",
         "ast",
         "fg3m",

@@ -699,6 +699,79 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     return deduped
 
 
+def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
+    """Extract defensive points-allowed thresholds.
+
+    Phrases like "held opponents under 100 points" describe the opponent's
+    score, not the subject team's points. Keep them out of the generic
+    ``pts`` threshold path so team finders filter on ``opponent_pts``.
+    """
+    _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
+    patterns = [
+        rf"\bheld\s+opponents\s+under\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\bheld\s+them\s+to\s+under\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\blimited\s+opponents\s+to\s+under\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\bkept\s+the\s+other\s+team\s+below\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\ballowed\s+under\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\b(?:gave|given)\s+up\s+fewer\s+than\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\bopponents?\s+under\s+{_NUM}(?:\s+(?:points?|pts))?\b",
+    ]
+
+    matches = []
+    for pattern in patterns:
+        for m in re.finditer(pattern, text):
+            value = float(m.group(1))
+            matches.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": "opponent_pts",
+                    "min_value": None,
+                    "max_value": value - 0.0001,
+                    "text": m.group(0),
+                }
+            )
+
+    matches.sort(key=lambda x: (x["start"], -(x["end"] - x["start"])))
+    deduped = []
+    accepted_spans: list[tuple[int, int]] = []
+    for item in matches:
+        span = (item["start"], item["end"])
+        if any(not (span[1] <= start or span[0] >= end) for start, end in accepted_spans):
+            continue
+        accepted_spans.append(span)
+        deduped.append(item)
+    return deduped
+
+
+def merge_opponent_points_allowed_conditions(
+    threshold_conditions: list[dict],
+    opponent_conditions: list[dict],
+) -> list[dict]:
+    """Prefer opponent-points conditions over overlapping generic pts ones."""
+    if not opponent_conditions:
+        return threshold_conditions
+
+    def overlaps_opponent_condition(condition: dict) -> bool:
+        start = condition.get("start")
+        end = condition.get("end")
+        if start is None or end is None:
+            return False
+        return any(
+            not (end <= opponent["start"] or start >= opponent["end"])
+            for opponent in opponent_conditions
+        )
+
+    merged = [
+        condition
+        for condition in threshold_conditions
+        if not overlaps_opponent_condition(condition)
+    ]
+    merged.extend(opponent_conditions)
+    merged.sort(key=lambda item: item.get("start", 0))
+    return merged
+
+
 def extract_min_value(text: str, stat: str | None) -> float | None:
     """Fallback threshold extraction for when extract_threshold_conditions
     finds no stat-aware match.
@@ -1202,12 +1275,12 @@ def wants_finder(text: str) -> bool:
 def wants_count(text: str) -> bool:
     """Detect explicit count intent.
 
-    Triggers on phrases like 'how many', 'count', 'number of',
+    Triggers on phrases like 'how many', 'how often', 'count', 'number of',
     'total number', 'total count', 'total games'.
     """
     return bool(
         re.search(
-            r"\b(how\s+many|count|number\s+of|total\s+(?:number|count|games))\b",
+            r"\b(how\s+many|how\s+often|count|number\s+of|total\s+(?:number|count|games))\b",
             text,
         )
     )

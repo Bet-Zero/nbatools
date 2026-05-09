@@ -14,6 +14,7 @@ from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.player_occurrence_leaders import _flag_special_event
 from nbatools.commands.structured_results import FinderResult, NoResult
 
 ALLOWED_STATS = {
@@ -145,6 +146,7 @@ def build_result(
     opponent: str | None = None,
     opponent_player: str | None = None,
     without_player: str | None = None,
+    special_event: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -252,6 +254,9 @@ def build_result(
 
     if without_player and not df.empty:
         df = filter_without_player(df, without_player, seasons, season_type, team=team)
+
+    if special_event and not df.empty:
+        df = df[_flag_special_event(df, special_event)].copy()
 
     if clutch:
         df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)

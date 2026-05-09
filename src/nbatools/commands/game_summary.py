@@ -33,6 +33,7 @@ ALLOWED_STATS = {
     "dreb": "dreb",
     "efg_pct": "efg_pct",
     "ts_pct": "ts_pct",
+    "opponent_pts": "opponent_pts",
 }
 
 GAME_LOG_COLUMNS = [
@@ -154,6 +155,14 @@ def _apply_filters(
         if stat not in ALLOWED_STATS:
             raise ValueError(f"Unsupported stat: {stat}")
         stat_col = ALLOWED_STATS[stat]
+
+        if stat_col == "opponent_pts" and "opponent_pts" not in out.columns:
+            if {"pts", "plus_minus"}.issubset(out.columns):
+                out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
+                    out["plus_minus"], errors="coerce"
+                )
+            else:
+                raise ValueError("Missing required columns for opponent_pts")
 
         if min_value is not None:
             out = out[out[stat_col] >= min_value].copy()
@@ -393,7 +402,11 @@ def build_result(
 
     summary = pd.DataFrame([summary_row])
     include_game_log = (
-        last_n is not None or start_date is not None or end_date is not None or total_games <= 5
+        last_n is not None
+        or start_date is not None
+        or end_date is not None
+        or without_player is not None
+        or total_games <= 5
     )
     game_log = _build_game_log_section(df) if include_game_log else None
     top_performers: pd.DataFrame | None = None

@@ -93,6 +93,9 @@ class TestWantsCount:
     def test_how_many(self):
         assert wants_count("how many 40 point games has tatum had since 2020")
 
+    def test_how_often(self):
+        assert wants_count("how often has jokic recorded a triple double this season")
+
     def test_count(self):
         assert wants_count("count jokic triple-doubles in playoffs since 2021")
 
@@ -364,6 +367,68 @@ class TestIntentWithOpponent:
         parsed = parse_query("top 20 scorers vs Lakers since 2018")
         assert parsed["route"] == "season_leaders"
         assert parsed.get("opponent") is not None
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "How often have the Lakers held opponents under 100 points this year?",
+        "How often have the Lakers held them to under 100 points this year?",
+        "How often have the Lakers limited opponents to under 100 points this year?",
+        "How often have the Lakers kept the other team below 100 points this year?",
+        "How often have the Lakers allowed under 100 points this year?",
+        "Lakers gave up fewer than 100 points this year",
+        "How often have the Lakers given up fewer than 100 points this year?",
+        "Lakers opponents under 100 this year",
+    ],
+)
+def test_opponent_points_allowed_phrasings_use_opponent_pts(query):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "game_finder"
+    assert parsed["team"] == "LAL"
+    assert parsed["stat"] == "opponent_pts"
+    assert parsed["max_value"] == pytest.approx(99.9999)
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts"
+    assert parsed["route_kwargs"]["max_value"] == pytest.approx(99.9999)
+
+
+def test_team_finder_opponent_pts_filter_uses_opponent_score():
+    import pandas as pd
+
+    from nbatools.commands.game_finder import _apply_filters
+
+    df = pd.DataFrame(
+        [
+            {
+                "game_id": "win-low-opp",
+                "game_date": "2026-01-01",
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "pts": 116,
+                "plus_minus": 17,
+                "wl": "W",
+                "is_home": 1,
+                "is_away": 0,
+            },
+            {
+                "game_id": "loss-low-own",
+                "game_date": "2026-01-02",
+                "team_abbr": "LAL",
+                "team_name": "Los Angeles Lakers",
+                "pts": 96,
+                "plus_minus": -12,
+                "wl": "L",
+                "is_home": 0,
+                "is_away": 1,
+            },
+        ]
+    )
+
+    filtered = _apply_filters(df, team="LAL", stat="opponent_pts", max_value=99.9999)
+
+    assert filtered["game_id"].tolist() == ["win-low-opp"]
+    assert filtered["opponent_pts"].tolist() == [99]
 
 
 # ===================================================================

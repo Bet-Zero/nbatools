@@ -137,6 +137,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - `25+ points`
 - `5+ threes`
 - reverse phrasing for some stats: `ts% over .600`, `efg% under .500`
+- opponent-points defensive thresholds: `held opponents under 100 points`, `held them to under 100 points`, `limited opponents to under 100 points`, `kept the other team below 100 points`, `allowed under 100 points`, `gave up fewer than 100 points`
 
 ### 2.6 Stat name aliases
 
@@ -208,6 +209,7 @@ Examples:
 - `show me Lakers home losses`
 - `list Thunder games with 15+ threes`
 - `find Knicks games vs Heat since 2021`
+- `Lakers held opponents under 100 points this season`
 
 ### Finder + grouped boolean
 
@@ -234,12 +236,14 @@ Examples:
 
 - `how many Celtics games with 120+ points and 15+ threes since 2022`
 - `count Lakers home wins vs Warriors since 2021`
+- `how often have the Lakers held opponents under 100 points this year`
 
 ### Count intent phrases
 
 Common triggers:
 
 - `how many`
+- `how often`
 - `count`
 - `number of`
 - `total games`

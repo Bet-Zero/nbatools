@@ -1764,10 +1764,68 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(screen.getByText("Boston Celtics")).toBeInTheDocument();
     expect(screen.getByText("113-108")).toBeInTheDocument();
-    expect(screen.getByText("Summary Detail")).toBeInTheDocument();
-    expect(screen.getByText("By Season Detail")).toBeInTheDocument();
+    expect(screen.getByText("Game Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Summary Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
     expect(screen.getByText("Top Performers Detail")).toBeInTheDocument();
     expect(screen.queryByText("Top player performers")).not.toBeInTheDocument();
+  });
+
+  it("renders team summary answer-only shapes without a malformed fallback table", () => {
+    const data = makeResponse({
+      query: "How do the Suns perform when Devin Booker didn't play?",
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "How do the Suns perform when Devin Booker didn't play?",
+          route: "game_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          without_player: "Devin Booker",
+          answer_phrase:
+            "The Suns are 8-10 in 18 games without Devin Booker, averaging 103.8 PPG.",
+          team_context: {
+            team_id: 1610612756,
+            team_abbr: "PHX",
+            team_name: "Suns",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              team_name: "Suns",
+              games: 18,
+              wins: 8,
+              losses: 10,
+              pts_avg: 103.8,
+              reb_avg: 43.1,
+              ast_avg: 21.7,
+            },
+          ],
+          by_season: [{ season: "2025-26", games: 18, pts_avg: 103.8 }],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Suns are 8-10 in 18 games without Devin Booker, averaging 103.8 PPG.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("GP")).toBeInTheDocument();
+    expect(screen.getByText("18")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("table", { name: "Game log" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Summary Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
   });
 
   it("renders player split summaries through the split pattern", () => {
@@ -2211,6 +2269,14 @@ describe("ResultRenderer (substrate)", () => {
           ],
           by_season: [
             {
+              season: "1999-00",
+              wins: 6,
+              losses: 5,
+              deepest_round: "Unknown Round",
+              result: "Lost",
+              opponent_team_abbr: "POR",
+            },
+            {
               season: "2023-24",
               wins: 1,
               losses: 4,
@@ -2237,6 +2303,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByLabelText("Playoff history result")).toBeInTheDocument();
     expect(screen.getAllByText("Los Angeles Lakers").length).toBeGreaterThan(0);
     const history = screen.getByLabelText("Playoff history result");
+    expect(history.textContent).toContain("Los Angeles Lakers have");
     expect(
       within(history).getByText("playoff appearances", { exact: false }),
     ).toBeInTheDocument();
@@ -2247,6 +2314,8 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "Round" }),
     ).toBeInTheDocument();
     expect(screen.getByText("First Round")).toBeInTheDocument();
+    expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
     expect(screen.getByText("1-4")).toBeInTheDocument();
     expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
     expect(screen.getByText("Season Breakdown Detail")).toBeInTheDocument();
@@ -2289,6 +2358,7 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Boston Celtics").length).toBeGreaterThan(0);
     const roundRecord = screen.getByLabelText("Playoff round record result");
+    expect(roundRecord.textContent).toContain("Boston Celtics own");
     expect(
       within(roundRecord).getByText("finals playoff mark", { exact: false }),
     ).toBeInTheDocument();
@@ -2335,6 +2405,16 @@ describe("ResultRenderer (substrate)", () => {
           ],
           comparison: [
             {
+              season: "1999-00",
+              round: "Unknown Round",
+              winner_team_name: "Miami Heat",
+              series_result: "MIA won 3-2",
+              BOS_wins: 2,
+              BOS_losses: 3,
+              MIA_wins: 3,
+              MIA_losses: 2,
+            },
+            {
               season: "2022-23",
               round: "Conference Finals",
               winner_team_name: "Miami Heat",
@@ -2370,6 +2450,8 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "MIA" }),
     ).toBeInTheDocument();
     expect(screen.getByText("MIA won 4-3")).toBeInTheDocument();
+    expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
+    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
     expect(screen.getByText("3-4")).toBeInTheDocument();
     expect(screen.getAllByText("4-3").length).toBeGreaterThan(0);
     expect(screen.getByText("Series Detail")).toBeInTheDocument();

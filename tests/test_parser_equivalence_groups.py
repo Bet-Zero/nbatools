@@ -224,9 +224,11 @@ def test_occurrence_triple_double_this_season():
         [
             "How often has Nikola Jokić recorded a triple-double this season?",
             "Jokic triple doubles this season",
-        ]
+        ],
+        exclude_keys={"count_intent", "intent", "route_kwargs"},
     )
     assert reference["route"] == "player_game_finder"
+    assert reference["count_intent"] is True
     assert reference["occurrence_event"] is not None
 
 
@@ -246,6 +248,9 @@ def test_occurrence_5_or_more_threes():
             "confidence",
             "alternates",
             "intent",
+            "count_intent",
+            "notes",
+            "route_kwargs",
             "threshold_conditions",
             "extra_conditions",
         },
@@ -267,6 +272,9 @@ def test_occurrence_5_or_more_blocks():
             "confidence",
             "alternates",
             "intent",
+            "count_intent",
+            "notes",
+            "route_kwargs",
             "threshold_conditions",
             "extra_conditions",
         },
