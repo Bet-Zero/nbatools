@@ -8,13 +8,8 @@
 }
 
 .heroValue {
-  display: inline-block;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: var(--font-stat-md);
-  font-weight: var(--weight-bold);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
+  color: inherit;
+  font: inherit;
 }
 
 .matchupIdentity {

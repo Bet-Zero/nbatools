@@ -5,12 +5,14 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { resolveTeamIdentity } from "../../../lib/identity";
-import { formatColHeader, formatValue } from "../../tableFormatting";
+import {
+  formatColHeader,
+  formatProseValue,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import styles from "./LeaderboardResult.module.css";
 
 interface Props {
@@ -368,7 +370,8 @@ function queryMetricHint(data: QueryResponse): string | null {
     if (typeof value === "string" && value.trim()) return value.trim();
   }
 
-  const query = `${data.query ?? ""} ${metadata.query_text ?? ""}`.toLowerCase();
+  const query =
+    `${data.query ?? ""} ${metadata.query_text ?? ""}`.toLowerCase();
   if (
     /\b(win pct|winning percentage|winning pct|best record|record)\b/.test(
       query,
@@ -470,7 +473,7 @@ function metricValuePhrase(
   metric: string,
   suffix: string | undefined,
 ): string {
-  const formatted = formatValue(row[metric], metric);
+  const formatted = formatProseValue(row[metric], metric);
   if (suffix) return `${formatted} ${suffix}`;
   return metric.endsWith("_per_game") ? `${formatted} per game` : formatted;
 }
@@ -529,7 +532,11 @@ function playoffYear(season: string): string {
 function disambiguationNote(
   metadata: ResultMetadata | undefined,
 ): string | null {
-  for (const key of ["disambiguation_note", "interpreted_as", "interpretation"]) {
+  for (const key of [
+    "disambiguation_note",
+    "interpreted_as",
+    "interpretation",
+  ]) {
     const value = metadata?.[key];
     if (typeof value !== "string") continue;
     const trimmed = value.trim();
@@ -596,7 +603,8 @@ function entityCell(row: SectionRow): ReactNode {
 }
 
 function rowEntityKind(row: SectionRow): EntityKind {
-  if (textValue(row, "player_name") ?? textValue(row, "player")) return "player";
+  if (textValue(row, "player_name") ?? textValue(row, "player"))
+    return "player";
   if (hasLineupIdentity(row)) return "unknown";
   if (
     textValue(row, "team_name") ??

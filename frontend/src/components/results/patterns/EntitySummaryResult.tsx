@@ -4,12 +4,10 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
-import { formatValue } from "../../tableFormatting";
+import { formatProseValue, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import styles from "./EntitySummaryResult.module.css";
 
 interface Props {
@@ -23,7 +21,9 @@ export default function EntitySummaryResult({
 }: Props) {
   const row = data.result?.sections?.[sectionKey]?.[0];
   if (!row) return null;
-  const bySeasonRows = sortedBySeasonRows(data.result?.sections?.by_season ?? []);
+  const bySeasonRows = sortedBySeasonRows(
+    data.result?.sections?.by_season ?? [],
+  );
   const showBySeason = shouldShowBySeason(data.result?.metadata, bySeasonRows);
 
   return (
@@ -244,7 +244,7 @@ function statPhrase(
   label: string,
 ): string | null {
   if (!hasValue(row[key])) return null;
-  return `${formatValue(row[key], key)} ${label}`;
+  return `${formatProseValue(row[key], key)} ${label}`;
 }
 
 function summaryContext(
@@ -287,7 +287,9 @@ function heroIdentity(
   return (
     <EntityIdentity
       kind="player"
-      playerId={metadata?.player_context?.player_id ?? identityId(row.player_id)}
+      playerId={
+        metadata?.player_context?.player_id ?? identityId(row.player_id)
+      }
       playerName={playerName(row, metadata)}
     />
   );
@@ -309,7 +311,11 @@ function playerName(
 function disambiguationNote(
   metadata: ResultMetadata | undefined,
 ): string | null {
-  for (const key of ["disambiguation_note", "interpreted_as", "interpretation"]) {
+  for (const key of [
+    "disambiguation_note",
+    "interpreted_as",
+    "interpretation",
+  ]) {
     const value = metadata?.[key];
     if (typeof value !== "string") continue;
     const trimmed = value.trim();

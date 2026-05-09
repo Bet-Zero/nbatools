@@ -252,6 +252,49 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("trims trailing .0 from integer hero averages", () => {
+    const data = makeResponse({
+      query: "Luka last 5 games",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "Luka last 5 games",
+          route: "player_game_summary",
+          window_size: 5,
+          player_context: {
+            player_id: 1629029,
+            player_name: "Luka Doncic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Luka Doncic",
+              games: 5,
+              pts_avg: 34.0,
+              reb_avg: 6.0,
+              ast_avg: 7.0,
+            },
+          ],
+          game_log: [{ game_id: 1, game_date: "2026-03-01", pts: 34 }],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Luka Doncic has averaged 34 points, 6 rebounds and 7 assists in his last 5 games.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("renders by-season breakdowns for multi-period entity summaries", () => {
     const data = makeResponse({
       query: "Jokic career vs Lakers",
@@ -869,7 +912,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "The Los Angeles Lakers are 1,361-1,030 (56.9%) from 1996-97 to 2025-26 in the regular season, grouped by decade.",
+        "The Los Angeles Lakers are 1,361-1,030 (56.9%) in the regular season from 1996-97 to 2025-26.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -1011,7 +1054,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "The Los Angeles Lakers lead the Boston Celtics 31-27 in regular season games, grouped by decade.",
+        "The Los Angeles Lakers lead the Boston Celtics 31-27 in regular season games.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -2170,7 +2213,9 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(screen.getAllByText("Los Angeles Lakers").length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/Los Angeles Lakers' completed wins streak/),
+      screen.getByText(
+        "The Los Angeles Lakers won 4 straight games from Feb 1 to Feb 8, 2026.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Completed")).toBeInTheDocument();
     expect(
@@ -2437,7 +2482,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getAllByText("Miami Heat").length).toBeGreaterThan(0);
     expect(
       screen.getByText(
-        /Boston Celtics and Miami Heat have a playoff matchup history/,
+        "The Boston Celtics lead the Miami Heat 4-3 in their playoff history.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -2522,6 +2567,11 @@ describe("ResultRenderer (substrate)", () => {
 
     const compared = screen.getByLabelText("Compared players");
     expect(screen.getByLabelText("Comparison result")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Nikola Jokic has 51 wins to Joel Embiid's 44 in the 2025-26 regular season.",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getAllByText("Nikola Jokic").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Joel Embiid").length).toBeGreaterThan(0);
     expect(within(compared).getByText("51-21")).toBeInTheDocument();
@@ -2671,7 +2721,7 @@ describe("ResultRenderer (substrate)", () => {
 
     const participants = screen.getByLabelText("Head-to-head participants");
     expect(
-      screen.getByText(/Boston Celtics leads Los Angeles Lakers/),
+      screen.getByText(/Boston Celtics lead Los Angeles Lakers/),
     ).toBeInTheDocument();
     expect(within(participants).getByText("1-3")).toBeInTheDocument();
     expect(within(participants).getByText("3-1")).toBeInTheDocument();

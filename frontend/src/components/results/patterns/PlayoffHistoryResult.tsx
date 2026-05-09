@@ -9,9 +9,7 @@ import { formatColHeader, formatValue } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import styles from "./PlayoffHistoryResult.module.css";
 
 type PlayoffMode = "history" | "round_record" | "matchup";
@@ -97,7 +95,10 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
   const team = teamDisplay(data.result?.metadata, leader);
 
   return (
-    <section className={styles.pattern} aria-label="Playoff round record result">
+    <section
+      className={styles.pattern}
+      aria-label="Playoff round record result"
+    >
       <ResultHero
         sentence={roundRecordSentence(team.name, data.result?.metadata, leader)}
         subjectIllustration={teamIdentity(team)}
@@ -135,7 +136,9 @@ function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
       <ResultTable
         rows={rows}
         columns={matchupColumns(rows, teams)}
-        ariaLabel={seriesRows.length > 0 ? "Playoff series" : "Playoff matchup teams"}
+        ariaLabel={
+          seriesRows.length > 0 ? "Playoff series" : "Playoff matchup teams"
+        }
         getRowKey={rowKey}
       />
       {detailToggles(sections, MATCHUP_DETAIL_TITLES)}
@@ -156,7 +159,10 @@ function historySentence(
     numericValue(row, "titles") ?? numericValue(row, "championships");
   const finals =
     numericValue(row, "finals") ?? numericValue(row, "finals_appearances");
-  const context = [range, textValue(row, "season_type") ?? metadataText(metadata, "season_type")]
+  const context = [
+    range,
+    textValue(row, "season_type") ?? metadataText(metadata, "season_type"),
+  ]
     .filter(Boolean)
     .join(" ");
 
@@ -165,7 +171,9 @@ function historySentence(
       {teamName} have{" "}
       {appearances !== null ? (
         <>
-          <span className={styles.heroValue}>{formatValue(appearances, "appearances")}</span>{" "}
+          <span className={styles.heroValue}>
+            {formatValue(appearances, "appearances")}
+          </span>{" "}
           playoff {appearances === 1 ? "appearance" : "appearances"}
         </>
       ) : (
@@ -173,7 +181,9 @@ function historySentence(
       )}
       {context ? ` across ${context}` : ""}
       {record ? `, going ${record}` : ""}
-      {titleCount !== null ? ` with ${titleCount} ${titleCount === 1 ? "title" : "titles"}` : ""}
+      {titleCount !== null
+        ? ` with ${titleCount} ${titleCount === 1 ? "title" : "titles"}`
+        : ""}
       {titleCount === null && finals !== null
         ? ` with ${finals} ${finals === 1 ? "Finals trip" : "Finals trips"}`
         : ""}
@@ -207,27 +217,24 @@ function roundRecordSentence(
   );
 }
 
-function matchupSentence(teams: TeamDisplay[], rows: SectionRow[]): ReactNode {
+function matchupSentence(teams: TeamDisplay[], rows: SectionRow[]): string {
   const first = teams[0]?.name ?? "Team 1";
   const second = teams[1]?.name ?? "Team 2";
   const firstRecord = recordText(rows[0]);
-  const secondRecord = recordText(rows[1]);
+  const firstWins = numericValue(rows[0], "wins");
+  const firstLosses = numericValue(rows[0], "losses");
 
-  if (firstRecord) {
-    return (
-      <>
-        {first} and {second} have a playoff matchup history led by{" "}
-        <span className={styles.heroValue}>{firstRecord}</span>
-        {secondRecord ? ` against ${secondRecord}` : ""}.
-      </>
-    );
+  if (firstRecord && firstWins !== null && firstLosses !== null) {
+    if (firstWins > firstLosses) {
+      return `The ${first} lead the ${second} ${firstRecord} in their playoff history.`;
+    }
+    if (firstWins < firstLosses) {
+      return `The ${second} lead the ${first} ${firstLosses}-${firstWins} in their playoff history.`;
+    }
+    return `The ${first} and ${second} are tied ${firstRecord} in their playoff history.`;
   }
 
-  return (
-    <>
-      {first} vs {second} playoff matchup history.
-    </>
-  );
+  return `The ${first} and ${second} have playoff matchup history.`;
 }
 
 function historyColumns(
@@ -259,9 +266,7 @@ function historyColumns(
   addNumericIfPresent(columns, rows, "games", "Games");
 
   return columns.filter((column) =>
-    column.key === "opponent"
-      ? rows.some((row) => hasOpponent(row))
-      : true,
+    column.key === "opponent" ? rows.some((row) => hasOpponent(row)) : true,
   );
 }
 
@@ -333,7 +338,9 @@ function matchupColumns(
       key: "result",
       header: "Result",
       render: (row) =>
-        textValue(row, "series_result") ?? textValue(row, "result") ?? EMPTY_CELL,
+        textValue(row, "series_result") ??
+        textValue(row, "result") ??
+        EMPTY_CELL,
     });
   }
 
@@ -341,7 +348,9 @@ function matchupColumns(
     if (!team.teamAbbr) continue;
     const winsKey = `${team.teamAbbr}_wins`;
     const lossesKey = `${team.teamAbbr}_losses`;
-    if (!rows.some((row) => hasValue(row[winsKey]) || hasValue(row[lossesKey]))) {
+    if (
+      !rows.some((row) => hasValue(row[winsKey]) || hasValue(row[lossesKey]))
+    ) {
       continue;
     }
     columns.push({
@@ -357,7 +366,8 @@ function matchupColumns(
       {
         key: "team",
         header: "Team",
-        render: (row, index) => teamIdentity(teamDisplay(undefined, row, index)),
+        render: (row, index) =>
+          teamIdentity(teamDisplay(undefined, row, index)),
       },
       {
         key: "record",
@@ -460,7 +470,9 @@ function matchupTeams(
   }));
 
   if (teams && teams.length > 0) return teams;
-  return rows.slice(0, 2).map((row, index) => teamDisplay(metadata, row, index));
+  return rows
+    .slice(0, 2)
+    .map((row, index) => teamDisplay(metadata, row, index));
 }
 
 function teamDisplay(
@@ -578,16 +590,16 @@ function winnerValue(row: SectionRow): string {
 function hasOpponent(row: SectionRow): boolean {
   return Boolean(
     textValue(row, "opponent") ??
-      textValue(row, "opponent_team_name") ??
-      textValue(row, "opponent_team_abbr"),
+    textValue(row, "opponent_team_name") ??
+    textValue(row, "opponent_team_abbr"),
   );
 }
 
 function hasWinner(row: SectionRow): boolean {
   return Boolean(
     textValue(row, "winner") ??
-      textValue(row, "winner_team_name") ??
-      textValue(row, "winner_team_abbr"),
+    textValue(row, "winner_team_name") ??
+    textValue(row, "winner_team_abbr"),
   );
 }
 

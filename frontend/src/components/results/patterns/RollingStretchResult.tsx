@@ -10,6 +10,7 @@ import {
   formatAverageValue,
   formatColHeader,
   formatCompactDate,
+  formatProseValue,
   formatValue,
 } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
@@ -525,8 +526,12 @@ function stretchMetric(
 function stretchValue(row: SectionRow, metric: string, table = false): string {
   const value = hasValue(row.stretch_value) ? row.stretch_value : row[metric];
   const formatted = hasValue(row.stretch_value)
-    ? formatAverageValue(value, metric)
-    : formatTableValue(value, metric);
+    ? table
+      ? formatAverageValue(value, metric)
+      : formatProseValue(value, metric)
+    : table
+      ? formatTableValue(value, metric)
+      : formatProseValue(value, metric);
   if (table) return formatted;
   const label = STRETCH_METRIC_LABELS[metric];
   return label ? `${formatted} ${label}` : formatted;

@@ -8,6 +8,7 @@ import { Badge, Card, Stat, type StatSemantic } from "../../../design-system";
 import {
   formatColHeader,
   formatLongDateRange,
+  formatProseValue,
   formatValue,
 } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
@@ -214,7 +215,7 @@ function heroSentence(
   entities: EntityDisplay[],
   comparison: SectionRow[],
   headToHead: boolean,
-): ReactNode {
+): string {
   const title = comparisonTitle(entities);
   const first = entities[0]?.name ?? "Subject 1";
   const second = entities[1]?.name ?? "Subject 2";
@@ -228,56 +229,207 @@ function heroSentence(
 
     if (firstWins !== null && firstLosses !== null && firstRecord) {
       if (firstWins > firstLosses) {
-        return (
-          <>
-            {first} leads {second}{" "}
-            <span className={styles.heroValue}>{firstRecord}</span> in this
-            head-to-head sample.
-          </>
-        );
+        return `${first} ${leadVerb(entities[0])} ${second} ${firstRecord} in this head-to-head sample.`;
       }
       if (firstWins < firstLosses && secondRecord) {
-        return (
-          <>
-            {second} leads {first}{" "}
-            <span className={styles.heroValue}>{secondRecord}</span> in this
-            head-to-head sample.
-          </>
-        );
+        return `${second} ${leadVerb(entities[1])} ${first} ${secondRecord} in this head-to-head sample.`;
       }
-      return (
-        <>
-          {first} and {second} are tied{" "}
-          <span className={styles.heroValue}>{firstRecord}</span> in this
-          head-to-head sample.
-        </>
-      );
+      return `${first} and ${second} are tied ${firstRecord} in this head-to-head sample.`;
     }
   }
+
+  const winsSentence = comparisonWinsSentence(data, entities, summary);
+  if (winsSentence) return winsSentence;
 
   const edge = comparison
     .map((row) => {
       const columns = comparisonValueColumns(row);
       const leader = leaderInfo(row, columns);
-      return leader?.type === "leader" ? edgeLabel(leader) : null;
+      return leader?.type === "leader"
+        ? edgeSentence(data, entities, leader, columns)
+        : null;
     })
     .find((value): value is string => Boolean(value));
 
-  if (edge) {
-    return (
-      <>
-        {title}: <span className={styles.heroValue}>{edge}</span>.
-      </>
+  if (edge) return edge;
+
+  const context = contextLabel(data.result?.metadata);
+  return `${title}${context ? ` for ${context}` : ""}.`;
+}
+
+function comparisonWinsSentence(
+  data: QueryResponse,
+  entities: EntityDisplay[],
+  summary: SectionRow[],
+): string | null {
+  if (entities.length < 2 || summary.length < 2) return null;
+
+  const firstWins = numericValue(summary[0], "wins");
+  const secondWins = numericValue(summary[1], "wins");
+  if (firstWins === null || secondWins === null) return null;
+
+  const context = comparisonContextPhrase(data.result?.metadata, data.query);
+  const [first, second] = entities;
+
+  if (Math.abs(firstWins - secondWins) < 1e-9) {
+    return withComparisonContext(
+      `${sentenceSubject(first)} and ${sentenceObject(second)} each have ${formatProseValue(
+        firstWins,
+        "wins",
+      )} wins`,
+      context,
     );
   }
 
-  const context = contextLabel(data.result?.metadata);
-  return (
-    <>
-      {title}
-      {context ? ` for ${context}` : ""}.
-    </>
+  const leader = firstWins > secondWins ? first : second;
+  const trailer = firstWins > secondWins ? second : first;
+  const leaderWins = Math.max(firstWins, secondWins);
+  const trailerWins = Math.min(firstWins, secondWins);
+
+  return withComparisonContext(
+    `${sentenceSubject(leader)} ${hasVerb(leader)} ${formatProseValue(
+      leaderWins,
+      "wins",
+    )} wins to ${possessiveSubject(trailer)} ${formatProseValue(
+      trailerWins,
+      "wins",
+    )}`,
+    context,
   );
+}
+
+function edgeSentence(
+  data: QueryResponse,
+  entities: EntityDisplay[],
+  leader: Extract<LeaderInfo, { type: "leader" }>,
+  columns: string[],
+): string {
+  const otherColumn = columns.find((column) => column !== leader.column);
+  const subject = sentenceSubject(entityFromColumn(leader.column, entities));
+  const other = otherColumn
+    ? sentenceObject(entityFromColumn(otherColumn, entities))
+    : "the field";
+  const delta = formatProseValue(leader.delta, leader.metric);
+  const metric = proseMetricLabel(leader.metric);
+  const context = comparisonContextPhrase(data.result?.metadata, data.query);
+  const base = LOWER_IS_BETTER.has(leader.metric)
+    ? `${subject} has ${delta} fewer ${metric} than ${other}`
+    : `${subject} leads ${other} by ${delta} ${metric}`;
+  return withComparisonContext(base, context);
+}
+
+function withComparisonContext(
+  sentence: string,
+  context: string | null,
+): string {
+  if (!context) return `${sentence}.`;
+  if (context.startsWith("over ")) {
+    return `${capitalize(context)}, ${sentence}.`;
+  }
+  return `${sentence} ${context}.`;
+}
+
+function comparisonContextPhrase(
+  metadata: ResultMetadata | undefined,
+  query: string,
+): string | null {
+  const lastN = lastNWindow(query, metadata);
+  if (lastN) return `over their last ${lastN} games each`;
+
+  const season = seasonLabel(metadata);
+  const seasonType = metadataText(metadata, "season_type");
+  if (season) {
+    return `in the ${season}${seasonType ? ` ${seasonType.toLowerCase()}` : ""}`;
+  }
+
+  const date = dateLabel(metadata);
+  return date ? `from ${date}` : null;
+}
+
+function lastNWindow(
+  query: string,
+  metadata: ResultMetadata | undefined,
+): number | null {
+  const windowSize = metadata?.window_size;
+  if (typeof windowSize === "number" && Number.isFinite(windowSize)) {
+    return windowSize;
+  }
+  const queryText = `${query} ${metadata?.query_text ?? ""}`;
+  const match = queryText.match(/\blast\s+(\d+)\s*(?:games?|gms?)?\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function entityFromColumn(
+  column: string,
+  entities: EntityDisplay[],
+): EntityDisplay | string {
+  return (
+    entities.find(
+      (entity) =>
+        entity.name === column ||
+        entity.teamAbbr === column ||
+        column.includes(entity.name),
+    ) ?? column
+  );
+}
+
+function sentenceSubject(entity: EntityDisplay | string): string {
+  if (typeof entity === "string") return entity;
+  if (entity.kind === "team" && !/^the\b/i.test(entity.name)) {
+    return `The ${entity.name}`;
+  }
+  return entity.name;
+}
+
+function sentenceObject(entity: EntityDisplay | string): string {
+  if (typeof entity === "string") return entity;
+  if (entity.kind === "team" && !/^the\b/i.test(entity.name)) {
+    return `the ${entity.name}`;
+  }
+  return entity.name;
+}
+
+function possessiveSubject(entity: EntityDisplay): string {
+  const base =
+    entity.kind === "team" && !/^the\b/i.test(entity.name)
+      ? `the ${entity.name}`
+      : entity.name;
+  return base.endsWith("s") ? `${base}'` : `${base}'s`;
+}
+
+function leadVerb(entity: EntityDisplay | undefined): "lead" | "leads" {
+  return entity?.kind === "team" ? "lead" : "leads";
+}
+
+function hasVerb(entity: EntityDisplay): "has" | "have" {
+  return entity.kind === "team" ? "have" : "has";
+}
+
+function proseMetricLabel(metric: string): string {
+  const labels: Record<string, string> = {
+    ast_avg: "assists per game",
+    ast_sum: "assists",
+    blk_avg: "blocks per game",
+    efg_pct_avg: "effective field-goal percentage",
+    fg3m_avg: "threes per game",
+    losses: "losses",
+    minutes_avg: "minutes per game",
+    plus_minus_avg: "plus-minus",
+    pts_avg: "points per game",
+    pts_sum: "points",
+    reb_avg: "rebounds per game",
+    reb_sum: "rebounds",
+    stl_avg: "steals per game",
+    tov_avg: "turnovers per game",
+    ts_pct_avg: "true-shooting percentage",
+    win_pct: "win percentage",
+    wins: "wins",
+  };
+  return labels[metric] ?? edgeMetricLabel(metric).toLowerCase();
+}
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function metricColumns(

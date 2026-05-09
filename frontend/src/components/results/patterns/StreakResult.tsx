@@ -5,13 +5,17 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { Badge } from "../../../design-system";
-import { formatColHeader, formatValue } from "../../tableFormatting";
+import {
+  formatColHeader,
+  formatCompactDate,
+  formatLongDate,
+  formatProseValue,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
-import ResultTable, {
-  type ResultTableColumn,
-} from "../primitives/ResultTable";
+import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
 import { hasPinnedEntity } from "./entityBinding";
 import styles from "./StreakResult.module.css";
 
@@ -55,7 +59,7 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
   return (
     <section className={styles.pattern} aria-label="Streak result">
       <ResultHero
-        sentence={heroSentence(headlineRow, entity.name)}
+        sentence={heroSentence(headlineRow, entity.name, kind)}
         subjectIllustration={heroIdentity(kind, entity)}
         tone={kind === "team" ? "team" : "accent"}
         teamAccentAbbr={kind === "team" ? entity.teamAbbr : null}
@@ -169,30 +173,29 @@ function tableColumns(
   return columns;
 }
 
-function heroSentence(row: SectionRow, entityName: string): ReactNode {
+function heroSentence(
+  row: SectionRow,
+  entityName: string,
+  kind: EntityKind,
+): string {
+  const subject = sentenceSubject(entityName, kind);
   if (statusText(row) === "Active") {
-    return `${entityName} is on a ${gameCountForSentence(row)} streak of ${activeConditionPhrase(
+    return `${subject} is on a ${gameCountForSentence(row)} streak of ${activeConditionPhrase(
       row,
     )}, ongoing.`;
   }
 
-  const condition = conditionLabel(row);
-  const length = lengthValue(row);
-  const status = statusText(row);
-  const span = dateRange(row);
-  const statusTextPart = status ? `${status.toLowerCase()} ` : "";
-
-  return (
-    <>
-      <span className={styles.heroValue}>{length}</span>{" "}
-      {possessive(entityName)} {statusTextPart}
-      {condition.toLowerCase()} streak{span ? ` from ${span}` : ""}.
-    </>
-  );
+  const condition = completedConditionPhrase(row);
+  const length = straightGamesPhrase(row);
+  const span = heroDateRange(row);
+  return `${subject} ${condition.phrase}${
+    condition.usesIn ? ` in ${length}` : ` ${length}`
+  }${span ? ` from ${span}` : ""}.`;
 }
 
 function gameCountForSentence(row: SectionRow): string {
-  const length = numericValue(row, "streak_length") ?? numericValue(row, "games");
+  const length =
+    numericValue(row, "streak_length") ?? numericValue(row, "games");
   if (length === null) return lengthValue(row);
   return `${formatValue(length, "streak_length")}-game`;
 }
@@ -207,7 +210,7 @@ function activeConditionPhrase(row: SectionRow): string {
   const minimumMatch = raw?.match(/^([a-z0-9_]+)>=(\d+(?:\.\d+)?)$/i);
   if (minimumMatch) {
     const [, stat, value] = minimumMatch;
-    return `${conditionVerb(stat)} ${formatValue(Number(value), stat)}+ ${conditionNoun(
+    return `${conditionVerb(stat)} ${formatProseValue(Number(value), stat)}+ ${conditionNoun(
       stat,
     )}`;
   }
@@ -215,12 +218,78 @@ function activeConditionPhrase(row: SectionRow): string {
   const maximumMatch = raw?.match(/^([a-z0-9_]+)<=(\d+(?:\.\d+)?)$/i);
   if (maximumMatch) {
     const [, stat, value] = maximumMatch;
-    return `${conditionVerb(stat)} <= ${formatValue(Number(value), stat)} ${conditionNoun(
+    return `${conditionVerb(stat)} <= ${formatProseValue(Number(value), stat)} ${conditionNoun(
       stat,
     )}`;
   }
 
   return conditionLabel(row).toLowerCase();
+}
+
+function completedConditionPhrase(row: SectionRow): {
+  phrase: string;
+  usesIn: boolean;
+} {
+  const raw = textValue(row, "condition");
+  if (raw === "made_three")
+    return { phrase: "made at least one three", usesIn: true };
+  if (raw === "triple_double")
+    return { phrase: "recorded a triple-double", usesIn: true };
+  if (raw === "wins") return { phrase: "won", usesIn: false };
+  if (raw === "losses") return { phrase: "lost", usesIn: false };
+
+  const minimumMatch = raw?.match(/^([a-z0-9_]+)>=(\d+(?:\.\d+)?)$/i);
+  if (minimumMatch) {
+    const [, stat, value] = minimumMatch;
+    return {
+      phrase: `${conditionPastVerb(stat)} ${formatProseValue(Number(value), stat)}+ ${conditionNoun(
+        stat,
+      )}`,
+      usesIn: true,
+    };
+  }
+
+  const maximumMatch = raw?.match(/^([a-z0-9_]+)<=(\d+(?:\.\d+)?)$/i);
+  if (maximumMatch) {
+    const [, stat, value] = maximumMatch;
+    return {
+      phrase: `recorded <= ${formatProseValue(Number(value), stat)} ${conditionNoun(
+        stat,
+      )}`,
+      usesIn: true,
+    };
+  }
+
+  return {
+    phrase: `had a ${conditionLabel(row).toLowerCase()} streak`,
+    usesIn: false,
+  };
+}
+
+function straightGamesPhrase(row: SectionRow): string {
+  const length =
+    numericValue(row, "streak_length") ?? numericValue(row, "games");
+  if (length === null) return lengthValue(row);
+  return `${formatProseValue(length, "streak_length")} straight ${
+    length === 1 ? "game" : "games"
+  }`;
+}
+
+function heroDateRange(row: SectionRow): string | null {
+  const start = textValue(row, "start_date");
+  const end = textValue(row, "end_date");
+  if (start && end) {
+    return sameDateYear(start, end)
+      ? `${formatCompactDate(start)} to ${formatLongDate(end)}`
+      : `${formatLongDate(start)} to ${formatLongDate(end)}`;
+  }
+  return start || end ? formatLongDate(start ?? end) : null;
+}
+
+function sameDateYear(first: string, second: string): boolean {
+  const firstYear = first.match(/^(\d{4})-/)?.[1];
+  const secondYear = second.match(/^(\d{4})-/)?.[1];
+  return Boolean(firstYear && secondYear && firstYear === secondYear);
 }
 
 function conditionVerb(stat: string): string {
@@ -230,6 +299,15 @@ function conditionVerb(stat: string): string {
   if (normalized === "ast") return "recording";
   if (normalized === "fg3m") return "making";
   return "recording";
+}
+
+function conditionPastVerb(stat: string): string {
+  const normalized = stat.toLowerCase();
+  if (normalized === "pts") return "scored";
+  if (normalized === "reb") return "grabbed";
+  if (normalized === "ast") return "recorded";
+  if (normalized === "fg3m") return "made";
+  return "recorded";
 }
 
 function conditionNoun(stat: string): string {
@@ -367,7 +445,8 @@ function compactStatLabel(stat: string): string {
 }
 
 function lengthValue(row: SectionRow): string {
-  const length = numericValue(row, "streak_length") ?? numericValue(row, "games");
+  const length =
+    numericValue(row, "streak_length") ?? numericValue(row, "games");
   if (length === null) return "—";
   return `${formatValue(length, "streak_length")} ${length === 1 ? "game" : "games"}`;
 }
@@ -397,13 +476,6 @@ function statusText(row: SectionRow): string | null {
   return null;
 }
 
-function dateRange(row: SectionRow): string | null {
-  const start = textValue(row, "start_date");
-  const end = textValue(row, "end_date");
-  if (start && end) return `${start} to ${end}`;
-  return start ?? end;
-}
-
 function recordValue(row: SectionRow): string {
   if (!hasValue(row.wins) && !hasValue(row.losses)) return "—";
   return `${formatValue(row.wins, "wins")}-${formatValue(row.losses, "losses")}`;
@@ -421,8 +493,9 @@ function signedValue(value: unknown, key: string): string {
   return formatValue(value, key);
 }
 
-function possessive(name: string): string {
-  return name.endsWith("s") ? `${name}'` : `${name}'s`;
+function sentenceSubject(name: string, kind: EntityKind): string {
+  if (kind === "team" && !/^the\b/i.test(name)) return `The ${name}`;
+  return name;
 }
 
 function rowKey(row: SectionRow, index: number): string {

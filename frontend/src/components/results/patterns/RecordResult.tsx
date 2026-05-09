@@ -5,7 +5,11 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { Badge } from "../../../design-system";
-import { formatColHeader, formatValue } from "../../tableFormatting";
+import {
+  formatColHeader,
+  formatProseValue,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
@@ -292,7 +296,8 @@ function teamRecordBySeasonColumns(
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [valueColumn("season")];
   const gamesColumn =
-    optionalValueColumn("games", rows) ?? optionalValueColumn("games_played", rows);
+    optionalValueColumn("games", rows) ??
+    optionalValueColumn("games_played", rows);
   if (gamesColumn) {
     columns.push(gamesColumn);
   }
@@ -455,7 +460,7 @@ function teamRecordSentence(
   const opponentPhrase = opponent ? ` against the ${opponent.name}` : "";
   const record = recordText(row);
   const winPct = hasValue(row.win_pct)
-    ? `, a ${formatValue(row.win_pct, "win_pct")} win rate`
+    ? `, a ${formatProseValue(row.win_pct, "win_pct")} win rate`
     : "";
 
   if (record) {
@@ -471,16 +476,16 @@ function recordByDecadeSentence(
 ): string {
   if (!row) return `The ${team.name} have decade records available.`;
 
-  const context = recordRangeContext(row, data.result?.metadata);
+  const context = recordByDecadeContext(row, data.result?.metadata);
   const record = recordText(row);
   const winPct = hasValue(row.win_pct)
-    ? ` (${formatValue(row.win_pct, "win_pct")})`
+    ? ` (${formatProseValue(row.win_pct, "win_pct")})`
     : "";
 
   if (record) {
-    return `The ${team.name} are ${record}${winPct}${context}, grouped by decade.`;
+    return `The ${team.name} are ${record}${winPct}${context}.`;
   }
-  return `The ${team.name} have records${context}, grouped by decade.`;
+  return `The ${team.name} have records${context}.`;
 }
 
 function recordLeaderboardSentence(
@@ -492,7 +497,7 @@ function recordLeaderboardSentence(
   const decade = textValue(row, "decade");
   const decadeContext = decade ? ` in the ${decade}` : "";
   const since = sinceContext(data.query);
-  const metricValue = formatValue(row[metric], metric);
+  const metricValue = formatProseValue(row[metric], metric);
 
   if (metric === "wins") {
     return `The ${team.name} won the most games${decadeContext}${since}, with ${metricValue} wins.`;
@@ -527,15 +532,15 @@ function matchupByDecadeSentence(
 
   if (record && wins !== null && losses !== null) {
     if (wins > losses) {
-      return `The ${firstName} lead the ${secondName} ${record}${context}, grouped by decade.`;
+      return `The ${firstName} lead the ${secondName} ${record}${context}.`;
     }
     if (wins < losses) {
-      return `The ${secondName} lead the ${firstName} ${losses}-${wins}${context}, grouped by decade.`;
+      return `The ${secondName} lead the ${firstName} ${losses}-${wins}${context}.`;
     }
-    return `The ${firstName} and ${secondName} are tied ${record}${context}, grouped by decade.`;
+    return `The ${firstName} and ${secondName} are tied ${record}${context}.`;
   }
 
-  return `The ${firstName} and ${secondName} have matchup records${context}, grouped by decade.`;
+  return `The ${firstName} and ${secondName} have matchup records${context}.`;
 }
 
 function recordLeaderboardMetric(
@@ -614,6 +619,28 @@ function recordRangeContext(
   if (start) return ` since ${start}${rangeSuffix}`;
   if (end) return ` through ${end}${rangeSuffix}`;
   return seasonType ? ` in the ${seasonType.toLowerCase()}` : "";
+}
+
+function recordByDecadeContext(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+): string {
+  const start =
+    textValue(row, "season_start") ?? metadataText(metadata, "start_season");
+  const end =
+    textValue(row, "season_end") ?? metadataText(metadata, "end_season");
+  const seasonType =
+    textValue(row, "season_type") ?? metadataText(metadata, "season_type");
+  const typePrefix = seasonType ? ` in the ${seasonType.toLowerCase()}` : "";
+
+  if (start && end) {
+    return start === end
+      ? `${typePrefix} in ${start}`
+      : `${typePrefix} from ${start} to ${end}`;
+  }
+  if (start) return `${typePrefix} since ${start}`;
+  if (end) return `${typePrefix} through ${end}`;
+  return typePrefix;
 }
 
 function matchupContext(metadata: ResultMetadata | undefined): string {

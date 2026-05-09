@@ -181,6 +181,7 @@ Point-in-time audit snapshots and historical records.
 
 - `cosmetic_fixes_pass1_report.md` — pass 1 report for chip wrapping, average precision, and date-format cleanup from the `/review` screenshot pass
 - `correctness_fixes_pass3_report.md` — pass 3 report for count headlines, game-summary answers, opponent-points filters, playoff-round display, and team-headline grammar fixes
+- `editorial_polish_pass4_report.md` — pass 4 report for hero-sentence prose, integer-zero trimming, and hero-only mono-font cleanup
 - `output_shapes.md` — exhaustive result-renderer shape taxonomy with current parser-example sweep counts
 - `query_intent_audit.md` — fine-grained query intent → answer shape audit: every distinct intent, its current route, current shape, available data, and gap notes
 - `determination_layer_audit.md` — per-shape field selection, tie-handling, qualifiers, truncation, and context disambiguation

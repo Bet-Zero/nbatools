@@ -9,6 +9,7 @@ import {
   formatAverageValue,
   formatCompactDate,
   formatValue,
+  trimProseTrailingZeroes,
 } from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
@@ -117,7 +118,7 @@ export default function GameLogResult({
     : contextItems(data, rows);
   const countSentence = countHeadline(data.result?.metadata);
   const answerSentence = answerHeadline(data.result?.metadata);
-  const heroSentence = countSentence ?? answerSentence;
+  const heroSentence = proseHeadline(countSentence ?? answerSentence);
   const showStrip = showSummaryStrip && !countSentence && items.length > 0;
   const showDetails = rows.length > 0;
 
@@ -174,6 +175,10 @@ function countHeadline(metadata: ResultMetadata | undefined): string | null {
 function answerHeadline(metadata: ResultMetadata | undefined): string | null {
   const phrase = metadata?.answer_phrase;
   return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
+}
+
+function proseHeadline(value: string | null): string | null {
+  return value ? trimProseTrailingZeroes(value) : null;
 }
 
 function tableColumns(
