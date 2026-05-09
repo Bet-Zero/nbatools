@@ -101,6 +101,32 @@ A dash (`—`) is acceptable only when the missing meaning is obvious. For impor
 semantic columns like playoff round/result, use readable labels such as
 `Unavailable`, `Unknown`, or `Not available`, or provide the real semantic value.
 
+### G14 — Hero sentence must match query intent
+
+Do not let hero copy default to record/wins unless the query asks for record or
+head-to-head. `Recent form` should lead with performance averages/context; `best
+record` should lead with record/win pct; matchup history should specify whether
+it is describing game record or series record.
+
+### G15 — Comparison edge logic needs metric direction metadata
+
+Comparison edge labels must know whether higher is better, lower is better, or
+neutral/contextual. Losses and turnovers cannot use simple higher-is-better edge
+copy. Neutral/context metrics should use `Difference` rather than `Edge` when no
+value judgment is appropriate.
+
+### G16 — Comparison layouts should avoid duplicate visual layers
+
+Comparison families should use compact subject summaries plus a focused metric
+comparison table. Avoid stacking large subject dashboards and long metric tables
+that repeat the same values.
+
+### G17 — Playoff matchup tables must show winner/result explicitly
+
+Do not make users infer playoff series winners by comparing mirrored team record
+columns. Series/matchup tables should include `Winner` and/or `Series Result`
+columns whenever possible.
+
 ---
 
 # Batch 1
@@ -548,6 +574,191 @@ dashes.
 
 ---
 
+# Batch 4
+
+Screenshots reviewed:
+
+10. Playoff Round Records
+11. Playoff Matchup History
+12. Comparison Panels
+
+---
+
+## Family 10 — Playoff Round Records
+
+### Example reviewed
+
+- Query: `best finals record since 1980`
+- Fixture: 234
+- Route/pattern shown: `playoff_round_record` / `leaderboard`
+
+### Verdict
+
+Keep. This is one of the cleaner families. The structure is correct, but hero
+wording and caveat/context separation need refinement.
+
+### Decisions
+
+- Keep the hero sentence plus dense ranked table.
+- Keep the queried metric highlight. For this query, `Win Pct` is correctly
+  emphasized.
+- Improve hero wording:
+  - Current: `Indiana Pacers own 66.7% finals playoff mark (10-5) across 15 games.`
+  - Better: `The Indiana Pacers have the best Finals record since 1980, going 10-5 (.667) across 15 games.`
+- Required playoff round record columns:
+  - `#`, Team, Round, Record, Games, Win Pct
+- Optional columns:
+  - Seasons, Series, Titles/Wins if available
+- Highlight rule:
+  - `best record` → Win Pct
+  - `most wins` → Wins
+  - `most games` → Games
+- Separate caveats from normal query context:
+  - Data limitation: round data unavailable before 2001-02 → Caveat
+  - `Finals record leaderboard (win_pct)` and season range → Context / Interpreted as
+- Prefer readable season range labels:
+  - `Since 1980-81`
+  - `1980-81 through 2025-26`
+
+### Lock-in rule
+
+Playoff Round Records = direct ranking hero + dense ranked playoff table. The
+queried metric must be highlighted, and caveats must be limited to actual data
+limitations.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/PlayoffHistoryResult.tsx`
+- `LeaderboardResult` / playoff leaderboard config if shared
+- playoff hero sentence builder
+- caveat/context copy mapping
+- metric highlight mapping
+
+---
+
+## Family 11 — Playoff Matchup History
+
+### Example reviewed
+
+- Query: `Heat vs Knicks playoff history`
+- Fixture: 229
+- Route/pattern shown: `playoff_matchup_history` / `comparison`
+
+### Verdict
+
+Keep and refine. The matchup hero works, but the table needs explicit
+winner/result clarity and caveat/context separation.
+
+### Decisions
+
+- Keep the two-team matchup hero plus series table.
+- Clarify whether the hero record is game record or series record.
+  - Current: `The Heat lead the Knicks 19-16 in their playoff history.`
+  - Better if game record: `The Heat lead the Knicks 19-16 in playoff games.`
+  - Better if series record: `The Heat lead the Knicks 4-2 in playoff series.`
+- The table should not force users to infer winners by comparing mirrored team
+  record columns.
+- Required playoff matchup history columns:
+  - Season, Round, Winner, Series Result
+- Optional columns:
+  - Team A record, Team B record, Games
+- Prefer explicit series values:
+  - `Heat won 4-3`
+  - `Knicks won 3-2`
+- Avoid unexplained dashes in Round. Use `Round unavailable`, `Unavailable`, or a
+  real round/result label.
+- Separate caveats from normal query context:
+  - Round data unavailable before 2001-02 → Caveat
+  - matchup `MIA vs NYK` and season range → Context / Interpreted as
+- Remove/hide `Series Detail` raw toggle when it duplicates the visible series
+  answer table. Keep only if it exposes additional raw/debug-only fields.
+
+### Lock-in rule
+
+Playoff Matchup History = matchup hero + explicit series-result table. The table
+must show winner/result directly; users should not have to infer from mirrored
+team record columns.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/PlayoffHistoryResult.tsx`
+- playoff matchup table column config
+- series winner/result derivation
+- caveat/context copy mapping
+- raw/detail toggle visibility rules
+
+---
+
+## Family 12 — Comparison Panels
+
+### Example reviewed
+
+- Query: `Jokic vs Embiid recent form`
+- Fixture: 239
+- Route/pattern shown: `player_compare` / `comparison`
+
+### Verdict
+
+Rebuild/simplify. The data is useful, but the visual layout is too heavy and the
+hero does not match the query intent.
+
+### Decisions
+
+- Keep comparison as a family, but simplify the visual structure.
+- Current layout has too many duplicate layers:
+  - hero sentence
+  - large side-by-side stat dashboards
+  - long metric comparison table
+  - raw toggles
+- Prefer:
+  - hero sentence
+  - compact side-by-side subject summaries
+  - focused metric comparison table
+  - optional `Show more metrics`
+- The hero must match query intent.
+  - Query: `recent form`
+  - Current hero: `Nikola Jokić has 10 wins to Joel Embiid's 7 in the 2025-26 regular season.`
+  - Better performance-focused hero: `Over their last 10 games, Jokić has averaged 25.3 points, 14.5 rebounds and 11.9 assists, while Embiid has averaged 28.8 points, 8.2 rebounds and 4.2 assists.`
+  - Or concise comparison hero: `Over their last 10 games, Jokić has the edge in rebounds and assists, while Embiid has scored more.`
+- Do not default recent-form comparisons to wins/record unless the query asks for
+  record or head-to-head.
+- Side-by-side subject summaries should be compact, not full stat dashboards.
+- Default metric table should be focused and not exceed roughly 8–12 rows unless
+  the query demands more.
+- Required default player comparison rows:
+  - Games, Record, PTS, REB, AST, MIN, FG%, 3P%, FT%, STL, BLK, TOV, +/-, TS%/eFG% if available
+- Put deeper metrics behind `Show more metrics`:
+  - totals, USG%, AST%, REB%, and other secondary/advanced fields
+- Edge logic needs metric direction metadata:
+  - Higher better: PTS, REB, AST, STL, BLK, FG%, TS%, +/-
+  - Lower better: Losses, TOV (context-dependent)
+  - Neutral/contextual: Games, MIN, USG%
+- Do not label losses incorrectly.
+  - Bad: `Nikola Jokić +3 losses`
+  - Better: `Jokić 3 fewer losses` or `Jokić -3 losses`
+- Percentage difference wording should be readable.
+  - Prefer `Jokić +30.0 percentage points` for win-pct style differences.
+- Remove/hide `Player Summary Detail` and `Full Metric Detail` raw toggles when
+  they duplicate the visible subject summaries/table. Keep only if additional
+  raw/debug-only fields exist.
+
+### Lock-in rule
+
+Comparison Panels = intent-aware hero + compact subject summaries + focused
+metric comparison table. Avoid duplicated dashboards, limit default metric rows,
+and make edge/difference logic metric-aware.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/ComparisonResult.tsx`
+- comparison hero sentence builder
+- comparison metric config / row limiting
+- metric direction metadata
+- edge/difference formatting
+- raw/detail toggle visibility rules
+
+---
+
 ## Open questions for final synthesis
 
 - Should parser review pages keep the current large debug/context card exactly,
@@ -564,3 +775,7 @@ dashes.
   moved to an additional shooting-summary detail?
 - For streak queries, how should the parser/metadata distinguish exact streak
   length (`exactly 5`) from minimum streak length (`5+`)?
+- For playoff matchup history, should the hero prefer game record, series record,
+  or show both when both are available?
+- For comparison tables, where should the default cutoff between primary metrics
+  and `Show more metrics` land: 8 rows, 10 rows, or 12 rows?
