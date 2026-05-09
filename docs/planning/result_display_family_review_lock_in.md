@@ -127,6 +127,23 @@ Do not make users infer playoff series winners by comparing mirrored team record
 columns. Series/matchup tables should include `Winner` and/or `Series Result`
 columns whenever possible.
 
+### G18 — Hero wording must preserve filter meaning exactly
+
+Do not collapse one basketball concept into another. If the query asks for
+`record against playoff teams`, the hero must say `against playoff teams`, not
+`in the playoffs`.
+
+### G19 — Type fields must not mislead
+
+`Type` should describe the game population/season type, not an opponent group or
+filter. Use separate labels where needed, such as `Season Type: Regular Season`
+and `Opponent Group: Playoff Teams`.
+
+### G20 — Decade record families are structurally strong
+
+The decade record patterns are working. They need mostly semantic/copy cleanup
+and context/caveat separation, not major redesign.
+
 ---
 
 # Batch 1
@@ -759,6 +776,170 @@ and make edge/difference logic metric-aware.
 
 ---
 
+# Batch 5
+
+Screenshots reviewed:
+
+13. Team Record
+14. Record By Decade
+15. Record By Decade Leaderboard
+
+---
+
+## Family 13 — Team Record
+
+### Example reviewed
+
+- Query: `What is the Celtics' record against playoff teams?`
+- Fixture: 45
+- Route/pattern shown: `team_record` / `summary`
+
+### Verdict
+
+Keep the structure, but fix semantic wording and filter accuracy. The one-row
+record table is strong; the hero currently risks saying a different basketball
+concept than the query asked for.
+
+### Decisions
+
+- Keep the hero sentence plus one-row record table.
+- The one-row table is the correct answer table shape for a team record query.
+- The query asks for record `against playoff teams`; the hero must not say `in
+  the playoffs` unless the query actually asked for playoff games.
+  - Bad: `The Boston Celtics are 6-5 in the 2024-25 playoffs, a 54.5% win rate.`
+  - Better: `The Boston Celtics are 6-5 against playoff teams in 2024-25, a 54.5% win rate.`
+  - Better if the filter uses teams that made that season's playoffs: `The Boston Celtics went 6-5 against 2024-25 playoff teams, a 54.5% win rate.`
+- Normal filter explanations are context, not caveats.
+  - Bad caveat: `record filtered to games vs 20 opponents (ATL, BOS, CHI, ...)`
+  - Better context: `Filtered to games against 20 playoff-team opponents: ATL, BOS, CHI, ...`
+- The `Type` column must not mislead. If the games are regular-season games
+  against playoff teams, `Type` should not say `Playoffs`.
+- Use separate fields/labels when needed:
+  - `Season Type: Regular Season`
+  - `Opponent Group: Playoff Teams`
+- Required team record table columns:
+  - Team, W-L, Games, Win %, PPG, +/-, REB, AST, 3PM
+- Optional columns:
+  - Type, Opponent Group, Season, Home/Away, Opponent
+- `Record Detail` and `By Season Detail` raw toggles should be hidden/removed
+  when they duplicate the visible one-row table. Keep only if they expose
+  additional raw/debug-only fields.
+
+### Lock-in rule
+
+Team Record = intent-accurate hero sentence + one-row record table. The hero must
+preserve filters exactly, and `Type` must describe the actual game population,
+not the opponent group/filter.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/RecordResult.tsx`
+- team record hero sentence builder
+- context/caveat copy mapping
+- season type vs opponent group labeling
+- raw/detail toggle visibility rules
+
+---
+
+## Family 14 — Record By Decade
+
+### Example reviewed
+
+- Query: `Warriors record by decade`
+- Fixture: 236
+- Route/pattern shown: `record_by_decade` / `summary`
+
+### Verdict
+
+Keep. This is clean and close to locked. It needs context/caveat cleanup and
+minor metric-highlight rules, not redesign.
+
+### Decisions
+
+- Keep the team hero sentence plus decade breakdown table.
+- The reviewed hero is clear:
+  - `The Golden State Warriors are 1,176-1,209 (49.3%) in the regular season from 1996-97 to 2025-26.`
+- The decade table shape is good.
+- Required table columns:
+  - Decade, Seasons, W-L, Win %, Games
+- Optional columns:
+  - Wins, Losses, Type
+- Highlight rule:
+  - `record by decade` → Win % is acceptable as the quality column
+  - `most wins by decade` → Wins
+  - `best decade` → Win %
+  - `worst decade` → Win % ascending or Losses depending query
+- The current caveat is not a caveat:
+  - `record by decade aggregated across 1996-97 to 2025-26`
+- Convert it to context:
+  - `Aggregated by decade from 1996-97 through 2025-26.`
+- `Record Detail` raw toggle should be hidden/removed when it duplicates the
+  visible hero/table. Keep only if it exposes additional raw/debug-only fields.
+
+### Lock-in rule
+
+Record By Decade = team hero sentence + decade breakdown table. The table should
+highlight the metric implied by the query, and normal aggregation/range notes
+belong in context, not caveats.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/RecordResult.tsx`
+- decade record table config
+- metric highlight mapping
+- context/caveat copy mapping
+- raw/detail toggle visibility rules
+
+---
+
+## Family 15 — Record By Decade Leaderboard
+
+### Example reviewed
+
+- Query: `winningest team of the 2010s`
+- Fixture: 237
+- Route/pattern shown: `record_by_decade_leaderboard` / `leaderboard`
+
+### Verdict
+
+Keep. This is one of the stronger leaderboard families. It needs mostly
+context/caveat cleanup.
+
+### Decisions
+
+- Keep the leaderboard hero sentence plus dense ranked table.
+- The reviewed hero is good:
+  - `The San Antonio Spurs won the most games in the 2010s, with 541 wins.`
+- The queried metric `Wins` is highlighted correctly.
+- Required table columns:
+  - `#`, Team, Decade, Queried Metric, W-L, Games, Win %, Seasons, Type
+- Highlight rule:
+  - `winningest` → Wins
+  - `best record` → Win %
+  - `most losses` → Losses
+- The current caveat block contains normal context:
+  - `record by decade leaderboard (wins)`
+  - `across 2010-11 to 2019-20`
+- Convert to explicit interpretation/context:
+  - `Interpreted as: record by decade leaderboard, ranked by wins.`
+  - `Context: 2010-11 through 2019-20 regular season.`
+- The table is structurally strong; no redesign needed.
+
+### Lock-in rule
+
+Record By Decade Leaderboard = leaderboard hero sentence + dense ranked table
+with queried metric highlighted. Keep the current table shape and move normal
+range/metric interpretation out of caveats.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/LeaderboardResult.tsx`
+- decade leaderboard config
+- metric highlight mapping
+- context/caveat copy mapping
+
+---
+
 ## Open questions for final synthesis
 
 - Should parser review pages keep the current large debug/context card exactly,
@@ -779,3 +960,5 @@ and make edge/difference logic metric-aware.
   or show both when both are available?
 - For comparison tables, where should the default cutoff between primary metrics
   and `Show more metrics` land: 8 rows, 10 rows, or 12 rows?
+- For `record against playoff teams`, should the visible table include both
+  `Season Type` and `Opponent Group` whenever both concepts are present?
