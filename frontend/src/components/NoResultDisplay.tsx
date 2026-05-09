@@ -1,5 +1,6 @@
 import { Badge, Card, type BadgeVariant } from "../design-system";
 import type { DisambiguationCandidate, ResultMetadata } from "../api/types";
+import { formatColHeader } from "./tableFormatting";
 import styles from "./NoResultDisplay.module.css";
 
 interface Props {
@@ -101,6 +102,16 @@ function stateProfile(
         badgeVariant: "warning",
         suggestions: [],
       };
+    case "filter_not_supported":
+      return {
+        variant: "unsupported",
+        title: "Unavailable Filter",
+        label: "Filter unavailable",
+        message:
+          "The requested filter or metric is not available in the current dataset.",
+        badgeVariant: "warning",
+        suggestions: [],
+      };
     case "empty_sections":
       return {
         variant: "empty",
@@ -134,13 +145,19 @@ export default function NoResultDisplay({
   notes = [],
   caveats = [],
 }: Props) {
-  const profile = stateProfile(reason, status);
   const candidateLine = candidateSuggestionLine(metadata?.candidates);
   const suggestedQueries = suggestedQueryLines(metadata?.suggested_queries);
   const details = [
     ...notes.map((text) => ({ kind: "Note", text })),
     ...caveats.map((text) => ({ kind: "Caveat", text })),
   ];
+  const profile = stateProfile(reason, status);
+  const message = readableNoResultMessage(
+    profile.message,
+    reason,
+    metadata,
+    details.map((detail) => detail.text),
+  );
 
   return (
     <Card
@@ -159,7 +176,7 @@ export default function NoResultDisplay({
           {formatStatus(status)}
         </Badge>
       </div>
-      <div className={styles.message}>{profile.message}</div>
+      <div className={styles.message}>{message}</div>
       {candidateLine && (
         <div className={styles.recovery} aria-label="Disambiguation suggestions">
           <span className={styles.recoveryLead}>Did you mean:</span>{" "}
@@ -228,6 +245,79 @@ function suggestedQueryLines(queries: string[] | undefined): string[] {
   return queries
     .map(stringValue)
     .filter((query): query is string => Boolean(query));
+}
+
+function readableNoResultMessage(
+  fallback: string,
+  reason: string | null | undefined,
+  metadata: ResultMetadata | null | undefined,
+  detailTexts: string[],
+): string {
+  const columnMessage =
+    columnUnavailableMessage(reason) ??
+    detailTexts.map(columnUnavailableMessage).find(Boolean);
+  if (columnMessage) return columnMessage;
+
+  if (reason === "filter_not_supported") {
+    const metric = metricFromMetadata(metadata);
+    if (metric) {
+      return `${metricLabel(metric)} is not available for this query.`;
+    }
+  }
+
+  return humanizeBackendCopy(fallback);
+}
+
+function columnUnavailableMessage(text: string | null | undefined): string | null {
+  if (!text) return null;
+  const match = text.match(
+    /^Column '([^']+)' not available(?: for ([^.]+))?\.?$/i,
+  );
+  if (!match) return null;
+
+  const metric = metricLabel(match[1]);
+  const context = match[2]?.trim();
+  return context
+    ? `${metric} is not available for ${context}.`
+    : `${metric} is not available in the current dataset.`;
+}
+
+function humanizeBackendCopy(text: string): string {
+  const columnMessage = columnUnavailableMessage(text);
+  if (columnMessage) return columnMessage;
+  return text;
+}
+
+function metricFromMetadata(
+  metadata: ResultMetadata | null | undefined,
+): string | null {
+  if (!metadata) return null;
+  for (const key of ["stat", "metric", "target_stat", "target_metric"]) {
+    const value = metadata[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
+function metricLabel(metric: string): string {
+  const normalized = metric.trim().toLowerCase();
+  const labels: Record<string, string> = {
+    ast: "Assists",
+    ast_avg: "Assists per game",
+    def_rating: "Defensive rating",
+    efg_pct: "Effective field-goal percentage",
+    fg3_pct: "Three-point percentage",
+    fg_pct: "Field-goal percentage",
+    net_rating: "Net rating",
+    off_rating: "Offensive rating",
+    pts: "Points",
+    pts_avg: "Points per game",
+    reb: "Rebounds",
+    reb_avg: "Rebounds per game",
+    ts_pct: "True-shooting percentage",
+    win_pct: "Winning percentage",
+  };
+  return labels[normalized] ?? formatColHeader(metric);
 }
 
 function joinHumanList(values: string[]): string {

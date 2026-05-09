@@ -10,6 +10,8 @@ interface Props {
   highlight?: boolean;
   hiddenColumns?: Set<string>;
   defaultOpen?: boolean;
+  collapsedLabel?: string;
+  expandedLabel?: string;
 }
 
 export default function RawDetailToggle({
@@ -18,6 +20,8 @@ export default function RawDetailToggle({
   highlight = false,
   hiddenColumns,
   defaultOpen = false,
+  collapsedLabel = "Show raw table",
+  expandedLabel = "Hide raw table",
 }: Props) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
@@ -41,7 +45,7 @@ export default function RawDetailToggle({
           aria-expanded={open}
           aria-controls={panelId}
         >
-          {open ? "Hide raw table" : "Show raw table"}
+          {open ? expandedLabel : collapsedLabel}
         </Button>
       </div>
       {open && (

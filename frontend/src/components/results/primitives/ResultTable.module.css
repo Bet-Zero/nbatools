@@ -43,6 +43,10 @@
   white-space: nowrap;
 }
 
+.allowWrap {
+  white-space: normal;
+}
+
 .table tbody tr:first-child td {
   border-top: none;
 }

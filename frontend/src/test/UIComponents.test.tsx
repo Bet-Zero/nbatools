@@ -96,6 +96,24 @@ describe("NoResultDisplay", () => {
     expect(screen.getByLabelText("Result details")).toHaveTextContent("Note");
   });
 
+  it("humanizes backend column names in primary unsupported copy", () => {
+    render(
+      <NoResultDisplay
+        reason="Column 'def_rating' not available"
+        status="no_result"
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Defensive rating is not available in the current dataset.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Column 'def_rating' not available"),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows ambiguous variant", () => {
     render(<NoResultDisplay reason="ambiguous" status="no_result" />);
     expect(screen.getByText("Ambiguous Query")).toBeInTheDocument();

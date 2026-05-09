@@ -16,6 +16,10 @@ import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
+import {
+  resultTableSourceKeys,
+  rowsHaveAdditionalDetailFields,
+} from "../primitives/detailTables";
 import { hasPinnedEntity } from "./entityBinding";
 import styles from "./StreakResult.module.css";
 
@@ -55,6 +59,17 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
   const headlineRow = activeRow(rows) ?? rows[0];
   const kind = entityKind(data, headlineRow);
   const entity = entityDisplay(kind, data.result?.metadata, headlineRow);
+  const columns = tableColumns(rows, data, kind);
+  const displayedDetailKeys = resultTableSourceKeys(columns);
+  if (kind === "player" && hasPinnedEntity(data.result?.metadata, "player")) {
+    for (const key of ["player", "player_name", "player_id", "team_abbr"]) {
+      displayedDetailKeys.add(key);
+    }
+  }
+  const hasAdditionalStreakFields = rowsHaveAdditionalDetailFields(
+    rows,
+    displayedDetailKeys,
+  );
 
   return (
     <section className={styles.pattern} aria-label="Streak result">
@@ -66,11 +81,19 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
       />
       <ResultTable
         rows={rows}
-        columns={tableColumns(rows, data, kind)}
+        columns={columns}
         ariaLabel="Streaks"
         getRowKey={rowKey}
       />
-      <RawDetailToggle title="Full Streak Detail" rows={rows} highlight />
+      {hasAdditionalStreakFields && (
+        <RawDetailToggle
+          title="Full Streak Detail"
+          rows={rows}
+          highlight
+          collapsedLabel="Show additional columns"
+          expandedLabel="Hide additional columns"
+        />
+      )}
     </section>
   );
 }
@@ -89,17 +112,20 @@ function tableColumns(
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "rank",
+      sourceKeys: ["rank"],
       header: "#",
       align: "center",
       render: (_row, index) => index + 1,
     },
     {
       key: "condition",
+      sourceKeys: ["condition"],
       header: "Streak",
       render: conditionLabel,
     },
     {
       key: "length",
+      sourceKeys: ["streak_length", "games"],
       header: "Length",
       numeric: true,
       render: lengthValue,
@@ -109,6 +135,10 @@ function tableColumns(
   if (!hidePinnedPlayerColumn) {
     columns.splice(1, 0, {
       key: "entity",
+      sourceKeys:
+        kind === "team"
+          ? ["team", "team_name", "team_abbr", "team_id"]
+          : ["player", "player_name", "player_id", "team_abbr"],
       header: kind === "team" ? "Team" : "Player",
       render: (row) => {
         const entity = entityDisplay(kind, data.result?.metadata, row);
@@ -120,6 +150,7 @@ function tableColumns(
   if (rows.some((row) => hasValue(row.is_active))) {
     columns.push({
       key: "status",
+      sourceKeys: ["is_active", "status"],
       header: "Status",
       align: "center",
       render: statusCell,
@@ -129,22 +160,25 @@ function tableColumns(
   if (rows.some((row) => hasValue(row.start_date))) {
     columns.push({
       key: "start_date",
+      sourceKeys: ["start_date"],
       header: "Start",
-      render: (row) => textValue(row, "start_date") ?? "—",
+      render: (row) => formatCompactDate(textValue(row, "start_date")),
     });
   }
 
   if (rows.some((row) => hasValue(row.end_date))) {
     columns.push({
       key: "end_date",
+      sourceKeys: ["end_date"],
       header: "End",
-      render: (row) => textValue(row, "end_date") ?? "—",
+      render: (row) => formatCompactDate(textValue(row, "end_date")),
     });
   }
 
   if (rows.some((row) => hasValue(row.games))) {
     columns.push({
       key: "games",
+      sourceKeys: ["games"],
       header: "Games",
       numeric: true,
       render: (row) => formatValue(row.games, "games"),
@@ -154,6 +188,7 @@ function tableColumns(
   if (rows.some((row) => hasValue(row.wins) || hasValue(row.losses))) {
     columns.push({
       key: "record",
+      sourceKeys: ["wins", "losses"],
       header: "Record",
       align: "center",
       render: recordValue,
@@ -164,6 +199,7 @@ function tableColumns(
     if (!rows.some((row) => hasValue(row[key]))) continue;
     columns.push({
       key,
+      sourceKeys: [key],
       header: TABLE_LABELS[key] ?? formatColHeader(key),
       numeric: true,
       render: (row) => signedValue(row[key], key),

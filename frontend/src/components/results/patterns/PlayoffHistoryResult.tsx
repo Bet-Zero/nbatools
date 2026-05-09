@@ -10,6 +10,10 @@ import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
+import {
+  resultTableSourceKeys,
+  rowsHaveAdditionalDetailFields,
+} from "../primitives/detailTables";
 import styles from "./PlayoffHistoryResult.module.css";
 
 type PlayoffMode = "history" | "round_record" | "matchup";
@@ -36,6 +40,8 @@ const MATCHUP_DETAIL_TITLES: Record<string, string> = {
 };
 
 const EMPTY_CELL = "—";
+const ROUND_UNAVAILABLE = "Round unavailable";
+const RESULT_UNAVAILABLE = "Result unavailable";
 
 export default function PlayoffHistoryResult({ data, mode }: Props) {
   const route = data.route ?? data.result?.metadata?.route;
@@ -62,6 +68,10 @@ function PlayoffTeamHistoryResult({ data }: { data: QueryResponse }) {
 
   const team = teamDisplay(data.result?.metadata, summary);
   const rows = seasonRows.length > 0 ? seasonRows : summaryRows;
+  const columns = historyColumns(rows);
+  const visibleDetailKeys: Record<string, Iterable<string>> = {};
+  visibleDetailKeys[seasonRows.length > 0 ? "by_season" : "summary"] =
+    resultTableSourceKeys(columns);
 
   return (
     <section className={styles.pattern} aria-label="Playoff history result">
@@ -73,11 +83,11 @@ function PlayoffTeamHistoryResult({ data }: { data: QueryResponse }) {
       />
       <ResultTable
         rows={rows}
-        columns={historyColumns(rows)}
+        columns={columns}
         ariaLabel="Playoff season breakdown"
         getRowKey={rowKey}
       />
-      {detailToggles(sections, HISTORY_DETAIL_TITLES)}
+      {detailToggles(sections, HISTORY_DETAIL_TITLES, visibleDetailKeys)}
     </section>
   );
 }
@@ -93,6 +103,11 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
 
   const leader = rows[0];
   const team = teamDisplay(data.result?.metadata, leader);
+  const columns = roundRecordColumns(rows, data.result?.metadata);
+  const hasAdditionalDetail = rowsHaveAdditionalDetailFields(
+    rows,
+    resultTableSourceKeys(columns),
+  );
 
   return (
     <section
@@ -107,12 +122,20 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
       />
       <ResultTable
         rows={rows}
-        columns={roundRecordColumns(rows, data.result?.metadata)}
+        columns={columns}
         ariaLabel="Playoff round records"
         getRowKey={rowKey}
         highlightColumnKey={roundRecordMetricKey(rows)}
       />
-      <RawDetailToggle title="Playoff Round Detail" rows={rows} highlight />
+      {hasAdditionalDetail && (
+        <RawDetailToggle
+          title="Playoff Round Detail"
+          rows={rows}
+          highlight
+          collapsedLabel="Show additional columns"
+          expandedLabel="Hide additional columns"
+        />
+      )}
     </section>
   );
 }
@@ -123,6 +146,11 @@ function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
   const seriesRows = sections.comparison ?? [];
   const teams = matchupTeams(data.result?.metadata, summaryRows);
   const rows = seriesRows.length > 0 ? seriesRows : summaryRows;
+  const columns = matchupColumns(rows, teams);
+  const visibleDetailKeys = {
+    [seriesRows.length > 0 ? "comparison" : "summary"]:
+      resultTableSourceKeys(columns),
+  };
 
   if (teams.length === 0 && rows.length === 0) return null;
 
@@ -135,13 +163,13 @@ function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
       />
       <ResultTable
         rows={rows}
-        columns={matchupColumns(rows, teams)}
+        columns={columns}
         ariaLabel={
           seriesRows.length > 0 ? "Playoff series" : "Playoff matchup teams"
         }
         getRowKey={rowKey}
       />
-      {detailToggles(sections, MATCHUP_DETAIL_TITLES)}
+      {detailToggles(sections, MATCHUP_DETAIL_TITLES, visibleDetailKeys)}
     </section>
   );
 }
@@ -244,20 +272,30 @@ function historyColumns(
     textColumn("season", "Season"),
     {
       key: "round",
+      sourceKeys: ["round_reached", "deepest_round", "playoff_round", "round"],
       header: "Round",
       render: (row) => roundCell(row),
     },
     {
       key: "record",
+      sourceKeys: ["wins", "losses", "games", "games_played", "series"],
       header: "Record",
       align: "center",
       render: (row) => recordText(row) ?? gameCount(row) ?? EMPTY_CELL,
     },
   ];
 
-  addIfPresent(columns, rows, "result", "Result");
+  if (rows.some((row) => hasValue(row.result))) {
+    columns.push({
+      key: "result",
+      sourceKeys: ["result"],
+      header: "Result",
+      render: (row) => playoffResultValue(row),
+    });
+  }
   columns.push({
     key: "opponent",
+    sourceKeys: ["opponent", "opponent_team_name", "opponent_team_abbr"],
     header: "Opponent",
     render: opponentValue,
   });
@@ -277,22 +315,26 @@ function roundRecordColumns(
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "rank",
+      sourceKeys: ["rank"],
       header: "#",
       align: "center",
       render: (row, index) => rankValue(row, index),
     },
     {
       key: "team",
+      sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
       header: "Team",
       render: (row) => teamIdentity(teamDisplay(metadata, row)),
     },
     {
       key: "round",
+      sourceKeys: ["round", "playoff_round", "round_reached", "deepest_round"],
       header: "Round",
-      render: (row) => roundLabel(metadata, row) ?? EMPTY_CELL,
+      render: (row) => roundLabel(metadata, row) ?? ROUND_UNAVAILABLE,
     },
     {
       key: "record",
+      sourceKeys: ["wins", "losses"],
       header: "Record",
       align: "center",
       render: (row) => recordText(row) ?? EMPTY_CELL,
@@ -320,6 +362,7 @@ function matchupColumns(
   if (rows.some((row) => hasValue(row.round) || hasValue(row.playoff_round))) {
     columns.push({
       key: "round",
+      sourceKeys: ["round", "playoff_round", "round_reached", "deepest_round"],
       header: "Round",
       render: (row) => roundCell(row),
     });
@@ -328,6 +371,7 @@ function matchupColumns(
   if (rows.some((row) => hasWinner(row))) {
     columns.push({
       key: "winner",
+      sourceKeys: ["winner", "winner_team_name", "winner_team_abbr"],
       header: "Winner",
       render: winnerValue,
     });
@@ -336,11 +380,9 @@ function matchupColumns(
   if (rows.some((row) => hasValue(row.result) || hasValue(row.series_result))) {
     columns.push({
       key: "result",
+      sourceKeys: ["series_result", "result"],
       header: "Result",
-      render: (row) =>
-        textValue(row, "series_result") ??
-        textValue(row, "result") ??
-        EMPTY_CELL,
+      render: (row) => playoffResultValue(row),
     });
   }
 
@@ -355,6 +397,7 @@ function matchupColumns(
     }
     columns.push({
       key: `${team.teamAbbr}_record`,
+      sourceKeys: [winsKey, lossesKey],
       header: team.teamAbbr,
       align: "center",
       render: (row) => recordText(row, winsKey, lossesKey) ?? EMPTY_CELL,
@@ -365,12 +408,14 @@ function matchupColumns(
     return [
       {
         key: "team",
+        sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
         header: "Team",
         render: (row, index) =>
           teamIdentity(teamDisplay(undefined, row, index)),
       },
       {
         key: "record",
+        sourceKeys: ["wins", "losses"],
         header: "Record",
         align: "center",
         render: (row) => recordText(row) ?? EMPTY_CELL,
@@ -401,6 +446,7 @@ function addNumericIfPresent(
   if (!rows.some((row) => hasValue(row[key]))) return;
   columns.push({
     key,
+    sourceKeys: [key],
     header: label,
     numeric: true,
     render: (row) => formatValue(row[key], key),
@@ -410,6 +456,7 @@ function addNumericIfPresent(
 function textColumn(key: string, label: string): ResultTableColumn<SectionRow> {
   return {
     key,
+    sourceKeys: [key],
     header: label,
     render: (row) => textValue(row, key) ?? EMPTY_CELL,
   };
@@ -418,17 +465,34 @@ function textColumn(key: string, label: string): ResultTableColumn<SectionRow> {
 function detailToggles(
   sections: Record<string, SectionRow[]>,
   titles: Record<string, string>,
+  visibleKeysBySection: Record<string, Iterable<string>> = {},
 ) {
   return Object.keys(sections)
     .filter((key) => sections[key]?.length > 0)
-    .map((key) => (
-      <RawDetailToggle
-        key={key}
-        title={titles[key] ?? `${formatColHeader(key)} Detail`}
-        rows={sections[key]}
-        highlight={key !== "summary"}
-      />
-    ));
+    .map((key) => {
+      const visibleKeys = visibleKeysBySection[key];
+      if (
+        visibleKeys &&
+        !rowsHaveAdditionalDetailFields(sections[key], visibleKeys)
+      ) {
+        return null;
+      }
+      const isAdditionalColumns = Boolean(visibleKeys);
+      return (
+        <RawDetailToggle
+          key={key}
+          title={titles[key] ?? `${formatColHeader(key)} Detail`}
+          rows={sections[key]}
+          highlight={key !== "summary"}
+          collapsedLabel={
+            isAdditionalColumns ? "Show additional columns" : undefined
+          }
+          expandedLabel={
+            isAdditionalColumns ? "Hide additional columns" : undefined
+          }
+        />
+      );
+    });
 }
 
 function MatchupIdentity({ teams }: { teams: TeamDisplay[] }) {
@@ -552,15 +616,38 @@ function roundCell(row: SectionRow): string {
         textValue(row, "deepest_round") ??
         textValue(row, "playoff_round") ??
         textValue(row, "round"),
-    ) ?? EMPTY_CELL
+    ) ?? ROUND_UNAVAILABLE
   );
 }
 
 function cleanRoundLabel(label: string | null): string | null {
   if (!label) return null;
   const normalized = label.trim().toLowerCase();
-  if (normalized === "unknown" || normalized === "unknown round") return null;
+  if (
+    normalized === "unknown" ||
+    normalized === "unknown round" ||
+    normalized === "unavailable" ||
+    normalized === "not available" ||
+    normalized === "n/a"
+  ) {
+    return null;
+  }
   return label;
+}
+
+function playoffResultValue(row: SectionRow): string {
+  const value = textValue(row, "series_result") ?? textValue(row, "result");
+  if (!value) return RESULT_UNAVAILABLE;
+  const normalized = value.trim().toLowerCase();
+  if (
+    normalized === "unknown" ||
+    normalized === "unavailable" ||
+    normalized === "not available" ||
+    normalized === "n/a"
+  ) {
+    return RESULT_UNAVAILABLE;
+  }
+  return value;
 }
 
 function roundRecordMetricKey(rows: SectionRow[]): string | undefined {

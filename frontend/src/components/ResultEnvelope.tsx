@@ -9,6 +9,7 @@ import {
   type BadgeVariant,
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
+import { formatLongDateRange } from "./tableFormatting";
 import styles from "./ResultEnvelope.module.css";
 
 interface Props {
@@ -66,6 +67,12 @@ const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   error: "danger",
 };
 
+type ContextItem = {
+  key: string;
+  label: string;
+  value: string;
+};
+
 export default function ResultEnvelope({
   data,
   onAlternateSelect,
@@ -74,7 +81,23 @@ export default function ResultEnvelope({
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
   const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
-  const showNotes = data.result_status !== "no_result" && data.notes.length > 0;
+  const rawNotes = uniqueStrings([
+    ...data.notes,
+    ...metadataNotes(metadata?.notes),
+  ]);
+  const classifiedNotes = classifyNoticeItems(rawNotes);
+  const classifiedCaveats = classifyNoticeItems(data.caveats);
+  const contextItems = uniqueContextItems([
+    ...buildContextItems(metadata, appliedFilters),
+    ...classifiedNotes.context,
+    ...classifiedCaveats.context,
+  ]);
+  const noteItems =
+    data.result_status !== "no_result" ? classifiedNotes.remaining : [];
+  const caveatItems = classifiedCaveats.remaining;
+  const showContext = contextItems.length > 0;
+  const showNotes = noteItems.length > 0;
+  const showCaveats = caveatItems.length > 0;
 
   // Build context chips from metadata
   const contextChips: {
@@ -238,25 +261,40 @@ export default function ResultEnvelope({
         ) : null
       }
       notices={
-          showNotes || data.caveats.length > 0 ? (
+        showContext || showNotes || showCaveats ? (
           <>
-              {showNotes && (
+            {showContext && (
+              <div className={[styles.infoBlock, styles.contextBlock].join(" ")}>
+                <div className={styles.infoBlockLabel}>Context</div>
+                <ul>
+                  {contextItems.map((item) => (
+                    <li key={item.key}>
+                      <span className={styles.noticeItemLabel}>
+                        {item.label}:
+                      </span>{" "}
+                      {item.value}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {showNotes && (
               <div className={[styles.infoBlock, styles.notesBlock].join(" ")}>
                 <div className={styles.infoBlockLabel}>Notes</div>
                 <ul>
-                  {data.notes.map((note, i) => (
+                  {noteItems.map((note, i) => (
                     <li key={i}>{note}</li>
                   ))}
                 </ul>
               </div>
             )}
-            {data.caveats.length > 0 && (
+            {showCaveats && (
               <div
                 className={[styles.infoBlock, styles.caveatsBlock].join(" ")}
               >
                 <div className={styles.infoBlockLabel}>Caveats</div>
                 <ul>
-                  {data.caveats.map((caveat, i) => (
+                  {caveatItems.map((caveat, i) => (
                     <li key={i}>{caveat}</li>
                   ))}
                 </ul>
@@ -286,6 +324,191 @@ export default function ResultEnvelope({
       }
     />
   );
+}
+
+function buildContextItems(
+  metadata: QueryResponse["result"]["metadata"] | undefined,
+  appliedFilters: Array<{ key: string; label: string; value: string }>,
+): ContextItem[] {
+  if (!metadata) return [];
+  const items: ContextItem[] = [];
+
+  const interpretedAs =
+    metadataText(metadata, "interpreted_as") ??
+    metadataText(metadata, "interpretation") ??
+    metadataText(metadata, "disambiguation_note");
+  if (interpretedAs) {
+    addContextItem(items, "Interpreted as", stripInterpretedPrefix(interpretedAs));
+  }
+
+  const dateRange = formatLongDateRange(
+    metadataText(metadata, "start_date"),
+    metadataText(metadata, "end_date"),
+  );
+  if (dateRange) addContextItem(items, "Date range", dateRange);
+
+  const seasonRange = seasonRangeLabel(metadata);
+  if (seasonRange) addContextItem(items, "Season range", seasonRange);
+
+  const metric =
+    metadataText(metadata, "stat") ??
+    metadataText(metadata, "metric") ??
+    metadataText(metadata, "target_stat") ??
+    metadataText(metadata, "target_metric");
+  if (metric) addContextItem(items, "Metric", statLabel(metric));
+
+  for (const filter of appliedFilters) {
+    addContextItem(items, "Filter", `${filter.label}: ${filter.value}`);
+  }
+
+  return items;
+}
+
+function classifyNoticeItems(texts: string[]): {
+  context: ContextItem[];
+  remaining: string[];
+} {
+  const context: ContextItem[] = [];
+  const remaining: string[] = [];
+  for (const text of texts) {
+    const item = contextItemFromNotice(text);
+    if (item) {
+      context.push(item);
+    } else {
+      remaining.push(text);
+    }
+  }
+  return { context, remaining };
+}
+
+function contextItemFromNotice(text: string): ContextItem | null {
+  const trimmed = text.trim();
+  if (!trimmed) return null;
+  if (isLimitationNotice(trimmed)) return null;
+
+  const interpreted = trimmed.match(/^interpreted as:\s*(.+)$/i);
+  if (interpreted) {
+    return contextItem("Interpreted as", interpreted[1]);
+  }
+
+  const dateWindow = trimmed.match(/^date window:\s*(.+)$/i);
+  if (dateWindow) {
+    return contextItem("Date range", readableDateWindow(dateWindow[1]));
+  }
+
+  const filtered = trimmed.match(/^filtered to\s+(.+)$/i);
+  if (filtered) {
+    return contextItem("Filter", sentenceCase(filtered[1]));
+  }
+
+  const scheduleFilter = trimmed.match(/^schedule-context filter:\s*(.+)$/i);
+  if (scheduleFilter) {
+    return contextItem("Filter", sentenceCase(scheduleFilter[1]));
+  }
+
+  const clutchFilter = trimmed.match(/^clutch filter:\s*(.+)$/i);
+  if (clutchFilter) {
+    return contextItem("Filter", `Clutch: ${sentenceCase(clutchFilter[1])}`);
+  }
+
+  const headToHead = trimmed.match(/^head-to-head:\s*(.+)$/i);
+  if (headToHead) {
+    return contextItem("Interpreted as", sentenceCase(headToHead[1]));
+  }
+
+  const aggregation = trimmed.match(
+    /^multi-season (summary|comparison) aggregated from game logs across (.+)$/i,
+  );
+  if (aggregation) {
+    return contextItem("Aggregation", `Game logs across ${aggregation[2]}`);
+  }
+
+  if (/^games where\s+/i.test(trimmed)) {
+    return contextItem("Filter", sentenceCase(trimmed));
+  }
+
+  return null;
+}
+
+function isLimitationNotice(text: string): boolean {
+  return /\b(not available|unavailable|missing|excluded|partial|approx|degraded|unsupported)\b/i.test(
+    text,
+  );
+}
+
+function readableDateWindow(value: string): string {
+  const start = value.match(/\bfrom\s+(\d{4}-\d{2}-\d{2})\b/i)?.[1] ?? null;
+  const end = value.match(/\bto\s+(\d{4}-\d{2}-\d{2})\b/i)?.[1] ?? null;
+  return formatLongDateRange(start, end) ?? value;
+}
+
+function contextItem(label: string, value: string): ContextItem {
+  return {
+    key: `${label}-${value}`,
+    label,
+    value,
+  };
+}
+
+function addContextItem(items: ContextItem[], label: string, value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return;
+  items.push(contextItem(label, trimmed));
+}
+
+function uniqueContextItems(items: ContextItem[]): ContextItem[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = `${item.label.toLowerCase()}-${item.value.toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function uniqueStrings(values: string[]): string[] {
+  const seen = new Set<string>();
+  return values.filter((value) => {
+    const trimmed = value.trim();
+    if (!trimmed || seen.has(trimmed)) return false;
+    seen.add(trimmed);
+    return true;
+  });
+}
+
+function metadataNotes(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function seasonRangeLabel(
+  metadata: QueryResponse["result"]["metadata"],
+): string | null {
+  if (metadata.season) return null;
+  const start = metadataText(metadata, "start_season");
+  const end = metadataText(metadata, "end_season");
+  if (!start && !end) return null;
+  if (start && end) return start === end ? start : `${start} to ${end}`;
+  return start ? `Since ${start}` : `Through ${end}`;
+}
+
+function metadataText(
+  metadata: QueryResponse["result"]["metadata"],
+  key: string,
+): string | null {
+  const value = metadata[key];
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function stripInterpretedPrefix(value: string): string {
+  return value.replace(/^interpreted as:\s*/i, "");
+}
+
+function sentenceCase(value: string): string {
+  const trimmed = value.trim();
+  return trimmed ? trimmed.charAt(0).toUpperCase() + trimmed.slice(1) : value;
 }
 
 function appliedFilterLabels(

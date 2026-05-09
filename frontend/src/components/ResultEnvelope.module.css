@@ -54,6 +54,11 @@
   box-shadow: inset var(--space-1) 0 0 var(--accent);
 }
 
+.contextBlock {
+  background: color-mix(in srgb, var(--info) 7%, transparent);
+  box-shadow: inset var(--space-1) 0 0 var(--info);
+}
+
 .caveatsBlock {
   background: color-mix(in srgb, var(--warning) 6%, transparent);
   box-shadow: inset var(--space-1) 0 0 var(--warning);
@@ -69,6 +74,10 @@
 
 .notesBlock .infoBlockLabel {
   color: var(--accent);
+}
+
+.contextBlock .infoBlockLabel {
+  color: var(--info);
 }
 
 .caveatsBlock .infoBlockLabel {
@@ -95,6 +104,11 @@
 
 .caveatsBlock li::before {
   color: var(--warning);
+}
+
+.noticeItemLabel {
+  color: var(--text-secondary);
+  font-weight: var(--weight-semibold);
 }
 
 .alternatesLabel {

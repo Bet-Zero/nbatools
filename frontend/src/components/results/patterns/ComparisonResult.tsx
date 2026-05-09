@@ -15,6 +15,10 @@ import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
+import {
+  resultTableSourceKeys,
+  rowsHaveAdditionalDetailFields,
+} from "../primitives/detailTables";
 import styles from "./ComparisonResult.module.css";
 
 type SubjectKind = "player" | "team";
@@ -114,6 +118,7 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
   const entities = summary.map((row, index) =>
     entityDisplay(kind, data.result?.metadata, row, index),
   );
+  const comparisonColumns = metricColumns(comparison);
   const teamAccentAbbr =
     kind === "team" && entities.length === 1 ? entities[0]?.teamAbbr : null;
 
@@ -147,12 +152,15 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
       {comparison.length > 0 && (
         <ResultTable
           rows={comparison}
-          columns={metricColumns(comparison)}
+          columns={comparisonColumns}
           ariaLabel="Comparison metrics"
           getRowKey={metricRowKey}
         />
       )}
-      {detailToggles(sections, kind, isHeadToHead)}
+      {detailToggles(sections, kind, isHeadToHead, {
+        summary: subjectPanelSourceKeys(summary, kind),
+        comparison: resultTableSourceKeys(comparisonColumns),
+      })}
     </section>
   );
 }
@@ -439,6 +447,7 @@ function metricColumns(
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "metric",
+      sourceKeys: ["metric"],
       header: "Metric",
       render: (row) => metricLabel(metricKey(row)),
     },
@@ -447,6 +456,7 @@ function metricColumns(
   for (const key of valueColumns) {
     columns.push({
       key,
+      sourceKeys: [key],
       header: key,
       numeric: rows.some((row) => numericValue(row, key) !== null),
       render: (row) => metricValue(row, key),
@@ -470,17 +480,34 @@ function detailToggles(
   sections: Record<string, SectionRow[]>,
   kind: SubjectKind,
   headToHead: boolean,
+  visibleKeysBySection: Record<string, Iterable<string>>,
 ) {
   return Object.keys(sections)
     .filter((key) => sections[key]?.length > 0)
-    .map((key) => (
-      <RawDetailToggle
-        key={key}
-        title={detailTitle(key, kind, headToHead)}
-        rows={sections[key]}
-        highlight={key !== "summary"}
-      />
-    ));
+    .map((key) => {
+      const visibleKeys = visibleKeysBySection[key];
+      if (
+        visibleKeys &&
+        !rowsHaveAdditionalDetailFields(sections[key], visibleKeys)
+      ) {
+        return null;
+      }
+      const isAdditionalColumns = Boolean(visibleKeys);
+      return (
+        <RawDetailToggle
+          key={key}
+          title={detailTitle(key, kind, headToHead)}
+          rows={sections[key]}
+          highlight={key !== "summary"}
+          collapsedLabel={
+            isAdditionalColumns ? "Show additional columns" : undefined
+          }
+          expandedLabel={
+            isAdditionalColumns ? "Hide additional columns" : undefined
+          }
+        />
+      );
+    });
 }
 
 function detailTitle(
@@ -521,6 +548,47 @@ function subjectStats(row: SectionRow): StatChip[] {
   }
 
   return stats.slice(0, 8);
+}
+
+function subjectPanelSourceKeys(
+  rows: SectionRow[],
+  kind: SubjectKind,
+): Set<string> {
+  const keys = new Set<string>(
+    kind === "player"
+      ? ["player_name", "player", "player_id", "team_abbr"]
+      : ["team_name", "team", "team_abbr", "team_id"],
+  );
+
+  for (const row of rows) {
+    for (const key of visibleSubjectStatKeys(row)) {
+      keys.add(key);
+    }
+  }
+  return keys;
+}
+
+function visibleSubjectStatKeys(row: SectionRow): string[] {
+  const keys: string[] = [];
+  let visibleCount = 0;
+  const record = recordStat(row);
+  if (record) {
+    visibleCount += 1;
+    if (numericValue(row, "wins") !== null) keys.push("wins");
+    if (numericValue(row, "losses") !== null) keys.push("losses");
+    if (numericValue(row, "games") !== null) keys.push("games");
+    if (numericValue(row, "win_pct") !== null) keys.push("win_pct");
+  }
+
+  for (const candidate of STAT_CANDIDATES) {
+    if (candidate.key === "games" && record) continue;
+    if (numericValue(row, candidate.key) === null) continue;
+    if (visibleCount >= 8) break;
+    keys.push(candidate.key);
+    visibleCount += 1;
+  }
+
+  return keys;
 }
 
 function recordStat(row: SectionRow): StatChip | null {

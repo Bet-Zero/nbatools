@@ -784,11 +784,11 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "3PM" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Record Detail")).toBeInTheDocument();
-    expect(screen.getByText("By Season Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Record Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
     expect(
-      screen.getAllByRole("button", { name: "Show raw table" }),
-    ).toHaveLength(2);
+      screen.queryByRole("button", { name: "Show raw table" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders multi-season team record by-season tables in the body", () => {
@@ -1427,7 +1427,7 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Mar 22")).toBeInTheDocument();
-    expect(screen.getByText("Player Game Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Player Game Detail")).not.toBeInTheDocument();
     expect(
       screen.queryByLabelText("Player game cards"),
     ).not.toBeInTheDocument();
@@ -1542,7 +1542,7 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "Score" }),
     ).toBeInTheDocument();
     expect(screen.getByText("113-108")).toBeInTheDocument();
-    expect(screen.getByText("Game Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Game Detail")).not.toBeInTheDocument();
   });
 
   it("renders top player games as league-wide top performances", () => {
@@ -1807,7 +1807,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(screen.getByText("Boston Celtics")).toBeInTheDocument();
     expect(screen.getByText("113-108")).toBeInTheDocument();
-    expect(screen.getByText("Game Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Game Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("Summary Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
     expect(screen.getByText("Top Performers Detail")).toBeInTheDocument();
@@ -2162,7 +2162,7 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "TS%" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
-    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Full Streak Detail")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Streak results")).not.toBeInTheDocument();
   });
 
@@ -2360,10 +2360,10 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("First Round")).toBeInTheDocument();
     expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
-    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+    expect(screen.getByText("Round unavailable")).toBeInTheDocument();
     expect(screen.getByText("1-4")).toBeInTheDocument();
     expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
-    expect(screen.getByText("Season Breakdown Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Season Breakdown Detail")).not.toBeInTheDocument();
   });
 
   it("renders playoff round records through the playoff history pattern", () => {
@@ -2415,7 +2415,7 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("66.7%").length).toBeGreaterThan(0);
     expect(screen.getAllByText("28-14").length).toBeGreaterThan(0);
-    expect(screen.getByText("Playoff Round Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Playoff Round Detail")).not.toBeInTheDocument();
   });
 
   it("renders playoff matchup history as a series table", () => {
@@ -2496,10 +2496,10 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("MIA won 4-3")).toBeInTheDocument();
     expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
-    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+    expect(screen.getByText("Round unavailable")).toBeInTheDocument();
     expect(screen.getByText("3-4")).toBeInTheDocument();
     expect(screen.getAllByText("4-3").length).toBeGreaterThan(0);
-    expect(screen.getByText("Series Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Series Detail")).not.toBeInTheDocument();
   });
 
   it("renders player comparisons with subject panels and metric edges", () => {
@@ -2583,8 +2583,8 @@ describe("ResultRenderer (substrate)", () => {
       0,
     );
     expect(screen.getByText("Nikola Jokic +3.6 AST")).toBeInTheDocument();
-    expect(screen.getByText("Player Summary Detail")).toBeInTheDocument();
-    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Player Summary Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Full Metric Detail")).not.toBeInTheDocument();
   });
 
   it("renders team comparisons with team identity and metric deltas", () => {
@@ -2659,8 +2659,8 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "LAL" }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("BOS +13 Wins").length).toBeGreaterThan(0);
-    expect(screen.getByText("Team Summary Detail")).toBeInTheDocument();
-    expect(screen.getByText("Full Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Team Summary Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Full Metric Detail")).not.toBeInTheDocument();
   });
 
   it("renders matchup records as head-to-head comparisons", () => {
@@ -2728,7 +2728,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("table", { name: "Comparison metrics" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Participant Detail")).toBeInTheDocument();
-    expect(screen.getByText("Metric Detail")).toBeInTheDocument();
+    expect(screen.queryByText("Participant Detail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Metric Detail")).not.toBeInTheDocument();
   });
 });

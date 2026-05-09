@@ -14,6 +14,10 @@ import EntityIdentity from "../primitives/EntityIdentity";
 import RawDetailToggle from "../primitives/RawDetailToggle";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
+import {
+  resultTableSourceKeys,
+  rowsHaveAdditionalDetailFields,
+} from "../primitives/detailTables";
 import styles from "./RecordResult.module.css";
 
 type RecordMode =
@@ -121,6 +125,16 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
   const team = teamDisplay(data.result?.metadata, row);
   const opponent = opponentDisplay(data.result?.metadata);
   const showBySeason = shouldShowBySeason(data.result?.metadata, bySeasonRows);
+  const summaryColumns = teamRecordColumns(team, opponent, summary);
+  const bySeasonColumns = teamRecordBySeasonColumns(bySeasonRows);
+  const hasSummaryDetail = rowsHaveAdditionalDetailFields(
+    summary,
+    resultTableSourceKeys(summaryColumns),
+  );
+  const hasBySeasonDetail = rowsHaveAdditionalDetailFields(
+    sections.by_season ?? [],
+    resultTableSourceKeys(bySeasonColumns),
+  );
 
   return (
     <section className={styles.pattern} aria-label="Team record result">
@@ -132,7 +146,7 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
       />
       <ResultTable
         rows={summary}
-        columns={teamRecordColumns(team, opponent, summary)}
+        columns={summaryColumns}
         highlightColumnKey="record"
         ariaLabel="Team record"
         getRowKey={(_summaryRow, index) => `${team.name}-${index}`}
@@ -140,7 +154,7 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
       {showBySeason && (
         <ResultTable
           rows={bySeasonRows}
-          columns={teamRecordBySeasonColumns(bySeasonRows)}
+          columns={bySeasonColumns}
           highlightColumnKey="win_pct"
           ariaLabel="Team record by season"
           getRowKey={(seasonRow, index) =>
@@ -148,11 +162,22 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
           }
         />
       )}
-      <RawDetailToggle title="Record Detail" rows={summary} />
-      <RawDetailToggle
-        title="By Season Detail"
-        rows={sections.by_season ?? []}
-      />
+      {hasSummaryDetail && (
+        <RawDetailToggle
+          title="Record Detail"
+          rows={summary}
+          collapsedLabel="Show additional columns"
+          expandedLabel="Hide additional columns"
+        />
+      )}
+      {hasBySeasonDetail && (
+        <RawDetailToggle
+          title="By Season Detail"
+          rows={sections.by_season ?? []}
+          collapsedLabel="Show additional columns"
+          expandedLabel="Hide additional columns"
+        />
+      )}
     </section>
   );
 }
@@ -258,6 +283,7 @@ function teamRecordColumns(
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "team",
+      sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
       header: "Team",
       render: () => (
         <span className={styles.entityCell}>{teamIdentity(team)}</span>
@@ -268,6 +294,7 @@ function teamRecordColumns(
   if (opponent) {
     columns.push({
       key: "opponent",
+      sourceKeys: ["opponent", "opponent_team_name", "opponent_team_abbr"],
       header: "Opponent",
       render: () => (
         <span className={styles.entityCell}>{teamIdentity(opponent)}</span>
@@ -277,6 +304,7 @@ function teamRecordColumns(
 
   columns.push({
     key: "record",
+    sourceKeys: ["wins", "losses"],
     header: "W-L",
     align: "center",
     render: (row) => recordText(row),
@@ -305,6 +333,7 @@ function teamRecordBySeasonColumns(
   if (rows.some((row) => hasValue(row.wins) || hasValue(row.losses))) {
     columns.push({
       key: "record",
+      sourceKeys: ["wins", "losses"],
       header: "W-L",
       align: "center",
       render: (row) => recordText(row) ?? "—",
@@ -329,6 +358,7 @@ function decadeRecordColumns(
     optionalValueColumn("seasons_appeared", rows),
     {
       key: "record",
+      sourceKeys: ["wins", "losses"],
       header: "W-L",
       align: "center",
       render: (row: SectionRow) => recordText(row),
@@ -348,12 +378,14 @@ function recordLeaderboardColumns(
   const columns: Array<ResultTableColumn<SectionRow> | null> = [
     {
       key: "rank",
+      sourceKeys: ["rank"],
       header: "#",
       align: "center",
       render: rankValue,
     },
     {
       key: "team",
+      sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
       header: "Team",
       render: (row) => (
         <span className={styles.entityCell}>
@@ -365,6 +397,7 @@ function recordLeaderboardColumns(
     valueColumn(metric),
     {
       key: "record",
+      sourceKeys: ["wins", "losses"],
       header: "W-L",
       align: "center",
       render: (row) => recordText(row),
@@ -393,6 +426,7 @@ function matchupColumns(
   for (const prefix of [first, second]) {
     columns.push({
       key: `${prefix}_record`,
+      sourceKeys: [`${prefix}_wins`, `${prefix}_losses`],
       header: `${prefix} W-L`,
       align: "center",
       render: (row) => prefixedRecordText(row, prefix),
@@ -436,6 +470,7 @@ function valueColumn(
 ): ResultTableColumn<SectionRow> {
   return {
     key,
+    sourceKeys: [key],
     header: labelOverride ?? columnLabel(key),
     numeric: isNumericKey(key),
     align: isNumericKey(key) ? "right" : "left",

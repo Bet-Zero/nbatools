@@ -18,6 +18,10 @@ import ResultTable, {
   type ResultTableColumn,
   type ResultTableFooterRow,
 } from "../primitives/ResultTable";
+import {
+  resultTableSourceKeys,
+  rowsHaveAdditionalDetailFields,
+} from "../primitives/detailTables";
 import { hasPinnedEntity } from "./entityBinding";
 import styles from "./GameLogResult.module.css";
 
@@ -109,6 +113,19 @@ export default function GameLogResult({
   const metric = metricColumn(rows, data.result?.metadata, metricKey);
   const columns = tableColumns(rows, data, resolvedMode);
   const footerRows = summary ? tableFooters(rows, summary) : [];
+  const displayedDetailKeys = resultTableSourceKeys(columns);
+  if (
+    resolvedMode === "player" &&
+    hasPinnedEntity(data.result?.metadata, "player")
+  ) {
+    for (const key of ["player", "player_name", "player_id"]) {
+      displayedDetailKeys.add(key);
+    }
+  }
+  const hasAdditionalGameLogFields = rowsHaveAdditionalDetailFields(
+    rows,
+    displayedDetailKeys,
+  );
   const items = summary
     ? summaryItems(summary, {
         hideMinutes:
@@ -147,8 +164,13 @@ export default function GameLogResult({
           getRowKey={rowKey}
         />
       )}
-      {showDetails && rawDetailTitle && (
-        <RawDetailToggle title={rawDetailTitle} rows={rows} />
+      {showDetails && rawDetailTitle && hasAdditionalGameLogFields && (
+        <RawDetailToggle
+          title={rawDetailTitle}
+          rows={rows}
+          collapsedLabel="Show additional columns"
+          expandedLabel="Hide additional columns"
+        />
       )}
       {showDetails &&
         detailSectionKeys.map((key) => {
@@ -191,6 +213,7 @@ function tableColumns(
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "rank",
+      sourceKeys: ["rank"],
       header: "#",
       align: "center",
       render: (_row, index) => index + 1,
@@ -201,6 +224,7 @@ function tableColumns(
     if (!hidePinnedPlayerColumn) {
       columns.push({
         key: "player",
+        sourceKeys: ["player_name", "player", "player_id", "team_abbr"],
         header: "Player",
         render: playerCell,
       });
@@ -208,11 +232,13 @@ function tableColumns(
     columns.push(
       {
         key: "date",
+        sourceKeys: ["game_date"],
         header: TABLE_LABELS.date,
         render: (row) => formatCompactDate(textValue(row, "game_date")),
       },
       {
         key: "team",
+        sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
         header: TABLE_LABELS.team,
         render: (row) => teamCell(row, data),
       },
@@ -221,11 +247,13 @@ function tableColumns(
     columns.push(
       {
         key: "date",
+        sourceKeys: ["game_date"],
         header: TABLE_LABELS.date,
         render: (row) => formatCompactDate(textValue(row, "game_date")),
       },
       {
         key: "team",
+        sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
         header: "Team",
         render: (row) => teamCell(row, data),
       },
@@ -235,12 +263,19 @@ function tableColumns(
   columns.push(
     {
       key: "location",
+      sourceKeys: ["is_home", "is_away", "location"],
       header: TABLE_LABELS.location,
       align: "center",
       render: locationCell,
     },
     {
       key: "opponent",
+      sourceKeys: [
+        "opponent",
+        "opponent_team_name",
+        "opponent_team_abbr",
+        "opponent_team_id",
+      ],
       header: TABLE_LABELS.opponent,
       render: (row) => opponentCell(row, data),
     },
@@ -249,6 +284,15 @@ function tableColumns(
   if (hasScoreColumn(rows, mode)) {
     columns.push({
       key: "score",
+      sourceKeys: [
+        "team_score",
+        "pts_team",
+        "team_pts",
+        "pts",
+        "opponent_score",
+        "opponent_pts",
+        "opp_pts",
+      ],
       header: TABLE_LABELS.score,
       align: "center",
       render: scoreCell,
@@ -258,6 +302,7 @@ function tableColumns(
   if (rows.some((row) => hasValue(row.wl))) {
     columns.push({
       key: "wl",
+      sourceKeys: ["wl"],
       header: TABLE_LABELS.wl,
       align: "center",
       render: (row) => textValue(row, "wl")?.toUpperCase() ?? "—",
@@ -273,8 +318,12 @@ function tableColumns(
 }
 
 function statColumn(key: string): ResultTableColumn<SectionRow> {
+  const composite = COMPOSITE_STATS[key];
   return {
     key,
+    sourceKeys: composite
+      ? [composite.made, composite.attempt, composite.pct]
+      : [key],
     header: TABLE_LABELS[key] ?? key,
     numeric: true,
     render: (row) => statValue(row, key),

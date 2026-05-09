@@ -1,4 +1,4 @@
-import { type Key, type ReactNode } from "react";
+import { type CSSProperties, type Key, type ReactNode } from "react";
 import styles from "./ResultTable.module.css";
 
 export type ResultTableAlignment = "left" | "right" | "center";
@@ -6,10 +6,16 @@ export type ResultTableAlignment = "left" | "right" | "center";
 export interface ResultTableColumn<Row> {
   /** Stable key used to identify the column for highlight + react keys. */
   key: string;
+  /** Source row keys represented by this visible column. Used by detail dedupe. */
+  sourceKeys?: string[];
   header: ReactNode;
   align?: ResultTableAlignment;
   /** True for numeric stat columns; right-aligns and uses tabular-nums. */
   numeric?: boolean;
+  /** Optional low-risk sizing hints for dense answer tables. */
+  minWidth?: CSSProperties["minWidth"];
+  width?: CSSProperties["width"];
+  nowrap?: boolean;
   className?: string;
   headerClassName?: string;
   cellClassName?: string;
@@ -55,6 +61,37 @@ const ALIGN_CLASS: Record<ResultTableAlignment, string> = {
   center: styles.alignCenter,
 };
 
+function columnStyle<Row>(
+  column: ResultTableColumn<Row>,
+): CSSProperties | undefined {
+  const minWidth = column.minWidth ?? defaultMinWidth(column);
+  if (!minWidth && !column.width) return undefined;
+  return {
+    minWidth,
+    width: column.width,
+  };
+}
+
+function defaultMinWidth<Row>(
+  column: ResultTableColumn<Row>,
+): CSSProperties["minWidth"] | undefined {
+  const key = column.key.toLowerCase();
+  const header =
+    typeof column.header === "string" ? column.header.toLowerCase() : "";
+  const text = `${key} ${header}`;
+
+  if (key === "rank" || header === "#" || header === "rank") return "3.5rem";
+  if (column.numeric) return "5.25rem";
+  if (/\b(date|season|start|end)\b/.test(text)) return "6.75rem";
+  if (/\b(player|team|opponent|winner|entity|name|lineup)\b/.test(text)) {
+    return "10rem";
+  }
+  if (/\b(round|result|record|w-l|metric|streak)\b/.test(text)) {
+    return "7rem";
+  }
+  return undefined;
+}
+
 /**
  * The primary answer-table primitive used inside result patterns.
  * Renders a real `<table>` with `<thead>`, `<tbody>`, optional
@@ -94,9 +131,11 @@ export default function ResultTable<Row>({
           ALIGN_CLASS[column.align ?? (column.numeric ? "right" : "left")],
           column.numeric && styles.numeric,
           isHighlighted && styles.highlightCell,
+          column.nowrap === false && styles.allowWrap,
           isHeader ? column.headerClassName : column.cellClassName,
           column.className,
         )}
+        style={columnStyle(column)}
       >
         {cell}
       </Tag>
