@@ -75,6 +75,32 @@ Only show a raw/detail toggle when it exposes additional fields not already
 visible in the answer table. If the content is not truly raw/debug data, prefer a
 clearer label such as `Show additional columns` over `Show raw table`.
 
+### G10 — Compact summary strips are allowed when they add value
+
+The sentence hero remains primary, but a compact summary strip is allowed when
+it adds high-value context such as GP, record, PPG, RPG, APG, Opp PPG, margin,
+or other route-critical aggregate context. Avoid large stat-tile grids.
+
+### G11 — Dense tables need table-engineering rules
+
+Answer tables must support clean horizontal scrolling. Columns should not
+compress until values become unreadable. Identity/date columns should remain
+readable, numeric columns should keep consistent minimum widths, and wide tables
+should degrade by scrolling rather than wrapping or crushing values.
+
+### G12 — Footer rows need column-specific rules
+
+Average and Total rows are useful, but not every column should show both.
+Average footers should show core per-game averages. Total footers should show
+simple counting totals. Shooting totals should only show when readable; otherwise
+omit them or move them to additional details.
+
+### G13 — Important semantic cells should not use unexplained dashes
+
+A dash (`—`) is acceptable only when the missing meaning is obvious. For important
+semantic columns like playoff round/result, use readable labels such as
+`Unavailable`, `Unknown`, or `Not available`, or provide the real semantic value.
+
 ---
 
 # Batch 1
@@ -361,6 +387,167 @@ must surface and emphasize the condition that made each game match.
 
 ---
 
+# Batch 3
+
+Screenshots reviewed:
+
+7. Game Summary Log
+8. Streak Table
+9. Playoff History
+
+---
+
+## Family 7 — Game Summary Log
+
+### Example reviewed
+
+- Query: `How do the Suns perform when Devin Booker didn't play?`
+- Fixture: 51
+- Route/pattern shown: `game_summary` / `summary`
+
+### Verdict
+
+Keep the family. The overall structure is right, but table width, footer
+formatting, summary-strip content, and duplicate raw/detail toggles need cleanup.
+
+### Decisions
+
+- Keep the hero sentence:
+  - `The Suns are 8-10 in 18 games without Devin Booker, averaging 103.8 PPG.`
+- Keep a compact summary strip below the hero.
+- The summary strip should include the record, not only GP/PTS/REB/AST.
+  - Preferred strip: `GP 18 | Record 8-10 | PPG 103.8 | RPG 43.1 | APG 21.7`
+- Keep the team game-log answer table because the query asks how the team
+  performed in a filtered game set.
+- The table needs clean horizontal scrolling and minimum column widths; current
+  dense columns can become unreadable/crushed.
+- Required team game-summary-log columns:
+  - `#`, Date, Team, Opp, Score, W/L, PTS, Opp PTS, Margin, REB, AST, 3PM, FG, 3P, FT, TOV
+- Footer rows should stay, but follow column-specific rules:
+  - Average footer: per-game averages for core numeric columns.
+  - Total footer: totals for simple counting columns.
+  - Shooting totals: only show makes-attempts if readable; otherwise omit or move to additional details.
+- `Game Detail` raw toggle should be removed/hidden when it duplicates the
+  visible game-log answer table.
+- `Top Performers Detail` may remain hidden if not otherwise surfaced; ideally,
+  top performers should become a small secondary section only when relevant.
+
+### Lock-in rule
+
+Game Summary Log = hero sentence + compact summary strip + dense team game-log
+answer table. The table must remain readable under real stat volume, and raw
+toggles should not duplicate visible answer-table rows.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/GameLogResult.tsx`
+- `frontend/src/components/results/patterns/EntitySummaryResult.tsx` or summary strip primitive
+- answer-table CSS / horizontal scroll handling
+- footer row generation
+- raw/detail toggle visibility rules
+
+---
+
+## Family 8 — Streak Table
+
+### Example reviewed
+
+- Query: `Jokic 5 straight games with 20+ points`
+- Fixture: 201
+- Route/pattern shown: `player_streak_finder` / `streak`
+
+### Verdict
+
+Strong family. Keep the structure and refine wording/columns. This is close to
+locked.
+
+### Decisions
+
+- Keep the hero + ranked streak table pattern.
+- The reviewed hero sentence is strong but should preserve the `5 straight games`
+  threshold interpretation.
+  - Current: `Nikola Jokić scored 20+ points in 18 straight games from Oct 26 to Dec 8, 2024.`
+  - Better when the query means at least 5: `Nikola Jokić has 15 streaks of 5+ straight games with 20+ points. His longest was 18 games, from Oct 26 to Dec 8, 2024.`
+  - Better when showing longest-only: `Nikola Jokić's longest 20+ point streak of at least 5 games was 18 games, from Oct 26 to Dec 8, 2024.`
+- Highlight the main streak length column.
+- Show Status only when at least one row is active/ongoing/current or when row
+  statuses are mixed. If every row is `Completed`, the Status column is noise.
+- Required streak table columns:
+  - `#`, Streak/Condition, Length, Start, End, Games, Record, PTS, REB, AST
+- Optional streak table columns:
+  - Status, MIN, 3PM, +/-, FG, 3P, FT
+- The threshold/minimum should be clear in the hero and/or table context.
+  - Examples: `20+ PTS`, `5+ games minimum`
+- Remove/hide the raw `Full Streak Detail` toggle when it duplicates the visible
+  streak answer table, unless it exposes additional raw/debug-only fields.
+
+### Lock-in rule
+
+Streak Table = threshold-aware hero sentence + ranked streak table. The hero must
+clarify exact/minimum interpretation, and the table should emphasize Length.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/StreakResult.tsx`
+- streak sentence builder
+- streak table column config
+- condition/threshold metadata mapping
+- raw/detail toggle visibility rules
+
+---
+
+## Family 9 — Playoff History
+
+### Example reviewed
+
+- Query/example family: Playoff History
+- Pattern shown: `PlayoffHistoryResult`
+
+### Verdict
+
+Keep the structure, but improve semantic clarity. This family needs better hero
+wording, caveat wording, round/result labels, and duplicate raw-toggle handling.
+
+### Decisions
+
+- Keep the hero + season-by-season playoff table pattern.
+- Improve hero wording:
+  - Current style: `{Team} have 21 playoff appearances across 1996-97 to 2024-25 Playoffs, going 165-115.`
+  - Better: `From 1996-97 through 2024-25, the Lakers made the playoffs 21 times and went 165-115.`
+- If titles/finals data exists, optionally add:
+  - `They reached the Finals {finals_count} times and won {titles} titles.`
+- Caveat is legitimate when round data is unavailable. Keep it, but write it
+  more clearly:
+  - `Round-level data is unavailable before 2001-02, so those seasons are included in totals but not round breakdowns.`
+- Avoid unexplained dashes in important semantic columns like Round/Result.
+  Use `Unavailable`, `Unknown`, `Not available`, or a true semantic result.
+- The table should answer how far the team went when data allows.
+- Required playoff history columns:
+  - Season, Result/Round Reached, Record, Win Pct, Games
+- Optional playoff history columns:
+  - Opponent, Series Result, Seed, Coach
+- If only Finals/not-Finals data is available, rename the column to match what
+  the data actually means rather than implying full round coverage.
+- Remove/hide `Postseason Summary Detail` and `Season Breakdown Detail` raw
+  toggles when they duplicate visible answer-table data. Keep only if they expose
+  additional raw/debug-only fields.
+
+### Lock-in rule
+
+Playoff History = clear historical hero sentence + season-by-season playoff
+table. Missing round data must be labeled explicitly, not shown as unexplained
+dashes.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/PlayoffHistoryResult.tsx`
+- playoff hero sentence builder
+- playoff table column labels/value mapping
+- caveat/context copy mapping
+- raw/detail toggle visibility rules
+
+---
+
 ## Open questions for final synthesis
 
 - Should parser review pages keep the current large debug/context card exactly,
@@ -373,3 +560,7 @@ must surface and emphasize the condition that made each game match.
   fixed-height scrollable table viewport?
 - Should duplicated answer-table raw toggles be removed entirely or replaced
   with `Show additional columns` when extra fields exist?
+- For shooting columns in footer rows, should totals be omitted by default or
+  moved to an additional shooting-summary detail?
+- For streak queries, how should the parser/metadata distinguish exact streak
+  length (`exactly 5`) from minimum streak length (`5+`)?
