@@ -55,6 +55,26 @@ language and, where possible, suggest a nearby supported query.
 Generic suggestions are acceptable as a fallback, but no-result flows should
 prefer query-specific suggestions based on the failed filter/reason.
 
+### G7 — Game logs are a core answer table pattern
+
+Game logs should be visible by default when the query asks for last-N games,
+matching games, `how often` with game instances, games where a condition
+happened, or top games. The game-log table is the answer table, not a hidden raw
+detail.
+
+### G8 — Large answer tables need intentional row limits
+
+Small samples should show all rows. Medium/large game logs should not make the
+page feel endless by default. Product UI should use either `Show first 10/12 +
+Show all` or a fixed-height table viewport; parser review may still show all
+rows when useful.
+
+### G9 — Raw/detail toggles should not duplicate the visible answer table
+
+Only show a raw/detail toggle when it exposes additional fields not already
+visible in the answer table. If the content is not truly raw/debug data, prefer a
+clearer label such as `Show additional columns` over `Show raw table`.
+
 ---
 
 # Batch 1
@@ -192,6 +212,155 @@ reason and provide query-specific recovery suggestions where possible.
 
 ---
 
+# Batch 2
+
+Screenshots reviewed:
+
+4. Entity Summary + Recent Games
+5. Player Game Log
+6. Team Game Log
+
+---
+
+## Family 4 — Entity Summary + Recent Games
+
+### Example reviewed
+
+- Query: `Luka last 5`
+- Fixture: 247
+- Route/pattern shown: `player_game_summary` / `summary`
+
+### Verdict
+
+Mostly keep and use as a reference family. This is close to the intended
+sentence-hero plus dense game-log baseline, but the table needs a fuller
+box-score column set.
+
+### Decisions
+
+- Keep the sentence hero. The reviewed sentence is clear:
+  - `Luka Dončić has averaged 34 points, 6 rebounds and 7 assists in his last 5 games.`
+- Keep the dense game-log table directly under the hero.
+- Keep `Average` and `Total` footer rows inside the same table.
+- For last-N player summaries, show all requested rows.
+- The current table is too thin for a game-log answer because it only shows the
+  core counting stats.
+- Required player game-log columns for this family:
+  - `#`, Date, TM, Opp, W/L, MIN, PTS, REB, AST, FG, 3P, FT, STL, BLK, TOV, +/-
+- Optional columns when available:
+  - Score, home/away marker, TS%, eFG%
+
+### Lock-in rule
+
+Entity Summary + Recent Games = hero sentence + dense game-log answer table +
+Average/Total footer. For last-N windows, show all requested games and include a
+full useful player box-score column set.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/EntitySummaryResult.tsx`
+- `frontend/src/components/results/patterns/GameLogResult.tsx`
+- game-log column preset/config
+- footer row generation
+
+---
+
+## Family 5 — Player Game Log
+
+### Example reviewed
+
+- Query: `How often has Nikola Jokić recorded a triple-double this season?`
+- Fixture: 71
+- Route/pattern shown: `player_game_finder` / `count`
+
+### Verdict
+
+Keep the pattern, but add display limits for large logs and avoid duplicate raw
+toggles when the visible answer table already contains the game rows.
+
+### Decisions
+
+- Keep the count-style hero sentence:
+  - `Nikola Jokić has recorded 34 triple-doubles this season.`
+- Keep the dense game-log answer table.
+- The reviewed table has a stronger box-score column set than Family 4, but it
+  should still include FG and FT when available for consistency.
+- Large logs should not take over the entire product page by default.
+- Row-count behavior:
+  - 0–12 rows: show all rows.
+  - 13+ rows: product UI should show a capped view with either `Show first 10/12 + Show all` or a fixed-height scrollable viewport.
+  - Preferred product behavior: show first 12 rows plus `Show all {N} games`.
+  - Parser review pages may show all rows if that is useful for fixture QA.
+- Required player game-log columns:
+  - `#`, Date, TM, Opp, W/L, MIN, PTS, REB, AST, FG, 3P, FT, STL, BLK, TOV, +/-
+- If the visible answer table already uses the same row set as `Player Game
+  Detail`, do not show a redundant `Show raw table` toggle unless that toggle
+  exposes additional raw/debug-only fields.
+
+### Lock-in rule
+
+Player Game Log = count/condition hero + dense game-log answer table. Small logs
+show all rows; large logs are capped with a clear show-all affordance. Raw/detail
+toggles should not duplicate the visible answer table.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/GameLogResult.tsx`
+- game-log row limiting / show-all behavior
+- game-log column presets
+- raw/detail toggle visibility rules
+
+---
+
+## Family 6 — Team Game Log
+
+### Example reviewed
+
+- Query: `How often have the Lakers held opponents under 100 points this year?`
+- Fixture: 76
+- Route/pattern shown: `game_finder` / `count`
+
+### Verdict
+
+Keep and refine. This is close to locked: the hero answers the query well and
+the table is useful, but condition-specific columns should be emphasized.
+
+### Decisions
+
+- Keep the count + record hero sentence:
+  - `The Lakers have held opponents under 100 points 7 times this season, going 7-0.`
+- Keep the team-first game-log answer table open by default.
+- Add/ensure columns that make the defensive condition explicit:
+  - Opp PTS
+  - Margin
+- For condition-based logs, visually emphasize the queried condition column.
+  - `opponents under 100` → highlight `Opp PTS`
+  - `50-point games` → highlight PTS
+  - `10+ assists` → highlight AST
+  - `triple-doubles` → highlight the PTS/REB/AST condition columns or add a condition indicator
+- Required team game-log columns:
+  - `#`, Date, Team, Opp, Score, W/L, PTS, Opp PTS, Margin, REB, AST, 3PM, FG, 3P, FT, TOV
+- Optional team game-log columns when available:
+  - STL, BLK, ORB, DRB
+- For defensive/team result queries, prioritize available defensive context such
+  as Opp PTS, Opp FG%, forced turnovers, and margin.
+- If `Game Detail` duplicates the visible answer table, remove the redundant raw
+  toggle or only show it when it exposes additional raw/debug-only fields.
+
+### Lock-in rule
+
+Team Game Log = count/record hero + dense team-first game-log table. The table
+must surface and emphasize the condition that made each game match.
+
+### Likely implementation areas
+
+- `frontend/src/components/results/patterns/GameLogResult.tsx`
+- team game-log column preset/config
+- condition-column detection/highlighting
+- raw/detail toggle visibility rules
+
+---
+
 ## Open questions for final synthesis
 
 - Should parser review pages keep the current large debug/context card exactly,
@@ -200,3 +369,7 @@ reason and provide query-specific recovery suggestions where possible.
   `game_log` section exists, or only for specific routes / metadata flags?
 - Should `good teams` expansion list show all teams behind a detail disclosure,
   or only summarized as `19 opponents` in primary context?
+- For large game logs, should product UI use `Show first 12 + Show all` or a
+  fixed-height scrollable table viewport?
+- Should duplicated answer-table raw toggles be removed entirely or replaced
+  with `Show additional columns` when extra fields exist?
