@@ -49,6 +49,7 @@
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   margin-bottom: 1rem;
   padding: 0.875rem 1rem;
   border: 1px solid var(--border-default);
@@ -57,11 +58,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+.reviewActions,
 .controlGroup {
   display: flex;
   gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.reviewMeta {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: end;
 }
 
 .toggle {
@@ -86,6 +94,16 @@
 .controlError {
   flex-basis: 100%;
   color: var(--danger);
+}
+
+.costNote {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, var(--border-default));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--warning) 12%, var(--bg-elevated));
+  color: var(--text-primary);
+  font-size: 0.92rem;
 }
 
 .statusPanel,
@@ -210,10 +228,15 @@
   }
 
   .controls,
+  .reviewActions,
   .controlGroup,
   .groupToggle,
   .captureHeading {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .reviewMeta {
+    justify-items: start;
   }
 }

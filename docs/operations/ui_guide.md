@@ -88,6 +88,11 @@ module replacement during frontend development.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
 - **Raw JSON** — toggle to inspect the full API response.
 - **URL-driven state** — the active query is stored in the URL (`?q=...` for natural queries, `?route=...&kwargs=...` for structured queries). Refreshing the page re-runs the query. Browser back/forward navigates across prior query states.
+- **Parser review page** — `/review` loads the fixture inventory but does not
+  run query sweeps automatically. Use the review controls to run all fixtures
+  or the first 10 with a small concurrency limit. Keep cached results enabled
+  when possible, especially on Vercel, because a full review sweep can issue
+  many expensive `/query` requests.
 - **Query history** — in-session history with:
   - Status dots (green/yellow/red)
   - Query class and route labels

@@ -36,10 +36,14 @@ export async function fetchRoutes(): Promise<RoutesResponse> {
   return request<RoutesResponse>("/routes");
 }
 
-export async function postQuery(query: string): Promise<QueryResponse> {
+export async function postQuery(
+  query: string,
+  options?: { signal?: AbortSignal },
+): Promise<QueryResponse> {
   return request<QueryResponse>("/query", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    signal: options?.signal,
     body: JSON.stringify({ query }),
   });
 }
