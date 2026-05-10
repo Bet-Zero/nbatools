@@ -75,6 +75,21 @@ GAME_LOG_COLUMNS = [
     "pts",
     "reb",
     "ast",
+    "fgm",
+    "fga",
+    "fg_pct",
+    "fg3m",
+    "fg3a",
+    "fg3_pct",
+    "ftm",
+    "fta",
+    "ft_pct",
+    "stl",
+    "blk",
+    "tov",
+    "plus_minus",
+    "efg_pct",
+    "ts_pct",
 ]
 
 _DASH_TRANSLATION = str.maketrans(

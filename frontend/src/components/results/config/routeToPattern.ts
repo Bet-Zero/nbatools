@@ -67,7 +67,7 @@ export type PatternConfig =
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
   switch (data.route ?? data.result?.metadata?.route) {
     case "player_game_summary":
-      return isLastNPlayerSummary(data) || isOpponentPlayerSummary(data)
+      return shouldShowPlayerSummaryGameLog(data)
         ? [
             { type: "entity_summary", sectionKey: "summary" },
             {
@@ -210,6 +210,17 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
   }
 }
 
+function shouldShowPlayerSummaryGameLog(data: QueryResponse): boolean {
+  const rows = data.result?.sections?.game_log ?? [];
+  if (rows.length === 0) return false;
+
+  return (
+    isLastNPlayerSummary(data) ||
+    isOpponentPlayerSummary(data) ||
+    hasMeaningfulSummaryFilter(data)
+  );
+}
+
 function isLastNPlayerSummary(data: QueryResponse): boolean {
   const windowSize = data.result?.metadata?.window_size;
   if (typeof windowSize === "number" && Number.isFinite(windowSize)) {
@@ -235,4 +246,29 @@ function isOpponentPlayerSummary(data: QueryResponse): boolean {
     const label = filter.label.toLowerCase();
     return kind === "team" && label.includes("opponent");
   });
+}
+
+function hasMeaningfulSummaryFilter(data: QueryResponse): boolean {
+  const filters = data.result?.metadata?.applied_filters;
+  if (!Array.isArray(filters)) return false;
+
+  const meaningfulKinds = new Set([
+    "date",
+    "location",
+    "outcome",
+    "period",
+    "player",
+    "position",
+    "quality",
+    "role",
+    "schedule",
+    "season",
+    "situation",
+    "threshold",
+    "window",
+  ]);
+
+  return filters.some((filter) =>
+    meaningfulKinds.has(filter.kind.toLowerCase()),
+  );
 }

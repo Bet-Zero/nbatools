@@ -14,8 +14,11 @@ import StreakResult from "./patterns/StreakResult";
 import TopPerformancesResult from "./patterns/TopPerformancesResult";
 import ResultShell from "./primitives/ResultShell";
 
+type ResultDisplayMode = "product" | "review";
+
 interface Props {
   data: QueryResponse;
+  displayMode?: ResultDisplayMode;
 }
 
 /**
@@ -26,7 +29,10 @@ interface Props {
  * This is the only route-aware result display entry point; route-specific
  * presentation lives in reusable pattern components under `patterns/`.
  */
-export default function ResultRenderer({ data }: Props) {
+export default function ResultRenderer({
+  data,
+  displayMode = "product",
+}: Props) {
   const result = data.result;
 
   if (!result?.sections || Object.keys(result.sections).length === 0) {
@@ -87,7 +93,12 @@ export default function ResultRenderer({ data }: Props) {
   return (
     <ResultShell>
       {patterns.map((pattern, index) => (
-        <PatternBlock key={`${pattern.type}-${index}`} data={data} pattern={pattern} />
+        <PatternBlock
+          key={`${pattern.type}-${index}`}
+          data={data}
+          pattern={pattern}
+          displayMode={displayMode}
+        />
       ))}
     </ResultShell>
   );
@@ -96,9 +107,10 @@ export default function ResultRenderer({ data }: Props) {
 interface PatternBlockProps {
   data: QueryResponse;
   pattern: PatternConfig;
+  displayMode: ResultDisplayMode;
 }
 
-function PatternBlock({ data, pattern }: PatternBlockProps) {
+function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
   switch (pattern.type) {
     case "entity_summary":
       return <EntitySummaryResult data={data} sectionKey={pattern.sectionKey} />;
@@ -115,6 +127,7 @@ function PatternBlock({ data, pattern }: PatternBlockProps) {
           showSummaryStrip={pattern.showSummaryStrip}
           rawDetailTitle={pattern.rawDetailTitle}
           detailSectionKeys={pattern.detailSectionKeys}
+          displayMode={displayMode}
         />
       );
     case "leaderboard":

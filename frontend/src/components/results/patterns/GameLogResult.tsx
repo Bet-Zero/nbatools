@@ -26,6 +26,7 @@ import { hasPinnedEntity } from "./entityBinding";
 import styles from "./GameLogResult.module.css";
 
 type GameLogMode = "auto" | "player" | "team";
+type ResultDisplayMode = "product" | "review";
 
 interface Props {
   data: QueryResponse;
@@ -38,6 +39,7 @@ interface Props {
   showSummaryStrip?: boolean;
   rawDetailTitle?: string;
   detailSectionKeys?: string[];
+  displayMode?: ResultDisplayMode;
 }
 
 interface SummaryItem {
@@ -46,40 +48,68 @@ interface SummaryItem {
   value: string;
 }
 
-const STAT_COLUMNS = [
+const PLAYER_STAT_COLUMNS = [
   "minutes",
   "pts",
   "reb",
   "ast",
-  "fg3m",
+  "fg",
+  "fg3",
+  "ft",
   "stl",
   "blk",
+  "tov",
+  "plus_minus",
+  "ts_pct",
+  "efg_pct",
+];
+
+const TEAM_STAT_COLUMNS = [
+  "pts",
+  "opponent_pts",
+  "margin",
+  "reb",
+  "ast",
+  "fg3m",
   "fg",
   "fg3",
   "ft",
   "tov",
-  "plus_minus",
+  "stl",
+  "blk",
+  "oreb",
+  "dreb",
 ];
+
+const FOOTER_STAT_COLUMNS = new Set([
+  ...PLAYER_STAT_COLUMNS,
+  ...TEAM_STAT_COLUMNS,
+]);
 
 const TABLE_LABELS: Record<string, string> = {
   ast: "AST",
   blk: "BLK",
   date: "Date",
+  dreb: "DRB",
+  efg_pct: "eFG%",
   fg: "FG",
   fg3m: "3PM",
   fg3: "3P",
   ft: "FT",
   location: "",
+  margin: "Margin",
   minutes: "MIN",
+  oreb: "ORB",
   opponent: "Opp",
   plus_minus: "+/-",
   pts: "PTS",
-  opponent_pts: "OPP PTS",
+  opponent_pts: "Opp PTS",
   reb: "REB",
   score: "Score",
   stl: "STL",
   team: "TM",
   tov: "TOV",
+  ts_pct: "TS%",
   wl: "W/L",
 };
 
@@ -103,6 +133,7 @@ export default function GameLogResult({
   showSummaryStrip = true,
   rawDetailTitle,
   detailSectionKeys = [],
+  displayMode = "product",
 }: Props) {
   const rawRows = sectionRows(data, sectionKey, fallbackSectionKey);
   const rows = orderedRows(rawRows, preserveOrder);
@@ -110,7 +141,7 @@ export default function GameLogResult({
   if (rows.length === 0 && !summary) return null;
 
   const resolvedMode = gameLogMode(rows, mode);
-  const metric = metricColumn(rows, data.result?.metadata, metricKey);
+  const metrics = metricColumns(rows, data.result?.metadata, metricKey);
   const columns = tableColumns(rows, data, resolvedMode);
   const footerRows = summary ? tableFooters(rows, summary) : [];
   const displayedDetailKeys = resultTableSourceKeys(columns);
@@ -158,10 +189,12 @@ export default function GameLogResult({
         <ResultTable
           rows={rows}
           columns={columns}
-          highlightColumnKey={metric ?? undefined}
+          highlightColumnKeys={metrics}
           footerRows={footerRows}
           ariaLabel="Game log"
           getRowKey={rowKey}
+          rowLimit={displayMode === "product" ? 12 : undefined}
+          rowNoun="games"
         />
       )}
       {showDetails && rawDetailTitle && hasAdditionalGameLogFields && (
@@ -309,7 +342,9 @@ function tableColumns(
     });
   }
 
-  for (const key of STAT_COLUMNS) {
+  const statColumns =
+    mode === "player" ? PLAYER_STAT_COLUMNS : TEAM_STAT_COLUMNS;
+  for (const key of statColumns) {
     if (!hasStatColumn(rows, key)) continue;
     columns.push(statColumn(key));
   }
@@ -318,16 +353,25 @@ function tableColumns(
 }
 
 function statColumn(key: string): ResultTableColumn<SectionRow> {
-  const composite = COMPOSITE_STATS[key];
   return {
     key,
-    sourceKeys: composite
-      ? [composite.made, composite.attempt, composite.pct]
-      : [key],
+    sourceKeys: statSourceKeys(key),
     header: TABLE_LABELS[key] ?? key,
     numeric: true,
     render: (row) => statValue(row, key),
   };
+}
+
+function statSourceKeys(key: string): string[] {
+  const composite = COMPOSITE_STATS[key];
+  if (composite) return [composite.made, composite.attempt, composite.pct];
+  if (key === "margin") {
+    return ["margin", "plus_minus", "pts", "opponent_pts", "opp_pts"];
+  }
+  if (key === "opponent_pts") {
+    return ["opponent_pts", "opp_pts", "opponent_score", "pts", "plus_minus"];
+  }
+  return [key];
 }
 
 function tableFooters(
@@ -357,7 +401,7 @@ function footerValue(
   if (COMPOSITE_STATS[key]) {
     return compositeFooterValue(kind, key, rows, summary);
   }
-  if (!STAT_COLUMNS.includes(key)) return null;
+  if (!FOOTER_STAT_COLUMNS.has(key)) return null;
 
   const summaryKey = `${summaryPrefix(key)}_${kind}`;
   if (summary && hasValue(summary[summaryKey])) {
@@ -365,7 +409,7 @@ function footerValue(
   }
 
   const values = rows
-    .map((row) => row[key])
+    .map((row) => numericStatValue(row, key))
     .filter((value): value is number => typeof value === "number");
   if (values.length === 0) return null;
 
@@ -417,13 +461,23 @@ function summaryItems(
   if (!summary) return [];
   const items: SummaryItem[] = [];
   addSummaryItem(items, summary, "games", "GP");
-  addSummaryItem(items, summary, "pts_avg", "PTS");
-  addSummaryItem(items, summary, "reb_avg", "REB");
-  addSummaryItem(items, summary, "ast_avg", "AST");
+  addRecordSummaryItem(items, summary);
+  addSummaryItem(items, summary, "pts_avg", "PPG");
+  addSummaryItem(items, summary, "reb_avg", "RPG");
+  addSummaryItem(items, summary, "ast_avg", "APG");
   if (!options?.hideMinutes) {
     addSummaryItem(items, summary, "minutes_avg", "MIN");
   }
   return items;
+}
+
+function addRecordSummaryItem(items: SummaryItem[], row: SectionRow) {
+  if (!hasValue(row.wins) && !hasValue(row.losses)) return;
+  items.push({
+    key: "record",
+    label: "Record",
+    value: `${formatValue(row.wins, "wins")}-${formatValue(row.losses, "losses")}`,
+  });
 }
 
 function addSummaryItem(
@@ -471,18 +525,79 @@ function gameLogMode(
     : "team";
 }
 
-function metricColumn(
+function metricColumns(
   rows: SectionRow[],
   metadata: ResultMetadata | undefined,
   explicitMetric: string | undefined,
-): string | null {
-  if (explicitMetric && rows.some((row) => hasValue(row[explicitMetric]))) {
-    return explicitMetric;
-  }
+): string[] {
+  const metrics: string[] = [];
+  addMetricColumn(metrics, rows, explicitMetric);
 
   const stat = metadataText(metadata, "stat");
-  if (stat && rows.some((row) => hasValue(row[stat]))) return stat;
-  return null;
+  addMetricColumn(metrics, rows, stat);
+
+  for (const condition of metadataConditions(metadata)) {
+    addMetricColumn(metrics, rows, condition.stat);
+  }
+
+  const occurrence = metadata?.occurrence_event;
+  if (
+    occurrence &&
+    typeof occurrence === "object" &&
+    !Array.isArray(occurrence)
+  ) {
+    const event = occurrence as Record<string, unknown>;
+    if (event.special_event === "triple_double") {
+      for (const key of ["pts", "reb", "ast"]) addMetricColumn(metrics, rows, key);
+    } else if (typeof event.stat === "string") {
+      addMetricColumn(metrics, rows, event.stat);
+    }
+  }
+
+  return Array.from(new Set(metrics));
+}
+
+function addMetricColumn(
+  metrics: string[],
+  rows: SectionRow[],
+  key: string | null | undefined,
+) {
+  const mapped = metricColumnKey(key);
+  if (!mapped) return;
+  if (rows.some((row) => hasStatColumn([row], mapped))) metrics.push(mapped);
+}
+
+function metricColumnKey(key: string | null | undefined): string | null {
+  if (!key) return null;
+  const normalized = key.trim().toLowerCase();
+  const aliases: Record<string, string> = {
+    fg3a: "fg3",
+    fg3m: "fg3m",
+    fga: "fg",
+    fgm: "fg",
+    fta: "ft",
+    ftm: "ft",
+    opp_pts: "opponent_pts",
+  };
+  return aliases[normalized] ?? normalized;
+}
+
+function metadataConditions(
+  metadata: ResultMetadata | undefined,
+): Array<{ stat: string }> {
+  const conditions: Array<{ stat: string }> = [];
+  for (const key of ["threshold_conditions", "extra_conditions"]) {
+    const raw = metadata?.[key];
+    if (!Array.isArray(raw)) continue;
+    for (const condition of raw) {
+      if (!condition || typeof condition !== "object") continue;
+      const conditionRow = condition as Record<string, unknown>;
+      if (typeof conditionRow.stat === "string") {
+        conditions.push({ stat: conditionRow.stat });
+      }
+    }
+  }
+  return conditions;
 }
 
 function playerCell(row: SectionRow): ReactNode {
@@ -545,7 +660,11 @@ function hasScoreColumn(
 ): boolean {
   return rows.some((row) => {
     if (hasValue(row.team_score) && hasValue(row.opponent_score)) return true;
-    if (mode === "team" && hasValue(row.pts) && hasValue(row.opponent_pts)) {
+    if (
+      mode === "team" &&
+      teamScoreValue(row) !== null &&
+      opponentScoreValue(row) !== null
+    ) {
       return true;
     }
     return false;
@@ -553,15 +672,8 @@ function hasScoreColumn(
 }
 
 function scoreCell(row: SectionRow): string {
-  const teamScore =
-    numericValue(row, "team_score") ??
-    numericValue(row, "pts_team") ??
-    numericValue(row, "team_pts") ??
-    numericValue(row, "pts");
-  const opponentScore =
-    numericValue(row, "opponent_score") ??
-    numericValue(row, "opponent_pts") ??
-    numericValue(row, "opp_pts");
+  const teamScore = teamScoreValue(row);
+  const opponentScore = opponentScoreValue(row);
 
   if (teamScore === null || opponentScore === null) return "—";
   return `${formatValue(teamScore, "team_score")}-${formatValue(
@@ -586,6 +698,9 @@ function hasStatColumn(rows: SectionRow[], key: string): boolean {
         hasValue(row[config.pct]),
     );
   }
+  if (key === "margin" || key === "opponent_pts") {
+    return rows.some((row) => numericStatValue(row, key) !== null);
+  }
   return rows.some((row) => hasValue(row[key]));
 }
 
@@ -593,6 +708,9 @@ function statValue(row: SectionRow, key: string): ReactNode {
   const config = COMPOSITE_STATS[key];
   if (config) {
     return madeAttemptStat(row, config.made, config.attempt, config.pct);
+  }
+  if (key === "margin" || key === "opponent_pts") {
+    return formatStatValue(numericStatValue(row, key), key);
   }
   return formatStatValue(row[key], key);
 }
@@ -619,7 +737,7 @@ function formatStatValue(
   key: string,
   kind: "avg" | "sum" = "sum",
 ): string {
-  if (key === "plus_minus" && typeof value === "number") {
+  if ((key === "plus_minus" || key === "margin") && typeof value === "number") {
     const formatted =
       kind === "avg" ? formatAverageValue(value, key) : formatValue(value, key);
     return value > 0 ? `+${formatted}` : formatted;
@@ -637,6 +755,49 @@ function numericValues(rows: SectionRow[], key: string): number[] {
   return rows
     .map((row) => row[key])
     .filter((value): value is number => typeof value === "number");
+}
+
+function numericStatValue(row: SectionRow, key: string): number | null {
+  if (key === "margin") return marginValue(row);
+  if (key === "opponent_pts") return opponentScoreValue(row);
+  return numericValue(row, key);
+}
+
+function teamScoreValue(row: SectionRow): number | null {
+  return (
+    numericValue(row, "team_score") ??
+    numericValue(row, "pts_team") ??
+    numericValue(row, "team_pts") ??
+    numericValue(row, "pts")
+  );
+}
+
+function opponentScoreValue(row: SectionRow): number | null {
+  const explicit =
+    numericValue(row, "opponent_score") ??
+    numericValue(row, "opponent_pts") ??
+    numericValue(row, "opp_pts");
+  if (explicit !== null) return explicit;
+
+  const teamScore = teamScoreValue(row);
+  const margin = marginValue(row, false);
+  if (teamScore === null || margin === null) return null;
+  return teamScore - margin;
+}
+
+function marginValue(row: SectionRow, allowDerived = true): number | null {
+  const explicit =
+    numericValue(row, "margin") ?? numericValue(row, "plus_minus");
+  if (explicit !== null) return explicit;
+  if (!allowDerived) return null;
+
+  const teamScore = teamScoreValue(row);
+  const opponentScore =
+    numericValue(row, "opponent_score") ??
+    numericValue(row, "opponent_pts") ??
+    numericValue(row, "opp_pts");
+  if (teamScore === null || opponentScore === null) return null;
+  return teamScore - opponentScore;
 }
 
 function rowKey(row: SectionRow, index: number): string {

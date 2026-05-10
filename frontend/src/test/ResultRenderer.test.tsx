@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { QueryResponse } from "../api/types";
 import ResultRenderer from "../components/results/ResultRenderer";
@@ -149,6 +149,16 @@ describe("ResultRenderer (substrate)", () => {
               pts: 22,
               reb: 14,
               ast: 14,
+              fgm: 9,
+              fga: 15,
+              fg3m: 2,
+              fg3a: 5,
+              ftm: 2,
+              fta: 3,
+              stl: 1,
+              blk: 2,
+              tov: 3,
+              plus_minus: 8,
             },
             {
               game_id: 2,
@@ -167,6 +177,16 @@ describe("ResultRenderer (substrate)", () => {
               pts: 23,
               reb: 17,
               ast: 17,
+              fgm: 10,
+              fga: 16,
+              fg3m: 1,
+              fg3a: 4,
+              ftm: 2,
+              fta: 4,
+              stl: 2,
+              blk: 1,
+              tov: 4,
+              plus_minus: 4,
             },
           ],
         },
@@ -185,6 +205,16 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "FG" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "3P" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "FT" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("10-16")).toBeInTheDocument();
     expect(screen.getByText("Average")).toBeInTheDocument();
     expect(screen.getByText("Total")).toBeInTheDocument();
     expect(screen.getByText("253")).toBeInTheDocument();
@@ -465,6 +495,11 @@ describe("ResultRenderer (substrate)", () => {
 
     render(<ResultRenderer data={data} />);
 
+    expect(
+      screen.getByText(
+        "Nikola Jokic has averaged 28 points, 12 rebounds and 9 assists in 2 games against Lakers this season.",
+      ),
+    ).toBeInTheDocument();
     const gameLog = screen.getByRole("table", { name: "Game log" });
     expect(gameLog).toBeInTheDocument();
     const rows = within(gameLog).getAllByRole("row");
@@ -473,6 +508,84 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.queryByLabelText("Game-log averages"),
     ).not.toBeInTheDocument();
+  });
+
+  it("preserves opponent-quality filters in entity summary heroes and shows the filtered game log", () => {
+    const data = makeResponse({
+      query: "How has Jayson Tatum played against good teams this season?",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text:
+            "How has Jayson Tatum played against good teams this season?",
+          route: "player_game_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          player_context: {
+            player_id: 1628369,
+            player_name: "Jayson Tatum",
+          },
+          applied_filters: [
+            {
+              label: "Opponent quality",
+              value: "good teams",
+              kind: "quality",
+            },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Jayson Tatum",
+              games: 2,
+              pts_avg: 23,
+              reb_avg: 9.5,
+              ast_avg: 5.5,
+            },
+          ],
+          game_log: [
+            {
+              game_id: 1,
+              game_date: "2026-02-01",
+              player_name: "Jayson Tatum",
+              team_abbr: "BOS",
+              opponent_team_abbr: "OKC",
+              is_home: 1,
+              wl: "W",
+              pts: 25,
+              reb: 10,
+              ast: 6,
+            },
+            {
+              game_id: 2,
+              game_date: "2026-03-04",
+              player_name: "Jayson Tatum",
+              team_abbr: "BOS",
+              opponent_team_abbr: "DEN",
+              is_away: 1,
+              wl: "L",
+              pts: 21,
+              reb: 9,
+              ast: 5,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Jayson Tatum has averaged 23 points, 9.5 rebounds and 5.5 assists in 2 games against good teams this season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
   });
 
   it("renders season leaderboards as a sentence hero and dense answer table", () => {
@@ -1608,6 +1721,14 @@ describe("ResultRenderer (substrate)", () => {
               opponent_pts: 108,
               reb: 46,
               ast: 24,
+              fgm: 41,
+              fga: 88,
+              fg3m: 14,
+              fg3a: 36,
+              ftm: 17,
+              fta: 20,
+              tov: 12,
+              plus_minus: 5,
             },
           ],
         },
@@ -1626,8 +1747,157 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "Score" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Opp PTS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Margin" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "3PM" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "FG" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "FT" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("113-108")).toBeInTheDocument();
+    expect(screen.getByText("+5")).toBeInTheDocument();
     expect(screen.queryByText("Game Detail")).not.toBeInTheDocument();
+  });
+
+  it("renders team count game logs with defensive condition columns", () => {
+    const data = makeResponse({
+      query: "How often have the Lakers held opponents under 100 points this year?",
+      route: "game_finder",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          query_text:
+            "How often have the Lakers held opponents under 100 points this year?",
+          route: "game_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "opponent_pts",
+          max_value: 99.9999,
+          primary_count: 2,
+          count_phrase:
+            "The Lakers have held opponents under 100 points 2 times this season, going 1-1.",
+          team_context: {
+            team_id: 1610612747,
+            team_abbr: "LAL",
+            team_name: "Lakers",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: [
+            {
+              game_id: 1,
+              game_date: "2026-01-10",
+              team_abbr: "LAL",
+              opponent_team_abbr: "UTA",
+              is_home: 1,
+              wl: "W",
+              pts: 108,
+              opponent_pts: 95,
+              reb: 44,
+              ast: 25,
+              fg3m: 12,
+              tov: 10,
+              plus_minus: 13,
+            },
+            {
+              game_id: 2,
+              game_date: "2026-02-12",
+              team_abbr: "LAL",
+              opponent_team_abbr: "DAL",
+              is_away: 1,
+              wl: "L",
+              pts: 91,
+              opponent_pts: 98,
+              reb: 39,
+              ast: 20,
+              fg3m: 9,
+              tov: 14,
+              plus_minus: -7,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Lakers have held opponents under 100 points 2 times this season, going 1-1.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Opp PTS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Margin" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("95")).toBeInTheDocument();
+    expect(screen.getByText("-7")).toBeInTheDocument();
+  });
+
+  it("caps long product game logs and can expand/collapse them", () => {
+    const data = makeResponse({
+      query: "show Jokic triple doubles this season",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {
+          query_text: "show Jokic triple doubles this season",
+          route: "player_game_finder",
+          season: "2025-26",
+          season_type: "Regular Season",
+          occurrence_event: { special_event: "triple_double" },
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          finder: Array.from({ length: 13 }, (_, index) => ({
+            game_id: index + 1,
+            game_date: `2026-03-${String(index + 1).padStart(2, "0")}`,
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+            team_abbr: "DEN",
+            opponent_team_abbr: "POR",
+            wl: "W",
+            pts: 20 + index,
+            reb: 10,
+            ast: 10,
+          })),
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    const table = screen.getByRole("table", { name: "Game log" });
+    expect(within(table).getAllByRole("row")).toHaveLength(13);
+
+    fireEvent.click(screen.getByRole("button", { name: "Show all 13 games" }));
+    expect(within(table).getAllByRole("row")).toHaveLength(14);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Show first 12 games" }),
+    );
+    expect(within(table).getAllByRole("row")).toHaveLength(13);
   });
 
   it("renders top player games as league-wide top performances", () => {
@@ -1908,7 +2178,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.queryByText("Top player performers")).not.toBeInTheDocument();
   });
 
-  it("renders team summary answer-only shapes without a malformed fallback table", () => {
+  it("renders filtered team summaries with a record strip and game-log table", () => {
     const data = makeResponse({
       query: "How do the Suns perform when Devin Booker didn't play?",
       route: "game_summary",
@@ -1944,6 +2214,42 @@ describe("ResultRenderer (substrate)", () => {
             },
           ],
           by_season: [{ season: "2025-26", games: 18, pts_avg: 103.8 }],
+          game_log: [
+            {
+              game_id: 1,
+              game_date: "2026-01-03",
+              team_abbr: "PHX",
+              team_name: "Suns",
+              opponent_team_abbr: "LAC",
+              opponent_team_name: "Clippers",
+              is_home: 1,
+              wl: "W",
+              pts: 105,
+              opponent_pts: 99,
+              reb: 45,
+              ast: 22,
+              fg3m: 11,
+              tov: 12,
+              plus_minus: 6,
+            },
+            {
+              game_id: 2,
+              game_date: "2026-02-04",
+              team_abbr: "PHX",
+              team_name: "Suns",
+              opponent_team_abbr: "DEN",
+              opponent_team_name: "Nuggets",
+              is_away: 1,
+              wl: "L",
+              pts: 98,
+              opponent_pts: 111,
+              reb: 41,
+              ast: 19,
+              fg3m: 9,
+              tov: 15,
+              plus_minus: -13,
+            },
+          ],
         },
         current_through: "2026-04-12",
       },
@@ -1957,10 +2263,19 @@ describe("ResultRenderer (substrate)", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("GP")).toBeInTheDocument();
+    expect(screen.getByText("Record")).toBeInTheDocument();
+    expect(screen.getByText("8-10")).toBeInTheDocument();
+    expect(screen.getByText("PPG")).toBeInTheDocument();
     expect(screen.getByText("18")).toBeInTheDocument();
     expect(
-      screen.queryByRole("table", { name: "Game log" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("table", { name: "Game log" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Opp PTS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Margin" }),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Summary Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
   });

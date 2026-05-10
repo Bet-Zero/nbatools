@@ -1,4 +1,9 @@
-import { type CSSProperties, type Key, type ReactNode } from "react";
+import {
+  useState,
+  type CSSProperties,
+  type Key,
+  type ReactNode,
+} from "react";
 import styles from "./ResultTable.module.css";
 
 export type ResultTableAlignment = "left" | "right" | "center";
@@ -44,8 +49,13 @@ export interface ResultTableProps<Row> {
    * Optional — leaderboards set this; game logs typically don't.
    */
   highlightColumnKey?: string;
+  highlightColumnKeys?: string[];
   /** Footer rows rendered inside `<tfoot>`. Empty array to omit. */
   footerRows?: ResultTableFooterRow<Row>[];
+  /** Product row cap. When set, rows above the cap are hidden behind a toggle. */
+  rowLimit?: number;
+  /** Noun used in the row-cap control label. */
+  rowNoun?: string;
   /** Aria label for the table. Patterns should set this. */
   ariaLabel?: string;
   className?: string;
@@ -108,20 +118,32 @@ export default function ResultTable<Row>({
   rows,
   getRowKey,
   highlightColumnKey,
+  highlightColumnKeys,
   footerRows,
+  rowLimit,
+  rowNoun = "rows",
   ariaLabel,
   className,
 }: ResultTableProps<Row>) {
+  const [expanded, setExpanded] = useState(false);
   if (rows.length === 0) return null;
 
   const keyFor = getRowKey ?? ((_row: Row, index: number) => index);
+  const highlightKeys = new Set(
+    [highlightColumnKey, ...(highlightColumnKeys ?? [])].filter(
+      (key): key is string => Boolean(key),
+    ),
+  );
+  const capped = Boolean(rowLimit && rows.length > rowLimit);
+  const visibleRows =
+    capped && !expanded && rowLimit ? rows.slice(0, rowLimit) : rows;
 
   const renderColumnCell = (
     column: ResultTableColumn<Row>,
     cell: ReactNode,
     isHeader: boolean,
   ) => {
-    const isHighlighted = column.key === highlightColumnKey;
+    const isHighlighted = highlightKeys.has(column.key);
     const Tag = isHeader ? "th" : "td";
     return (
       <Tag
@@ -143,41 +165,63 @@ export default function ResultTable<Row>({
   };
 
   return (
-    <div className={joinClassNames(styles.tableScroll, className)}>
-      <table className={styles.table} aria-label={ariaLabel}>
-        <thead>
-          <tr>
-            {columns.map((column) =>
-              renderColumnCell(column, column.header, true),
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, rowIndex) => (
-            <tr key={keyFor(row, rowIndex)}>
+    <div className={joinClassNames(styles.tableFrame, className)}>
+      <div className={styles.tableScroll}>
+        <table className={styles.table} aria-label={ariaLabel}>
+          <thead>
+            <tr>
               {columns.map((column) =>
-                renderColumnCell(column, column.render(row, rowIndex), false),
+                renderColumnCell(column, column.header, true),
               )}
             </tr>
-          ))}
-        </tbody>
-        {footerRows && footerRows.length > 0 && (
-          <tfoot>
-            {footerRows.map((footer) => (
-              <tr
-                key={footer.key}
-                className={joinClassNames(styles.footerRow, footer.className)}
-              >
-                {columns.map((column, columnIndex) => {
-                  const value =
-                    columnIndex === 0 ? footer.label : footer.getValue(column);
-                  return renderColumnCell(column, value, false);
-                })}
+          </thead>
+          <tbody>
+            {visibleRows.map((row, rowIndex) => (
+              <tr key={keyFor(row, rowIndex)}>
+                {columns.map((column) =>
+                  renderColumnCell(
+                    column,
+                    column.render(row, rowIndex),
+                    false,
+                  ),
+                )}
               </tr>
             ))}
-          </tfoot>
-        )}
-      </table>
+          </tbody>
+          {footerRows && footerRows.length > 0 && (
+            <tfoot>
+              {footerRows.map((footer) => (
+                <tr
+                  key={footer.key}
+                  className={joinClassNames(
+                    styles.footerRow,
+                    footer.className,
+                  )}
+                >
+                  {columns.map((column, columnIndex) => {
+                    const value =
+                      columnIndex === 0
+                        ? footer.label
+                        : footer.getValue(column);
+                    return renderColumnCell(column, value, false);
+                  })}
+                </tr>
+              ))}
+            </tfoot>
+          )}
+        </table>
+      </div>
+      {capped && rowLimit && (
+        <button
+          type="button"
+          className={styles.rowToggle}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          {expanded
+            ? `Show first ${rowLimit} ${rowNoun}`
+            : `Show all ${rows.length} ${rowNoun}`}
+        </button>
+      )}
     </div>
   );
 }

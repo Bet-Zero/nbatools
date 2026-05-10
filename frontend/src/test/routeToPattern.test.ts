@@ -54,4 +54,29 @@ describe("routeToPattern", () => {
       },
     ]);
   });
+
+  it("routes filtered player summaries with game rows to the entity-summary plus game-log stack", () => {
+    const data = makeResponse("player_game_summary");
+    data.query = "Tatum against good teams this season";
+    data.result.metadata = {
+      route: "player_game_summary",
+      applied_filters: [
+        { label: "Opponent quality", value: "good teams", kind: "quality" },
+      ],
+    };
+    data.result.sections = {
+      summary: [{ player_name: "Jayson Tatum", pts_avg: 23 }],
+      game_log: [{ game_date: "2026-03-01", pts: 23 }],
+    };
+
+    expect(routeToPattern(data)).toEqual([
+      { type: "entity_summary", sectionKey: "summary" },
+      {
+        type: "game_log",
+        sectionKey: "game_log",
+        summaryKey: "summary",
+        showSummaryStrip: false,
+      },
+    ]);
+  });
 });

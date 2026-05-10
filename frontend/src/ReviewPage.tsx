@@ -547,7 +547,7 @@ export default function ReviewPage() {
                       <p className={styles.caseMeta}>Fixture {index + 1}</p>
                       <ResultEnvelope data={result} />
                       <div className={styles.resultSections}>
-                        <ResultRenderer data={result} />
+                        <ResultRenderer data={result} displayMode="review" />
                       </div>
                     </article>
                   ))}
@@ -596,7 +596,7 @@ export default function ReviewPage() {
                     <p className={styles.caseMeta}>Fixture {entry.index + 1}</p>
                     <ResultEnvelope data={entry.result} />
                     <div className={styles.resultSections}>
-                      <ResultRenderer data={entry.result} />
+                      <ResultRenderer data={entry.result} displayMode="review" />
                     </div>
                   </article>
                 </div>

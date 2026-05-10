@@ -1,10 +1,15 @@
 import type { ReactNode } from "react";
 import type {
+  AppliedFilter,
   QueryResponse,
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
-import { formatProseValue, formatValue } from "../../tableFormatting";
+import {
+  formatLongDateRange,
+  formatProseValue,
+  formatValue,
+} from "../../tableFormatting";
 import EntityIdentity from "../primitives/EntityIdentity";
 import ResultHero from "../primitives/ResultHero";
 import ResultTable, { type ResultTableColumn } from "../primitives/ResultTable";
@@ -253,10 +258,46 @@ function summaryContext(
   query: string,
 ): string {
   const lastN = lastNWindow(query, metadata);
-  if (lastN) return ` in his last ${lastN} games`;
+  const filters = filterPhrases(metadata);
+  const timeframe = lastN ? "" : timeframePhrase(row, metadata, query);
+  const games = numericValue(row, "games");
 
-  if (/\bthis season\b/i.test(query)) return " this season";
-  if (/\bcareer\b/i.test(query)) return " in his career";
+  if (lastN || filters.length > 0) {
+    const parts = [
+      lastN
+        ? `in his last ${lastN} games`
+        : typeof games === "number" && Number.isFinite(games)
+          ? `in ${formatValue(games, "games")} games`
+          : null,
+      ...filters,
+      timeframe,
+    ].filter((part): part is string => Boolean(part));
+
+    return parts.length > 0 ? ` ${parts.join(" ")}` : "";
+  }
+
+  if (timeframe) return ` ${timeframe}`;
+
+  if (typeof games === "number" && Number.isFinite(games)) {
+    return ` in ${formatValue(games, "games")} games`;
+  }
+
+  return "";
+}
+
+function timeframePhrase(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+  query: string,
+): string {
+  const dateRange = formatLongDateRange(
+    metadataText(metadata, "start_date"),
+    metadataText(metadata, "end_date"),
+  );
+  if (dateRange) return dateRange;
+
+  if (/\bthis\s+(?:season|year)\b/i.test(query)) return "this season";
+  if (/\bcareer\b/i.test(query)) return "in his career";
 
   const seasonStart =
     textValue(row, "season_start") ?? metadataText(metadata, "season");
@@ -265,19 +306,119 @@ function summaryContext(
     textValue(row, "season_type") ?? metadataText(metadata, "season_type");
 
   if (seasonStart && seasonEnd && seasonStart !== seasonEnd) {
-    return ` from ${seasonStart} to ${seasonEnd}`;
+    return `from ${seasonStart} to ${seasonEnd}`;
   }
 
   if (seasonStart) {
-    return ` in the ${seasonStart}${seasonType ? ` ${seasonType.toLowerCase()}` : ""}`;
-  }
-
-  const games = row.games;
-  if (typeof games === "number" && Number.isFinite(games)) {
-    return ` in ${formatValue(games, "games")} games`;
+    return `in the ${seasonStart}${seasonType ? ` ${seasonType.toLowerCase()}` : ""}`;
   }
 
   return "";
+}
+
+function filterPhrases(metadata: ResultMetadata | undefined): string[] {
+  const phrases: string[] = [];
+  const filters = Array.isArray(metadata?.applied_filters)
+    ? metadata.applied_filters
+    : [];
+
+  for (const filter of filters) {
+    const phrase = appliedFilterPhrase(filter);
+    if (phrase) phrases.push(phrase);
+  }
+
+  if (
+    metadata?.opponent_context &&
+    !phrases.some((phrase) => phrase.startsWith("against "))
+  ) {
+    const opponent =
+      metadata.opponent_context.team_name ?? metadata.opponent_context.team_abbr;
+    if (opponent) phrases.push(`against ${opponent}`);
+  }
+
+  const withoutPlayer = metadataText(metadata, "without_player");
+  const withoutPhrase = withoutPlayer ? `without ${withoutPlayer}` : null;
+  if (
+    withoutPhrase &&
+    !phrases.some(
+      (phrase) => phrase.toLowerCase() === withoutPhrase.toLowerCase(),
+    )
+  ) {
+    phrases.push(withoutPhrase);
+  }
+
+  return uniqueStrings(phrases);
+}
+
+function appliedFilterPhrase(filter: AppliedFilter): string | null {
+  const kind = filter.kind.toLowerCase();
+  const label = filter.label.toLowerCase();
+  const value = filter.value.trim();
+  if (!value) return null;
+
+  if (kind === "quality") return `against ${value}`;
+  if (kind === "team" && label.includes("opponent")) {
+    return `against ${value}`;
+  }
+  if (kind === "location") {
+    const normalized = value.toLowerCase();
+    if (normalized === "home") return "at home";
+    if (normalized === "away") return "on the road";
+    return value;
+  }
+  if (kind === "outcome") {
+    const normalized = value.toLowerCase();
+    if (normalized.startsWith("win")) return "in wins";
+    if (normalized.startsWith("loss")) return "in losses";
+    return `in ${value}`;
+  }
+  if (kind === "player" && label.includes("without")) {
+    return `without ${value}`;
+  }
+  if (kind === "date") return null;
+  if (kind === "season" || kind === "window") return null;
+  if (kind === "threshold") return thresholdPhrase(filter.label, value);
+  if (kind === "situation" || kind === "schedule") {
+    return value.toLowerCase() === "true"
+      ? `in ${filter.label.toLowerCase()} games`
+      : `${filter.label.toLowerCase()}: ${value}`;
+  }
+  if (kind === "role" || kind === "position" || kind === "period") {
+    return `${filter.label.toLowerCase()}: ${value}`;
+  }
+
+  return null;
+}
+
+function thresholdPhrase(label: string, value: string): string {
+  const match = label.match(/^(.+)\s+(min|max)$/i);
+  if (!match) return `${label}: ${value}`;
+
+  const [, stat, direction] = match;
+  const numeric = Number(value);
+  const threshold = Number.isFinite(numeric)
+    ? formatValue(
+        Math.abs(numeric - Math.round(numeric)) < 0.001 ||
+          Math.abs(numeric - Math.round(numeric) - 0.0001) < 0.001
+          ? Math.round(numeric)
+          : numeric,
+        stat,
+      )
+    : value;
+  const statText = stat.replace(/_/g, " ").toUpperCase();
+  return direction.toLowerCase() === "min"
+    ? `with at least ${threshold} ${statText}`
+    : `with at most ${threshold} ${statText}`;
+}
+
+function uniqueStrings(values: string[]): string[] {
+  const seen = new Set<string>();
+  return values.filter((value) => {
+    const key = value.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function heroIdentity(

@@ -74,6 +74,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/result_display_implementation_plan.md` — completed first-pass result display implementation queue
 - `planning/result_display_followup_queue.md` — active follow-up queue for remaining route-level result display gaps
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
+- `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
 - `planning/phase_v2_work_queue.md` — completed Track A visual-foundation primitives queue and Phase V2 retrospective
 - `planning/phase_v2_primitives_inventory.md` — primitive needs inventory and API-boundary record produced by Phase V2 item 1
 - `planning/phase_v3_work_queue.md` — completed Track A visual-foundation queue for app shell and layout work

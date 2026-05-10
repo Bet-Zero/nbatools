@@ -1,3 +1,10 @@
+.tableFrame {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .tableScroll {
   box-sizing: border-box;
   width: 100%;
@@ -111,4 +118,22 @@
 
 .footerRow:first-of-type td {
   border-top: 2px solid var(--border-subtle);
+}
+
+.rowToggle {
+  margin-top: var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+
+.rowToggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
