@@ -74,6 +74,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/result_display_map.md` — route-by-route display intent and reconciliation map for result rendering
 - `planning/result_display_implementation_plan.md` — completed first-pass result display implementation queue
 - `planning/result_display_followup_queue.md` — active follow-up queue for remaining route-level result display gaps
+- `planning/raw-product/WEAK_CONTRACT_DECISION_PREFLIGHT.md` — product-decision preflight for `lineup_summary`, `player_on_off`, and single-team `playoff_appearances` weak contracts
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
 - `planning/result-display-lock-in/result_display_wave_4_findings.md` — Wave 4 lock-in findings for records, comparisons, and playoff history
