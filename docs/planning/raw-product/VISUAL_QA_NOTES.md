@@ -35,6 +35,7 @@ Recent related work before this visual QA pass:
 | Low | Playoff Round Records | Hero uses `.667` while table uses `66.7%`. | Standardize hero to percentage formatting. | Batch 2 |
 | Low | Playoff History / Matchup History | `Round unavailable` repeats heavily in historical playoff rows. | Consider shorter unavailable display later while keeping caveat. | Batch 2 / Batch 3 |
 | Low | Comparison Panels | Record mini-card appears to duplicate wording like `win pct pct`. | Clean up comparison card record sublabel formatting. | Batch 3 |
+| Low | Leaderboard Table | Some team/abbreviation text can truncate awkwardly in narrow cells, e.g. `P...`. | Review entity-cell width/abbreviation behavior during table polish. | Batch 4 |
 
 ---
 
@@ -633,3 +634,166 @@ Secondary candidates to move behind `Show additional columns`:
 
 - Clean up duplicate `pct` wording in Comparison Panels record-card sublabels.
 - Consider shorter unavailable round display for Playoff Matchup History rows.
+
+---
+
+# Batch 4
+
+## Screenshots Reviewed
+
+1. Matchup By Decade
+2. Leaderboard Table
+3. Top Performances
+4. Rolling Stretch
+
+## Overall Batch Verdict
+
+Batch 4 is strong overall. The core leaderboard, top-performance, rolling-stretch, and matchup-by-decade outputs look clean and readable at review width. The leaderboard-supporting-column work appears to have improved consistency without making the default leaderboard too crowded.
+
+Main issue found:
+
+1. `Leaderboard Table` has a minor entity-cell truncation issue for some team abbreviations/text, visible as `P...` in the table.
+
+## Screenshot Notes
+
+### Matchup By Decade
+
+Fixture:
+
+- Shape: Matchup By Decade
+- Query: `Lakers vs Celtics by decade`
+- Fixture ID shown: 238
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is clear:
+  - `The Los Angeles Lakers lead the Boston Celtics 31-27 in regular-season games from 1996-97 through 2025-26.`
+- The context card is clean.
+- The table is compact and readable.
+- The columns are well chosen:
+  - `Decade`
+  - `Games`
+  - `LAL W-L`
+  - `LAL Win %`
+  - `BOS W-L`
+  - `BOS Win %`
+- The `Show matchup summary` button is clear.
+
+Status:
+
+- `PASS / NO IMMEDIATE ACTION`
+
+---
+
+### Leaderboard Table
+
+Fixture:
+
+- Shape: Leaderboard Table
+- Query: `Who leads the NBA in points per game this season?`
+- Fixture ID shown: 1
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is direct:
+  - `Luka Dončić led the NBA with 33.5 PPG in the 2025-26 regular season.`
+- The route-specific supporting columns are useful and not too crowded:
+  - `Season`
+  - `TM`
+  - `GP`
+  - `Type`
+- The primary metric highlight works well.
+- The table feels cleaner than earlier dynamic-column versions.
+
+Minor issue:
+
+- Some team/entity text can truncate awkwardly in narrow cells, visible as `P...` for Philadelphia rows.
+- Since the team badge already shows `PHI`, the extra truncated text may not add much value.
+
+Status:
+
+- `PASS / MINOR ENTITY-CELL POLISH`
+
+Potential future improvement:
+
+- For team abbreviation cells, avoid duplicating the abbreviation after the badge if it risks truncation.
+- Or give the abbreviation/text cell enough width to avoid awkward `P...` display.
+
+---
+
+### Top Performances
+
+Fixture:
+
+- Shape: Top Performances
+- Query: `What were the biggest scoring games this season?`
+- Fixture ID shown: 31
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is direct and useful:
+  - `Bam Adebayo had the top scoring game this season with 83 points in a win against Washington Wizards on Mar 10.`
+- The note is clean:
+  - `Showing league-wide single-game scoring performances.`
+- The table columns are well balanced:
+  - `Rank`
+  - `Player`
+  - `Date`
+  - `Opp`
+  - `Result`
+  - `PTS`
+  - `REB`
+  - `AST`
+  - `3PM`
+- Highlighting `PTS` is appropriate.
+- No obvious clipping.
+
+Status:
+
+- `PASS / NO IMMEDIATE ACTION`
+
+---
+
+### Rolling Stretch
+
+Fixture:
+
+- Shape: Rolling Stretch
+- Query: `Which players have the hottest 3-game scoring stretch this year?`
+- Fixture ID shown: 36
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is clear:
+  - `Luka Dončić had the hottest 3-game scoring stretch this season, averaging 45.3 PPG from Mar 16 to Mar 19.`
+- The table is compact and readable.
+- The columns are well chosen:
+  - `Rank`
+  - `Player`
+  - `Window`
+  - primary metric, e.g. `PPG`
+  - `Start`
+  - `End`
+  - `Season`
+- Highlighting the primary metric works well.
+
+Status:
+
+- `PASS / NO IMMEDIATE ACTION`
+
+## Batch 4 Recommended Follow-Up
+
+No new high-priority fixes from this batch.
+
+### Minor Entity-Cell Polish
+
+For generic leaderboard tables, consider cleaning up team abbreviation display so rows do not show awkward truncated text like `P...` after a badge that already contains the abbreviation.
+
+This is lower priority than the already-captured medium-priority table-density issues:
+
+1. Streak Table default columns.
+2. Team Record default columns.
