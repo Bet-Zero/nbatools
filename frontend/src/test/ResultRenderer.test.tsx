@@ -649,7 +649,10 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "PPG" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "TM" }),
+      screen.getByRole("columnheader", { name: "Team" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "GP" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Jalen Williams")).toBeInTheDocument();
     expect(
@@ -705,8 +708,14 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "APG" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "PPG" }),
+      screen.getByRole("columnheader", { name: "GP" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Season Type" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "PPG" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Show raw table" }),
     ).not.toBeInTheDocument();
@@ -758,7 +767,7 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "Wins" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Losses" }),
+      screen.getByRole("columnheader", { name: "W-L" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Win %" }),
@@ -815,11 +824,12 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "Win %" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Wins" }),
+      screen.getByRole("columnheader", { name: "W-L" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Losses" }),
+      screen.getByRole("columnheader", { name: "Games" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("578-304")).toBeInTheDocument();
     expect(screen.getByText("882")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Show raw table" }),
@@ -1644,13 +1654,21 @@ describe("ResultRenderer (substrate)", () => {
           leaderboard: [
             {
               rank: 1,
-              lineup_members: ["Jayson Tatum", "Jaylen Brown", "Derrick White"],
-              team_abbr: "BOS",
-              games: 22,
-              minutes: 240,
-              net_rating: 18.5,
               season: "2025-26",
               season_type: "Regular Season",
+              team_abbr: "BOS",
+              unit_size: 3,
+              lineup_id: "BOS-001",
+              lineup_name: "Jayson Tatum | Jaylen Brown | Derrick White",
+              player_ids: "1628369|1627759|1628401",
+              player_names: "Jayson Tatum|Jaylen Brown|Derrick White",
+              minute_minimum: 200,
+              minutes: 240,
+              off_rating: 122.1,
+              def_rating: 103.6,
+              net_rating: 18.5,
+              pace: 99.4,
+              ts_pct: 0.64,
             },
           ],
         },
@@ -1664,11 +1682,33 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByText("Jayson Tatum / Jaylen Brown / Derrick White"),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("columnheader", { name: "Lineup" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Team" }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("columnheader", { name: "Net" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "TM" }),
+      screen.getByRole("columnheader", { name: "ORtg" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "DRtg" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Pace" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "TS%" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("BOS-001")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("1628369|1627759|1628401"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Jayson Tatum|Jaylen Brown|Derrick White"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders playoff appearances as a leaderboard pattern", () => {
@@ -1710,6 +1750,12 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Appearances" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Round" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Seasons" }),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Playoff leaderboard rankings"),

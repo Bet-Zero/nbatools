@@ -45,6 +45,14 @@ function expectHeaders(table: HTMLElement, headers: string[]): void {
   }
 }
 
+function expectNoHeaders(table: HTMLElement, headers: string[]): void {
+  for (const header of headers) {
+    expect(
+      within(table).queryByRole("columnheader", { name: header }),
+    ).not.toBeInTheDocument();
+  }
+}
+
 describe("Wave 1 table pattern contracts", () => {
   it("renders the player game-log visible header contract", () => {
     const data = makeResponse("player_game_summary", {
@@ -246,7 +254,7 @@ describe("Wave 1 table pattern contracts", () => {
     ]);
   });
 
-  it("renders the leaderboard rank, entity, and primary metric contract", () => {
+  it("renders player season leaderboards with route-specific support columns", () => {
     const data = makeResponse("season_leaders", {
       queryClass: "leaderboard",
       metadata: { stat: "pts_per_game", season: "2025-26" },
@@ -255,9 +263,12 @@ describe("Wave 1 table pattern contracts", () => {
           {
             rank: 1,
             player_name: "Shai Gilgeous-Alexander",
+            player_id: 1628983,
             team_abbr: "OKC",
             games_played: 72,
             pts_per_game: 31.1,
+            season: "2025-26",
+            season_type: "Regular Season",
           },
         ],
       },
@@ -266,7 +277,232 @@ describe("Wave 1 table pattern contracts", () => {
     render(<ResultRenderer data={data} displayMode="review" />);
 
     const table = screen.getByRole("table", { name: "Leaderboard" });
-    expectHeaders(table, ["#", "Player", "PPG"]);
+    expectHeaders(table, [
+      "#",
+      "Player",
+      "PPG",
+      "Team",
+      "GP",
+      "Season",
+      "Season Type",
+    ]);
+    expect(within(table).queryByText("1628983")).not.toBeInTheDocument();
+  });
+
+  it("renders player season shooting leaderboards with made and attempt context", () => {
+    const data = makeResponse("season_leaders", {
+      queryClass: "leaderboard",
+      metadata: { stat: "fg_pct", season: "2025-26" },
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            player_name: "Nikola Jokic",
+            team_abbr: "DEN",
+            games_played: 70,
+            fg_pct: 0.635,
+            fgm_total: 820,
+            fga_total: 1291,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    render(<ResultRenderer data={data} displayMode="review" />);
+
+    const table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, ["#", "Player", "FG%", "Team", "GP", "FGM", "FGA"]);
+  });
+
+  it("renders team season leaderboards with stable rating and record context", () => {
+    const ratingData = makeResponse("season_team_leaders", {
+      queryClass: "leaderboard",
+      metadata: { stat: "off_rating", season: "2025-26" },
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            team_name: "Denver Nuggets",
+            team_abbr: "DEN",
+            team_id: 1610612743,
+            games_played: 82,
+            off_rating: 121.4,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    const { rerender } = render(
+      <ResultRenderer data={ratingData} displayMode="review" />,
+    );
+
+    let table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, [
+      "#",
+      "Team",
+      "ORtg",
+      "GP",
+      "Season",
+      "Season Type",
+    ]);
+    expect(within(table).queryByText("1610612743")).not.toBeInTheDocument();
+
+    const recordData = makeResponse("season_team_leaders", {
+      queryClass: "leaderboard",
+      metadata: { stat: "wins", season: "2025-26" },
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            team_name: "Oklahoma City Thunder",
+            team_abbr: "OKC",
+            team_id: 1610612760,
+            games_played: 82,
+            wins: 68,
+            losses: 14,
+            win_pct: 0.829,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    rerender(<ResultRenderer data={recordData} displayMode="review" />);
+    table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, ["#", "Team", "Wins", "W-L", "Win %", "GP"]);
+    expect(within(table).getByText("68-14")).toBeInTheDocument();
+  });
+
+  it("renders team record leaderboards with explicit W-L semantics", () => {
+    const data = makeResponse("team_record_leaderboard", {
+      queryClass: "leaderboard",
+      metadata: { stat: "win_pct", season: "2025-26" },
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            team_name: "Boston Celtics",
+            team_abbr: "BOS",
+            team_id: 1610612738,
+            games_played: 82,
+            wins: 61,
+            losses: 21,
+            win_pct: 0.744,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    render(<ResultRenderer data={data} displayMode="review" />);
+
+    const table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, [
+      "#",
+      "Team",
+      "W-L",
+      "Win %",
+      "Games",
+      "Season",
+      "Season Type",
+    ]);
+    expect(within(table).getByText("61-21")).toBeInTheDocument();
+    expect(within(table).queryByText("1610612738")).not.toBeInTheDocument();
+  });
+
+  it("renders player occurrence leaderboards with count, team, and GP context", () => {
+    const specialEventData = makeResponse("player_occurrence_leaders", {
+      queryClass: "leaderboard",
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            player_name: "Nikola Jokic",
+            team_abbr: "DEN",
+            games_played: 78,
+            "triple doubles": 32,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    const { rerender } = render(
+      <ResultRenderer data={specialEventData} displayMode="review" />,
+    );
+
+    let table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, [
+      "#",
+      "Player",
+      "Triple Doubles",
+      "Team",
+      "GP",
+      "Season",
+      "Season Type",
+    ]);
+
+    const thresholdData = makeResponse("player_occurrence_leaders", {
+      queryClass: "leaderboard",
+      metadata: { stat: "pts", min_value: 40 },
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            player_name: "Shai Gilgeous-Alexander",
+            team_abbr: "OKC",
+            games_played: 72,
+            "games_pts_40+": 12,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    rerender(<ResultRenderer data={thresholdData} displayMode="review" />);
+    table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, ["Games PTS 40+", "Team", "GP"]);
+    expect(within(table).getByText("12")).toBeInTheDocument();
+  });
+
+  it("renders team occurrence leaderboards with team-abbreviation identity and GP context", () => {
+    const data = makeResponse("team_occurrence_leaders", {
+      queryClass: "leaderboard",
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            team_abbr: "DEN",
+            games_played: 82,
+            "games_pts_120+": 55,
+            season: "2025-26",
+            season_type: "Regular Season",
+          },
+        ],
+      },
+    });
+
+    render(<ResultRenderer data={data} displayMode="review" />);
+
+    const table = screen.getByRole("table", { name: "Leaderboard" });
+    expectHeaders(table, [
+      "#",
+      "Team",
+      "Games PTS 120+",
+      "GP",
+      "Season",
+      "Season Type",
+    ]);
+    expect(within(table).getAllByText("DEN").length).toBeGreaterThan(0);
+    expectNoHeaders(table, ["Team Id"]);
   });
 
   it("renders the top-performance rank, subject, context, and primary metric contract", () => {

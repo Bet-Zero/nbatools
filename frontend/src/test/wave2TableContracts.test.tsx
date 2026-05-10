@@ -326,6 +326,38 @@ describe("Wave 2 table pattern contracts", () => {
       "Games",
     ]);
 
+    const leagueWideAppearancesData = makeResponse("playoff_appearances", {
+      queryClass: "leaderboard",
+      sections: {
+        leaderboard: [
+          {
+            rank: 1,
+            team_abbr: "MIA",
+            team_name: "Miami Heat",
+            team_id: 1610612748,
+            appearances: 23,
+            round: "Playoffs",
+            seasons: "1996-97 to 2024-25",
+          },
+        ],
+      },
+    });
+
+    rerender(
+      <ResultRenderer
+        data={leagueWideAppearancesData}
+        displayMode="review"
+      />,
+    );
+    expectHeaders(screen.getByRole("table", { name: "Leaderboard" }), [
+      "#",
+      "Team",
+      "Appearances",
+      "Round",
+      "Seasons",
+    ]);
+    expect(screen.queryByText("1610612748")).not.toBeInTheDocument();
+
     const appearancesData = makeResponse("playoff_appearances", {
       metadata: {
         team_context: {
@@ -601,12 +633,38 @@ describe("Wave 2 table pattern contracts", () => {
         leaderboard: [
           {
             rank: 1,
-            lineup: "Nikola Jokic / Jamal Murray",
+            season: "2025-26",
+            season_type: "Regular Season",
             team_abbr: "DEN",
+            unit_size: 5,
+            lineup_id: "DEN-001",
+            lineup_name: "Nikola Jokic | Jamal Murray",
+            player_ids: "203999|1627750",
+            player_names: "Nikola Jokic|Jamal Murray",
+            minute_minimum: 200,
             minutes: 500,
             off_rating: 125.2,
             def_rating: 110.2,
             net_rating: 15,
+            pace: 99.7,
+            ts_pct: 0.632,
+          },
+          {
+            rank: 2,
+            season: "2025-26",
+            season_type: "Regular Season",
+            team_abbr: "DEN",
+            unit_size: 2,
+            lineup_id: "DEN-002",
+            player_ids: "203932|1629008",
+            player_names: '["Aaron Gordon","Michael Porter Jr."]',
+            minute_minimum: 200,
+            minutes: 420,
+            off_rating: 121.1,
+            def_rating: 111.4,
+            net_rating: 9.7,
+            pace: 98.6,
+            ts_pct: 0.611,
           },
         ],
       },
@@ -614,7 +672,27 @@ describe("Wave 2 table pattern contracts", () => {
 
     rerender(<ResultRenderer data={leaderboardData} displayMode="review" />);
     const table = screen.getByRole("table", { name: "Leaderboard" });
-    expectHeaders(table, ["#", "Name", "Net", "TM", "Minutes", "ORtg", "DRtg"]);
-    expect(within(table).getByText("Nikola Jokic / Jamal Murray")).toBeInTheDocument();
+    expectHeaders(table, [
+      "#",
+      "Lineup",
+      "Team",
+      "Net",
+      "Minutes",
+      "ORtg",
+      "DRtg",
+      "Pace",
+      "TS%",
+    ]);
+    expect(
+      within(table).getByText("Nikola Jokic / Jamal Murray"),
+    ).toBeInTheDocument();
+    expect(
+      within(table).getByText("Aaron Gordon / Michael Porter Jr."),
+    ).toBeInTheDocument();
+    expect(within(table).queryByText("DEN-001")).not.toBeInTheDocument();
+    expect(within(table).queryByText("203999|1627750")).not.toBeInTheDocument();
+    expect(
+      within(table).queryByText("Nikola Jokic|Jamal Murray"),
+    ).not.toBeInTheDocument();
   });
 });

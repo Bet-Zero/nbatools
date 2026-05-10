@@ -26,6 +26,14 @@ interface Props {
 }
 
 type EntityKind = "player" | "team" | "unknown";
+type LeaderboardRoute =
+  | "season_leaders"
+  | "season_team_leaders"
+  | "team_record_leaderboard"
+  | "player_occurrence_leaders"
+  | "team_occurrence_leaders"
+  | "playoff_appearances"
+  | "lineup_leaderboard";
 
 const ENTITY_COLUMNS = new Set([
   "player_name",
@@ -35,7 +43,9 @@ const ENTITY_COLUMNS = new Set([
   "team",
   "entity",
   "name",
+  "lineup_name",
   "lineup",
+  "player_names",
   "lineup_members",
   "members",
 ]);
@@ -46,6 +56,11 @@ const INTERNAL_COLUMNS = new Set([
   "team_id",
   "game_id",
   "opponent_team_id",
+  "lineup_id",
+  "player_ids",
+  "winner_team_id",
+  "start_game_id",
+  "end_game_id",
 ]);
 
 const METRIC_EXCLUDED_COLUMNS = new Set([
@@ -196,7 +211,8 @@ export default function LeaderboardResult({
   const metric = metricColumn(rows, data, metricKey);
   const firstRow = rows[0];
   const entityKind = rowEntityKind(firstRow);
-  const columns = tableColumns(rows, metric, entityKind, metricLabel);
+  const route = leaderboardRoute(data);
+  const columns = tableColumns(rows, metric, entityKind, metricLabel, route);
 
   return (
     <section className={styles.pattern} aria-label="Leaderboard result">
@@ -238,6 +254,7 @@ function tableColumns(
   metric: string | null,
   entityKind: EntityKind,
   metricLabel: string | undefined,
+  route: LeaderboardRoute | null,
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
@@ -248,15 +265,21 @@ function tableColumns(
     },
     {
       key: "entity",
-      header:
-        entityKind === "team"
-          ? "Team"
-          : entityKind === "player"
-            ? "Player"
-            : "Name",
+      header: entityHeader(route, entityKind),
       render: entityCell,
     },
   ];
+
+  const configuredColumns = routeSpecificColumns(
+    rows,
+    metric,
+    metricLabel,
+    route,
+  );
+  if (configuredColumns) {
+    columns.push(...configuredColumns);
+    return columns;
+  }
 
   if (metric) {
     columns.push(valueColumn(metric, rows, metricLabel));
@@ -267,6 +290,267 @@ function tableColumns(
   }
 
   return columns;
+}
+
+function leaderboardRoute(data: QueryResponse): LeaderboardRoute | null {
+  const route = data.route ?? data.result?.metadata?.route;
+  switch (route) {
+    case "season_leaders":
+    case "season_team_leaders":
+    case "team_record_leaderboard":
+    case "player_occurrence_leaders":
+    case "team_occurrence_leaders":
+    case "playoff_appearances":
+    case "lineup_leaderboard":
+      return route;
+    default:
+      return null;
+  }
+}
+
+function entityHeader(
+  route: LeaderboardRoute | null,
+  entityKind: EntityKind,
+): string {
+  if (route === "lineup_leaderboard") return "Lineup";
+  if (entityKind === "team") return "Team";
+  if (entityKind === "player") return "Player";
+  return "Name";
+}
+
+function routeSpecificColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+  route: LeaderboardRoute | null,
+): Array<ResultTableColumn<SectionRow>> | null {
+  switch (route) {
+    case "season_leaders":
+      return seasonLeaderColumns(rows, metric, metricLabel);
+    case "season_team_leaders":
+      return seasonTeamLeaderColumns(rows, metric, metricLabel);
+    case "team_record_leaderboard":
+      return teamRecordLeaderboardColumns(rows, metric, metricLabel);
+    case "player_occurrence_leaders":
+      return playerOccurrenceColumns(rows, metric, metricLabel);
+    case "team_occurrence_leaders":
+      return teamOccurrenceColumns(rows, metric, metricLabel);
+    case "playoff_appearances":
+      return playoffAppearanceColumns(rows, metric, metricLabel);
+    case "lineup_leaderboard":
+      return lineupLeaderboardColumns(rows, metric, metricLabel);
+    default:
+      return null;
+  }
+}
+
+function seasonLeaderColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  pushMetricColumn(columns, rows, metric, metricLabel);
+  pushValueColumn(columns, rows, "team_abbr", "Team");
+  pushValueColumn(columns, rows, "games_played", "GP");
+  pushShootingColumns(columns, rows, metric);
+  pushSeasonContextColumns(columns, rows);
+  return columns;
+}
+
+function seasonTeamLeaderColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  pushMetricColumn(columns, rows, metric, metricLabel);
+  pushRecordContextColumns(columns, rows);
+  pushValueColumn(columns, rows, "games_played", "GP");
+  pushShootingColumns(columns, rows, metric);
+  pushSeasonContextColumns(columns, rows);
+  return columns;
+}
+
+function teamRecordLeaderboardColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  if (
+    metric &&
+    !["wins", "losses", "win_pct", "games_played"].includes(metric)
+  ) {
+    pushMetricColumn(columns, rows, metric, metricLabel);
+  }
+  if (rowsHaveAnyValue(rows, ["wins", "losses"])) {
+    columns.push(
+      recordColumn(
+        metric === "wins" || metric === "losses" ? metric : "record",
+      ),
+    );
+  }
+  pushValueColumn(columns, rows, "win_pct", "Win %");
+  pushValueColumn(columns, rows, "games_played", "Games");
+  pushValueColumn(columns, rows, "season", "Season");
+  pushValueColumn(columns, rows, "seasons", "Seasons");
+  pushValueColumn(columns, rows, "season_type", "Season Type");
+  return columns;
+}
+
+function playerOccurrenceColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  pushMetricColumn(columns, rows, metric, metricLabel);
+  pushValueColumn(columns, rows, "team_abbr", "Team");
+  pushValueColumn(columns, rows, "games_played", "GP");
+  pushSeasonContextColumns(columns, rows);
+  return columns;
+}
+
+function teamOccurrenceColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  pushMetricColumn(columns, rows, metric, metricLabel);
+  pushValueColumn(columns, rows, "games_played", "GP");
+  pushSeasonContextColumns(columns, rows);
+  return columns;
+}
+
+function playoffAppearanceColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  pushMetricColumn(columns, rows, metric ?? "appearances", metricLabel);
+  pushValueColumn(columns, rows, "round", "Round");
+  pushValueColumn(columns, rows, "seasons", "Seasons");
+  pushValueColumn(columns, rows, "season", "Season");
+  return columns;
+}
+
+function lineupLeaderboardColumns(
+  rows: SectionRow[],
+  metric: string | null,
+  metricLabel: string | undefined,
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [];
+  const primaryMetric = metric ?? "net_rating";
+  pushValueColumn(columns, rows, "team_abbr", "Team");
+  pushMetricColumn(columns, rows, primaryMetric, metricLabel);
+
+  const supportOrder =
+    primaryMetric === "minutes"
+      ? ["net_rating", "off_rating", "def_rating", "pace", "ts_pct"]
+      : [
+          "minutes",
+          "net_rating",
+          "off_rating",
+          "def_rating",
+          "pace",
+          "ts_pct",
+        ];
+  for (const key of supportOrder) {
+    pushValueColumn(columns, rows, key);
+  }
+  return columns;
+}
+
+function pushMetricColumn(
+  columns: Array<ResultTableColumn<SectionRow>>,
+  rows: SectionRow[],
+  metric: string | null,
+  labelOverride?: string,
+): void {
+  if (!metric) return;
+  pushValueColumn(columns, rows, metric, labelOverride);
+}
+
+function pushShootingColumns(
+  columns: Array<ResultTableColumn<SectionRow>>,
+  rows: SectionRow[],
+  metric: string | null,
+): void {
+  if (!isShootingContext(rows, metric)) return;
+  for (const key of [
+    "fgm_total",
+    "fga_total",
+    "fg3m_total",
+    "fg3a_total",
+    "ftm_total",
+    "fta_total",
+  ]) {
+    pushValueColumn(columns, rows, key);
+  }
+}
+
+function isShootingContext(rows: SectionRow[], metric: string | null): boolean {
+  if (
+    metric &&
+    ["fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"].includes(metric)
+  ) {
+    return true;
+  }
+  return rowsHaveAnyValue(rows, [
+    "fgm_total",
+    "fga_total",
+    "fg3m_total",
+    "fg3a_total",
+    "ftm_total",
+    "fta_total",
+  ]);
+}
+
+function pushRecordContextColumns(
+  columns: Array<ResultTableColumn<SectionRow>>,
+  rows: SectionRow[],
+): void {
+  if (rowsHaveAnyValue(rows, ["wins", "losses"])) {
+    columns.push(recordColumn("record"));
+  }
+  pushValueColumn(columns, rows, "win_pct", "Win %");
+}
+
+function pushSeasonContextColumns(
+  columns: Array<ResultTableColumn<SectionRow>>,
+  rows: SectionRow[],
+): void {
+  pushValueColumn(columns, rows, "season", "Season");
+  pushValueColumn(columns, rows, "seasons", "Seasons");
+  pushValueColumn(columns, rows, "season_type", "Season Type");
+}
+
+function pushValueColumn(
+  columns: Array<ResultTableColumn<SectionRow>>,
+  rows: SectionRow[],
+  key: string,
+  labelOverride?: string,
+): void {
+  if (columns.some((column) => column.key === key)) return;
+  if (!rows.some((row) => hasValue(row[key]))) return;
+  columns.push(valueColumn(key, rows, labelOverride));
+}
+
+function rowsHaveAnyValue(rows: SectionRow[], keys: string[]): boolean {
+  return keys.some((key) => rows.some((row) => hasValue(row[key])));
+}
+
+function recordColumn(key: string): ResultTableColumn<SectionRow> {
+  return {
+    key,
+    sourceKeys: ["wins", "losses"],
+    header: "W-L",
+    align: "center",
+    render: recordValue,
+  };
 }
 
 function displayColumnKeys(
@@ -668,13 +952,65 @@ function hasLineupIdentity(row: SectionRow): boolean {
 }
 
 function lineupIdentityLabel(row: SectionRow): string | null {
-  for (const key of ["lineup_members", "members"]) {
-    const value = row[key];
-    if (Array.isArray(value) && value.length > 0) {
-      return value.map(String).join(" / ");
-    }
+  for (const key of [
+    "lineup_name",
+    "lineup",
+    "player_names",
+    "lineup_members",
+    "members",
+  ]) {
+    const label = readableNameList(row[key]);
+    if (label) return label;
   }
-  return textValue(row, "lineup");
+  return null;
+}
+
+function readableNameList(value: unknown): string | null {
+  if (Array.isArray(value)) {
+    const parts = value.map(String).map((part) => part.trim()).filter(Boolean);
+    return parts.length > 0 ? parts.join(" / ") : null;
+  }
+
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const parsed = parseArrayLikeNames(trimmed);
+  if (parsed.length > 0) return parsed.join(" / ");
+
+  if (trimmed.includes("|")) {
+    const parts = trimmed.split("|").map((part) => part.trim()).filter(Boolean);
+    return parts.length > 0 ? parts.join(" / ") : null;
+  }
+
+  return trimmed;
+}
+
+function parseArrayLikeNames(value: string): string[] {
+  if (!value.startsWith("[") || !value.endsWith("]")) return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.map(String).map((part) => part.trim()).filter(Boolean);
+    }
+  } catch {
+    // Some backend/debug paths stringify arrays with single quotes.
+  }
+
+  return value
+    .slice(1, -1)
+    .split(",")
+    .map((part) => part.trim().replace(/^['"]|['"]$/g, ""))
+    .filter(Boolean);
+}
+
+function recordValue(row: SectionRow): string {
+  if (!hasValue(row.wins) && !hasValue(row.losses)) return "—";
+  return `${formatValue(row.wins, "wins")}-${formatValue(
+    row.losses,
+    "losses",
+  )}`;
 }
 
 function rankValue(row: SectionRow, index: number): string {

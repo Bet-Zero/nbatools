@@ -334,7 +334,14 @@ describe("classifyResultShape", () => {
           route: "lineup_leaderboard",
           sections: {
             leaderboard: [
-              { rank: 1, lineup: "Nikola Jokic / Jamal Murray", net_rating: 15 },
+              {
+                rank: 1,
+                lineup_name: "Nikola Jokic | Jamal Murray",
+                player_names: "Nikola Jokic|Jamal Murray",
+                team_abbr: "DEN",
+                minutes: 500,
+                net_rating: 15,
+              },
             ],
           },
         }),

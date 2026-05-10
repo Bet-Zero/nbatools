@@ -46,6 +46,7 @@ const WAVE_1_ROUTES = [
   "team_record",
   "season_leaders",
   "season_team_leaders",
+  "team_record_leaderboard",
   "top_player_games",
   "top_team_games",
   "player_occurrence_leaders",
@@ -194,6 +195,7 @@ describe("routeToPattern", () => {
     for (const route of [
       "season_leaders",
       "season_team_leaders",
+      "team_record_leaderboard",
       "player_occurrence_leaders",
       "team_occurrence_leaders",
     ]) {
