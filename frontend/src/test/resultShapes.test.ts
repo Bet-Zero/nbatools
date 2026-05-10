@@ -44,6 +44,114 @@ function makeResponse(
 }
 
 describe("classifyResultShape", () => {
+  it("classifies representative Wave 1 result shapes", () => {
+    const cases: Array<{
+      name: string;
+      data: QueryResponse;
+      expected: typeof RESULT_SHAPES[keyof typeof RESULT_SHAPES];
+    }> = [
+      {
+        name: "entity_summary",
+        data: makeResponse({
+          route: "player_game_summary",
+          sections: {
+            summary: [{ player_name: "Nikola Jokic", pts_avg: 28.1 }],
+          },
+        }),
+        expected: RESULT_SHAPES.entity_summary,
+      },
+      {
+        name: "entity_summary_with_gamelog",
+        data: makeResponse({
+          route: "player_game_summary",
+          query: "Nikola Jokic last 5 games",
+          metadata: { window_size: 5 },
+          sections: {
+            summary: [{ player_name: "Nikola Jokic", pts_avg: 31.2 }],
+            game_log: [{ player_name: "Nikola Jokic", game_date: "2026-04-01" }],
+          },
+        }),
+        expected: RESULT_SHAPES.entity_summary_with_gamelog,
+      },
+      {
+        name: "game_log_player_table",
+        data: makeResponse({
+          route: "player_game_finder",
+          sections: {
+            finder: [{ player_name: "Stephen Curry", game_date: "2026-02-01" }],
+          },
+        }),
+        expected: RESULT_SHAPES.game_log_player_table,
+      },
+      {
+        name: "game_log_team_table",
+        data: makeResponse({
+          route: "game_finder",
+          sections: {
+            finder: [{ team_name: "Los Angeles Lakers", game_date: "2026-02-01" }],
+          },
+        }),
+        expected: RESULT_SHAPES.game_log_team_table,
+      },
+      {
+        name: "game_log_team_detail",
+        data: makeResponse({
+          route: "game_summary",
+          sections: {
+            summary: [{ team_name: "Boston Celtics", wins: 3, losses: 2 }],
+            game_log: [{ team_name: "Boston Celtics", game_date: "2026-02-01" }],
+            top_performers: [{ player_name: "Jayson Tatum", pts: 33 }],
+          },
+        }),
+        expected: RESULT_SHAPES.game_log_team_detail,
+      },
+      {
+        name: "team_record",
+        data: makeResponse({
+          route: "team_record",
+          sections: {
+            summary: [{ team_name: "New York Knicks", wins: 3, losses: 5 }],
+          },
+        }),
+        expected: RESULT_SHAPES.team_record,
+      },
+      {
+        name: "leaderboard_table",
+        data: makeResponse({
+          route: "season_leaders",
+          sections: {
+            leaderboard: [{ rank: 1, player_name: "Shai Gilgeous-Alexander" }],
+          },
+        }),
+        expected: RESULT_SHAPES.leaderboard_table,
+      },
+      {
+        name: "top_performances",
+        data: makeResponse({
+          route: "top_player_games",
+          sections: {
+            leaderboard: [{ rank: 1, player_name: "Bam Adebayo", pts: 40 }],
+          },
+        }),
+        expected: RESULT_SHAPES.top_performances,
+      },
+      {
+        name: "rolling_stretch",
+        data: makeResponse({
+          route: "player_stretch_leaderboard",
+          sections: {
+            leaderboard: [{ rank: 1, player_name: "Luka Doncic", stretch_value: 34 }],
+          },
+        }),
+        expected: RESULT_SHAPES.rolling_stretch,
+      },
+    ];
+
+    for (const { name, data, expected } of cases) {
+      expect(classifyResultShape(data), name).toBe(expected);
+    }
+  });
+
   it("collapses leaderboard routes into the same shape", () => {
     const playerLeaders = makeResponse({
       route: "season_leaders",

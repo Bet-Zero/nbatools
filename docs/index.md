@@ -42,6 +42,7 @@ Current-state documentation and verified behavior specs.
 - `reference/data_catalog.md` — dataset inventory
 - `reference/data_contracts.md` — dataset-level contracts
 - `reference/result_contracts.md` — **design target** for engine result shapes
+- `reference/result_contracts/core_result_table_contracts.md` — locked Wave 1 route/result/table display contracts
 - `reference/system_conventions.md` — data format and naming conventions
 
 ## Architecture — `architecture/`
