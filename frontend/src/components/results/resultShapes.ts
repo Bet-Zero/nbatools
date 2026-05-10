@@ -198,6 +198,15 @@ export function classifyResultShape(
     return RESULT_SHAPES.entity_summary_with_gamelog;
   }
 
+  if (
+    patterns.length === 2 &&
+    patterns[0]?.type === "record" &&
+    patterns[0]?.mode === "team_record" &&
+    patterns[1]?.type === "game_log"
+  ) {
+    return RESULT_SHAPES.team_record;
+  }
+
   if (patterns.length !== 1) {
     return RESULT_SHAPES.unclassified;
   }

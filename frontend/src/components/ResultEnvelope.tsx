@@ -9,7 +9,10 @@ import {
   type BadgeVariant,
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
-import { formatReadableDateRange } from "./noResultDisplayUtils";
+import {
+  formatReadableDateRange,
+  productFacingNotice,
+} from "./noResultDisplayUtils";
 import { formatLongDateRange } from "./tableFormatting";
 import styles from "./ResultEnvelope.module.css";
 
@@ -365,10 +368,28 @@ function buildContextItems(
     metadataText(metadata, "metric") ??
     metadataText(metadata, "target_stat") ??
     metadataText(metadata, "target_metric");
-  if (metric) addContextItem(items, "Metric", statLabel(metric));
+  if (metric) addContextItem(items, "Metric", contextMetricLabel(metric, metadata));
 
   for (const filter of appliedFilters) {
-    addContextItem(items, "Filter", `${filter.label}: ${filter.value}`);
+    if (
+      (filter.label === "Date range" && dateRange) ||
+      (filter.label === "Season range" && seasonRange)
+    ) {
+      continue;
+    }
+    if (filter.label === "Date range" || filter.label === "Season range") {
+      addContextItem(items, filter.label, filter.value);
+    } else if (filter.label === "Filter") {
+      addContextItem(items, "Filter", filter.value);
+    } else if (
+      filter.label === "Window" ||
+      filter.label === "Opponent group" ||
+      filter.label === "Included opponents"
+    ) {
+      addContextItem(items, filter.label, filter.value);
+    } else {
+      addContextItem(items, "Filter", `${filter.label}: ${filter.value}`);
+    }
   }
 
   return items;
@@ -381,11 +402,13 @@ function classifyNoticeItems(texts: string[]): {
   const context: ContextItem[] = [];
   const remaining: string[] = [];
   for (const text of texts) {
-    const item = contextItemFromNotice(text);
+    const displayText = productFacingNotice(text);
+    if (displayText === null) continue;
+    const item = contextItemFromNotice(displayText);
     if (item) {
       context.push(item);
     } else {
-      remaining.push(text);
+      remaining.push(displayText);
     }
   }
   return { context, remaining };
@@ -413,7 +436,15 @@ function contextItemFromNotice(text: string): ContextItem | null {
 
   const recordFiltered = trimmed.match(/^record filtered to games vs\s+(.+)$/i);
   if (recordFiltered) {
-    return contextItem("Filter", `Games vs ${recordFiltered[1]}`);
+    return contextItem(
+      "Included opponents",
+      includedOpponentsLabel(recordFiltered[1]),
+    );
+  }
+
+  const recordWithout = trimmed.match(/^record filtered to games without\s+(.+)$/i);
+  if (recordWithout) {
+    return contextItem("Filter", `Without ${recordWithout[1]}`);
   }
 
   const playoffGameFilter = trimmed.match(
@@ -636,22 +667,30 @@ function formatAppliedFilter(
   kind: string | null,
 ): { label: string; value: string } {
   if (kind === "quality") {
-    return { label: "VS", value: opponentQualityChipValue(value) };
+    return { label: "Opponent group", value: titleCase(value) };
   }
 
   if (kind === "threshold") {
     const threshold = thresholdFilterValue(label, value);
     if (threshold) {
       if (label.trim().toLowerCase().startsWith("opp pts ")) {
-        return { label: "OPP", value: threshold.replace(/^<=\s+/, "<= ") };
+        return { label: "Filter", value: threshold };
       }
-      return { label: "Stat", value: threshold };
+      return { label: "Filter", value: threshold };
     }
   }
 
   if (kind === "date") {
     const dateRange = dateFilterValue(value);
     if (dateRange) return { label, value: dateRange };
+  }
+
+  if (kind === "season" && label.toLowerCase() === "season range") {
+    return { label: "Season range", value };
+  }
+
+  if (kind === "window" && label.toLowerCase() === "last n games") {
+    return { label: "Window", value: `Last ${value} games` };
   }
 
   const normalizedValue =
@@ -671,26 +710,17 @@ function dateFilterValue(value: string): string | null {
   return formatReadableDateRange(match[1], match[2] ?? match[1]);
 }
 
-function opponentQualityChipValue(value: string): string {
-  const normalized = value.trim().toLowerCase();
-  const labels: Record<string, string> = {
-    contenders: "CONTENDERS",
-    "good teams": "GOOD TEAMS",
-    "playoff teams": "PLAYOFF TEAMS",
-    "teams over .500": "WINNING TEAMS",
-    "top teams": "TOP TEAMS",
-    "top-10 defenses": "TOP-10 DEFENSES",
-    "winning teams": "WINNING TEAMS",
-  };
-  return labels[normalized] ?? normalized.toUpperCase();
-}
-
 function thresholdFilterValue(label: string, value: string): string | null {
   const match = label.match(/^(.+)\s+(min|max)$/i);
   if (!match) return null;
 
   const [, stat, direction] = match;
   const threshold = compactThresholdValue(value);
+  if (stat.trim().toLowerCase() === "opp pts") {
+    return direction.toLowerCase() === "min"
+      ? `Opp PTS >= ${threshold}`
+      : `Opp PTS <= ${threshold}`;
+  }
   const suffix = statLabel(stat);
   return direction.toLowerCase() === "min"
     ? `${threshold}+ ${suffix}`
@@ -723,8 +753,8 @@ function statLabel(stat: string): string {
     pts: "PTS",
     pts_avg: "PPG",
     pts_per_game: "PPG",
-    "opp pts": "PTS",
-    opponent_pts: "PTS",
+    "opp pts": "Opponent points",
+    opponent_pts: "Opponent points",
     reb: "REB",
     reb_avg: "RPG",
     reb_per_game: "RPG",
@@ -734,6 +764,30 @@ function statLabel(stat: string): string {
     tov: "TOV",
   };
   return labels[normalized] ?? normalized.replace(/_/g, " ").toUpperCase();
+}
+
+function contextMetricLabel(
+  metric: string,
+  metadata: QueryResponse["result"]["metadata"] | undefined,
+): string {
+  if (
+    metadata?.route === "player_stretch_leaderboard" &&
+    metric.trim().toLowerCase() === "pts"
+  ) {
+    return "PPG";
+  }
+  return statLabel(metric);
+}
+
+function includedOpponentsLabel(value: string): string {
+  return value.replace(/^(\d+)\s+opponents\b/i, "$1 teams");
+}
+
+function titleCase(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function stringValue(value: unknown): string | null {

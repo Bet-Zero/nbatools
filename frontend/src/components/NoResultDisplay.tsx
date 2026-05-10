@@ -37,6 +37,16 @@ function stateProfile(
   status: string,
   metricUnavailable = false,
 ): StateProfile {
+  if (reason === "unrouted") {
+    return {
+      variant: "unsupported",
+      title: "Unsupported Query",
+      label: "Not routed",
+      message: "This query type is not yet supported by the engine.",
+      badgeVariant: "warning",
+    };
+  }
+
   if (status === "error" || reason === "error") {
     return {
       variant: "error",
@@ -73,14 +83,6 @@ function stateProfile(
         label: "Unavailable scope",
         message: "Data is not available for the requested scope.",
         badgeVariant: "neutral",
-      };
-    case "unrouted":
-      return {
-        variant: "unsupported",
-        title: "Unsupported Query",
-        label: "Not routed",
-        message: "This query type is not yet supported by the engine.",
-        badgeVariant: "warning",
       };
     case "ambiguous":
       return {

@@ -168,7 +168,19 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     case "team_matchup_record":
       return [{ type: "comparison", subject: "team", headToHead: true }];
     case "team_record":
-      return [{ type: "record", mode: "team_record" }];
+      return data.result?.sections?.game_log?.length
+        ? [
+            { type: "record", mode: "team_record" },
+            {
+              type: "game_log",
+              sectionKey: "game_log",
+              summaryKey: "summary",
+              mode: "team",
+              showSummaryStrip: false,
+              rawDetailTitle: "Game Detail",
+            },
+          ]
+        : [{ type: "record", mode: "team_record" }];
     case "record_by_decade":
       return [{ type: "record", mode: "record_by_decade" }];
     case "record_by_decade_leaderboard":

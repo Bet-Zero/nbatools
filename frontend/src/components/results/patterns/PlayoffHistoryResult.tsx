@@ -524,6 +524,7 @@ function detailToggles(
         return null;
       }
       const isAdditionalColumns = Boolean(visibleKeys);
+      const labels = playoffDetailToggleLabels(key, titles[key]);
       return (
         <RawDetailToggle
           key={key}
@@ -531,14 +532,30 @@ function detailToggles(
           rows={sections[key]}
           highlight={key !== "summary"}
           collapsedLabel={
-            isAdditionalColumns ? "Show additional columns" : undefined
+            isAdditionalColumns ? "Show additional columns" : labels.collapsed
           }
           expandedLabel={
-            isAdditionalColumns ? "Hide additional columns" : undefined
+            isAdditionalColumns ? "Hide additional columns" : labels.expanded
           }
         />
       );
     });
+}
+
+function playoffDetailToggleLabels(
+  key: string,
+  title: string | undefined,
+): { collapsed: string; expanded: string } {
+  if (title === "Postseason Summary Detail" || key === "summary") {
+    return {
+      collapsed: "Show postseason summary",
+      expanded: "Hide postseason summary",
+    };
+  }
+  return {
+    collapsed: "Show additional columns",
+    expanded: "Hide additional columns",
+  };
 }
 
 function MatchupIdentity({ teams }: { teams: TeamDisplay[] }) {

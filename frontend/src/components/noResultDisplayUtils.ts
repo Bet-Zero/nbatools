@@ -54,13 +54,51 @@ export function buildNoResultDetails(
   metadata?: ResultMetadata | null,
 ): NoResultDetail[] {
   return uniqueDetails([
-    ...notes.map((text) => ({ kind: "Note" as const, text })),
-    ...caveats.map((text) => ({ kind: "Caveat" as const, text })),
-    ...metadataNotes(metadata?.notes).map((text) => ({
+    ...productFacingNotices(notes).map((text) => ({
+      kind: "Note" as const,
+      text,
+    })),
+    ...productFacingNotices(caveats).map((text) => ({
+      kind: "Caveat" as const,
+      text,
+    })),
+    ...productFacingNotices(metadataNotes(metadata?.notes)).map((text) => ({
       kind: "Note" as const,
       text,
     })),
   ]);
+}
+
+export function productFacingNotice(text: string): string | null {
+  const trimmed = text.trim();
+  if (!trimmed) return null;
+
+  if (/^sample_advanced_metrics:/i.test(trimmed)) {
+    return "Advanced rate stats were recalculated using only this filtered sample.";
+  }
+
+  if (/^season_high:/i.test(trimmed)) {
+    return "Showing league-wide single-game scoring performances.";
+  }
+
+  if (
+    /^default:\s*player streak uses three-season window when no season specified$/i.test(
+      trimmed,
+    )
+  ) {
+    return "Because no season was specified, this search used the last three seasons.";
+  }
+
+  if (/^default:\s*<metric> only/i.test(trimmed)) return null;
+  if (/^leaderboard_source:/i.test(trimmed)) return null;
+
+  return trimmed;
+}
+
+export function productFacingNotices(texts: string[]): string[] {
+  return texts
+    .map((text) => productFacingNotice(text))
+    .filter((text): text is string => text !== null);
 }
 
 export function buildNoResultGuidance(
@@ -122,6 +160,9 @@ export function readableNoResultMessage(
   metadata: ResultMetadata | null | undefined,
   detailTexts: string[],
 ): string {
+  const unsupportedPhrase = unsupportedPhraseMessage(metadata);
+  if (unsupportedPhrase) return unsupportedPhrase;
+
   if (isDateNoMatch(reason, metadata)) {
     const dateRange = noResultDateRange(metadata);
     if (dateRange) return `No NBA games matched ${dateRange}.`;
@@ -149,6 +190,16 @@ export function readableNoResultMessage(
   }
 
   return humanizeBackendCopy(fallback, metadata);
+}
+
+function unsupportedPhraseMessage(
+  metadata: ResultMetadata | null | undefined,
+): string | null {
+  const query = String(metadata?.query_text ?? "").toLowerCase();
+  if (query.includes("cooled off")) {
+    return 'I couldn\'t interpret "cooled off" as a supported stat query yet.';
+  }
+  return null;
 }
 
 export function isColumnUnavailableReason(

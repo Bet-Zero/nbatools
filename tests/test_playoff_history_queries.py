@@ -935,6 +935,19 @@ class TestPlayoffHistoryResultContracts(unittest.TestCase):
                 f"Expected round data caveat, got: {result.caveats}"
             )
 
+    def test_lakers_playoff_history_natural_query_returns_history_sections(self):
+        from nbatools.query_service import execute_natural_query
+
+        qr = execute_natural_query("Lakers playoff history")
+
+        assert qr.route == "playoff_history"
+        assert qr.result.result_status == "ok"
+        sections = qr.to_dict()["sections"]
+        assert len(sections["summary"]) == 1
+        assert len(sections["by_season"]) > 0
+        assert sections["summary"][0]["team_name"] == "Los Angeles Lakers"
+        assert any("round data" in caveat for caveat in qr.result.caveats)
+
 
 # ---------------------------------------------------------------------------
 # Route-to-query-class mapping tests

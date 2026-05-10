@@ -32,6 +32,7 @@ from nbatools.commands.data_utils import (
     load_team_games_for_seasons,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
+from nbatools.commands.game_summary import _build_game_log_section
 from nbatools.commands.structured_results import (
     ComparisonResult,
     LeaderboardResult,
@@ -323,6 +324,7 @@ def build_team_record_result(
         by_season["win_pct"] = (by_season["wins"] / by_season["games"]).round(3)
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
+    game_log = _build_game_log_section(df) if without_player else None
 
     caveats: list[str] = []
     if len(seasons) > 1:
@@ -375,6 +377,7 @@ def build_team_record_result(
     return SummaryResult(
         summary=summary,
         by_season=by_season,
+        game_log=game_log,
         current_through=current_through,
         notes=notes,
         caveats=caveats,

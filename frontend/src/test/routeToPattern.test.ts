@@ -79,4 +79,24 @@ describe("routeToPattern", () => {
       },
     ]);
   });
+
+  it("stacks team-record game logs when the backend provides matching games", () => {
+    const data = makeResponse("team_record");
+    data.result.sections = {
+      summary: [{ team_name: "Knicks", wins: 3, losses: 5 }],
+      game_log: [{ game_date: "2026-03-01", team_abbr: "NYK" }],
+    };
+
+    expect(routeToPattern(data)).toEqual([
+      { type: "record", mode: "team_record" },
+      {
+        type: "game_log",
+        sectionKey: "game_log",
+        summaryKey: "summary",
+        mode: "team",
+        showSummaryStrip: false,
+        rawDetailTitle: "Game Detail",
+      },
+    ]);
+  });
 });

@@ -418,6 +418,7 @@ def _build_query_metadata(
             player=player,
             dedupe_players=route_kwargs.get("dedupe_players"),
         ),
+        "min_streak_length": route_kwargs.get("min_streak_length"),
         "stat": parsed.get("stat") or route_kwargs.get("stat"),
         "min_value": (
             parsed.get("min_value")

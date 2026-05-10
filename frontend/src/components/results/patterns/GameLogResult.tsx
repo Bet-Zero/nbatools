@@ -209,11 +209,14 @@ export default function GameLogResult({
         detailSectionKeys.map((key) => {
           const detailRows = data.result?.sections?.[key] ?? [];
           if (detailRows.length === 0) return null;
+          const labels = detailToggleLabels(key);
           return (
             <RawDetailToggle
               key={key}
               title={detailTitle(key)}
               rows={detailRows}
+              collapsedLabel={labels.collapsed}
+              expandedLabel={labels.expanded}
             />
           );
         })}
@@ -988,4 +991,22 @@ function detailTitle(key: string): string {
     top_performers: "Top Performers Detail",
   };
   return labels[key] ?? `${key.replace(/_/g, " ")} Detail`;
+}
+
+function detailToggleLabels(key: string): {
+  collapsed: string;
+  expanded: string;
+} {
+  const labels: Record<string, { collapsed: string; expanded: string }> = {
+    top_performers: {
+      collapsed: "Show top performer details",
+      expanded: "Hide top performer details",
+    },
+  };
+  return (
+    labels[key] ?? {
+      collapsed: "Show additional columns",
+      expanded: "Hide additional columns",
+    }
+  );
 }

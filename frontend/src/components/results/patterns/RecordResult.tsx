@@ -220,7 +220,12 @@ function RecordByDecadeResult({ data }: { data: QueryResponse }) {
           `${textValue(decadeRow, "decade") ?? "decade"}-${index}`
         }
       />
-      <RawDetailToggle title="Record Detail" rows={summary} />
+      <RawDetailToggle
+        title="Record Detail"
+        rows={summary}
+        collapsedLabel="Show record details"
+        expandedLabel="Hide record details"
+      />
     </section>
   );
 }
@@ -282,7 +287,12 @@ function MatchupByDecadeResult({ data }: { data: QueryResponse }) {
           `${textValue(row, "decade") ?? "decade"}-${index}`
         }
       />
-      <RawDetailToggle title="Matchup Summary Detail" rows={summary} />
+      <RawDetailToggle
+        title="Matchup Summary Detail"
+        rows={summary}
+        collapsedLabel="Show matchup summary"
+        expandedLabel="Hide matchup summary"
+      />
     </section>
   );
 }
@@ -341,7 +351,7 @@ function teamRecordColumns(
     });
   }
 
-  if (season) {
+  if (season && !opponentGroup) {
     columns.push({
       key: "season",
       sourceKeys: ["season", "season_start", "season_end"],
@@ -577,13 +587,17 @@ function teamRecordSentence(
     suppressSeason: Boolean(opponentGroup && /playoff teams/i.test(opponentGroup)),
     suppressSeasonType: Boolean(opponentGroup),
   });
+  const withoutPlayer = metadataText(metadata, "without_player");
   const record = recordText(row);
   const winPct = hasValue(row.win_pct)
     ? `, a ${formatProseValue(row.win_pct, "win_pct")} win rate`
     : "";
 
   if (record) {
-    return `The ${team.name} are ${record}${context}${opponentPhrase}${winPct}.`;
+    const absencePhrase = withoutPlayer
+      ? ` in ${gameCountPhrase(row)} without ${withoutPlayer}`
+      : "";
+    return `The ${team.name} are ${record}${absencePhrase}${context}${opponentPhrase}${winPct}.`;
   }
   return `The ${team.name} have a record summary${context}${opponentPhrase}.`;
 }
@@ -983,6 +997,12 @@ function recordText(row: SectionRow): string | null {
   const losses = row.losses;
   if (!hasValue(wins) || !hasValue(losses)) return null;
   return `${formatValue(wins, "wins")}-${formatValue(losses, "losses")}`;
+}
+
+function gameCountPhrase(row: SectionRow): string {
+  const games = numericValue(row, "games");
+  if (games === null) return "games";
+  return `${formatValue(games, "games")} ${games === 1 ? "game" : "games"}`;
 }
 
 function prefixedRecordText(row: SectionRow, prefix: string): string | null {

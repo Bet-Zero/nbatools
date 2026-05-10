@@ -178,6 +178,20 @@ describe("classifyResultShape", () => {
     expect(classifyResultShape(onOff)).toBe(RESULT_SHAPES.on_off_split);
   });
 
+  it("keeps team records with supporting game logs in the team-record shape", () => {
+    const recordWithGameLog = makeResponse({
+      route: "team_record",
+      sections: {
+        summary: [{ team_name: "New York Knicks", wins: 3, losses: 5 }],
+        game_log: [{ team_name: "Knicks", game_date: "2026-01-01" }],
+      },
+    });
+
+    expect(classifyResultShape(recordWithGameLog)).toBe(
+      RESULT_SHAPES.team_record,
+    );
+  });
+
   it("classifies unmapped routed payloads as fallback tables", () => {
     const fallback = makeResponse({
       route: "lineup_summary",

@@ -436,16 +436,15 @@ describe("migrated result envelope", () => {
 
     expect(screen.getByText("Opponent")).toBeInTheDocument();
     expect(screen.getByText("Lakers")).toBeInTheDocument();
-    expect(screen.getByText("Stat")).toBeInTheDocument();
-    expect(screen.getByText("30+ PTS")).toBeInTheDocument();
-    expect(screen.getByText("OPP")).toBeInTheDocument();
-    expect(screen.getByText("<= 100 PTS")).toBeInTheDocument();
+    expect(screen.getAllByText("Filter").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("30+ PTS").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Opp PTS <= 100").length).toBeGreaterThan(0);
     expect(screen.getByText("Date range")).toBeInTheDocument();
-    expect(screen.getByText("Apr 1\u201312, 2026")).toBeInTheDocument();
+    expect(screen.getAllByText("Apr 1\u201312, 2026").length).toBeGreaterThan(0);
     expect(screen.queryByText(/2026-04-01/)).not.toBeInTheDocument();
   });
 
-  it("formats opponent-quality filters as VS chips", () => {
+  it("formats opponent-quality filters as opponent-group chips", () => {
     const data = makeResponse({
       result: {
         query_class: "summary",
@@ -463,8 +462,8 @@ describe("migrated result envelope", () => {
 
     render(<ResultEnvelope data={data} />);
 
-    expect(screen.getByText("VS")).toBeInTheDocument();
-    expect(screen.getByText("GOOD TEAMS")).toBeInTheDocument();
+    expect(screen.getByText("Opponent group")).toBeInTheDocument();
+    expect(screen.getAllByText("Good Teams").length).toBeGreaterThan(0);
     expect(screen.queryByText("Opponent quality")).not.toBeInTheDocument();
   });
 
@@ -521,9 +520,8 @@ describe("migrated result envelope", () => {
     render(<ResultEnvelope data={data} />);
 
     expect(screen.getByText("Context")).toBeInTheDocument();
-    expect(
-      screen.getByText("Games vs 20 opponents (ATL, BOS, CHI, ...)"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Included opponents:")).toBeInTheDocument();
+    expect(screen.getByText("20 teams (ATL, BOS, CHI, ...)")).toBeInTheDocument();
     expect(
       screen.getByText("Record by decade across 1996-97 to 2025-26"),
     ).toBeInTheDocument();
@@ -534,6 +532,53 @@ describe("migrated result envelope", () => {
       screen.getByText("Playoff matchup history: MIA vs NYK"),
     ).toBeInTheDocument();
     expect(screen.queryByText("Caveats")).not.toBeInTheDocument();
+  });
+
+  it("deduplicates range filters and humanizes product-facing notes", () => {
+    const data = makeResponse({
+      notes: [
+        "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct recomputed from filtered sample",
+        "default: <metric> only \u2192 league-wide leaderboard",
+        "leaderboard_source: game-log derived (season-advanced stats excluded in date window)",
+      ],
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          route: "player_stretch_leaderboard",
+          stat: "pts",
+          start_season: "2023-24",
+          end_season: "2025-26",
+          applied_filters: [
+            {
+              label: "Season range",
+              value: "2023-24 \u2013 2025-26",
+              kind: "season",
+            },
+            { label: "Last N games", value: "10", kind: "window" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    expect(screen.getByText("Metric:")).toBeInTheDocument();
+    expect(screen.getByText("PPG")).toBeInTheDocument();
+    expect(screen.getByText("Window:")).toBeInTheDocument();
+    expect(screen.getAllByText("Last 10 games").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("2023-24 to 2025-26")).toHaveLength(1);
+    expect(
+      screen.getByText(
+        "Advanced rate stats were recalculated using only this filtered sample.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/sample_advanced_metrics/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/leaderboard_source/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/<metric> only/)).not.toBeInTheDocument();
   });
 
   it("suppresses notes in the envelope for no-result outcomes", () => {

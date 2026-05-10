@@ -74,7 +74,13 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
   return (
     <section className={styles.pattern} aria-label="Streak result">
       <ResultHero
-        sentence={heroSentence(headlineRow, entity.name, kind)}
+        sentence={heroSentence(
+          headlineRow,
+          entity.name,
+          kind,
+          rows,
+          data.result?.metadata,
+        )}
         subjectIllustration={heroIdentity(kind, entity)}
         tone={kind === "team" ? "team" : "accent"}
         teamAccentAbbr={kind === "team" ? entity.teamAbbr : null}
@@ -147,7 +153,7 @@ function tableColumns(
     });
   }
 
-  if (rows.some((row) => hasValue(row.is_active))) {
+  if (shouldShowStatusColumn(rows)) {
     columns.push({
       key: "status",
       sourceKeys: ["is_active", "status"],
@@ -213,6 +219,8 @@ function heroSentence(
   row: SectionRow,
   entityName: string,
   kind: EntityKind,
+  rows: SectionRow[],
+  metadata: ResultMetadata | undefined,
 ): string {
   const subject = sentenceSubject(entityName, kind);
   if (statusText(row) === "Active") {
@@ -221,12 +229,61 @@ function heroSentence(
     )}, ongoing.`;
   }
 
+  const minStreakLength = metadataNumber(metadata, "min_streak_length");
+  if (minStreakLength !== null && minStreakLength > 1) {
+    const length =
+      numericValue(row, "streak_length") ?? numericValue(row, "games");
+    const lengthPhrase =
+      length === null
+        ? lengthValue(row)
+        : `${formatProseValue(length, "streak_length")} ${
+            length === 1 ? "game" : "games"
+          }`;
+    const span = heroDateRange(row);
+    const threshold = thresholdConditionPhrase(row);
+    if (rows.length > 1) {
+      return `${subject} has ${formatValue(rows.length, "games")} streaks of ${formatValue(
+        minStreakLength,
+        "games",
+      )}+ straight games with ${threshold}. The longest was ${lengthPhrase}${
+        span ? `, from ${span}` : ""
+      }.`;
+    }
+    return `${possessiveSubject(
+      subject,
+    )} longest ${threshold} streak of at least ${formatValue(
+      minStreakLength,
+      "games",
+    )} games was ${lengthPhrase}${span ? `, from ${span}` : ""}.`;
+  }
+
   const condition = completedConditionPhrase(row);
   const length = straightGamesPhrase(row);
   const span = heroDateRange(row);
   return `${subject} ${condition.phrase}${
     condition.usesIn ? ` in ${length}` : ` ${length}`
   }${span ? ` from ${span}` : ""}.`;
+}
+
+function shouldShowStatusColumn(rows: SectionRow[]): boolean {
+  const statuses = new Set(
+    rows.map((row) => statusText(row)).filter((status): status is string => Boolean(status)),
+  );
+  return statuses.has("Active") || statuses.size > 1;
+}
+
+function thresholdConditionPhrase(row: SectionRow): string {
+  const raw = textValue(row, "condition");
+  const minimumMatch = raw?.match(/^([a-z0-9_]+)>=(\d+(?:\.\d+)?)$/i);
+  if (minimumMatch) {
+    const [, stat, value] = minimumMatch;
+    return `${formatProseValue(Number(value), stat)}+ ${conditionNoun(stat)}`;
+  }
+  return conditionLabel(row).toLowerCase();
+}
+
+function possessiveSubject(subject: string): string {
+  return `${subject}${subject.endsWith("s") ? "'" : "'s"}`;
 }
 
 function gameCountForSentence(row: SectionRow): string {
@@ -562,6 +619,14 @@ function metadataText(
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+function metadataNumber(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): number | null {
+  const value = metadata?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function numericValue(row: SectionRow | undefined, key: string): number | null {

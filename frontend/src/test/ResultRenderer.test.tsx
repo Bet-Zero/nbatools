@@ -975,6 +975,81 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders team records without a player as team-first results with game logs", () => {
+    const data = makeResponse({
+      query: "What is the Knicks' record when Jalen Brunson doesn't play?",
+      route: "team_record",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "What is the Knicks' record when Jalen Brunson doesn't play?",
+          route: "team_record",
+          season: "2025-26",
+          season_type: "Regular Season",
+          without_player: "Jalen Brunson",
+          team_context: {
+            team_id: 1610612752,
+            team_abbr: "NYK",
+            team_name: "Knicks",
+          },
+        },
+        notes: [],
+        caveats: ["record filtered to games without Jalen Brunson"],
+        sections: {
+          summary: [
+            {
+              team_name: "New York Knicks",
+              season_start: "2025-26",
+              season_end: "2025-26",
+              season_type: "Regular Season",
+              games: 8,
+              wins: 3,
+              losses: 5,
+              win_pct: 0.375,
+              pts_avg: 116.375,
+              reb_avg: 47.375,
+              ast_avg: 27.75,
+              fg3m_avg: 14.125,
+              plus_minus_avg: -0.25,
+            },
+          ],
+          game_log: [
+            {
+              game_id: 1,
+              game_date: "2026-01-01",
+              team_abbr: "NYK",
+              team_name: "Knicks",
+              opponent_team_abbr: "BOS",
+              opponent_team_name: "Celtics",
+              wl: "L",
+              pts: 112,
+              opponent_pts: 118,
+              reb: 44,
+              ast: 24,
+              fg3m: 13,
+              plus_minus: -6,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+      caveats: ["record filtered to games without Jalen Brunson"],
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The New York Knicks are 3-5 in 8 games without Jalen Brunson in the 2025-26 regular season, a 37.5% win rate.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Jalen Brunson has averaged/)).not.toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Team record" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Opp PTS" })).toBeInTheDocument();
+  });
+
   it("renders multi-season team record by-season tables in the body", () => {
     const data = makeResponse({
       query: "Lakers record since 2024",
@@ -1109,7 +1184,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("72.6%")).toBeInTheDocument();
     expect(screen.getByText("Record Detail")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Show raw table" }),
+      screen.getByRole("button", { name: "Show record details" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("By Season")).not.toBeInTheDocument();
   });
@@ -1260,7 +1335,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("2-4")).toBeInTheDocument();
     expect(screen.getByText("Matchup Summary Detail")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Show raw table" }),
+      screen.getByRole("button", { name: "Show matchup summary" }),
     ).toBeInTheDocument();
   });
 
@@ -1977,6 +2052,90 @@ describe("ResultRenderer (substrate)", () => {
     expect(within(table).getAllByRole("row")).toHaveLength(13);
   });
 
+  it("caps fixture-sized product game logs with total-row labels", () => {
+    const gameRows = (count: number) =>
+      Array.from({ length: count }, (_, index) => ({
+        game_id: index + 1,
+        game_date: `2026-03-${String(index + 1).padStart(2, "0")}`,
+        player_id: 203999,
+        player_name: "Nikola Jokic",
+        team_abbr: "DEN",
+        opponent_team_abbr: "POR",
+        wl: "W",
+        pts: 20 + index,
+        reb: 10,
+        ast: 10,
+      }));
+
+    const fixture71 = makeResponse({
+      query: "Jokic game log",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {
+          route: "player_game_finder",
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokic",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: { finder: gameRows(34) },
+        current_through: "2026-04-12",
+      },
+    });
+
+    const firstRender = render(<ResultRenderer data={fixture71} />);
+    let table = screen.getByRole("table", { name: "Game log" });
+    expect(within(table).getAllByRole("row")).toHaveLength(13);
+    expect(
+      screen.getByRole("button", { name: "Show all 34 games" }),
+    ).toBeInTheDocument();
+    firstRender.unmount();
+
+    const fixture51 = makeResponse({
+      query: "team game summary",
+      route: "game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          route: "game_summary",
+          team_context: {
+            team_id: 1610612756,
+            team_abbr: "PHX",
+            team_name: "Suns",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [{ team_name: "Suns", games: 18, wins: 8, losses: 10 }],
+          game_log: Array.from({ length: 18 }, (_, index) => ({
+            game_id: index + 1,
+            game_date: `2026-02-${String(index + 1).padStart(2, "0")}`,
+            team_abbr: "PHX",
+            team_name: "Suns",
+            opponent_team_abbr: "LAC",
+            wl: index % 2 === 0 ? "W" : "L",
+            pts: 100 + index,
+            opponent_pts: 98 + index,
+          })),
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={fixture51} />);
+    table = screen.getByRole("table", { name: "Game log" });
+    expect(within(table).getAllByRole("row")).toHaveLength(15);
+    expect(
+      screen.getByRole("button", { name: "Show all 18 games" }),
+    ).toBeInTheDocument();
+  });
+
   it("renders top player games as league-wide top performances", () => {
     const data = makeResponse({
       query: "highest scoring games this season",
@@ -2252,6 +2411,9 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.queryByText("Summary Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
     expect(screen.getByText("Top Performers Detail")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Show top performer details" }),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Top player performers")).not.toBeInTheDocument();
   });
 
@@ -2652,7 +2814,76 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.queryByLabelText("Streak results")).not.toBeInTheDocument();
   });
 
-  it("renders team streaks with team identity and completed status", () => {
+  it("preserves minimum streak thresholds and hides all-completed status columns", () => {
+    const data = makeResponse({
+      query: "Jokic 5 straight games with 20+ points",
+      route: "player_streak_finder",
+      result: {
+        query_class: "streak",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic 5 straight games with 20+ points",
+          route: "player_streak_finder",
+          min_streak_length: 5,
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokić",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          streak: [
+            {
+              player_name: "Nikola Jokić",
+              player_id: 203999,
+              condition: "pts>=20",
+              streak_length: 18,
+              games: 18,
+              start_date: "2024-10-26",
+              end_date: "2024-12-08",
+              is_active: 0,
+              wins: 11,
+              losses: 7,
+              pts_avg: 33.167,
+              reb_avg: 13.667,
+              ast_avg: 10,
+            },
+            {
+              player_name: "Nikola Jokić",
+              player_id: 203999,
+              condition: "pts>=20",
+              streak_length: 17,
+              games: 17,
+              start_date: "2025-02-27",
+              end_date: "2025-04-11",
+              is_active: 0,
+              wins: 9,
+              losses: 8,
+              pts_avg: 31.529,
+              reb_avg: 13.471,
+              ast_avg: 9.941,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Nikola Jokić has 2 streaks of 5+ straight games with 20+ points. The longest was 18 games, from Oct 26 to Dec 8, 2024.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Status" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Completed")).not.toBeInTheDocument();
+  });
+
+  it("renders team streaks with team identity and hides repetitive completed status", () => {
     const data = makeResponse({
       query: "Lakers longest win streak",
       route: "team_streak_finder",
@@ -2703,7 +2934,7 @@ describe("ResultRenderer (substrate)", () => {
         "The Los Angeles Lakers won 4 straight games from Feb 1 to Feb 8, 2026.",
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Completed")).toBeInTheDocument();
+    expect(screen.queryByText("Completed")).not.toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "+/-" }),
     ).toBeInTheDocument();
@@ -2851,6 +3082,9 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("Round unavailable")).toBeInTheDocument();
     expect(screen.getByText("1-4")).toBeInTheDocument();
     expect(screen.getByText("Postseason Summary Detail")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Show postseason summary" }),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Season Breakdown Detail")).not.toBeInTheDocument();
   });
 

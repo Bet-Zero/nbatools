@@ -254,11 +254,25 @@ class TestWithoutPlayer:
         assert "without" not in cleaned.lower()
         assert "curry" not in cleaned.lower()
 
+    def test_detect_without_player_does_not_play_form(self):
+        player, cleaned = detect_without_player(
+            "what is the knicks record when jalen brunson doesn't play"
+        )
+        assert player == "Jalen Brunson"
+        assert "brunson" not in cleaned.lower()
+
     def test_route_team_without_player(self):
         parsed = parse_query("Lakers record without LeBron James")
         assert parsed["route"] == "team_record"
         assert parsed["team"] == "LAL"
         assert parsed.get("without_player") == "LeBron James"
+
+    def test_route_team_record_when_player_does_not_play(self):
+        parsed = parse_query("What is the Knicks' record when Jalen Brunson doesn't play?")
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "NYK"
+        assert parsed["player"] is None
+        assert parsed.get("without_player") == "Jalen Brunson"
 
     def test_route_team_wins_without_player(self):
         parsed = parse_query("Warriors wins without Stephen Curry")
@@ -300,6 +314,21 @@ class TestWithoutPlayer:
         assert qr.route == "team_record"
         assert qr.result.result_reason == "no_match"
         assert qr.result.notes == ["No games matched the specified filters"]
+
+    @pytest.mark.needs_data
+    def test_record_when_player_does_not_play_answers_team_record_with_game_log(self):
+        qr = execute_natural_query("What is the Knicks' record when Jalen Brunson doesn't play?")
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["without_player"] == "Jalen Brunson"
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["team_name"] == "New York Knicks"
+        assert summary["wins"] == 3
+        assert summary["losses"] == 5
+        assert len(sections["game_log"]) == 8
+        assert all(row["team_abbr"] == "NYK" for row in sections["game_log"])
 
     @pytest.mark.needs_data
     def test_record_leaderboard_without_player_returns_no_match(self):

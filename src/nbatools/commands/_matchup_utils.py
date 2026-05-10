@@ -267,8 +267,8 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     absence_patterns = [
         # `without PLAYER` / `w/o PLAYER`
         rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
-        # `when PLAYER didn't play` / `when PLAYER did not play`
-        r"\bwhen\s+([\w .&'\-]+?)\s+(?:didn'?t|did\s+not)\s+play\b",
+        # `when PLAYER didn't/doesn't play` / `when PLAYER did/does not play`
+        r"\bwhen\s+([\w .&'\-]+?)\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
         # `when PLAYER is/was out`
         r"\bwhen\s+([\w .&'\-]+?)\s+(?:is|was)\s+out\b",
         # `when PLAYER out` (no copula)

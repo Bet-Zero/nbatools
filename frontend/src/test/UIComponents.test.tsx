@@ -125,6 +125,26 @@ describe("NoResultDisplay", () => {
     expect(screen.getByText("Query Error")).toBeInTheDocument();
   });
 
+  it("uses clearer copy for unsupported cooled-off phrasing", () => {
+    render(
+      <NoResultDisplay
+        reason="unrouted"
+        status="error"
+        metadata={{
+          query_text: "Which scorers have cooled off over their last 10 games?",
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Query")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'I couldn\'t interpret "cooled off" as a supported stat query yet.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Query Error")).not.toBeInTheDocument();
+  });
+
   it("shows default message when no reason", () => {
     render(<NoResultDisplay reason={null} status="no_result" />);
     expect(screen.getByText("No Results")).toBeInTheDocument();
@@ -199,6 +219,32 @@ describe("NoResultDisplay", () => {
     expect(screen.getByLabelText("Result details")).toHaveTextContent(
       "Column 'def_rating' not available",
     );
+  });
+
+  it("hides internal parser notes from no-result details", () => {
+    render(
+      <NoResultDisplay
+        reason="no_match"
+        status="no_result"
+        notes={[
+          "No games matched the specified filters",
+          "default: <metric> only \u2192 league-wide leaderboard",
+          "leaderboard_source: game-log derived (season-advanced stats excluded in date window)",
+        ]}
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          start_date: "2026-04-11",
+          end_date: "2026-04-11",
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText("Result details")).toHaveTextContent(
+      "No games matched the specified filters",
+    );
+    expect(screen.queryByText(/<metric> only/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/leaderboard_source/)).not.toBeInTheDocument();
   });
 
   it("shows ambiguous variant", () => {
