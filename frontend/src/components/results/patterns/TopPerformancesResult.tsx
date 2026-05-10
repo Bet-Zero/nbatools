@@ -94,6 +94,13 @@ const VALUE_UNITS: Record<string, string> = {
 
 const METRIC_HINT_KEYS = ["stat", "metric", "target_stat", "target_metric"];
 
+const SUPPORTING_STATS_BY_METRIC: Record<string, string[]> = {
+  ast: ["pts", "reb", "tov"],
+  fg3m: ["pts", "fg3a"],
+  pts: ["reb", "ast", "fg3m"],
+  reb: ["pts", "ast"],
+};
+
 export default function TopPerformancesResult({
   data,
   sectionKey = "leaderboard",
@@ -164,14 +171,28 @@ function tableColumns(
       align: "center",
       render: resultCell,
     },
-    {
-      key: metric,
-      header: statLabel(metric),
-      numeric: metric !== "triple_double",
-      align: metric === "triple_double" ? "center" : "right",
-      render: (row) => metricTableValue(row, metric),
-    },
   ];
+
+  if (rows.some((row) => Boolean(scoreText(row, subject)))) {
+    columns.push({
+      key: "score",
+      sourceKeys:
+        subject === "team"
+          ? ["pts", "opponent_pts", "team_score", "opponent_score"]
+          : ["team_score", "team_pts", "opponent_score", "opponent_pts"],
+      header: "Score",
+      align: "center",
+      render: (row) => scoreText(row, subject) ?? "—",
+    });
+  }
+
+  columns.push({
+    key: metric,
+    header: statLabel(metric),
+    numeric: metric !== "triple_double",
+    align: metric === "triple_double" ? "center" : "right",
+    render: (row) => metricTableValue(row, metric),
+  });
 
   for (const key of supportingStatKeys(rows, metric)) {
     columns.push({
@@ -307,6 +328,13 @@ function supportingStatKeys(rows: SectionRow[], metric: string): string[] {
     used.add("ast");
   }
 
+  const preferred = SUPPORTING_STATS_BY_METRIC[metric];
+  if (preferred) {
+    return preferred.filter(
+      (key) => !used.has(key) && rows.some((row) => hasValue(row[key])),
+    );
+  }
+
   return STAT_ORDER.filter(
     (key) => !used.has(key) && rows.some((row) => hasValue(row[key])),
   ).slice(0, 3);
@@ -361,15 +389,20 @@ function heroSentence(
 ): string {
   const leader = subject === "team" ? teamLabel(row) : entityLabel(row);
   const scope = scopePhrase(row, data.result?.metadata, data.query);
-  return `The top ${metricPhrase(metric)}${
+  const context = gameContextPhrase(row, data, subject);
+  return `${leader} had the top ${singleGameMetricPhrase(metric)}${
     scope ? ` ${scope}` : ""
-  }: ${leader} with ${metricSentenceValue(row, metric)}.`;
+  } with ${metricSentenceValue(row, metric)}${context}.`;
 }
 
 function metricPhrase(metric: string): string {
   return (
     STAT_SENTENCE_LABELS[metric] ?? `${statLabel(metric).toLowerCase()} games`
   );
+}
+
+function singleGameMetricPhrase(metric: string): string {
+  return metricPhrase(metric).replace(/\s+games$/, " game");
 }
 
 function metricSentenceValue(row: SectionRow, metric: string): string {
@@ -387,6 +420,71 @@ function metricValue(row: SectionRow, metric: string): string {
     )}-${formatValue(row.ast, "ast")}`;
   }
   return statValue(row, metric);
+}
+
+function gameContextPhrase(
+  row: SectionRow,
+  data: QueryResponse,
+  subject: "player" | "team",
+): string {
+  const parts: string[] = [];
+  const outcome = outcomeText(row);
+  const score = scoreText(row, subject);
+  if (outcome && score) {
+    parts.push(`in a ${score} ${outcome}`);
+  } else if (outcome) {
+    parts.push(`in a ${outcome}`);
+  } else if (score) {
+    parts.push(`in a ${score} game`);
+  }
+
+  const opponent = opponentLabel(row, data);
+  if (opponent) parts.push(`against ${opponent}`);
+
+  const date = formatCompactDate(textValue(row, "game_date"));
+  if (date !== "—") parts.push(`on ${date}`);
+
+  return parts.length > 0 ? ` ${parts.join(" ")}` : "";
+}
+
+function outcomeText(row: SectionRow): string | null {
+  const wl = textValue(row, "wl")?.toUpperCase();
+  if (wl === "W") return "win";
+  if (wl === "L") return "loss";
+  return null;
+}
+
+function scoreText(row: SectionRow, subject: "player" | "team"): string | null {
+  const teamScore =
+    numericValue(row, "team_score") ??
+    numericValue(row, "team_pts") ??
+    (subject === "team" ? numericValue(row, "pts") : null);
+  const opponentScore =
+    numericValue(row, "opponent_score") ?? numericValue(row, "opponent_pts");
+  if (teamScore === null || opponentScore === null) return null;
+  return `${formatValue(teamScore, "pts")}-${formatValue(opponentScore, "pts")}`;
+}
+
+function opponentLabel(row: SectionRow, data: QueryResponse): string | null {
+  const opponentContext = data.result?.metadata?.opponent_context;
+  const team = resolveTeamIdentity({
+    teamId: identityId(row.opponent_team_id) ?? opponentContext?.team_id,
+    teamAbbr:
+      textValue(row, "opponent_team_abbr") ??
+      textValue(row, "opponent") ??
+      opponentContext?.team_abbr,
+    teamName:
+      textValue(row, "opponent_team_name") ??
+      textValue(row, "opponent") ??
+      opponentContext?.team_name,
+  });
+  return (
+    team.teamName ??
+    team.teamAbbr ??
+    textValue(row, "opponent_team_name") ??
+    textValue(row, "opponent_team_abbr") ??
+    textValue(row, "opponent")
+  );
 }
 
 function scopePhrase(
@@ -555,6 +653,11 @@ function metadataNumber(
     if (typeof value === "number" && Number.isFinite(value)) return value;
   }
   return null;
+}
+
+function numericValue(row: SectionRow, key: string): number | null {
+  const value = row[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function identityId(value: unknown): number | string | null {

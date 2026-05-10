@@ -144,6 +144,7 @@ def build_result(
     window_size: int | None = None,
     stretch_metric: str = "game_score",
     limit: int = 10,
+    dedupe_players: bool = False,
 ) -> LeaderboardResult | NoResult:
     if window_size is None or window_size <= 0:
         return NoResult(
@@ -231,7 +232,10 @@ def build_result(
     windows = windows.sort_values(
         ["stretch_value", "game_date", "player_name"],
         ascending=[False, False, True],
-    ).head(limit)
+    )
+    if dedupe_players:
+        windows = windows.drop_duplicates(subset=["player_id"], keep="first")
+    windows = windows.head(limit)
 
     result = windows[
         [

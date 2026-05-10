@@ -103,7 +103,8 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
 
   const leader = rows[0];
   const team = teamDisplay(data.result?.metadata, leader);
-  const columns = roundRecordColumns(rows, data.result?.metadata);
+  const metric = roundRecordMetricKey(rows, data);
+  const columns = roundRecordColumns(rows, data.result?.metadata, metric);
   const hasAdditionalDetail = rowsHaveAdditionalDetailFields(
     rows,
     resultTableSourceKeys(columns),
@@ -115,7 +116,12 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
       aria-label="Playoff round record result"
     >
       <ResultHero
-        sentence={roundRecordSentence(team.name, data.result?.metadata, leader)}
+        sentence={roundRecordSentence(
+          team.name,
+          data.result?.metadata,
+          leader,
+          data,
+        )}
         subjectIllustration={teamIdentity(team)}
         tone="team"
         teamAccentAbbr={team.teamAbbr}
@@ -125,7 +131,7 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
         columns={columns}
         ariaLabel="Playoff round records"
         getRowKey={rowKey}
-        highlightColumnKey={roundRecordMetricKey(rows)}
+        highlightColumnKey={metric}
       />
       {hasAdditionalDetail && (
         <RawDetailToggle
@@ -224,23 +230,51 @@ function roundRecordSentence(
   teamName: string,
   metadata: ResultMetadata | undefined,
   row: SectionRow,
+  data: QueryResponse,
 ): ReactNode {
   const round = roundLabel(metadata, row);
   const record = recordText(row);
-  const metricKey = roundRecordMetricKey([row]);
-  const metric = metricKey ? formatValue(row[metricKey], metricKey) : null;
+  const metricKey = roundRecordMetricKey([row], data);
+  const context = roundRecordContext(metadata, row, data);
   const games =
     numericValue(row, "games_played") ??
     numericValue(row, "games") ??
     numericValue(row, "series");
 
+  if (metricKey === "win_pct" || !metricKey) {
+    return (
+      <>
+        The {teamName} have the best{" "}
+        {round ? `${round} record` : "playoff round record"}
+        {context}
+        {record ? `, going ${record}` : ""}
+        {hasValue(row.win_pct) ? ` (${winPctDecimal(row.win_pct)})` : ""}
+        {games !== null ? ` across ${formatValue(games, "games")} games` : ""}.
+      </>
+    );
+  }
+
+  if (metricKey === "wins") {
+    return (
+      <>
+        The {teamName} have the most{" "}
+        {round ? `${round} wins` : "playoff round wins"}
+        {context}, with{" "}
+        <span className={styles.heroValue}>{formatValue(row.wins, "wins")}</span>{" "}
+        wins
+        {record ? ` (${record})` : ""}
+        {games !== null ? ` across ${formatValue(games, "games")} games` : ""}.
+      </>
+    );
+  }
+
   return (
     <>
-      {teamName} own{" "}
-      {metric ? <span className={styles.heroValue}>{metric}</span> : "the top"}{" "}
-      {round ? `${round.toLowerCase()} playoff mark` : "playoff round mark"}
-      {record ? ` (${record})` : ""}
-      {games !== null ? ` across ${formatValue(games, "games")} games` : ""}.
+      The {teamName} have played the most{" "}
+      {round ? `${round} games` : "playoff round games"}
+      {context}, with{" "}
+      <span className={styles.heroValue}>{formatValue(row[metricKey], metricKey)}</span>{" "}
+      games{record ? ` (${record})` : ""}.
     </>
   );
 }
@@ -311,6 +345,7 @@ function historyColumns(
 function roundRecordColumns(
   rows: SectionRow[],
   metadata: ResultMetadata | undefined,
+  metric: string | undefined,
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
@@ -341,9 +376,16 @@ function roundRecordColumns(
     },
   ];
 
-  addIfPresent(columns, rows, "seasons", "Seasons");
-  addNumericIfPresent(columns, rows, "games_played", "Games");
+  if (metric === "wins") {
+    addNumericIfPresent(columns, rows, "wins", "Wins");
+  }
+  if (rows.some((row) => hasValue(row.games_played))) {
+    addNumericIfPresent(columns, rows, "games_played", "Games");
+  } else {
+    addNumericIfPresent(columns, rows, "games", "Games");
+  }
   addNumericIfPresent(columns, rows, "win_pct", "Win Pct");
+  addIfPresent(columns, rows, "seasons", "Seasons");
   addNumericIfPresent(columns, rows, "series", "Series");
 
   return columns;
@@ -650,10 +692,51 @@ function playoffResultValue(row: SectionRow): string {
   return value;
 }
 
-function roundRecordMetricKey(rows: SectionRow[]): string | undefined {
-  return ["win_pct", "wins", "series", "games_played"].find((key) =>
+function roundRecordMetricKey(
+  rows: SectionRow[],
+  data?: QueryResponse,
+): string | undefined {
+  const query =
+    `${data?.query ?? ""} ${data?.result?.metadata?.query_text ?? ""}`.toLowerCase();
+  if (/\b(most wins|wins|won|winningest)\b/.test(query)) {
+    return rows.some((row) => hasValue(row.wins)) ? "wins" : undefined;
+  }
+  if (/\b(most games|games played)\b/.test(query)) {
+    if (rows.some((row) => hasValue(row.games_played))) return "games_played";
+    if (rows.some((row) => hasValue(row.games))) return "games";
+  }
+  if (
+    /\b(best record|win pct|winning percentage|winning pct|record)\b/.test(
+      query,
+    ) &&
+    rows.some((row) => hasValue(row.win_pct))
+  ) {
+    return "win_pct";
+  }
+  return ["win_pct", "wins", "games_played", "games", "series"].find((key) =>
     rows.some((row) => hasValue(row[key])),
   );
+}
+
+function roundRecordContext(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow,
+  data: QueryResponse,
+): string {
+  const query = `${data.query ?? ""} ${metadata?.query_text ?? ""}`;
+  const since = query.match(/\bsince\s+(\d{4})\b/i);
+  if (since) return ` since ${since[1]}`;
+
+  const range = seasonRange(metadata, row);
+  return range ? ` from ${range}` : "";
+}
+
+function winPctDecimal(value: unknown): string {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return formatValue(value, "win_pct");
+  }
+  const decimal = value > 1 ? value / 100 : value;
+  return decimal.toFixed(3).replace(/^0/, "");
 }
 
 function opponentValue(row: SectionRow): string {

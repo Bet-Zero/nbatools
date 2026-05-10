@@ -423,6 +423,21 @@ function contextItemFromNotice(text: string): ContextItem | null {
     return contextItem("Aggregation", `Game logs across ${aggregation[2]}`);
   }
 
+  const leaderboardContext = trimmed.match(/^(.+\bleaderboard)\s*\(([^)]+)\)$/i);
+  if (leaderboardContext) {
+    return contextItem(
+      "Interpreted as",
+      `${sentenceCase(leaderboardContext[1])} (${statLabel(
+        leaderboardContext[2],
+      )})`,
+    );
+  }
+
+  const acrossRange = trimmed.match(/^across\s+(.+)$/i);
+  if (acrossRange) {
+    return contextItem("Season range", acrossRange[1]);
+  }
+
   if (/^games where\s+/i.test(trimmed)) {
     return contextItem("Filter", sentenceCase(trimmed));
   }

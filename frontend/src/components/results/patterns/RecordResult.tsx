@@ -596,9 +596,13 @@ function recordLeaderboardMetric(
     return "losses";
   }
   if (
-    /\b(win pct|winning percentage|winning pct|winningest|best record)\b/.test(
-      query,
-    ) &&
+    /\b(winningest|most wins|wins)\b/.test(query) &&
+    rows.some((row) => hasValue(row.wins))
+  ) {
+    return "wins";
+  }
+  if (
+    /\b(win pct|winning percentage|winning pct|best record)\b/.test(query) &&
     rows.some((row) => hasValue(row.win_pct))
   ) {
     return "win_pct";

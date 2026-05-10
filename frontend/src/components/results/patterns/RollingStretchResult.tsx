@@ -23,6 +23,8 @@ interface Props {
   sectionKey?: string;
 }
 
+type StretchDisplayMode = "named_player" | "players" | "windows";
+
 const STRETCH_METRIC_LABELS: Record<string, string> = {
   ast: "APG",
   blk: "BPG",
@@ -111,11 +113,15 @@ export default function RollingStretchResult({
   if (rows.length === 0) return null;
 
   const metadata = data.result?.metadata;
-  const topRow = rows[0];
   const metric = stretchMetric(rows, metadata, data.query);
   const namedPlayer = namedPlayerContext(metadata);
   const isNamedPlayer = Boolean(namedPlayer);
-  const note = topCountNote(metadata, rows.length);
+  const displayMode = stretchDisplayMode(metadata, isNamedPlayer);
+  const displayRows =
+    displayMode === "players" ? dedupeBestWindowPerPlayer(rows) : rows;
+  const topRow = displayRows[0];
+  if (!topRow) return null;
+  const note = topCountNote(metadata, displayRows.length);
 
   return (
     <section className={styles.pattern} aria-label="Rolling stretch result">
@@ -123,15 +129,20 @@ export default function RollingStretchResult({
         sentence={
           isNamedPlayer
             ? namedPlayerSentence(topRow, metric, data, namedPlayer)
-            : leagueSentence(topRow, metric, data)
+            : leagueSentence(topRow, metric, data, displayMode)
         }
         subjectIllustration={heroIdentity(topRow, namedPlayer)}
         tone="accent"
       />
       {isNamedPlayer ? (
-        <NamedPlayerBody data={data} rows={rows} metric={metric} note={note} />
+        <NamedPlayerBody
+          data={data}
+          rows={displayRows}
+          metric={metric}
+          note={note}
+        />
       ) : (
-        <LeagueBody rows={rows} metric={metric} note={note} />
+        <LeagueBody rows={displayRows} metric={metric} note={note} />
       )}
     </section>
   );
@@ -215,6 +226,7 @@ function leagueColumns(
     },
     {
       key: "player",
+      sourceKeys: ["player_name", "player", "player_id", "team_abbr"],
       header: "Player",
       render: playerCell,
     },
@@ -234,6 +246,12 @@ function leagueColumns(
       key: "window_end_date",
       header: "End",
       render: (row) => formatCompactDate(textValue(row, "window_end_date")),
+    },
+    {
+      key: "season",
+      sourceKeys: ["window_end_season", "season"],
+      header: "Season",
+      render: seasonCell,
     },
   ];
 
@@ -256,22 +274,34 @@ function namedWindowColumns(
       render: rankCell,
     },
     {
+      key: "player",
+      sourceKeys: ["player_name", "player", "player_id", "team_abbr"],
+      header: "Player",
+      render: playerCell,
+    },
+    {
       key: "window_size",
       header: "Window",
       align: "center",
       render: windowSizeCell,
     },
-    {
-      key: "date_range",
-      header: "Dates",
-      render: (row) => (
-        <span className={styles.dateRange}>
-          {formatCompactDate(textValue(row, "window_start_date"))} to{" "}
-          {formatCompactDate(textValue(row, "window_end_date"))}
-        </span>
-      ),
-    },
     stretchValueColumn(metric),
+    {
+      key: "window_start_date",
+      header: "Start",
+      render: (row) => formatCompactDate(textValue(row, "window_start_date")),
+    },
+    {
+      key: "window_end_date",
+      header: "End",
+      render: (row) => formatCompactDate(textValue(row, "window_end_date")),
+    },
+    {
+      key: "season",
+      sourceKeys: ["window_end_season", "season"],
+      header: "Season",
+      render: seasonCell,
+    },
   ];
 
   for (const key of supportingWindowKeys(rows, metric, 2)) {
@@ -392,12 +422,27 @@ function windowSizeCell(row: SectionRow): string {
   return size ? `${size} games` : "—";
 }
 
+function seasonCell(row: SectionRow): string {
+  return textValue(row, "window_end_season") ?? textValue(row, "season") ?? "—";
+}
+
 function leagueSentence(
   row: SectionRow,
   metric: string,
   data: QueryResponse,
+  displayMode: StretchDisplayMode,
 ): string {
   const scope = scopePhrase(row, data.result?.metadata, data.query);
+  if (displayMode === "players") {
+    return `${playerName(row)} had the hottest ${windowSize(
+      row,
+      data.result?.metadata,
+    )}-game ${metricPhrase(metric)}${
+      scope ? ` ${scope}` : ""
+    }, averaging ${stretchValue(row, metric)} from ${formatCompactDate(
+      textValue(row, "window_start_date"),
+    )} to ${formatCompactDate(textValue(row, "window_end_date"))}.`;
+  }
   return `Best ${windowSize(row, data.result?.metadata)}-game ${metricPhrase(metric)}${
     scope ? ` ${scope}` : ""
   }: ${playerName(
@@ -417,7 +462,7 @@ function namedPlayerSentence(
   const scope = scopePhrase(row, data.result?.metadata, data.query);
   return `${name}'s best ${windowSize(row, data.result?.metadata)}-game ${metricPhrase(
     metric,
-  )}${scope ? ` ${scope}` : ""}: ${stretchValue(
+  )}${scope ? ` ${scope}` : ""}: averaging ${stretchValue(
     row,
     metric,
   )} from ${formatCompactDate(textValue(row, "window_start_date"))} to ${formatCompactDate(
@@ -457,6 +502,29 @@ function namedPlayerContext(
   return null;
 }
 
+function stretchDisplayMode(
+  metadata: ResultMetadata | undefined,
+  isNamedPlayer: boolean,
+): StretchDisplayMode {
+  if (isNamedPlayer) return "named_player";
+  return metadata?.stretch_display_mode === "players" ? "players" : "windows";
+}
+
+function dedupeBestWindowPerPlayer(rows: SectionRow[]): SectionRow[] {
+  const seen = new Set<string>();
+  const deduped: SectionRow[] = [];
+  for (const row of rows) {
+    const key =
+      String(identityId(row.player_id) ?? "") ||
+      textValue(row, "player_name") ||
+      textValue(row, "player");
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    deduped.push({ ...row, rank: deduped.length + 1 });
+  }
+  return deduped;
+}
+
 function bestWindowGameRows(data: QueryResponse): SectionRow[] {
   const sections = data.result?.sections ?? {};
   for (const key of ["best_window_game_log", "window_game_log", "game_log"]) {
@@ -485,7 +553,8 @@ function supportingWindowKeys(
     "window_start_date",
     "window_end_date",
     "window_start_season",
-    "games_in_window",
+    "window_end_season",
+    "season",
   ]);
   if (metric !== "stretch_value") excluded.add(metric);
 

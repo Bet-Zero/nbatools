@@ -419,6 +419,13 @@ function heroSentence(
     return teamHeroSentence(row, metric, leader, context, options);
   }
 
+  if (!options.verb && !options.sentenceMetricLabel && !options.valueSuffix) {
+    return `${leader} led the NBA with ${metricLeaderValuePhrase(
+      row,
+      metric,
+    )}${context}.`;
+  }
+
   const value = metricValuePhrase(row, metric, options.valueSuffix);
   return `${leader} ${options.verb ?? metricVerb(metric)} the most ${
     options.sentenceMetricLabel ?? sentenceMetricLabel(metric)
@@ -476,6 +483,16 @@ function metricValuePhrase(
   const formatted = formatProseValue(row[metric], metric);
   if (suffix) return `${formatted} ${suffix}`;
   return metric.endsWith("_per_game") ? `${formatted} per game` : formatted;
+}
+
+function metricLeaderValuePhrase(row: SectionRow, metric: string): string {
+  const formatted = formatProseValue(row[metric], metric);
+  if (metric.endsWith("_per_game")) {
+    return `${formatted} ${tableLabel(metric)}`;
+  }
+
+  const label = sentenceMetricLabel(metric);
+  return label ? `${formatted} ${label}` : formatted;
 }
 
 function contextPhrase(

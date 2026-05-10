@@ -733,6 +733,17 @@ def test_hottest_three_game_scoring_stretch_routes_to_stretch_leaderboard():
     assert parsed["intent"] == "leaderboard"
     assert parsed["window_size"] == 3
     assert parsed["stretch_metric"] == "pts"
+    assert parsed["stretch_display_mode"] == "windows"
+    assert parsed["route_kwargs"]["dedupe_players"] is False
+
+
+def test_which_players_stretch_query_dedupes_to_best_player_windows():
+    parsed = parse_query("which players have the hottest 3-game scoring stretch this year")
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert parsed["window_size"] == 3
+    assert parsed["stretch_metric"] == "pts"
+    assert parsed["stretch_display_mode"] == "players"
+    assert parsed["route_kwargs"]["dedupe_players"] is True
 
 
 def test_best_five_game_stretch_by_game_score_sets_metric_and_default_limit():
@@ -755,3 +766,4 @@ def test_player_specific_stretch_query_preserves_subject():
     assert parsed["route"] == "player_stretch_leaderboard"
     assert parsed["player"] == "Devin Booker"
     assert parsed["window_size"] == 4
+    assert parsed["stretch_display_mode"] == "named_player"

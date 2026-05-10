@@ -523,7 +523,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "Shai Gilgeous-Alexander scored the most points per game in the 2025 playoffs, with 29.9 per game.",
+        "Shai Gilgeous-Alexander led the NBA with 29.9 PPG in the 2025 playoffs.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -1124,12 +1124,94 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "PPG" }),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("columnheader", { name: "Season" }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("table", { name: "Rolling stretch leaderboard" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Showing top 1 of 24")).toBeInTheDocument();
     expect(
       screen.queryByRole("table", { name: "Leaderboard" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("renders player-oriented rolling stretch leaderboards with one window per player", () => {
+    const data = makeResponse({
+      query: "Which players have the hottest 3-game scoring stretch this year?",
+      route: "player_stretch_leaderboard",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text:
+            "Which players have the hottest 3-game scoring stretch this year?",
+          route: "player_stretch_leaderboard",
+          season: "2025-26",
+          season_type: "Regular Season",
+          window_size: 3,
+          stretch_metric: "pts",
+          stretch_display_mode: "players",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Luka Doncic",
+              player_id: 1629029,
+              team_abbr: "LAL",
+              window_size: 3,
+              stretch_metric: "pts",
+              window_start_date: "2026-03-16",
+              window_end_date: "2026-03-19",
+              window_end_season: "2025-26",
+              stretch_value: 45.333,
+            },
+            {
+              rank: 2,
+              player_name: "Luka Doncic",
+              player_id: 1629029,
+              team_abbr: "LAL",
+              window_size: 3,
+              stretch_metric: "pts",
+              window_start_date: "2026-03-18",
+              window_end_date: "2026-03-21",
+              window_end_season: "2025-26",
+              stretch_value: 44.667,
+            },
+            {
+              rank: 3,
+              player_name: "Devin Booker",
+              player_id: 1626164,
+              team_abbr: "PHX",
+              window_size: 3,
+              stretch_metric: "pts",
+              window_start_date: "2026-02-10",
+              window_end_date: "2026-02-14",
+              window_end_season: "2025-26",
+              stretch_value: 41,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Luka Doncic had the hottest 3-game scoring stretch this season, averaging 45.3 PPG from Mar 16 to Mar 19.",
+      ),
+    ).toBeInTheDocument();
+    const table = screen.getByRole("table", {
+      name: "Rolling stretch leaderboard",
+    });
+    const rows = within(table).getAllByRole("row");
+    expect(rows).toHaveLength(3);
+    expect(within(rows[1]).getByText("Luka Doncic")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("Devin Booker")).toBeInTheDocument();
   });
 
   it("renders named-player rolling stretches with top windows and optional game log", () => {
@@ -1206,13 +1288,16 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "Devin Booker's best 4-game scoring stretch in the 2025-26 regular season: 39.8 PPG from Feb 10 to Feb 17.",
+        "Devin Booker's best 4-game scoring stretch in the 2025-26 regular season: averaging 39.8 PPG from Feb 10 to Feb 17.",
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Top Windows")).toBeInTheDocument();
     expect(screen.getByText("Best Window Games")).toBeInTheDocument();
     expect(
       screen.getByRole("table", { name: "Player rolling stretch windows" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Season" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("table", { name: "Best stretch game log" }),
@@ -1574,6 +1659,7 @@ describe("ResultRenderer (substrate)", () => {
               pts: 83,
               reb: 9,
               ast: 3,
+              fg3m: 5,
               opponent_team_abbr: "WAS",
               is_home: 1,
               wl: "W",
@@ -1588,6 +1674,7 @@ describe("ResultRenderer (substrate)", () => {
               pts: 60,
               reb: 7,
               ast: 3,
+              fg3m: 4,
               opponent_team_abbr: "MIA",
               is_away: 1,
               wl: "W",
@@ -1602,7 +1689,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "The top scoring games this season: Bam Adebayo with 83 points.",
+        "Bam Adebayo had the top scoring game this season with 83 points in a win against WAS on Mar 10.",
       ),
     ).toBeInTheDocument();
     const table = screen.getByRole("table", { name: "Top performances" });
@@ -1617,6 +1704,9 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "PTS" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "3PM" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Showing top 2 of 35")).toBeInTheDocument();
     expect(
@@ -1668,7 +1758,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "The top triple-double games this season: Nikola Jokic with 35-15-15.",
+        "Nikola Jokic had the top triple-double game this season with 35-15-15 in a win against BOS on Jan 8.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -1718,7 +1808,7 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "The top scoring games in the 2025-26 regular season: Denver Nuggets with 157 points.",
+        "Denver Nuggets had the top scoring game in the 2025-26 regular season with 157 points in a 157-103 win against POR on Feb 20.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -1727,6 +1817,10 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "Result" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Score" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("157-103")).toBeInTheDocument();
     expect(screen.getAllByText("Denver Nuggets").length).toBeGreaterThan(0);
     expect(
       screen.getByRole("table", { name: "Top performances" }),
@@ -2403,9 +2497,11 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Boston Celtics").length).toBeGreaterThan(0);
     const roundRecord = screen.getByLabelText("Playoff round record result");
-    expect(roundRecord.textContent).toContain("Boston Celtics own");
+    expect(roundRecord.textContent).toContain(
+      "The Boston Celtics have the best Finals record from 1980-81 to 2024-25, going 28-14 (.667) across 42 games.",
+    );
     expect(
-      within(roundRecord).getByText("finals playoff mark", { exact: false }),
+      within(roundRecord).getByText("Finals record", { exact: false }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("table", { name: "Playoff round records" }),

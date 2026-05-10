@@ -459,6 +459,36 @@ describe("migrated result envelope", () => {
     expect(screen.queryByText("Opponent quality")).not.toBeInTheDocument();
   });
 
+  it("classifies leaderboard interpretation caveats as context", () => {
+    const data = makeResponse({
+      caveats: [
+        "record by decade leaderboard (wins)",
+        "across 2010-11 to 2019-20",
+        "playoff round data not available before 2001-02",
+      ],
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    expect(screen.getByText("Context")).toBeInTheDocument();
+    expect(
+      screen.getByText("Record by decade leaderboard (WINS)"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2010-11 to 2019-20")).toBeInTheDocument();
+    expect(screen.getByText("Caveats")).toBeInTheDocument();
+    expect(
+      screen.getByText("playoff round data not available before 2001-02"),
+    ).toBeInTheDocument();
+  });
+
   it("suppresses notes in the envelope for no-result outcomes", () => {
     const data = makeResponse({
       result_status: "no_result",

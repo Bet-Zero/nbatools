@@ -121,6 +121,7 @@ export interface ResultMetadata {
   primary_count?: number | null;
   count_phrase?: string | null;
   answer_phrase?: string | null;
+  stretch_display_mode?: "named_player" | "players" | "windows" | null;
   candidates?: DisambiguationCandidate[];
   suggested_queries?: string[];
   notes?: string[];

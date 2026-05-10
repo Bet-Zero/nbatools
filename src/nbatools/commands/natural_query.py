@@ -280,6 +280,19 @@ _AMBIGUOUS_FRAGMENT_PATTERNS = (
 )
 
 
+def _stretch_display_mode(q: str, player: str | None) -> str | None:
+    """Classify rolling-stretch display intent when the query says so plainly."""
+    if not re.search(r"\b(?:stretch(?:es)?|windows?|rolling)\b", q):
+        return None
+    if player:
+        return "named_player"
+    if re.search(r"\bwhich\s+players?\b", q):
+        return "players"
+    if re.search(r"\b(?:best|top|hottest)\b.*\b(?:stretch(?:es)?|windows?)\b", q):
+        return "windows"
+    return "windows"
+
+
 def _ambiguous_fragment_note(q: str) -> str | None:
     for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
         if re.search(pattern, q):
@@ -627,6 +640,7 @@ def _build_parse_state(query: str) -> dict:
                 anchor_date = ct_ts
 
     start_date, end_date = extract_date_range(q, season, anchor_date=anchor_date)
+    stretch_display_mode = _stretch_display_mode(q, player)
 
     explicit_single_season = extract_season(q)
     explicit_range_start, explicit_range_end = extract_season_range(q)
@@ -673,6 +687,7 @@ def _build_parse_state(query: str) -> dict:
         "lineup_query_mode": lineup_query_mode,
         "window_size": window_size,
         "stretch_metric": stretch_metric,
+        "stretch_display_mode": stretch_display_mode,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -799,6 +814,7 @@ def _finalize_route(parsed: dict) -> dict:
     lineup_query_mode = parsed.get("lineup_query_mode")
     window_size = parsed.get("window_size")
     stretch_metric = parsed.get("stretch_metric")
+    stretch_display_mode = parsed.get("stretch_display_mode")
 
     notes: list[str] = []
     route = None
@@ -957,6 +973,7 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "window_size": window_size,
             "stretch_metric": stretch_metric,
+            "dedupe_players": stretch_display_mode == "players",
             "limit": top_n or 10,
         }
 

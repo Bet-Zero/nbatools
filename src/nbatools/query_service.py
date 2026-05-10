@@ -413,6 +413,11 @@ def _build_query_metadata(
         "minute_minimum": parsed.get("minute_minimum"),
         "window_size": parsed.get("window_size"),
         "stretch_metric": parsed.get("stretch_metric"),
+        "stretch_display_mode": _stretch_display_mode_metadata(
+            route,
+            player=player,
+            dedupe_players=route_kwargs.get("dedupe_players"),
+        ),
         "stat": parsed.get("stat") or route_kwargs.get("stat"),
         "min_value": (
             parsed.get("min_value")
@@ -497,6 +502,19 @@ def _build_query_metadata(
         meta["alternates"] = alternates
 
     return meta
+
+
+def _stretch_display_mode_metadata(
+    route: str | None,
+    *,
+    player: str | None,
+    dedupe_players: Any,
+) -> str | None:
+    if route != "player_stretch_leaderboard":
+        return None
+    if player:
+        return "named_player"
+    return "players" if bool(dedupe_players) else "windows"
 
 
 def _merge_metadata_notes(metadata: dict[str, Any], result_notes: list[str]) -> None:
@@ -1273,6 +1291,11 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "minute_minimum": kwargs.get("minute_minimum"),
         "window_size": kwargs.get("window_size"),
         "stretch_metric": kwargs.get("stretch_metric"),
+        "stretch_display_mode": _stretch_display_mode_metadata(
+            route,
+            player=player,
+            dedupe_players=kwargs.get("dedupe_players"),
+        ),
         "stat": kwargs.get("stat"),
         "min_value": kwargs.get("min_value"),
         "max_value": kwargs.get("max_value"),

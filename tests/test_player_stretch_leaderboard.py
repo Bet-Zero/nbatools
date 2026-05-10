@@ -204,6 +204,146 @@ def test_build_result_ranks_highest_scoring_stretches(tmp_path, monkeypatch):
     assert leaders.iloc[0]["stretch_value"] == pytest.approx((20 + 24 + 26) / 3, rel=1e-3)
 
 
+def test_build_result_can_keep_only_best_window_per_player(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    player_rows = [
+        _player_row(
+            game_id=1,
+            game_date="2099-10-01",
+            player_id=1,
+            player_name="Alpha Scorer",
+            team_id=10,
+            team_abbr="AAA",
+            pts=40,
+            fgm=14,
+            fga=25,
+            fg3m=3,
+            fg3a=8,
+            ftm=9,
+            fta=10,
+        ),
+        _player_row(
+            game_id=2,
+            game_date="2099-10-03",
+            player_id=1,
+            player_name="Alpha Scorer",
+            team_id=10,
+            team_abbr="AAA",
+            pts=40,
+            fgm=14,
+            fga=25,
+            fg3m=3,
+            fg3a=8,
+            ftm=9,
+            fta=10,
+        ),
+        _player_row(
+            game_id=3,
+            game_date="2099-10-05",
+            player_id=1,
+            player_name="Alpha Scorer",
+            team_id=10,
+            team_abbr="AAA",
+            pts=40,
+            fgm=14,
+            fga=25,
+            fg3m=3,
+            fg3a=8,
+            ftm=9,
+            fta=10,
+        ),
+        _player_row(
+            game_id=4,
+            game_date="2099-10-07",
+            player_id=1,
+            player_name="Alpha Scorer",
+            team_id=10,
+            team_abbr="AAA",
+            pts=39,
+            fgm=13,
+            fga=24,
+            fg3m=3,
+            fg3a=8,
+            ftm=10,
+            fta=11,
+        ),
+        _player_row(
+            game_id=5,
+            game_date="2099-10-01",
+            player_id=2,
+            player_name="Beta Bucket",
+            team_id=20,
+            team_abbr="BBB",
+            pts=30,
+            fgm=10,
+            fga=20,
+            fg3m=2,
+            fg3a=5,
+            ftm=8,
+            fta=9,
+        ),
+        _player_row(
+            game_id=6,
+            game_date="2099-10-03",
+            player_id=2,
+            player_name="Beta Bucket",
+            team_id=20,
+            team_abbr="BBB",
+            pts=30,
+            fgm=10,
+            fga=20,
+            fg3m=2,
+            fg3a=5,
+            ftm=8,
+            fta=9,
+        ),
+        _player_row(
+            game_id=7,
+            game_date="2099-10-05",
+            player_id=2,
+            player_name="Beta Bucket",
+            team_id=20,
+            team_abbr="BBB",
+            pts=30,
+            fgm=10,
+            fga=20,
+            fg3m=2,
+            fg3a=5,
+            ftm=8,
+            fta=9,
+        ),
+    ]
+    team_rows = [
+        {"game_id": game_id, "team_id": team_id, "wl": "W"}
+        for game_id, team_id in [
+            (1, 10),
+            (2, 10),
+            (3, 10),
+            (4, 10),
+            (5, 20),
+            (6, 20),
+            (7, 20),
+        ]
+    ]
+    _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv", player_rows)
+    _write_csv(tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv", team_rows)
+
+    result = build_result(
+        season="2099-00",
+        season_type="Regular Season",
+        window_size=3,
+        stretch_metric="pts",
+        limit=5,
+        dedupe_players=True,
+    )
+
+    leaders = result.leaders
+    assert leaders["player_name"].tolist() == ["Alpha Scorer", "Beta Bucket"]
+    assert leaders["rank"].tolist() == [1, 2]
+    assert leaders.iloc[0]["stretch_value"] == pytest.approx(40, rel=1e-3)
+
+
 def test_build_result_computes_game_score_stretch_metric(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
