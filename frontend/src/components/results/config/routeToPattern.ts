@@ -200,6 +200,8 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
           sectionKey: "leaderboard",
         },
       ];
+    case "lineup_summary":
+      return [{ type: "entity_summary", sectionKey: "summary" }];
     case "lineup_leaderboard":
       return [
         {

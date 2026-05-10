@@ -170,6 +170,146 @@ describe("classifyResultShape", () => {
     );
   });
 
+  it("classifies representative Wave 2 result shapes", () => {
+    const cases: Array<{
+      name: string;
+      data: QueryResponse;
+      expected: typeof RESULT_SHAPES[keyof typeof RESULT_SHAPES];
+    }> = [
+      {
+        name: "split_table",
+        data: makeResponse({
+          route: "player_split_summary",
+          sections: {
+            split_comparison: [{ bucket: "home", games: 10, pts_avg: 29.4 }],
+          },
+        }),
+        expected: RESULT_SHAPES.split_table,
+      },
+      {
+        name: "on_off_split",
+        data: makeResponse({
+          route: "player_on_off",
+          sections: {
+            summary: [{ presence_state: "on", gp: 42, net_rating: 12.3 }],
+          },
+        }),
+        expected: RESULT_SHAPES.on_off_split,
+      },
+      {
+        name: "streak_table",
+        data: makeResponse({
+          route: "player_streak_finder",
+          sections: {
+            streak: [{ rank: 1, player_name: "Stephen Curry", streak_length: 8 }],
+          },
+        }),
+        expected: RESULT_SHAPES.streak_table,
+      },
+      {
+        name: "comparison",
+        data: makeResponse({
+          route: "team_compare",
+          sections: {
+            summary: [{ team_name: "Lakers" }, { team_name: "Celtics" }],
+            comparison: [{ metric: "wins", Lakers: 42, Celtics: 45 }],
+          },
+        }),
+        expected: RESULT_SHAPES.comparison,
+      },
+      {
+        name: "playoff_history",
+        data: makeResponse({
+          route: "playoff_history",
+          sections: {
+            summary: [{ team_name: "Boston Celtics", appearances: 5 }],
+            by_season: [{ season: "2024-25", wins: 8, losses: 5 }],
+          },
+        }),
+        expected: RESULT_SHAPES.playoff_history,
+      },
+      {
+        name: "playoff_round_record",
+        data: makeResponse({
+          route: "playoff_round_record",
+          sections: {
+            leaderboard: [{ rank: 1, team_name: "Lakers", win_pct: 0.61 }],
+          },
+        }),
+        expected: RESULT_SHAPES.playoff_round_record,
+      },
+      {
+        name: "playoff_matchup_history",
+        data: makeResponse({
+          route: "playoff_matchup_history",
+          sections: {
+            summary: [{ team_name: "Celtics" }, { team_name: "Lakers" }],
+            comparison: [{ season: "2023-24", BOS_wins: 4, LAL_wins: 2 }],
+          },
+        }),
+        expected: RESULT_SHAPES.playoff_matchup_history,
+      },
+      {
+        name: "record_by_decade",
+        data: makeResponse({
+          route: "record_by_decade",
+          sections: {
+            summary: [{ team_name: "Spurs", wins: 500, losses: 320 }],
+            by_season: [{ decade: "2010s", wins: 520, losses: 300 }],
+          },
+        }),
+        expected: RESULT_SHAPES.record_by_decade,
+      },
+      {
+        name: "record_by_decade_leaderboard",
+        data: makeResponse({
+          route: "record_by_decade_leaderboard",
+          sections: {
+            leaderboard: [{ rank: 1, team_name: "Spurs", decade: "2010s" }],
+          },
+        }),
+        expected: RESULT_SHAPES.record_by_decade_leaderboard,
+      },
+      {
+        name: "matchup_by_decade",
+        data: makeResponse({
+          route: "matchup_by_decade",
+          sections: {
+            summary: [{ team_name: "Celtics" }, { team_name: "Lakers" }],
+            comparison: [{ decade: "1980s", BOS_wins: 12, LAL_wins: 10 }],
+          },
+        }),
+        expected: RESULT_SHAPES.matchup_by_decade,
+      },
+      {
+        name: "lineup_summary",
+        data: makeResponse({
+          route: "lineup_summary",
+          sections: {
+            summary: [{ lineup: "Jayson Tatum / Jaylen Brown", net_rating: 11 }],
+          },
+        }),
+        expected: RESULT_SHAPES.entity_summary,
+      },
+      {
+        name: "lineup_leaderboard",
+        data: makeResponse({
+          route: "lineup_leaderboard",
+          sections: {
+            leaderboard: [
+              { rank: 1, lineup: "Nikola Jokic / Jamal Murray", net_rating: 15 },
+            ],
+          },
+        }),
+        expected: RESULT_SHAPES.leaderboard_table,
+      },
+    ];
+
+    for (const { name, data, expected } of cases) {
+      expect(classifyResultShape(data), name).toBe(expected);
+    }
+  });
+
   it("classifies top performances and rolling stretches as dedicated shapes", () => {
     const topGames = makeResponse({
       route: "top_player_games",
@@ -302,7 +442,7 @@ describe("classifyResultShape", () => {
 
   it("classifies unmapped routed payloads as fallback tables", () => {
     const fallback = makeResponse({
-      route: "lineup_summary",
+      route: "unmapped_route",
       sections: { summary: [{ lineup: "A / B / C / D / E", net_rating: 8.1 }] },
     });
 

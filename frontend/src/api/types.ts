@@ -64,7 +64,9 @@ export type RouteName =
   | "playoff_round_record"
   | "record_by_decade"
   | "record_by_decade_leaderboard"
-  | "matchup_by_decade";
+  | "matchup_by_decade"
+  | "lineup_summary"
+  | "lineup_leaderboard";
 
 // --- Result metadata ---
 

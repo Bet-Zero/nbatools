@@ -53,6 +53,26 @@ const WAVE_1_ROUTES = [
   "player_stretch_leaderboard",
 ];
 
+const WAVE_2_ROUTES = [
+  "player_split_summary",
+  "team_split_summary",
+  "player_on_off",
+  "player_streak_finder",
+  "team_streak_finder",
+  "player_compare",
+  "team_compare",
+  "team_matchup_record",
+  "playoff_history",
+  "playoff_appearances",
+  "playoff_matchup_history",
+  "playoff_round_record",
+  "record_by_decade",
+  "record_by_decade_leaderboard",
+  "matchup_by_decade",
+  "lineup_summary",
+  "lineup_leaderboard",
+];
+
 function expectPattern(route: string, expected: PatternConfig[]) {
   expect(routeToPattern(makeResponse(route))).toEqual(expected);
 }
@@ -203,6 +223,107 @@ describe("routeToPattern", () => {
       {
         type: "rolling_stretch",
         sectionKey: "leaderboard",
+      },
+    ]);
+  });
+
+  it("guards every Wave 2 route from falling through to fallback_table", () => {
+    for (const route of WAVE_2_ROUTES) {
+      const patterns = routeToPattern(makeResponse(route));
+      expect(patterns, route).not.toHaveLength(0);
+      expect(patterns.map((pattern) => pattern.type), route).not.toContain(
+        "fallback_table",
+      );
+    }
+  });
+
+  it("routes Wave 2 split routes to split patterns", () => {
+    expectPattern("player_split_summary", [{ type: "split", subject: "player" }]);
+    expectPattern("team_split_summary", [{ type: "split", subject: "team" }]);
+    expectPattern("player_on_off", [
+      {
+        type: "split",
+        sectionKey: "summary",
+        summaryKey: "summary",
+        subject: "player",
+        bucketKey: "presence_state",
+        splitLabelOverride: "On/Off",
+        primaryDetailTitle: "On/Off Detail",
+        summaryDetailTitle: null,
+      },
+    ]);
+  });
+
+  it("routes Wave 2 streak routes to the streak pattern", () => {
+    expectPattern("player_streak_finder", [
+      { type: "streak", sectionKey: "streak" },
+    ]);
+    expectPattern("team_streak_finder", [
+      { type: "streak", sectionKey: "streak" },
+    ]);
+  });
+
+  it("routes Wave 2 comparison routes to comparison patterns", () => {
+    expectPattern("player_compare", [
+      { type: "comparison", subject: "player", headToHead: false },
+    ]);
+    expectPattern("team_compare", [
+      { type: "comparison", subject: "team", headToHead: false },
+    ]);
+    expectPattern("team_matchup_record", [
+      { type: "comparison", subject: "team", headToHead: true },
+    ]);
+
+    expect(
+      routeToPattern(
+        makeResponse("player_compare", {
+          metadata: { head_to_head_used: true },
+        }),
+      ),
+    ).toEqual([{ type: "comparison", subject: "player", headToHead: true }]);
+  });
+
+  it("routes Wave 2 playoff/history routes to their specific modes", () => {
+    expectPattern("playoff_history", [
+      { type: "playoff_history", mode: "history" },
+    ]);
+    expectPattern("playoff_round_record", [
+      { type: "playoff_history", mode: "round_record" },
+    ]);
+    expectPattern("playoff_matchup_history", [
+      { type: "playoff_history", mode: "matchup" },
+    ]);
+    expectPattern("playoff_appearances", [
+      {
+        type: "leaderboard",
+        sectionKey: "leaderboard",
+        metricKey: "appearances",
+        sentenceMetricLabel: "playoff appearances",
+      },
+    ]);
+  });
+
+  it("routes Wave 2 decade and matchup record routes to record patterns", () => {
+    expectPattern("record_by_decade", [
+      { type: "record", mode: "record_by_decade" },
+    ]);
+    expectPattern("record_by_decade_leaderboard", [
+      { type: "record", mode: "record_by_decade_leaderboard" },
+    ]);
+    expectPattern("matchup_by_decade", [
+      { type: "record", mode: "matchup_by_decade" },
+    ]);
+  });
+
+  it("routes Wave 2 lineup routes to summary and leaderboard patterns", () => {
+    expectPattern("lineup_summary", [
+      { type: "entity_summary", sectionKey: "summary" },
+    ]);
+    expectPattern("lineup_leaderboard", [
+      {
+        type: "leaderboard",
+        sectionKey: "leaderboard",
+        metricKey: "net_rating",
       },
     ]);
   });

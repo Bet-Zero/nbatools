@@ -219,6 +219,11 @@ function summarySentence(
   metadata: ResultMetadata | undefined,
   query: string,
 ): string {
+  const lineup = lineupName(row);
+  if (lineup) {
+    return lineupSummarySentence(lineup, row, metadata, query);
+  }
+
   const name = playerName(row, metadata);
   const averages = averagePhrase(row);
   const context = summaryContext(row, metadata, query);
@@ -228,6 +233,47 @@ function summarySentence(
   }
 
   return `${name} has averaged ${averages}${context}.`;
+}
+
+function lineupSummarySentence(
+  lineup: string,
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+  query: string,
+): string {
+  const metrics = lineupMetricPhrase(row);
+  const context = summaryContext(row, metadata, query);
+  if (!metrics) return `${lineup} has a lineup summary available${context}.`;
+  return `${lineup} posted ${metrics}${context}.`;
+}
+
+function lineupMetricPhrase(row: SectionRow): string | null {
+  const parts = [
+    lineupStatPhrase(row, "net_rating", "net rating", true),
+    lineupStatPhrase(row, "off_rating", "offensive rating"),
+    lineupStatPhrase(row, "def_rating", "defensive rating"),
+    lineupStatPhrase(row, "pace", "pace"),
+  ].filter((part): part is string => Boolean(part));
+
+  if (parts.length === 0) return null;
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+  return `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+}
+
+function lineupStatPhrase(
+  row: SectionRow,
+  key: string,
+  label: string,
+  signed = false,
+): string | null {
+  if (!hasValue(row[key])) return null;
+  const raw = row[key];
+  const value =
+    signed && typeof raw === "number" && raw > 0
+      ? `+${formatProseValue(raw, key)}`
+      : formatProseValue(raw, key);
+  return `${value} ${label}`;
 }
 
 function averagePhrase(row: SectionRow): string | null {
@@ -425,6 +471,8 @@ function heroIdentity(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
 ): ReactNode {
+  if (lineupName(row)) return null;
+
   return (
     <EntityIdentity
       kind="player"
@@ -434,6 +482,16 @@ function heroIdentity(
       playerName={playerName(row, metadata)}
     />
   );
+}
+
+function lineupName(row: SectionRow): string | null {
+  for (const key of ["lineup_members", "members"]) {
+    const value = row[key];
+    if (Array.isArray(value) && value.length > 0) {
+      return value.map(String).join(" / ");
+    }
+  }
+  return textValue(row, "lineup");
 }
 
 function playerName(
