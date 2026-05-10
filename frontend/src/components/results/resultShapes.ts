@@ -231,6 +231,7 @@ export function classifyResultShape(
     case "playoff_history":
       switch (pattern.mode) {
         case "history":
+        case "appearances":
           return RESULT_SHAPES.playoff_history;
         case "round_record":
           return RESULT_SHAPES.playoff_round_record;

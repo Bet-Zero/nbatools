@@ -219,7 +219,7 @@ function summarySentence(
   metadata: ResultMetadata | undefined,
   query: string,
 ): string {
-  const lineup = lineupName(row);
+  const lineup = lineupName(row, metadata);
   if (lineup) {
     return lineupSummarySentence(lineup, row, metadata, query);
   }
@@ -471,7 +471,7 @@ function heroIdentity(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
 ): ReactNode {
-  if (lineupName(row)) return null;
+  if (lineupName(row, metadata)) return null;
 
   return (
     <EntityIdentity
@@ -484,14 +484,61 @@ function heroIdentity(
   );
 }
 
-function lineupName(row: SectionRow): string | null {
-  for (const key of ["lineup_members", "members"]) {
-    const value = row[key];
-    if (Array.isArray(value) && value.length > 0) {
-      return value.map(String).join(" / ");
-    }
+function lineupName(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+): string | null {
+  for (const key of ["lineup_name", "lineup"]) {
+    const label = readableNameList(row[key]);
+    if (label) return label;
   }
-  return textValue(row, "lineup");
+
+  for (const key of ["player_names", "lineup_members", "members"]) {
+    const label = readableNameList(row[key]);
+    if (label) return label;
+  }
+
+  return readableNameList(metadata?.lineup_members);
+}
+
+function readableNameList(value: unknown): string | null {
+  if (Array.isArray(value)) {
+    const parts = value.map(String).map((part) => part.trim()).filter(Boolean);
+    return parts.length > 0 ? parts.join(" / ") : null;
+  }
+
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const parsed = parseArrayLikeNames(trimmed);
+  if (parsed.length > 0) return parsed.join(" / ");
+
+  if (trimmed.includes("|")) {
+    const parts = trimmed.split("|").map((part) => part.trim()).filter(Boolean);
+    return parts.length > 0 ? parts.join(" / ") : null;
+  }
+
+  return trimmed;
+}
+
+function parseArrayLikeNames(value: string): string[] {
+  if (!value.startsWith("[") || !value.endsWith("]")) return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.map(String).map((part) => part.trim()).filter(Boolean);
+    }
+  } catch {
+    // Some backend/debug paths stringify arrays with single quotes.
+  }
+
+  return value
+    .slice(1, -1)
+    .split(",")
+    .map((part) => part.trim().replace(/^['"]|['"]$/g, ""))
+    .filter(Boolean);
 }
 
 function playerName(

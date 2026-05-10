@@ -326,6 +326,54 @@ describe("Wave 2 table pattern contracts", () => {
       "Games",
     ]);
 
+    const appearancesData = makeResponse("playoff_appearances", {
+      metadata: {
+        team_context: {
+          team_id: 1610612747,
+          team_abbr: "LAL",
+          team_name: "Los Angeles Lakers",
+        },
+      },
+      sections: {
+        summary: [
+          {
+            team_name: "Los Angeles Lakers",
+            appearances: 18,
+            round: "Finals",
+            season_start: "1996-97",
+            season_end: "2024-25",
+          },
+        ],
+        by_season: [
+          {
+            season: "2024-25",
+            games: 13,
+            wins: 8,
+            losses: 5,
+            win_pct: 0.615,
+          },
+        ],
+      },
+    });
+
+    rerender(<ResultRenderer data={appearancesData} displayMode="review" />);
+    expect(
+      screen.getByText(
+        (_content, element) =>
+          element?.tagName.toLowerCase() === "p" &&
+          element.textContent ===
+            "From 1996-97 through 2024-25, the Los Angeles Lakers reached the Finals 18 times.",
+      ),
+    ).toBeInTheDocument();
+    expectHeaders(screen.getByRole("table", { name: "Playoff season breakdown" }), [
+      "Season",
+      "Record",
+      "Games",
+      "Win Pct",
+    ]);
+    expect(screen.queryByRole("columnheader", { name: "Round Reached" })).not.toBeInTheDocument();
+    expect(screen.getByText("8-5")).toBeInTheDocument();
+
     const roundData = makeResponse("playoff_round_record", {
       queryClass: "leaderboard",
       query: "best finals record",
@@ -508,13 +556,15 @@ describe("Wave 2 table pattern contracts", () => {
       sections: {
         summary: [
           {
-            lineup: "Jayson Tatum / Jaylen Brown",
+            lineup_name: "Jayson Tatum | Jaylen Brown",
+            player_names: "Jayson Tatum|Jaylen Brown",
             team_abbr: "BOS",
             minutes: 420,
             off_rating: 122.4,
             def_rating: 111.4,
             net_rating: 11,
             pace: 99.8,
+            ts_pct: 0.62,
           },
         ],
       },
@@ -526,6 +576,24 @@ describe("Wave 2 table pattern contracts", () => {
     expect(screen.getByText(/Jayson Tatum \/ Jaylen Brown posted/)).toBeInTheDocument();
     expect(screen.getByText(/net rating/)).toBeInTheDocument();
     expect(screen.queryByText("Summary")).not.toBeInTheDocument();
+
+    const syntheticSummaryData = makeResponse("lineup_summary", {
+      metadata: { season: "2025-26", season_type: "Regular Season" },
+      sections: {
+        summary: [
+          {
+            lineup_members: ["Jayson Tatum", "Jaylen Brown"],
+            team_abbr: "BOS",
+            net_rating: 11,
+          },
+        ],
+      },
+    });
+
+    rerender(
+      <ResultRenderer data={syntheticSummaryData} displayMode="review" />,
+    );
+    expect(screen.getByText(/Jayson Tatum \/ Jaylen Brown posted/)).toBeInTheDocument();
 
     const leaderboardData = makeResponse("lineup_leaderboard", {
       queryClass: "leaderboard",

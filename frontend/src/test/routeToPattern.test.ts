@@ -303,6 +303,50 @@ describe("routeToPattern", () => {
     ]);
   });
 
+  it("branches playoff appearances between leaderboard and single-team summary variants", () => {
+    expect(
+      routeToPattern(
+        makeResponse("playoff_appearances", {
+          sections: {
+            leaderboard: [
+              {
+                rank: 1,
+                team_name: "Los Angeles Lakers",
+                appearances: 31,
+              },
+            ],
+          },
+        }),
+      ),
+    ).toEqual([
+      {
+        type: "leaderboard",
+        sectionKey: "leaderboard",
+        metricKey: "appearances",
+        sentenceMetricLabel: "playoff appearances",
+      },
+    ]);
+
+    expect(
+      routeToPattern(
+        makeResponse("playoff_appearances", {
+          sections: {
+            summary: [
+              {
+                team_name: "Los Angeles Lakers",
+                appearances: 18,
+                round: "Finals",
+                season_start: "1996-97",
+                season_end: "2024-25",
+              },
+            ],
+            by_season: [{ season: "2024-25", wins: 8, losses: 5 }],
+          },
+        }),
+      ),
+    ).toEqual([{ type: "playoff_history", mode: "appearances" }]);
+  });
+
   it("routes Wave 2 decade and matchup record routes to record patterns", () => {
     expectPattern("record_by_decade", [
       { type: "record", mode: "record_by_decade" },

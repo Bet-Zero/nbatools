@@ -229,6 +229,37 @@ describe("classifyResultShape", () => {
         expected: RESULT_SHAPES.playoff_history,
       },
       {
+        name: "playoff_appearances_leaderboard",
+        data: makeResponse({
+          route: "playoff_appearances",
+          sections: {
+            leaderboard: [
+              { rank: 1, team_name: "Los Angeles Lakers", appearances: 31 },
+            ],
+          },
+        }),
+        expected: RESULT_SHAPES.leaderboard_table,
+      },
+      {
+        name: "playoff_appearances_single_team",
+        data: makeResponse({
+          route: "playoff_appearances",
+          sections: {
+            summary: [
+              {
+                team_name: "Los Angeles Lakers",
+                appearances: 18,
+                round: "Finals",
+                season_start: "1996-97",
+                season_end: "2024-25",
+              },
+            ],
+            by_season: [{ season: "2024-25", wins: 8, losses: 5 }],
+          },
+        }),
+        expected: RESULT_SHAPES.playoff_history,
+      },
+      {
         name: "playoff_round_record",
         data: makeResponse({
           route: "playoff_round_record",
@@ -286,7 +317,13 @@ describe("classifyResultShape", () => {
         data: makeResponse({
           route: "lineup_summary",
           sections: {
-            summary: [{ lineup: "Jayson Tatum / Jaylen Brown", net_rating: 11 }],
+            summary: [
+              {
+                lineup_name: "Jayson Tatum | Jaylen Brown",
+                player_names: "Jayson Tatum|Jaylen Brown",
+                net_rating: 11,
+              },
+            ],
           },
         }),
         expected: RESULT_SHAPES.entity_summary,

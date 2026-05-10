@@ -52,7 +52,10 @@ export type PatternConfig =
       summaryDetailTitle?: string | null;
     }
   | { type: "streak"; sectionKey?: string }
-  | { type: "playoff_history"; mode?: "history" | "round_record" | "matchup" }
+  | {
+      type: "playoff_history";
+      mode?: "history" | "round_record" | "matchup" | "appearances";
+    }
   | { type: "comparison"; subject?: "player" | "team"; headToHead?: boolean }
   | {
       type: "record";
@@ -211,6 +214,22 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
         },
       ];
     case "playoff_appearances":
+      if ((data.result?.sections?.leaderboard?.length ?? 0) > 0) {
+        return [
+          {
+            type: "leaderboard",
+            sectionKey: "leaderboard",
+            metricKey: "appearances",
+            sentenceMetricLabel: "playoff appearances",
+          },
+        ];
+      }
+      if (
+        (data.result?.sections?.summary?.length ?? 0) > 0 ||
+        (data.result?.sections?.by_season?.length ?? 0) > 0
+      ) {
+        return [{ type: "playoff_history", mode: "appearances" }];
+      }
       return [
         {
           type: "leaderboard",

@@ -138,6 +138,22 @@ describe("Wave 2 result section contracts", () => {
         leaderboard: [{ rank: 1, team_name: "Los Angeles Lakers", appearances: 20 }],
       },
     });
+    const singleTeamAppearances = makeResponse("playoff_appearances", {
+      sections: {
+        summary: [
+          {
+            team_name: "Los Angeles Lakers",
+            appearances: 18,
+            round: "Finals",
+            season_start: "1996-97",
+            season_end: "2024-25",
+          },
+        ],
+        by_season: [
+          { season: "2024-25", games: 13, wins: 8, losses: 5, win_pct: 0.615 },
+        ],
+      },
+    });
     const playoffMatchup = makeResponse("playoff_matchup_history", {
       queryClass: "comparison",
       sections: {
@@ -155,8 +171,19 @@ describe("Wave 2 result section contracts", () => {
     expectRequiredSections(playoffHistory, ["summary", "by_season"]);
     expect(classifyResultShape(playoffHistory)).toBe(RESULT_SHAPES.playoff_history);
     expectRequiredSections(playoffAppearances, ["leaderboard"]);
+    expect(routeToPattern(playoffAppearances)[0]).toMatchObject({
+      type: "leaderboard",
+      sectionKey: "leaderboard",
+    });
     expect(classifyResultShape(playoffAppearances)).toBe(
       RESULT_SHAPES.leaderboard_table,
+    );
+    expectRequiredSections(singleTeamAppearances, ["summary", "by_season"]);
+    expect(routeToPattern(singleTeamAppearances)).toEqual([
+      { type: "playoff_history", mode: "appearances" },
+    ]);
+    expect(classifyResultShape(singleTeamAppearances)).toBe(
+      RESULT_SHAPES.playoff_history,
     );
     expectRequiredSections(playoffMatchup, ["summary", "comparison"]);
     expect(classifyResultShape(playoffMatchup)).toBe(
@@ -208,7 +235,19 @@ describe("Wave 2 result section contracts", () => {
       {
         data: makeResponse("lineup_summary", {
           sections: {
-            summary: [{ lineup: "Jayson Tatum / Jaylen Brown", net_rating: 11 }],
+            summary: [
+              {
+                lineup_name: "Jayson Tatum | Jaylen Brown",
+                player_names: "Jayson Tatum|Jaylen Brown",
+                team_abbr: "BOS",
+                minutes: 420,
+                off_rating: 122.4,
+                def_rating: 111.4,
+                net_rating: 11,
+                pace: 99.8,
+                ts_pct: 0.62,
+              },
+            ],
           },
         }),
         required: ["summary"],

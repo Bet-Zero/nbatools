@@ -16,7 +16,7 @@ import {
 } from "../primitives/detailTables";
 import styles from "./PlayoffHistoryResult.module.css";
 
-type PlayoffMode = "history" | "round_record" | "matchup";
+type PlayoffMode = "history" | "round_record" | "matchup" | "appearances";
 
 interface Props {
   data: QueryResponse;
@@ -55,10 +55,21 @@ export default function PlayoffHistoryResult({ data, mode }: Props) {
     return <PlayoffRoundRecordResult data={data} />;
   }
 
-  return <PlayoffTeamHistoryResult data={data} />;
+  return (
+    <PlayoffTeamHistoryResult
+      data={data}
+      variant={resolvedMode === "appearances" ? "appearances" : "history"}
+    />
+  );
 }
 
-function PlayoffTeamHistoryResult({ data }: { data: QueryResponse }) {
+function PlayoffTeamHistoryResult({
+  data,
+  variant = "history",
+}: {
+  data: QueryResponse;
+  variant?: "history" | "appearances";
+}) {
   const sections = data.result?.sections ?? {};
   const summaryRows = sections.summary ?? [];
   const seasonRows = sections.by_season ?? [];
@@ -68,7 +79,8 @@ function PlayoffTeamHistoryResult({ data }: { data: QueryResponse }) {
 
   const team = teamDisplay(data.result?.metadata, summary);
   const rows = seasonRows.length > 0 ? seasonRows : summaryRows;
-  const columns = historyColumns(rows);
+  const columns =
+    variant === "appearances" ? appearanceColumns(rows) : historyColumns(rows);
   const visibleDetailKeys: Record<string, Iterable<string>> = {};
   visibleDetailKeys[seasonRows.length > 0 ? "by_season" : "summary"] =
     resultTableSourceKeys(columns);
@@ -76,7 +88,11 @@ function PlayoffTeamHistoryResult({ data }: { data: QueryResponse }) {
   return (
     <section className={styles.pattern} aria-label="Playoff history result">
       <ResultHero
-        sentence={historySentence(team.name, data.result?.metadata, summary)}
+        sentence={
+          variant === "appearances"
+            ? appearanceSentence(team.name, data.result?.metadata, summary)
+            : historySentence(team.name, data.result?.metadata, summary)
+        }
         subjectIllustration={teamIdentity(team)}
         tone="team"
         teamAccentAbbr={team.teamAbbr}
@@ -222,6 +238,43 @@ function historySentence(
   );
 }
 
+function appearanceSentence(
+  teamName: string,
+  metadata: ResultMetadata | undefined,
+  row: SectionRow,
+): ReactNode {
+  const appearances =
+    numericValue(row, "appearances") ?? numericValue(row, "seasons_appeared");
+  const round = roundLabel(metadata, row);
+  const range = seasonRange(metadata, row);
+  const rangePrefix = range ? `From ${range.replace(" to ", " through ")}, ` : "";
+  const action = appearanceAction(round);
+
+  return (
+    <>
+      {rangePrefix}the {teamName} {action}{" "}
+      {appearances !== null ? (
+        <>
+          <span className={styles.heroValue}>
+            {formatValue(appearances, "appearances")}
+          </span>{" "}
+          {appearances === 1 ? "time" : "times"}
+        </>
+      ) : (
+        "in the available seasons"
+      )}
+      .
+    </>
+  );
+}
+
+function appearanceAction(round: string | null): string {
+  if (!round) return "made the playoffs";
+  const normalized = round.toLowerCase();
+  if (normalized.includes("playoff")) return "made the playoffs";
+  return `reached the ${round}`;
+}
+
 function roundRecordSentence(
   teamName: string,
   metadata: ResultMetadata | undefined,
@@ -344,6 +397,30 @@ function historyColumns(
   return columns.filter((column) =>
     column.key === "opponent" ? rows.some((row) => hasOpponent(row)) : true,
   );
+}
+
+function appearanceColumns(
+  rows: SectionRow[],
+): Array<ResultTableColumn<SectionRow>> {
+  const columns: Array<ResultTableColumn<SectionRow>> = [
+    textColumn("season", "Season"),
+    {
+      key: "record",
+      sourceKeys: ["wins", "losses"],
+      header: "Record",
+      align: "center",
+      render: (row) => recordText(row) ?? EMPTY_CELL,
+    },
+  ];
+
+  if (rows.some((row) => hasValue(row.games_played))) {
+    addNumericIfPresent(columns, rows, "games_played", "Games");
+  } else {
+    addNumericIfPresent(columns, rows, "games", "Games");
+  }
+  addNumericIfPresent(columns, rows, "win_pct", "Win Pct");
+
+  return columns;
 }
 
 function roundRecordColumns(
@@ -637,6 +714,7 @@ function teamDisplay(
 function modeFromRoute(route: string | null | undefined): PlayoffMode {
   if (route === "playoff_round_record") return "round_record";
   if (route === "playoff_matchup_history") return "matchup";
+  if (route === "playoff_appearances") return "appearances";
   return "history";
 }
 
