@@ -29,10 +29,12 @@ Recent related work before this visual QA pass:
 |---|---|---|---|---|
 | High | Entity Summary | Query asks for Denver record when Jokić has triple-double, but hero answers with Jokić season averages. | Investigate backend payload and hero selection for record-when player-condition summaries. | Batch 1 |
 | Medium | Streak Table | Rightmost columns are clipped / table is too dense. | Reduce default visible columns or move secondary stats behind `Show additional columns`. | Batch 2 |
+| Medium | Team Record | Single-row record table is too wide and clips the rightmost column at review width. | Reduce default visible columns or move lower-priority context fields behind additional columns. | Batch 3 |
 | Low | Message No Result | Unsupported query displays `ERROR` severity. | Consider softer unsupported/no-result severity later. | Batch 1 |
 | Low | Entity Summary + Recent Games | Average/Total footer can get cramped on dense tables. | Review table footer density during later visual polish. | Batch 1 |
 | Low | Playoff Round Records | Hero uses `.667` while table uses `66.7%`. | Standardize hero to percentage formatting. | Batch 2 |
-| Low | Playoff History | `Round unavailable` repeats heavily. | Consider shorter unavailable display later while keeping caveat. | Batch 2 |
+| Low | Playoff History / Matchup History | `Round unavailable` repeats heavily in historical playoff rows. | Consider shorter unavailable display later while keeping caveat. | Batch 2 / Batch 3 |
+| Low | Comparison Panels | Record mini-card appears to duplicate wording like `win pct pct`. | Clean up comparison card record sublabel formatting. | Batch 3 |
 
 ---
 
@@ -54,7 +56,7 @@ The main issue found in this batch is not a styling problem. It is a wrong-answe
 
 ## Screenshot Notes
 
-### 1. Player Game Log
+### Player Game Log
 
 Fixture:
 
@@ -70,18 +72,13 @@ Assessment:
 - `Show additional columns` makes sense here.
 - The large row count is acceptable because the user asked a count/finder-style question and seeing every matching game builds trust.
 
-Notes:
-
-- No immediate visual action required.
-- Keep an eye on very tall game-log outputs, but this is acceptable for now.
-
 Status:
 
 - `PASS / NO IMMEDIATE ACTION`
 
 ---
 
-### 2. Entity Summary + Recent Games
+### Entity Summary + Recent Games
 
 Fixture:
 
@@ -92,12 +89,7 @@ Fixture:
 Assessment:
 
 - Strong layout.
-- The flow is good:
-  - context block
-  - notes block
-  - hero summary
-  - supporting game table
-  - average / total footer
+- The flow is good: context block, notes block, hero summary, supporting game table, average / total footer.
 - The note wording is much better than the older technical phrasing:
   - `Advanced rate stats were recalculated using only this filtered sample.`
 - The table is readable and useful.
@@ -110,13 +102,9 @@ Status:
 
 - `PASS / MINOR WATCH ITEM`
 
-Potential future improvement:
-
-- Review footer alignment and density for tables with many stat columns.
-
 ---
 
-### 3. Entity Summary
+### Entity Summary
 
 Fixture:
 
@@ -145,10 +133,6 @@ Possible root causes to investigate:
 - Summary row contains the right record fields but `EntitySummaryResult` prioritizes player average fields.
 - `player_game_summary` / `entity_summary` is being reused too generically for record-when queries.
 
-Priority:
-
-- High.
-
 Status:
 
 - `FAIL / TARGETED BUG`
@@ -162,7 +146,7 @@ Recommended next action:
 
 ---
 
-### 4. Message No Result
+### Message No Result
 
 Fixture:
 
@@ -186,13 +170,9 @@ Status:
 
 - `PASS / MINOR COPY-SEVERITY WATCH ITEM`
 
-Potential future improvement:
-
-- Consider using a softer status label such as `UNSUPPORTED` or `NO RESULT` instead of `ERROR` for intentional unsupported-query states.
-
 ---
 
-### 5. Guided No Result
+### Guided No Result
 
 Fixture:
 
@@ -203,11 +183,7 @@ Fixture:
 Assessment:
 
 - Good no-result pattern.
-- The structure is useful:
-  - no matching rows
-  - suggested queries
-  - why this happened
-  - suggested next steps
+- The structure is useful: no matching rows, suggested queries, why this happened, suggested next steps.
 - The card provides enough explanation without feeling like a crash.
 
 Status:
@@ -250,7 +226,7 @@ Main issues found:
 
 ## Screenshot Notes
 
-### 1. Team Game Log
+### Team Game Log
 
 Fixture:
 
@@ -263,16 +239,7 @@ Assessment:
 - Looks good overall.
 - The answer is direct and correct-looking:
   - `The Lakers have held opponents under 100 points 7 times this season, going 7-0.`
-- The table columns are strong and trust-building:
-  - `Date`
-  - `Team`
-  - `Opp`
-  - `Score`
-  - `W/L`
-  - `PTS`
-  - `Opp PTS`
-  - `Margin`
-  - `REB`
+- The table columns are strong and trust-building: `Date`, `Team`, `Opp`, `Score`, `W/L`, `PTS`, `Opp PTS`, `Margin`, `REB`.
 - Highlighting `Opp PTS` is appropriate for this query.
 
 Status:
@@ -281,7 +248,7 @@ Status:
 
 ---
 
-### 2. Game Summary Log
+### Game Summary Log
 
 Fixture:
 
@@ -292,32 +259,17 @@ Fixture:
 Assessment:
 
 - Very strong output.
-- The structure works well:
-  - query/context card
-  - direct hero answer
-  - summary stat cards
-  - supporting game table
-  - average/total footer
-  - detail toggles
-- The summary cards are useful:
-  - `GP`
-  - `Record`
-  - `PPG`
-  - `RPG`
-  - `APG`
+- The structure works well: query/context card, direct hero answer, summary stat cards, supporting game table, average/total footer, detail toggles.
+- The summary cards are useful: `GP`, `Record`, `PPG`, `RPG`, `APG`.
 - The table is dense but still readable at this screenshot width.
 
 Status:
 
 - `PASS / NO IMMEDIATE ACTION`
 
-Potential future watch item:
-
-- Continue watching table density when several stat columns and average/total footer rows are present.
-
 ---
 
-### 3. Streak Table
+### Streak Table
 
 Fixture:
 
@@ -338,14 +290,7 @@ Problem:
 - The table is too wide for the container.
 - The rightmost columns are visibly clipped in the screenshot.
 - The visible clipped area makes the table feel broken even though the underlying data appears fine.
-
-Observed problem area:
-
 - Rightmost stat columns such as `3P` / additional stats are cut off.
-
-Priority:
-
-- Medium.
 
 Status:
 
@@ -354,26 +299,13 @@ Status:
 Recommended fix direction:
 
 - Reduce the default visible columns for `Streak Table`.
-- Keep the trust-critical default columns:
-  - `#`
-  - `Streak`
-  - `Length`
-  - `Start`
-  - `End`
-  - `Games`
-  - `Record`
-  - primary metric, e.g. `PTS`
-- Move lower-priority support stats behind `Show additional columns`, likely:
-  - `REB`
-  - `AST`
-  - `MIN`
-  - `3P`
-  - `+/-`
+- Keep the trust-critical default columns: `#`, `Streak`, `Length`, `Start`, `End`, `Games`, `Record`, primary metric, e.g. `PTS`.
+- Move lower-priority support stats behind `Show additional columns`, likely `REB`, `AST`, `MIN`, `3P`, `+/-`.
 - Avoid relying only on horizontal clipping/overflow as the primary solution.
 
 ---
 
-### 4. Playoff History
+### Playoff History
 
 Fixture:
 
@@ -401,14 +333,12 @@ Status:
 
 Potential future improvement:
 
-- Consider a shorter display for unavailable round values, such as:
-  - `—`
-  - `Unavailable`
+- Consider a shorter display for unavailable round values, such as `—` or `Unavailable`.
 - Keep the caveat explaining the actual data limitation.
 
 ---
 
-### 5. Playoff Round Records
+### Playoff Round Records
 
 Fixture:
 
@@ -419,14 +349,7 @@ Fixture:
 Assessment:
 
 - Looks good overall.
-- The table is strong:
-  - `#`
-  - `Team`
-  - `Round`
-  - `Record`
-  - `Games`
-  - `Win Pct`
-  - `Seasons`
+- The table is strong: `#`, `Team`, `Round`, `Record`, `Games`, `Win Pct`, `Seasons`.
 - Context, caveats, and highlighted metric are clear.
 
 Minor copy/formatting issue:
@@ -435,10 +358,6 @@ Minor copy/formatting issue:
   - `going 10-5 (.667) across 15 games.`
 - Table uses `66.7%`.
 - These are mathematically equivalent, but mixed formatting feels inconsistent.
-
-Priority:
-
-- Low.
 
 Status:
 
@@ -482,3 +401,235 @@ Secondary candidates:
 
 - Standardize playoff round record hero percentage formatting.
 - Consider shorter display for unavailable playoff round values in historical tables.
+
+---
+
+# Batch 3
+
+## Screenshots Reviewed
+
+1. Playoff Matchup History
+2. Comparison Panels
+3. Team Record
+4. Record By Decade
+5. Record By Decade Leaderboard
+
+## Overall Batch Verdict
+
+Batch 3 is visually strong overall. The record-by-decade and matchup/comparison layouts are in good shape. The main issue is a table-density problem in the Team Record shape, where a single-row table is still wide enough to clip at the right edge.
+
+Main issues found:
+
+1. `Team Record` table is too wide and clips the rightmost column at review width.
+2. `Comparison Panels` record mini-card appears to duplicate wording like `win pct pct`.
+3. `Playoff Matchup History` repeats `Round unavailable`, same historical-data watch item as Playoff History.
+
+## Screenshot Notes
+
+### Playoff Matchup History
+
+Fixture:
+
+- Shape: Playoff Matchup History
+- Query: `Heat vs Knicks playoff history`
+- Fixture ID shown: 229
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is strong:
+  - `The Heat lead the Knicks 19-16 in playoff games. Their playoff series record is tied 3-3.`
+- The table columns are useful and readable: `Season`, `Round`, `Winner`, `Series Result`, team records, `Games`.
+- Context and caveats are clear.
+- The `Show postseason summary` button is clearer than a raw-table label.
+
+Watch item:
+
+- `Round unavailable` repeats in several rows.
+- This is acceptable because the caveat explains it, but the repeated text visually weighs down historical tables.
+
+Status:
+
+- `PASS / WATCH ITEM`
+
+Potential future improvement:
+
+- Use a shorter unavailable marker in the row itself while keeping the caveat explanatory.
+
+---
+
+### Comparison Panels
+
+Fixture:
+
+- Shape: Comparison Panels
+- Query: `Jokic vs Embiid recent form`
+- Fixture ID shown: 239
+
+Assessment:
+
+- Looks good overall.
+- The hero sentence directly explains the comparison.
+- Subject cards work well and create a good side-by-side comparison.
+- The metric comparison table is readable.
+- `Show more metrics` is a good control and keeps the default table from being too tall.
+
+Minor issue:
+
+- The Record mini-card appears to display duplicated wording such as:
+  - `100.0% win pct pct`
+- This is likely a small label/suffix formatting issue.
+
+Status:
+
+- `PASS / MINOR LABEL FIX`
+
+Recommended fix:
+
+- Clean up record-card sublabel formatting so it does not duplicate `pct`.
+
+---
+
+### Team Record
+
+Fixture:
+
+- Shape: Team Record
+- Query: `What is the Celtics' record against playoff teams?`
+- Fixture ID shown: 45
+
+Assessment:
+
+- The hero answer is good:
+  - `The Boston Celtics are 6-5 against 2024-25 playoff teams, a 54.5% win rate.`
+- The context block is clear and useful.
+- The table content is useful, but the table is too wide.
+
+Problem:
+
+- The right edge of the single-row table is clipped at review width.
+- The final visible header appears cut off as `ST...` or similar.
+- This makes the result feel less polished even though the result itself is useful.
+
+Possible cause:
+
+- The default visible columns include too many fields for a single-summary record table:
+  - `Team`
+  - `W-L`
+  - `Games`
+  - `Win %`
+  - `PPG`
+  - `+/-`
+  - `REB`
+  - `AST`
+  - `3PM`
+  - `Opponent Group`
+  - likely season/status context at the far right
+
+Status:
+
+- `NEEDS VISUAL FIX`
+
+Recommended fix direction:
+
+- Reduce default visible columns for `Team Record` single-summary tables.
+- Keep trust-critical default columns:
+  - `Team`
+  - `W-L`
+  - `Games`
+  - `Win %`
+  - `PPG`
+  - `+/-`
+  - `Opponent Group`, when the query is opponent-group based
+- Move lower-priority support stats behind `Show additional columns`, likely:
+  - `REB`
+  - `AST`
+  - `3PM`
+  - season/status fields if already present in chips/context
+
+Priority:
+
+- Medium.
+
+---
+
+### Record By Decade
+
+Fixture:
+
+- Shape: Record By Decade
+- Query: `Warriors record by decade`
+- Fixture ID shown: 236
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is clean:
+  - `The Golden State Warriors are 1,176-1,209 (49.3%) in the regular season from 1996-97 to 2025-26.`
+- The decade table is readable and not too dense.
+- The highlighted `Win %` column works well.
+- The `Show record details` button is clearer than a raw-table label.
+
+Status:
+
+- `PASS / NO IMMEDIATE ACTION`
+
+---
+
+### Record By Decade Leaderboard
+
+Fixture:
+
+- Shape: Record By Decade Leaderboard
+- Query: `winningest team of the 2010s`
+- Fixture ID shown: 237
+
+Assessment:
+
+- Looks good overall.
+- The hero answer is direct:
+  - `The San Antonio Spurs won the most games in the 2010s, with 541 wins.`
+- The leaderboard columns are strong and well-balanced:
+  - `#`
+  - `Team`
+  - `Decade`
+  - `Wins`
+  - `W-L`
+  - `Games`
+  - `Win %`
+  - `Seasons`
+  - `Season Type`
+- No obvious clipping at review width.
+- The route-specific leaderboard column work appears to have helped here.
+
+Status:
+
+- `PASS / NO IMMEDIATE ACTION`
+
+## Batch 3 Recommended Follow-Up
+
+### Targeted Visual Fix: Team Record Default Columns
+
+Investigate `RecordResult` / `TeamRecord` table column selection and reduce default visible columns for single-summary team record tables.
+
+Recommended default column set:
+
+- `Team`
+- `W-L`
+- `Games`
+- `Win %`
+- `PPG`
+- `+/-`
+- condition/context column when directly relevant, e.g. `Opponent Group`
+
+Secondary candidates to move behind `Show additional columns`:
+
+- `REB`
+- `AST`
+- `3PM`
+- season/status context already visible in chips/context
+
+### Secondary Polish Items
+
+- Clean up duplicate `pct` wording in Comparison Panels record-card sublabels.
+- Consider shorter unavailable round display for Playoff Matchup History rows.
