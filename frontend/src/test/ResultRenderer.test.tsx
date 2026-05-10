@@ -904,6 +904,77 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("preserves playoff-team opponent groups in team record heroes and tables", () => {
+    const data = makeResponse({
+      query: "What is the Celtics' record against playoff teams?",
+      route: "team_record",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text: "What is the Celtics' record against playoff teams?",
+          route: "team_record",
+          season: "2024-25",
+          season_type: "Playoffs",
+          team_context: {
+            team_id: 1610612738,
+            team_abbr: "BOS",
+            team_name: "Celtics",
+          },
+          applied_filters: [
+            {
+              label: "Opponent quality",
+              value: "playoff teams",
+              kind: "quality",
+            },
+          ],
+        },
+        notes: [],
+        caveats: ["record filtered to games vs 20 opponents (ATL, BOS, CHI, ...)"],
+        sections: {
+          summary: [
+            {
+              team_name: "Boston Celtics",
+              season_start: "2024-25",
+              season_end: "2024-25",
+              season_type: "Playoffs",
+              games: 11,
+              wins: 6,
+              losses: 5,
+              win_pct: 0.545,
+              pts_avg: 105.727,
+              reb_avg: 43.091,
+              ast_avg: 20,
+              fg3m_avg: 14.182,
+              plus_minus_avg: 5.545,
+            },
+          ],
+        },
+        current_through: "2025-06-22",
+      },
+      caveats: ["record filtered to games vs 20 opponents (ATL, BOS, CHI, ...)"],
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Boston Celtics are 6-5 against 2024-25 playoff teams, a 54.5% win rate.",
+      ),
+    ).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Team record" });
+    expect(
+      within(table).getByRole("columnheader", { name: "Opponent Group" }),
+    ).toBeInTheDocument();
+    expect(within(table).getByText("Playoff Teams")).toBeInTheDocument();
+    expect(
+      within(table).queryByRole("columnheader", { name: "Season Type" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/in the 2024-25 playoffs/i),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders multi-season team record by-season tables in the body", () => {
     const data = makeResponse({
       query: "Lakers record since 2024",
@@ -1129,7 +1200,10 @@ describe("ResultRenderer (substrate)", () => {
           ],
         },
         notes: [],
-        caveats: [],
+        caveats: [
+          "matchup history: LAL vs BOS by decade",
+          "across 1996-97 to 2025-26",
+        ],
         sections: {
           summary: [
             {
@@ -1167,11 +1241,14 @@ describe("ResultRenderer (substrate)", () => {
 
     expect(
       screen.getByText(
-        "The Los Angeles Lakers lead the Boston Celtics 31-27 in regular season games.",
+        "The Los Angeles Lakers lead the Boston Celtics 31-27 in regular-season games from 1996-97 through 2025-26.",
       ),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("table", { name: "Matchup by decade" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Games" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "LAL W-L" }),
@@ -2757,15 +2834,17 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByLabelText("Playoff history result")).toBeInTheDocument();
     expect(screen.getAllByText("Los Angeles Lakers").length).toBeGreaterThan(0);
     const history = screen.getByLabelText("Playoff history result");
-    expect(history.textContent).toContain("Los Angeles Lakers have");
+    expect(history.textContent).toContain(
+      "From 2019-20 through 2024-25, the Los Angeles Lakers made the playoffs 5 times and went 52-32.",
+    );
     expect(
-      within(history).getByText("playoff appearances", { exact: false }),
+      within(history).getByText("made the playoffs", { exact: false }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("table", { name: "Playoff season breakdown" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Round" }),
+      screen.getByRole("columnheader", { name: "Round Reached" }),
     ).toBeInTheDocument();
     expect(screen.getByText("First Round")).toBeInTheDocument();
     expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
@@ -2893,7 +2972,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getAllByText("Miami Heat").length).toBeGreaterThan(0);
     expect(
       screen.getByText(
-        "The Boston Celtics lead the Miami Heat 4-3 in their playoff history.",
+        "The Boston Celtics lead the Miami Heat 4-3 in playoff games. The Miami Heat lead 2-0 in playoff series.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -2904,6 +2983,12 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "MIA" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Winner" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Series Result" }),
     ).toBeInTheDocument();
     expect(screen.getByText("MIA won 4-3")).toBeInTheDocument();
     expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
@@ -2998,6 +3083,104 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.queryByText("Full Metric Detail")).not.toBeInTheDocument();
   });
 
+  it("renders recent-form comparisons with compact primary metrics and safe differences", () => {
+    const data = makeResponse({
+      query: "Jokic vs Embiid recent form",
+      route: "player_compare",
+      result: {
+        query_class: "comparison",
+        result_status: "ok",
+        metadata: {
+          query_text: "Jokic vs Embiid recent form",
+          route: "player_compare",
+          season: "2025-26",
+          season_type: "Regular Season",
+          applied_filters: [
+            { label: "Last N games", value: "10", kind: "window" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokić",
+              games: 10,
+              wins: 10,
+              losses: 0,
+              win_pct: 1,
+              minutes_avg: 35.2,
+              pts_avg: 25.3,
+              reb_avg: 14.5,
+              ast_avg: 11.9,
+              stl_avg: 1.2,
+              blk_avg: 0.7,
+              tov_avg: 3,
+              plus_minus_avg: 11,
+              efg_pct_avg: 0.589,
+              ts_pct_avg: 0.637,
+            },
+            {
+              player_name: "Joel Embiid",
+              games: 10,
+              wins: 7,
+              losses: 3,
+              win_pct: 0.7,
+              minutes_avg: 33.2,
+              pts_avg: 28.8,
+              reb_avg: 8.2,
+              ast_avg: 4.2,
+              stl_avg: 0.3,
+              blk_avg: 1.5,
+              tov_avg: 2.3,
+              plus_minus_avg: 2.6,
+              efg_pct_avg: 0.545,
+              ts_pct_avg: 0.623,
+            },
+          ],
+          comparison: [
+            { metric: "games", "Nikola Jokić": 10, "Joel Embiid": 10 },
+            { metric: "wins", "Nikola Jokić": 10, "Joel Embiid": 7 },
+            { metric: "losses", "Nikola Jokić": 0, "Joel Embiid": 3 },
+            { metric: "win_pct", "Nikola Jokić": 1, "Joel Embiid": 0.7 },
+            { metric: "minutes_avg", "Nikola Jokić": 35.2, "Joel Embiid": 33.2 },
+            { metric: "pts_avg", "Nikola Jokić": 25.3, "Joel Embiid": 28.8 },
+            { metric: "reb_avg", "Nikola Jokić": 14.5, "Joel Embiid": 8.2 },
+            { metric: "ast_avg", "Nikola Jokić": 11.9, "Joel Embiid": 4.2 },
+            { metric: "stl_avg", "Nikola Jokić": 1.2, "Joel Embiid": 0.3 },
+            { metric: "blk_avg", "Nikola Jokić": 0.7, "Joel Embiid": 1.5 },
+            { metric: "tov_avg", "Nikola Jokić": 3, "Joel Embiid": 2.3 },
+            { metric: "plus_minus_avg", "Nikola Jokić": 11, "Joel Embiid": 2.6 },
+            { metric: "efg_pct_avg", "Nikola Jokić": 0.589, "Joel Embiid": 0.545 },
+            { metric: "ts_pct_avg", "Nikola Jokić": 0.637, "Joel Embiid": 0.623 },
+            { metric: "usg_pct_avg", "Nikola Jokić": 28.2, "Joel Embiid": 33.1 },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Over their last 10 games, Nikola Jokić has averaged 25.3 points, 14.5 rebounds and 11.9 assists, while Joel Embiid has averaged 28.8 points, 8.2 rebounds and 4.2 assists.",
+      ),
+    ).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Comparison metrics" });
+    expect(within(table).getByText("Record")).toBeInTheDocument();
+    expect(within(table).queryByText("USG% Avg")).not.toBeInTheDocument();
+    expect(screen.getByText("Difference 2.0 MIN")).toBeInTheDocument();
+    expect(screen.queryByText("Nikola Jokić +3 losses")).not.toBeInTheDocument();
+    const showMore = screen.getByRole("button", { name: "Show more metrics" });
+    fireEvent.click(showMore);
+    expect(screen.getByText("USG% Avg")).toBeInTheDocument();
+    expect(screen.getByText("Nikola Jokić 3 fewer losses")).toBeInTheDocument();
+    expect(
+      screen.getByText("Nikola Jokić +30.0 percentage points"),
+    ).toBeInTheDocument();
+  });
+
   it("renders team comparisons with team identity and metric deltas", () => {
     const data = makeResponse({
       query: "Celtics vs Lakers",
@@ -3069,7 +3252,10 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "LAL" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText("BOS +13 Wins").length).toBeGreaterThan(0);
+    expect(screen.getByText("Boston Celtics +13 wins")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Show more metrics" }),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Team Summary Detail")).not.toBeInTheDocument();
     expect(screen.queryByText("Full Metric Detail")).not.toBeInTheDocument();
   });

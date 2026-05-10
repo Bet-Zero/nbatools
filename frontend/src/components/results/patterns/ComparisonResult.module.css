@@ -25,8 +25,8 @@
   min-width: 0;
   max-width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-2);
 }
 
 .subjectCard {
@@ -34,26 +34,71 @@
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
 }
 
 .subjectHeader {
   min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .statGrid {
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(6.25rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr));
   gap: var(--space-2);
+  margin: 0;
 }
 
 .statChip {
   min-width: 0;
+  display: grid;
+  gap: 0.125rem;
+  padding: var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+}
+
+.statChip dt {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+}
+
+.statChip dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+}
+
+.statChip span {
+  color: var(--text-secondary);
+  font-size: var(--font-micro);
+}
+
+.stat-success dd {
+  color: var(--success);
+}
+
+.stat-danger dd {
+  color: var(--danger);
+}
+
+.stat-accent dd {
+  color: var(--accent);
+}
+
+.showMoreButton {
+  align-self: flex-start;
 }
 
 @media (max-width: 560px) {

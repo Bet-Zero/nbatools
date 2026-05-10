@@ -41,13 +41,20 @@ const TEAM_RECORD_STATS = [
   "games",
   "win_pct",
   "pts_avg",
-  "opponent_pts_avg",
   "plus_minus_avg",
-  "net_rating",
   "reb_avg",
   "ast_avg",
   "fg3m_avg",
-  "season_type",
+];
+
+const TEAM_RECORD_OPTIONAL_STATS = [
+  "opponent_pts_avg",
+  "net_rating",
+  "stl_avg",
+  "blk_avg",
+  "tov_avg",
+  "efg_pct_avg",
+  "ts_pct_avg",
 ];
 
 const TEAM_RECORD_BY_SEASON_STATS = [
@@ -94,7 +101,7 @@ const RECORD_LABELS: Record<string, string> = {
   plus_minus_avg: "+/-",
   pts_avg: "PPG",
   reb_avg: "REB",
-  season_type: "Type",
+  season_type: "Season Type",
   seasons: "Seasons",
   seasons_appeared: "Seasons",
   ts_pct_avg: "TS%",
@@ -125,7 +132,12 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
   const team = teamDisplay(data.result?.metadata, row);
   const opponent = opponentDisplay(data.result?.metadata);
   const showBySeason = shouldShowBySeason(data.result?.metadata, bySeasonRows);
-  const summaryColumns = teamRecordColumns(team, opponent, summary);
+  const summaryColumns = teamRecordColumns(
+    team,
+    opponent,
+    summary,
+    data.result?.metadata,
+  );
   const bySeasonColumns = teamRecordBySeasonColumns(bySeasonRows);
   const hasSummaryDetail = rowsHaveAdditionalDetailFields(
     summary,
@@ -279,7 +291,13 @@ function teamRecordColumns(
   team: TeamDisplay,
   opponent: TeamDisplay | null,
   rows: SectionRow[],
+  metadata: ResultMetadata | undefined,
 ): Array<ResultTableColumn<SectionRow>> {
+  const row = rows[0];
+  const opponentGroup = opponentGroupLabel(metadata);
+  const season = teamRecordSeasonLabel(row, metadata);
+  const seasonType = teamRecordSeasonTypeLabel(row, metadata, opponentGroup);
+  const location = locationFilterLabel(metadata);
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "team",
@@ -290,6 +308,56 @@ function teamRecordColumns(
       ),
     },
   ];
+
+  columns.push({
+    key: "record",
+    sourceKeys: ["wins", "losses"],
+    header: "W-L",
+    align: "center",
+    render: (row) => recordText(row),
+  });
+
+  for (const key of TEAM_RECORD_STATS) {
+    if (rows.some((row) => hasValue(row[key]))) {
+      columns.push(valueColumn(key));
+    }
+  }
+
+  if (seasonType) {
+    columns.push({
+      key: "season_type",
+      sourceKeys: ["season_type"],
+      header: "Season Type",
+      render: () => seasonType,
+    });
+  }
+
+  if (opponentGroup) {
+    columns.push({
+      key: "opponent_group",
+      sourceKeys: ["opponent_quality", "season_type"],
+      header: "Opponent Group",
+      render: () => opponentGroup,
+    });
+  }
+
+  if (season) {
+    columns.push({
+      key: "season",
+      sourceKeys: ["season", "season_start", "season_end"],
+      header: "Season",
+      render: () => season,
+    });
+  }
+
+  if (location) {
+    columns.push({
+      key: "location",
+      sourceKeys: ["home_only", "away_only"],
+      header: "Home/Away",
+      render: () => location,
+    });
+  }
 
   if (opponent) {
     columns.push({
@@ -302,15 +370,7 @@ function teamRecordColumns(
     });
   }
 
-  columns.push({
-    key: "record",
-    sourceKeys: ["wins", "losses"],
-    header: "W-L",
-    align: "center",
-    render: (row) => recordText(row),
-  });
-
-  for (const key of TEAM_RECORD_STATS) {
+  for (const key of TEAM_RECORD_OPTIONAL_STATS) {
     if (rows.some((row) => hasValue(row[key]))) {
       columns.push(valueColumn(key));
     }
@@ -423,6 +483,20 @@ function matchupColumns(
   const [first, second] = matchupPrefixes(rows, teams);
   const columns: Array<ResultTableColumn<SectionRow>> = [valueColumn("decade")];
 
+  columns.push({
+    key: "games",
+    sourceKeys: [
+      "games",
+      `${first}_wins`,
+      `${first}_losses`,
+      `${second}_wins`,
+      `${second}_losses`,
+    ],
+    header: "Games",
+    numeric: true,
+    render: (row) => matchupGames(row, first, second) ?? "—",
+  });
+
   for (const prefix of [first, second]) {
     columns.push({
       key: `${prefix}_record`,
@@ -491,8 +565,18 @@ function teamRecordSentence(
   row: SectionRow,
   data: QueryResponse,
 ): string {
-  const context = recordContext(row, data.result?.metadata, data.query);
-  const opponentPhrase = opponent ? ` against the ${opponent.name}` : "";
+  const metadata = data.result?.metadata;
+  const opponentGroup = opponentGroupLabel(metadata);
+  const opponentPhrase = teamRecordOpponentPhrase(
+    opponent,
+    opponentGroup,
+    row,
+    metadata,
+  );
+  const context = recordContext(row, metadata, data.query, {
+    suppressSeason: Boolean(opponentGroup && /playoff teams/i.test(opponentGroup)),
+    suppressSeasonType: Boolean(opponentGroup),
+  });
   const record = recordText(row);
   const winPct = hasValue(row.win_pct)
     ? `, a ${formatProseValue(row.win_pct, "win_pct")} win rate`
@@ -563,7 +647,7 @@ function matchupByDecadeSentence(
   const record = firstRow ? recordText(firstRow) : null;
   const wins = firstRow ? numericValue(firstRow, "wins") : null;
   const losses = firstRow ? numericValue(firstRow, "losses") : null;
-  const context = matchupContext(data.result?.metadata);
+  const context = matchupContext(data.result?.metadata, data);
 
   if (record && wins !== null && losses !== null) {
     if (wins > losses) {
@@ -624,32 +708,41 @@ function recordContext(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
   query: string,
+  options: { suppressSeason?: boolean; suppressSeasonType?: boolean } = {},
 ): string {
-  if (/\bthis season\b/i.test(query)) return " this season";
+  if (!options.suppressSeason && /\bthis season\b/i.test(query)) {
+    return " this season";
+  }
 
   const season = metadataText(metadata, "season");
-  const seasonType =
-    textValue(row, "season_type") ?? metadataText(metadata, "season_type");
-  if (season) {
+  const seasonType = options.suppressSeasonType
+    ? null
+    : textValue(row, "season_type") ?? metadataText(metadata, "season_type");
+  if (season && !options.suppressSeason) {
     return ` in the ${season}${seasonType ? ` ${seasonType.toLowerCase()}` : ""}`;
   }
 
-  return recordRangeContext(row, metadata);
+  return recordRangeContext(row, metadata, options);
 }
 
 function recordRangeContext(
   row: SectionRow,
   metadata: ResultMetadata | undefined,
+  options: { suppressSeason?: boolean; suppressSeasonType?: boolean } = {},
 ): string {
   const start =
     textValue(row, "season_start") ?? metadataText(metadata, "start_season");
   const end =
     textValue(row, "season_end") ?? metadataText(metadata, "end_season");
-  const seasonType =
-    textValue(row, "season_type") ?? metadataText(metadata, "season_type");
+  const seasonType = options.suppressSeasonType
+    ? null
+    : textValue(row, "season_type") ?? metadataText(metadata, "season_type");
   const singleSeasonSuffix = seasonType ? ` ${seasonType.toLowerCase()}` : "";
   const rangeSuffix = seasonType ? ` in the ${seasonType.toLowerCase()}` : "";
 
+  if (options.suppressSeason) {
+    return seasonType ? ` in the ${seasonType.toLowerCase()}` : "";
+  }
   if (start && end) {
     return start === end
       ? ` in the ${start}${singleSeasonSuffix}`
@@ -682,9 +775,16 @@ function recordByDecadeContext(
   return typePrefix;
 }
 
-function matchupContext(metadata: ResultMetadata | undefined): string {
+function matchupContext(
+  metadata: ResultMetadata | undefined,
+  data: QueryResponse,
+): string {
   const seasonType = metadataText(metadata, "season_type");
-  return seasonType ? ` in ${seasonType.toLowerCase()} games` : "";
+  const gameType = seasonType
+    ? ` in ${seasonType.toLowerCase().replace("regular season", "regular-season")} games`
+    : "";
+  const range = rangeFromMetadataOrNotices(metadata, data);
+  return `${gameType}${range ? ` from ${range.start} through ${range.end}` : ""}`;
 }
 
 function sinceContext(query: string): string {
@@ -750,6 +850,78 @@ function opponentDisplay(
     abbr: context.team_abbr,
     name: context.team_name,
   };
+}
+
+function teamRecordOpponentPhrase(
+  opponent: TeamDisplay | null,
+  opponentGroup: string | null,
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+): string {
+  if (opponentGroup) {
+    const season = teamRecordSeasonLabel(row, metadata);
+    if (/^playoff teams$/i.test(opponentGroup) && season) {
+      return ` against ${season} playoff teams`;
+    }
+    return ` against ${opponentGroup.toLowerCase()}`;
+  }
+  return opponent ? ` against the ${opponent.name}` : "";
+}
+
+function opponentGroupLabel(metadata: ResultMetadata | undefined): string | null {
+  const quality = appliedFilterValue(metadata, "Opponent quality");
+  if (!quality) return null;
+  return quality
+    .replace(/\bplayoff teams\b/i, "Playoff Teams")
+    .replace(/\bgood teams\b/i, "Good Teams")
+    .replace(/\btop teams\b/i, "Top Teams")
+    .replace(/\bcontenders\b/i, "Contenders")
+    .replace(/\bteams over \.500\b/i, "Winning Teams")
+    .replace(/\bwinning teams\b/i, "Winning Teams")
+    .replace(/\btop-10 defenses\b/i, "Top-10 Defenses");
+}
+
+function teamRecordSeasonLabel(
+  row: SectionRow | undefined,
+  metadata: ResultMetadata | undefined,
+): string | null {
+  const direct = textValue(row, "season") ?? metadataText(metadata, "season");
+  if (direct) return direct;
+  const start =
+    textValue(row, "season_start") ?? metadataText(metadata, "start_season");
+  const end =
+    textValue(row, "season_end") ?? metadataText(metadata, "end_season");
+  if (start && end) return start === end ? start : `${start} to ${end}`;
+  return start ?? end;
+}
+
+function teamRecordSeasonTypeLabel(
+  row: SectionRow | undefined,
+  metadata: ResultMetadata | undefined,
+  opponentGroup: string | null,
+): string | null {
+  const value = textValue(row, "season_type") ?? metadataText(metadata, "season_type");
+  if (!value) return null;
+  if (/^playoff teams$/i.test(opponentGroup ?? "") && value === "Playoffs") {
+    return null;
+  }
+  return value;
+}
+
+function locationFilterLabel(metadata: ResultMetadata | undefined): string | null {
+  return appliedFilterValue(metadata, "Location");
+}
+
+function appliedFilterValue(
+  metadata: ResultMetadata | undefined,
+  label: string,
+): string | null {
+  const filters = metadata?.applied_filters;
+  if (!Array.isArray(filters)) return null;
+  const match = filters.find(
+    (filter) => filter.label.toLowerCase() === label.toLowerCase(),
+  );
+  return match?.value ?? null;
 }
 
 function matchupTeams(
@@ -818,6 +990,43 @@ function prefixedRecordText(row: SectionRow, prefix: string): string | null {
   const losses = row[`${prefix}_losses`];
   if (!hasValue(wins) || !hasValue(losses)) return null;
   return `${formatValue(wins, "wins")}-${formatValue(losses, "losses")}`;
+}
+
+function matchupGames(
+  row: SectionRow,
+  firstPrefix: string,
+  secondPrefix: string,
+): number | string | null {
+  if (hasValue(row.games)) return formatValue(row.games, "games");
+  const firstWins = numericValue(row, `${firstPrefix}_wins`);
+  const firstLosses = numericValue(row, `${firstPrefix}_losses`);
+  if (firstWins !== null && firstLosses !== null) {
+    return firstWins + firstLosses;
+  }
+  const secondWins = numericValue(row, `${secondPrefix}_wins`);
+  const secondLosses = numericValue(row, `${secondPrefix}_losses`);
+  if (secondWins !== null && secondLosses !== null) {
+    return secondWins + secondLosses;
+  }
+  return null;
+}
+
+function rangeFromMetadataOrNotices(
+  metadata: ResultMetadata | undefined,
+  data: QueryResponse,
+): { start: string; end: string } | null {
+  const start = metadataText(metadata, "start_season");
+  const end = metadataText(metadata, "end_season");
+  if (start && end) return { start, end };
+
+  const noticeText = [
+    ...data.caveats,
+    ...data.notes,
+    ...(data.result?.caveats ?? []),
+    ...(data.result?.notes ?? []),
+  ].join(" ");
+  const match = noticeText.match(/\bacross\s+([0-9]{4}-[0-9]{2})\s+to\s+([0-9]{4}-[0-9]{2})\b/i);
+  return match ? { start: match[1], end: match[2] } : null;
 }
 
 function teamNameFromRow(row: SectionRow): string {

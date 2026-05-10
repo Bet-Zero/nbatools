@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type {
   QueryResponse,
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
-import { Badge, Card, Stat, type StatSemantic } from "../../../design-system";
+import { Badge, Button, type StatSemantic } from "../../../design-system";
 import {
   formatColHeader,
   formatLongDateRange,
@@ -47,7 +47,53 @@ type LeaderInfo =
   | { type: "leader"; column: string; delta: number; metric: string }
   | { type: "tie" };
 
-const LOWER_IS_BETTER = new Set(["losses", "tov_avg"]);
+type MetricDirection = "higher" | "lower" | "neutral";
+
+const METRIC_DIRECTIONS: Record<string, MetricDirection> = {
+  ast_avg: "higher",
+  ast_pct_avg: "higher",
+  ast_sum: "higher",
+  blk_avg: "higher",
+  efg_pct_avg: "higher",
+  fg3m_avg: "higher",
+  fg3_pct_avg: "higher",
+  ft_pct_avg: "higher",
+  games: "neutral",
+  losses: "lower",
+  minutes_avg: "neutral",
+  plus_minus_avg: "higher",
+  pts_avg: "higher",
+  pts_sum: "higher",
+  reb_avg: "higher",
+  reb_pct_avg: "higher",
+  reb_sum: "higher",
+  stl_avg: "higher",
+  tov_avg: "lower",
+  ts_pct_avg: "higher",
+  usg_pct_avg: "neutral",
+  win_pct: "higher",
+  wins: "higher",
+};
+
+const PRIMARY_COMPARISON_METRICS = [
+  "games",
+  "record",
+  "pts_avg",
+  "reb_avg",
+  "ast_avg",
+  "minutes_avg",
+  "fg_pct_avg",
+  "fg3_pct_avg",
+  "ft_pct_avg",
+  "stl_avg",
+  "blk_avg",
+  "tov_avg",
+  "plus_minus_avg",
+  "ts_pct_avg",
+  "efg_pct_avg",
+];
+
+const PRIMARY_METRIC_LIMIT = 12;
 
 const METRIC_LABEL_OVERRIDES: Record<string, string> = {
   ast_avg: "AST Avg",
@@ -55,7 +101,10 @@ const METRIC_LABEL_OVERRIDES: Record<string, string> = {
   ast_sum: "AST Total",
   blk_avg: "BLK Avg",
   efg_pct_avg: "eFG% Avg",
+  fg_pct_avg: "FG% Avg",
   fg3m_avg: "3PM Avg",
+  fg3_pct_avg: "3P% Avg",
+  ft_pct_avg: "FT% Avg",
   losses: "Losses",
   minutes_avg: "MIN Avg",
   plus_minus_avg: "+/- Avg",
@@ -64,6 +113,7 @@ const METRIC_LABEL_OVERRIDES: Record<string, string> = {
   reb_avg: "REB Avg",
   reb_pct_avg: "REB% Avg",
   reb_sum: "REB Total",
+  record: "Record",
   stl_avg: "STL Avg",
   tov_avg: "TOV Avg",
   ts_pct_avg: "TS% Avg",
@@ -77,7 +127,11 @@ const EDGE_LABEL_OVERRIDES: Record<string, string> = {
   ast_sum: "AST",
   blk_avg: "BLK",
   efg_pct_avg: "eFG%",
+  fg_pct_avg: "FG%",
   fg3m_avg: "3PM",
+  fg3_pct_avg: "3P%",
+  ft_pct_avg: "FT%",
+  games: "games",
   losses: "losses",
   minutes_avg: "MIN",
   plus_minus_avg: "+/-",
@@ -112,13 +166,22 @@ const STAT_CANDIDATES: Array<{
 export default function ComparisonResult({ data, subject, headToHead }: Props) {
   const sections = data.result?.sections ?? {};
   const summary = sections.summary ?? [];
-  const comparison = sections.comparison ?? [];
+  const comparison = comparisonDisplayRows(summary, sections.comparison ?? []);
   const kind = subject ?? subjectKind(data);
   const isHeadToHead = headToHead ?? isHeadToHeadResult(data);
   const entities = summary.map((row, index) =>
     entityDisplay(kind, data.result?.metadata, row, index),
   );
-  const comparisonColumns = metricColumns(comparison);
+  const primaryComparison = primaryMetricRows(comparison);
+  const secondaryComparison = comparison.filter(
+    (row) => !primaryComparison.includes(row),
+  );
+  const [showMoreMetrics, setShowMoreMetrics] = useState(false);
+  const visibleComparison =
+    showMoreMetrics || secondaryComparison.length === 0
+      ? [...primaryComparison, ...secondaryComparison]
+      : primaryComparison;
+  const comparisonColumns = metricColumns(visibleComparison, entities);
   const teamAccentAbbr =
     kind === "team" && entities.length === 1 ? entities[0]?.teamAbbr : null;
 
@@ -142,7 +205,6 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
           {summary.map((row, index) => (
             <SubjectPanel
               entity={entities[index]}
-              index={index}
               key={subjectKey(entities[index], index)}
               row={row}
             />
@@ -150,12 +212,25 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
         </div>
       )}
       {comparison.length > 0 && (
-        <ResultTable
-          rows={comparison}
-          columns={comparisonColumns}
-          ariaLabel="Comparison metrics"
-          getRowKey={metricRowKey}
-        />
+        <>
+          <ResultTable
+            rows={visibleComparison}
+            columns={comparisonColumns}
+            ariaLabel="Comparison metrics"
+            getRowKey={metricRowKey}
+          />
+          {secondaryComparison.length > 0 && (
+            <Button
+              type="button"
+              className={styles.showMoreButton}
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowMoreMetrics((current) => !current)}
+            >
+              {showMoreMetrics ? "Show fewer metrics" : "Show more metrics"}
+            </Button>
+          )}
+        </>
       )}
       {detailToggles(sections, kind, isHeadToHead, {
         summary: subjectPanelSourceKeys(summary, kind),
@@ -167,38 +242,36 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
 
 function SubjectPanel({
   entity,
-  index,
   row,
 }: {
   entity: EntityDisplay;
-  index: number;
   row: SectionRow;
 }) {
   const stats = subjectStats(row);
 
   return (
-    <Card as="article" className={styles.subjectCard} depth="card" padding="sm">
+    <article className={styles.subjectCard}>
       <div className={styles.subjectHeader}>
         {entityIdentity(entity)}
-        <Badge variant="neutral" size="sm" uppercase>
-          {entity.kind === "player" ? "Player" : "Team"} {index + 1}
-        </Badge>
       </div>
       {stats.length > 0 && (
-        <div className={styles.statGrid} aria-label={`${entity.name} stats`}>
+        <dl className={styles.statGrid} aria-label={`${entity.name} stats`}>
           {stats.map((stat) => (
-            <Stat
-              className={styles.statChip}
+            <div
+              className={[
+                styles.statChip,
+                stat.semantic ? styles[`stat-${stat.semantic}`] : "",
+              ].join(" ")}
               key={stat.label}
-              label={stat.label}
-              value={stat.value}
-              context={stat.context}
-              semantic={stat.semantic ?? "neutral"}
-            />
+            >
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+              {stat.context && <span>{stat.context}</span>}
+            </div>
           ))}
-        </div>
+        </dl>
       )}
-    </Card>
+    </article>
   );
 }
 
@@ -228,6 +301,9 @@ function heroSentence(
   const first = entities[0]?.name ?? "Subject 1";
   const second = entities[1]?.name ?? "Subject 2";
   const summary = data.result?.sections?.summary ?? [];
+
+  const recentSentence = recentFormSentence(data, entities, summary);
+  if (recentSentence && !headToHead) return recentSentence;
 
   if (headToHead && summary.length >= 2) {
     const firstWins = numericValue(summary[0], "wins");
@@ -306,6 +382,49 @@ function comparisonWinsSentence(
   );
 }
 
+function recentFormSentence(
+  data: QueryResponse,
+  entities: EntityDisplay[],
+  summary: SectionRow[],
+): string | null {
+  if (entities.length < 2 || summary.length < 2) return null;
+  if (!isRecentFormQuery(data)) return null;
+
+  const firstStats = pointsReboundsAssists(summary[0]);
+  const secondStats = pointsReboundsAssists(summary[1]);
+  if (!firstStats || !secondStats) return null;
+
+  const context = comparisonContextPhrase(data.result?.metadata, data.query);
+  const prefix = context?.startsWith("over ")
+    ? `${capitalize(context)}, `
+    : context
+      ? `In ${context.replace(/^in\s+/i, "")}, `
+      : "";
+
+  return `${prefix}${entities[0].name} has averaged ${firstStats}, while ${entities[1].name} has averaged ${secondStats}.`;
+}
+
+function pointsReboundsAssists(row: SectionRow): string | null {
+  const pts = numericValue(row, "pts_avg");
+  const reb = numericValue(row, "reb_avg");
+  const ast = numericValue(row, "ast_avg");
+  if (pts === null && reb === null && ast === null) return null;
+  return [
+    pts !== null ? `${formatProseValue(pts, "pts_avg")} points` : null,
+    reb !== null ? `${formatProseValue(reb, "reb_avg")} rebounds` : null,
+    ast !== null ? `${formatProseValue(ast, "ast_avg")} assists` : null,
+  ]
+    .filter(Boolean)
+    .join(", ")
+    .replace(/, ([^,]*)$/, " and $1");
+}
+
+function isRecentFormQuery(data: QueryResponse): boolean {
+  const query = `${data.query ?? ""} ${data.result?.metadata?.query_text ?? ""}`;
+  if (/\b(recent form|last\s+\d+|past\s+\d+)\b/i.test(query)) return true;
+  return lastNWindow(data.query, data.result?.metadata) !== null;
+}
+
 function edgeSentence(
   data: QueryResponse,
   entities: EntityDisplay[],
@@ -320,9 +439,13 @@ function edgeSentence(
   const delta = formatProseValue(leader.delta, leader.metric);
   const metric = proseMetricLabel(leader.metric);
   const context = comparisonContextPhrase(data.result?.metadata, data.query);
-  const base = LOWER_IS_BETTER.has(leader.metric)
-    ? `${subject} has ${delta} fewer ${metric} than ${other}`
-    : `${subject} leads ${other} by ${delta} ${metric}`;
+  const direction = metricDirection(leader.metric);
+  const base =
+    direction === "lower"
+      ? `${subject} has ${delta} fewer ${metric} than ${other}`
+      : direction === "neutral"
+        ? `${subject} differs from ${other} by ${delta} ${metric}`
+        : `${subject} leads ${other} by ${delta} ${metric}`;
   return withComparisonContext(base, context);
 }
 
@@ -342,7 +465,7 @@ function comparisonContextPhrase(
   query: string,
 ): string | null {
   const lastN = lastNWindow(query, metadata);
-  if (lastN) return `over their last ${lastN} games each`;
+  if (lastN) return `over their last ${lastN} games`;
 
   const season = seasonLabel(metadata);
   const seasonType = metadataText(metadata, "season_type");
@@ -361,6 +484,15 @@ function lastNWindow(
   const windowSize = metadata?.window_size;
   if (typeof windowSize === "number" && Number.isFinite(windowSize)) {
     return windowSize;
+  }
+  const filterWindow = metadata?.applied_filters?.find(
+    (filter) =>
+      filter.kind === "window" ||
+      filter.label.trim().toLowerCase() === "last n games",
+  );
+  if (filterWindow) {
+    const value = Number(filterWindow.value);
+    if (Number.isFinite(value)) return value;
   }
   const queryText = `${query} ${metadata?.query_text ?? ""}`;
   const match = queryText.match(/\blast\s+(\d+)\s*(?:games?|gms?)?\b/i);
@@ -427,6 +559,7 @@ function proseMetricLabel(metric: string): string {
     pts_sum: "points",
     reb_avg: "rebounds per game",
     reb_sum: "rebounds",
+    record: "record",
     stl_avg: "steals per game",
     tov_avg: "turnovers per game",
     ts_pct_avg: "true-shooting percentage",
@@ -442,6 +575,7 @@ function capitalize(value: string): string {
 
 function metricColumns(
   rows: SectionRow[],
+  entities: EntityDisplay[],
 ): Array<ResultTableColumn<SectionRow>> {
   const valueColumns = allMetricValueColumns(rows);
   const columns: Array<ResultTableColumn<SectionRow>> = [
@@ -465,15 +599,71 @@ function metricColumns(
 
   columns.push({
     key: "edge",
-    header: "Edge",
+    header: "Edge / Difference",
     render: (row) => {
+      const explicit = textValue(row, "__edge_label");
+      if (explicit) return explicit;
       const leader = leaderInfo(row, valueColumns);
       if (leader?.type === "tie") return "Tie";
-      return leader?.type === "leader" ? edgeLabel(leader) : "-";
+      return leader?.type === "leader" ? edgeLabel(leader, entities) : "-";
     },
   });
 
   return columns;
+}
+
+function comparisonDisplayRows(
+  summary: SectionRow[],
+  comparison: SectionRow[],
+): SectionRow[] {
+  const rows = [...comparison];
+  const record = comparisonRecordRow(summary);
+  if (record && !rows.some((row) => metricKey(row) === "record")) {
+    const insertAt = rows.findIndex((row) => metricKey(row) === "wins");
+    rows.splice(insertAt >= 0 ? insertAt : 1, 0, record);
+  }
+  return rows;
+}
+
+function comparisonRecordRow(summary: SectionRow[]): SectionRow | null {
+  if (summary.length < 2) return null;
+  const firstName = textValue(summary[0], "player_name") ?? textValue(summary[0], "team_name");
+  const secondName = textValue(summary[1], "player_name") ?? textValue(summary[1], "team_name");
+  if (!firstName || !secondName) return null;
+  const firstRecord = recordText(summary[0]);
+  const secondRecord = recordText(summary[1]);
+  if (!firstRecord || !secondRecord) return null;
+
+  return {
+    metric: "record",
+    [firstName]: firstRecord,
+    [secondName]: secondRecord,
+    __edge_label: recordEdgeLabel(summary, firstName, secondName),
+  };
+}
+
+function recordEdgeLabel(
+  summary: SectionRow[],
+  firstName: string,
+  secondName: string,
+): string {
+  const firstWins = numericValue(summary[0], "wins");
+  const secondWins = numericValue(summary[1], "wins");
+  if (firstWins === null || secondWins === null) return "-";
+  if (Math.abs(firstWins - secondWins) < 1e-9) return "Tie";
+  const leader = firstWins > secondWins ? firstName : secondName;
+  return `${leader} +${formatValue(Math.abs(firstWins - secondWins), "wins")} wins`;
+}
+
+function primaryMetricRows(rows: SectionRow[]): SectionRow[] {
+  const primary: SectionRow[] = [];
+  for (const metric of PRIMARY_COMPARISON_METRICS) {
+    const row = rows.find((candidate) => metricKey(candidate) === metric);
+    if (row) primary.push(row);
+    if (primary.length >= PRIMARY_METRIC_LIMIT) break;
+  }
+  if (primary.length === 0) return rows.slice(0, PRIMARY_METRIC_LIMIT);
+  return primary;
 }
 
 function detailToggles(
@@ -547,7 +737,7 @@ function subjectStats(row: SectionRow): StatChip[] {
     });
   }
 
-  return stats.slice(0, 8);
+  return stats.slice(0, 5);
 }
 
 function subjectPanelSourceKeys(
@@ -583,7 +773,7 @@ function visibleSubjectStatKeys(row: SectionRow): string[] {
   for (const candidate of STAT_CANDIDATES) {
     if (candidate.key === "games" && record) continue;
     if (numericValue(row, candidate.key) === null) continue;
-    if (visibleCount >= 8) break;
+    if (visibleCount >= 5) break;
     keys.push(candidate.key);
     visibleCount += 1;
   }
@@ -757,7 +947,9 @@ function allMetricValueColumns(rows: SectionRow[]): string[] {
 }
 
 function comparisonValueColumns(row: SectionRow): string[] {
-  return Object.keys(row).filter((key) => key !== "metric");
+  return Object.keys(row).filter(
+    (key) => key !== "metric" && !key.startsWith("__"),
+  );
 }
 
 function leaderInfo(row: SectionRow, columns: string[]): LeaderInfo | null {
@@ -771,7 +963,9 @@ function leaderInfo(row: SectionRow, columns: string[]): LeaderInfo | null {
   if (values.length < 2) return null;
 
   const sorted = [...values].sort((a, b) =>
-    LOWER_IS_BETTER.has(metric) ? a.value - b.value : b.value - a.value,
+    metricDirection(metric) === "lower"
+      ? a.value - b.value
+      : b.value - a.value,
   );
   const [first, second] = sorted;
   if (Math.abs(first.value - second.value) < 1e-9) return { type: "tie" };
@@ -784,18 +978,62 @@ function leaderInfo(row: SectionRow, columns: string[]): LeaderInfo | null {
   };
 }
 
-function edgeLabel(leader: Extract<LeaderInfo, { type: "leader" }>): string {
-  return `${leader.column} +${formatEdgeDelta(leader.delta, leader.metric)} ${edgeMetricLabel(
-    leader.metric,
-  )}`;
+function edgeLabel(
+  leader: Extract<LeaderInfo, { type: "leader" }>,
+  entities: EntityDisplay[],
+): string {
+  const subject = entityLabel(entityFromColumn(leader.column, entities));
+  const delta = formatEdgeDelta(leader.delta, leader.metric);
+  const metric = edgeMetricLabel(leader.metric);
+  const direction = metricDirection(leader.metric);
+  if (direction === "lower") {
+    return `${subject} ${delta} fewer ${metric}`;
+  }
+  if (direction === "neutral") {
+    return `Difference ${delta} ${metric}`;
+  }
+  if (isPercentagePointMetric(leader.metric)) {
+    return `${subject} +${delta}`;
+  }
+  return `${subject} +${delta} ${metric}`;
 }
 
 function formatEdgeDelta(delta: number, metric: string): string {
+  if (isPercentagePointMetric(metric)) {
+    const points = delta >= 0 && delta <= 1 ? delta * 100 : delta;
+    return `${points.toFixed(1)} percentage points`;
+  }
   return formatValue(delta, metric);
 }
 
 function metricValue(row: SectionRow, key: string): ReactNode {
-  return hasValue(row[key]) ? formatValue(row[key], metricKey(row)) : "-";
+  return hasValue(row[key])
+    ? formatComparisonMetricValue(row[key], metricKey(row))
+    : "-";
+}
+
+function metricDirection(metric: string): MetricDirection {
+  return METRIC_DIRECTIONS[metric] ?? "higher";
+}
+
+function isPercentagePointMetric(metric: string): boolean {
+  return metric === "win_pct" || metric.endsWith("_pct_avg");
+}
+
+function formatComparisonMetricValue(value: unknown, metric: string): string {
+  if (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    isPercentagePointMetric(metric) &&
+    value > 1
+  ) {
+    return `${value.toFixed(1)}%`;
+  }
+  return formatValue(value, metric);
+}
+
+function entityLabel(entity: EntityDisplay | string): string {
+  return typeof entity === "string" ? entity : entity.name;
 }
 
 function signedValue(value: number, key: string): string {

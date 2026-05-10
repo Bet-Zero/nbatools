@@ -83,10 +83,13 @@ export default function ResultEnvelope({
   const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
   const rawNotes = uniqueStrings([
     ...data.notes,
+    ...(data.result?.notes ?? []),
     ...metadataNotes(metadata?.notes),
   ]);
   const classifiedNotes = classifyNoticeItems(rawNotes);
-  const classifiedCaveats = classifyNoticeItems(data.caveats);
+  const classifiedCaveats = classifyNoticeItems(
+    uniqueStrings([...data.caveats, ...(data.result?.caveats ?? [])]),
+  );
   const contextItems = uniqueContextItems([
     ...buildContextItems(metadata, appliedFilters),
     ...classifiedNotes.context,
@@ -94,7 +97,7 @@ export default function ResultEnvelope({
   ]);
   const noteItems =
     data.result_status !== "no_result" ? classifiedNotes.remaining : [];
-  const caveatItems = classifiedCaveats.remaining;
+  const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
   const showContext = contextItems.length > 0;
   const showNotes = noteItems.length > 0;
   const showCaveats = caveatItems.length > 0;
@@ -401,6 +404,20 @@ function contextItemFromNotice(text: string): ContextItem | null {
     return contextItem("Filter", sentenceCase(filtered[1]));
   }
 
+  const recordFiltered = trimmed.match(/^record filtered to games vs\s+(.+)$/i);
+  if (recordFiltered) {
+    return contextItem("Filter", `Games vs ${recordFiltered[1]}`);
+  }
+
+  const playoffGameFilter = trimmed.match(/^filtered to playoff games vs\s+(.+)$/i);
+  if (playoffGameFilter) {
+    return contextItem("Filter", `Playoff games vs ${playoffGameFilter[1]}`);
+  }
+
+  if (/^playoff games only$/i.test(trimmed)) {
+    return contextItem("Filter", "Playoff games only");
+  }
+
   const scheduleFilter = trimmed.match(/^schedule-context filter:\s*(.+)$/i);
   if (scheduleFilter) {
     return contextItem("Filter", sentenceCase(scheduleFilter[1]));
@@ -421,6 +438,31 @@ function contextItemFromNotice(text: string): ContextItem | null {
   );
   if (aggregation) {
     return contextItem("Aggregation", `Game logs across ${aggregation[2]}`);
+  }
+
+  const recordByDecade = trimmed.match(/^record by decade aggregated across (.+)$/i);
+  if (recordByDecade) {
+    return contextItem("Aggregation", `Record by decade across ${recordByDecade[1]}`);
+  }
+
+  const playoffHistoryAggregation = trimmed.match(/^playoff history aggregated across (.+)$/i);
+  if (playoffHistoryAggregation) {
+    return contextItem("Aggregation", `Playoff history across ${playoffHistoryAggregation[1]}`);
+  }
+
+  const matchupHistory = trimmed.match(/^matchup history:\s*(.+)$/i);
+  if (matchupHistory) {
+    return contextItem("Interpreted as", `Matchup history: ${matchupHistory[1]}`);
+  }
+
+  const playoffMatchupHistory = trimmed.match(
+    /^playoff matchup history(?: by round)?:\s*(.+)$/i,
+  );
+  if (playoffMatchupHistory) {
+    return contextItem(
+      "Interpreted as",
+      `Playoff matchup history: ${playoffMatchupHistory[1]}`,
+    );
   }
 
   const leaderboardContext = trimmed.match(/^(.+\bleaderboard)\s*\(([^)]+)\)$/i);
@@ -449,6 +491,13 @@ function isLimitationNotice(text: string): boolean {
   return /\b(not available|unavailable|missing|excluded|partial|approx|degraded|unsupported)\b/i.test(
     text,
   );
+}
+
+function displayNoticeText(text: string): string {
+  if (/^playoff round data not available(?: for seasons)? before 2001-02/i.test(text)) {
+    return "Round-level data is unavailable before 2001-02, so those seasons are included in totals but not round breakdowns.";
+  }
+  return text;
 }
 
 function readableDateWindow(value: string): string {

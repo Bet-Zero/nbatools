@@ -485,8 +485,46 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("2010-11 to 2019-20")).toBeInTheDocument();
     expect(screen.getByText("Caveats")).toBeInTheDocument();
     expect(
-      screen.getByText("playoff round data not available before 2001-02"),
+      screen.getByText(
+        "Round-level data is unavailable before 2001-02, so those seasons are included in totals but not round breakdowns.",
+      ),
     ).toBeInTheDocument();
+  });
+
+  it("classifies record and matchup range notes as context", () => {
+    const data = makeResponse({
+      caveats: [
+        "record filtered to games vs 20 opponents (ATL, BOS, CHI, ...)",
+        "record by decade aggregated across 1996-97 to 2025-26",
+        "matchup history: LAL vs BOS by decade",
+        "playoff matchup history: MIA vs NYK",
+      ],
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultEnvelope data={data} />);
+
+    expect(screen.getByText("Context")).toBeInTheDocument();
+    expect(
+      screen.getByText("Games vs 20 opponents (ATL, BOS, CHI, ...)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Record by decade across 1996-97 to 2025-26"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Matchup history: LAL vs BOS by decade"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Playoff matchup history: MIA vs NYK"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Caveats")).not.toBeInTheDocument();
   });
 
   it("suppresses notes in the envelope for no-result outcomes", () => {

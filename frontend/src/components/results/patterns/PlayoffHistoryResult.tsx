@@ -163,7 +163,7 @@ function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
   return (
     <section className={styles.pattern} aria-label="Playoff matchup result">
       <ResultHero
-        sentence={matchupSentence(teams, summaryRows)}
+        sentence={matchupSentence(teams, summaryRows, seriesRows)}
         subjectIllustration={<MatchupIdentity teams={teams} />}
         tone="neutral"
       />
@@ -193,35 +193,31 @@ function historySentence(
     numericValue(row, "titles") ?? numericValue(row, "championships");
   const finals =
     numericValue(row, "finals") ?? numericValue(row, "finals_appearances");
-  const context = [
-    range,
-    textValue(row, "season_type") ?? metadataText(metadata, "season_type"),
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const rangePrefix = range ? `From ${range.replace(" to ", " through ")}, ` : "";
+  const finalsClause =
+    finals !== null && finals > 0
+      ? ` They reached the Finals ${formatValue(finals, "finals")} ${
+          finals === 1 ? "time" : "times"
+        }${titleCount !== null ? ` and won ${titleCount} ${titleCount === 1 ? "title" : "titles"}` : ""}.`
+      : titleCount !== null && titleCount > 0
+        ? ` They won ${titleCount} ${titleCount === 1 ? "title" : "titles"}.`
+        : "";
 
   return (
     <>
-      {teamName} have{" "}
+      {rangePrefix}the {teamName}{" "}
       {appearances !== null ? (
         <>
+          made the playoffs{" "}
           <span className={styles.heroValue}>
             {formatValue(appearances, "appearances")}
           </span>{" "}
-          playoff {appearances === 1 ? "appearance" : "appearances"}
+          {appearances === 1 ? "time" : "times"}
         </>
       ) : (
-        "a playoff history"
+        "have playoff history"
       )}
-      {context ? ` across ${context}` : ""}
-      {record ? `, going ${record}` : ""}
-      {titleCount !== null
-        ? ` with ${titleCount} ${titleCount === 1 ? "title" : "titles"}`
-        : ""}
-      {titleCount === null && finals !== null
-        ? ` with ${finals} ${finals === 1 ? "Finals trip" : "Finals trips"}`
-        : ""}
-      .
+      {record ? ` and went ${record}` : ""}.{finalsClause}
     </>
   );
 }
@@ -279,24 +275,32 @@ function roundRecordSentence(
   );
 }
 
-function matchupSentence(teams: TeamDisplay[], rows: SectionRow[]): string {
+function matchupSentence(
+  teams: TeamDisplay[],
+  rows: SectionRow[],
+  seriesRows: SectionRow[],
+): string {
   const first = teams[0]?.name ?? "Team 1";
   const second = teams[1]?.name ?? "Team 2";
   const firstRecord = recordText(rows[0]);
   const firstWins = numericValue(rows[0], "wins");
   const firstLosses = numericValue(rows[0], "losses");
+  const seriesRecord = playoffSeriesRecord(seriesRows, teams);
+  const seriesClause = seriesRecord
+    ? ` ${seriesRecord.sentence}.`
+    : "";
 
   if (firstRecord && firstWins !== null && firstLosses !== null) {
     if (firstWins > firstLosses) {
-      return `The ${first} lead the ${second} ${firstRecord} in their playoff history.`;
+      return `The ${first} lead the ${second} ${firstRecord} in playoff games.${seriesClause}`;
     }
     if (firstWins < firstLosses) {
-      return `The ${second} lead the ${first} ${firstLosses}-${firstWins} in their playoff history.`;
+      return `The ${second} lead the ${first} ${firstLosses}-${firstWins} in playoff games.${seriesClause}`;
     }
-    return `The ${first} and ${second} are tied ${firstRecord} in their playoff history.`;
+    return `The ${first} and ${second} are tied ${firstRecord} in playoff games.${seriesClause}`;
   }
 
-  return `The ${first} and ${second} have playoff matchup history.`;
+  return `The ${first} and ${second} have playoff matchup history.${seriesClause}`;
 }
 
 function historyColumns(
@@ -307,7 +311,7 @@ function historyColumns(
     {
       key: "round",
       sourceKeys: ["round_reached", "deepest_round", "playoff_round", "round"],
-      header: "Round",
+      header: "Round Reached",
       render: (row) => roundCell(row),
     },
     {
@@ -397,36 +401,28 @@ function matchupColumns(
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [];
 
-  if (rows.some((row) => hasValue(row.season))) {
-    columns.push(textColumn("season", "Season"));
-  }
+  columns.push(textColumn("season", "Season"));
 
-  if (rows.some((row) => hasValue(row.round) || hasValue(row.playoff_round))) {
-    columns.push({
-      key: "round",
-      sourceKeys: ["round", "playoff_round", "round_reached", "deepest_round"],
-      header: "Round",
-      render: (row) => roundCell(row),
-    });
-  }
+  columns.push({
+    key: "round",
+    sourceKeys: ["round", "playoff_round", "round_reached", "deepest_round"],
+    header: "Round",
+    render: (row) => roundCell(row),
+  });
 
-  if (rows.some((row) => hasWinner(row))) {
-    columns.push({
-      key: "winner",
-      sourceKeys: ["winner", "winner_team_name", "winner_team_abbr"],
-      header: "Winner",
-      render: winnerValue,
-    });
-  }
+  columns.push({
+    key: "winner",
+    sourceKeys: ["winner", "winner_team_name", "winner_team_abbr"],
+    header: "Winner",
+    render: (row) => winnerValue(row, teams),
+  });
 
-  if (rows.some((row) => hasValue(row.result) || hasValue(row.series_result))) {
-    columns.push({
-      key: "result",
-      sourceKeys: ["series_result", "result"],
-      header: "Result",
-      render: (row) => playoffResultValue(row),
-    });
-  }
+  columns.push({
+    key: "result",
+    sourceKeys: ["series_result", "result"],
+    header: "Series Result",
+    render: (row) => playoffResultValue(row, teams),
+  });
 
   for (const team of teams) {
     if (!team.teamAbbr) continue;
@@ -465,7 +461,15 @@ function matchupColumns(
     ];
   }
 
-  addNumericIfPresent(columns, rows, "games", "Games");
+  if (rows.some((row) => hasValue(row.games)) || teams.length >= 2) {
+    columns.push({
+      key: "games",
+      sourceKeys: ["games"],
+      header: "Games",
+      numeric: true,
+      render: (row) => playoffSeriesGames(row, teams) ?? EMPTY_CELL,
+    });
+  }
   return columns;
 }
 
@@ -677,19 +681,21 @@ function cleanRoundLabel(label: string | null): string | null {
   return label;
 }
 
-function playoffResultValue(row: SectionRow): string {
+function playoffResultValue(row: SectionRow, teams?: TeamDisplay[]): string {
   const value = textValue(row, "series_result") ?? textValue(row, "result");
-  if (!value) return RESULT_UNAVAILABLE;
-  const normalized = value.trim().toLowerCase();
-  if (
-    normalized === "unknown" ||
-    normalized === "unavailable" ||
-    normalized === "not available" ||
-    normalized === "n/a"
-  ) {
-    return RESULT_UNAVAILABLE;
+  if (value) {
+    const normalized = value.trim().toLowerCase();
+    if (
+      normalized !== "unknown" &&
+      normalized !== "unavailable" &&
+      normalized !== "not available" &&
+      normalized !== "n/a"
+    ) {
+      return value;
+    }
   }
-  return value;
+  const derived = teams ? playoffSeriesResult(row, teams) : null;
+  return derived ?? RESULT_UNAVAILABLE;
 }
 
 function roundRecordMetricKey(
@@ -748,13 +754,99 @@ function opponentValue(row: SectionRow): string {
   );
 }
 
-function winnerValue(row: SectionRow): string {
-  return (
+function winnerValue(row: SectionRow, teams?: TeamDisplay[]): string {
+  const explicit =
     textValue(row, "winner") ??
     textValue(row, "winner_team_name") ??
-    textValue(row, "winner_team_abbr") ??
-    EMPTY_CELL
-  );
+    textValue(row, "winner_team_abbr");
+  if (explicit) return explicit;
+  const derived = teams ? playoffSeriesWinner(row, teams) : null;
+  return derived?.name ?? EMPTY_CELL;
+}
+
+function playoffSeriesWinner(
+  row: SectionRow,
+  teams: TeamDisplay[],
+): { team: TeamDisplay; wins: number; losses: number; name: string } | null {
+  const records = teams
+    .map((team) => {
+      const prefix = team.teamAbbr;
+      if (!prefix) return null;
+      const wins = numericValue(row, `${prefix}_wins`);
+      const losses = numericValue(row, `${prefix}_losses`);
+      if (wins === null || losses === null) return null;
+      return { team, wins, losses, name: team.name };
+    })
+    .filter(
+      (
+        record,
+      ): record is {
+        team: TeamDisplay;
+        wins: number;
+        losses: number;
+        name: string;
+      } => record !== null,
+    );
+
+  if (records.length < 2) return null;
+  const sorted = [...records].sort((a, b) => b.wins - a.wins);
+  if (Math.abs(sorted[0].wins - sorted[1].wins) < 1e-9) return null;
+  return sorted[0];
+}
+
+function playoffSeriesResult(
+  row: SectionRow,
+  teams: TeamDisplay[],
+): string | null {
+  const winner = playoffSeriesWinner(row, teams);
+  if (!winner) return null;
+  return `${winner.name} won ${formatValue(winner.wins, "wins")}-${formatValue(
+    winner.losses,
+    "losses",
+  )}`;
+}
+
+function playoffSeriesGames(
+  row: SectionRow,
+  teams: TeamDisplay[],
+): string | null {
+  if (hasValue(row.games)) return formatValue(row.games, "games");
+  const winner = playoffSeriesWinner(row, teams);
+  if (!winner) return null;
+  return formatValue(winner.wins + winner.losses, "games");
+}
+
+function playoffSeriesRecord(
+  rows: SectionRow[],
+  teams: TeamDisplay[],
+): { sentence: string } | null {
+  if (rows.length === 0 || teams.length < 2) return null;
+  const [first, second] = teams;
+  if (!first.teamAbbr || !second.teamAbbr) return null;
+
+  let firstSeriesWins = 0;
+  let secondSeriesWins = 0;
+  for (const row of rows) {
+    const firstWins = numericValue(row, `${first.teamAbbr}_wins`);
+    const secondWins = numericValue(row, `${second.teamAbbr}_wins`);
+    if (firstWins === null || secondWins === null) continue;
+    if (firstWins > secondWins) firstSeriesWins += 1;
+    if (secondWins > firstWins) secondSeriesWins += 1;
+  }
+
+  if (firstSeriesWins === 0 && secondSeriesWins === 0) return null;
+  const record = `${firstSeriesWins}-${secondSeriesWins}`;
+  if (firstSeriesWins > secondSeriesWins) {
+    return {
+      sentence: `The ${first.name} lead ${record} in playoff series`,
+    };
+  }
+  if (firstSeriesWins < secondSeriesWins) {
+    return {
+      sentence: `The ${second.name} lead ${secondSeriesWins}-${firstSeriesWins} in playoff series`,
+    };
+  }
+  return { sentence: `Their playoff series record is tied ${record}` };
 }
 
 function hasOpponent(row: SectionRow): boolean {
@@ -762,14 +854,6 @@ function hasOpponent(row: SectionRow): boolean {
     textValue(row, "opponent") ??
     textValue(row, "opponent_team_name") ??
     textValue(row, "opponent_team_abbr"),
-  );
-}
-
-function hasWinner(row: SectionRow): boolean {
-  return Boolean(
-    textValue(row, "winner") ??
-    textValue(row, "winner_team_name") ??
-    textValue(row, "winner_team_abbr"),
   );
 }
 
