@@ -13,6 +13,8 @@ function makeResponse(
     metadata?: Record<string, unknown>;
     sections?: Record<string, SectionRow[]>;
     query?: string;
+    notes?: string[];
+    caveats?: string[];
   } = {},
 ): QueryResponse {
   const result: ResultPayload = {
@@ -20,8 +22,8 @@ function makeResponse(
     result_status: options.result_status ?? "ok",
     result_reason: options.result_reason ?? null,
     metadata: options.metadata ?? {},
-    notes: [],
-    caveats: [],
+    notes: options.notes ?? [],
+    caveats: options.caveats ?? [],
     sections: options.sections ?? {},
   };
 
@@ -35,8 +37,8 @@ function makeResponse(
     confidence: null,
     intent: null,
     alternates: [],
-    notes: [],
-    caveats: [],
+    notes: options.notes ?? [],
+    caveats: options.caveats ?? [],
     result,
   };
 }
@@ -107,6 +109,33 @@ describe("classifyResultShape", () => {
 
     expect(classifyResultShape(guided)).toBe(RESULT_SHAPES.no_result_guided);
     expect(classifyResultShape(message)).toBe(RESULT_SHAPES.no_result_message);
+  });
+
+  it("classifies unsupported no-results with safe recovery as guided", () => {
+    const guidedUnsupported = makeResponse({
+      route: "season_team_leaders",
+      result_status: "no_result",
+      result_reason: "unsupported",
+      notes: ["Column 'def_rating' not available"],
+      metadata: {
+        route: "season_team_leaders",
+        stat: "def_rating",
+        applied_filters: [
+          { label: "Last N games", value: "10", kind: "window" },
+        ],
+      },
+    });
+    const hardUnsupported = makeResponse({
+      result_status: "no_result",
+      result_reason: "unsupported",
+    });
+
+    expect(classifyResultShape(guidedUnsupported)).toBe(
+      RESULT_SHAPES.no_result_guided,
+    );
+    expect(classifyResultShape(hardUnsupported)).toBe(
+      RESULT_SHAPES.no_result_message,
+    );
   });
 
   it("collapses comparison variants into one comparison shape", () => {

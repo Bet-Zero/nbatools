@@ -1,6 +1,12 @@
 import { Badge, Card, type BadgeVariant } from "../design-system";
 import type { DisambiguationCandidate, ResultMetadata } from "../api/types";
-import { formatColHeader } from "./tableFormatting";
+import {
+  buildNoResultDetails,
+  buildNoResultGuidance,
+  isColumnUnavailableReason,
+  isMetricUnavailableNoResult,
+  readableNoResultMessage,
+} from "./noResultDisplayUtils";
 import styles from "./NoResultDisplay.module.css";
 
 interface Props {
@@ -24,25 +30,12 @@ interface StateProfile {
   label: string;
   message: string;
   badgeVariant: BadgeVariant;
-  suggestions: string[];
 }
-
-const RECOVERABLE_SUGGESTIONS = [
-  "Check player or team spelling",
-  "Try a different season or date range",
-  "Broaden stat filters or split filters",
-  "Start from a grouped starter query",
-];
-
-const NO_DATA_SUGGESTIONS = [
-  "Try a season covered by the local data",
-  "Broaden the date window",
-  "Remove narrow split filters",
-];
 
 function stateProfile(
   reason: string | null | undefined,
   status: string,
+  metricUnavailable = false,
 ): StateProfile {
   if (status === "error" || reason === "error") {
     return {
@@ -51,7 +44,16 @@ function stateProfile(
       label: "Result error",
       message: "An error occurred while processing the query.",
       badgeVariant: "danger",
-      suggestions: [],
+    };
+  }
+
+  if (metricUnavailable || isColumnUnavailableReason(reason)) {
+    return {
+      variant: "unsupported",
+      title: "Unavailable Metric",
+      label: "Metric unavailable",
+      message: "The requested metric is not available in the current dataset.",
+      badgeVariant: "warning",
     };
   }
 
@@ -63,7 +65,6 @@ function stateProfile(
         label: "No matching rows",
         message: "No games or records matched the query filters.",
         badgeVariant: "neutral",
-        suggestions: RECOVERABLE_SUGGESTIONS,
       };
     case "no_data":
       return {
@@ -72,7 +73,6 @@ function stateProfile(
         label: "Unavailable scope",
         message: "Data is not available for the requested scope.",
         badgeVariant: "neutral",
-        suggestions: NO_DATA_SUGGESTIONS,
       };
     case "unrouted":
       return {
@@ -81,7 +81,6 @@ function stateProfile(
         label: "Not routed",
         message: "This query type is not yet supported by the engine.",
         badgeVariant: "warning",
-        suggestions: [],
       };
     case "ambiguous":
       return {
@@ -91,7 +90,6 @@ function stateProfile(
         message:
           "The query matched multiple possible entities. Add more specific player, team, season, or matchup details.",
         badgeVariant: "warning",
-        suggestions: [],
       };
     case "unsupported":
       return {
@@ -100,7 +98,6 @@ function stateProfile(
         label: "Unsupported combination",
         message: "This query combination is not supported by the engine.",
         badgeVariant: "warning",
-        suggestions: [],
       };
     case "filter_not_supported":
       return {
@@ -110,7 +107,6 @@ function stateProfile(
         message:
           "The requested filter or metric is not available in the current dataset.",
         badgeVariant: "warning",
-        suggestions: [],
       };
     case "empty_sections":
       return {
@@ -120,7 +116,6 @@ function stateProfile(
         message:
           "The query completed, but the response did not include rows this view can display.",
         badgeVariant: "info",
-        suggestions: [],
       };
     default:
       return {
@@ -129,7 +124,6 @@ function stateProfile(
         label: "No matching data",
         message: reason ?? "No matching data found.",
         badgeVariant: "neutral",
-        suggestions: RECOVERABLE_SUGGESTIONS,
       };
   }
 }
@@ -146,18 +140,20 @@ export default function NoResultDisplay({
   caveats = [],
 }: Props) {
   const candidateLine = candidateSuggestionLine(metadata?.candidates);
-  const suggestedQueries = suggestedQueryLines(metadata?.suggested_queries);
-  const details = [
-    ...notes.map((text) => ({ kind: "Note", text })),
-    ...caveats.map((text) => ({ kind: "Caveat", text })),
-  ];
-  const profile = stateProfile(reason, status);
+  const details = buildNoResultDetails(notes, caveats, metadata);
+  const detailTexts = details.map((detail) => detail.text);
+  const profile = stateProfile(
+    reason,
+    status,
+    isMetricUnavailableNoResult(reason, metadata, detailTexts),
+  );
   const message = readableNoResultMessage(
     profile.message,
     reason,
     metadata,
-    details.map((detail) => detail.text),
+    detailTexts,
   );
+  const guidance = buildNoResultGuidance(reason, status, metadata, detailTexts);
 
   return (
     <Card
@@ -178,16 +174,19 @@ export default function NoResultDisplay({
       </div>
       <div className={styles.message}>{message}</div>
       {candidateLine && (
-        <div className={styles.recovery} aria-label="Disambiguation suggestions">
+        <div
+          className={styles.recovery}
+          aria-label="Disambiguation suggestions"
+        >
           <span className={styles.recoveryLead}>Did you mean:</span>{" "}
           <span>{candidateLine}?</span>
         </div>
       )}
-      {suggestedQueries.length > 0 && (
+      {guidance.querySuggestions.length > 0 && (
         <div className={styles.recovery} aria-label="Suggested queries">
           <div className={styles.recoveryLead}>Try one of these:</div>
           <div className={styles.querySuggestions}>
-            {suggestedQueries.map((query) => (
+            {guidance.querySuggestions.map((query) => (
               <code key={query} className={styles.querySuggestion}>
                 {query}
               </code>
@@ -197,7 +196,7 @@ export default function NoResultDisplay({
       )}
       {details.length > 0 && (
         <div className={styles.details} aria-label="Result details">
-          <div className={styles.sectionTitle}>Details</div>
+          <div className={styles.sectionTitle}>Why this happened</div>
           {details.map((detail, i) => (
             <div key={`${detail.kind}-${i}`} className={styles.detailItem}>
               <span className={styles.detailKind}>{detail.kind}</span>
@@ -206,11 +205,11 @@ export default function NoResultDisplay({
           ))}
         </div>
       )}
-      {profile.suggestions.length > 0 && (
+      {guidance.nextSteps.length > 0 && (
         <div className={styles.suggestions} aria-label="Suggested next steps">
           <div className={styles.sectionTitle}>Suggested next steps</div>
           <div className={styles.suggestionGrid}>
-            {profile.suggestions.map((suggestion) => (
+            {guidance.nextSteps.map((suggestion) => (
               <div key={suggestion} className={styles.suggestion}>
                 {suggestion}
               </div>
@@ -238,86 +237,6 @@ function candidateLabel(candidate: DisambiguationCandidate): string | null {
   if (!name) return null;
   const team = stringValue(candidate.team_abbr) ?? "free agent";
   return `${name} (${team})`;
-}
-
-function suggestedQueryLines(queries: string[] | undefined): string[] {
-  if (!Array.isArray(queries)) return [];
-  return queries
-    .map(stringValue)
-    .filter((query): query is string => Boolean(query));
-}
-
-function readableNoResultMessage(
-  fallback: string,
-  reason: string | null | undefined,
-  metadata: ResultMetadata | null | undefined,
-  detailTexts: string[],
-): string {
-  const columnMessage =
-    columnUnavailableMessage(reason) ??
-    detailTexts.map(columnUnavailableMessage).find(Boolean);
-  if (columnMessage) return columnMessage;
-
-  if (reason === "filter_not_supported") {
-    const metric = metricFromMetadata(metadata);
-    if (metric) {
-      return `${metricLabel(metric)} is not available for this query.`;
-    }
-  }
-
-  return humanizeBackendCopy(fallback);
-}
-
-function columnUnavailableMessage(text: string | null | undefined): string | null {
-  if (!text) return null;
-  const match = text.match(
-    /^Column '([^']+)' not available(?: for ([^.]+))?\.?$/i,
-  );
-  if (!match) return null;
-
-  const metric = metricLabel(match[1]);
-  const context = match[2]?.trim();
-  return context
-    ? `${metric} is not available for ${context}.`
-    : `${metric} is not available in the current dataset.`;
-}
-
-function humanizeBackendCopy(text: string): string {
-  const columnMessage = columnUnavailableMessage(text);
-  if (columnMessage) return columnMessage;
-  return text;
-}
-
-function metricFromMetadata(
-  metadata: ResultMetadata | null | undefined,
-): string | null {
-  if (!metadata) return null;
-  for (const key of ["stat", "metric", "target_stat", "target_metric"]) {
-    const value = metadata[key];
-    if (typeof value === "string" && value.trim()) return value.trim();
-  }
-  return null;
-}
-
-function metricLabel(metric: string): string {
-  const normalized = metric.trim().toLowerCase();
-  const labels: Record<string, string> = {
-    ast: "Assists",
-    ast_avg: "Assists per game",
-    def_rating: "Defensive rating",
-    efg_pct: "Effective field-goal percentage",
-    fg3_pct: "Three-point percentage",
-    fg_pct: "Field-goal percentage",
-    net_rating: "Net rating",
-    off_rating: "Offensive rating",
-    pts: "Points",
-    pts_avg: "Points per game",
-    reb: "Rebounds",
-    reb_avg: "Rebounds per game",
-    ts_pct: "True-shooting percentage",
-    win_pct: "Winning percentage",
-  };
-  return labels[normalized] ?? formatColHeader(metric);
 }
 
 function joinHumanList(values: string[]): string {

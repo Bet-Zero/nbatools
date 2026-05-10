@@ -34,6 +34,8 @@ export default function ResultRenderer({
   displayMode = "product",
 }: Props) {
   const result = data.result;
+  const noResultNotes = [...data.notes, ...(data.result?.notes ?? [])];
+  const noResultCaveats = [...data.caveats, ...(data.result?.caveats ?? [])];
 
   if (!result?.sections || Object.keys(result.sections).length === 0) {
     if (data.result_status === "no_result" || data.result_status === "error") {
@@ -42,8 +44,8 @@ export default function ResultRenderer({
           reason={data.result_reason}
           status={data.result_status}
           metadata={data.result?.metadata}
-          notes={data.notes}
-          caveats={data.caveats}
+          notes={noResultNotes}
+          caveats={noResultCaveats}
         />
       );
     }
@@ -53,8 +55,8 @@ export default function ResultRenderer({
           reason="empty_sections"
           status={data.result_status}
           metadata={data.result?.metadata}
-          notes={data.notes}
-          caveats={data.caveats}
+          notes={noResultNotes}
+          caveats={noResultCaveats}
         />
       );
     }
@@ -72,8 +74,8 @@ export default function ResultRenderer({
           reason={data.result_reason}
           status={data.result_status}
           metadata={data.result?.metadata}
-          notes={data.notes}
-          caveats={data.caveats}
+          notes={noResultNotes}
+          caveats={noResultCaveats}
         />
       );
     }
@@ -82,8 +84,8 @@ export default function ResultRenderer({
         reason="empty_sections"
         status={data.result_status}
         metadata={data.result?.metadata}
-        notes={data.notes}
-        caveats={data.caveats}
+        notes={noResultNotes}
+        caveats={noResultCaveats}
       />
     );
   }
@@ -113,7 +115,9 @@ interface PatternBlockProps {
 function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
   switch (pattern.type) {
     case "entity_summary":
-      return <EntitySummaryResult data={data} sectionKey={pattern.sectionKey} />;
+      return (
+        <EntitySummaryResult data={data} sectionKey={pattern.sectionKey} />
+      );
     case "game_log":
       return (
         <GameLogResult
@@ -151,7 +155,9 @@ function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
         />
       );
     case "rolling_stretch":
-      return <RollingStretchResult data={data} sectionKey={pattern.sectionKey} />;
+      return (
+        <RollingStretchResult data={data} sectionKey={pattern.sectionKey} />
+      );
     case "split":
       return (
         <SplitResult

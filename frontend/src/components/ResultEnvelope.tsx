@@ -9,6 +9,7 @@ import {
   type BadgeVariant,
 } from "../design-system";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
+import { formatReadableDateRange } from "./noResultDisplayUtils";
 import { formatLongDateRange } from "./tableFormatting";
 import styles from "./ResultEnvelope.module.css";
 
@@ -267,7 +268,9 @@ export default function ResultEnvelope({
         showContext || showNotes || showCaveats ? (
           <>
             {showContext && (
-              <div className={[styles.infoBlock, styles.contextBlock].join(" ")}>
+              <div
+                className={[styles.infoBlock, styles.contextBlock].join(" ")}
+              >
                 <div className={styles.infoBlockLabel}>Context</div>
                 <ul>
                   {contextItems.map((item) => (
@@ -341,7 +344,11 @@ function buildContextItems(
     metadataText(metadata, "interpretation") ??
     metadataText(metadata, "disambiguation_note");
   if (interpretedAs) {
-    addContextItem(items, "Interpreted as", stripInterpretedPrefix(interpretedAs));
+    addContextItem(
+      items,
+      "Interpreted as",
+      stripInterpretedPrefix(interpretedAs),
+    );
   }
 
   const dateRange = formatLongDateRange(
@@ -409,7 +416,9 @@ function contextItemFromNotice(text: string): ContextItem | null {
     return contextItem("Filter", `Games vs ${recordFiltered[1]}`);
   }
 
-  const playoffGameFilter = trimmed.match(/^filtered to playoff games vs\s+(.+)$/i);
+  const playoffGameFilter = trimmed.match(
+    /^filtered to playoff games vs\s+(.+)$/i,
+  );
   if (playoffGameFilter) {
     return contextItem("Filter", `Playoff games vs ${playoffGameFilter[1]}`);
   }
@@ -440,19 +449,32 @@ function contextItemFromNotice(text: string): ContextItem | null {
     return contextItem("Aggregation", `Game logs across ${aggregation[2]}`);
   }
 
-  const recordByDecade = trimmed.match(/^record by decade aggregated across (.+)$/i);
+  const recordByDecade = trimmed.match(
+    /^record by decade aggregated across (.+)$/i,
+  );
   if (recordByDecade) {
-    return contextItem("Aggregation", `Record by decade across ${recordByDecade[1]}`);
+    return contextItem(
+      "Aggregation",
+      `Record by decade across ${recordByDecade[1]}`,
+    );
   }
 
-  const playoffHistoryAggregation = trimmed.match(/^playoff history aggregated across (.+)$/i);
+  const playoffHistoryAggregation = trimmed.match(
+    /^playoff history aggregated across (.+)$/i,
+  );
   if (playoffHistoryAggregation) {
-    return contextItem("Aggregation", `Playoff history across ${playoffHistoryAggregation[1]}`);
+    return contextItem(
+      "Aggregation",
+      `Playoff history across ${playoffHistoryAggregation[1]}`,
+    );
   }
 
   const matchupHistory = trimmed.match(/^matchup history:\s*(.+)$/i);
   if (matchupHistory) {
-    return contextItem("Interpreted as", `Matchup history: ${matchupHistory[1]}`);
+    return contextItem(
+      "Interpreted as",
+      `Matchup history: ${matchupHistory[1]}`,
+    );
   }
 
   const playoffMatchupHistory = trimmed.match(
@@ -465,7 +487,9 @@ function contextItemFromNotice(text: string): ContextItem | null {
     );
   }
 
-  const leaderboardContext = trimmed.match(/^(.+\bleaderboard)\s*\(([^)]+)\)$/i);
+  const leaderboardContext = trimmed.match(
+    /^(.+\bleaderboard)\s*\(([^)]+)\)$/i,
+  );
   if (leaderboardContext) {
     return contextItem(
       "Interpreted as",
@@ -494,7 +518,11 @@ function isLimitationNotice(text: string): boolean {
 }
 
 function displayNoticeText(text: string): string {
-  if (/^playoff round data not available(?: for seasons)? before 2001-02/i.test(text)) {
+  if (
+    /^playoff round data not available(?: for seasons)? before 2001-02/i.test(
+      text,
+    )
+  ) {
     return "Round-level data is unavailable before 2001-02, so those seasons are included in totals but not round breakdowns.";
   }
   return text;
@@ -621,6 +649,11 @@ function formatAppliedFilter(
     }
   }
 
+  if (kind === "date") {
+    const dateRange = dateFilterValue(value);
+    if (dateRange) return { label, value: dateRange };
+  }
+
   const normalizedValue =
     value.toLowerCase() === "true"
       ? "Yes"
@@ -628,6 +661,14 @@ function formatAppliedFilter(
         ? "No"
         : value;
   return { label, value: normalizedValue };
+}
+
+function dateFilterValue(value: string): string | null {
+  const match = value.match(
+    /(\d{4}-\d{2}-\d{2})(?:\s*(?:to|\u2013|-)\s*(\d{4}-\d{2}-\d{2}))?/,
+  );
+  if (!match) return null;
+  return formatReadableDateRange(match[1], match[2] ?? match[1]);
 }
 
 function opponentQualityChipValue(value: string): string {
@@ -660,7 +701,10 @@ function compactThresholdValue(value: string): string {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return value;
   const rounded = Math.round(numeric);
-  if (Math.abs(numeric - rounded) < 0.001 || Math.abs(numeric - rounded - 0.0001) < 0.001) {
+  if (
+    Math.abs(numeric - rounded) < 0.001 ||
+    Math.abs(numeric - rounded - 0.0001) < 0.001
+  ) {
     return String(rounded);
   }
   return Number(numeric.toFixed(1)).toString();

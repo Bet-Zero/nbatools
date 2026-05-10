@@ -76,6 +76,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
 - `planning/result-display-lock-in/result_display_wave_4_findings.md` — Wave 4 lock-in findings for records, comparisons, and playoff history
+- `planning/result-display-lock-in/result_display_wave_5_findings.md` — Wave 5 lock-in findings for no-result behavior
 - `planning/phase_v2_work_queue.md` — completed Track A visual-foundation primitives queue and Phase V2 retrospective
 - `planning/phase_v2_primitives_inventory.md` — primitive needs inventory and API-boundary record produced by Phase V2 item 1
 - `planning/phase_v3_work_queue.md` — completed Track A visual-foundation queue for app shell and layout work

@@ -23,8 +23,7 @@ function mockReducedMotion(matches: boolean) {
     configurable: true,
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
-      matches:
-        query === "(prefers-reduced-motion: reduce)" ? matches : false,
+      matches: query === "(prefers-reduced-motion: reduce)" ? matches : false,
       media: query,
       onchange: null,
       addEventListener: vi.fn(),
@@ -286,11 +285,12 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("2025-04-01")).toBeInTheDocument();
     expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
     expect(screen.getByLabelText("Nikola Jokic avatar")).toBeInTheDocument();
-    expect(screen.getByLabelText("Nikola Jokic avatar").querySelector("img"))
-      .toHaveAttribute(
-        "src",
-        "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
-      );
+    expect(
+      screen.getByLabelText("Nikola Jokic avatar").querySelector("img"),
+    ).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+    );
     expect(screen.getByLabelText("DEN")).toBeInTheDocument();
     expect(screen.getByText("2024-25")).toBeInTheDocument();
     expect(screen.getByText("Using regular-season logs")).toBeInTheDocument();
@@ -401,11 +401,12 @@ describe("migrated result envelope", () => {
       "https://cdn.nba.com/logos/nba/1610612738/primary/L/logo.svg",
     );
 
-    expect(screen.getByLabelText("Lakers (LAL)").querySelector("img"))
-      .toHaveAttribute(
-        "src",
-        "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
-      );
+    expect(
+      screen.getByLabelText("Lakers (LAL)").querySelector("img"),
+    ).toHaveAttribute(
+      "src",
+      "https://cdn.nba.com/logos/nba/1610612747/primary/L/logo.svg",
+    );
   });
 
   it("renders applied filters as envelope chips", () => {
@@ -418,6 +419,11 @@ describe("migrated result envelope", () => {
             { label: "Opponent", value: "Lakers", kind: "team" },
             { label: "pts min", value: "30.0001", kind: "threshold" },
             { label: "OPP PTS max", value: "99.9999", kind: "threshold" },
+            {
+              label: "Date range",
+              value: "2026-04-01 \u2013 2026-04-12",
+              kind: "date",
+            },
           ],
         },
         notes: [],
@@ -434,6 +440,9 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("30+ PTS")).toBeInTheDocument();
     expect(screen.getByText("OPP")).toBeInTheDocument();
     expect(screen.getByText("<= 100 PTS")).toBeInTheDocument();
+    expect(screen.getByText("Date range")).toBeInTheDocument();
+    expect(screen.getByText("Apr 1\u201312, 2026")).toBeInTheDocument();
+    expect(screen.queryByText(/2026-04-01/)).not.toBeInTheDocument();
   });
 
   it("formats opponent-quality filters as VS chips", () => {
@@ -550,6 +559,8 @@ describe("migrated result envelope", () => {
       screen.queryByText("No games matched the specified filters"),
     ).not.toBeInTheDocument();
     expect(screen.getByText("Caveats")).toBeInTheDocument();
-    expect(screen.getByText("Recent games may not be loaded yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Recent games may not be loaded yet"),
+    ).toBeInTheDocument();
   });
 });

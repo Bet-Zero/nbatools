@@ -1,4 +1,8 @@
 import type { QueryResponse } from "../../api/types";
+import {
+  buildNoResultDetails,
+  hasGuidedNoResultRecovery,
+} from "../noResultDisplayUtils";
 import { routeToPattern } from "./config/routeToPattern";
 
 export type ResultShapeKey =
@@ -275,6 +279,22 @@ function noResultShape(data: QueryResponse): ResultShapeKey {
   }
 
   if (reason === "no_match" || reason === "no_data" || !reason) {
+    return "no_result_guided";
+  }
+
+  const details = buildNoResultDetails(
+    [...data.notes, ...(data.result?.notes ?? [])],
+    [...data.caveats, ...(data.result?.caveats ?? [])],
+    data.result?.metadata,
+  );
+  if (
+    hasGuidedNoResultRecovery(
+      reason,
+      data.result_status,
+      data.result?.metadata,
+      details.map((detail) => detail.text),
+    )
+  ) {
     return "no_result_guided";
   }
 

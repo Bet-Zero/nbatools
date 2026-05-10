@@ -65,6 +65,61 @@ describe("NoResultDisplay", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses readable date copy and date-specific guidance for date no-matches", () => {
+    render(
+      <NoResultDisplay
+        reason="no_match"
+        status="no_result"
+        notes={["No games matched the specified filters"]}
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          start_date: "2026-04-11",
+          end_date: "2026-04-11",
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText("No NBA games matched Apr 11, 2026."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/2026-04-11/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Suggested next steps")).toHaveTextContent(
+      "Try the previous NBA game day",
+    );
+    expect(screen.getByLabelText("Suggested next steps")).toHaveTextContent(
+      "Try the next NBA game day",
+    );
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "Who leads the NBA in points per game this season?",
+    );
+    expect(
+      screen.queryByText(/Check player or team spelling/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("formats date ranges in no-match copy without raw ISO dates", () => {
+    render(
+      <NoResultDisplay
+        reason="no_match"
+        status="no_result"
+        notes={["No games matched the specified filters"]}
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          start_date: "2026-04-01",
+          end_date: "2026-04-12",
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText("No NBA games matched Apr 1\u201312, 2026."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/2026-04-01/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/2026-04-12/)).not.toBeInTheDocument();
+  });
+
   it("shows error variant for error status", () => {
     render(<NoResultDisplay reason="error" status="error" />);
     expect(screen.getByText("Query Error")).toBeInTheDocument();
@@ -114,6 +169,38 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("guides recent defensive-rating unsupported queries to safe alternatives", () => {
+    render(
+      <NoResultDisplay
+        reason="unsupported"
+        status="no_result"
+        notes={["Column 'def_rating' not available"]}
+        metadata={{
+          route: "season_team_leaders",
+          stat: "def_rating",
+          applied_filters: [
+            { label: "Last N games", value: "10", kind: "window" },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Defensive rating is not available for recent team leaderboards in the current dataset.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "Which teams have the best record recently?",
+    );
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "Lakers held opponents under 100 points this season",
+    );
+    expect(screen.getByLabelText("Result details")).toHaveTextContent(
+      "Column 'def_rating' not available",
+    );
+  });
+
   it("shows ambiguous variant", () => {
     render(<NoResultDisplay reason="ambiguous" status="no_result" />);
     expect(screen.getByText("Ambiguous Query")).toBeInTheDocument();
@@ -137,7 +224,9 @@ describe("NoResultDisplay", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Disambiguation suggestions")).toHaveTextContent(
+    expect(
+      screen.getByLabelText("Disambiguation suggestions"),
+    ).toHaveTextContent(
       "Did you mean: Jaylen Brown (BOS), Bruce Brown (NOP), or Anthony Brown (free agent)?",
     );
   });
@@ -229,8 +318,12 @@ describe("Loading", () => {
   it("renders a compact result-preview skeleton", () => {
     render(<Loading />);
     expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
-    expect(screen.getByLabelText("Loading result metadata")).toBeInTheDocument();
-    expect(screen.getByLabelText("Loading summary preview")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Loading result metadata"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Loading summary preview"),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Loading result rows")).toBeInTheDocument();
   });
 });
