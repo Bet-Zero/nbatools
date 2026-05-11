@@ -1,0 +1,203 @@
+version: 1
+cases:
+  - id: record_when_jokic_triple_double
+    query: "What is Denver's record when Nikola Jokic has a triple-double?"
+    category: record_when_player_condition
+    priority: p0
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: special_event
+        label: Special Event
+        value: Triple Double
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 34
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 34
+      - path: result.sections.summary.0.wins
+        equals: 24
+      - path: result.sections.summary.0.losses
+        equals: 10
+    review_notes: "Regression guard for stale unfiltered 65-game, 43-22 answer."
+
+  - id: jokic_triple_double_count
+    query: "How often has Nikola Jokic recorded a triple-double this season?"
+    category: player_game_log_count
+    priority: p0
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_filters:
+      - kind: special_event
+        label: Special Event
+        value: Triple Double
+    expected_sections:
+      - count
+      - finder
+    expected_row_counts:
+      count: 1
+      finder: 34
+    hard_assertions:
+      - path: result.sections.count.0.count
+        equals: 34
+    review_notes: "Count phrase should come from backend metadata, not frontend hero text."
+
+  - id: points_per_game_leader
+    query: "Who leads the NBA in points per game this season?"
+    category: leaderboard
+    priority: p1
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Normal player season leaderboard."
+
+  - id: biggest_scoring_games
+    query: "What were the biggest scoring games this season?"
+    category: top_performances
+    priority: p1
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Season-high/top-game path should not collapse to points-per-game leaders."
+
+  - id: celtics_record_playoff_teams
+    query: "What is the Celtics' record against playoff teams?"
+    category: team_record
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    review_notes: "Opponent-quality record case for a team summary route."
+
+  - id: suns_without_booker
+    query: "How do the Suns perform when Devin Booker didn't play?"
+    category: without_player_condition
+    priority: p0
+    expected_status: ok
+    expected_route: game_summary
+    expected_shape: game_log_team_detail
+    expected_filters:
+      - kind: player
+        value: Devin Booker
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 18
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 18
+      - path: result.sections.summary.0.wins
+        equals: 8
+      - path: result.sections.summary.0.losses
+        equals: 10
+    review_notes: "Backend metadata currently provides the answer phrase for this route."
+
+  - id: hottest_3_game_scoring_stretch
+    query: "Which players have the hottest 3-game scoring stretch this year?"
+    category: rolling_stretch
+    priority: p1
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 3
+    review_notes: "Rolling stretch query should expose window fields, not just season aggregates."
+
+  - id: jokic_5_straight_20_points
+    query: "Jokic 5 straight games with 20+ points"
+    category: streak
+    priority: p1
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        value: "20.0"
+    expected_sections:
+      - streak
+    expected_row_counts:
+      streak: 15
+    review_notes: "Compressed shorthand streak form."
+
+  - id: lakers_playoff_history
+    query: "Lakers playoff history"
+    category: playoff_history
+    priority: p1
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 21
+    review_notes: "Single-team postseason history surface."
+
+  - id: heat_knicks_playoff_history
+    query: "Heat vs Knicks playoff history"
+    category: playoff_matchup_history
+    priority: p1
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+      comparison: 6
+    review_notes: "Historical postseason matchup surface."
+
+  - id: most_points_last_night
+    query: "Who scored the most points last night?"
+    category: no_result_date
+    priority: p1
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_filters:
+      - kind: date
+    review_notes: "Guided no-result candidate when the current dataset has no matching date."
+
+  - id: cooled_off_last_10
+    query: "Which scorers have cooled off over their last 10 games?"
+    category: unsupported_boundary
+    priority: p2
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    expected_filters:
+      - kind: window
+        value: "10"
+    review_notes: "Intentional semantic boundary until trend/drop-off definitions exist."

@@ -283,6 +283,38 @@ make raw-query-answer-qa
 git diff --check
 ```
 
+## Wave 1 Implementation Status
+
+Implemented files:
+
+- `qa/raw_query_answer_corpus.yaml`
+- `tools/raw_query_answer_qa.py`
+- `Makefile` target `raw-query-answer-qa`
+
+Output location:
+
+- `outputs/raw_query_answer_qa/<run_id>/report.jsonl`
+- `outputs/raw_query_answer_qa/<run_id>/report.md`
+- `outputs/raw_query_answer_qa/<run_id>/summary.json`
+
+How to run:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+make raw-query-answer-qa
+```
+
+Current limitations:
+
+- The harness uses backend-provided `metadata.answer_phrase` or
+  `metadata.count_phrase` only. Frontend-only hero sentences are not fabricated.
+- `shape_hint` is a route/section-based backend approximation and is marked with
+  `shape_source: backend_approximation`.
+- Exact frontend hero text and exact frontend visual shape parity are deferred to
+  a future rendered-output harness.
+- The corpus is a curated manual-review set, not a replacement for focused hard
+  regression tests.
+
 ## Promotion To Hard Tests
 
 Use the report to decide which failures are objective.
