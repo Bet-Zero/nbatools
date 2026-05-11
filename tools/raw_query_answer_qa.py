@@ -39,6 +39,40 @@ EXPECTED_FIELD_NAMES = {
     "hard_assertions",
     "review_notes",
 }
+MANUAL_REVIEW_STATUSES = {
+    "unreviewed",
+    "pass",
+    "needs_followup",
+    "semantics_issue",
+    "data_quality_question",
+    "routing_issue",
+    "missing_filter",
+    "wrong_shape",
+    "bad_answer_text",
+    "expected_unsupported",
+    "needs_product_decision",
+}
+SUMMARY_ROUTES = {
+    "game_summary",
+    "lineup_summary",
+    "matchup_by_decade",
+    "player_game_summary",
+    "player_on_off",
+    "player_split_summary",
+    "playoff_appearances",
+    "playoff_history",
+    "record_by_decade",
+    "team_record",
+    "team_split_summary",
+}
+SUGGESTED_TAGS_BY_FLAG = {
+    "missing_backend_answer_text": ["frontend_hero_extraction"],
+    "ok_no_sections": ["shape_section_contract"],
+    "top_performance_high_points": ["top_performance_data_quality"],
+    "playoff_teams_playoff_season_type": ["opponent_quality_semantics"],
+    "expected_unsupported_returned_ok": ["unsupported_no_result_policy"],
+    "expected_ok_returned_non_ok": ["routing_or_data_gap"],
+}
 SHAPE_BY_ROUTE = {
     "game_finder": "game_log_team_table",
     "game_summary": "game_log_team_detail",
@@ -138,6 +172,7 @@ def load_corpus(path: Path) -> tuple[int | None, list[dict[str, Any]]]:
         missing = REQUIRED_CASE_FIELDS - set(case)
         if missing:
             raise ValueError(f"Case {case.get('id', index)} missing fields: {sorted(missing)}")
+        normalize_manual_review(case)
 
     version = data.get("version")
     if isinstance(version, int | str) and str(version).isdigit():
@@ -197,6 +232,33 @@ def json_ready(value: Any) -> Any:
 
 def case_expectations(case: dict[str, Any]) -> dict[str, Any]:
     return {key: json_ready(case.get(key)) for key in EXPECTED_FIELD_NAMES if key in case}
+
+
+def normalize_manual_review(case: dict[str, Any]) -> dict[str, Any]:
+    raw = case.get("manual_review")
+    if raw is None:
+        return {"status": "unreviewed", "tags": [], "notes": ""}
+    if not isinstance(raw, dict):
+        raise ValueError(f"Case {case.get('id')} manual_review must be a mapping")
+
+    status = str(raw.get("status") or "unreviewed")
+    if status not in MANUAL_REVIEW_STATUSES:
+        allowed = ", ".join(sorted(MANUAL_REVIEW_STATUSES))
+        raise ValueError(
+            f"Case {case.get('id')} has invalid manual_review.status {status!r}; "
+            f"expected one of: {allowed}"
+        )
+
+    raw_tags = raw.get("tags") or []
+    if not isinstance(raw_tags, list):
+        raise ValueError(f"Case {case.get('id')} manual_review.tags must be a list")
+
+    notes = raw.get("notes") or ""
+    return {
+        "status": status,
+        "tags": [str(tag) for tag in raw_tags],
+        "notes": str(notes),
+    }
 
 
 def answer_text_from_metadata(metadata: dict[str, Any]) -> tuple[str | None, str | None]:
@@ -496,21 +558,187 @@ def error_expectation_results(exc: Exception) -> dict[str, Any]:
     }
 
 
+def make_suspicious_flag(
+    flag_id: str,
+    message: str,
+    *,
+    details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    flag = {"id": flag_id, "message": message}
+    if details:
+        flag["details"] = json_ready(details)
+    return flag
+
+
+def expected_allows(case: dict[str, Any], status: str) -> bool:
+    return status in as_allowed_values(case.get("expected_status"))
+
+
+def expected_is_unsupported_like(case: dict[str, Any]) -> bool:
+    allowed = {str(value) for value in as_allowed_values(case.get("expected_status"))}
+    manual_review = normalize_manual_review(case)
+    return (
+        (bool(allowed) and allowed <= {"error", "no_result"})
+        or str(case.get("category")) == "unsupported_boundary"
+        or manual_review["status"] == "expected_unsupported"
+    )
+
+
+def top_performance_high_point_rows(
+    *,
+    route: str | None,
+    shape_hint: str,
+    sections: dict[str, Any],
+    threshold: int = 75,
+) -> list[dict[str, Any]]:
+    if shape_hint != "top_performances" and route not in {"top_player_games", "top_team_games"}:
+        return []
+
+    matches: list[dict[str, Any]] = []
+    for section_name, rows in sections.items():
+        if not isinstance(rows, list):
+            continue
+        for row in rows[:3]:
+            if not isinstance(row, dict):
+                continue
+            if route != "top_player_games" and not row.get("player_name"):
+                continue
+            points = row.get("pts")
+            if isinstance(points, int | float) and points >= threshold:
+                matches.append(
+                    {
+                        "section": section_name,
+                        "rank": row.get("rank"),
+                        "player_name": row.get("player_name"),
+                        "team_name": row.get("team_name"),
+                        "team_abbr": row.get("team_abbr"),
+                        "game_date": row.get("game_date"),
+                        "pts": points,
+                    }
+                )
+    return matches
+
+
+def build_suspicious_flags(
+    case: dict[str, Any],
+    *,
+    result_status: str | None,
+    route: str | None,
+    answer_text: str | None,
+    shape_hint: str,
+    metadata: dict[str, Any],
+    sections: dict[str, Any],
+) -> list[dict[str, Any]]:
+    flags: list[dict[str, Any]] = []
+    priority = str(case.get("priority"))
+    query_class = metadata.get("query_class")
+
+    if (
+        result_status == "ok"
+        and priority in {"p0", "p1"}
+        and not answer_text
+        and (route in SUMMARY_ROUTES or query_class in {"summary", "split_summary"})
+    ):
+        flags.append(
+            make_suspicious_flag(
+                "missing_backend_answer_text",
+                "P0/P1 summary-style result has no backend answer text.",
+                details={"route": route, "query_class": query_class},
+            )
+        )
+
+    if result_status == "ok" and not sections:
+        flags.append(
+            make_suspicious_flag(
+                "ok_no_sections",
+                "Result status is ok but no result sections were returned.",
+                details={"route": route},
+            )
+        )
+
+    high_point_rows = top_performance_high_point_rows(
+        route=route,
+        shape_hint=shape_hint,
+        sections=sections,
+    )
+    if high_point_rows:
+        flags.append(
+            make_suspicious_flag(
+                "top_performance_high_points",
+                "Top performance point total is unusually high (>= 75).",
+                details={"rows": high_point_rows},
+            )
+        )
+
+    if (
+        "playoff teams" in normalized_match_text(case.get("query"))
+        and metadata.get("season_type") == "Playoffs"
+    ):
+        flags.append(
+            make_suspicious_flag(
+                "playoff_teams_playoff_season_type",
+                'Query contains "playoff teams" but result metadata uses season_type=Playoffs.',
+                details={"season": metadata.get("season"), "route": route},
+            )
+        )
+
+    if result_status == "ok" and expected_is_unsupported_like(case):
+        flags.append(
+            make_suspicious_flag(
+                "expected_unsupported_returned_ok",
+                "Case is expected unsupported/error-like but returned ok.",
+                details={"expected_status": case.get("expected_status"), "route": route},
+            )
+        )
+
+    if result_status in {"no_result", "error"} and expected_allows(case, "ok"):
+        flags.append(
+            make_suspicious_flag(
+                "expected_ok_returned_non_ok",
+                "Case expects ok but returned no_result/error.",
+                details={
+                    "expected_status": case.get("expected_status"),
+                    "actual_status": result_status,
+                },
+            )
+        )
+
+    return flags
+
+
+def suggested_review_tags(flags: list[dict[str, Any]]) -> list[str]:
+    tags: set[str] = set()
+    for flag in flags:
+        tags.update(SUGGESTED_TAGS_BY_FLAG.get(str(flag.get("id")), []))
+    return sorted(tags)
+
+
 def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
     case_id = str(case["id"])
     query = str(case["query"])
+    manual_review = normalize_manual_review(case)
     base = {
         "id": case_id,
         "query": query,
         "category": case["category"],
         "priority": case["priority"],
         "expected": case_expectations(case),
+        "manual_review": manual_review,
     }
 
     try:
         qr = execute_natural_query(query)
         payload = query_result_to_payload(qr)
     except Exception as exc:  # pragma: no cover - exercised manually through harness.
+        flags = build_suspicious_flags(
+            case,
+            result_status="error",
+            route=None,
+            answer_text=None,
+            shape_hint="error",
+            metadata={},
+            sections={},
+        )
         return {
             **base,
             "route": None,
@@ -532,6 +760,8 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
             "caveats": [],
             "errors": [{"type": type(exc).__name__, "message": str(exc)}],
             "expectation_results": error_expectation_results(exc),
+            "suggested_review_tags": suggested_review_tags(flags),
+            "suspicious_flags": flags,
         }
 
     result = payload.get("result") if isinstance(payload.get("result"), dict) else {}
@@ -548,6 +778,15 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
         payload=payload,
         shape_hint=shape_hint,
         applied_filters=applied_filters,
+    )
+    flags = build_suspicious_flags(
+        case,
+        result_status=payload.get("result_status"),
+        route=payload.get("route"),
+        answer_text=answer_text,
+        shape_hint=shape_hint,
+        metadata=metadata,
+        sections=sections,
     )
 
     return json_ready(
@@ -572,6 +811,8 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
             "caveats": payload.get("caveats") or result.get("caveats") or [],
             "errors": [],
             "expectation_results": expectation_results,
+            "suggested_review_tags": suggested_review_tags(flags),
+            "suspicious_flags": flags,
         }
     )
 
@@ -598,12 +839,29 @@ def summarize_rows(
     status_counts = Counter(str(row.get("result_status")) for row in rows)
     category_counts = Counter(str(row.get("category")) for row in rows)
     route_counts = Counter(str(row.get("route") or "<none>") for row in rows)
+    manual_review_status_counts = Counter(
+        str((row.get("manual_review") or {}).get("status", "unreviewed")) for row in rows
+    )
+    manual_review_tag_counts: Counter[str] = Counter()
+    suspicious_flag_counts: Counter[str] = Counter()
+    suggested_review_tag_counts: Counter[str] = Counter()
     expectation_case_counts = Counter(
         str((row.get("expectation_results") or {}).get("status")) for row in rows
     )
     expectation_check_counts: Counter[str] = Counter()
     failed_case_ids: list[str] = []
+    suspicious_flag_case_ids: list[str] = []
     for row in rows:
+        manual_review = row.get("manual_review") or {}
+        for tag in manual_review.get("tags", []):
+            manual_review_tag_counts[str(tag)] += 1
+        flags = row.get("suspicious_flags") or []
+        if flags:
+            suspicious_flag_case_ids.append(str(row.get("id")))
+        for flag in flags:
+            suspicious_flag_counts[str(flag.get("id"))] += 1
+        for tag in row.get("suggested_review_tags") or []:
+            suggested_review_tag_counts[str(tag)] += 1
         expectation_results = row.get("expectation_results") or {}
         if expectation_results.get("status") == "fail":
             failed_case_ids.append(str(row.get("id")))
@@ -622,6 +880,12 @@ def summarize_rows(
         "result_status_counts": dict(sorted(status_counts.items())),
         "category_counts": dict(sorted(category_counts.items())),
         "route_counts": dict(sorted(route_counts.items())),
+        "manual_review_status_counts": dict(sorted(manual_review_status_counts.items())),
+        "manual_review_tag_counts": dict(sorted(manual_review_tag_counts.items())),
+        "suspicious_flag_case_count": len(suspicious_flag_case_ids),
+        "suspicious_flag_case_ids": suspicious_flag_case_ids,
+        "suspicious_flag_counts": dict(sorted(suspicious_flag_counts.items())),
+        "suggested_review_tag_counts": dict(sorted(suggested_review_tag_counts.items())),
         "expectation_case_counts": dict(sorted(expectation_case_counts.items())),
         "expectation_check_counts": dict(sorted(expectation_check_counts.items())),
         "failed_case_ids": failed_case_ids,
@@ -747,13 +1011,53 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         f"- Result statuses: {md_code(summary['result_status_counts'])}",
         f"- Categories: {md_code(summary['category_counts'])}",
         f"- Routes: {md_code(summary['route_counts'])}",
+        f"- Manual review statuses: {md_code(summary['manual_review_status_counts'])}",
+        f"- Manual review tags: {md_code(summary['manual_review_tag_counts'])}",
+        f"- Suspicious flag cases: {md_code(summary['suspicious_flag_case_count'])}",
+        f"- Suspicious flags: {md_code(summary['suspicious_flag_counts'])}",
+        f"- Suggested review tags: {md_code(summary['suggested_review_tag_counts'])}",
         f"- Expectation cases: {md_code(summary['expectation_case_counts'])}",
         f"- Expectation checks: {md_code(summary['expectation_check_counts'])}",
         f"- Failed case IDs: {md_code(summary['failed_case_ids'])}",
         "",
-        "## Failed Expectations",
+        "## Suspicious / Review Flags",
         "",
     ]
+
+    flagged_rows = [row for row in rows if row.get("suspicious_flags")]
+    if flagged_rows:
+        lines.extend(
+            [
+                "| Case | Flags | Suggested tags | Manual review |",
+                "|---|---|---|---|",
+            ]
+        )
+        for row in flagged_rows:
+            flag_ids = ", ".join(str(flag.get("id")) for flag in row.get("suspicious_flags") or [])
+            tags = ", ".join(row.get("suggested_review_tags") or [])
+            manual_review = row.get("manual_review") or {}
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        md_escape(row.get("id")),
+                        md_escape(flag_ids),
+                        md_escape(tags),
+                        md_escape(manual_review.get("status", "unreviewed")),
+                    ]
+                )
+                + " |"
+            )
+    else:
+        lines.append("_None._")
+
+    lines.extend(
+        [
+            "",
+            "## Failed Expectations",
+            "",
+        ]
+    )
 
     failures = failed_checks(rows)
     if failures:
@@ -809,6 +1113,18 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         )
         if row.get("expected", {}).get("review_notes"):
             lines.append(f"- Review notes: {md_escape(row['expected']['review_notes'])}")
+        manual_review = row.get("manual_review") or {}
+        manual_status = manual_review.get("status", "unreviewed")
+        manual_tags = ", ".join(manual_review.get("tags") or [])
+        manual_display = f"{manual_status}" + (f" [{manual_tags}]" if manual_tags else "")
+        lines.append(f"- Manual review: {md_code(manual_display)}")
+        if manual_review.get("notes"):
+            lines.append(f"- Manual review notes: {md_escape(manual_review.get('notes'))}")
+        if row.get("suspicious_flags"):
+            flag_ids = ", ".join(str(flag.get("id")) for flag in row["suspicious_flags"])
+            lines.append(f"- Suspicious flags: {md_code(flag_ids)}")
+        if row.get("suggested_review_tags"):
+            lines.append(f"- Suggested review tags: {md_code(row.get('suggested_review_tags'))}")
         if row.get("notes"):
             lines.append(f"- Notes: {md_code(row.get('notes'))}")
         if row.get("caveats"):
@@ -883,6 +1199,7 @@ def main() -> int:
     print(f"Cases: {summary['case_count']}")
     print(f"Result statuses: {summary['result_status_counts']}")
     print(f"Expectation cases: {summary['expectation_case_counts']}")
+    print(f"Suspicious flag cases: {summary['suspicious_flag_case_count']}")
     if failed_case_ids:
         print(f"Failed case IDs: {', '.join(failed_case_ids)}")
     else:

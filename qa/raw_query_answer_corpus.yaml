@@ -1,4 +1,19 @@
 version: 1
+
+# Optional manual-review metadata:
+# manual_review.status allowed values:
+# - unreviewed
+# - pass
+# - needs_followup
+# - semantics_issue
+# - data_quality_question
+# - routing_issue
+# - missing_filter
+# - wrong_shape
+# - bad_answer_text
+# - expected_unsupported
+# - needs_product_decision
+
 cases:
   - id: record_when_jokic_triple_double
     query: "What is Denver's record when Nikola Jokic has a triple-double?"
@@ -73,6 +88,12 @@ cases:
     expected_row_counts:
       leaderboard: 10
     review_notes: "Season-high/top-game path should not collapse to points-per-game leaders."
+    manual_review:
+      status: data_quality_question
+      tags:
+        - top_performance
+        - outlier
+      notes: "Wave 1 surfaced Bam Adebayo with 83 points; record as suspicious until source data is investigated."
 
   - id: celtics_record_playoff_teams
     query: "What is the Celtics' record against playoff teams?"
@@ -89,6 +110,12 @@ cases:
     expected_row_counts:
       summary: 1
     review_notes: "Opponent-quality record case for a team summary route."
+    manual_review:
+      status: semantics_issue
+      tags:
+        - opponent_quality
+        - season_type
+      notes: "Wave 1 output used season_type=Playoffs; likely user intent is regular-season record against teams that made the playoffs."
 
   - id: suns_without_booker
     query: "How do the Suns perform when Devin Booker didn't play?"
@@ -201,3 +228,921 @@ cases:
       - kind: window
         value: "10"
     review_notes: "Intentional semantic boundary until trend/drop-off definitions exist."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - subjective_trend
+      notes: "Expected unsupported/product-boundary query."
+
+  - id: assist_leaders_this_season
+    query: "Who leads the NBA in assists this season?"
+    category: leaderboard
+    priority: p1
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Basic assist leaderboard question form."
+
+  - id: rebound_leaders_this_season
+    query: "Who leads the NBA in rebounds this season?"
+    category: leaderboard
+    priority: p1
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Basic rebound leaderboard question form."
+
+  - id: steal_leaders_this_season
+    query: "Who leads the league in steals this season?"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Defensive box-score stat leaderboard."
+
+  - id: block_leaders_this_season
+    query: "Who leads the league in blocks this season?"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Defensive box-score stat leaderboard."
+
+  - id: ts_percentage_leader
+    query: "Who has the highest TS% this season?"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Shooting efficiency leaderboard; row count may vary with source/minimum filters."
+
+  - id: three_point_percentage_leader
+    query: "Who has the best 3 point percentage this season?"
+    category: leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "3P percentage alias coverage; row count is intentionally not asserted."
+
+  - id: best_offensive_teams
+    query: "Which teams have the best offense this season?"
+    category: team_leaderboard
+    priority: p1
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team stat leaderboard using offense phrasing."
+
+  - id: team_efg_leaders
+    query: "Which teams have the best eFG% this season?"
+    category: team_leaderboard
+    priority: p2
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team shooting leaderboard."
+
+  - id: team_wins_leaderboard
+    query: "What team has the most wins this season?"
+    category: team_record_leaderboard
+    priority: p1
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team record leaderboard; current payload caveat says wins only."
+
+  - id: defensive_team_leaders_recent
+    query: "What team has played the best defense recently?"
+    category: unsupported_boundary
+    priority: p2
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_filters:
+      - kind: window
+        value: "10"
+    review_notes: "Current dataset/reporting path lacks recent defensive rating for this leaderboard."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - defensive_rating
+        - recent_window
+      notes: "Expected unsupported unless recent team defensive rating becomes source-backed."
+
+  - id: most_assists_single_game
+    query: "What were the most assists in a game this season?"
+    category: top_performances
+    priority: p2
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Top single-game assists are not currently routed from this wording."
+    manual_review:
+      status: needs_product_decision
+      tags:
+        - top_performance
+        - assists
+      notes: "Decide whether non-scoring top single-game phrasing should route to top_player_games."
+
+  - id: most_rebounds_single_game
+    query: "What were the most rebounds in a game this season?"
+    category: top_performances
+    priority: p2
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Top single-game rebounds are not currently routed from this wording."
+    manual_review:
+      status: needs_product_decision
+      tags:
+        - top_performance
+        - rebounds
+      notes: "Decide whether non-scoring top single-game phrasing should route to top_player_games."
+
+  - id: top_team_scoring_games
+    query: "top team scoring games this season"
+    category: top_performances
+    priority: p1
+    expected_status: ok
+    expected_route: top_team_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    review_notes: "Compressed top-team-performance form."
+
+  - id: luka_best_game_this_season
+    query: "Luka Doncic best game this season"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    review_notes: "Single-player best-game wording currently returns a finder-style game list."
+
+  - id: warriors_top_scoring_games
+    query: "Warriors top scoring games this season"
+    category: top_performances
+    priority: p2
+    expected_status: ok
+    expected_route: game_finder
+    expected_sections:
+      - finder
+    review_notes: "Single-team top performance phrase currently returns a team game finder list."
+
+  - id: jokic_season_summary
+    query: "Jokic this season"
+    category: player_summary
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player season shorthand summary."
+
+  - id: tatum_recent_form
+    query: "Jayson Tatum recent form"
+    category: player_summary
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Recent-form shorthand should preserve a last-10-games filter."
+
+  - id: tatum_vs_lakers_no_result
+    query: "Jayson Tatum stats vs Lakers this season"
+    category: player_summary
+    priority: p2
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_filters:
+      - kind: team
+        value: LAL
+    review_notes: "Current dataset has no matching regular-season Tatum vs Lakers rows for the selected season."
+
+  - id: tatum_good_teams
+    query: "How has Jayson Tatum played against good teams this season?"
+    category: player_summary
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: quality
+        value: good teams
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Opponent-quality player summary; caveat should explain the resolved opponent bucket."
+
+  - id: jokic_home_stats
+    query: "Jokic home stats this season"
+    category: player_summary
+    priority: p2
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: location
+        value: Home
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player location-filter summary."
+
+  - id: celtics_overall_record
+    query: "What is the Celtics record this season?"
+    category: team_record
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    review_notes: "Basic team record question."
+
+  - id: lakers_good_teams_record
+    query: "What is the Lakers record against good teams?"
+    category: team_record
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: good teams
+    expected_sections:
+      - summary
+    review_notes: "Opponent-quality team record without explicit season."
+
+  - id: lakers_home_record
+    query: "What is the Lakers home record this season?"
+    category: team_record
+    priority: p2
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Home
+    expected_sections:
+      - summary
+    review_notes: "Team home split as record."
+
+  - id: lakers_held_opponents_under_100_record
+    query: "What is the Lakers record when they held opponents under 100 points?"
+    category: record_when_team_condition
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: threshold
+        label: OPP PTS max
+    expected_sections:
+      - summary
+    review_notes: "Manual review: record summary should be checked against the count/finder result for the same opponent-points condition."
+    manual_review:
+      status: needs_followup
+      tags:
+        - record_when
+        - opponent_threshold
+      notes: "Candidate mismatch: sampled summary showed full-season 82 games while the count/finder variant showed 7 matching games."
+
+  - id: celtics_scored_over_120_record
+    query: "What is the Celtics record when they score over 120 points?"
+    category: record_when_team_condition
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - summary
+    review_notes: "Team scoring-threshold record."
+
+  - id: lakers_top_10_defenses_record
+    query: "Lakers record against top-10 defenses 2024-25"
+    category: team_record
+    priority: p2
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: top-10 defenses
+    expected_sections:
+      - summary
+    review_notes: "Opponent-quality team record with explicit season."
+
+  - id: thunder_sga_30_record
+    query: "What is the Thunder record when Shai Gilgeous-Alexander scores 30+?"
+    category: record_when_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Record-when player scoring threshold."
+
+  - id: warriors_curry_6_threes_record
+    query: "What is the Warriors record when Stephen Curry makes at least 6 threes?"
+    category: record_when_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: fg3m min
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Record-when player made-threes threshold."
+
+  - id: denver_jokic_10_assists_record
+    query: "What is Denver record when Nikola Jokic has 10+ assists?"
+    category: record_when_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: ast min
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Record-when player assists threshold."
+
+  - id: lakers_lebron_ad_both_play
+    query: "What is the Lakers record when LeBron James and Anthony Davis both play?"
+    category: availability_boundary
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    review_notes: "Manual review: multi-player availability is documented as an unsupported boundary but sampled output returned an unfiltered team record."
+    manual_review:
+      status: missing_filter
+      tags:
+        - availability
+        - multi_player
+      notes: "No applied availability filters were sampled; should likely become unsupported/no-result with guidance or be properly implemented."
+
+  - id: suns_without_booker_shorthand
+    query: "Suns without Booker"
+    category: without_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        value: Devin Booker
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Search-bar shorthand without-player phrasing."
+
+  - id: bucks_without_giannis
+    query: "What is the Bucks record when Giannis Antetokounmpo was out?"
+    category: without_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        value: Giannis Antetokounmpo
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Full-question without-player phrasing."
+
+  - id: knicks_without_brunson
+    query: "What is the Knicks record when Jalen Brunson does not play?"
+    category: without_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        value: Jalen Brunson
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Does-not-play availability phrasing."
+
+  - id: lakers_without_lebron
+    query: "Lakers record without LeBron"
+    category: without_player_condition
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        value: LeBron James
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Team shorthand with star-player absence."
+
+  - id: warriors_wins_without_curry
+    query: "Warriors wins without Stephen Curry"
+    category: without_player_condition
+    priority: p2
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        value: Stephen Curry
+      - kind: outcome
+        value: Wins
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Without-player plus outcome-filter variant."
+
+  - id: players_40_point_count
+    query: "how many players scored 40 points this season"
+    category: finder_count
+    priority: p1
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - count
+    review_notes: "Distinct player occurrence count."
+
+  - id: players_10_assist_count
+    query: "number of players with 10 assists this season"
+    category: finder_count
+    priority: p2
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_filters:
+      - kind: threshold
+        label: ast min
+    expected_sections:
+      - count
+    review_notes: "Distinct player count with assist threshold."
+
+  - id: lakers_held_opponents_under_100_count
+    query: "How often have the Lakers held opponents under 100 points this year?"
+    category: finder_count
+    priority: p1
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: count_with_finder
+    expected_filters:
+      - kind: threshold
+        label: OPP PTS max
+    expected_sections:
+      - count
+      - finder
+    review_notes: "Count/finder baseline for opponent-points threshold."
+
+  - id: jokic_30_10_10_finder
+    query: "Jokic over 30 points and over 10 rebounds and over 10 assists"
+    category: finder_count
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - finder
+    review_notes: "Grouped player threshold finder; manual review should confirm all three conditions survived parsing."
+
+  - id: curry_5_threes_finder
+    query: "Curry 5+ threes this season"
+    category: finder_count
+    priority: p2
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: threshold
+        label: fg3m min
+    expected_sections:
+      - finder
+    review_notes: "Compact player finder threshold form."
+
+  - id: celtics_120_points_15_threes
+    query: "Celtics games with 120+ points and 15+ threes"
+    category: finder_count
+    priority: p2
+    expected_status: ok
+    expected_route: game_finder
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - finder
+    review_notes: "Team finder with multi-condition wording; manual review should confirm the threes condition is honored."
+
+  - id: jokic_30_point_streak
+    query: "Jokic longest streak of 30 point games"
+    category: streak
+    priority: p1
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - streak
+    review_notes: "Player longest threshold streak."
+
+  - id: lebron_active_20_point_streak
+    query: "LeBron current 20+ point streak"
+    category: streak
+    priority: p2
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - streak
+    review_notes: "Active/current streak phrasing."
+
+  - id: lakers_win_streak
+    query: "longest Lakers winning streak"
+    category: streak
+    priority: p2
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_shape: streak_table
+    expected_sections:
+      - streak
+    review_notes: "Team outcome streak."
+
+  - id: celtics_120_point_streak
+    query: "Celtics 5 straight games scoring 120+"
+    category: streak
+    priority: p2
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - streak
+    review_notes: "Team threshold streak shorthand."
+
+  - id: best_5_game_assist_stretch
+    query: "best 5-game assists stretch this season"
+    category: rolling_stretch
+    priority: p2
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 5
+    review_notes: "Rolling assists leaderboard."
+
+  - id: jokic_5_game_rebound_stretch
+    query: "Jokic best 5-game rebounding stretch this season"
+    category: rolling_stretch
+    priority: p2
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 5
+    review_notes: "Named-player rolling rebound stretch; sampled output remains leaderboard-shaped."
+
+  - id: booker_4_game_scoring_stretch
+    query: "Booker hottest 4-game scoring stretch"
+    category: rolling_stretch
+    priority: p2
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 4
+    review_notes: "Named-player rolling scoring stretch."
+
+  - id: team_5_game_scoring_stretch
+    query: "best 5-game team scoring stretch this season"
+    category: rolling_stretch
+    priority: p2
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    review_notes: "Manual review: team rolling-stretch wording currently routes to player_stretch_leaderboard."
+    manual_review:
+      status: needs_product_decision
+      tags:
+        - rolling_stretch
+        - team_scope
+      notes: "Either document team rolling stretches as unsupported or add a team-backed route."
+
+  - id: lakers_finals_appearances
+    query: "Lakers Finals appearances"
+    category: playoff_history
+    priority: p1
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_sections:
+      - summary
+      - by_season
+    review_notes: "Single-team playoff round appearances surface."
+
+  - id: most_finals_appearances_since_1980
+    query: "most Finals appearances since 1980"
+    category: playoff_history
+    priority: p1
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: season
+    expected_sections:
+      - leaderboard
+    review_notes: "Playoff appearances leaderboard with season range."
+
+  - id: best_finals_record_since_1980
+    query: "best Finals record since 1980"
+    category: playoff_history
+    priority: p1
+    expected_status: ok
+    expected_route: playoff_round_record
+    expected_shape: playoff_round_record
+    expected_filters:
+      - kind: season
+    expected_sections:
+      - leaderboard
+    review_notes: "Playoff round record leaderboard."
+
+  - id: playoff_appearances_leaderboard
+    query: "Which teams have the most playoff appearances?"
+    category: playoff_history
+    priority: p2
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Generic playoff appearances leaderboard."
+
+  - id: lakers_celtics_playoff_history
+    query: "Lakers vs Celtics playoff history"
+    category: playoff_matchup_history
+    priority: p1
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Historic Finals-heavy matchup surface."
+
+  - id: specific_date_jan_1
+    query: "Who scored the most points on January 1 2026?"
+    category: date_range
+    priority: p2
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Manual review: sampled output appeared to ignore the explicit date instead of filtering or returning no_result."
+    manual_review:
+      status: missing_filter
+      tags:
+        - date_filter
+      notes: "Check explicit single-date parsing/routing before promoting any expectation."
+
+  - id: jokic_since_all_star_break
+    query: "Jokic since All-Star break"
+    category: date_range
+    priority: p1
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - finder
+    review_notes: "Date-window shorthand currently returns finder rows."
+
+  - id: top_scorers_in_march
+    query: "top scorers in March"
+    category: date_range
+    priority: p1
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - leaderboard
+    review_notes: "Month-window leaderboard."
+
+  - id: best_offensive_teams_since_january
+    query: "best offensive teams since January"
+    category: date_range
+    priority: p2
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - leaderboard
+    review_notes: "Team stat leaderboard with open-ended date filter."
+
+  - id: jokic_home_away_split
+    query: "Jokic home vs away this season"
+    category: split
+    priority: p1
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_filters:
+      - kind: location
+        value: Home
+      - kind: location
+        value: Away
+    expected_sections:
+      - summary
+      - split_comparison
+    review_notes: "Player home/away split."
+
+  - id: celtics_wins_losses_split
+    query: "Celtics wins vs losses"
+    category: split
+    priority: p2
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_filters:
+      - kind: outcome
+        value: Wins
+      - kind: outcome
+        value: Losses
+    expected_sections:
+      - summary
+      - split_comparison
+    review_notes: "Team wins/losses split."
+
+  - id: lakers_back_to_back_record
+    query: "Lakers on back-to-backs record"
+    category: split
+    priority: p2
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: schedule
+        value: "True"
+    expected_sections:
+      - summary
+    review_notes: "Schedule-context team record."
+
+  - id: jokic_rest_advantage
+    query: "Jokic summary with rest advantage"
+    category: split
+    priority: p2
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: schedule
+        value: advantage
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player summary with schedule rest context."
+
+  - id: tatum_clutch_stats
+    query: "Tatum clutch stats"
+    category: unsupported_boundary
+    priority: p2
+    expected_status: no_result
+    expected_route: player_game_summary
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_filters:
+      - kind: situation
+        value: "True"
+    review_notes: "Clutch recognition returns an unsupported-data no-result response."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - clutch
+      notes: "Expected unsupported until clutch source coverage is shipped."
+
+  - id: best_defender_subjective
+    query: "Who is the best defender in the NBA?"
+    category: unsupported_boundary
+    priority: p2
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Subjective best-defender query is outside current supported stat definitions."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - subjective
+        - defense
+      notes: "Expected unsupported/product-boundary query."
+
+  - id: mvp_candidates_subjective
+    query: "Who are the MVP candidates?"
+    category: unsupported_boundary
+    priority: p2
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Awards/MVP forecasting is outside current product boundary."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - subjective
+        - awards
+      notes: "Expected unsupported/product-boundary query."
+
+  - id: best_player_lately_ambiguous
+    query: "Who is the best player lately?"
+    category: unsupported_boundary
+    priority: p2
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    expected_filters:
+      - kind: window
+        value: "10"
+    review_notes: "Vague best-player-lately query lacks an objective metric definition."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - subjective
+        - recent_window
+      notes: "Expected unsupported until a metric-backed definition exists."

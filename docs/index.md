@@ -77,6 +77,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/WEAK_CONTRACT_DECISION_PREFLIGHT.md` — product-decision preflight for `lineup_summary`, `player_on_off`, and single-team `playoff_appearances` weak contracts
 - `planning/raw-product/LEADERBOARD_SUPPORTING_COLUMNS_PREFLIGHT.md` — product-decision preflight for route-specific leaderboard supporting columns
 - `planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` — plan for a manual-first raw query answer QA harness over a curated natural-language corpus
+- `planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md` — living manual-review findings inventory from raw query answer QA harness runs
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
 - `planning/result-display-lock-in/result_display_wave_4_findings.md` — Wave 4 lock-in findings for records, comparisons, and playoff history

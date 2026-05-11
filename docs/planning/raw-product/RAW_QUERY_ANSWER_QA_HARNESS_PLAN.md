@@ -342,6 +342,61 @@ Future hard tests should live near the behavior they protect:
 - frontend rendering/hero regressions: `frontend/src/test/ResultRenderer.test.tsx`
 - corpus-level smoke: a small test around a promoted fixture subset, not the whole manual QA corpus
 
+## Wave 2 Status
+
+Wave 2 expanded the corpus and added triage-oriented review metadata. It did not
+change production query behavior, frontend rendering behavior, or hard tests.
+
+Status:
+
+- Corpus expanded from 12 to 78 curated cases.
+- Optional `manual_review` metadata is supported in the corpus and emitted into
+  JSONL, Markdown, and summary reports.
+- Triage fields are supported:
+  - manual review status, tags, and notes
+  - suggested review tags
+  - suspicious flags for missing backend answer text on P0/P1 summary routes,
+    ok results with no sections, unusually high player top-performance point
+    totals, `playoff teams` queries returning `season_type=Playoffs`, expected
+    unsupported/error-like cases returning ok, and expected-ok cases returning
+    no-result/error.
+- Findings inventory created:
+  - `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md`
+- Latest output path:
+  - `outputs/raw_query_answer_qa/20260511T043039Z/report.md`
+
+Latest run summary:
+
+- Run ID: `20260511T043039Z`
+- Cases: 78
+- Result statuses: `ok: 68`, `no_result: 4`, `error: 6`
+- Expectation cases: `pass: 78`
+- Expectation checks: `pass: 375`
+- Failed case IDs: `[]`
+- Suspicious flag cases: 22
+
+Current limitations:
+
+- The harness still uses backend-provided `metadata.answer_phrase` or
+  `metadata.count_phrase` only. Frontend-only hero sentences are not extracted.
+- `shape_hint` remains a backend approximation.
+- Suspicious flags are review aids only; they do not fail expectations unless
+  the corpus encodes a hard expectation.
+- Several corpus cases intentionally encode current production behavior while
+  marking manual-review concerns, so the report can group fix families before
+  targeted implementation.
+
+Next recommended phase:
+
+- Review `RAW_QUERY_ANSWER_QA_FINDINGS.md` and group fixes by family before
+  changing query behavior:
+  - opponent-quality / playoff-team semantics
+  - top-performance data quality
+  - record-when condition filtering
+  - unsupported/no-result policy for missing filters and product boundaries
+  - frontend-rendered answer extraction
+  - date handling
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.
