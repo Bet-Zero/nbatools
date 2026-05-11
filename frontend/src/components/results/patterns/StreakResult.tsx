@@ -52,6 +52,17 @@ const AVERAGE_COLUMNS = [
   "plus_minus_avg",
 ];
 
+const STAT_AVERAGE_COLUMNS: Record<string, string> = {
+  ast: "ast_avg",
+  efg_pct: "efg_pct_avg",
+  fg3m: "fg3m_avg",
+  minutes: "minutes_avg",
+  plus_minus: "plus_minus_avg",
+  pts: "pts_avg",
+  reb: "reb_avg",
+  ts_pct: "ts_pct_avg",
+};
+
 export default function StreakResult({ data, sectionKey = "streak" }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
@@ -201,7 +212,7 @@ function tableColumns(
     });
   }
 
-  for (const key of AVERAGE_COLUMNS) {
+  for (const key of defaultAverageColumns(rows, data)) {
     if (!rows.some((row) => hasValue(row[key]))) continue;
     columns.push({
       key,
@@ -213,6 +224,44 @@ function tableColumns(
   }
 
   return columns;
+}
+
+function defaultAverageColumns(rows: SectionRow[], data: QueryResponse): string[] {
+  const requested = requestedAverageColumn(rows, data.result?.metadata);
+  if (requested && rows.some((row) => hasValue(row[requested]))) {
+    return [requested];
+  }
+
+  const firstAvailable = AVERAGE_COLUMNS.find((key) =>
+    rows.some((row) => hasValue(row[key])),
+  );
+  return firstAvailable ? [firstAvailable] : [];
+}
+
+function requestedAverageColumn(
+  rows: SectionRow[],
+  metadata: ResultMetadata | undefined,
+): string | null {
+  const metadataStat = metadataText(metadata, "stat");
+  const statFromMetadata = metadataStat ? statAverageColumn(metadataStat) : null;
+  if (statFromMetadata) return statFromMetadata;
+
+  for (const row of rows) {
+    const condition = textValue(row, "condition");
+    if (!condition) continue;
+    if (condition === "made_three") return "fg3m_avg";
+
+    const thresholdMatch = condition.match(/^([a-z0-9_]+)(?:>=|<=|:)/i);
+    if (!thresholdMatch) continue;
+    const averageColumn = statAverageColumn(thresholdMatch[1]);
+    if (averageColumn) return averageColumn;
+  }
+
+  return null;
+}
+
+function statAverageColumn(stat: string): string | null {
+  return STAT_AVERAGE_COLUMNS[stat.toLowerCase()] ?? null;
 }
 
 function heroSentence(

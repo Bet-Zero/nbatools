@@ -289,6 +289,11 @@ function roundRecordSentence(
     numericValue(row, "games_played") ??
     numericValue(row, "games") ??
     numericValue(row, "series");
+  const winPctPhrase = hasValue(row.win_pct)
+    ? `, a ${formatValue(row.win_pct, "win_pct")} win rate${
+        games !== null ? "," : ""
+      }`
+    : "";
 
   if (metricKey === "win_pct" || !metricKey) {
     return (
@@ -297,7 +302,7 @@ function roundRecordSentence(
         {round ? `${round} record` : "playoff round record"}
         {context}
         {record ? `, going ${record}` : ""}
-        {hasValue(row.win_pct) ? ` (${winPctDecimal(row.win_pct)})` : ""}
+        {winPctPhrase}
         {games !== null ? ` across ${formatValue(games, "games")} games` : ""}.
       </>
     );
@@ -830,14 +835,6 @@ function roundRecordContext(
 
   const range = seasonRange(metadata, row);
   return range ? ` from ${range}` : "";
-}
-
-function winPctDecimal(value: unknown): string {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return formatValue(value, "win_pct");
-  }
-  const decimal = value > 1 ? value / 100 : value;
-  return decimal.toFixed(3).replace(/^0/, "");
 }
 
 function opponentValue(row: SectionRow): string {

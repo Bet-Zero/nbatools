@@ -37,24 +37,11 @@ type TeamDisplay = {
   name: string;
 };
 
-const TEAM_RECORD_STATS = [
+const TEAM_RECORD_DEFAULT_STATS = [
   "games",
   "win_pct",
   "pts_avg",
   "plus_minus_avg",
-  "reb_avg",
-  "ast_avg",
-  "fg3m_avg",
-];
-
-const TEAM_RECORD_OPTIONAL_STATS = [
-  "opponent_pts_avg",
-  "net_rating",
-  "stl_avg",
-  "blk_avg",
-  "tov_avg",
-  "efg_pct_avg",
-  "ts_pct_avg",
 ];
 
 const TEAM_RECORD_BY_SEASON_STATS = [
@@ -303,10 +290,7 @@ function teamRecordColumns(
   rows: SectionRow[],
   metadata: ResultMetadata | undefined,
 ): Array<ResultTableColumn<SectionRow>> {
-  const row = rows[0];
   const opponentGroup = opponentGroupLabel(metadata);
-  const season = teamRecordSeasonLabel(row, metadata);
-  const seasonType = teamRecordSeasonTypeLabel(row, metadata, opponentGroup);
   const location = locationFilterLabel(metadata);
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
@@ -327,36 +311,18 @@ function teamRecordColumns(
     render: (row) => recordText(row),
   });
 
-  for (const key of TEAM_RECORD_STATS) {
+  for (const key of TEAM_RECORD_DEFAULT_STATS) {
     if (rows.some((row) => hasValue(row[key]))) {
       columns.push(valueColumn(key));
     }
   }
 
-  if (seasonType) {
-    columns.push({
-      key: "season_type",
-      sourceKeys: ["season_type"],
-      header: "Season Type",
-      render: () => seasonType,
-    });
-  }
-
   if (opponentGroup) {
     columns.push({
       key: "opponent_group",
-      sourceKeys: ["opponent_quality", "season_type"],
+      sourceKeys: ["opponent_quality"],
       header: "Opponent Group",
       render: () => opponentGroup,
-    });
-  }
-
-  if (season && !opponentGroup) {
-    columns.push({
-      key: "season",
-      sourceKeys: ["season", "season_start", "season_end"],
-      header: "Season",
-      render: () => season,
     });
   }
 
@@ -378,12 +344,6 @@ function teamRecordColumns(
         <span className={styles.entityCell}>{teamIdentity(opponent)}</span>
       ),
     });
-  }
-
-  for (const key of TEAM_RECORD_OPTIONAL_STATS) {
-    if (rows.some((row) => hasValue(row[key]))) {
-      columns.push(valueColumn(key));
-    }
   }
 
   return columns;
@@ -907,19 +867,6 @@ function teamRecordSeasonLabel(
     textValue(row, "season_end") ?? metadataText(metadata, "end_season");
   if (start && end) return start === end ? start : `${start} to ${end}`;
   return start ?? end;
-}
-
-function teamRecordSeasonTypeLabel(
-  row: SectionRow | undefined,
-  metadata: ResultMetadata | undefined,
-  opponentGroup: string | null,
-): string | null {
-  const value = textValue(row, "season_type") ?? metadataText(metadata, "season_type");
-  if (!value) return null;
-  if (/^playoff teams$/i.test(opponentGroup ?? "") && value === "Playoffs") {
-    return null;
-  }
-  return value;
 }
 
 function locationFilterLabel(metadata: ResultMetadata | undefined): string | null {

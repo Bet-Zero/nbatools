@@ -1572,6 +1572,7 @@ def _finalize_route(parsed: dict) -> dict:
             "max_value": max_value,
             "last_n": last_n,
             "career_intent": career_intent,
+            "special_event": special_event,
         }
     # ---------------------------------------------------------------------------
     # Record-oriented routing: single team record

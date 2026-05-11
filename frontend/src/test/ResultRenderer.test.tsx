@@ -282,6 +282,61 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("prioritizes team record heroes for record-when player condition summaries", () => {
+    const data = makeResponse({
+      query: "What is Denver's record when Nikola Jokić has a triple-double?",
+      route: "player_game_summary",
+      result: {
+        query_class: "summary",
+        result_status: "ok",
+        metadata: {
+          query_text:
+            "What is Denver's record when Nikola Jokić has a triple-double?",
+          route: "player_game_summary",
+          season: "2025-26",
+          season_type: "Regular Season",
+          scope_kind: "single_season",
+          occurrence_event: { special_event: "triple_double" },
+          player_context: {
+            player_id: 203999,
+            player_name: "Nikola Jokić",
+          },
+          team_context: {
+            team_id: 1610612743,
+            team_abbr: "DEN",
+            team_name: "Nuggets",
+          },
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          summary: [
+            {
+              player_name: "Nikola Jokić",
+              games: 34,
+              wins: 24,
+              losses: 10,
+              win_pct: 0.706,
+              pts_avg: 31.2,
+              reb_avg: 14.1,
+              ast_avg: 12.3,
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Nuggets are 24-10 when Nikola Jokić records a triple-double this season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Nikola Jokić has averaged/)).not.toBeInTheDocument();
+  });
+
   it("trims trailing .0 from integer hero averages", () => {
     const data = makeResponse({
       query: "Luka last 5 games",
@@ -905,9 +960,9 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByRole("columnheader", { name: "Win %" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "3PM" }),
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Record Detail")).not.toBeInTheDocument();
+      screen.queryByRole("columnheader", { name: "3PM" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Record Detail")).toBeInTheDocument();
     expect(screen.queryByText("By Season Detail")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Show raw table" }),
@@ -976,6 +1031,21 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       within(table).getByRole("columnheader", { name: "Opponent Group" }),
     ).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "PPG" }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "+/-" }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).queryByRole("columnheader", { name: "REB" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(table).queryByRole("columnheader", { name: "AST" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(table).queryByRole("columnheader", { name: "3PM" }),
+    ).not.toBeInTheDocument();
     expect(within(table).getByText("Playoff Teams")).toBeInTheDocument();
     expect(
       within(table).queryByRole("columnheader", { name: "Season Type" }),
@@ -2853,10 +2923,19 @@ describe("ResultRenderer (substrate)", () => {
       screen.queryByRole("columnheader", { name: "Player" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "TS%" }),
+      screen.getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "TS%" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
-    expect(screen.queryByText("Full Streak Detail")).not.toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Show additional columns" }),
+    );
+    expect(
+      screen.getByRole("columnheader", { name: "Ts Pct Avg" }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText("Streak results")).not.toBeInTheDocument();
   });
 
@@ -2927,6 +3006,17 @@ describe("ResultRenderer (substrate)", () => {
       screen.queryByRole("columnheader", { name: "Status" }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Completed")).not.toBeInTheDocument();
+    const table = screen.getByRole("table", { name: "Streaks" });
+    expect(
+      within(table).getByRole("columnheader", { name: "PTS" }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).queryByRole("columnheader", { name: "REB" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(table).queryByRole("columnheader", { name: "AST" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
   });
 
   it("renders team streaks with team identity and hides repetitive completed status", () => {
@@ -2982,8 +3072,11 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("Completed")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "+/-" }),
+      screen.getByRole("columnheader", { name: "PTS" }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "+/-" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("4-0")).toBeInTheDocument();
   });
 
@@ -3172,7 +3265,7 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getAllByText("Boston Celtics").length).toBeGreaterThan(0);
     const roundRecord = screen.getByLabelText("Playoff round record result");
     expect(roundRecord.textContent).toContain(
-      "The Boston Celtics have the best Finals record from 1980-81 to 2024-25, going 28-14 (.667) across 42 games.",
+      "The Boston Celtics have the best Finals record from 1980-81 to 2024-25, going 28-14, a 66.7% win rate, across 42 games.",
     );
     expect(
       within(roundRecord).getByText("Finals record", { exact: false }),

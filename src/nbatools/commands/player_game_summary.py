@@ -24,6 +24,7 @@ from nbatools.commands.player_advanced_metrics import (
     compute_season_grouped_sample_advanced_metrics,
     load_team_games_for_seasons,
 )
+from nbatools.commands.player_occurrence_leaders import _flag_special_event
 from nbatools.commands.structured_results import NoResult, SummaryResult
 
 ALLOWED_STATS = {
@@ -225,6 +226,7 @@ def build_result(
     opponent: str | None = None,
     opponent_player: str | None = None,
     without_player: str | None = None,
+    special_event: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -329,6 +331,9 @@ def build_result(
         df = df.copy()
         if "game_date" in df.columns:
             df["game_date"] = pd.to_datetime(df["game_date"]).dt.normalize()
+
+    if special_event and not df.empty:
+        df = df[_flag_special_event(df, special_event)].copy()
 
     clutch_executed = False
     if clutch:
@@ -505,6 +510,7 @@ def run(
     player: str | None = None,
     team: str | None = None,
     opponent: str | None = None,
+    special_event: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
     wins_only: bool = False,
@@ -525,6 +531,7 @@ def run(
         player=player,
         team=team,
         opponent=opponent,
+        special_event=special_event,
         home_only=home_only,
         away_only=away_only,
         wins_only=wins_only,

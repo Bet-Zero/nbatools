@@ -198,11 +198,16 @@ describe("Wave 2 table pattern contracts", () => {
       "Games",
       "Record",
       "PTS",
-      "AST",
-      "+/-",
     ]);
+    expect(
+      within(playerTable).queryByRole("columnheader", { name: "AST" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(playerTable).queryByRole("columnheader", { name: "+/-" }),
+    ).not.toBeInTheDocument();
     expect(within(playerTable).getByText("20+ PTS")).toBeInTheDocument();
     expect(within(playerTable).getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("Full Streak Detail")).toBeInTheDocument();
 
     const teamData = makeResponse("team_streak_finder", {
       queryClass: "streak",

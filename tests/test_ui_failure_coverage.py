@@ -34,6 +34,10 @@ from nbatools.query_service import execute_natural_query
 pytestmark = pytest.mark.query
 
 
+def _is_triple_double(row: dict) -> bool:
+    return sum(1 for stat in ("pts", "reb", "ast", "stl", "blk") if (row.get(stat) or 0) >= 10) >= 3
+
+
 # ---------------------------------------------------------------------------
 # 1. Player-vs-player-as-opponent
 # ---------------------------------------------------------------------------
@@ -329,6 +333,24 @@ class TestWithoutPlayer:
         assert summary["losses"] == 5
         assert len(sections["game_log"]) == 8
         assert all(row["team_abbr"] == "NYK" for row in sections["game_log"])
+
+    @pytest.mark.needs_data
+    def test_record_when_player_special_event_filters_summary_and_game_log(self):
+        qr = execute_natural_query("What is Denver's record when Nikola Jokić has a triple-double?")
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team_context"]["team_abbr"] == "DEN"
+        assert qr.metadata["occurrence_event"] == {"special_event": "triple_double"}
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        game_log = sections["game_log"]
+
+        assert summary["games"] == len(game_log)
+        assert summary["wins"] == sum(1 for row in game_log if row["wl"] == "W")
+        assert summary["losses"] == sum(1 for row in game_log if row["wl"] == "L")
+        assert summary["games"] > 0
+        assert all(_is_triple_double(row) for row in game_log)
 
     @pytest.mark.needs_data
     def test_record_leaderboard_without_player_returns_no_match(self):

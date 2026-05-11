@@ -793,7 +793,7 @@ function recordStat(row: SectionRow): StatChip | null {
       value: `${formatValue(wins, "wins")}-${formatValue(losses, "losses")}`,
       context: [
         games !== null ? `${formatValue(games, "games")} games` : null,
-        winPct !== null ? `${formatValue(winPct, "win_pct")} win pct` : null,
+        winPct !== null ? `${formatValue(winPct, "win_pct")} win rate` : null,
       ]
         .filter(Boolean)
         .join(" / "),

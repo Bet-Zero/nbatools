@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { QueryResponse, ResultMetadata, SectionRow } from "../api/types";
 import ResultRenderer from "../components/results/ResultRenderer";
@@ -244,6 +244,8 @@ describe("Wave 1 table pattern contracts", () => {
       "Win %",
       "PPG",
       "+/-",
+    ]);
+    expectNoHeaders(table, [
       "REB",
       "AST",
       "3PM",
@@ -252,6 +254,18 @@ describe("Wave 1 table pattern contracts", () => {
       "Opp PPG",
       "Net",
     ]);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Show additional columns" }),
+    );
+    expect(
+      screen.getByRole("columnheader", { name: "Reb Avg" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Ast Avg" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Fg3m Avg" }),
+    ).toBeInTheDocument();
   });
 
   it("renders player season leaderboards with route-specific support columns", () => {

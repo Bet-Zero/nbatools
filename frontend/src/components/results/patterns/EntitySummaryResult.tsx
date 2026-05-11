@@ -26,18 +26,30 @@ export default function EntitySummaryResult({
 }: Props) {
   const row = data.result?.sections?.[sectionKey]?.[0];
   if (!row) return null;
+  const metadata = data.result?.metadata;
+  const recordWhenSummary = recordWhenPlayerConditionSummary(
+    row,
+    metadata,
+    data.query,
+  );
   const bySeasonRows = sortedBySeasonRows(
     data.result?.sections?.by_season ?? [],
   );
-  const showBySeason = shouldShowBySeason(data.result?.metadata, bySeasonRows);
+  const showBySeason = shouldShowBySeason(metadata, bySeasonRows);
 
   return (
     <section className={styles.pattern} aria-label="Player summary result">
       <ResultHero
-        sentence={summarySentence(row, data.result?.metadata, data.query)}
-        subjectIllustration={heroIdentity(row, data.result?.metadata)}
-        disambiguationNote={disambiguationNote(data.result?.metadata)}
-        tone="accent"
+        sentence={
+          recordWhenSummary?.sentence ??
+          summarySentence(row, metadata, data.query)
+        }
+        subjectIllustration={
+          recordWhenSummary?.subjectIllustration ?? heroIdentity(row, metadata)
+        }
+        disambiguationNote={disambiguationNote(metadata)}
+        tone={recordWhenSummary ? "team" : "accent"}
+        teamAccentAbbr={recordWhenSummary?.teamAbbr ?? null}
       />
       {showBySeason && (
         <ResultTable
@@ -233,6 +245,146 @@ function summarySentence(
   }
 
   return `${name} has averaged ${averages}${context}.`;
+}
+
+type RecordWhenPlayerConditionSummary = {
+  sentence: string;
+  subjectIllustration: ReactNode;
+  teamAbbr: string | null;
+};
+
+function recordWhenPlayerConditionSummary(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+  query: string,
+): RecordWhenPlayerConditionSummary | null {
+  const route = metadataText(metadata, "route");
+  const queryText = `${query} ${metadataText(metadata, "query_text") ?? ""}`;
+  if (route !== "player_game_summary" || !/\brecord\b/i.test(queryText)) {
+    return null;
+  }
+
+  const record = recordValue(row);
+  const team = recordWhenTeam(metadata, row);
+  const condition = recordWhenConditionPhrase(metadata);
+  if (record === "—" || !team || !condition) return null;
+
+  const player = playerName(row, metadata);
+  const context = recordWhenContext(row, metadata, query);
+
+  return {
+    sentence: `${teamSubject(team.name)} are ${record} when ${player} ${condition}${context}.`,
+    subjectIllustration: (
+      <EntityIdentity
+        kind="team"
+        teamId={team.id}
+        teamAbbr={team.abbr}
+        teamName={team.name}
+      />
+    ),
+    teamAbbr: team.abbr,
+  };
+}
+
+function recordWhenTeam(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow,
+): { id: number | string | null; abbr: string | null; name: string } | null {
+  const context = metadata?.team_context;
+  const name =
+    context?.team_name ??
+    textValue(row, "team_name") ??
+    textValue(row, "team") ??
+    metadataText(metadata, "team");
+  if (!name) return null;
+
+  return {
+    id: context?.team_id ?? identityId(row.team_id),
+    abbr:
+      context?.team_abbr ??
+      textValue(row, "team_abbr") ??
+      metadataText(metadata, "team"),
+    name,
+  };
+}
+
+function teamSubject(name: string): string {
+  return /^the\b/i.test(name) ? name : `The ${name}`;
+}
+
+function recordWhenConditionPhrase(
+  metadata: ResultMetadata | undefined,
+): string | null {
+  const occurrence = metadata?.occurrence_event;
+  if (occurrence && typeof occurrence === "object" && !Array.isArray(occurrence)) {
+    const special = (occurrence as Record<string, unknown>).special_event;
+    if (special === "triple_double") return "records a triple-double";
+    if (special === "double_double") return "records a double-double";
+    if (typeof special === "string" && special.trim()) {
+      return `records a ${special.replace(/_/g, "-")}`;
+    }
+  }
+
+  const stat = metadataText(metadata, "stat");
+  if (!stat) return null;
+
+  const min = metadataNumber(metadata, "min_value");
+  const max = metadataNumber(metadata, "max_value");
+  if (min !== null) {
+    return `${conditionVerb(stat)} ${formatProseValue(min, stat)}+ ${conditionNoun(
+      stat,
+    )}`;
+  }
+  if (max !== null) {
+    return `${conditionVerb(stat)} ${formatProseValue(max, stat)} or fewer ${conditionNoun(
+      stat,
+    )}`;
+  }
+  return null;
+}
+
+function recordWhenContext(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+  query: string,
+): string {
+  const queryText = `${query} ${metadataText(metadata, "query_text") ?? ""}`;
+  if (/\bthis\s+(?:season|year)\b/i.test(queryText)) return " this season";
+
+  const hasExplicitSeason = /\b\d{4}(?:-\d{2})?\b/.test(queryText);
+  if (
+    !hasExplicitSeason &&
+    metadata?.scope_kind === "single_season" &&
+    (metadataText(metadata, "season") || textValue(row, "season_start"))
+  ) {
+    return " this season";
+  }
+
+  const timeframe = timeframePhrase(row, metadata, query);
+  return timeframe ? ` ${timeframe}` : "";
+}
+
+function conditionVerb(stat: string): string {
+  const normalized = stat.toLowerCase();
+  if (normalized === "pts") return "scores";
+  if (normalized === "reb") return "grabs";
+  if (normalized === "fg3m") return "makes";
+  if (normalized === "blk") return "blocks";
+  return "records";
+}
+
+function conditionNoun(stat: string): string {
+  const normalized = stat.toLowerCase();
+  const labels: Record<string, string> = {
+    ast: "assists",
+    blk: "blocks",
+    fg3m: "threes",
+    pts: "points",
+    reb: "rebounds",
+    stl: "steals",
+    tov: "turnovers",
+  };
+  return labels[normalized] ?? stat.replace(/_/g, " ");
 }
 
 function lineupSummarySentence(
@@ -602,6 +754,14 @@ function metadataText(
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+function metadataNumber(
+  metadata: ResultMetadata | undefined,
+  key: string,
+): number | null {
+  const value = metadata?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function identityId(value: unknown): number | string | null {

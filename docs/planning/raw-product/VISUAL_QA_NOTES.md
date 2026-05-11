@@ -37,6 +37,21 @@ Recent related work before this visual QA pass:
 | Low | Comparison Panels | Record mini-card appears to duplicate wording like `win pct pct`. | Clean up comparison card record sublabel formatting. | Batch 3 |
 | Low | Leaderboard Table | Some team/abbreviation text can truncate awkwardly in narrow cells, e.g. `P...`. | Review entity-cell width/abbreviation behavior during table polish. | Batch 4 |
 
+## Fix Wave 1 Status
+
+Implementation return package:
+`return_packages/raw-product/VISUAL_QA_TARGETED_FIX_WAVE_1_RETURN_PACKAGE.md`
+
+| Target | Status | Notes |
+|---|---|---|
+| Entity Summary record-when player condition | Fixed | `player_game_summary` now filters special-event summary/game-log rows, and `EntitySummaryResult` prioritizes team record hero wording for record-when player-condition summaries. |
+| Streak Table density/clipping | Fixed | Default Streak tables now keep trust-critical columns plus one requested/primary metric; secondary stats are available through `Show additional columns`. |
+| Team Record density/clipping | Fixed | Single-summary Team Record tables now default to `Team`, `W-L`, `Games`, `Win %`, `PPG`, `+/-`, and directly relevant context such as `Opponent Group`; support stats move to `Show additional columns`. |
+| Playoff Round Records percentage format | Fixed | Hero copy now uses percentage win-rate wording to match the table. |
+| Comparison Panels duplicate `pct` wording | Fixed | Record-card context now uses `win rate` wording. |
+| Historical playoff `Round unavailable` repetition | Deferred | Still low priority; changing historical unavailable display would expand beyond this targeted density/wrong-answer wave. |
+| Generic leaderboard entity-cell truncation | Deferred | Still low priority; this wave did not touch leaderboard cell layout. |
+
 ---
 
 # Batch 1
