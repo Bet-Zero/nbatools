@@ -52,6 +52,18 @@ Implementation return package:
 | Historical playoff `Round unavailable` repetition | Deferred | Still low priority; changing historical unavailable display would expand beyond this targeted density/wrong-answer wave. |
 | Generic leaderboard entity-cell truncation | Deferred | Still low priority; this wave did not touch leaderboard cell layout. |
 
+### Entity Summary Record-When Filter Follow-Up
+
+Follow-up return package:
+`return_packages/raw-product/ENTITY_SUMMARY_RECORD_WHEN_FILTER_FOLLOWUP_RETURN_PACKAGE.md`
+
+- Wave 1 fixed the Entity Summary hero wording for record-when player-condition summaries.
+- Visual recheck still showed `43-22` for `What is Denver's record when Nikola Jokić has a triple-double?`, which matched the unfiltered Denver/Jokić season sample.
+- Follow-up inspection verified the live backend route already carries `special_event="triple_double"` into `player_game_summary` and computes the summary from the filtered 34-game sample: `24-10`.
+- Root cause for the stale visual recheck was the `/review` page result cache reusing an old unfiltered payload under cache namespace `v1`; this follow-up bumps the cache namespace to force fresh query execution.
+- The query metadata now exposes an existing applied-filter chip: `Special Event: Triple Double`.
+- Backend regressions now assert the exact filtered sample and reject the stale `65` game, `43-22` record.
+
 ---
 
 # Batch 1

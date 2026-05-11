@@ -420,6 +420,11 @@ describe("migrated result envelope", () => {
             { label: "pts min", value: "30.0001", kind: "threshold" },
             { label: "OPP PTS max", value: "99.9999", kind: "threshold" },
             {
+              label: "Special Event",
+              value: "Triple Double",
+              kind: "special_event",
+            },
+            {
               label: "Date range",
               value: "2026-04-01 \u2013 2026-04-12",
               kind: "date",
@@ -439,6 +444,8 @@ describe("migrated result envelope", () => {
     expect(screen.getAllByText("Filter").length).toBeGreaterThan(0);
     expect(screen.getAllByText("30+ PTS").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Opp PTS <= 100").length).toBeGreaterThan(0);
+    expect(screen.getByText("Special Event")).toBeInTheDocument();
+    expect(screen.getAllByText("Triple Double").length).toBeGreaterThan(0);
     expect(screen.getByText("Date range")).toBeInTheDocument();
     expect(screen.getAllByText("Apr 1\u201312, 2026").length).toBeGreaterThan(0);
     expect(screen.queryByText(/2026-04-01/)).not.toBeInTheDocument();

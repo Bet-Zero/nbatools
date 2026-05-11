@@ -336,20 +336,34 @@ class TestWithoutPlayer:
 
     @pytest.mark.needs_data
     def test_record_when_player_special_event_filters_summary_and_game_log(self):
-        qr = execute_natural_query("What is Denver's record when Nikola Jokić has a triple-double?")
+        query = "What is Denver's record when Nikola Jokić has a triple-double?"
+        parsed = parse_query(query)
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["route_kwargs"]["special_event"] == "triple_double"
+        assert parsed["occurrence_event"] == {"special_event": "triple_double"}
+
+        qr = execute_natural_query(query)
         assert qr.route == "player_game_summary"
         assert qr.result.result_status == "ok"
         assert qr.metadata["team_context"]["team_abbr"] == "DEN"
         assert qr.metadata["occurrence_event"] == {"special_event": "triple_double"}
+        assert {
+            "label": "Special Event",
+            "value": "Triple Double",
+            "kind": "special_event",
+        } in qr.metadata["applied_filters"]
 
         sections = qr.to_dict()["sections"]
         summary = sections["summary"][0]
         game_log = sections["game_log"]
 
+        assert summary["games"] == 34
+        assert summary["wins"] == 24
+        assert summary["losses"] == 10
+        assert (summary["games"], summary["wins"], summary["losses"]) != (65, 43, 22)
         assert summary["games"] == len(game_log)
         assert summary["wins"] == sum(1 for row in game_log if row["wl"] == "W")
         assert summary["losses"] == sum(1 for row in game_log if row["wl"] == "L")
-        assert summary["games"] > 0
         assert all(_is_triple_double(row) for row in game_log)
 
     @pytest.mark.needs_data

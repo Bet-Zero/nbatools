@@ -51,6 +51,7 @@ def _patch_identity_contexts(monkeypatch) -> None:
     }
     team_contexts = {
         "BOS": {"team_id": 1610612738, "team_abbr": "BOS", "team_name": "Celtics"},
+        "DEN": {"team_id": 1610612743, "team_abbr": "DEN", "team_name": "Nuggets"},
         "LAL": {"team_id": 1610612747, "team_abbr": "LAL", "team_name": "Lakers"},
         "PHX": {"team_id": 1610612756, "team_abbr": "PHX", "team_name": "Suns"},
     }
@@ -639,6 +640,37 @@ class TestMetadataPreservation:
         assert (
             qr.metadata["count_phrase"] == "Nikola Jokić has recorded 2 triple-doubles this season."
         )
+
+    def test_record_when_player_special_event_metadata_exposes_filter(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert route == "player_game_summary"
+            assert kwargs["special_event"] == "triple_double"
+            return SummaryResult(
+                summary=pd.DataFrame(
+                    [
+                        {
+                            "player_name": "Nikola Jokić",
+                            "games": 34,
+                            "wins": 24,
+                            "losses": 10,
+                        }
+                    ]
+                )
+            )
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute)
+
+        qr = execute_natural_query("What is Denver's record when Nikola Jokić has a triple-double?")
+
+        assert qr.metadata["route"] == "player_game_summary"
+        assert qr.metadata["occurrence_event"] == {"special_event": "triple_double"}
+        assert {
+            "label": "Special Event",
+            "value": "Triple Double",
+            "kind": "special_event",
+        } in qr.metadata["applied_filters"]
 
     def test_team_opponent_points_count_phrase_includes_record(self, monkeypatch):
         _patch_identity_contexts(monkeypatch)

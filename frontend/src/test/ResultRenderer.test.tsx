@@ -282,7 +282,7 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("prioritizes team record heroes for record-when player condition summaries", () => {
+  it("uses filtered team record fields for record-when player condition summaries", () => {
     const data = makeResponse({
       query: "What is Denver's record when Nikola Jokić has a triple-double?",
       route: "player_game_summary",
@@ -297,6 +297,13 @@ describe("ResultRenderer (substrate)", () => {
           season_type: "Regular Season",
           scope_kind: "single_season",
           occurrence_event: { special_event: "triple_double" },
+          applied_filters: [
+            {
+              label: "Special Event",
+              value: "Triple Double",
+              kind: "special_event",
+            },
+          ],
           player_context: {
             player_id: 203999,
             player_name: "Nikola Jokić",
@@ -334,6 +341,7 @@ describe("ResultRenderer (substrate)", () => {
         "The Nuggets are 24-10 when Nikola Jokić records a triple-double this season.",
       ),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/43-22/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Nikola Jokić has averaged/)).not.toBeInTheDocument();
   });
 

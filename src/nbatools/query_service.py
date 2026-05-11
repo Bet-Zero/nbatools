@@ -236,6 +236,18 @@ def _opponent_quality_surface_term(value: Any) -> str | None:
     return _clean_text(value)
 
 
+def _special_event_filter_label(value: Any) -> str | None:
+    text = _clean_text(value)
+    if not text:
+        return None
+
+    labels = {
+        "triple_double": "Triple Double",
+        "double_double": "Double Double",
+    }
+    return labels.get(text, text.replace("_", " ").title())
+
+
 def _build_applied_filters(
     source: dict[str, Any],
     *,
@@ -293,6 +305,23 @@ def _build_applied_filters(
                 "label": "Opponent quality",
                 "value": opponent_quality_value,
                 "kind": "quality",
+            }
+        )
+
+    occurrence_event = source.get("occurrence_event")
+    special_event = None
+    if isinstance(occurrence_event, dict):
+        special_event = occurrence_event.get("special_event")
+    special_event = (
+        special_event or source.get("special_event") or route_kwargs.get("special_event")
+    )
+    special_event_label = _special_event_filter_label(special_event)
+    if special_event_label:
+        applied_filters.append(
+            {
+                "label": "Special Event",
+                "value": special_event_label,
+                "kind": "special_event",
             }
         )
 

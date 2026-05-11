@@ -39,7 +39,7 @@ interface RunProgress {
   label: string;
 }
 
-const REVIEW_CACHE_VERSION = "v1";
+const REVIEW_CACHE_VERSION = "v2";
 const REVIEW_CACHE_PREFIX = `nbatools.review:${REVIEW_CACHE_VERSION}:`;
 const REVIEW_CONCURRENCY_LIMIT = 3;
 

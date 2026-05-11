@@ -171,7 +171,7 @@ describe("ReviewPage", () => {
   it("uses cached results without calling postQuery", async () => {
     const cached = makeNoResult("Cached fixture");
     window.localStorage.setItem(
-      "nbatools.review:v1:A:Cached fixture",
+      "nbatools.review:v2:A:Cached fixture",
       JSON.stringify({ data: cached }),
     );
     vi.mocked(fetchDevFixtures).mockResolvedValue({
@@ -193,7 +193,7 @@ describe("ReviewPage", () => {
 
   it("clears cached results and visible review results", async () => {
     window.localStorage.setItem(
-      "nbatools.review:v1:A:Cached fixture",
+      "nbatools.review:v2:A:Cached fixture",
       JSON.stringify({ data: makeNoResult("Cached fixture") }),
     );
     vi.mocked(fetchDevFixtures).mockResolvedValue({
