@@ -1,0 +1,317 @@
+# Raw Query Answer QA Harness Plan
+
+## Purpose
+
+Build a lightweight backend/product QA harness for this question:
+
+Can a user ask NBA questions and get accurate, structured answers?
+
+The harness should support manual and ChatGPT review first. Selected objective failures can later be promoted into hard regression tests.
+
+This plan is discovery-backed and intentionally keeps Wave 1 small: run a curated query corpus, capture structured result envelopes, extract the most useful answer-review fields, and write JSONL plus Markdown reports. It should not require browser rendering in the first implementation.
+
+## Existing Infrastructure To Reuse
+
+The strongest existing reuse point is the backend query service:
+
+- `src/nbatools/query_service.py::execute_natural_query(query)` returns a `QueryResult`.
+- `src/nbatools/api_handlers.py::query_result_to_payload(qr)` converts that result into the same API envelope used by the React UI.
+- The envelope includes route, status, reason, confidence, intent, alternates, notes, caveats, metadata, sections, and section rows.
+
+The strongest existing corpus source is:
+
+- `docs/architecture/parser/examples.md`, extracted by `src/nbatools/parser_examples.py::extract_cases()`.
+
+That corpus is broad but not a correctness corpus. It includes supported examples, coverage-gated examples, stress inputs, intentionally ambiguous examples, and explicit unsupported boundaries.
+
+Existing broad sweep support:
+
+- `tools/parser_examples_full_sweep.py`
+- `make parser-examples-sweep`
+- ignored generated artifacts under `outputs/parser_examples_full_sweep/`
+
+Existing review UI support:
+
+- `frontend/src/ReviewPage.tsx`
+- `GET /api/dev/fixtures`
+- live `POST /query` execution
+- frontend shape grouping via `classifyResultShape()`
+
+## Key Gap
+
+There is no curated answer-QA corpus with review-oriented expectations.
+
+The existing 402-case parser examples are useful for breadth and route sanity, but they are not shaped around product answer correctness. Existing hard expectations are scattered across tests, usually as route/status/section assertions, with a few exact answer regressions.
+
+## Recommended Architecture
+
+Wave 1 should be a Python script, not an npm script and not a production CLI command.
+
+Recommended files:
+
+- `qa/raw_query_answer_corpus.yaml`
+- `tools/raw_query_answer_qa.py`
+- `outputs/raw_query_answer_qa/<run_id>/report.jsonl`
+- `outputs/raw_query_answer_qa/<run_id>/report.md`
+- `outputs/raw_query_answer_qa/<run_id>/summary.json`
+- optional Makefile target: `raw-query-answer-qa`
+
+Rationale:
+
+- Python can call `execute_natural_query()` directly and reuse the API payload conversion.
+- The harness can run without the frontend.
+- Generated artifacts already belong under ignored `outputs/`.
+- A `qa/` corpus keeps manual product-review cases separate from hard regression fixtures.
+- Once a case becomes objective and stable, promote it into a focused test file instead of making the whole QA corpus a required test suite.
+
+## Shape And Hero Policy
+
+Wave 1 should not import the React renderer.
+
+Shape handling:
+
+- Include `route`, `query_class`, and returned section pattern from the backend.
+- Add a best-effort `shape_hint` derived from route plus section presence.
+- Mark it as `shape_source: backend_approximation`.
+- Do not claim exact visual shape parity with `frontend/src/components/results/resultShapes.ts`.
+
+Hero handling:
+
+- Extract `metadata.count_phrase` and `metadata.answer_phrase` when present.
+- Store them as `answer_text` with `answer_text_source: backend_metadata`.
+- Leave `answer_text` null when the sentence is frontend-only.
+- Do not snapshot exact frontend hero sentences in Wave 1.
+
+Frontend-rendered hero extraction can be added later as a separate JS/headless-render pass if manual review shows it is worth the extra moving parts.
+
+## Corpus Schema
+
+Required now:
+
+- `id`: stable slug
+- `query`: natural-language query
+- `category`: product family such as `record_when`, `leaderboard`, `unsupported`
+- `priority`: `p0`, `p1`, or `p2`
+- `expected_status`: string or list of allowed statuses
+
+Optional now:
+
+- `expected_route`
+- `expected_reason`
+- `expected_shape`
+- `expected_filters`
+- `expected_sections`
+- `expected_row_counts`
+- `hard_assertions`
+- `review_notes`
+
+Wait until later:
+
+- exact frontend hero snapshots
+- exact full-table snapshots
+- broad per-column exact expected rows
+- browser-only shape assertions
+
+Example:
+
+```yaml
+version: 1
+cases:
+  - id: record_when_jokic_triple_double
+    query: "What is Denver's record when Nikola Jokic has a triple-double?"
+    category: record_when_player_condition
+    priority: p0
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: special_event
+        label: Special Event
+        value: Triple Double
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 34
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 34
+      - path: result.sections.summary.0.wins
+        equals: 24
+      - path: result.sections.summary.0.losses
+        equals: 10
+    review_notes: "Regression guard for stale unfiltered 65-game, 43-22 answer."
+
+  - id: top_scorers_this_season
+    query: "Who leads the NBA in points per game this season?"
+    category: leaderboard
+    priority: p1
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+
+  - id: cooled_off_unsupported
+    query: "Which scorers have cooled off over their last 10 games?"
+    category: unsupported_boundary
+    priority: p2
+    expected_status:
+      - no_result
+      - error
+    expected_reason:
+      - unsupported
+      - unrouted
+    review_notes: "Intentional semantic boundary until trend/drop-off definitions exist."
+```
+
+## Report Schema
+
+Each JSONL row should include:
+
+- `id`
+- `query`
+- `category`
+- `priority`
+- `route`
+- `intent`
+- `family` or `query_class`
+- `result_status`
+- `result_reason`
+- `ok`
+- `answer_text`
+- `answer_text_source`
+- `shape_hint`
+- `shape_source`
+- `metadata`
+- `applied_filters`
+- `sections`
+- `section_summaries`
+- `notes`
+- `caveats`
+- `errors`
+- `expectation_results`
+
+Section summaries should include:
+
+- row count
+- columns
+- top rows, capped to 3 by default
+- summary row, when section is single-row `summary`
+
+Example JSONL row:
+
+```json
+{"id":"record_when_jokic_triple_double","query":"What is Denver's record when Nikola Jokic has a triple-double?","route":"player_game_summary","intent":"summary","query_class":"summary","result_status":"ok","result_reason":null,"answer_text":null,"answer_text_source":null,"shape_hint":"entity_summary","shape_source":"backend_approximation","applied_filters":[{"label":"Special Event","value":"Triple Double","kind":"special_event"}],"section_summaries":{"summary":{"row_count":1,"columns":["player_name","games","wins","losses","win_pct"],"top_rows":[{"player_name":"Nikola Jokic","games":34,"wins":24,"losses":10,"win_pct":0.706}]},"game_log":{"row_count":34,"columns":["game_date","team_abbr","opp_abbr","wl","pts","reb","ast"],"top_rows":[{"team_abbr":"DEN","wl":"W","pts":32,"reb":14,"ast":10}]}},"expectation_results":{"status":"pass","checks":[{"name":"expected_route","status":"pass"},{"name":"summary.games","status":"pass"}]}}
+```
+
+Markdown report should include:
+
+- run metadata
+- status/route/category summary
+- failed expectation summary
+- one review card per query
+- compact section summaries and top rows
+- notes/caveats/errors
+
+Example Markdown card:
+
+```md
+### record_when_jokic_triple_double
+
+- Query: `What is Denver's record when Nikola Jokic has a triple-double?`
+- Category: `record_when_player_condition`
+- Status: `ok`
+- Route: `player_game_summary`
+- Shape hint: `entity_summary`
+- Answer text: _not backend-provided_
+- Filters: `Special Event=Triple Double`
+- Sections: `summary` 1 row, `game_log` 34 rows
+- Expectations: pass
+
+Summary row:
+
+| player_name | games | wins | losses | win_pct |
+|---|---:|---:|---:|---:|
+| Nikola Jokic | 34 | 24 | 10 | 0.706 |
+```
+
+## Execution Wave 1
+
+Create:
+
+- `qa/raw_query_answer_corpus.yaml`
+- `tools/raw_query_answer_qa.py`
+
+Modify:
+
+- `Makefile` with `raw-query-answer-qa`
+- optionally `docs/operations/query_smoke_workflow.md` only if the workflow is formalized in Wave 1
+
+Do not modify:
+
+- production query behavior
+- frontend renderer behavior
+- existing parser examples
+- existing hard tests
+
+Acceptance criteria:
+
+- The script reads the YAML corpus.
+- The script runs each case through `execute_natural_query()`.
+- The script converts each result through `query_result_to_payload()`.
+- The script writes JSONL, Markdown, and summary JSON under `outputs/raw_query_answer_qa/<run_id>/`.
+- Each report row includes route, intent, query class, status, reason, answer text when backend-provided, metadata, applied filters, sections, row counts, columns, top rows, notes, caveats, and expectation results.
+- Expectations support status, route, reason, section presence, row counts, applied filters, and simple path equality checks.
+- The initial corpus includes at least 10 curated cases covering record-when, entity summary, leaderboard, finder/count, team record, playoff/history, no-result, and unsupported boundary examples.
+- The harness catches per-query exceptions and records them as query-level errors without aborting the whole run.
+- No frontend runtime is required.
+
+Validation commands:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --limit 5
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+git diff --check
+```
+
+If a Makefile target is added:
+
+```bash
+make raw-query-answer-qa
+git diff --check
+```
+
+## Promotion To Hard Tests
+
+Use the report to decide which failures are objective.
+
+Good promotion candidates:
+
+- wrong route for a clearly supported query
+- wrong result status or reason
+- wrong record/count fields
+- missing applied filter
+- section row count mismatch for deterministic fixtures
+- summary/game-log disagreement
+
+Poor initial hard-test candidates:
+
+- exact frontend hero sentence snapshots
+- arbitrary top leaderboard ordering for live/current data
+- broad 402-case pass/fail expectations
+- subjective semantic boundaries such as "cooled off" before product definitions exist
+
+Future hard tests should live near the behavior they protect:
+
+- backend answer/data correctness: focused `tests/test_*` file, often `needs_data`
+- API envelope shape: `tests/test_api.py` or `tests/test_query_service.py`
+- frontend rendering/hero regressions: `frontend/src/test/ResultRenderer.test.tsx`
+- corpus-level smoke: a small test around a promoted fixture subset, not the whole manual QA corpus
+
+## Open Questions
+
+- Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.
+- Should frontend shape classification be reproduced in Python or extracted by Node? Recommendation: backend approximation in Wave 1; defer exact frontend classification.
+- Should exact hero sentences ever become hard assertions? Recommendation: only after a separate rendered-output harness exists and only for targeted regressions.
