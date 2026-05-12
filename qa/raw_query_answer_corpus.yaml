@@ -109,13 +109,69 @@ cases:
       - summary
     expected_row_counts:
       summary: 1
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Regular Season
+      - path: result.sections.summary.0.games
+        equals: 54
+      - path: result.sections.summary.0.wins
+        equals: 33
+      - path: result.sections.summary.0.losses
+        equals: 21
     review_notes: "Opponent-quality record case for a team summary route."
     manual_review:
-      status: semantics_issue
+      status: pass
       tags:
         - opponent_quality
         - season_type
-      notes: "Wave 1 output used season_type=Playoffs; likely user intent is regular-season record against teams that made the playoffs."
+      notes: "Wave 4 fixed this to regular-season opponent-quality semantics."
+
+  - id: celtics_record_teams_made_playoffs
+    query: "Celtics record against teams that made the playoffs"
+    category: team_record
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Regular Season
+    review_notes: "Phrase variant for playoff-team opponent-quality semantics."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - season_type
+      notes: "Phrase maps to the existing playoff teams opponent-quality bucket without switching to playoff games."
+
+  - id: celtics_playoff_record
+    query: "What is the Celtics playoff record?"
+    category: team_record
+    priority: p1
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Guardrail: explicit playoff-record wording still uses playoff games."
+    manual_review:
+      status: pass
+      tags:
+        - playoff_record
+        - season_type
+      notes: "Explicit playoff competition phrase remains Playoffs after Wave 4."
 
   - id: suns_without_booker
     query: "How do the Suns perform when Devin Booker didn't play?"

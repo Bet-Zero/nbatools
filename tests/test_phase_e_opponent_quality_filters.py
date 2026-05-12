@@ -21,6 +21,13 @@ def test_top_ten_defenses_propagates_to_team_record_route_kwargs():
     assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "top-10 defenses"
 
 
+def test_playoff_team_quality_phrases_propagate_without_playoff_season_type():
+    parsed = parse_query("Celtics record against teams that made the playoffs")
+    assert parsed["route"] == "team_record"
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"
+
+
 @pytest.mark.needs_data
 def test_natural_query_filters_player_summary_against_contenders():
     query = "Jokic against contenders 2024-25"

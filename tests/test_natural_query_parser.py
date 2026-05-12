@@ -575,6 +575,64 @@ def test_top_teams_surface_form_sets_opponent_quality_slot():
 def test_playoff_teams_surface_form_sets_opponent_quality_slot():
     parsed = parse_query("Jokic against playoff teams")
     assert parsed["opponent_quality"]["surface_term"] == "playoff teams"
+    assert parsed["season_type"] == "Regular Season"
+
+
+def test_postseason_teams_surface_form_maps_to_playoff_teams_slot():
+    parsed = parse_query("Jokic against postseason teams")
+    assert parsed["opponent_quality"]["surface_term"] == "playoff teams"
+    assert parsed["season_type"] == "Regular Season"
+
+
+def test_team_record_against_playoff_teams_stays_regular_season():
+    parsed = parse_query("Celtics record against playoff teams")
+    assert parsed["route"] == "team_record"
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"
+
+
+def test_team_record_against_playoff_teams_explicit_regular_season():
+    parsed = parse_query("Celtics record against playoff teams in the regular season")
+    assert parsed["route"] == "team_record"
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"
+
+
+def test_teams_that_made_playoffs_maps_to_playoff_teams_slot():
+    parsed = parse_query("Celtics record against teams that made the playoffs")
+    assert parsed["route"] == "team_record"
+    assert parsed["opponent_quality"]["surface_term"] == "playoff teams"
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+
+
+def test_teams_that_qualified_for_playoffs_maps_to_playoff_teams_slot():
+    parsed = parse_query("Celtics record against teams that qualified for the playoffs")
+    assert parsed["route"] == "team_record"
+    assert parsed["opponent_quality"]["surface_term"] == "playoff teams"
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+
+
+def test_player_summary_against_playoff_teams_this_season_stays_regular_season():
+    parsed = parse_query("How has Jayson Tatum played against playoff teams this season?")
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"
+    assert parsed["route_kwargs"]["season_type"] == "Regular Season"
+
+
+def test_actual_playoff_record_phrases_still_use_playoffs():
+    parsed = parse_query("Celtics playoff record")
+    assert parsed["route"] == "team_record"
+    assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+
+    parsed = parse_query("Celtics record in the playoffs")
+    assert parsed["route"] == "team_record"
+    assert parsed["route_kwargs"]["season_type"] == "Playoffs"
+
+
+def test_playoff_history_phrase_still_routes_to_playoff_history():
+    parsed = parse_query("Lakers playoff history")
+    assert parsed["route"] == "playoff_history"
+    assert parsed["season_type"] == "Playoffs"
 
 
 def test_teams_over_point_five_surface_form_sets_opponent_quality_slot():

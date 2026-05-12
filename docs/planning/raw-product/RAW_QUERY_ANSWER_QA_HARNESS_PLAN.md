@@ -472,6 +472,37 @@ queries.
   boundaries, frontend-rendered answer extraction, non-scoring top-performance
   product decisions, and team-scoped rolling-stretch product decisions.
 
+## Fix Wave 4 Status
+
+Opponent-quality playoff-team semantics are fixed.
+
+- Target case: `celtics_record_playoff_teams`
+- Fix: opponent-quality phrases such as `against playoff teams`, `against
+  postseason teams`, and `against teams that made the playoffs` now keep
+  `season_type=Regular Season` and resolve the existing `playoff teams`
+  opponent bucket. Explicit playoff-competition phrases such as `playoff
+  record`, `in the playoffs`, and `playoff history` still use Playoffs
+  semantics or dedicated playoff routes.
+- Corpus additions: `celtics_record_teams_made_playoffs` covers a phrase
+  variant, and `celtics_playoff_record` protects explicit playoff-record
+  wording.
+- Latest targeted harness output:
+  `outputs/raw_query_answer_qa/20260512T124856Z/report.md`
+- Latest phrase-variant/guard harness output:
+  `outputs/raw_query_answer_qa/20260512T124905Z/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260512T124917Z/report.md`
+- Latest full run summary: 80 cases; result statuses `ok: 69`,
+  `no_result: 5`, `error: 6`; expectation cases `pass: 80`; expectation
+  checks `pass: 401`; failed case IDs `[]`; suspicious flag cases `23`.
+  The previous `playoff_teams_playoff_season_type` suspicious flag is gone;
+  remaining flags are `missing_backend_answer_text: 22` and
+  `top_performance_high_points: 1`.
+- Remaining fix families: top-performance data quality, unsupported/no-result
+  policy for other product boundaries, frontend-rendered answer extraction,
+  non-scoring top-performance product decisions, and team-scoped
+  rolling-stretch product decisions.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

@@ -490,8 +490,32 @@ def detect_stat(text: str) -> str | None:
     return None
 
 
+_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
+    r"\b(?:against|vs\.?|versus)\s+(?:playoff|postseason)\s+teams\b",
+    r"\b(?:against|vs\.?|versus)\s+teams?\s+that\s+(?:made|make|qualified\s+for|qualify\s+for)\s+(?:the\s+)?(?:playoffs|postseason)\b",
+    r"\b(?:against|vs\.?|versus)\s+playoff\s+qualifiers\b",
+]
+
+
+def detects_playoff_team_opponent_quality(text: str) -> bool:
+    return any(re.search(pattern, text) for pattern in _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS)
+
+
+def _has_explicit_playoff_competition_context(text: str) -> bool:
+    patterns = [
+        r"\b(?:in|during)\s+(?:the\s+)?(?:playoffs|postseason)\b",
+        r"\b(?:playoff|postseason)\s+(?:record|history|games?|series|summary|leaders?|leaderboard|appearances?)\b",
+        r"\b(?:record|games?|summary|leaders?|leaderboard)\s+(?:in|during|for)\s+(?:the\s+)?(?:playoffs|postseason)\b",
+    ]
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
 def detect_season_type(text: str) -> str:
     if re.search(r"\b(playoff|playoffs|postseason)\b", text):
+        if detects_playoff_team_opponent_quality(
+            text
+        ) and not _has_explicit_playoff_competition_context(text):
+            return "Regular Season"
         return "Playoffs"
     return "Regular Season"
 
@@ -826,7 +850,7 @@ def detect_opponent_quality(text: str) -> dict | None:
         (r"\b(?:against|vs\.?|versus)\s+contenders\b", "contenders"),
         (r"\b(?:against|vs\.?|versus)\s+good\s+teams\b", "good teams"),
         (r"\b(?:against|vs\.?|versus)\s+top\s+teams\b", "top teams"),
-        (r"\b(?:against|vs\.?|versus)\s+playoff\s+teams\b", "playoff teams"),
+        *[(pattern, "playoff teams") for pattern in _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS],
         (r"\b(?:against|vs\.?|versus)\s+winning\s+teams\b", "winning teams"),
         (r"\b(?:against|vs\.?|versus)\s+teams?\s+over\s+\.500\b", "teams over .500"),
         (r"\b(?:against|vs\.?|versus)\s+top[- ]10\s+defenses\b", "top-10 defenses"),

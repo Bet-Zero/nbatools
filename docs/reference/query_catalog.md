@@ -124,7 +124,7 @@ If a feature is not reflected here, it should not be assumed shipped.
   appends an explicit unfiltered-results note. Team-only phrases like `Celtics bench scoring`
   are intentionally ignored and broader role route expansion is out of scope for
   the core finish line unless a future product queue reopens it)
-- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against teams over .500`, `against top-10 defenses`
+- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against teams over .500`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
   unsupported routes append an explicit note and remain unfiltered)
@@ -527,6 +527,7 @@ Examples:
 
 - `Celtics record since 2020`
 - `Lakers playoff record since 2015`
+- `Celtics record against playoff teams`
 - `best home record over the last 5 seasons`
 - `worst away record since 2020`
 - `Celtics record when scoring 120+ since 2022`
@@ -552,6 +553,11 @@ Examples:
 Record no-match behavior:
 
 - if team/opponent/absence/date/context filters leave no matching sample, record routes return `no_match` with an explicit empty-sample note instead of falling back to a full-season result
+
+Playoff wording boundary:
+
+- `against playoff teams`, `against postseason teams`, and `against teams that made the playoffs` are opponent-quality filters over regular-season games by default
+- `playoff record`, `postseason record`, `in the playoffs`, `playoff history`, and `playoff series` use playoff-game semantics or dedicated playoff-history routes
 
 ---
 
@@ -745,11 +751,14 @@ Examples:
 
 - `Jokic against contenders 2024-25`
 - `Lakers record against top-10 defenses 2024-25`
+- `Celtics record against playoff teams`
+- `Celtics record against teams that made the playoffs`
 
 Current behavior:
 
 - parser sets a structured `opponent_quality` slot containing the surface term and resolved bucket definition
 - execution resolves that bucket to a concrete opponent-team list on the supported single-entity summary/finder/record routes
+- `playoff teams` includes postseason-team phrasings such as `postseason teams` and `teams that made the playoffs`; this remains a regular-season opponent-quality context unless the query also explicitly asks for playoff competition
 - unsupported routes append an explicit note and remain unfiltered
 
 ---

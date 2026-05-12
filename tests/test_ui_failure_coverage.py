@@ -550,7 +550,66 @@ class TestDateFilterDropPrevention:
 
 
 # ---------------------------------------------------------------------------
-# 5. Distinct entity count
+# 5. Opponent-quality playoff-team semantics
+# ---------------------------------------------------------------------------
+
+
+class TestOpponentQualityPlayoffTeamSemantics:
+    @pytest.mark.needs_data
+    def test_celtics_record_against_playoff_teams_uses_regular_season_quality_sample(self):
+        qr = execute_natural_query("What is the Celtics' record against playoff teams?")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season_type"] == "Regular Season"
+        assert {
+            "label": "Opponent quality",
+            "value": "playoff teams",
+            "kind": "quality",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["season_type"] == "Regular Season"
+        assert summary["games"] == 54
+        assert summary["wins"] == 33
+        assert summary["losses"] == 21
+        assert (summary["games"], summary["wins"], summary["losses"]) != (11, 6, 5)
+
+    @pytest.mark.needs_data
+    def test_tatum_against_playoff_teams_uses_regular_season_quality_sample(self):
+        qr = execute_natural_query("How has Jayson Tatum played against playoff teams this season?")
+
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season_type"] == "Regular Season"
+        assert {
+            "label": "Opponent quality",
+            "value": "playoff teams",
+            "kind": "quality",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["season_type"] == "Regular Season"
+        assert summary["games"] == 12
+        assert summary["games"] != 8
+
+    @pytest.mark.needs_data
+    def test_actual_playoff_record_phrase_still_uses_playoff_games(self):
+        qr = execute_natural_query("What is the Celtics playoff record?")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season_type"] == "Playoffs"
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["season_type"] == "Playoffs"
+        assert summary["games"] == 11
+        assert summary["wins"] == 6
+        assert summary["losses"] == 5
+
+
+# ---------------------------------------------------------------------------
+# 6. Distinct entity count
 # ---------------------------------------------------------------------------
 
 
@@ -575,7 +634,7 @@ class TestDistinctEntityCount:
 
 
 # ---------------------------------------------------------------------------
-# 6. Entity resolution: Bronny James
+# 7. Entity resolution: Bronny James
 # ---------------------------------------------------------------------------
 
 
@@ -598,7 +657,7 @@ class TestBronnyJamesResolution:
 
 
 # ---------------------------------------------------------------------------
-# 7. Build-parse-state integration: new keys present
+# 8. Build-parse-state integration: new keys present
 # ---------------------------------------------------------------------------
 
 
