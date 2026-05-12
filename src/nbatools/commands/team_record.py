@@ -46,6 +46,32 @@ from nbatools.commands.structured_results import (
 
 _EMPTY_SAMPLE_NOTE = "No games matched the specified filters"
 
+TEAM_RECORD_FILTER_STATS = {
+    "pts": "pts",
+    "reb": "reb",
+    "ast": "ast",
+    "stl": "stl",
+    "blk": "blk",
+    "fgm": "fgm",
+    "fga": "fga",
+    "fg3m": "fg3m",
+    "fg3a": "fg3a",
+    "ftm": "ftm",
+    "fta": "fta",
+    "tov": "tov",
+    "pf": "pf",
+    "minutes": "minutes",
+    "plus_minus": "plus_minus",
+    "oreb": "oreb",
+    "dreb": "dreb",
+    "fg_pct": "fg_pct",
+    "fg3_pct": "fg3_pct",
+    "ft_pct": "ft_pct",
+    "efg_pct": "efg_pct",
+    "ts_pct": "ts_pct",
+    "opponent_pts": "opponent_pts",
+}
+
 
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
@@ -106,11 +132,30 @@ def _apply_game_filters(
     if losses_only and "wl" in out.columns:
         out = out[out["wl"] == "L"].copy()
 
-    if stat and stat in out.columns:
+    if stat and (min_value is not None or max_value is not None):
+        stat_key = stat.lower()
+        if stat_key not in TEAM_RECORD_FILTER_STATS:
+            raise ValueError(f"Unsupported stat: {stat}")
+
+        stat_col = TEAM_RECORD_FILTER_STATS[stat_key]
+        if stat_col == "opponent_pts" and "opponent_pts" not in out.columns:
+            if {"pts", "plus_minus"}.issubset(out.columns):
+                out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
+                    out["plus_minus"], errors="coerce"
+                )
+            else:
+                raise ValueError("Missing required columns for opponent_pts")
+
+        if stat_col not in out.columns:
+            raise ValueError(f"Unsupported stat for team record data: {stat}")
+
+        values = pd.to_numeric(out[stat_col], errors="coerce")
+        mask = pd.Series(True, index=out.index)
         if min_value is not None:
-            out = out[out[stat] >= min_value].copy()
+            mask &= values >= min_value
         if max_value is not None:
-            out = out[out[stat] <= max_value].copy()
+            mask &= values <= max_value
+        out = out[mask].copy()
 
     return out
 

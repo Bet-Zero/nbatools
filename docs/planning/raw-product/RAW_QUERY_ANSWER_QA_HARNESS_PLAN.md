@@ -363,15 +363,15 @@ Status:
 - Findings inventory created:
   - `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md`
 - Latest output path:
-  - `outputs/raw_query_answer_qa/20260511T043039Z/report.md`
+  - `outputs/raw_query_answer_qa/20260512T085014Z/report.md`
 
 Latest run summary:
 
-- Run ID: `20260511T043039Z`
+- Run ID: `20260512T085014Z`
 - Cases: 78
 - Result statuses: `ok: 68`, `no_result: 4`, `error: 6`
 - Expectation cases: `pass: 78`
-- Expectation checks: `pass: 375`
+- Expectation checks: `pass: 379`
 - Failed case IDs: `[]`
 - Suspicious flag cases: 22
 
@@ -392,10 +392,33 @@ Next recommended phase:
   changing query behavior:
   - opponent-quality / playoff-team semantics
   - top-performance data quality
-  - record-when condition filtering
+  - record-when condition filtering (AQ-004 fixed in Fix Wave 1)
   - unsupported/no-result policy for missing filters and product boundaries
   - frontend-rendered answer extraction
   - date handling
+
+## Fix Wave 1 Status
+
+Filtered team-record aggregation is fixed for the first correctness wave.
+
+- Target case: `lakers_held_opponents_under_100_record`
+- Fix: `team_record` now applies supported threshold filters before aggregating
+  record summaries and by-season rows; opponent-points thresholds derive
+  `opponent_pts` from team points and margin when the source table does not
+  carry an explicit opponent-points column.
+- Tests added: focused team-record engine coverage plus data-backed natural
+  query regressions for the Lakers opponent-points case and the nearby Celtics
+  team-points threshold case.
+- Corpus update: the Lakers case now has hard assertions for `games=7`,
+  `wins=7`, and `losses=0`.
+- Latest targeted harness output:
+  `outputs/raw_query_answer_qa/20260512T085005Z/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260512T085014Z/report.md`
+- Remaining fix families: opponent-quality / playoff-team semantics, top
+  performance data quality, unsupported/no-result policy for missing filters
+  and product boundaries, frontend-rendered answer extraction, and date
+  handling.
 
 ## Open Questions
 

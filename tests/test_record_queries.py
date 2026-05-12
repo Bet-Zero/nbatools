@@ -685,6 +685,42 @@ class TestBuildTeamRecordResult:
         assert result.summary.iloc[0]["games"] == 8
         assert any("pts" in c for c in result.caveats)
 
+    def test_record_with_opponent_points_threshold_uses_opponent_score(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write_contextual_data(tmp_path)
+
+        result = build_team_record_result(
+            team="ALP",
+            season="2098-99",
+            stat="opponent_pts",
+            max_value=112.9999,
+        )
+
+        assert isinstance(result, SummaryResult)
+        summary = result.summary.iloc[0]
+        assert summary["games"] == 3
+        assert summary["wins"] == 3
+        assert summary["losses"] == 0
+        by_season = result.by_season.iloc[0]
+        assert by_season["games"] == 3
+        assert by_season["wins"] == 3
+        assert by_season["losses"] == 0
+        assert any("opponent_pts" in c for c in result.caveats)
+
+    def test_record_with_unsupported_stat_filter_does_not_return_unfiltered_record(
+        self, tmp_path, monkeypatch
+    ):
+        monkeypatch.chdir(tmp_path)
+        _write_contextual_data(tmp_path)
+
+        with pytest.raises(ValueError, match="Unsupported stat"):
+            build_team_record_result(
+                team="ALP",
+                season="2098-99",
+                stat="invented_stat",
+                min_value=1,
+            )
+
     def test_record_without_player_filters_sample(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         _write_without_player_data(tmp_path)

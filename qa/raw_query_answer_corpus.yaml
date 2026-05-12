@@ -536,13 +536,22 @@ cases:
         label: OPP PTS max
     expected_sections:
       - summary
-    review_notes: "Manual review: record summary should be checked against the count/finder result for the same opponent-points condition."
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 7
+      - path: result.sections.summary.0.wins
+        equals: 7
+      - path: result.sections.summary.0.losses
+        equals: 0
+    review_notes: "Regression guard: filtered record summary must align with the opponent-points count/finder sample."
     manual_review:
-      status: needs_followup
+      status: pass
       tags:
         - record_when
         - opponent_threshold
-      notes: "Candidate mismatch: sampled summary showed full-season 82 games while the count/finder variant showed 7 matching games."
+      notes: "Fixed in filtered-record correctness wave: summary now uses the 7-game opponent-points sample and returns 7-0."
 
   - id: celtics_scored_over_120_record
     query: "What is the Celtics record when they score over 120 points?"

@@ -367,6 +367,52 @@ class TestWithoutPlayer:
         assert all(_is_triple_double(row) for row in game_log)
 
     @pytest.mark.needs_data
+    def test_lakers_record_holding_opponents_under_100_uses_filtered_sample(self):
+        qr = execute_natural_query(
+            "What is the Lakers record when they held opponents under 100 points?"
+        )
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert {
+            "label": "OPP PTS max",
+            "value": "99.9999",
+            "kind": "threshold",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["games"] == 7
+        assert summary["wins"] == 7
+        assert summary["losses"] == 0
+        assert (summary["games"], summary["wins"], summary["losses"]) != (82, 53, 29)
+
+        by_season = sections["by_season"][0]
+        assert by_season["games"] == summary["games"]
+        assert by_season["wins"] == summary["wins"]
+        assert by_season["losses"] == summary["losses"]
+
+    @pytest.mark.needs_data
+    def test_celtics_record_scoring_over_120_uses_filtered_sample(self):
+        qr = execute_natural_query("What is the Celtics record when they score over 120 points?")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert any(
+            item["kind"] == "threshold" and item["label"] == "pts min"
+            for item in qr.metadata["applied_filters"]
+        )
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert 0 < summary["games"] < 82
+        assert summary["wins"] + summary["losses"] == summary["games"]
+
+        by_season = sections["by_season"][0]
+        assert by_season["games"] == summary["games"]
+        assert by_season["wins"] + by_season["losses"] == by_season["games"]
+
+    @pytest.mark.needs_data
     def test_record_leaderboard_without_player_returns_no_match(self):
         qr = execute_natural_query("best record without Stephen Curry")
         assert qr.route == "team_record_leaderboard"
