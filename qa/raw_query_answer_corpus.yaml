@@ -630,18 +630,21 @@ cases:
     query: "What is the Lakers record when LeBron James and Anthony Davis both play?"
     category: availability_boundary
     priority: p1
-    expected_status: ok
+    expected_status: no_result
     expected_route: team_record
-    expected_shape: team_record
-    expected_sections:
-      - summary
-    review_notes: "Manual review: multi-player availability is documented as an unsupported boundary but sampled output returned an unfiltered team record."
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: multi_player_availability
+    review_notes: "Multi-player availability is intentionally unsupported for now; it must not return an unfiltered team record."
     manual_review:
-      status: missing_filter
+      status: expected_unsupported
       tags:
         - availability
         - multi_player
-      notes: "No applied availability filters were sampled; should likely become unsupported/no-result with guidance or be properly implemented."
+      notes: "Fixed in QA Fix Wave 2: returns filter_not_supported/no_result instead of silently dropping the multi-player availability condition."
 
   - id: suns_without_booker_shorthand
     query: "Suns without Booker"

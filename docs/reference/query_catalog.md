@@ -321,7 +321,7 @@ Current behavior:
 - execution uses trusted `team_player_on_off_summary` rows when both `on` and `off` coverage exists for the requested single-player slice
 - missing or untrusted coverage, unsupported multi-player on/off, and slices outside the source contract return explicit unsupported/no-result responses
 - whole-game `without_player` absence is not an on/off substitute
-- multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` is outside the current lineup/availability boundary and returns a broad team-record fallback with an explicit unsupported-boundary note
+- multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` is outside the current lineup/availability boundary and returns an explicit unsupported/no-result response rather than an unfiltered team record
 
 ### Specific lineup summaries
 

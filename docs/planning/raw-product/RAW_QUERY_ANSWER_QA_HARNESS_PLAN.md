@@ -420,6 +420,31 @@ Filtered team-record aggregation is fixed for the first correctness wave.
   and product boundaries, frontend-rendered answer extraction, and date
   handling.
 
+## Fix Wave 2 Status
+
+Unsupported/missing filter policy is tightened for multi-player availability
+record queries.
+
+- Target case: `lakers_lebron_ad_both_play`
+- Fix: multi-player availability record phrasing such as `Lakers record when
+  LeBron and AD both play` now carries an explicit unsupported-filter marker
+  and returns `no_result` / `filter_not_supported` before `team_record`
+  execution, instead of returning an unfiltered full-season record.
+- Single-player availability preserved: `Suns without Booker`, `Bucks record
+  when Giannis was out`, `Knicks record when Jalen Brunson does not play`, and
+  `Lakers record without LeBron` still execute as filtered `team_record`
+  results with `Without player` applied filters.
+- Latest targeted harness output:
+  `outputs/raw_query_answer_qa/20260512T100432Z/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260512T100442Z/report.md`
+- Latest full run summary: 78 cases; result statuses `ok: 67`,
+  `no_result: 5`, `error: 6`; expectation cases `pass: 78`; expectation
+  checks `pass: 381`; failed case IDs `[]`; suspicious flag cases `21`.
+- Remaining fix families: opponent-quality / playoff-team semantics, top
+  performance data quality, unsupported/no-result policy for other product
+  boundaries, frontend-rendered answer extraction, and date handling.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

@@ -268,7 +268,22 @@ def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | 
 
 def _multi_player_availability_boundary(q: str) -> bool:
     """Detect unsupported multi-player availability phrasing."""
-    return bool(re.search(r"\b(?:both\s+play|play\s+together)\b", q))
+    if re.search(
+        r"\b(?:both\s+play(?:ing)?|play(?:ing)?\s+together|"
+        r"(?:(?:are|were|is|was)\s+)?both\s+out)\b",
+        q,
+    ):
+        return True
+
+    with_without = re.search(
+        r"\b(?:with|without|w/o)\s+(.+?)(?=\s+(?:record|games?|this|that|last|in|for)\b|$)",
+        q,
+    )
+    if not with_without or " and " not in with_without.group(1):
+        return False
+
+    left, right = [part.strip(" .") for part in with_without.group(1).split(" and ", 1)]
+    return bool(detect_player(left) and detect_player(right))
 
 
 _AMBIGUOUS_FRAGMENT_PATTERNS = (
@@ -1516,9 +1531,14 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
         }
     elif team and record_intent and _multi_player_availability_boundary(q):
-        # Explicit "record" keyword present and a player availability boundary
-        # ("without", "w/o", "when X out") → team_record with without_player.
+        # Multi-player availability is requested but not execution-backed.
+        # Preserve the team-record route context, then let execution return an
+        # honest unsupported-filter result instead of an unfiltered record.
         route = "team_record"
+        notes.append(
+            "unsupported_boundary: multi-player availability filters are outside "
+            "the current record execution boundary"
+        )
         route_kwargs = {
             "team": team,
             "season": season,
@@ -1536,6 +1556,7 @@ def _finalize_route(parsed: dict) -> dict:
             "max_value": max_value,
             "start_date": start_date,
             "end_date": end_date,
+            "unsupported_filters": ["multi_player_availability"],
         }
     elif player and (
         summary_intent
@@ -1763,7 +1784,9 @@ def _finalize_route(parsed: dict) -> dict:
             "sample_advanced_metrics: usg_pct, ast_pct, reb_pct, tov_pct"
             " recomputed from filtered sample"
         )
-    if boundary_note := _unsupported_boundary_note(q, route, route_kwargs):
+    if not route_kwargs.get("unsupported_filters") and (
+        boundary_note := _unsupported_boundary_note(q, route, route_kwargs)
+    ):
         notes.append(boundary_note)
 
     if notes:

@@ -400,6 +400,9 @@ def _build_query_metadata(
     route_kwargs = parsed.get("route_kwargs")
     if not isinstance(route_kwargs, dict):
         route_kwargs = {}
+    unsupported_filters = parsed.get("unsupported_filters") or route_kwargs.get(
+        "unsupported_filters"
+    )
 
     notes = parsed.get("notes") or []
 
@@ -435,6 +438,7 @@ def _build_query_metadata(
         "team": team,
         "opponent": parsed.get("opponent"),
         "without_player": parsed.get("without_player"),
+        "unsupported_filters": unsupported_filters,
         "opponent_quality": parsed.get("opponent_quality"),
         "lineup_members": parsed.get("lineup_members"),
         "presence_state": parsed.get("presence_state"),
@@ -505,7 +509,9 @@ def _build_query_metadata(
     meta["scope_kind"] = scope_kind
 
     # ---- Pattern 2: applied_filters — structured list of active filters ----
-    applied_filters = _build_applied_filters(parsed, route_kwargs=route_kwargs)
+    applied_filters = (
+        [] if unsupported_filters else _build_applied_filters(parsed, route_kwargs=route_kwargs)
+    )
     if applied_filters:
         meta["applied_filters"] = applied_filters
 
@@ -1301,6 +1307,8 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         ]
         current_through = compute_current_through_for_seasons(seasons, season_type)
 
+    unsupported_filters = kwargs.get("unsupported_filters")
+
     metadata: dict[str, Any] = {
         "route": route,
         "query_class": query_class,
@@ -1314,6 +1322,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "team": team,
         "opponent": kwargs.get("opponent"),
         "without_player": kwargs.get("without_player"),
+        "unsupported_filters": unsupported_filters,
         "opponent_quality": kwargs.get("opponent_quality"),
         "lineup_members": kwargs.get("lineup_members"),
         "presence_state": kwargs.get("presence_state"),
@@ -1346,7 +1355,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
     if current_through is not None:
         metadata["current_through"] = current_through
 
-    applied_filters = _build_applied_filters(kwargs)
+    applied_filters = [] if unsupported_filters else _build_applied_filters(kwargs)
     if applied_filters:
         metadata["applied_filters"] = applied_filters
 

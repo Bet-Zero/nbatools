@@ -303,14 +303,52 @@ class TestWithoutPlayer:
         [
             "What is the Lakers' record when LeBron James and Anthony Davis both play?",
             "Lakers record when LeBron and AD both play",
+            "Lakers record when LeBron and AD are both out",
+            "Lakers record with LeBron and AD",
+            "Lakers record without LeBron and AD",
         ],
     )
-    def test_multi_player_availability_record_is_broad_unsupported_boundary(self, query):
+    def test_multi_player_availability_record_sets_unsupported_filter(self, query):
         parsed = parse_query(query)
         assert parsed["route"] == "team_record"
         assert parsed["team"] == "LAL"
-        assert parsed["route_kwargs"]["without_player"] is None
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["multi_player_availability"]
         assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+    @pytest.mark.needs_data
+    def test_multi_player_availability_record_returns_unsupported_not_unfiltered(self):
+        qr = execute_natural_query(
+            "What is the Lakers record when LeBron James and Anthony Davis both play?"
+        )
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["multi_player_availability"]
+        assert qr.to_dict()["sections"] == {}
+        notes = qr.metadata.get("notes", []) + qr.result.notes
+        assert any("multi-player availability" in note for note in notes)
+
+    @pytest.mark.needs_data
+    def test_single_player_availability_record_still_executes_with_filter(self):
+        qr = execute_natural_query("Lakers record without LeBron")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert {
+            "label": "Without player",
+            "value": "LeBron James",
+            "kind": "player",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["games"] < 82
+        assert summary["wins"] + summary["losses"] == summary["games"]
+        assert len(sections["game_log"]) == summary["games"]
 
     @pytest.mark.needs_data
     def test_record_without_player_wrong_team_returns_no_match(self):

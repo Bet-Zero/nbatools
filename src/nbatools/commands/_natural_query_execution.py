@@ -375,6 +375,30 @@ def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, li
     return sanitized, notes
 
 
+def _normalize_unsupported_filters(value) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list | tuple | set):
+        return [str(item) for item in value if item]
+    return [str(value)]
+
+
+def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
+    if filter_id == "multi_player_availability":
+        return (
+            "multi-player availability filters are not supported with current data; "
+            "try a single-player absence query such as 'Lakers record without LeBron' "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    return (
+        f"{filter_id} filter is not supported with current data; try removing this filter "
+        f"or asking for standard player, team, or game stats "
+        f"(blocked: {', '.join(all_filters)})"
+    )
+
+
 def _apply_extra_conditions_to_result(result, extra_conditions: list[dict]):
     """Apply stat-threshold extra conditions directly to the result's DataFrame.
 
@@ -419,6 +443,9 @@ def _execute_build_result(
 
     build_fn = _get_build_result_map()[route]
     sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
+    unsupported_filters = _normalize_unsupported_filters(
+        sanitized_kwargs.pop("unsupported_filters", None)
+    )
     sanitized_kwargs, context_notes, blocked_filters = _route_context_filters_for_execution(
         route, sanitized_kwargs
     )
@@ -426,6 +453,16 @@ def _execute_build_result(
 
     # If any parsed filter cannot be applied on this route, return an honest
     # no-result rather than executing unfiltered and returning misleading data.
+    if unsupported_filters:
+        primary = unsupported_filters[0]
+        return NoResult(
+            query_class=route_to_query_class(route),
+            reason="filter_not_supported",
+            result_status="no_result",
+            result_reason="filter_not_supported",
+            notes=[_unsupported_filter_note(primary, unsupported_filters)],
+        )
+
     if blocked_filters:
         primary = blocked_filters[0]
         filter_list = ", ".join(blocked_filters)

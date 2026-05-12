@@ -347,7 +347,8 @@ boundary and should return aligned unsupported/no-result behavior.
 
 _Current boundary note:_ multi-player availability record phrasing such as
 "both play" is outside the current lineup/availability execution boundary and
-returns an aligned broad team-record fallback with an explicit unsupported note.
+returns an explicit unsupported/no-result response instead of an unfiltered
+team-record fallback.
 
 ### 3.10 Splits / context / shorthand search style
 

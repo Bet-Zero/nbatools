@@ -8,17 +8,17 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260512T085014Z`
+- Run ID: `20260512T100442Z`
 - Corpus size: 78 cases
-- Output report path: `outputs/raw_query_answer_qa/20260512T085014Z/report.md`
+- Output report path: `outputs/raw_query_answer_qa/20260512T100442Z/report.md`
 - Summary counts:
-  - Result statuses: `ok: 68`, `no_result: 4`, `error: 6`
+  - Result statuses: `ok: 67`, `no_result: 5`, `error: 6`
   - Expectation cases: `pass: 78`
-  - Expectation checks: `pass: 379`
+  - Expectation checks: `pass: 381`
   - Failed case IDs: `[]`
-  - Manual review statuses: `unreviewed: 64`, `expected_unsupported: 6`, `needs_product_decision: 3`, `missing_filter: 2`, `pass: 1`, `semantics_issue: 1`, `data_quality_question: 1`
-  - Suspicious flag cases: 22
-  - Suspicious flags: `missing_backend_answer_text: 21`, `playoff_teams_playoff_season_type: 1`, `top_performance_high_points: 1`
+  - Manual review statuses: `unreviewed: 64`, `expected_unsupported: 7`, `needs_product_decision: 3`, `missing_filter: 1`, `pass: 1`, `semantics_issue: 1`, `data_quality_question: 1`
+  - Suspicious flag cases: 21
+  - Suspicious flags: `missing_backend_answer_text: 20`, `playoff_teams_playoff_season_type: 1`, `top_performance_high_points: 1`
 
 ## Finding summary
 
@@ -28,7 +28,7 @@ findings here should be grouped into fix families before implementation.
 | AQ-002 | P1 | Top performances | `biggest_scoring_games` | data_quality_question | open | Top player scoring row is Bam Adebayo with 83 points on 2026-03-10; record as suspicious until source data is audited. | top-performance data quality |
 | AQ-003 | P2 | Backend answer text / frontend hero | Many P0/P1 summary routes | expected limitation | deferred | 21 cases flagged as missing backend answer text. This is expected for Wave 2 because frontend-rendered hero extraction is deferred, not a production bug by itself. | frontend hero extraction |
 | AQ-004 | P1 | Record-when team condition | `lakers_held_opponents_under_100_record` | needs_followup | fixed | Fixed in Raw Query Answer QA Fix Wave 1. `team_record` now computes opponent-points threshold summaries from the filtered sample: Lakers held opponents under 100 returns 7 games, 7 wins, 0 losses, matching the companion count/finder sample. Latest run: `outputs/raw_query_answer_qa/20260512T085014Z/report.md`. | record-when conditions |
-| AQ-005 | P1 | Availability / multi-player condition | `lakers_lebron_ad_both_play` | missing_filter | open | Query returned an unfiltered Lakers `team_record` with no applied filters. Current docs describe multi-player availability as outside the supported boundary unless implemented explicitly. | unsupported/no-result policy |
+| AQ-005 | P1 | Availability / multi-player condition | `lakers_lebron_ad_both_play` | missing_filter | fixed_as_expected_unsupported | Fixed in Raw Query Answer QA Fix Wave 2. Multi-player availability record queries now return `no_result` / `filter_not_supported` with guidance instead of an unfiltered full-season `team_record`. Latest run: `outputs/raw_query_answer_qa/20260512T100442Z/report.md`. | unsupported/no-result policy |
 | AQ-006 | P2 | Top performances | `most_assists_single_game`, `most_rebounds_single_game` | needs_product_decision | needs_manual_review | Non-scoring single-game top-performance wording is currently unrouted. Decide whether these should route to `top_player_games` with `ast`/`reb` or remain unsupported with guidance. | unsupported/no-result policy |
 | AQ-007 | P2 | Date handling | `specific_date_jan_1` | missing_filter | open | Query includes `January 1 2026` but output returned season leaders with no applied date filter. Needs parser/routing review before hard expectations are added. | data freshness/date handling |
 | AQ-008 | P2 | Rolling stretch / team scope | `team_5_game_scoring_stretch` | needs_product_decision | needs_manual_review | Team-scoped rolling-stretch wording currently routes to `player_stretch_leaderboard`. Decide whether team rolling stretches are supported or should return an unsupported/no-result response. | unsupported/no-result policy |
