@@ -445,6 +445,33 @@ record queries.
   performance data quality, unsupported/no-result policy for other product
   boundaries, frontend-rendered answer extraction, and date handling.
 
+## Fix Wave 3 Status
+
+Date-filter drop prevention is fixed for explicit single-date top-scorer
+queries.
+
+- Target case: `specific_date_jan_1`
+- Fix: explicit calendar dates such as `January 1 2026` now parse into a
+  single-day date range. `Who scored the most points on January 1 2026?`
+  routes to date-filtered game-level `top_player_games` instead of broad
+  season `season_leaders`.
+- Working date-window cases preserved: `top scorers in March` still returns a
+  date-window `season_leaders` leaderboard, `Jokic since All-Star break` still
+  returns filtered `player_game_finder` rows, and `Who scored the most points
+  last night?` still returns `no_result` / `no_match` with its single-day date
+  filter.
+- Latest targeted harness output:
+  `outputs/raw_query_answer_qa/20260512T105137Z/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260512T105201Z/report.md`
+- Latest full run summary: 78 cases; result statuses `ok: 67`,
+  `no_result: 5`, `error: 6`; expectation cases `pass: 78`; expectation
+  checks `pass: 384`; failed case IDs `[]`; suspicious flag cases `21`.
+- Remaining fix families: opponent-quality / playoff-team semantics, top
+  performance data quality, unsupported/no-result policy for other product
+  boundaries, frontend-rendered answer extraction, non-scoring top-performance
+  product decisions, and team-scoped rolling-stretch product decisions.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

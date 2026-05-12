@@ -672,6 +672,38 @@ class TestMetadataPreservation:
             "kind": "special_event",
         } in qr.metadata["applied_filters"]
 
+    def test_specific_calendar_date_top_scorer_preserves_date_filter(self, monkeypatch):
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert route == "top_player_games"
+            assert kwargs["start_date"] == "2026-01-01"
+            assert kwargs["end_date"] == "2026-01-01"
+            return LeaderboardResult(
+                leaders=pd.DataFrame(
+                    [
+                        {
+                            "rank": 1,
+                            "player_name": "Kawhi Leonard",
+                            "game_date": "2026-01-01",
+                            "pts": 45,
+                        }
+                    ]
+                )
+            )
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute)
+
+        qr = execute_natural_query("Who scored the most points on January 1 2026?")
+
+        assert qr.route == "top_player_games"
+        assert qr.metadata["start_date"] == "2026-01-01"
+        assert qr.metadata["end_date"] == "2026-01-01"
+        assert {
+            "label": "Date range",
+            "value": "2026-01-01 – 2026-01-01",
+            "kind": "date",
+        } in qr.metadata["applied_filters"]
+        assert qr.to_dict()["sections"]["leaderboard"][0]["pts"] == 45
+
     def test_team_opponent_points_count_phrase_includes_record(self, monkeypatch):
         _patch_identity_contexts(monkeypatch)
 

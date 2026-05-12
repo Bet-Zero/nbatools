@@ -49,6 +49,15 @@ def test_parse_team_summary_in_march():
     assert parsed["route_kwargs"]["end_date"] == "2026-03-31"
 
 
+def test_parse_explicit_date_top_scorer_uses_game_level_route():
+    parsed = parse_query("Who scored the most points on January 1 2026?")
+    assert parsed["season"] == "2025-26"
+    assert parsed["route"] == "top_player_games"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert parsed["route_kwargs"]["start_date"] == "2026-01-01"
+    assert parsed["route_kwargs"]["end_date"] == "2026-01-01"
+
+
 def test_parse_matchup_last_30_days():
     parsed = parse_query("Jokic vs Lakers last 30 days")
     # Anchor to data end date when data is stale, otherwise CURRENT_QUERY_DATE

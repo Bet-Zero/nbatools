@@ -4,7 +4,11 @@ import pandas as pd
 
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
 from nbatools.commands._constants import normalize_text, route_to_intent
-from nbatools.commands._date_utils import CURRENT_QUERY_DATE, extract_date_range
+from nbatools.commands._date_utils import (
+    CURRENT_QUERY_DATE,
+    extract_date_range,
+    has_explicit_calendar_date,
+)
 from nbatools.commands._default_rules import (
     metric_only_leaderboard_default,
     player_threshold_finder_default,
@@ -306,6 +310,21 @@ def _stretch_display_mode(q: str, player: str | None) -> str | None:
     if re.search(r"\b(?:best|top|hottest)\b.*\b(?:stretch(?:es)?|windows?)\b", q):
         return "windows"
     return "windows"
+
+
+def _specific_date_top_scorer_intent(q: str, start_date: str | None, end_date: str | None) -> bool:
+    """Detect explicit-date top-scorer phrasing that needs game-level rows."""
+    if not start_date or not end_date or start_date != end_date:
+        return False
+    if not has_explicit_calendar_date(q):
+        return False
+    return bool(
+        re.search(
+            r"\bwho\s+(?:scored|had)\s+(?:the\s+)?most\s+points\b"
+            r"|\bmost\s+points\s+(?:on|in)\b",
+            q,
+        )
+    )
 
 
 def _ambiguous_fragment_note(q: str) -> str | None:
@@ -1300,6 +1319,32 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
+    elif (
+        _specific_date_top_scorer_intent(q, start_date, end_date)
+        and not player
+        and not team
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+    ):
+        route = "top_player_games"
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "opponent": opponent,
+        }
+        notes.append("specific_date_top_scorer: using game-level top performances")
     elif (
         not player
         and not team

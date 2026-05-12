@@ -493,6 +493,62 @@ class TestWithoutPlayer:
         assert qr.result.result_status == "no_result"
 
 
+class TestDateFilterDropPrevention:
+    @pytest.mark.needs_data
+    def test_specific_date_top_scorer_uses_game_level_date_filtered_result(self):
+        qr = execute_natural_query("Who scored the most points on January 1 2026?")
+
+        assert qr.route == "top_player_games"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["start_date"] == "2026-01-01"
+        assert qr.metadata["end_date"] == "2026-01-01"
+        assert {
+            "label": "Date range",
+            "value": "2026-01-01 – 2026-01-01",
+            "kind": "date",
+        } in qr.metadata["applied_filters"]
+
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows
+        assert all(str(row["game_date"]).startswith("2026-01-01") for row in rows)
+        assert rows[0]["player_name"] == "Kawhi Leonard"
+        assert rows[0]["pts"] == 45
+        assert "pts_per_game" not in rows[0]
+
+    @pytest.mark.needs_data
+    def test_working_date_window_cases_still_preserve_date_filters(self):
+        march = execute_natural_query("top scorers in March")
+        assert march.route == "season_leaders"
+        assert march.result.result_status == "ok"
+        assert {
+            "label": "Date range",
+            "value": "2026-03-01 – 2026-03-31",
+            "kind": "date",
+        } in march.metadata["applied_filters"]
+        assert march.to_dict()["sections"]["leaderboard"]
+
+        all_star = execute_natural_query("Jokic since All-Star break")
+        assert all_star.route == "player_game_finder"
+        assert all_star.result.result_status == "ok"
+        assert {
+            "label": "Date range",
+            "value": "2026-02-16",
+            "kind": "date",
+        } in all_star.metadata["applied_filters"]
+        assert all_star.to_dict()["sections"]["finder"]
+
+        last_night = execute_natural_query("Who scored the most points last night?")
+        assert last_night.route == "season_leaders"
+        assert last_night.result.result_status == "no_result"
+        assert last_night.result.result_reason == "no_match"
+        assert {
+            "label": "Date range",
+            "value": "2026-04-11 – 2026-04-11",
+            "kind": "date",
+        } in last_night.metadata["applied_filters"]
+        assert last_night.to_dict()["sections"] == {}
+
+
 # ---------------------------------------------------------------------------
 # 5. Distinct entity count
 # ---------------------------------------------------------------------------

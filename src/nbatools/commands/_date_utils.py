@@ -12,17 +12,29 @@ from nbatools.commands._glossary import FUZZY_DATE_TERMS
 
 MONTH_NAME_TO_NUM = {
     "january": 1,
+    "jan": 1,
     "february": 2,
+    "feb": 2,
     "march": 3,
+    "mar": 3,
     "april": 4,
+    "apr": 4,
     "may": 5,
     "june": 6,
+    "jun": 6,
     "july": 7,
+    "jul": 7,
     "august": 8,
+    "aug": 8,
     "september": 9,
+    "sep": 9,
+    "sept": 9,
     "october": 10,
+    "oct": 10,
     "november": 11,
+    "nov": 11,
     "december": 12,
+    "dec": 12,
 }
 
 CURRENT_QUERY_DATE = pd.Timestamp.now(tz=ZoneInfo("America/Detroit")).floor("D").tz_localize(None)
@@ -66,6 +78,47 @@ def _resolve_year_for_month_in_season(season: str | None, month_num: int) -> int
     return current_year if month_num <= current_month else current_year - 1
 
 
+def _month_name_pattern() -> str:
+    return "|".join(sorted(MONTH_NAME_TO_NUM.keys(), key=len, reverse=True))
+
+
+def has_explicit_calendar_date(text: str) -> bool:
+    """Return True for month-day calendar dates such as ``January 1 2026``."""
+    month_pattern = _month_name_pattern()
+    return bool(
+        re.search(
+            rf"\b(?:on\s+)?(?:{month_pattern})\.?\s+\d{{1,2}}(?:st|nd|rd|th)?"
+            rf"(?:,?\s+(?:19|20)\d{{2}})?\b",
+            text,
+        )
+    )
+
+
+def _extract_explicit_calendar_date(
+    text: str,
+    season: str | None,
+) -> tuple[str | None, str | None]:
+    month_pattern = _month_name_pattern()
+    m = re.search(
+        rf"\b(?:on\s+)?({month_pattern})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?"
+        rf"(?:,?\s+((?:19|20)\d{{2}}))?\b",
+        text,
+    )
+    if not m:
+        return None, None
+
+    month_num = MONTH_NAME_TO_NUM[m.group(1)]
+    day = int(m.group(2))
+    year = int(m.group(3)) if m.group(3) else _resolve_year_for_month_in_season(season, month_num)
+
+    last_day = monthrange(year, month_num)[1]
+    if day < 1 or day > last_day:
+        return None, None
+
+    value = f"{year}-{month_num:02d}-{day:02d}"
+    return value, value
+
+
 def extract_date_range(
     text: str,
     season: str | None,
@@ -100,6 +153,10 @@ def extract_date_range(
             return start, end
 
     month_pattern = "|".join(MONTH_NAME_TO_NUM.keys())
+
+    explicit_start, explicit_end = _extract_explicit_calendar_date(text, season)
+    if explicit_start or explicit_end:
+        return explicit_start, explicit_end
 
     m = re.search(rf"\bsince\s+({month_pattern})\b", text)
     if m:

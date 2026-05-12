@@ -980,16 +980,24 @@ cases:
     category: date_range
     priority: p2
     expected_status: ok
-    expected_route: season_leaders
-    expected_shape: leaderboard_table
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_filters:
+      - kind: date
+        value: "2026-01-01 – 2026-01-01"
     expected_sections:
       - leaderboard
-    review_notes: "Manual review: sampled output appeared to ignore the explicit date instead of filtering or returning no_result."
+    hard_assertions:
+      - path: result.sections.leaderboard.0.player_name
+        equals: "Kawhi Leonard"
+      - path: result.sections.leaderboard.0.pts
+        equals: 45
+    review_notes: "AQ-007 regression guard: explicit single-date top-scorer queries must use date-filtered game-level top performances, not unfiltered season leaders."
     manual_review:
-      status: missing_filter
+      status: pass
       tags:
         - date_filter
-      notes: "Check explicit single-date parsing/routing before promoting any expectation."
+      notes: "Fixed in Wave 3: January 1 2026 is preserved as a date filter and routes to top_player_games."
 
   - id: jokic_since_all_star_break
     query: "Jokic since All-Star break"

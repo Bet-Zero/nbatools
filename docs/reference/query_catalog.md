@@ -78,6 +78,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - last N games: `last 10 games`
 - rolling windows: `3-game stretch`, `5-game scoring stretch`, `rolling 10-game stretch`
 - month / date windows: `in March`, `since January`, `since All-Star break`, `last 30 days`
+- explicit calendar dates: `January 1 2026`, `Jan. 1, 2026`
 - fuzzy time words: `lately`, `recently` (→ last 10 games), `past month`, `last month` (→ rolling 30 days), `last couple weeks`, `past 2 weeks` (→ rolling 14 days)
 - single-day: `last night`, `yesterday`, `today`, `tonight`
 - season type: `playoffs`, `postseason`
@@ -407,6 +408,7 @@ Examples:
 - `best free throw percentage` (recognized stat alias → ft_pct)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 - `biggest scoring games this season` / `most dominant games by plus-minus this season` (single-game leaderboard variants)
+- `Who scored the most points on January 1 2026?` (explicit-date top-scorer question → date-filtered `top_player_games`)
 - `who leads the NBA in points per game` / `who leads the league in assists` (question form; routes to leaderboard)
 - `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
 - `Who scores the most at home this season?` / `most points at home this season` (leaderboard + home filter)
