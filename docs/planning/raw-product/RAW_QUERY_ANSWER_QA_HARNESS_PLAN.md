@@ -596,6 +596,74 @@ metadata generation.
   high-value record-style routes such as `team_record`, player-condition
   record summaries, and selected postseason direct-answer routes.
 
+## Corpus Expansion Wave 3 Status
+
+Expansion Wave 3 broadened the manual QA corpus from 80 to 145 curated cases.
+This was a corpus/reporting/review wave only: no production query behavior,
+frontend rendering, backend answer metadata, or source data was changed.
+
+Coverage strategy:
+
+- Core surfaces/stat coverage: expanded player leaderboards, team leaderboards,
+  top performances, player summaries, team records, count/finder queries,
+  streaks, rolling stretches, playoff/history routes, comparisons, and splits.
+- Phrasing variation: added question-form, search-bar shorthand, compressed
+  threshold forms, `who leads`, `most`, `best`, `highest`, `how often`,
+  `record when`, `against`, `without`, `single-game`, and current-season
+  variants.
+- Context/filter assumptions: added this-season defaults, `last season`, March,
+  since All-Star break, road/home, opponent quality, top defenses, playoff
+  teams, season ranges, and decade/era contexts.
+- Moderate complexity: added player-threshold record-when cases, team threshold
+  records, player count/finder thresholds, compound team counts, and compact
+  multi-stat player finders.
+- Unsupported boundaries: added or reinforced minutes leaderboard support
+  boundaries, team rolling stretches, lineup/on-off unsupported data, subjective
+  duo ranking, and team single-game threes routing.
+
+Harness/reporting update:
+
+- JSONL and Markdown rows now include QA-only `answer_summary` compact fact
+  lines, derived from returned rows. This does not change production backend
+  `answer_phrase` / `count_phrase` metadata.
+
+Latest run:
+
+- Run ID: `20260513T060001Z`
+- Output path: `outputs/raw_query_answer_qa/20260513T060001Z/report.md`
+- Cases: 145
+- Result statuses: `ok: 126`, `no_result: 13`, `error: 6`
+- Expectation cases: `pass: 137`, `fail: 8`
+- Expectation checks: `pass: 695`, `fail: 17`
+- Suspicious flag cases: 3
+- Suspicious flags: `expected_ok_returned_non_ok: 3`
+- Informational flag cases: 73
+- Informational flags: `frontend_hero_expected: 73`
+- Verified outlier cases: 1
+- Verified outliers: `top_performance_high_points: 1`
+
+New finding families:
+
+- player summary/split no-match diagnostics
+- abbreviation-heavy stat/context route and filter drops
+- defensive/opponent-points stat mapping
+- relative season filter preservation
+- percentage threshold parsing/execution
+- compound threshold parsing/execution
+- position-filtered leaderboard support
+- backend count phrase quality
+- product-boundary decisions for documented stats and team top-game variants
+
+Recommended next phase:
+
+- Do not fix one case at a time. Group the Wave 3 findings into fix families:
+  defensive stat mapping, compound/percentage threshold parsing, context-filter
+  preservation, summary/split no-match diagnostics, and count phrase quality.
+- Promote only objective, stable fixes into focused tests near the relevant
+  parser, route, or command behavior.
+- Keep frontend hero extraction and broad backend answer enrichment deferred
+  unless a focused answer-text wave is explicitly scheduled.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

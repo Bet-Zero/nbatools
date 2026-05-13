@@ -8,23 +8,42 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260513T044523Z`
-- Corpus size: 80 cases
-- Output report path: `outputs/raw_query_answer_qa/20260513T044523Z/report.md`
+- Run ID: `20260513T060001Z`
+- Corpus size: 145 cases
+- Output report path: `outputs/raw_query_answer_qa/20260513T060001Z/report.md`
 - Summary counts:
-  - Result statuses: `ok: 70`, `no_result: 6`, `error: 4`
-  - Expectation cases: `pass: 80`
-  - Expectation checks: `pass: 409`
-  - Failed case IDs: `[]`
-  - Manual review statuses: `unreviewed: 64`, `expected_unsupported: 8`, `pass: 7`, `verified_outlier: 1`
-  - Answer text policies: `frontend_hero_expected: 22`, `requires_backend_answer_text: 5`, `no_answer_text_expected: 10`, `<unspecified>: 43`
-  - Answer text statuses: `frontend_hero_expected: 22`, `backend_answer_text_present: 5`, `no_answer_text_expected: 10`, `not_required: 43`
-  - Suspicious flag cases: 0
-  - Suspicious flags: `{}`
-  - Informational flag cases: 22
-  - Informational flags: `frontend_hero_expected: 22`
+  - Result statuses: `ok: 126`, `no_result: 13`, `error: 6`
+  - Expectation cases: `pass: 137`, `fail: 8`
+  - Expectation checks: `pass: 695`, `fail: 17`
+  - Failed case IDs: `anthony_edwards_last_10_summary_no_match`, `kd_ts_top_defenses_missing_filters`, `knicks_allowed_under_110_record`, `lakers_road_record_last_season`, `boston_tatum_under_40_fg_record_missing_filter`, `celtics_120_15_threes_count_missing_filter`, `jokic_30_points_10_assists_finder_misparsed`, `anthony_edwards_wins_losses_split_no_match`
+  - Manual review statuses: `unreviewed: 129`, `expected_unsupported: 8`, `pass: 7`, `verified_outlier: 1`
+  - Answer text policies: `frontend_hero_expected: 76`, `requires_backend_answer_text: 10`, `no_answer_text_expected: 16`, `<unspecified>: 43`
+  - Answer text statuses: `frontend_hero_expected: 73`, `backend_answer_text_present: 10`, `no_answer_text_expected: 16`, `not_required: 46`
+  - Suspicious flag cases: 3
+  - Suspicious flags: `expected_ok_returned_non_ok: 3`
+  - Informational flag cases: 73
+  - Informational flags: `frontend_hero_expected: 73`
   - Verified outlier cases: 1
   - Verified outliers: `top_performance_high_points: 1`
+
+## Expansion Wave 3 summary
+
+Expansion Wave 3 grew the curated corpus from 80 to 145 cases. It did not
+change production query behavior, frontend rendering, backend answer metadata,
+or source data. The wave added broad stat coverage, phrasing variants, context
+filters, moderate condition complexity, and unsupported-boundary samples.
+
+New review signals are grouped into these families:
+
+- stat/context mapping gaps: position filters, defensive allowed-points wording,
+  percentage thresholds, and abbreviation-heavy metric/context forms
+- date/context filter preservation: relative `last season` wording
+- compound threshold handling: multi-condition counts and compact player finder
+  phrases
+- routing/data no-match gaps: documented player summary/split examples that
+  return no-result for Anthony Edwards
+- answer text quality: backend count phrases that are present but too generic
+  or expose raw stat labels
 
 ## Finding summary
 
@@ -38,6 +57,15 @@ findings here should be grouped into fix families before implementation.
 | AQ-006 | P2 | Top performances | `most_assists_single_game`, `most_rebounds_single_game` | supported_now | fixed | Fixed in Raw Query Answer QA Fix Wave 6. Natural non-scoring single-game top-performance queries now route to `top_player_games` with `stat=ast` / `stat=reb` and keep the existing `top_performances` shape. | top-performance routing |
 | AQ-007 | P2 | Date handling | `specific_date_jan_1` | missing_filter | fixed | Fixed in Raw Query Answer QA Fix Wave 3. Explicit calendar-date top-scorer wording now parses `January 1 2026`, preserves the date filter, and routes to game-level `top_player_games` instead of unfiltered season leaders. Latest run: `outputs/raw_query_answer_qa/20260512T105201Z/report.md`. | data freshness/date handling |
 | AQ-008 | P2 | Rolling stretch / team scope | `team_5_game_scoring_stretch` | fixed_as_expected_unsupported | fixed_as_expected_unsupported | Fixed in Raw Query Answer QA Fix Wave 6. Team-scoped rolling-stretch wording no longer returns player windows; it returns `no_result` / `filter_not_supported` with `unsupported_filters=["team_rolling_stretch"]` until a team rolling route/result contract exists. | unsupported/no-result policy |
+| AQ-009 | P1 | Routing / data no-match | `anthony_edwards_last_10_summary_no_match`, `anthony_edwards_wins_losses_split_no_match` | routing_or_data_gap | open | Documented player last-N summary and wins/losses split forms return `no_result` / `no_match` for Anthony Edwards despite preserving the intended filters. Needs diagnosis to separate entity resolution, data coverage, and split/window execution. | player summary/split no-match diagnostics |
+| AQ-010 | P1 | Stat/context filters | `kd_ts_top_defenses_missing_filters` | route_and_filter_drop | open | Abbreviation-heavy `KD TS% vs top defenses` routes to `player_game_finder`, returns 25 rows, and drops the top-defense opponent-quality context instead of producing a filtered summary. | stat alias + opponent-quality routing |
+| AQ-011 | P1 | Defensive stat semantics | `knicks_allowed_under_110_record`, `fewest_points_allowed_team_leader` | stat_mapping_issue | open | `allow fewer than 110` maps to team `pts max` instead of `OPP PTS max`; `allowed the fewest points per game` appears to rank low team scoring (`stat=pts`) rather than opponent points allowed. | defensive/opponent-points stat mapping |
+| AQ-012 | P1 | Date/context filters | `lakers_road_record_last_season` | missing_filter | open | `last season` is dropped while the road filter is preserved, so the result is a current-season road record rather than a last-season road record. | relative season parsing/filter preservation |
+| AQ-013 | P1 | Record-when player condition | `boston_tatum_under_40_fg_record_missing_filter` | missing_filter | open | `shoots under 40%` returns an OK player summary but no applied `fg_pct max` threshold, so the record-when condition is silently dropped. | percentage threshold parsing/execution |
+| AQ-014 | P1 | Compound thresholds | `celtics_120_15_threes_count_missing_filter`, `jokic_30_points_10_assists_finder_misparsed` | missing_filter / stat_binding_issue | open | The Celtics count preserves `120+ points` and season range but drops `15+ threes`; the Jokic compact finder binds `30` to assists and returns no-match instead of preserving `30 points` plus `10 assists`. | compound threshold parsing/execution |
+| AQ-015 | P2 | Leaderboard context filters | `guards_fg_percentage_leaders` | missing_filter | open | `among guards` is ignored; the top row is Jaxson Hayes, indicating position context is not applied on this leaderboard. | position-filtered leaderboards |
+| AQ-016 | P2 | Backend answer text quality | `players_40_point_count`, `players_10_assist_count`, `curry_5_threes_count`, `luka_40_point_count`, `wemby_5_blocks_count`, `teams_120_point_count_answer_text_review` | awkward_answer_text | open | Backend count phrases are present but sometimes too generic (`Result has recorded...`) or expose raw stat labels (`fg3ms`, `blks`, `pts`) instead of natural threshold phrasing. | count phrase generation |
+| AQ-017 | P2 | Product boundary / stat coverage | `minutes_leaders_unsupported`, `biggest_team_three_point_games_boundary` | needs_product_decision | open | `minutes` is documented as a stat alias but leaderboard execution returns unsupported; team single-game threes wording is unrouted even though top-team-game scoring exists. Decide whether to support or document these as explicit boundaries. | product boundary / stat coverage |
 
 ## Notes
 
@@ -46,3 +74,7 @@ findings here should be grouped into fix families before implementation.
 - AQ-006 and AQ-008 were resolved in Wave 6; AQ-003 is now a reclassified expected limitation rather than an open suspicious flag family.
 - Exact frontend rendered-answer extraction is still deferred; targeted backend `answer_phrase` enrichment remains an optional future improvement for high-value direct-answer routes.
 - The manual corpus should remain review-oriented. Promote only objective, stable failures into focused tests near the behavior they protect.
+- Expansion Wave 3 intentionally leaves expectation failures in place for cases
+  that appear to expose real behavior gaps. Do not "green" those cases by
+  encoding wrong current behavior unless product review decides they are
+  unsupported boundaries.

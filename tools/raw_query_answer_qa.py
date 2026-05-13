@@ -375,6 +375,99 @@ def build_section_summaries(
     return summaries
 
 
+def format_summary_number(value: Any) -> str:
+    if isinstance(value, float):
+        return f"{value:.3f}".rstrip("0").rstrip(".")
+    return str(value)
+
+
+def row_entity_label(row: dict[str, Any]) -> str:
+    for key in ("player_name", "team_name", "team_abbr"):
+        value = row.get(key)
+        if value:
+            return str(value)
+    return "row"
+
+
+def row_stat_label(row: dict[str, Any], metadata: dict[str, Any]) -> str:
+    stat = metadata.get("stat")
+    if isinstance(stat, str) and stat in row:
+        return f"{format_summary_number(row[stat])} {stat.upper()}"
+    for key in ("pts", "ast", "reb", "stl", "blk", "fg3m", "wins", "count"):
+        if key in row:
+            return f"{format_summary_number(row[key])} {key.upper()}"
+    return ""
+
+
+def row_matchup_label(row: dict[str, Any]) -> str:
+    date_text = date_prefix(row.get("game_date"))
+    team = row.get("team_abbr") or row.get("team_name")
+    opponent = row.get("opponent_team_abbr") or row.get("opp_abbr")
+    parts = [
+        part for part in (date_text, team, "vs" if team and opponent else None, opponent) if part
+    ]
+    return " ".join(str(part) for part in parts)
+
+
+def build_answer_summary(
+    *,
+    result_status: str | None,
+    result_reason: str | None,
+    route: str | None,
+    metadata: dict[str, Any],
+    sections: dict[str, Any],
+) -> str | None:
+    """Build a compact QA-only fact line for report review."""
+    if result_status in {"no_result", "error"}:
+        reason = result_reason or "unknown"
+        return f"No answer rows returned; reason={reason}"
+
+    count_rows = sections.get("count")
+    if isinstance(count_rows, list) and count_rows and isinstance(count_rows[0], dict):
+        count = count_rows[0].get("count")
+        if count is not None:
+            return f"Count: {format_summary_number(count)}"
+
+    summary_rows = sections.get("summary")
+    if isinstance(summary_rows, list) and summary_rows and isinstance(summary_rows[0], dict):
+        row = summary_rows[0]
+        entity = row_entity_label(row)
+        bits: list[str] = []
+        games = row.get("games")
+        wins = row.get("wins")
+        losses = row.get("losses")
+        if wins is not None and losses is not None:
+            record = f"{format_summary_number(wins)}-{format_summary_number(losses)}"
+            if games is not None:
+                record = f"{record} over {format_summary_number(games)} games"
+            bits.append(record)
+        elif games is not None:
+            bits.append(f"{format_summary_number(games)} games")
+        for key, label in (("pts_avg", "PPG"), ("reb_avg", "RPG"), ("ast_avg", "APG")):
+            if key in row:
+                bits.append(f"{format_summary_number(row[key])} {label}")
+        season_type = row.get("season_type") or metadata.get("season_type")
+        if season_type:
+            bits.append(str(season_type))
+        return f"{entity} -- {', '.join(bits)}" if bits else entity
+
+    for section_name in ("leaderboard", "finder", "streak", "split_comparison", "by_season"):
+        rows = sections.get(section_name)
+        if not isinstance(rows, list) or not rows or not isinstance(rows[0], dict):
+            continue
+        row = rows[0]
+        entity = row_entity_label(row)
+        stat_text = row_stat_label(row, metadata)
+        matchup = row_matchup_label(row)
+        details = ", ".join(part for part in (stat_text, matchup) if part)
+        prefix = "Top row" if section_name in {"leaderboard", "finder"} else section_name
+        return f"{prefix}: {entity}" + (f" -- {details}" if details else "")
+
+    if route:
+        return f"No compact answer summary available; route={route}"
+    return None
+
+
 def as_allowed_values(value: Any) -> list[Any]:
     return value if isinstance(value, list) else [value]
 
@@ -1076,6 +1169,7 @@ def run_case(
             "answer_text": None,
             "answer_text_source": None,
             "answer_text_status": review_flags["answer_text_status"],
+            "answer_summary": "No answer rows returned; reason=exception",
             "shape_hint": "error",
             "shape_source": "backend_approximation",
             "metadata": {},
@@ -1120,6 +1214,13 @@ def run_case(
     flags = review_flags["suspicious_flags"]
     informational_flags = review_flags["informational_flags"]
     verified_flags = review_flags["verified_outliers"]
+    answer_summary = build_answer_summary(
+        result_status=payload.get("result_status"),
+        result_reason=payload.get("result_reason"),
+        route=payload.get("route"),
+        metadata=metadata,
+        sections=sections,
+    )
 
     return json_ready(
         {
@@ -1134,6 +1235,7 @@ def run_case(
             "answer_text": answer_text,
             "answer_text_source": answer_text_source,
             "answer_text_status": review_flags["answer_text_status"],
+            "answer_summary": answer_summary,
             "shape_hint": shape_hint,
             "shape_source": "backend_approximation",
             "metadata": metadata,
@@ -1546,6 +1648,11 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
                     f"- Backend answer text: {md_escape(row['answer_text'])}"
                     if row.get("answer_text")
                     else "- Backend answer text: _not backend-provided_"
+                ),
+                (
+                    f"- Answer summary: {md_escape(row['answer_summary'])}"
+                    if row.get("answer_summary")
+                    else "- Answer summary: _not available_"
                 ),
                 f"- Filters: {format_filters(row.get('applied_filters') or [])}",
                 f"- Sections: {format_sections(row.get('section_summaries') or {})}",

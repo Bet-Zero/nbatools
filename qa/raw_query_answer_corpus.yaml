@@ -1284,3 +1284,1294 @@ cases:
         - subjective
         - recent_window
       notes: "Expected unsupported until a metric-backed definition exists."
+
+  - id: total_rebound_leaders_this_year
+    query: "Which players have the most total rebounds this year?"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Total-rebounds leaderboard phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - phrasing_variant
+      notes: "Review that total rebound wording maps to the intended rebound leaderboard."
+
+  - id: assists_per_game_right_now
+    query: "Who is averaging the most assists per game right now?"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Question-form assist-per-game leaderboard with right-now wording."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - phrasing_variant
+      notes: "Review current-season default and assist stat mapping."
+
+  - id: steals_per_game_leaders
+    query: "Who has the most steals per game this year?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Defensive box-score leaderboard with per-game wording."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review steal stat mapping and leaderboard metric."
+
+  - id: guards_fg_percentage_leaders
+    query: "What players have the best field goal percentage among guards?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Position-filtered shooting leaderboard phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - context_filter
+      notes: "Review whether guard position context is preserved or only the stat is applied."
+
+  - id: free_throw_percentage_leader
+    query: "Who has the best free throw percentage this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "FT percentage stat alias coverage."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review FT% stat mapping and minimum filter behavior."
+
+  - id: minutes_leaders_unsupported
+    query: "Who played the most minutes this season?"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: unsupported
+    expected_shape: no_result
+    review_notes: "Minutes are documented as a stat alias, but current leaderboard execution returns unsupported."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - unsupported_boundary
+      notes: "Review as a stat coverage gap or intentional leaderboard boundary."
+
+  - id: usage_rate_leader
+    query: "Who has the highest usage rate this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Advanced player rate stat leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review usage-rate stat mapping."
+
+  - id: plus_minus_leader
+    query: "Who has the highest plus-minus this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Plus-minus player leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review plus-minus metric sorting."
+
+  - id: most_30_point_games
+    query: "Who has the most 30 point games this season?"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - leaderboard
+    review_notes: "Occurrence-style player leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - record_when
+      notes: "Review threshold preservation for 30-point-games leaderboard."
+
+  - id: triple_double_leaders_since_2020
+    query: "Who has the most triple-doubles since 2020?"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_occurrence_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: special_event
+        value: Triple Double
+      - kind: season
+    expected_sections:
+      - leaderboard
+    review_notes: "Special-event occurrence leaderboard over a season range."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - context_filter
+      notes: "Review triple-double special-event and season-range handling."
+
+  - id: offensive_rating_team_leader
+    query: "What team has the highest offensive rating this season?"
+    category: team_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team offensive-rating leaderboard with highest phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review offensive-rating stat mapping."
+
+  - id: net_rating_team_leaders
+    query: "What teams have the best net rating this year?"
+    category: team_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team net-rating leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review net-rating stat mapping."
+
+  - id: fewest_points_allowed_team_leader
+    query: "Which team has allowed the fewest points per game this season?"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Defensive scoring phrasing should rank points allowed, not team scoring."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - phrasing_variant
+      notes: "Review whether allowed-points wording maps to a defensive metric."
+
+  - id: team_scoring_leaders
+    query: "Which teams score the most points this season?"
+    category: team_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team scoring leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review team points stat mapping."
+
+  - id: team_three_point_leaders
+    query: "Which teams make the most threes this season?"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team made-threes leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review team fg3m stat mapping."
+
+  - id: team_road_record_leaders
+    query: "Which teams have the best road record this year?"
+    category: team_record_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: location
+        value: Away
+    expected_sections:
+      - leaderboard
+    review_notes: "Road-record team leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+      notes: "Review away location filtering and record leaderboard sort."
+
+  - id: team_free_throw_percentage_leaders
+    query: "Which teams have the best free throw percentage this season?"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Team FT percentage leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review team ft_pct stat mapping."
+
+  - id: most_threes_single_game
+    query: "What were the most threes in a game this season?"
+    category: top_performances
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: fg3m
+    review_notes: "Single-game made-threes top performance."
+    manual_review:
+      status: unreviewed
+      tags:
+        - top_performance
+        - stat_mapping
+      notes: "Review top-player-game fg3m mapping."
+
+  - id: most_blocks_single_game
+    query: "What were the most blocks in a game this season?"
+    category: top_performances
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: blk
+    review_notes: "Single-game blocks top performance."
+    manual_review:
+      status: unreviewed
+      tags:
+        - top_performance
+        - stat_mapping
+      notes: "Review top-player-game blk mapping."
+
+  - id: most_steals_single_game
+    query: "What were the most steals in a game this season?"
+    category: top_performances
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: stl
+    review_notes: "Single-game steals top performance."
+    manual_review:
+      status: unreviewed
+      tags:
+        - top_performance
+        - stat_mapping
+      notes: "Review top-player-game stl mapping."
+
+  - id: plus_minus_single_game
+    query: "What were the most dominant games by plus-minus this season?"
+    category: top_performances
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: plus_minus
+    review_notes: "Plus-minus single-game top performance."
+    manual_review:
+      status: unreviewed
+      tags:
+        - top_performance
+        - stat_mapping
+      notes: "Review plus-minus top-player-game mapping."
+
+  - id: biggest_team_three_point_games_boundary
+    query: "biggest team three-point games this season"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Team single-game threes wording is currently unrouted."
+    manual_review:
+      status: unreviewed
+      tags:
+        - top_performance
+        - unsupported_boundary
+      notes: "Review whether team fg3m top-game support should be added or explicitly documented as unsupported."
+
+  - id: luka_highest_scoring_game
+    query: "Luka Doncic highest scoring game this season"
+    category: top_performances
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    review_notes: "Named-player highest-scoring-game phrasing currently returns a finder-style game list."
+    manual_review:
+      status: unreviewed
+      tags:
+        - top_performance
+        - phrasing_variant
+      notes: "Review whether this should become top_player_games-shaped for a single player."
+
+  - id: luka_last_5_summary
+    query: "Luka last 5"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: window
+        value: "5"
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Compressed player plus last-N shorthand."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - context_filter
+      notes: "Review last-5 window and player resolution."
+
+  - id: anthony_edwards_last_10_summary_no_match
+    query: "Anthony Edwards last 10 games summary"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Documented player last-N summary form currently returns no_match for this player."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - phrasing_variant
+      notes: "Review whether no_match is data coverage, entity resolution, or recent-window filtering behavior."
+
+  - id: tatum_playoff_teams_summary
+    query: "Tatum against playoff teams this season"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player opponent-quality shorthand."
+    manual_review:
+      status: unreviewed
+      tags:
+        - opponent_quality
+        - context_filter
+      notes: "Review playoff-team opponent-quality semantics on player summary."
+
+  - id: kd_ts_top_defenses_missing_filters
+    query: "KD TS% vs top defenses"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: quality
+        value: top-10 defenses
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Abbreviation-heavy player summary should preserve TS% and top-defense context."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - opponent_quality
+        - context_filter
+      notes: "Initial probe returned a finder without quality filters; review as a likely route/filter drop."
+
+  - id: anthony_davis_without_lebron_summary
+    query: "How has Anthony Davis rebounded when LeBron James didn't play?"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: player
+        value: LeBron James
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player summary with teammate absence filter."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - phrasing_variant
+      notes: "Review player-vs-teammate absence semantics."
+
+  - id: maxey_without_embiid_summary
+    query: "How has Tyrese Maxey played when Joel Embiid was out this season?"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: player
+        value: Joel Embiid
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player summary with another teammate absence phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - phrasing_variant
+      notes: "Review without-player filter on player summary."
+
+  - id: lebron_career_summary
+    query: "LeBron career"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: season
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Career shorthand should expand to available full season range."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - phrasing_variant
+      notes: "Review career/all-time season range."
+
+  - id: knicks_road_record
+    query: "What is the Knicks road record this season?"
+    category: team_record
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Away
+    expected_sections:
+      - summary
+    review_notes: "Team road-record summary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+      notes: "Review road location filtering."
+
+  - id: thunder_since_all_star_record
+    query: "Thunder record since All-Star break"
+    category: team_record
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - summary
+    review_notes: "Team record with since-All-Star-break date window."
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+        - context_filter
+      notes: "Review date-window handling on team records."
+
+  - id: celtics_road_losses_finder
+    query: "Celtics road losses this season"
+    category: finder_count
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_filters:
+      - kind: location
+        value: Away
+      - kind: outcome
+        value: Losses
+    expected_sections:
+      - finder
+    review_notes: "Team game finder with location plus outcome."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+      notes: "Review finder row ordering and filter preservation."
+
+  - id: knicks_allowed_under_110_record
+    query: "What is the Knicks record when they allow fewer than 110 points?"
+    category: record_when_team_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: threshold
+        label: OPP PTS max
+    expected_sections:
+      - summary
+    review_notes: "Opponent-points threshold record phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+        - context_filter
+      notes: "Review that allow/fewer-than maps to opponent points rather than team points."
+
+  - id: cavaliers_scored_under_105_record
+    query: "What's the Cavaliers' record when they score fewer than 105 points?"
+    category: record_when_team_condition
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: threshold
+        label: pts max
+    expected_sections:
+      - summary
+    review_notes: "Team low-scoring threshold record."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+      notes: "Review under-threshold team points handling."
+
+  - id: warriors_march_record
+    query: "Warriors record in March"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - summary
+    review_notes: "Team record with month date window."
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+      notes: "Review month filtering."
+
+  - id: lakers_road_record_last_season
+    query: "Lakers road record last season"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Away
+      - kind: season
+    expected_sections:
+      - summary
+    review_notes: "Team road record with relative last-season context."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Initial probe showed only the road filter; review whether last-season is dropped."
+
+  - id: boston_tatum_under_40_fg_record_missing_filter
+    query: "What's Boston's record when Jayson Tatum shoots under 40%?"
+    category: record_when_player_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: fg_pct max
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player field-goal percentage threshold should not be dropped."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+        - stat_mapping
+      notes: "Initial probe returned OK without an applied FG% threshold."
+
+  - id: lakers_lebron_10_assists_record
+    query: "What is the Lakers record when LeBron James has 10+ assists?"
+    category: record_when_player_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: ast min
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player-assist threshold record-when phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+        - stat_mapping
+      notes: "Review threshold and team-context semantics."
+
+  - id: knicks_brunson_30_record
+    query: "What is the Knicks record when Jalen Brunson scores 30+?"
+    category: record_when_player_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Player scoring threshold with team-context wording."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+        - stat_mapping
+      notes: "Review team-context semantics for player-threshold summaries."
+
+  - id: warriors_curry_3_threes_record
+    query: "What is the Warriors record when Stephen Curry makes 3+ threes?"
+    category: record_when_player_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: threshold
+        label: fg3m min
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Made-threes threshold with team-context wording."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+        - stat_mapping
+      notes: "Review fg3m threshold and team-context semantics."
+
+  - id: curry_5_threes_count
+    query: "How often has Stephen Curry made 5 or more threes this year?"
+    category: player_game_log_count
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_filters:
+      - kind: threshold
+        label: fg3m min
+    expected_sections:
+      - count
+      - finder
+    review_notes: "Player made-threes count phrase."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - phrasing_variant
+      notes: "Review backend count phrase wording for made threes."
+
+  - id: luka_40_point_count
+    query: "How often has Luka Doncic scored 40 or more this season?"
+    category: player_game_log_count
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - count
+      - finder
+    review_notes: "Player 40-point count phrase."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - phrasing_variant
+      notes: "Review backend count phrase wording for threshold counts."
+
+  - id: wemby_5_blocks_count
+    query: "How often has Victor Wembanyama had 5 or more blocks this season?"
+    category: player_game_log_count
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_filters:
+      - kind: threshold
+        label: blk min
+    expected_sections:
+      - count
+      - finder
+    review_notes: "Player blocks count phrase."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+      notes: "Review block threshold and count phrase."
+
+  - id: celtics_120_15_threes_count_missing_filter
+    query: "how many Celtics games with 120+ points and 15+ threes since 2022"
+    category: finder_count
+    priority: p1
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_occurrence_leaders
+    expected_filters:
+      - kind: threshold
+        label: pts min
+      - kind: threshold
+        label: fg3m min
+      - kind: season
+    expected_sections:
+      - count
+    review_notes: "Compound team count should preserve both points and threes thresholds."
+    manual_review:
+      status: unreviewed
+      tags:
+        - record_when
+        - stat_mapping
+        - context_filter
+      notes: "Initial probe kept the points threshold and season range but appeared to drop the 15+ threes condition."
+
+  - id: teams_120_point_count_answer_text_review
+    query: "how many teams scored 120+ this season"
+    category: finder_count
+    priority: p2
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: team_occurrence_leaders
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - count
+    review_notes: "Distinct-team threshold count; inspect backend count phrase quality."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - answer_text_policy
+      notes: "Initial probe returned a backend count phrase, but the wording may be too generic for distinct-team semantics."
+
+  - id: jokic_30_points_10_assists_finder_misparsed
+    query: "Jokic games with 30 points and 10 assists"
+    category: finder_count
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: threshold
+        label: pts min
+      - kind: threshold
+        label: ast min
+        value: "10.0"
+    expected_sections:
+      - finder
+    review_notes: "Compact two-threshold finder should parse 30 points plus 10 assists."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - phrasing_variant
+      notes: "Initial probe appeared to bind 30 to assists and returned no_match."
+
+  - id: curry_3_threes_streak
+    query: "Curry longest streak with at least 3 threes"
+    category: streak
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        label: fg3m min
+    expected_sections:
+      - streak
+    review_notes: "Player made-threes streak."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+        - stat_mapping
+      notes: "Review fg3m threshold in streak route."
+
+  - id: jokic_triple_double_streak
+    query: "Jokic longest triple-double streak"
+    category: streak
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: special_event
+        value: Triple Double
+    expected_sections:
+      - streak
+    review_notes: "Player special-event streak."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review triple-double special event in streak route."
+
+  - id: thunder_110_point_streak
+    query: "Thunder consecutive games with 110+ points"
+    category: streak
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    expected_sections:
+      - streak
+    review_notes: "Team points threshold streak."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+      notes: "Review team threshold streak parsing."
+
+  - id: bucks_15_threes_streak
+    query: "longest Bucks streak with 15+ threes"
+    category: streak
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_streak_finder
+    expected_shape: streak_table
+    expected_filters:
+      - kind: threshold
+        label: fg3m min
+    expected_sections:
+      - streak
+    review_notes: "Team made-threes threshold streak."
+    manual_review:
+      status: unreviewed
+      tags:
+        - streak
+        - stat_mapping
+      notes: "Review team fg3m streak parsing."
+
+  - id: efficient_10_game_stretch
+    query: "most efficient 10-game rolling stretch"
+    category: rolling_stretch
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.window_size
+        equals: 10
+    review_notes: "Efficiency-oriented rolling stretch query."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - stat_mapping
+      notes: "Review which efficiency metric is selected."
+
+  - id: team_net_rating_stretch_unsupported
+    query: "best 5-game team net rating stretch"
+    category: rolling_stretch
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_stretch_leaderboard
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Team advanced-metric rolling stretch remains outside current support."
+    manual_review:
+      status: unreviewed
+      tags:
+        - rolling_stretch
+        - unsupported_boundary
+      notes: "Review unsupported boundary for team rolling stretches beyond scoring phrasing."
+
+  - id: warriors_conference_finals_appearances
+    query: "Warriors conference finals appearances"
+    category: playoff_history
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_sections:
+      - summary
+      - by_season
+    review_notes: "Single-team conference-finals appearance summary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+      notes: "Review playoff round parsing and summary rows."
+
+  - id: lakers_celtics_series_record
+    query: "Lakers playoff series record vs Celtics"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_filters:
+      - kind: team
+        value: BOS
+    expected_sections:
+      - summary
+      - by_season
+    review_notes: "Single-team playoff history with opponent filter."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - context_filter
+      notes: "Review whether series-record phrasing should route to matchup history instead."
+
+  - id: best_second_round_record
+    query: "best second round record"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_round_record
+    expected_shape: playoff_round_record
+    expected_sections:
+      - leaderboard
+    review_notes: "Playoff round-record leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+      notes: "Review second-round selection and leaderboard sorting."
+
+  - id: winningest_team_2010s
+    query: "winningest team of the 2010s"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: record_by_decade_leaderboard
+    expected_shape: record_by_decade_leaderboard
+    expected_filters:
+      - kind: season
+    expected_sections:
+      - leaderboard
+    review_notes: "Era/decade regular-season record leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - context_filter
+      notes: "Review decade season-range mapping."
+
+  - id: warriors_record_by_decade
+    query: "Warriors record by decade"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: record_by_decade
+    expected_shape: record_by_decade
+    expected_sections:
+      - summary
+      - by_season
+    review_notes: "Single-team record-by-decade summary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+      notes: "Review era-history summary shape."
+
+  - id: lakers_celtics_by_decade
+    query: "Lakers vs Celtics by decade"
+    category: playoff_matchup_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: matchup_by_decade
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Historical matchup comparison by decade."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - split
+      notes: "Review matchup-by-decade rows and labels."
+
+  - id: jokic_embiid_recent_comparison
+    query: "Jokic vs Embiid recent form"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Player comparison with recent-form window."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review comparison route output and recent-window semantics."
+
+  - id: celtics_bucks_range_comparison
+    query: "Celtics vs Bucks from 2021-22 to 2023-24"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_filters:
+      - kind: season
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Team comparison over explicit season range."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review season-range comparison behavior."
+
+  - id: anthony_edwards_wins_losses_split_no_match
+    query: "How does Anthony Edwards shoot in wins versus losses?"
+    category: split
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_filters:
+      - kind: outcome
+        value: Wins
+      - kind: outcome
+        value: Losses
+    expected_sections:
+      - summary
+      - split_comparison
+    review_notes: "Documented player wins/losses split currently returns no_match for this player."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review whether no_match comes from split routing, entity resolution, or data coverage."
+
+  - id: nuggets_jokic_on_off_unsupported
+    query: "Nuggets net rating with Nikola Jokic on the floor versus off the floor"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_on_off
+    expected_reason: unsupported
+    expected_shape: no_result
+    review_notes: "On/off route exists but coverage is currently unsupported for this slice."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - unsupported_boundary
+      notes: "Review on/off unsupported-data guidance."
+
+  - id: best_5_man_lineups_unsupported
+    query: "best 5-man lineups"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: lineup_leaderboard
+    expected_reason: unsupported
+    expected_shape: no_result
+    review_notes: "Lineup leaderboard route returns unsupported when trusted coverage is unavailable."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+      notes: "Review lineup unsupported-data guidance."
+
+  - id: best_duo_unsupported
+    query: "Who is the best duo this season?"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Subjective duo ranking is outside the current product boundary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+        - subjective
+      notes: "Review product boundary and guidance for subjective lineup/duo phrasing."
