@@ -39,6 +39,11 @@ EXPECTED_FIELD_NAMES = {
     "hard_assertions",
     "review_notes",
 }
+ANSWER_TEXT_POLICIES = {
+    "requires_backend_answer_text",
+    "frontend_hero_expected",
+    "no_answer_text_expected",
+}
 MANUAL_REVIEW_STATUSES = {
     "unreviewed",
     "pass",
@@ -67,12 +72,19 @@ SUMMARY_ROUTES = {
     "team_split_summary",
 }
 SUGGESTED_TAGS_BY_FLAG = {
-    "missing_backend_answer_text": ["frontend_hero_extraction"],
+    "missing_backend_answer_text": ["backend_answer_text_required"],
     "ok_no_sections": ["shape_section_contract"],
     "top_performance_high_points": ["top_performance_data_quality"],
     "playoff_teams_playoff_season_type": ["opponent_quality_semantics"],
     "expected_unsupported_returned_ok": ["unsupported_no_result_policy"],
     "expected_ok_returned_non_ok": ["routing_or_data_gap"],
+}
+ANSWER_TEXT_STATUS_LABELS = {
+    "backend_answer_text_present": "backend answer text present",
+    "frontend_hero_expected": "frontend-rendered hero expected",
+    "missing_backend_answer_text": "backend answer text missing",
+    "no_answer_text_expected": "no answer text expected",
+    "not_required": "not required",
 }
 SHAPE_BY_ROUTE = {
     "game_finder": "game_log_team_table",
@@ -175,6 +187,7 @@ def load_corpus(path: Path) -> tuple[int | None, list[dict[str, Any]]]:
         missing = REQUIRED_CASE_FIELDS - set(case)
         if missing:
             raise ValueError(f"Case {case.get('id', index)} missing fields: {sorted(missing)}")
+        normalize_answer_text_policy(case)
         normalize_manual_review(case)
 
     version = data.get("version")
@@ -254,6 +267,20 @@ def json_ready(value: Any) -> Any:
 
 def case_expectations(case: dict[str, Any]) -> dict[str, Any]:
     return {key: json_ready(case.get(key)) for key in EXPECTED_FIELD_NAMES if key in case}
+
+
+def normalize_answer_text_policy(case: dict[str, Any]) -> str | None:
+    raw = case.get("answer_text_policy")
+    if raw is None:
+        return None
+    policy = str(raw)
+    if policy not in ANSWER_TEXT_POLICIES:
+        allowed = ", ".join(sorted(ANSWER_TEXT_POLICIES))
+        raise ValueError(
+            f"Case {case.get('id')} has invalid answer_text_policy {policy!r}; "
+            f"expected one of: {allowed}"
+        )
+    return policy
 
 
 def normalize_manual_review(case: dict[str, Any]) -> dict[str, Any]:
@@ -603,6 +630,17 @@ def make_verified_outlier_flag(
     return flag
 
 
+def make_informational_flag(
+    flag_id: str,
+    message: str,
+    *,
+    details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    flag = make_suspicious_flag(flag_id, message, details=details)
+    flag["severity"] = "informational"
+    return flag
+
+
 def expected_allows(case: dict[str, Any], status: str) -> bool:
     return status in as_allowed_values(case.get("expected_status"))
 
@@ -746,6 +784,119 @@ def split_verified_high_point_rows(
     return unverified_rows, verified_rows
 
 
+def legacy_requires_backend_answer_text(
+    case: dict[str, Any],
+    *,
+    result_status: str | None,
+    route: str | None,
+    metadata: dict[str, Any],
+) -> bool:
+    priority = str(case.get("priority"))
+    query_class = metadata.get("query_class")
+    return (
+        result_status == "ok"
+        and priority in {"p0", "p1"}
+        and (route in SUMMARY_ROUTES or query_class in {"summary", "split_summary"})
+    )
+
+
+def classify_answer_text(
+    case: dict[str, Any],
+    *,
+    result_status: str | None,
+    route: str | None,
+    answer_text: str | None,
+    metadata: dict[str, Any],
+) -> dict[str, Any]:
+    policy = normalize_answer_text_policy(case)
+    query_class = metadata.get("query_class")
+
+    if answer_text:
+        return {
+            "answer_text_policy": policy,
+            "answer_text_status": "backend_answer_text_present",
+            "suspicious_flags": [],
+            "informational_flags": [],
+        }
+
+    details = {
+        "route": route,
+        "query_class": query_class,
+        "answer_text_policy": policy,
+    }
+    if policy == "frontend_hero_expected":
+        if result_status == "ok":
+            return {
+                "answer_text_policy": policy,
+                "answer_text_status": "frontend_hero_expected",
+                "suspicious_flags": [],
+                "informational_flags": [
+                    make_informational_flag(
+                        "frontend_hero_expected",
+                        "Frontend result component is expected to provide the hero answer text.",
+                        details=details,
+                    )
+                ],
+            }
+        return {
+            "answer_text_policy": policy,
+            "answer_text_status": "not_required",
+            "suspicious_flags": [],
+            "informational_flags": [],
+        }
+
+    if policy == "no_answer_text_expected":
+        return {
+            "answer_text_policy": policy,
+            "answer_text_status": "no_answer_text_expected",
+            "suspicious_flags": [],
+            "informational_flags": [],
+        }
+
+    if policy == "requires_backend_answer_text" and result_status == "ok":
+        return {
+            "answer_text_policy": policy,
+            "answer_text_status": "missing_backend_answer_text",
+            "suspicious_flags": [
+                make_suspicious_flag(
+                    "missing_backend_answer_text",
+                    (
+                        "Case requires backend answer text but metadata has no "
+                        "answer_phrase or count_phrase."
+                    ),
+                    details=details,
+                )
+            ],
+            "informational_flags": [],
+        }
+
+    if policy is None and legacy_requires_backend_answer_text(
+        case,
+        result_status=result_status,
+        route=route,
+        metadata=metadata,
+    ):
+        return {
+            "answer_text_policy": policy,
+            "answer_text_status": "missing_backend_answer_text",
+            "suspicious_flags": [
+                make_suspicious_flag(
+                    "missing_backend_answer_text",
+                    "P0/P1 summary-style result has no backend answer text.",
+                    details=details,
+                )
+            ],
+            "informational_flags": [],
+        }
+
+    return {
+        "answer_text_policy": policy,
+        "answer_text_status": "not_required",
+        "suspicious_flags": [],
+        "informational_flags": [],
+    }
+
+
 def build_review_flags(
     case: dict[str, Any],
     *,
@@ -756,25 +907,17 @@ def build_review_flags(
     metadata: dict[str, Any],
     sections: dict[str, Any],
     verified_outliers: list[dict[str, Any]] | None = None,
-) -> dict[str, list[dict[str, Any]]]:
-    flags: list[dict[str, Any]] = []
+) -> dict[str, Any]:
+    answer_text_review = classify_answer_text(
+        case,
+        result_status=result_status,
+        route=route,
+        answer_text=answer_text,
+        metadata=metadata,
+    )
+    flags: list[dict[str, Any]] = list(answer_text_review["suspicious_flags"])
+    informational_flags: list[dict[str, Any]] = list(answer_text_review["informational_flags"])
     verified_flags: list[dict[str, Any]] = []
-    priority = str(case.get("priority"))
-    query_class = metadata.get("query_class")
-
-    if (
-        result_status == "ok"
-        and priority in {"p0", "p1"}
-        and not answer_text
-        and (route in SUMMARY_ROUTES or query_class in {"summary", "split_summary"})
-    ):
-        flags.append(
-            make_suspicious_flag(
-                "missing_backend_answer_text",
-                "P0/P1 summary-style result has no backend answer text.",
-                details={"route": route, "query_class": query_class},
-            )
-        )
 
     if result_status == "ok" and not sections:
         flags.append(
@@ -845,7 +988,13 @@ def build_review_flags(
             )
         )
 
-    return {"suspicious_flags": flags, "verified_outliers": verified_flags}
+    return {
+        "answer_text_policy": answer_text_review["answer_text_policy"],
+        "answer_text_status": answer_text_review["answer_text_status"],
+        "suspicious_flags": flags,
+        "informational_flags": informational_flags,
+        "verified_outliers": verified_flags,
+    }
 
 
 def build_suspicious_flags(
@@ -887,6 +1036,7 @@ def run_case(
     case_id = str(case["id"])
     query = str(case["query"])
     manual_review = normalize_manual_review(case)
+    answer_text_policy = normalize_answer_text_policy(case)
     base = {
         "id": case_id,
         "query": query,
@@ -894,6 +1044,7 @@ def run_case(
         "priority": case["priority"],
         "expected": case_expectations(case),
         "manual_review": manual_review,
+        "answer_text_policy": answer_text_policy,
     }
 
     try:
@@ -911,6 +1062,7 @@ def run_case(
             verified_outliers=verified_outliers,
         )
         flags = review_flags["suspicious_flags"]
+        informational_flags = review_flags["informational_flags"]
         verified_flags = review_flags["verified_outliers"]
         return {
             **base,
@@ -923,6 +1075,7 @@ def run_case(
             "ok": False,
             "answer_text": None,
             "answer_text_source": None,
+            "answer_text_status": review_flags["answer_text_status"],
             "shape_hint": "error",
             "shape_source": "backend_approximation",
             "metadata": {},
@@ -935,6 +1088,7 @@ def run_case(
             "expectation_results": error_expectation_results(exc),
             "suggested_review_tags": suggested_review_tags(flags),
             "suspicious_flags": flags,
+            "informational_flags": informational_flags,
             "verified_outliers": verified_flags,
         }
 
@@ -964,6 +1118,7 @@ def run_case(
         verified_outliers=verified_outliers,
     )
     flags = review_flags["suspicious_flags"]
+    informational_flags = review_flags["informational_flags"]
     verified_flags = review_flags["verified_outliers"]
 
     return json_ready(
@@ -978,6 +1133,7 @@ def run_case(
             "ok": payload.get("ok"),
             "answer_text": answer_text,
             "answer_text_source": answer_text_source,
+            "answer_text_status": review_flags["answer_text_status"],
             "shape_hint": shape_hint,
             "shape_source": "backend_approximation",
             "metadata": metadata,
@@ -990,6 +1146,7 @@ def run_case(
             "expectation_results": expectation_results,
             "suggested_review_tags": suggested_review_tags(flags),
             "suspicious_flags": flags,
+            "informational_flags": informational_flags,
             "verified_outliers": verified_flags,
         }
     )
@@ -1020,8 +1177,13 @@ def summarize_rows(
     manual_review_status_counts = Counter(
         str((row.get("manual_review") or {}).get("status", "unreviewed")) for row in rows
     )
+    answer_text_policy_counts = Counter(
+        str(row.get("answer_text_policy") or "<unspecified>") for row in rows
+    )
+    answer_text_status_counts = Counter(str(row.get("answer_text_status")) for row in rows)
     manual_review_tag_counts: Counter[str] = Counter()
     suspicious_flag_counts: Counter[str] = Counter()
+    informational_flag_counts: Counter[str] = Counter()
     verified_outlier_counts: Counter[str] = Counter()
     suggested_review_tag_counts: Counter[str] = Counter()
     expectation_case_counts = Counter(
@@ -1030,6 +1192,7 @@ def summarize_rows(
     expectation_check_counts: Counter[str] = Counter()
     failed_case_ids: list[str] = []
     suspicious_flag_case_ids: list[str] = []
+    informational_flag_case_ids: list[str] = []
     verified_outlier_case_ids: list[str] = []
     for row in rows:
         manual_review = row.get("manual_review") or {}
@@ -1040,6 +1203,11 @@ def summarize_rows(
             suspicious_flag_case_ids.append(str(row.get("id")))
         for flag in flags:
             suspicious_flag_counts[str(flag.get("id"))] += 1
+        informational_flags = row.get("informational_flags") or []
+        if informational_flags:
+            informational_flag_case_ids.append(str(row.get("id")))
+        for flag in informational_flags:
+            informational_flag_counts[str(flag.get("id"))] += 1
         verified_outliers = row.get("verified_outliers") or []
         if verified_outliers:
             verified_outlier_case_ids.append(str(row.get("id")))
@@ -1067,9 +1235,14 @@ def summarize_rows(
         "route_counts": dict(sorted(route_counts.items())),
         "manual_review_status_counts": dict(sorted(manual_review_status_counts.items())),
         "manual_review_tag_counts": dict(sorted(manual_review_tag_counts.items())),
+        "answer_text_policy_counts": dict(sorted(answer_text_policy_counts.items())),
+        "answer_text_status_counts": dict(sorted(answer_text_status_counts.items())),
         "suspicious_flag_case_count": len(suspicious_flag_case_ids),
         "suspicious_flag_case_ids": suspicious_flag_case_ids,
         "suspicious_flag_counts": dict(sorted(suspicious_flag_counts.items())),
+        "informational_flag_case_count": len(informational_flag_case_ids),
+        "informational_flag_case_ids": informational_flag_case_ids,
+        "informational_flag_counts": dict(sorted(informational_flag_counts.items())),
         "verified_outlier_case_count": len(verified_outlier_case_ids),
         "verified_outlier_case_ids": verified_outlier_case_ids,
         "verified_outlier_counts": dict(sorted(verified_outlier_counts.items())),
@@ -1093,6 +1266,11 @@ def md_code(value: Any) -> str:
     if value is None:
         return "`<none>`"
     return f"`{str(value).replace('`', '')}`"
+
+
+def answer_text_status_label(status: Any) -> str:
+    status_text = str(status or "")
+    return str(ANSWER_TEXT_STATUS_LABELS.get(status_text, status or ""))
 
 
 def compact_value(value: Any) -> str:
@@ -1201,8 +1379,12 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         f"- Routes: {md_code(summary['route_counts'])}",
         f"- Manual review statuses: {md_code(summary['manual_review_status_counts'])}",
         f"- Manual review tags: {md_code(summary['manual_review_tag_counts'])}",
+        f"- Answer text policies: {md_code(summary['answer_text_policy_counts'])}",
+        f"- Answer text statuses: {md_code(summary['answer_text_status_counts'])}",
         f"- Suspicious flag cases: {md_code(summary['suspicious_flag_case_count'])}",
         f"- Suspicious flags: {md_code(summary['suspicious_flag_counts'])}",
+        f"- Informational flag cases: {md_code(summary['informational_flag_case_count'])}",
+        f"- Informational flags: {md_code(summary['informational_flag_counts'])}",
         f"- Verified outlier cases: {md_code(summary['verified_outlier_case_count'])}",
         f"- Verified outliers: {md_code(summary['verified_outlier_counts'])}",
         f"- Suggested review tags: {md_code(summary['suggested_review_tag_counts'])}",
@@ -1234,6 +1416,35 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
                         md_escape(flag_ids),
                         md_escape(tags),
                         md_escape(manual_review.get("status", "unreviewed")),
+                    ]
+                )
+                + " |"
+            )
+    else:
+        lines.append("_None._")
+
+    lines.extend(["", "## Informational Flags", ""])
+    informational_rows = [row for row in rows if row.get("informational_flags")]
+    if informational_rows:
+        lines.extend(
+            [
+                "| Case | Flags | Answer text policy | Answer text status |",
+                "|---|---|---|---|",
+            ]
+        )
+        for row in informational_rows:
+            flag_ids = ", ".join(
+                str(flag.get("id")) for flag in row.get("informational_flags") or []
+            )
+            status = str(row.get("answer_text_status") or "")
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        md_escape(row.get("id")),
+                        md_escape(flag_ids),
+                        md_escape(row.get("answer_text_policy")),
+                        md_escape(answer_text_status_label(status)),
                     ]
                 )
                 + " |"
@@ -1326,6 +1537,11 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
                 f"- Query class: {md_code(row.get('query_class'))}",
                 f"- Shape hint: {md_code(row.get('shape_hint'))}",
                 f"- Shape source: {md_code(row.get('shape_source'))}",
+                f"- Answer text policy: {md_code(row.get('answer_text_policy'))}",
+                (
+                    "- Answer text status: "
+                    f"{md_escape(answer_text_status_label(row.get('answer_text_status')))}"
+                ),
                 (
                     f"- Backend answer text: {md_escape(row['answer_text'])}"
                     if row.get("answer_text")
@@ -1352,6 +1568,9 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         if row.get("suspicious_flags"):
             flag_ids = ", ".join(str(flag.get("id")) for flag in row["suspicious_flags"])
             lines.append(f"- Suspicious flags: {md_code(flag_ids)}")
+        if row.get("informational_flags"):
+            flag_ids = ", ".join(str(flag.get("id")) for flag in row["informational_flags"])
+            lines.append(f"- Informational flags: {md_code(flag_ids)}")
         if row.get("verified_outliers"):
             flag_ids = ", ".join(str(flag.get("id")) for flag in row["verified_outliers"])
             lines.append(f"- Verified outliers: {md_code(flag_ids)}")
@@ -1436,6 +1655,7 @@ def main() -> int:
     print(f"Result statuses: {summary['result_status_counts']}")
     print(f"Expectation cases: {summary['expectation_case_counts']}")
     print(f"Suspicious flag cases: {summary['suspicious_flag_case_count']}")
+    print(f"Informational flag cases: {summary['informational_flag_case_count']}")
     print(f"Verified outlier cases: {summary['verified_outlier_case_count']}")
     if failed_case_ids:
         print(f"Failed case IDs: {', '.join(failed_case_ids)}")

@@ -14,12 +14,18 @@ version: 1
 # - bad_answer_text
 # - expected_unsupported
 # - needs_product_decision
+#
+# Optional answer_text_policy allowed values:
+# - requires_backend_answer_text
+# - frontend_hero_expected
+# - no_answer_text_expected
 
 cases:
   - id: record_when_jokic_triple_double
     query: "What is Denver's record when Nikola Jokic has a triple-double?"
     category: record_when_player_condition
     priority: p0
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -46,6 +52,7 @@ cases:
     query: "How often has Nikola Jokic recorded a triple-double this season?"
     category: player_game_log_count
     priority: p0
+    answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_game_finder
     expected_shape: count_with_finder
@@ -100,6 +107,7 @@ cases:
     query: "What is the Celtics' record against playoff teams?"
     category: team_record
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -131,6 +139,7 @@ cases:
     query: "Celtics record against teams that made the playoffs"
     category: team_record
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -156,6 +165,7 @@ cases:
     query: "What is the Celtics playoff record?"
     category: team_record
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -178,6 +188,7 @@ cases:
     query: "How do the Suns perform when Devin Booker didn't play?"
     category: without_player_condition
     priority: p0
+    answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: game_summary
     expected_shape: game_log_team_detail
@@ -235,6 +246,7 @@ cases:
     query: "Lakers playoff history"
     category: playoff_history
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_history
     expected_shape: playoff_history
@@ -265,6 +277,7 @@ cases:
     query: "Who scored the most points last night?"
     category: no_result_date
     priority: p1
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: season_leaders
     expected_reason: no_match
@@ -277,6 +290,7 @@ cases:
     query: "Which scorers have cooled off over their last 10 games?"
     category: unsupported_boundary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
     expected_reason: unrouted
@@ -394,6 +408,7 @@ cases:
     query: "What team has played the best defense recently?"
     category: unsupported_boundary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: season_team_leaders
     expected_reason: unsupported
@@ -492,6 +507,7 @@ cases:
     query: "Jokic this season"
     category: player_summary
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -504,6 +520,7 @@ cases:
     query: "Jayson Tatum recent form"
     category: player_summary
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -519,6 +536,7 @@ cases:
     query: "Jayson Tatum stats vs Lakers this season"
     category: player_summary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_game_finder
     expected_reason: no_match
@@ -532,6 +550,7 @@ cases:
     query: "How has Jayson Tatum played against good teams this season?"
     category: player_summary
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -562,6 +581,7 @@ cases:
     query: "What is the Celtics record this season?"
     category: team_record
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -573,6 +593,7 @@ cases:
     query: "What is the Lakers record against good teams?"
     category: team_record
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -601,6 +622,7 @@ cases:
     query: "What is the Lakers record when they held opponents under 100 points?"
     category: record_when_team_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -630,6 +652,7 @@ cases:
     query: "What is the Celtics record when they score over 120 points?"
     category: record_when_team_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -658,6 +681,7 @@ cases:
     query: "What is the Thunder record when Shai Gilgeous-Alexander scores 30+?"
     category: record_when_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -673,6 +697,7 @@ cases:
     query: "What is the Warriors record when Stephen Curry makes at least 6 threes?"
     category: record_when_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -688,6 +713,7 @@ cases:
     query: "What is Denver record when Nikola Jokic has 10+ assists?"
     category: record_when_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
     expected_shape: entity_summary
@@ -703,6 +729,7 @@ cases:
     query: "What is the Lakers record when LeBron James and Anthony Davis both play?"
     category: availability_boundary
     priority: p1
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: team_record
     expected_reason: filter_not_supported
@@ -723,6 +750,7 @@ cases:
     query: "Suns without Booker"
     category: without_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -738,6 +766,7 @@ cases:
     query: "What is the Bucks record when Giannis Antetokounmpo was out?"
     category: without_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -753,6 +782,7 @@ cases:
     query: "What is the Knicks record when Jalen Brunson does not play?"
     category: without_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -768,6 +798,7 @@ cases:
     query: "Lakers record without LeBron"
     category: without_player_condition
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
     expected_shape: team_record
@@ -800,6 +831,7 @@ cases:
     query: "how many players scored 40 points this season"
     category: finder_count
     priority: p1
+    answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_occurrence_leaders
     expected_filters:
@@ -813,6 +845,7 @@ cases:
     query: "number of players with 10 assists this season"
     category: finder_count
     priority: p2
+    answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_occurrence_leaders
     expected_filters:
@@ -826,6 +859,7 @@ cases:
     query: "How often have the Lakers held opponents under 100 points this year?"
     category: finder_count
     priority: p1
+    answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: game_finder
     expected_shape: count_with_finder
@@ -975,6 +1009,7 @@ cases:
     query: "best 5-game team scoring stretch this season"
     category: rolling_stretch
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_stretch_leaderboard
     expected_reason: filter_not_supported
@@ -995,6 +1030,7 @@ cases:
     query: "Lakers Finals appearances"
     category: playoff_history
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_appearances
     expected_sections:
@@ -1006,6 +1042,7 @@ cases:
     query: "most Finals appearances since 1980"
     category: playoff_history
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_appearances
     expected_shape: leaderboard_table
@@ -1117,6 +1154,7 @@ cases:
     query: "Jokic home vs away this season"
     category: split
     priority: p1
+    answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_split_summary
     expected_filters:
@@ -1178,6 +1216,7 @@ cases:
     query: "Tatum clutch stats"
     category: unsupported_boundary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_game_summary
     expected_reason: filter_not_supported
@@ -1196,6 +1235,7 @@ cases:
     query: "Who is the best defender in the NBA?"
     category: unsupported_boundary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
     expected_reason: unrouted
@@ -1212,6 +1252,7 @@ cases:
     query: "Who are the MVP candidates?"
     category: unsupported_boundary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
     expected_reason: unrouted
@@ -1228,6 +1269,7 @@ cases:
     query: "Who is the best player lately?"
     category: unsupported_boundary
     priority: p2
+    answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
     expected_reason: unrouted

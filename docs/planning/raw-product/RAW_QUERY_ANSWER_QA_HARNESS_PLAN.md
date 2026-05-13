@@ -561,6 +561,41 @@ Top-performance routing and the team rolling-stretch product boundary are fixed.
   `1`; verified outliers `top_performance_high_points: 1`.
 - Remaining family: frontend answer extraction / backend answer text limitation.
 
+## Fix Wave 7A Status
+
+Answer-text QA classification is now policy-aware. This wave did not change
+production query behavior, frontend rendering, route behavior, or backend answer
+metadata generation.
+
+- Corpus policy: `qa/raw_query_answer_corpus.yaml` supports
+  `answer_text_policy` with these values:
+  `requires_backend_answer_text`, `frontend_hero_expected`, and
+  `no_answer_text_expected`.
+- Reclassification: the 22 previously suspicious AQ-003
+  `missing_backend_answer_text` cases are marked `frontend_hero_expected`.
+  Missing backend metadata for those cases is now reported as informational
+  because the React result components are expected to build the hero/final
+  answer.
+- Required backend text: current backend `answer_phrase` / `count_phrase`
+  cases are marked `requires_backend_answer_text`; those still produce an open
+  `missing_backend_answer_text` suspicious flag if the phrase disappears.
+- No-answer boundaries: unsupported/no-result/product-boundary cases are marked
+  `no_answer_text_expected` where no backend answer or frontend hero is needed.
+- Report output: JSONL, summary JSON, and Markdown now include
+  `answer_text_policy`, `answer_text_status`, informational flag counts, and
+  suspicious flag counts that exclude expected frontend-only heroes.
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260513T044523Z/report.md`
+- Latest full run summary: 80 cases; result statuses `ok: 70`,
+  `no_result: 6`, `error: 4`; expectation cases `pass: 80`; expectation
+  checks `pass: 409`; failed case IDs `[]`; suspicious flag cases `0`;
+  informational flag cases `22`; informational flags
+  `frontend_hero_expected: 22`; verified outlier cases `1`; verified outliers
+  `top_performance_high_points: 1`.
+- Next optional wave: targeted backend `answer_phrase` enrichment for
+  high-value record-style routes such as `team_record`, player-condition
+  record summaries, and selected postseason direct-answer routes.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.
