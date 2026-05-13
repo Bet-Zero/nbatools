@@ -503,7 +503,7 @@ Opponent-quality playoff-team semantics are fixed.
   non-scoring top-performance product decisions, and team-scoped
   rolling-stretch product decisions.
 
-## Fix Wave 5 Status
+## Fix Wave 5 Top-Performance Outlier Status
 
 Verified top-performance outlier policy is added for QA reporting.
 
@@ -737,6 +737,48 @@ compact shorthand such as `25/10/10`.
   with `kd_ts_top_defenses_missing_filters`, `lakers_road_record_last_season`,
   and the Anthony Edwards no-match cases as the highest-priority remaining
   failures.
+
+## Fix Wave 5 Context / Filter Status
+
+Context/filter preservation and no-match diagnostics are fixed for the four
+remaining Wave 4B failures. This wave changed entity resolution,
+relative-season parsing, opponent-quality shorthand parsing, a narrow
+player-stat-context route default, explicit relative-season metadata/filter
+coverage, tests, QA corpus expectations, and docs. It did not change frontend
+rendering, backend answer phrase enrichment, source data, or the previously
+fixed scalar/compound threshold behavior.
+
+- Anthony Edwards full-name resolution: fixed. Data-backed exact full-name
+  matches now run before broad nickname aliases, so full queries containing
+  `Anthony Edwards` resolve to Anthony Edwards instead of Carmelo Anthony.
+  The single-token `anthony` alias remains Carmelo Anthony.
+- Singular `last season`: fixed. `last season` / `previous season` resolves to
+  the season before the latest season for the detected season type. With latest
+  regular-season data set to `2025-26`, `Lakers road record last season`
+  resolves to `2024-25` and returns 41 games, 19 wins, and 22 losses.
+- `top defenses` shorthand: fixed for explicit opponent context. `against top
+  defenses`, `vs top defenses`, and `versus top defenses` map to the existing
+  `top-10 defenses` opponent-quality bucket without turning free-standing team
+  defense leaderboard wording into opponent-quality context.
+- KD stat/context routing: fixed. `KD TS% vs top defenses` preserves
+  `stat=ts_pct`, preserves `opponent_quality=top-10 defenses`, routes to
+  `player_game_summary`, and returns a 23-game sample.
+- Latest targeted Wave 5 harness output:
+  `outputs/raw_query_answer_qa/20260513T093000Z_wave5_targeted/report.md`
+- Latest adjacent regression harness output:
+  `outputs/raw_query_answer_qa/20260513T093500Z_wave5_adjacent/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`
+- Latest full run summary: 145 cases; result statuses `ok: 129`,
+  `no_result: 10`, `error: 6`; expectation cases `pass: 145`;
+  expectation checks `pass: 746`; failed case IDs none; suspicious flag cases
+  `0`; informational flag cases `76` (`frontend_hero_expected: 76`);
+  verified outlier cases `1` (`top_performance_high_points: 1`).
+- Recommended next phase: the corpus is now 145/145. Choose the next raw
+  product direction explicitly: another corpus expansion wave, frontend
+  hero/copy QA, targeted backend answer phrase enrichment, or one of the
+  remaining P2 product-boundary families such as position-filtered
+  leaderboards / count phrase quality.
 
 ## Open Questions
 

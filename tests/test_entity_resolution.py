@@ -71,6 +71,17 @@ class TestResolvePlayer:
         assert r.is_confident
         assert r.resolved == "Anthony Edwards"
 
+    def test_anthony_edwards_full_name_resolves_before_anthony_alias(self):
+        r = resolve_player("Anthony Edwards")
+        assert r.is_confident
+        assert r.resolved == "Anthony Edwards"
+        assert r.source == "full_name"
+
+    def test_single_token_anthony_alias_still_resolves_to_carmelo(self):
+        r = resolve_player("anthony")
+        assert r.is_confident
+        assert r.resolved == "Carmelo Anthony"
+
     def test_steph_resolves(self):
         r = resolve_player("steph")
         assert r.is_confident
@@ -216,6 +227,20 @@ class TestResolvePlayerInQuery:
         r = resolve_player_in_query("bron career vs celtics")
         assert r.is_confident
         assert r.resolved == "LeBron James"
+
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "Anthony Edwards",
+            "Anthony Edwards last 10 games summary",
+            "How does Anthony Edwards shoot in wins versus losses?",
+        ],
+    )
+    def test_anthony_edwards_full_name_in_query(self, query):
+        r = resolve_player_in_query(query)
+        assert r.is_confident
+        assert r.resolved == "Anthony Edwards"
+        assert r.source == "full_name"
 
     def test_no_player_in_query(self):
         r = resolve_player_in_query("top 10 scorers this season")

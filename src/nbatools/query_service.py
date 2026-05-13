@@ -42,7 +42,7 @@ from nbatools.commands._natural_query_execution import (
     _execute_or_query_build_result,
     _extract_grouped_condition_text,
 )
-from nbatools.commands.entity_resolution import resolve_team
+from nbatools.commands.entity_resolution import ALL_TEAM_ABBRS, resolve_team
 from nbatools.commands.format_output import route_to_query_class
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.natural_query import (
@@ -182,6 +182,8 @@ def _resolve_team_context(team_value: Any) -> dict[str, Any] | None:
         context = lookup.get(_identity_key(candidate))
         if context:
             return dict(context)
+    if resolved.is_confident and resolved.resolved in ALL_TEAM_ABBRS:
+        return {"team_abbr": resolved.resolved}
     return None
 
 
@@ -368,6 +370,14 @@ def _build_applied_filters(
                 "kind": "season",
             }
         )
+    elif source.get("explicit_relative_season") and source.get("season"):
+        applied_filters.append(
+            {
+                "label": "Season",
+                "value": str(source["season"]),
+                "kind": "season",
+            }
+        )
     if source.get("start_date") or source.get("end_date"):
         date_value = " – ".join(filter(None, [source.get("start_date"), source.get("end_date")]))
         applied_filters.append({"label": "Date range", "value": date_value, "kind": "date"})
@@ -449,6 +459,7 @@ def _build_query_metadata(
         "season": season,
         "start_season": start_season,
         "end_season": end_season,
+        "explicit_relative_season": parsed.get("explicit_relative_season"),
         "season_type": parsed.get("season_type"),
         "start_date": parsed.get("start_date"),
         "end_date": parsed.get("end_date"),

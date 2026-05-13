@@ -93,7 +93,35 @@ def metric_only_leaderboard_default(parsed: dict) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-# 3. <player> + <threshold> → finder
+# 3. <player> + <stat> + <opponent-quality context> → summary
+# ---------------------------------------------------------------------------
+
+
+def player_stat_context_summary_default(parsed: dict) -> tuple[bool, str]:
+    """Policy: player stat asked within opponent-quality context → summary.
+
+    This covers direct stat/context questions such as ``KD TS% vs top defenses``.
+    It intentionally requires an opponent-quality slot so plain stat-only
+    queries keep their existing finder behavior, and explicit finder/count
+    wording is handled before this default can fire.
+    """
+    if not parsed.get("player"):
+        return (False, "")
+    if parsed.get("finder_intent") or parsed.get("count_intent"):
+        return (False, "")
+    if parsed.get("opponent_quality") is None:
+        return (False, "")
+    if parsed.get("stat") is None:
+        return (False, "")
+    if parsed.get("min_value") is not None or parsed.get("max_value") is not None:
+        return (False, "")
+    if parsed.get("split_type") or parsed.get("streak_request") or parsed.get("season_high_intent"):
+        return (False, "")
+    return (True, "default: <player> + <stat> + <opponent-quality context> → summary")
+
+
+# ---------------------------------------------------------------------------
+# 4. <player> + <threshold> → finder
 # ---------------------------------------------------------------------------
 
 
@@ -112,7 +140,7 @@ def player_threshold_finder_default(parsed: dict) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-# 4. <team> + <threshold> → finder
+# 5. <team> + <threshold> → finder
 # ---------------------------------------------------------------------------
 
 
@@ -127,7 +155,7 @@ def team_threshold_finder_default(parsed: dict) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
-# 5. Streak three-season window default
+# 6. Streak three-season window default
 # ---------------------------------------------------------------------------
 
 

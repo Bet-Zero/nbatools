@@ -135,6 +135,15 @@ def extract_season(text: str) -> str | None:
     return m.group(0) if m else None
 
 
+def extract_relative_season(text: str, season_type: str) -> str | None:
+    """Extract singular relative season phrases such as ``last season``."""
+    if re.search(r"\b(?:last|previous)\s+season\b", text):
+        from nbatools.commands._seasons import previous_season
+
+        return previous_season(season_type)
+    return None
+
+
 def extract_season_range(text: str) -> tuple[str | None, str | None]:
     m = re.search(r"\bfrom\s+((?:19|20)\d{2}-\d{2})\s+to\s+((?:19|20)\d{2}-\d{2})\b", text)
     if m:
@@ -913,6 +922,7 @@ def detect_opponent_quality(text: str) -> dict | None:
         (r"\b(?:against|vs\.?|versus)\s+winning\s+teams\b", "winning teams"),
         (r"\b(?:against|vs\.?|versus)\s+teams?\s+over\s+\.500\b", "teams over .500"),
         (r"\b(?:against|vs\.?|versus)\s+top[- ]10\s+defenses\b", "top-10 defenses"),
+        (r"\b(?:against|vs\.?|versus)\s+top\s+defenses\b", "top-10 defenses"),
     ]
     for pattern, term in patterns:
         if re.search(pattern, text):

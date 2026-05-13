@@ -8,21 +8,21 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260513T084000Z_wave4b_full`
+- Run ID: `20260513T094000Z_wave5_full`
 - Corpus size: 145 cases
-- Output report path: `outputs/raw_query_answer_qa/20260513T084000Z_wave4b_full/report.md`
+- Output report path: `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`
 - Summary counts:
-  - Result statuses: `ok: 127`, `no_result: 12`, `error: 6`
-  - Expectation cases: `pass: 141`, `fail: 4`
-  - Expectation checks: `pass: 716`, `fail: 10`
-  - Failed case IDs: `anthony_edwards_last_10_summary_no_match`, `kd_ts_top_defenses_missing_filters`, `lakers_road_record_last_season`, `anthony_edwards_wins_losses_split_no_match`
-  - Manual review statuses: `unreviewed: 124`, `expected_unsupported: 8`, `pass: 12`, `verified_outlier: 1`
+  - Result statuses: `ok: 129`, `no_result: 10`, `error: 6`
+  - Expectation cases: `pass: 145`
+  - Expectation checks: `pass: 746`
+  - Failed case IDs: none
+  - Manual review statuses: `unreviewed: 120`, `expected_unsupported: 8`, `pass: 16`, `verified_outlier: 1`
   - Answer text policies: `frontend_hero_expected: 76`, `requires_backend_answer_text: 10`, `no_answer_text_expected: 16`, `<unspecified>: 43`
-  - Answer text statuses: `frontend_hero_expected: 74`, `backend_answer_text_present: 10`, `no_answer_text_expected: 16`, `not_required: 45`
-  - Suspicious flag cases: 2
-  - Suspicious flags: `expected_ok_returned_non_ok: 2`
-  - Informational flag cases: 74
-  - Informational flags: `frontend_hero_expected: 74`
+  - Answer text statuses: `frontend_hero_expected: 76`, `backend_answer_text_present: 10`, `no_answer_text_expected: 16`, `not_required: 43`
+  - Suspicious flag cases: 0
+  - Suspicious flags: none
+  - Informational flag cases: 76
+  - Informational flags: `frontend_hero_expected: 76`
   - Verified outlier cases: 1
   - Verified outliers: `top_performance_high_points: 1`
 
@@ -57,10 +57,10 @@ New review signals are grouped into these families:
 | AQ-006 | P2 | Top performances | `most_assists_single_game`, `most_rebounds_single_game` | supported_now | fixed | Fixed in Raw Query Answer QA Fix Wave 6. Natural non-scoring single-game top-performance queries now route to `top_player_games` with `stat=ast` / `stat=reb` and keep the existing `top_performances` shape. | top-performance routing |
 | AQ-007 | P2 | Date handling | `specific_date_jan_1` | missing_filter | fixed | Fixed in Raw Query Answer QA Fix Wave 3. Explicit calendar-date top-scorer wording now parses `January 1 2026`, preserves the date filter, and routes to game-level `top_player_games` instead of unfiltered season leaders. Latest run: `outputs/raw_query_answer_qa/20260512T105201Z/report.md`. | data freshness/date handling |
 | AQ-008 | P2 | Rolling stretch / team scope | `team_5_game_scoring_stretch` | fixed_as_expected_unsupported | fixed_as_expected_unsupported | Fixed in Raw Query Answer QA Fix Wave 6. Team-scoped rolling-stretch wording no longer returns player windows; it returns `no_result` / `filter_not_supported` with `unsupported_filters=["team_rolling_stretch"]` until a team rolling route/result contract exists. | unsupported/no-result policy |
-| AQ-009 | P1 | Routing / data no-match | `anthony_edwards_last_10_summary_no_match`, `anthony_edwards_wins_losses_split_no_match` | routing_or_data_gap | open | Documented player last-N summary and wins/losses split forms return `no_result` / `no_match` for Anthony Edwards despite preserving the intended filters. Needs diagnosis to separate entity resolution, data coverage, and split/window execution. | player summary/split no-match diagnostics |
-| AQ-010 | P1 | Stat/context filters | `kd_ts_top_defenses_missing_filters` | route_and_filter_drop | open | Abbreviation-heavy `KD TS% vs top defenses` routes to `player_game_finder`, returns 25 rows, and drops the top-defense opponent-quality context instead of producing a filtered summary. | stat alias + opponent-quality routing |
+| AQ-009 | P1 | Routing / data no-match | `anthony_edwards_last_10_summary_no_match`, `anthony_edwards_wins_losses_split_no_match` | routing_or_data_gap | fixed | Fixed in Raw Query Answer QA Fix Wave 5. Data-backed full-name player resolution now wins before broad single-token nickname aliases, so `Anthony Edwards last 10 games summary` returns a 10-game `player_game_summary`, and `How does Anthony Edwards shoot in wins versus losses?` returns a `player_split_summary` with wins/losses buckets. Latest run: `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`. | player summary/split no-match diagnostics |
+| AQ-010 | P1 | Stat/context filters | `kd_ts_top_defenses_missing_filters` | route_and_filter_drop | fixed | Fixed in Raw Query Answer QA Fix Wave 5. `top defenses` now maps to the existing `top-10 defenses` opponent-quality bucket in `against` / `vs` / `versus` context, and player + stat + opponent-quality queries route to `player_game_summary` unless explicit finder/count wording is present. `KD TS% vs top defenses` returns a 23-game Kevin Durant summary with TS% and the quality filter preserved. Latest run: `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`. | stat alias + opponent-quality routing |
 | AQ-011 | P1 | Defensive stat semantics | `knicks_allowed_under_110_record`, `fewest_points_allowed_team_leader` | stat_mapping_issue | fixed | Fixed in Raw Query Answer QA Fix Wave 4A. `allow fewer than 110` maps to `opponent_pts max` and Knicks return 35 games, 32-3. `allowed the fewest points per game` ranks `opponent_pts_per_game` ascending; Boston is top at about 107.159 opponent PPG. Latest run: `outputs/raw_query_answer_qa/20260513T072000Z_wave4a_full/report.md`. | defensive/opponent-points stat mapping |
-| AQ-012 | P1 | Date/context filters | `lakers_road_record_last_season` | missing_filter | open | `last season` is dropped while the road filter is preserved, so the result is a current-season road record rather than a last-season road record. | relative season parsing/filter preservation |
+| AQ-012 | P1 | Date/context filters | `lakers_road_record_last_season` | missing_filter | fixed | Fixed in Raw Query Answer QA Fix Wave 5. Singular `last season` resolves to the previous latest regular season (`2024-25` when latest is `2025-26`) and preserves road/away location filters. The Lakers road record last season returns 41 games, 19 wins, and 22 losses with explicit relative-season metadata/filter context. Latest run: `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`. | relative season parsing/filter preservation |
 | AQ-013 | P1 | Record-when player condition | `boston_tatum_under_40_fg_record_missing_filter` | missing_filter | fixed | Fixed in Raw Query Answer QA Fix Wave 4A. Clear shooting percentage thresholds infer `fg_pct`, normalize `40%` / `40 percent` to 0.40, and Tatum under 40% returns 6 games, 4-2 with an applied `fg_pct max` filter. Latest run: `outputs/raw_query_answer_qa/20260513T072000Z_wave4a_full/report.md`. | percentage threshold parsing/execution |
 | AQ-014 | P1 | Compound thresholds | `celtics_120_15_threes_count_missing_filter`, `jokic_30_points_10_assists_finder_misparsed` | missing_filter / stat_binding_issue | fixed | Fixed in Raw Query Answer QA Fix Wave 4B. Compound stat thresholds now use a route-consumed `conditions` list instead of duplicating the same filters into unsafe post-aggregate `extra_conditions`. Finder routes apply compound conditions before sorting/limiting. Celtics `120+ points` and `15+ threes` since 2022 returns count 125 with both applied filters; Jokic `30 points and 10 assists` returns 14 finder rows satisfying both thresholds. Latest run: `outputs/raw_query_answer_qa/20260513T084000Z_wave4b_full/report.md`. | compound threshold parsing/execution |
 | AQ-015 | P2 | Leaderboard context filters | `guards_fg_percentage_leaders` | missing_filter | open | `among guards` is ignored; the top row is Jaxson Hayes, indicating position context is not applied on this leaderboard. | position-filtered leaderboards |
@@ -75,7 +75,9 @@ New review signals are grouped into these families:
 - Exact frontend rendered-answer extraction is still deferred; targeted backend `answer_phrase` enrichment remains an optional future improvement for high-value direct-answer routes.
 - The manual corpus should remain review-oriented. Promote only objective, stable failures into focused tests near the behavior they protect.
 - Fix Wave 4A resolved AQ-011 and AQ-013 scalar semantics. Fix Wave 4B
-  resolved AQ-014 compound threshold representation/execution.
+  resolved AQ-014 compound threshold representation/execution. Fix Wave 5
+  resolved AQ-009, AQ-010, and AQ-012, bringing the 145-case corpus to
+  145/145 expectation passes with zero suspicious flags.
 - Expansion Wave 3 intentionally leaves expectation failures in place for cases
   that appear to expose real behavior gaps. Do not "green" those cases by
   encoding wrong current behavior unless product review decides they are

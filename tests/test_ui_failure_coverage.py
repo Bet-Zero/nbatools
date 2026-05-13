@@ -721,6 +721,80 @@ class TestOpponentQualityPlayoffTeamSemantics:
         assert summary["losses"] == 5
 
 
+class TestRawQueryAnswerWave5Coverage:
+    @pytest.mark.needs_data
+    def test_anthony_edwards_last_10_summary_returns_expected_player_and_window(self):
+        qr = execute_natural_query("Anthony Edwards last 10 games summary")
+
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["player"] == "Anthony Edwards"
+        assert {"label": "Last N games", "value": "10", "kind": "window"} in qr.metadata[
+            "applied_filters"
+        ]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["player_name"] == "Anthony Edwards"
+        assert summary["games"] == 10
+        assert len(sections["game_log"]) == 10
+
+    @pytest.mark.needs_data
+    def test_anthony_edwards_wins_losses_split_returns_split_buckets(self):
+        qr = execute_natural_query("How does Anthony Edwards shoot in wins versus losses?")
+
+        assert qr.route == "player_split_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["player"] == "Anthony Edwards"
+
+        sections = qr.to_dict()["sections"]
+        assert sections["summary"][0]["player_name"] == "Anthony Edwards"
+        assert sections["summary"][0]["games_total"] == 61
+        assert {row["bucket"] for row in sections["split_comparison"]} == {"wins", "losses"}
+
+    @pytest.mark.needs_data
+    def test_lakers_road_record_last_season_preserves_relative_season_and_location(self):
+        qr = execute_natural_query("Lakers road record last season")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season"] == "2024-25"
+        assert qr.metadata["explicit_relative_season"] is True
+        assert {"label": "Location", "value": "Away", "kind": "location"} in qr.metadata[
+            "applied_filters"
+        ]
+        assert {"label": "Season", "value": "2024-25", "kind": "season"} in qr.metadata[
+            "applied_filters"
+        ]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["season_start"] == "2024-25"
+        assert summary["games"] == 41
+        assert summary["wins"] == 19
+        assert summary["losses"] == 22
+
+    @pytest.mark.needs_data
+    def test_kd_ts_top_defenses_summary_preserves_stat_and_quality_filter(self):
+        qr = execute_natural_query("KD TS% vs top defenses")
+
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["player"] == "Kevin Durant"
+        assert qr.metadata["stat"] == "ts_pct"
+        assert qr.metadata["opponent_quality"]["surface_term"] == "top-10 defenses"
+        assert {
+            "label": "Opponent quality",
+            "value": "top-10 defenses",
+            "kind": "quality",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["player_name"] == "Kevin Durant"
+        assert summary["games"] == 23
+        assert len(sections["game_log"]) == 23
+
+
 # ---------------------------------------------------------------------------
 # 6. Distinct entity count
 # ---------------------------------------------------------------------------

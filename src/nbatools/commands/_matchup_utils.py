@@ -26,20 +26,24 @@ from nbatools.commands.entity_resolution import (
 
 
 def detect_player(text: str) -> str | None:
-    # First try the original curated alias dict (preserves exact existing behavior)
-    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
-            return PLAYER_ALIASES[key]
-    # Fall back to entity resolution (data-driven last-name lookup)
     result = resolve_player_in_query(text)
     if result.is_confident:
         return result.resolved
+    # Fall back to the legacy merged alias map for any compatibility-only alias
+    # not covered by the resolver.
+    for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"\b{re.escape(key)}\b", text):
+            return PLAYER_ALIASES[key]
     return None
 
 
 def detect_player_resolved(text: str) -> ResolutionResult:
     """Like detect_player but returns full resolution result including ambiguity."""
-    # First try the original curated alias dict
+    result = resolve_player_in_query(text)
+    if result.is_confident or result.is_ambiguous:
+        return result
+    # Fall back to the legacy merged alias map for any compatibility-only alias
+    # not covered by the resolver.
     for key in sorted(PLAYER_ALIASES.keys(), key=len, reverse=True):
         if re.search(rf"\b{re.escape(key)}\b", text):
             return ResolutionResult(
@@ -48,8 +52,7 @@ def detect_player_resolved(text: str) -> ResolutionResult:
                 confidence="confident",
                 source="alias",
             )
-    # Fall back to entity resolution (data-driven last-name lookup)
-    return resolve_player_in_query(text)
+    return result
 
 
 def detect_team_in_text(text: str) -> str | None:

@@ -80,6 +80,8 @@ Natural examples:
 - `Jokic recent form`
 - `Celtics last 15 games summary`
 - `Jokic summary vs Lakers`
+- `Anthony Edwards last 10 games summary`
+- `KD TS% vs top defenses` (uses the `top-10 defenses` opponent-quality bucket)
 - `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
 - `Jokic averages against Stephen Curry`
 
@@ -107,6 +109,7 @@ Natural examples:
 - `Jokic home vs away in 2025-26`
 - `Jokic home away split last 20 games`
 - `Celtics wins vs losses`
+- `How does Anthony Edwards shoot in wins versus losses?`
 
 ## Streaks
 
@@ -202,6 +205,12 @@ Natural examples:
 - `Lakers record without LeBron`
 - `Warriors wins without Stephen Curry`
 - `Celtics summary without Jaylen Brown`
+
+## Team records
+
+- `Lakers road record last season` (`last season` resolves to `2024-25` when the latest regular season is `2025-26`)
+- `Lakers 2024-25 road record`
+- `Celtics record against playoff teams`
 
 ## Season-high / best-game queries
 

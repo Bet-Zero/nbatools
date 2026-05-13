@@ -12,6 +12,7 @@ from nbatools.commands._date_utils import (
 )
 from nbatools.commands._default_rules import (
     metric_only_leaderboard_default,
+    player_stat_context_summary_default,
     player_threshold_finder_default,
     player_timeframe_summary_default,
     streak_default_window,
@@ -156,6 +157,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     extract_position_filter as extract_position_filter,
+)
+from nbatools.commands._parse_helpers import (
+    extract_relative_season as extract_relative_season,
 )
 from nbatools.commands._parse_helpers import (
     extract_season as extract_season,
@@ -399,6 +403,7 @@ __all__ = [
     "extract_min_value",
     "extract_opponent_points_allowed_conditions",
     "extract_position_filter",
+    "extract_relative_season",
     "extract_season",
     "extract_season_range",
     "extract_since_season",
@@ -422,6 +427,7 @@ __all__ = [
 
 def _build_parse_state(query: str) -> dict:
     q = normalize_text(query)
+    season_type = detect_season_type(q)
 
     # -- Historical span detection (must run before single-season extraction) --
     start_season, end_season = extract_season_range(q)
@@ -438,9 +444,8 @@ def _build_parse_state(query: str) -> dict:
         if since_season:
             from nbatools.commands._seasons import default_end_season
 
-            season_type_early = detect_season_type(q)
             start_season = since_season
-            end_season = default_end_season(season_type_early)
+            end_season = default_end_season(season_type)
 
     if not (start_season and end_season):
         # Try "last N seasons"
@@ -448,8 +453,7 @@ def _build_parse_state(query: str) -> dict:
         if last_n_seasons:
             from nbatools.commands._seasons import resolve_last_n_seasons
 
-            season_type_early = detect_season_type(q)
-            start_season, end_season = resolve_last_n_seasons(last_n_seasons, season_type_early)
+            start_season, end_season = resolve_last_n_seasons(last_n_seasons, season_type)
 
     if not (start_season and end_season):
         # Try "career" / "all-time"
@@ -457,12 +461,16 @@ def _build_parse_state(query: str) -> dict:
             from nbatools.commands._seasons import resolve_career
 
             career_intent = True
-            season_type_early = detect_season_type(q)
-            start_season, end_season = resolve_career(season_type_early)
+            start_season, end_season = resolve_career(season_type)
 
-    season = None if (start_season and end_season) else extract_season(q)
+    explicit_relative_season = False
+    season = None
+    if not (start_season and end_season):
+        season = extract_season(q)
+        if season is None:
+            season = extract_relative_season(q, season_type)
+            explicit_relative_season = season is not None
 
-    season_type = detect_season_type(q)
     stat = detect_stat(q)
     last_n = extract_last_n(q)
     top_n = extract_top_n(q)
@@ -708,6 +716,7 @@ def _build_parse_state(query: str) -> dict:
         "season": season,
         "start_season": start_season,
         "end_season": end_season,
+        "explicit_relative_season": explicit_relative_season,
         "start_date": start_date,
         "end_date": end_date,
         "season_type": season_type,
@@ -1705,9 +1714,13 @@ def _finalize_route(parsed: dict) -> dict:
         or ("averages" in q)
         or ("average" in q)
         or without_player
+        or player_stat_context_summary_default(parsed)[0]
         or player_timeframe_summary_default(parsed)[0]
     ):
         route = "player_game_summary"
+        _fires, _note = player_stat_context_summary_default(parsed)
+        if _fires:
+            notes.append(_note)
         _fires, _note = player_timeframe_summary_default(parsed)
         if _fires:
             notes.append(_note)
@@ -1952,6 +1965,7 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "season",
         "start_season",
         "end_season",
+        "explicit_relative_season",
         "start_date",
         "end_date",
         "season_type",

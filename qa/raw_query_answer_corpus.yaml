@@ -1749,13 +1749,21 @@ cases:
     expected_sections:
       - summary
       - game_log
-    review_notes: "Documented player last-N summary form currently returns no_match for this player."
+    expected_row_counts:
+      summary: 1
+      game_log: 10
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: Anthony Edwards
+      - path: result.sections.summary.0.games
+        equals: 10
+    review_notes: "Regression guard for full-name Anthony Edwards last-N summary resolution."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - context_filter
         - phrasing_variant
-      notes: "Review whether no_match is data coverage, entity resolution, or recent-window filtering behavior."
+      notes: "Verified after Wave 5: full-name resolution returns Anthony Edwards and a 10-game sample."
 
   - id: tatum_playoff_teams_summary
     query: "Tatum against playoff teams this season"
@@ -1793,14 +1801,22 @@ cases:
     expected_sections:
       - summary
       - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 23
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: Kevin Durant
+      - path: result.sections.summary.0.games
+        equals: 23
     review_notes: "Abbreviation-heavy player summary should preserve TS% and top-defense context."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - stat_mapping
         - opponent_quality
         - context_filter
-      notes: "Initial probe returned a finder without quality filters; review as a likely route/filter drop."
+      notes: "Verified after Wave 5: routes to summary with TS% and top-10 defense filter preserved."
 
   - id: anthony_davis_without_lebron_summary
     query: "How has Anthony Davis rebounded when LeBron James didn't play?"
@@ -2010,13 +2026,24 @@ cases:
       - kind: season
     expected_sections:
       - summary
-    review_notes: "Team road record with relative last-season context."
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.season_start
+        equals: 2024-25
+      - path: result.sections.summary.0.games
+        equals: 41
+      - path: result.sections.summary.0.wins
+        equals: 19
+      - path: result.sections.summary.0.losses
+        equals: 22
+    review_notes: "Regression guard for team road record with relative last-season context."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - context_filter
         - date_filter
-      notes: "Initial probe showed only the road filter; review whether last-season is dropped."
+      notes: "Verified after Wave 5: last season resolves to 2024-25 and preserves road filter."
 
   - id: boston_tatum_under_40_fg_record_missing_filter
     query: "What's Boston's record when Jayson Tatum shoots under 40%?"
@@ -2545,6 +2572,7 @@ cases:
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_split_summary
+    expected_shape: entity_summary
     expected_filters:
       - kind: outcome
         value: Wins
@@ -2553,13 +2581,25 @@ cases:
     expected_sections:
       - summary
       - split_comparison
-    review_notes: "Documented player wins/losses split currently returns no_match for this player."
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: Anthony Edwards
+      - path: result.sections.summary.0.games_total
+        equals: 61
+      - path: result.sections.split_comparison.0.bucket
+        equals: wins
+      - path: result.sections.split_comparison.1.bucket
+        equals: losses
+    review_notes: "Regression guard for full-name Anthony Edwards wins/losses split resolution."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - split
         - context_filter
-      notes: "Review whether no_match comes from split routing, entity resolution, or data coverage."
+      notes: "Verified after Wave 5: full-name resolution returns Anthony Edwards and both split buckets."
 
   - id: nuggets_jokic_on_off_unsupported
     query: "Nuggets net rating with Nikola Jokic on the floor versus off the floor"

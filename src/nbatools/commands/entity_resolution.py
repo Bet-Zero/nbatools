@@ -569,13 +569,8 @@ def _normalize_for_matching(text: str) -> str:
 _DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 
 
-def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
-    """Build a last-name → list[full-name] index from player game stats CSVs.
-
-    Scans all available season files to capture the broadest set of
-    player names.  Returns a dict mapping lowercased last names to
-    lists of canonical full names (as they appear in the data).
-    """
+def _read_player_names(data_dir: Path | None = None) -> set[str]:
+    """Read canonical player names from player game stats CSVs."""
     if data_dir is None:
         csv_paths = data_glob("raw/player_game_stats/*.csv")
         read_csv = data_read_csv
@@ -586,13 +581,24 @@ def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
         csv_paths = sorted(stats_dir.glob("*.csv"))
         read_csv = pd.read_csv
 
-    all_names: set[str] = set()
+    names: set[str] = set()
     for csv_path in csv_paths:
         try:
             df = read_csv(csv_path, usecols=["player_name"], dtype=str)
-            all_names.update(df["player_name"].dropna().unique())
+            names.update(df["player_name"].dropna().unique())
         except Exception:
             continue
+    return names
+
+
+def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
+    """Build a last-name → list[full-name] index from player game stats CSVs.
+
+    Scans all available season files to capture the broadest set of
+    player names.  Returns a dict mapping lowercased last names to
+    lists of canonical full names (as they appear in the data).
+    """
+    all_names = _read_player_names(data_dir)
 
     # Build last-name index
     last_name_index: dict[str, list[str]] = {}
@@ -620,6 +626,8 @@ def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
 
 # Module-level cache (built lazily)
 _player_last_name_index: dict[str, list[str]] | None = None
+_player_full_name_index: dict[str, str] | None = None
+_player_full_name_keys: tuple[str, ...] | None = None
 
 
 def _get_player_index() -> dict[str, list[str]]:
@@ -630,10 +638,35 @@ def _get_player_index() -> dict[str, list[str]]:
     return _player_last_name_index
 
 
+def _build_player_full_name_index(data_dir: Path | None = None) -> dict[str, str]:
+    """Build a normalized full-name → canonical full-name index from game stats."""
+    return {_normalize_for_matching(name): name for name in _read_player_names(data_dir)}
+
+
+def _get_player_full_name_index() -> dict[str, str]:
+    """Get (or build) the cached player full-name index."""
+    global _player_full_name_index
+    if _player_full_name_index is None:
+        _player_full_name_index = _build_player_full_name_index()
+    return _player_full_name_index
+
+
+def _get_player_full_name_keys() -> tuple[str, ...]:
+    """Return data-backed full names sorted longest-first for query scanning."""
+    global _player_full_name_keys
+    if _player_full_name_keys is None:
+        _player_full_name_keys = tuple(
+            sorted(_get_player_full_name_index().keys(), key=len, reverse=True)
+        )
+    return _player_full_name_keys
+
+
 def reset_player_index() -> None:
     """Force rebuild of the player index (for testing)."""
-    global _player_last_name_index
+    global _player_last_name_index, _player_full_name_index, _player_full_name_keys
     _player_last_name_index = None
+    _player_full_name_index = None
+    _player_full_name_keys = None
 
 
 # ---------------------------------------------------------------------------
@@ -699,9 +732,11 @@ def resolve_player(text: str) -> ResolutionResult:
 
     Resolution order:
     1. Curated full-name aliases (accent normalization)
-    2. Curated nickname/acronym aliases
-    3. Data-driven last-name lookup (single word)
-    4. No match
+    2. Data-driven exact full-name lookup
+    3. Curated common-name aliases
+    4. Curated nickname/acronym aliases
+    5. Data-driven last-name lookup (single word)
+    6. No match
 
     Parameters
     ----------
@@ -723,12 +758,24 @@ def resolve_player(text: str) -> ResolutionResult:
     if q in PLAYER_FULL_NAME_ALIASES:
         return _confident(PLAYER_FULL_NAME_ALIASES[q], source="full_name_alias")
 
-    # 2. Curated nickname / acronym aliases (longest match first)
+    # 2. Data-backed exact full-name lookup. This must precede nickname
+    # aliases so a full name like "Anthony Edwards" is not captured by the
+    # broader single-token "anthony" alias.
+    full_name_match = _get_player_full_name_index().get(q)
+    if full_name_match:
+        return _confident(full_name_match, source="full_name")
+
+    # 3. Curated common-name aliases (longest match first)
+    for key in sorted(CURATED_PLAYER_ALIASES.keys(), key=len, reverse=True):
+        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
+            return _confident(CURATED_PLAYER_ALIASES[key], source="alias")
+
+    # 4. Curated nickname / acronym aliases (longest match first)
     for key in sorted(PLAYER_NICKNAME_ALIASES.keys(), key=len, reverse=True):
         if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
             return _confident(PLAYER_NICKNAME_ALIASES[key], source="nickname")
 
-    # 3. Data-driven last-name lookup
+    # 5. Data-driven last-name lookup
     # Only attempt for single words or clear last-name patterns
     words = q.split()
     if len(words) == 1:
@@ -747,8 +794,9 @@ def resolve_player(text: str) -> ResolutionResult:
 def resolve_player_in_query(text: str) -> ResolutionResult:
     """Try to resolve a player from a full query string.
 
-    Scans the query for known aliases (longest first), then falls back
-    to single-word last-name resolution.
+    Scans the query for known aliases and full names, preferring the earliest
+    entity mention while letting full-name matches beat aliases at the same
+    span, then falls back to single-word last-name resolution.
 
     This is the main entry point used by the parser.
     """
@@ -756,17 +804,45 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
     if not q:
         return _no_match()
 
-    # 1. Try curated full-name aliases (longest first)
-    for key in sorted(PLAYER_FULL_NAME_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
-            return _confident(PLAYER_FULL_NAME_ALIASES[key], source="full_name_alias")
+    matches: list[tuple[int, int, int, str, str]] = []
 
-    # 2. Try curated nickname/acronym aliases (longest first)
-    for key in sorted(PLAYER_NICKNAME_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q):
-            return _confident(PLAYER_NICKNAME_ALIASES[key], source="nickname")
+    def add_matches(alias_map: dict[str, str], source: str, priority: int) -> None:
+        for key, resolved in alias_map.items():
+            match = re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q)
+            if not match:
+                continue
+            matches.append(
+                (match.start(), priority, -(match.end() - match.start()), resolved, source)
+            )
 
-    # 3. Try data-driven last-name on each word (skip common stopwords)
+    def add_full_name_matches(full_name_index: dict[str, str]) -> None:
+        for key in _get_player_full_name_keys():
+            match = re.search(rf"(?<!\w){re.escape(key)}(?!\w)", q)
+            if not match:
+                continue
+            matches.append(
+                (
+                    match.start(),
+                    0,
+                    -(match.end() - match.start()),
+                    full_name_index[key],
+                    "full_name",
+                )
+            )
+
+    # Prefer the earliest resolved entity in a full query. When two candidates
+    # start at the same position, full-name/data-backed matches beat broad
+    # single-token aliases inside that same span.
+    add_matches(PLAYER_FULL_NAME_ALIASES, "full_name_alias", 0)
+    full_name_index = _get_player_full_name_index()
+    add_full_name_matches(full_name_index)
+    add_matches(CURATED_PLAYER_ALIASES, "alias", 1)
+    add_matches(PLAYER_NICKNAME_ALIASES, "nickname", 1)
+    if matches:
+        _, _, _, resolved, source = sorted(matches)[0]
+        return _confident(resolved, source=source)
+
+    # 5. Try data-driven last-name on each word (skip common stopwords)
     _stop = {
         "last",
         "past",

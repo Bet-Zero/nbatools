@@ -31,6 +31,12 @@ def default_end_season(season_type: str) -> str:
     return LATEST_REGULAR_SEASON
 
 
+def previous_season(season_type: str) -> str:
+    """Return the season immediately before the latest season for context."""
+    latest = default_end_season(season_type)
+    return int_to_season(season_to_int(latest) - 1)
+
+
 def resolve_seasons(
     season: str | None,
     start_season: str | None,

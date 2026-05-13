@@ -138,6 +138,15 @@ class TestAppliedFilters:
         filters = meta.get("applied_filters", [])
         assert filters == [], f"Expected no applied_filters but got {filters}"
 
+    def test_relative_last_season_filter_present(self):
+        from nbatools.query_service import _build_query_metadata
+
+        parsed = parse_query("Lakers road record last season")
+        meta = _build_query_metadata(parsed, "Lakers road record last season")
+        filters = meta.get("applied_filters", [])
+        assert {"label": "Season", "value": "2024-25", "kind": "season"} in filters
+        assert {"label": "Location", "value": "Away", "kind": "location"} in filters
+
     def test_season_range_filter_present(self):
         from nbatools.query_service import _build_query_metadata
 

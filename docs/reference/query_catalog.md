@@ -280,7 +280,9 @@ Examples:
 - `LeBron career`
 - `Jokic last 10` / `Jokic last 10 games` (player + timeframe shorthand → summary per spec §15.3)
 - `Jokic this season` (player + implicit season → summary)
+- `Anthony Edwards last 10 games summary`
 - `How has Jayson Tatum played against winning teams this season?` (verb-phrase question form → summary)
+- `KD TS% vs top defenses` (stat + opponent-quality context → summary; `top defenses` maps to `top-10 defenses`)
 - `Jokic playoff stats vs Suns since 2021`
 - `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
 - `Jokic averages against Stephen Curry` (summary filtered to games where opponent played)
@@ -533,12 +535,18 @@ Examples:
 
 - `Celtics record since 2020`
 - `Lakers playoff record since 2015`
+- `Lakers road record last season`
 - `Celtics record against playoff teams`
 - `best home record over the last 5 seasons`
 - `worst away record since 2020`
 - `Celtics record when scoring 120+ since 2022`
 - `Lakers record without LeBron James`
 - `Warriors wins without Stephen Curry`
+
+Relative season support:
+
+- `last season` resolves to the season before the latest loaded season for that season type, so with latest regular-season data set to `2025-26`, `last season` resolves to `2024-25`
+- `last 10 games` remains a last-N game window, not a season phrase
 
 ### Team vs team matchup record
 
@@ -757,6 +765,7 @@ Examples:
 
 - `Jokic against contenders 2024-25`
 - `Lakers record against top-10 defenses 2024-25`
+- `KD TS% vs top defenses`
 - `Celtics record against playoff teams`
 - `Celtics record against teams that made the playoffs`
 
@@ -764,6 +773,7 @@ Current behavior:
 
 - parser sets a structured `opponent_quality` slot containing the surface term and resolved bucket definition
 - execution resolves that bucket to a concrete opponent-team list on the supported single-entity summary/finder/record routes
+- `top defenses` is accepted as shorthand for `top-10 defenses` only in explicit opponent context such as `against`, `vs`, or `versus`
 - `playoff teams` includes postseason-team phrasings such as `postseason teams` and `teams that made the playoffs`; this remains a regular-season opponent-quality context unless the query also explicitly asks for playoff competition
 - unsupported routes append an explicit note and remain unfiltered
 

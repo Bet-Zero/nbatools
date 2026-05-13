@@ -1,6 +1,6 @@
 import pytest
 
-from nbatools.commands.natural_query import parse_query
+from nbatools.commands.natural_query import detect_opponent_quality, parse_query
 
 pytestmark = pytest.mark.parser
 
@@ -172,6 +172,21 @@ def test_last_n_player_summary_route():
     assert parsed["route"] == "player_game_summary"
 
 
+def test_anthony_edwards_full_name_last_n_summary_route():
+    parsed = parse_query("Anthony Edwards last 10 games summary")
+    assert parsed["player"] == "Anthony Edwards"
+    assert parsed["last_n"] == 10
+    assert parsed["season"] == "2025-26"
+    assert parsed["route"] == "player_game_summary"
+
+
+def test_anthony_edwards_full_name_wins_losses_split_route():
+    parsed = parse_query("How does Anthony Edwards shoot in wins versus losses?")
+    assert parsed["player"] == "Anthony Edwards"
+    assert parsed["split_type"] == "wins_losses"
+    assert parsed["route"] == "player_split_summary"
+
+
 def test_last_n_team_summary_route():
     parsed = parse_query("Celtics last 15 games summary")
     assert parsed["team"] == "BOS"
@@ -219,6 +234,37 @@ def test_team_split_explicit_season_route():
     assert parsed["split_type"] == "wins_losses"
     assert parsed["season"] == "2025-26"
     assert parsed["route"] == "team_split_summary"
+
+
+def test_team_record_road_last_season_relative_season():
+    parsed = parse_query("Lakers road record last season")
+    assert parsed["route"] == "team_record"
+    assert parsed["team"] == "LAL"
+    assert parsed["season"] == "2024-25"
+    assert parsed["explicit_relative_season"] is True
+    assert parsed["away_only"] is True
+
+
+def test_team_record_away_last_season_relative_season():
+    parsed = parse_query("Lakers away record last season")
+    assert parsed["route"] == "team_record"
+    assert parsed["season"] == "2024-25"
+    assert parsed["away_only"] is True
+
+
+def test_team_record_explicit_season_road_still_works():
+    parsed = parse_query("Lakers 2024-25 road record")
+    assert parsed["route"] == "team_record"
+    assert parsed["season"] == "2024-25"
+    assert parsed["explicit_relative_season"] is False
+    assert parsed["away_only"] is True
+
+
+def test_last_n_games_does_not_parse_as_last_season():
+    parsed = parse_query("Anthony Edwards last 10 games summary")
+    assert parsed["season"] == "2025-26"
+    assert parsed["last_n"] == 10
+    assert parsed["explicit_relative_season"] is False
 
 
 def test_single_threshold_defaults_season_for_player_finder():
@@ -778,6 +824,33 @@ def test_top_ten_defenses_surface_form_sets_opponent_quality_slot():
     parsed = parse_query("Jokic against top-10 defenses")
     assert parsed["opponent_quality"]["surface_term"] == "top-10 defenses"
     assert parsed["opponent_quality"]["definition"]["metric"] == "def_rating_rank"
+
+
+def test_top_defenses_shorthand_sets_top_ten_defenses_in_opponent_context():
+    parsed = parse_query("Jokic against top defenses")
+    assert parsed["opponent_quality"]["surface_term"] == "top-10 defenses"
+    assert parsed["opponent_quality"]["definition"]["metric"] == "def_rating_rank"
+
+
+def test_kd_ts_top_defenses_routes_to_summary_with_stat_and_quality():
+    parsed = parse_query("KD TS% vs top defenses")
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Kevin Durant"
+    assert parsed["stat"] == "ts_pct"
+    assert parsed["opponent_quality"]["surface_term"] == "top-10 defenses"
+    assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "top-10 defenses"
+
+
+def test_kd_ts_top_10_defenses_still_preserves_quality():
+    parsed = parse_query("KD TS% vs top 10 defenses")
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["stat"] == "ts_pct"
+    assert parsed["opponent_quality"]["surface_term"] == "top-10 defenses"
+
+
+def test_top_defenses_without_opponent_context_does_not_set_opponent_quality():
+    assert detect_opponent_quality("best defenses this season") is None
+    assert detect_opponent_quality("top defenses this season") is None
 
 
 def test_specific_opponent_does_not_set_opponent_quality():
