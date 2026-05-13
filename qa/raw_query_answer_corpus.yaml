@@ -4,6 +4,7 @@ version: 1
 # manual_review.status allowed values:
 # - unreviewed
 # - pass
+# - verified_outlier
 # - needs_followup
 # - semantics_issue
 # - data_quality_question
@@ -89,11 +90,11 @@ cases:
       leaderboard: 10
     review_notes: "Season-high/top-game path should not collapse to points-per-game leaders."
     manual_review:
-      status: data_quality_question
+      status: verified_outlier
       tags:
         - top_performance
-        - outlier
-      notes: "Wave 1 surfaced Bam Adebayo with 83 points; record as suspicious until source data is investigated."
+        - verified_outlier
+      notes: "Bam Adebayo's 83-point game was audited in Wave 5 and verified as source-backed official data. It should remain displayed; future high-point outliers should still be reviewed unless allowlisted."
 
   - id: celtics_record_playoff_teams
     query: "What is the Celtics' record against playoff teams?"

@@ -1,0 +1,24 @@
+version: 1
+verified_outliers:
+  - id: bam_adebayo_83_points_2026_03_10
+    category: top_performance_high_points
+    entity_type: player_game
+    player_name: Bam Adebayo
+    player_id: 1628389
+    game_id: "0022500938"
+    game_date: "2026-03-10"
+    team_abbr: MIA
+    opponent_team_abbr: WAS
+    stat: pts
+    value: 83
+    verification_status: verified_official
+    evidence:
+      - source: local_raw_player_game_stats
+        path: data/raw/player_game_stats/2025-26_regular_season.csv
+      - source: local_raw_team_game_stats
+        path: data/raw/team_game_stats/2025-26_regular_season.csv
+      - source: nba.com
+        note: "WAS-vs-MIA-0022500938 box score matched the local row during preflight."
+      - source: espn_ap
+        note: "ESPN/AP recap matched the score and Adebayo stat line during preflight."
+    notes: "Verified official extreme scoring row. Do not suppress or cap."

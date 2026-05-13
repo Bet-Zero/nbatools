@@ -52,6 +52,13 @@ Specialized `TopPerformancesResult` routes remain unchanged in this wave.
 Player top-game score fields remain a future backend enrichment idea because
 player top-game rows do not reliably expose team/opponent scores today.
 
+QA/data-quality policy for extreme top-performance rows: official-source-backed
+outliers are displayed as-is, not capped or suppressed. The raw answer QA
+harness flags extreme values for review and records verified official outliers
+in `qa/verified_outliers.yaml`; future high-point rows that are not allowlisted
+remain suspicious review flags. Hard impossibilities remain validation failures
+or review blockers.
+
 ## Wave 1 Route Contracts
 
 | Route | PatternConfig | Result shape | Required sections | Optional sections | Table family / mode | Expected row type | Examples |

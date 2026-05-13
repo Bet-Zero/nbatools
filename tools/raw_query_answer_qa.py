@@ -42,6 +42,7 @@ EXPECTED_FIELD_NAMES = {
 MANUAL_REVIEW_STATUSES = {
     "unreviewed",
     "pass",
+    "verified_outlier",
     "needs_followup",
     "semantics_issue",
     "data_quality_question",
@@ -130,6 +131,7 @@ PREFERRED_MARKDOWN_COLUMNS = [
     "start_date",
     "end_date",
 ]
+DEFAULT_VERIFIED_OUTLIERS_PATH = ROOT / "qa" / "verified_outliers.yaml"
 
 
 def parse_args() -> argparse.Namespace:
@@ -142,6 +144,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--case", action="append", default=[])
     parser.add_argument("--top-rows", type=int, default=3)
+    parser.add_argument("--verified-outliers", default=str(DEFAULT_VERIFIED_OUTLIERS_PATH))
     parser.add_argument("--fail-on-expectation-failure", action="store_true")
     return parser.parse_args()
 
@@ -178,6 +181,25 @@ def load_corpus(path: Path) -> tuple[int | None, list[dict[str, Any]]]:
     if isinstance(version, int | str) and str(version).isdigit():
         return int(version), cases
     return None, cases
+
+
+def load_verified_outliers(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    raw = path.read_text()
+    if yaml is not None:
+        data = yaml.safe_load(raw)
+    else:
+        data = json.loads(raw)
+    if not isinstance(data, dict):
+        raise ValueError(f"Verified outliers file must be a mapping: {path}")
+    entries = data.get("verified_outliers") or []
+    if not isinstance(entries, list):
+        raise ValueError(f"verified_outliers must be a list: {path}")
+    for index, entry in enumerate(entries, start=1):
+        if not isinstance(entry, dict):
+            raise ValueError(f"Verified outlier {index} must be a mapping")
+    return entries
 
 
 def selected_case_ids(values: list[str]) -> set[str]:
@@ -570,6 +592,17 @@ def make_suspicious_flag(
     return flag
 
 
+def make_verified_outlier_flag(
+    flag_id: str,
+    message: str,
+    *,
+    details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    flag = make_suspicious_flag(flag_id, message, details=details)
+    flag["status"] = "verified"
+    return flag
+
+
 def expected_allows(case: dict[str, Any], status: str) -> bool:
     return status in as_allowed_values(case.get("expected_status"))
 
@@ -607,19 +640,113 @@ def top_performance_high_point_rows(
             if isinstance(points, int | float) and points >= threshold:
                 matches.append(
                     {
+                        "category": "top_performance_high_points",
                         "section": section_name,
                         "rank": row.get("rank"),
+                        "player_id": row.get("player_id"),
                         "player_name": row.get("player_name"),
                         "team_name": row.get("team_name"),
                         "team_abbr": row.get("team_abbr"),
+                        "opponent_team_abbr": row.get("opponent_team_abbr"),
+                        "game_id": row.get("game_id"),
                         "game_date": row.get("game_date"),
+                        "stat": "pts",
+                        "value": points,
                         "pts": points,
                     }
                 )
     return matches
 
 
-def build_suspicious_flags(
+def game_id_variants(value: Any) -> set[str]:
+    if value is None:
+        return set()
+    text = str(value).strip()
+    if not text:
+        return set()
+    if text.endswith(".0"):
+        text = text[:-2]
+    stripped = text.lstrip("0") or "0"
+    return {text, stripped}
+
+
+def date_prefix(value: Any) -> str:
+    return str(value or "").strip()[:10]
+
+
+def normalized_number(value: Any) -> float | None:
+    if isinstance(value, int | float):
+        return float(value)
+    try:
+        return float(str(value).strip())
+    except ValueError:
+        return None
+
+
+def value_matches(expected: Any, actual: Any) -> bool:
+    if expected is None:
+        return True
+    if actual is None:
+        return False
+    expected_number = normalized_number(expected)
+    actual_number = normalized_number(actual)
+    if expected_number is not None and actual_number is not None:
+        return expected_number == actual_number
+    return normalized_match_text(expected) == normalized_match_text(actual)
+
+
+def outlier_entry_matches_row(entry: dict[str, Any], row: dict[str, Any]) -> bool:
+    if entry.get("verification_status") != "verified_official":
+        return False
+    if normalized_match_text(entry.get("category")) != normalized_match_text(row.get("category")):
+        return False
+    if str(entry.get("stat") or "").casefold() != str(row.get("stat") or "").casefold():
+        return False
+    if not value_matches(entry.get("value"), row.get("value")):
+        return False
+    if date_prefix(entry.get("game_date")) != date_prefix(row.get("game_date")):
+        return False
+
+    entry_game_ids = game_id_variants(entry.get("game_id"))
+    row_game_ids = game_id_variants(row.get("game_id"))
+    if entry_game_ids and row_game_ids and entry_game_ids.isdisjoint(row_game_ids):
+        return False
+
+    player_id = entry.get("player_id")
+    if player_id is not None and row.get("player_id") is not None:
+        return value_matches(player_id, row.get("player_id"))
+
+    return normalized_match_text(entry.get("player_name")) == normalized_match_text(
+        row.get("player_name")
+    )
+
+
+def verified_outlier_match(
+    row: dict[str, Any],
+    verified_outliers: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    for entry in verified_outliers:
+        if outlier_entry_matches_row(entry, row):
+            return entry
+    return None
+
+
+def split_verified_high_point_rows(
+    rows: list[dict[str, Any]],
+    verified_outliers: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    unverified_rows: list[dict[str, Any]] = []
+    verified_rows: list[dict[str, Any]] = []
+    for row in rows:
+        match = verified_outlier_match(row, verified_outliers)
+        if match:
+            verified_rows.append({**row, "verified_outlier_id": match.get("id")})
+        else:
+            unverified_rows.append(row)
+    return unverified_rows, verified_rows
+
+
+def build_review_flags(
     case: dict[str, Any],
     *,
     result_status: str | None,
@@ -628,8 +755,10 @@ def build_suspicious_flags(
     shape_hint: str,
     metadata: dict[str, Any],
     sections: dict[str, Any],
-) -> list[dict[str, Any]]:
+    verified_outliers: list[dict[str, Any]] | None = None,
+) -> dict[str, list[dict[str, Any]]]:
     flags: list[dict[str, Any]] = []
+    verified_flags: list[dict[str, Any]] = []
     priority = str(case.get("priority"))
     query_class = metadata.get("query_class")
 
@@ -662,13 +791,26 @@ def build_suspicious_flags(
         sections=sections,
     )
     if high_point_rows:
-        flags.append(
-            make_suspicious_flag(
-                "top_performance_high_points",
-                "Top performance point total is unusually high (>= 75).",
-                details={"rows": high_point_rows},
-            )
+        unverified_rows, verified_rows = split_verified_high_point_rows(
+            high_point_rows,
+            verified_outliers or [],
         )
+        if unverified_rows:
+            flags.append(
+                make_suspicious_flag(
+                    "top_performance_high_points",
+                    "Top performance point total is unusually high (>= 75).",
+                    details={"rows": unverified_rows},
+                )
+            )
+        if verified_rows:
+            verified_flags.append(
+                make_verified_outlier_flag(
+                    "top_performance_high_points",
+                    "Top performance point total is unusually high (>= 75) but verified official.",
+                    details={"rows": verified_rows},
+                )
+            )
 
     if (
         "playoff teams" in normalized_match_text(case.get("query"))
@@ -703,7 +845,30 @@ def build_suspicious_flags(
             )
         )
 
-    return flags
+    return {"suspicious_flags": flags, "verified_outliers": verified_flags}
+
+
+def build_suspicious_flags(
+    case: dict[str, Any],
+    *,
+    result_status: str | None,
+    route: str | None,
+    answer_text: str | None,
+    shape_hint: str,
+    metadata: dict[str, Any],
+    sections: dict[str, Any],
+    verified_outliers: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    return build_review_flags(
+        case,
+        result_status=result_status,
+        route=route,
+        answer_text=answer_text,
+        shape_hint=shape_hint,
+        metadata=metadata,
+        sections=sections,
+        verified_outliers=verified_outliers,
+    )["suspicious_flags"]
 
 
 def suggested_review_tags(flags: list[dict[str, Any]]) -> list[str]:
@@ -713,7 +878,12 @@ def suggested_review_tags(flags: list[dict[str, Any]]) -> list[str]:
     return sorted(tags)
 
 
-def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
+def run_case(
+    case: dict[str, Any],
+    *,
+    top_rows: int,
+    verified_outliers: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     case_id = str(case["id"])
     query = str(case["query"])
     manual_review = normalize_manual_review(case)
@@ -730,7 +900,7 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
         qr = execute_natural_query(query)
         payload = query_result_to_payload(qr)
     except Exception as exc:  # pragma: no cover - exercised manually through harness.
-        flags = build_suspicious_flags(
+        review_flags = build_review_flags(
             case,
             result_status="error",
             route=None,
@@ -738,7 +908,10 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
             shape_hint="error",
             metadata={},
             sections={},
+            verified_outliers=verified_outliers,
         )
+        flags = review_flags["suspicious_flags"]
+        verified_flags = review_flags["verified_outliers"]
         return {
             **base,
             "route": None,
@@ -762,6 +935,7 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
             "expectation_results": error_expectation_results(exc),
             "suggested_review_tags": suggested_review_tags(flags),
             "suspicious_flags": flags,
+            "verified_outliers": verified_flags,
         }
 
     result = payload.get("result") if isinstance(payload.get("result"), dict) else {}
@@ -779,7 +953,7 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
         shape_hint=shape_hint,
         applied_filters=applied_filters,
     )
-    flags = build_suspicious_flags(
+    review_flags = build_review_flags(
         case,
         result_status=payload.get("result_status"),
         route=payload.get("route"),
@@ -787,7 +961,10 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
         shape_hint=shape_hint,
         metadata=metadata,
         sections=sections,
+        verified_outliers=verified_outliers,
     )
+    flags = review_flags["suspicious_flags"]
+    verified_flags = review_flags["verified_outliers"]
 
     return json_ready(
         {
@@ -813,6 +990,7 @@ def run_case(case: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
             "expectation_results": expectation_results,
             "suggested_review_tags": suggested_review_tags(flags),
             "suspicious_flags": flags,
+            "verified_outliers": verified_flags,
         }
     )
 
@@ -844,6 +1022,7 @@ def summarize_rows(
     )
     manual_review_tag_counts: Counter[str] = Counter()
     suspicious_flag_counts: Counter[str] = Counter()
+    verified_outlier_counts: Counter[str] = Counter()
     suggested_review_tag_counts: Counter[str] = Counter()
     expectation_case_counts = Counter(
         str((row.get("expectation_results") or {}).get("status")) for row in rows
@@ -851,6 +1030,7 @@ def summarize_rows(
     expectation_check_counts: Counter[str] = Counter()
     failed_case_ids: list[str] = []
     suspicious_flag_case_ids: list[str] = []
+    verified_outlier_case_ids: list[str] = []
     for row in rows:
         manual_review = row.get("manual_review") or {}
         for tag in manual_review.get("tags", []):
@@ -860,6 +1040,11 @@ def summarize_rows(
             suspicious_flag_case_ids.append(str(row.get("id")))
         for flag in flags:
             suspicious_flag_counts[str(flag.get("id"))] += 1
+        verified_outliers = row.get("verified_outliers") or []
+        if verified_outliers:
+            verified_outlier_case_ids.append(str(row.get("id")))
+        for flag in verified_outliers:
+            verified_outlier_counts[str(flag.get("id"))] += 1
         for tag in row.get("suggested_review_tags") or []:
             suggested_review_tag_counts[str(tag)] += 1
         expectation_results = row.get("expectation_results") or {}
@@ -885,6 +1070,9 @@ def summarize_rows(
         "suspicious_flag_case_count": len(suspicious_flag_case_ids),
         "suspicious_flag_case_ids": suspicious_flag_case_ids,
         "suspicious_flag_counts": dict(sorted(suspicious_flag_counts.items())),
+        "verified_outlier_case_count": len(verified_outlier_case_ids),
+        "verified_outlier_case_ids": verified_outlier_case_ids,
+        "verified_outlier_counts": dict(sorted(verified_outlier_counts.items())),
         "suggested_review_tag_counts": dict(sorted(suggested_review_tag_counts.items())),
         "expectation_case_counts": dict(sorted(expectation_case_counts.items())),
         "expectation_check_counts": dict(sorted(expectation_check_counts.items())),
@@ -1015,6 +1203,8 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         f"- Manual review tags: {md_code(summary['manual_review_tag_counts'])}",
         f"- Suspicious flag cases: {md_code(summary['suspicious_flag_case_count'])}",
         f"- Suspicious flags: {md_code(summary['suspicious_flag_counts'])}",
+        f"- Verified outlier cases: {md_code(summary['verified_outlier_case_count'])}",
+        f"- Verified outliers: {md_code(summary['verified_outlier_counts'])}",
         f"- Suggested review tags: {md_code(summary['suggested_review_tag_counts'])}",
         f"- Expectation cases: {md_code(summary['expectation_case_counts'])}",
         f"- Expectation checks: {md_code(summary['expectation_check_counts'])}",
@@ -1043,6 +1233,45 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
                         md_escape(row.get("id")),
                         md_escape(flag_ids),
                         md_escape(tags),
+                        md_escape(manual_review.get("status", "unreviewed")),
+                    ]
+                )
+                + " |"
+            )
+    else:
+        lines.append("_None._")
+
+    lines.extend(["", "## Verified Outliers", ""])
+    verified_rows = [row for row in rows if row.get("verified_outliers")]
+    if verified_rows:
+        lines.extend(
+            [
+                "| Case | Flags | Details | Manual review |",
+                "|---|---|---|---|",
+            ]
+        )
+        for row in verified_rows:
+            flag_ids = ", ".join(str(flag.get("id")) for flag in row.get("verified_outliers") or [])
+            detail_parts: list[str] = []
+            for flag in row.get("verified_outliers") or []:
+                for item in (flag.get("details") or {}).get("rows") or []:
+                    player = item.get("player_name") or item.get("team_name") or "row"
+                    stat = item.get("stat") or "stat"
+                    value = item.get("value")
+                    game_date = date_prefix(item.get("game_date"))
+                    outlier_id = item.get("verified_outlier_id")
+                    detail = f"{player} {value} {stat} on {game_date}"
+                    if outlier_id:
+                        detail = f"{detail} ({outlier_id})"
+                    detail_parts.append(detail)
+            manual_review = row.get("manual_review") or {}
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        md_escape(row.get("id")),
+                        md_escape(flag_ids),
+                        md_escape("; ".join(detail_parts)),
                         md_escape(manual_review.get("status", "unreviewed")),
                     ]
                 )
@@ -1123,6 +1352,9 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         if row.get("suspicious_flags"):
             flag_ids = ", ".join(str(flag.get("id")) for flag in row["suspicious_flags"])
             lines.append(f"- Suspicious flags: {md_code(flag_ids)}")
+        if row.get("verified_outliers"):
+            flag_ids = ", ".join(str(flag.get("id")) for flag in row["verified_outliers"])
+            lines.append(f"- Verified outliers: {md_code(flag_ids)}")
         if row.get("suggested_review_tags"):
             lines.append(f"- Suggested review tags: {md_code(row.get('suggested_review_tags'))}")
         if row.get("notes"):
@@ -1169,10 +1401,14 @@ def main() -> int:
 
     version, cases = load_corpus(corpus_path)
     del version
+    verified_outliers = load_verified_outliers(resolve_path(args.verified_outliers))
     selected = filter_cases(cases, case_ids=selected_case_ids(args.case), limit=args.limit)
 
     started_at = datetime.now(UTC).isoformat()
-    rows = [run_case(case, top_rows=args.top_rows) for case in selected]
+    rows = [
+        run_case(case, top_rows=args.top_rows, verified_outliers=verified_outliers)
+        for case in selected
+    ]
     completed_at = datetime.now(UTC).isoformat()
 
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -1200,6 +1436,7 @@ def main() -> int:
     print(f"Result statuses: {summary['result_status_counts']}")
     print(f"Expectation cases: {summary['expectation_case_counts']}")
     print(f"Suspicious flag cases: {summary['suspicious_flag_case_count']}")
+    print(f"Verified outlier cases: {summary['verified_outlier_case_count']}")
     if failed_case_ids:
         print(f"Failed case IDs: {', '.join(failed_case_ids)}")
     else:

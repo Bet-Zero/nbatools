@@ -503,6 +503,38 @@ Opponent-quality playoff-team semantics are fixed.
   non-scoring top-performance product decisions, and team-scoped
   rolling-stretch product decisions.
 
+## Fix Wave 5 Status
+
+Verified top-performance outlier policy is added for QA reporting.
+
+- Target case: `biggest_scoring_games`
+- Policy: official-source-backed rare outliers are displayed as-is and recorded
+  as verified outliers; hard impossibilities remain validation failures or
+  review flags; suspicious-but-possible outliers remain open review flags until
+  verified.
+- Allowlist: `qa/verified_outliers.yaml`
+- Fix: Bam Adebayo's 83-point game on 2026-03-10 is classified as a verified
+  official outlier instead of an open suspicious data-quality issue. The
+  `top_player_games` route and production output are unchanged.
+- Harness behavior: high-point top-performance rows are still detected. Rows
+  matching the allowlist move into `verified_outliers`; rows not matching the
+  allowlist remain in `suspicious_flags`.
+- Tests added: focused harness-unit coverage for verified high-point
+  classification, unverified high-point classification, and leading-zero /
+  zero-stripped `game_id` matching.
+- Latest targeted harness output:
+  `outputs/raw_query_answer_qa/20260513T025121Z/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260513T025137Z/report.md`
+- Latest full run summary: 80 cases; result statuses `ok: 69`,
+  `no_result: 5`, `error: 6`; expectation cases `pass: 80`; expectation
+  checks `pass: 401`; failed case IDs `[]`; suspicious flag cases `22`;
+  suspicious flags `missing_backend_answer_text: 22`; verified outlier cases
+  `1`; verified outliers `top_performance_high_points: 1`.
+- Remaining fix families: unsupported/no-result policy for other product
+  boundaries, frontend-rendered answer extraction, non-scoring top-performance
+  product decisions, and team-scoped rolling-stretch product decisions.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.
