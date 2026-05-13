@@ -604,14 +604,109 @@ class TestMetadataPreservation:
                 "text": "10+ rebounds",
             },
         ]
-        assert qr.metadata["extra_conditions"] == [
+        assert qr.metadata["conditions"] == [
+            {
+                "stat": "pts",
+                "min_value": 25.0,
+                "max_value": None,
+                "text": "25+ points",
+            },
             {
                 "stat": "reb",
                 "min_value": 10.0,
                 "max_value": None,
                 "text": "10+ rebounds",
-            }
+            },
         ]
+        assert qr.metadata["extra_conditions"] == []
+        assert qr.metadata["applied_filters"] == [
+            {
+                "label": "pts min",
+                "value": "25.0",
+                "kind": "threshold",
+            },
+            {
+                "label": "reb min",
+                "value": "10.0",
+                "kind": "threshold",
+            },
+        ]
+
+    def test_compound_team_count_consumes_conditions_without_extra_filtering(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert route == "team_occurrence_leaders"
+            assert kwargs["conditions"] == [
+                {"stat": "pts", "min_value": 120.0, "max_value": None},
+                {"stat": "fg3m", "min_value": 15.0, "max_value": None},
+            ]
+            assert extra_conditions == []
+            return LeaderboardResult(
+                leaders=pd.DataFrame(
+                    [
+                        {
+                            "rank": 1,
+                            "team_abbr": "BOS",
+                            "team_name": "Boston Celtics",
+                            "games_played": 200,
+                            "games_pts_120+_fg3m_15+": 125,
+                        }
+                    ]
+                )
+            )
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute)
+
+        qr = execute_natural_query(
+            "how many Celtics games with 120+ points and 15+ threes since 2022"
+        )
+
+        assert qr.metadata["primary_count"] == 125
+        assert qr.metadata["extra_conditions"] == []
+        assert "15+ threes" in qr.metadata["count_phrase"]
+        assert {
+            "label": "pts min",
+            "value": "120.0",
+            "kind": "threshold",
+        } in qr.metadata["applied_filters"]
+        assert {
+            "label": "fg3m min",
+            "value": "15.0",
+            "kind": "threshold",
+        } in qr.metadata["applied_filters"]
+
+    def test_compact_player_finder_passes_compound_conditions_to_execution(self, monkeypatch):
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert route == "player_game_finder"
+            assert kwargs["stat"] == "pts"
+            assert kwargs["min_value"] == 30.0
+            assert kwargs["conditions"] == [
+                {"stat": "pts", "min_value": 30.0, "max_value": None},
+                {"stat": "ast", "min_value": 10.0, "max_value": None},
+            ]
+            assert extra_conditions == []
+            return FinderResult(
+                games=pd.DataFrame([{"player_name": "Nikola Jokić", "pts": 30, "ast": 10}])
+            )
+
+        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute)
+
+        qr = execute_natural_query("Jokic games with 30 points and 10 assists")
+
+        assert qr.metadata["route"] == "player_game_finder"
+        assert qr.metadata["stat"] == "pts"
+        assert qr.metadata["min_value"] == 30.0
+        assert {
+            "label": "pts min",
+            "value": "30.0",
+            "kind": "threshold",
+        } in qr.metadata["applied_filters"]
+        assert {
+            "label": "ast min",
+            "value": "10.0",
+            "kind": "threshold",
+        } in qr.metadata["applied_filters"]
 
     def test_how_often_player_special_event_gets_count_phrase(self, monkeypatch):
         _patch_identity_contexts(monkeypatch)

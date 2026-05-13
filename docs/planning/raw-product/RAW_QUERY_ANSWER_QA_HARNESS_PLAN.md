@@ -704,6 +704,40 @@ phrase enrichment, source data, or compound-threshold representation.
 - Recommended next phase: compound threshold representation/execution for
   count/finder routes.
 
+## Fix Wave 4B Status
+
+Compound threshold representation/execution is fixed for the targeted count and
+finder failures. This wave added a shared stat-threshold condition helper,
+route-consumed `conditions` for compound finder/occurrence routes, pre-limit
+finder filtering for compound thresholds, metadata/applied-filter coverage for
+all route-consumed conditions, tests, corpus expectations, and docs. It did not
+change frontend rendering, source data, scalar Wave 4A stat mapping, or broad
+compact shorthand such as `25/10/10`.
+
+- `celtics_120_15_threes_count_missing_filter`: fixed. The query now routes to
+  `team_occurrence_leaders`, consumes `conditions=[pts>=120, fg3m>=15]`, does
+  not post-filter the aggregate row via duplicate `extra_conditions`, and
+  returns count `125`.
+- `jokic_30_points_10_assists_finder_misparsed`: fixed. The compact finder now
+  consumes `conditions=[pts>=30, ast>=10]`, keeps `stat=pts` for sorting, and
+  returns 14 rows satisfying both thresholds instead of filtering `ast>=30`.
+- Latest targeted compound harness output:
+  `outputs/raw_query_answer_qa/20260513T083000Z_wave4b_targeted/report.md`
+- Latest adjacent regression harness output:
+  `outputs/raw_query_answer_qa/20260513T083500Z_wave4b_adjacent/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260513T084000Z_wave4b_full/report.md`
+- Latest full run summary: 145 cases; result statuses `ok: 127`,
+  `no_result: 12`, `error: 6`; expectation cases `pass: 141`, `fail: 4`;
+  expectation checks `pass: 716`, `fail: 10`; failed case IDs
+  `anthony_edwards_last_10_summary_no_match`,
+  `kd_ts_top_defenses_missing_filters`, `lakers_road_record_last_season`, and
+  `anthony_edwards_wins_losses_split_no_match`.
+- Recommended next phase: context/filter preservation and no-match diagnostics,
+  with `kd_ts_top_defenses_missing_filters`, `lakers_road_record_last_season`,
+  and the Anthony Edwards no-match cases as the highest-priority remaining
+  failures.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

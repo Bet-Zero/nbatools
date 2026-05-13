@@ -29,6 +29,7 @@ from nbatools.commands.player_occurrence_leaders import (
 )
 from nbatools.commands.structured_results import (
     CountResult,
+    FinderResult,
     LeaderboardResult,
     NoResult,
 )
@@ -314,8 +315,24 @@ class TestCompoundOccurrenceRouting:
         assert parsed["route"] == "team_occurrence_leaders"
         kw = parsed["route_kwargs"]
         assert "conditions" in kw
+        assert kw["conditions"] == [
+            {"stat": "pts", "min_value": 120.0, "max_value": None},
+            {"stat": "fg3m", "min_value": 15.0, "max_value": None},
+        ]
         assert kw.get("team") == "BOS"
         assert kw.get("limit") == 500
+        assert parsed["extra_conditions"] == []
+
+    def test_compact_player_finder_routes_with_conditions(self):
+        parsed = parse_query("Jokic games with 30 points and 10 assists")
+        assert parsed["route"] == "player_game_finder"
+        kw = parsed["route_kwargs"]
+        assert kw["stat"] == "pts"
+        assert kw["min_value"] == 30.0
+        assert kw["conditions"] == [
+            {"stat": "pts", "min_value": 30.0, "max_value": None},
+            {"stat": "ast", "min_value": 10.0, "max_value": None},
+        ]
 
 
 # ===================================================================
@@ -487,6 +504,52 @@ class TestCompoundOccurrenceService:
         assert isinstance(result.result, (CountResult, NoResult))
         if isinstance(result.result, CountResult):
             assert result.result.count >= 0
+
+    @pytest.mark.needs_data
+    def test_team_compound_count_uses_occurrence_result_not_post_filter(self):
+        result = execute_natural_query(
+            "how many Celtics games with 120+ points and 15+ threes since 2022"
+        )
+
+        assert result.route == "team_occurrence_leaders"
+        assert isinstance(result.result, CountResult)
+        assert result.result.result_status == "ok"
+        assert result.result.count == 125
+        assert result.metadata["extra_conditions"] == []
+        assert {
+            "label": "pts min",
+            "value": "120.0",
+            "kind": "threshold",
+        } in result.metadata["applied_filters"]
+        assert {
+            "label": "fg3m min",
+            "value": "15.0",
+            "kind": "threshold",
+        } in result.metadata["applied_filters"]
+
+    @pytest.mark.needs_data
+    def test_compact_player_finder_applies_both_conditions(self):
+        result = execute_natural_query("Jokic games with 30 points and 10 assists")
+
+        assert result.route == "player_game_finder"
+        assert isinstance(result.result, FinderResult)
+        assert result.result.result_status == "ok"
+        assert result.metadata["stat"] == "pts"
+        assert result.metadata["min_value"] == 30.0
+        assert {
+            "label": "pts min",
+            "value": "30.0",
+            "kind": "threshold",
+        } in result.metadata["applied_filters"]
+        assert {
+            "label": "ast min",
+            "value": "10.0",
+            "kind": "threshold",
+        } in result.metadata["applied_filters"]
+        rows = result.to_dict()["sections"]["finder"]
+        assert rows
+        assert all(row["pts"] >= 30 for row in rows)
+        assert all(row["ast"] >= 10 for row in rows)
 
 
 # ===================================================================

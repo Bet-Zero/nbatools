@@ -199,6 +199,7 @@ Examples:
 - `Jokic last 10 games over 25 points`
 - `show me Jokic games vs Lakers`
 - `find LeBron away wins`
+- `Jokic games with 30 points and 10 assists`
 - `what games did Tatum have over 35 points and 5+ threes`
 - `Cade Cunningham season high` (routes to top single games for the player)
 - `LeBron best game this season`
@@ -208,6 +209,7 @@ Examples:
 Examples:
 
 - `Celtics wins vs Bucks over 120 points`
+- `Celtics games with 120+ points and 15+ threes`
 - `show me Lakers home losses`
 - `list Thunder games with 15+ threes`
 - `find Knicks games vs Heat since 2021`

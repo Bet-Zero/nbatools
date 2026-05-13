@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
 from nbatools.commands._constants import normalize_text, route_to_intent
 from nbatools.commands._date_utils import (
@@ -794,6 +795,56 @@ def _build_parse_state(query: str) -> dict:
             for c in extra_conditions
         ],
     }
+
+
+def _conditions_for_route(parsed: dict, route: str, route_kwargs: dict) -> list[dict]:
+    """Return canonical condition-list filters consumed by the selected route."""
+    route_conditions = normalize_stat_conditions(route_kwargs.get("conditions"))
+    if route_conditions:
+        return route_conditions
+
+    if route in {"player_game_finder", "game_finder"}:
+        threshold_conditions = normalize_stat_conditions(parsed.get("threshold_conditions"))
+        if len(threshold_conditions) >= 2:
+            return threshold_conditions
+
+        compound_conditions = normalize_stat_conditions(
+            parsed.get("compound_occurrence_conditions")
+        )
+        if len(compound_conditions) >= 2:
+            return compound_conditions
+
+    return []
+
+
+def _apply_route_conditions(parsed: dict, route: str, route_kwargs: dict) -> None:
+    """Attach compound conditions to routes and clear duplicate post-filters."""
+    conditions = _conditions_for_route(parsed, route, route_kwargs)
+    if not conditions:
+        return
+
+    route_kwargs["conditions"] = conditions
+    parsed["conditions"] = conditions
+
+    if not parsed.get("threshold_conditions"):
+        parsed["threshold_conditions"] = conditions
+
+    if parsed.get("extra_conditions") and stat_conditions_cover(
+        conditions,
+        parsed.get("extra_conditions"),
+    ):
+        parsed["extra_conditions"] = []
+
+    if route not in {"player_game_finder", "game_finder"}:
+        return
+
+    primary = conditions[0]
+    route_kwargs["stat"] = primary["stat"]
+    route_kwargs["min_value"] = primary.get("min_value")
+    route_kwargs["max_value"] = primary.get("max_value")
+    parsed["stat"] = primary["stat"]
+    parsed["min_value"] = primary.get("min_value")
+    parsed["max_value"] = primary.get("max_value")
 
 
 def _finalize_route(parsed: dict) -> dict:
@@ -1819,7 +1870,6 @@ def _finalize_route(parsed: dict) -> dict:
             "'Jokic vs Embiid recent form'."
         )
 
-    out = dict(parsed)
     route_kwargs["back_to_back"] = back_to_back
     route_kwargs["rest_days"] = rest_days
     route_kwargs["one_possession"] = one_possession
@@ -1829,6 +1879,9 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["opponent_quality"] = opponent_quality
     route_kwargs["quarter"] = quarter
     route_kwargs["half"] = half
+    _apply_route_conditions(parsed, route, route_kwargs)
+
+    out = dict(parsed)
     out["route"] = route
     out["route_kwargs"] = route_kwargs
     if route == "season_team_leaders" and route_kwargs.get("stat"):

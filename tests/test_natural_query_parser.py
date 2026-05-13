@@ -243,7 +243,7 @@ def test_single_threshold_defaults_season_for_team_finder():
     assert parsed["route"] == "game_finder"
 
 
-def test_multi_condition_player_query_parses_extra_conditions():
+def test_multi_condition_player_query_parses_route_conditions():
     parsed = parse_query("Jokic last 10 games over 25 points and over 10 rebounds")
     assert parsed["player"] == "Nikola Jokić"
     assert parsed["season"] == "2025-26"
@@ -252,12 +252,13 @@ def test_multi_condition_player_query_parses_extra_conditions():
     assert parsed["min_value"] is not None
     assert parsed["route"] == "player_game_finder"
     assert len(parsed["threshold_conditions"]) == 2
-    assert len(parsed["extra_conditions"]) == 1
-    assert parsed["extra_conditions"][0]["stat"] == "reb"
-    assert parsed["extra_conditions"][0]["min_value"] is not None
+    assert parsed["extra_conditions"] == []
+    assert parsed["route_kwargs"]["conditions"] == parsed["threshold_conditions"]
+    assert parsed["route_kwargs"]["conditions"][1]["stat"] == "reb"
+    assert parsed["route_kwargs"]["conditions"][1]["min_value"] is not None
 
 
-def test_multi_condition_team_query_parses_extra_conditions():
+def test_multi_condition_team_query_parses_route_conditions():
     parsed = parse_query("Celtics wins vs Bucks over 120 points and over 15 threes")
     assert parsed["team"] == "BOS"
     assert parsed["opponent"] == "MIL"
@@ -266,8 +267,55 @@ def test_multi_condition_team_query_parses_extra_conditions():
     assert parsed["stat"] == "pts"
     assert parsed["route"] == "game_finder"
     assert len(parsed["threshold_conditions"]) == 2
-    assert len(parsed["extra_conditions"]) == 1
-    assert parsed["extra_conditions"][0]["stat"] == "fg3m"
+    assert parsed["extra_conditions"] == []
+    assert parsed["route_kwargs"]["conditions"] == parsed["threshold_conditions"]
+    assert parsed["route_kwargs"]["conditions"][1]["stat"] == "fg3m"
+
+
+def test_compound_team_count_uses_route_conditions_without_duplicate_extras():
+    parsed = parse_query("how many Celtics games with 120+ points and 15+ threes since 2022")
+
+    assert parsed["route"] == "team_occurrence_leaders"
+    assert parsed["team"] == "BOS"
+    assert parsed["route_kwargs"]["conditions"] == [
+        {"stat": "pts", "min_value": 120.0, "max_value": None},
+        {"stat": "fg3m", "min_value": 15.0, "max_value": None},
+    ]
+    assert parsed["conditions"] == parsed["route_kwargs"]["conditions"]
+    assert parsed["extra_conditions"] == []
+
+
+def test_compact_player_finder_compound_binds_values_to_each_stat():
+    parsed = parse_query("Jokic games with 30 points and 10 assists")
+
+    assert parsed["route"] == "player_game_finder"
+    assert parsed["player"] == "Nikola Jokić"
+    assert parsed["stat"] == "pts"
+    assert parsed["min_value"] == 30.0
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert parsed["route_kwargs"]["min_value"] == 30.0
+    assert parsed["route_kwargs"]["conditions"] == [
+        {"stat": "pts", "min_value": 30.0, "max_value": None},
+        {"stat": "ast", "min_value": 10.0, "max_value": None},
+    ]
+    assert parsed["extra_conditions"] == []
+
+
+def test_single_stat_threshold_still_uses_scalar_route_kwargs():
+    parsed = parse_query("Curry 5+ threes this season")
+
+    assert parsed["route"] == "player_game_finder"
+    assert parsed["stat"] == "fg3m"
+    assert parsed["min_value"] == 5.0
+    assert "conditions" not in parsed["route_kwargs"]
+    assert parsed["extra_conditions"] == []
+
+
+def test_compact_shorthand_is_not_expanded_to_compound_conditions():
+    parsed = parse_query("Jokic 25/10/10")
+
+    assert parsed["compound_occurrence_conditions"] is None
+    assert "conditions" not in parsed["route_kwargs"]
 
 
 def test_under_query_parses_max_value_for_player():
@@ -386,10 +434,11 @@ def test_mixed_over_and_under_conditions_parse():
     assert parsed["max_value"] is None
     assert parsed["route"] == "player_game_finder"
     assert len(parsed["threshold_conditions"]) == 2
-    assert len(parsed["extra_conditions"]) == 1
-    assert parsed["extra_conditions"][0]["stat"] == "reb"
-    assert parsed["extra_conditions"][0]["min_value"] is None
-    assert parsed["extra_conditions"][0]["max_value"] is not None
+    assert parsed["extra_conditions"] == []
+    assert parsed["route_kwargs"]["conditions"] == parsed["threshold_conditions"]
+    assert parsed["route_kwargs"]["conditions"][1]["stat"] == "reb"
+    assert parsed["route_kwargs"]["conditions"][1]["min_value"] is None
+    assert parsed["route_kwargs"]["conditions"][1]["max_value"] is not None
 
 
 def test_between_query_parses_for_team():

@@ -1,5 +1,6 @@
 import pandas as pd
 
+from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     build_opponent_mask,
@@ -36,6 +37,19 @@ ALLOWED_STATS = {
 }
 
 
+def _ensure_stat_column(df: pd.DataFrame, stat_col: str) -> pd.DataFrame:
+    """Derive stat columns that are available from team game logs."""
+    if stat_col != "opponent_pts" or "opponent_pts" in df.columns:
+        return df
+    if {"pts", "plus_minus"}.issubset(df.columns):
+        out = df.copy()
+        out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
+            out["plus_minus"], errors="coerce"
+        )
+        return out
+    raise ValueError("Missing required columns for opponent_pts")
+
+
 def _normalize_date_value(value: str | None) -> pd.Timestamp | None:
     if value is None:
         return None
@@ -56,6 +70,7 @@ def _apply_filters(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
@@ -102,19 +117,21 @@ def _apply_filters(
             raise ValueError(f"Unsupported stat: {stat}")
         stat_col = ALLOWED_STATS[stat]
 
-        if stat_col == "opponent_pts" and "opponent_pts" not in out.columns:
-            if {"pts", "plus_minus"}.issubset(out.columns):
-                out["opponent_pts"] = pd.to_numeric(out["pts"], errors="coerce") - pd.to_numeric(
-                    out["plus_minus"], errors="coerce"
-                )
-            else:
-                raise ValueError("Missing required columns for opponent_pts")
+        out = _ensure_stat_column(out, stat_col)
 
         if min_value is not None:
             out = out[out[stat_col] >= min_value].copy()
 
         if max_value is not None:
             out = out[out[stat_col] <= max_value].copy()
+
+    if conditions:
+        out = apply_stat_conditions(
+            out,
+            conditions,
+            ALLOWED_STATS,
+            prepare_stat_column=_ensure_stat_column,
+        )
 
     if out.empty:
         return out
@@ -144,6 +161,7 @@ def build_result(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     limit: int = 25,
@@ -212,6 +230,7 @@ def build_result(
         stat=stat,
         min_value=min_value,
         max_value=max_value,
+        conditions=conditions,
         last_n=last_n,
         start_date=start_date,
         end_date=end_date,

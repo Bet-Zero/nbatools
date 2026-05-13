@@ -2188,19 +2188,26 @@ cases:
     expected_filters:
       - kind: threshold
         label: pts min
+        value: "120.0"
       - kind: threshold
         label: fg3m min
+        value: "15.0"
       - kind: season
     expected_sections:
       - count
+    expected_row_counts:
+      count: 1
+    hard_assertions:
+      - path: result.sections.count.0.count
+        equals: 125
     review_notes: "Compound team count should preserve both points and threes thresholds."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - record_when
         - stat_mapping
         - context_filter
-      notes: "Initial probe kept the points threshold and season range but appeared to drop the 15+ threes condition."
+      notes: "Wave 4B fixed compound condition representation; count is 125 with both pts and fg3m filters applied."
 
   - id: teams_120_point_count_answer_text_review
     query: "how many teams scored 120+ this season"
@@ -2229,21 +2236,30 @@ cases:
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_finder
+    expected_shape: game_log_table
     expected_filters:
       - kind: threshold
         label: pts min
+        value: "30.0"
       - kind: threshold
         label: ast min
         value: "10.0"
     expected_sections:
       - finder
+    expected_row_counts:
+      finder: 14
+    hard_assertions:
+      - path: result.sections.finder.0.pts
+        equals: 56
+      - path: result.sections.finder.0.ast
+        equals: 15
     review_notes: "Compact two-threshold finder should parse 30 points plus 10 assists."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - stat_mapping
         - phrasing_variant
-      notes: "Initial probe appeared to bind 30 to assists and returned no_match."
+      notes: "Wave 4B fixed compact compound finder binding; rows satisfy pts >= 30 and ast >= 10."
 
   - id: curry_3_threes_streak
     query: "Curry longest streak with at least 3 threes"

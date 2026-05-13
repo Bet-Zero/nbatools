@@ -24,6 +24,11 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import (
+    normalize_stat_conditions,
+    primary_condition_from_kwargs,
+    stat_conditions_cover,
+)
 from nbatools.commands._constants import BOOLEAN_OR_PATTERN, contains_boolean_or, normalize_text
 from nbatools.commands._parse_helpers import (
     build_opponent_quality_note,
@@ -385,6 +390,36 @@ def _normalize_unsupported_filters(value) -> list[str]:
     return [str(value)]
 
 
+def _prepare_route_conditions(
+    route: str,
+    kwargs: dict,
+    extra_conditions: list[dict],
+) -> tuple[dict, list[dict]]:
+    """Move compound finder filters into route-native condition execution."""
+    if not extra_conditions:
+        return kwargs, extra_conditions
+
+    route_conditions = normalize_stat_conditions(kwargs.get("conditions"))
+    if route_conditions and stat_conditions_cover(route_conditions, extra_conditions):
+        return kwargs, []
+
+    if route not in {"player_game_finder", "game_finder"}:
+        return kwargs, extra_conditions
+
+    primary = primary_condition_from_kwargs(kwargs)
+    combined = []
+    if primary is not None:
+        combined.append(primary)
+    combined.extend(normalize_stat_conditions(extra_conditions))
+
+    if not combined:
+        return kwargs, extra_conditions
+
+    routed = dict(kwargs)
+    routed["conditions"] = combined
+    return routed, []
+
+
 def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
     if filter_id == "multi_player_availability":
         return (
@@ -485,6 +520,12 @@ def _execute_build_result(
             result_reason="filter_not_supported",
             notes=[note],
         )
+
+    sanitized_kwargs, extra_conditions = _prepare_route_conditions(
+        route,
+        sanitized_kwargs,
+        extra_conditions,
+    )
 
     result = build_fn(**sanitized_kwargs)
     result = _append_result_notes(result, notes)

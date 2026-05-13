@@ -1,5 +1,6 @@
 import pandas as pd
 
+from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     apply_player_clutch_filter,
@@ -68,6 +69,7 @@ def _apply_filters(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     last_n: int | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
@@ -123,6 +125,9 @@ def _apply_filters(
         if max_value is not None:
             out = out[out[stat_col] <= max_value].copy()
 
+    if conditions:
+        out = apply_stat_conditions(out, conditions, ALLOWED_STATS)
+
     if out.empty:
         return out
 
@@ -154,6 +159,7 @@ def build_result(
     stat: str | None = None,
     min_value: float | None = None,
     max_value: float | None = None,
+    conditions: list[dict] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     limit: int = 25,
@@ -243,6 +249,7 @@ def build_result(
         stat=stat,
         min_value=min_value,
         max_value=max_value,
+        conditions=conditions,
         last_n=last_n,
         start_date=start_date,
         end_date=end_date,

@@ -58,6 +58,8 @@ Natural examples:
 
 - `Jokic under 20 points`
 - `Jokic between 20 and 30 points`
+- `Jokic games with 30 points and 10 assists`
+- `Celtics games with 120+ points and 15+ threes`
 - `Celtics wins vs Bucks over 120 points`
 - `Knicks record when they allow fewer than 110 points` (points allowed → opponent points)
 - `Cade Cunningham season high` (routes to top single games)

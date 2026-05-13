@@ -34,6 +34,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands._condition_utils import normalize_stat_conditions
 from nbatools.commands._constants import contains_boolean_or
 from nbatools.commands._natural_query_execution import (
     _execute_build_result,
@@ -325,23 +326,40 @@ def _build_applied_filters(
             }
         )
 
-    stat = source.get("stat") or route_kwargs.get("stat")
-    min_value = (
-        source.get("min_value")
-        if source.get("min_value") is not None
-        else route_kwargs.get("min_value")
+    conditions = normalize_stat_conditions(
+        route_kwargs.get("conditions") or source.get("conditions")
     )
-    max_value = (
-        source.get("max_value")
-        if source.get("max_value") is not None
-        else route_kwargs.get("max_value")
-    )
-    if stat and min_value is not None:
-        label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
-        applied_filters.append({"label": label, "value": str(min_value), "kind": "threshold"})
-    if stat and max_value is not None:
-        label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
-        applied_filters.append({"label": label, "value": str(max_value), "kind": "threshold"})
+    if conditions:
+        for cond in conditions:
+            stat = cond["stat"]
+            if cond.get("min_value") is not None:
+                label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
+                applied_filters.append(
+                    {"label": label, "value": str(cond["min_value"]), "kind": "threshold"}
+                )
+            if cond.get("max_value") is not None:
+                label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
+                applied_filters.append(
+                    {"label": label, "value": str(cond["max_value"]), "kind": "threshold"}
+                )
+    else:
+        stat = source.get("stat") or route_kwargs.get("stat")
+        min_value = (
+            source.get("min_value")
+            if source.get("min_value") is not None
+            else route_kwargs.get("min_value")
+        )
+        max_value = (
+            source.get("max_value")
+            if source.get("max_value") is not None
+            else route_kwargs.get("max_value")
+        )
+        if stat and min_value is not None:
+            label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
+            applied_filters.append({"label": label, "value": str(min_value), "kind": "threshold"})
+        if stat and max_value is not None:
+            label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
+            applied_filters.append({"label": label, "value": str(max_value), "kind": "threshold"})
     if source.get("start_season") and source.get("end_season"):
         applied_filters.append(
             {
@@ -471,6 +489,7 @@ def _build_query_metadata(
         ),
         "threshold_conditions": parsed.get("threshold_conditions"),
         "extra_conditions": parsed.get("extra_conditions"),
+        "conditions": route_kwargs.get("conditions") or parsed.get("conditions"),
         "occurrence_event": parsed.get("occurrence_event"),
         "split_type": parsed.get("split_type"),
         "clutch": parsed.get("clutch"),
@@ -589,7 +608,11 @@ def _build_count_phrase(
         )
 
     entity = player or _team_subject(metadata) or "Result"
-    occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
+    conditions = normalize_stat_conditions(metadata.get("conditions") or parsed.get("conditions"))
+    if len(conditions) >= 2:
+        occurrence = _compound_occurrence_label(conditions)
+    else:
+        occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
     context = _count_context(metadata, player=bool(player))
     verb = "has had" if count_noun.startswith("games with ") else "has recorded"
@@ -718,6 +741,26 @@ def _occurrence_label(occurrence: Any) -> str:
     if isinstance(occurrence, str) and occurrence:
         return occurrence.replace("_", "-")
     return "game"
+
+
+def _compound_occurrence_label(conditions: list[dict[str, Any]]) -> str:
+    parts: list[str] = []
+    for cond in conditions:
+        stat = cond.get("stat")
+        if not isinstance(stat, str):
+            continue
+        stat_name = stat_phrase_label(stat)
+        min_value = cond.get("min_value")
+        max_value = cond.get("max_value")
+        if isinstance(min_value, (int, float)):
+            parts.append(f"{compact_number(min_value)}+ {stat_name}")
+        elif isinstance(max_value, (int, float)):
+            parts.append(f"under {compact_number(max_value)} {stat_name}")
+        else:
+            parts.append(stat_name)
+    if not parts:
+        return "game"
+    return "games with " + " and ".join(parts)
 
 
 def pluralize_occurrence(label: str) -> str:
@@ -1338,6 +1381,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "stat": kwargs.get("stat"),
         "min_value": kwargs.get("min_value"),
         "max_value": kwargs.get("max_value"),
+        "conditions": kwargs.get("conditions"),
         "sort_by": kwargs.get("sort_by"),
         "ranked_intent": kwargs.get("sort_by") == "stat",
         "split_type": kwargs.get("split"),
