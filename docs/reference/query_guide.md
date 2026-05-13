@@ -60,6 +60,7 @@ Natural examples:
 - `Celtics wins vs Bucks over 120 points`
 - `Cade Cunningham season high` (routes to top single games)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
+- `most assists in a game this season` (routes to top_player_games, not assist-per-game leaders)
 
 ## Summaries
 
@@ -122,6 +123,8 @@ Natural examples:
 ## top-player-games
 
     nbatools-cli query top-player-games --season 2005-06 --stat pts --limit 10
+    nbatools-cli query top-player-games --season 2025-26 --stat ast --limit 10
+    nbatools-cli query top-player-games --season 2025-26 --stat reb --limit 10
 
 ## top-team-games
 
@@ -200,6 +203,8 @@ Natural examples:
 - `Cade Cunningham season high`
 - `LeBron best game this season`
 - `highest scoring games this season` (routes to top_player_games)
+- `most assists in a game this season` (routes to top_player_games)
+- `single-game rebound leaders this season` (routes to top_player_games)
 
 ## Distinct count queries
 
@@ -225,6 +230,16 @@ Natural examples:
 - `longest Bucks streak with 15+ threes`
 - `Thunder consecutive games with 110+ points`
 - `Celtics 5 straight games scoring 120+`
+
+## Rolling stretches
+
+- `hottest 3-game scoring stretch this year`
+- `Jokic best 5-game rebounding stretch this season`
+- `Booker hottest 4-game scoring stretch`
+
+Team rolling-stretch leaderboards, such as `best 5-game team scoring stretch`,
+are not currently supported. They return `no_result` / `filter_not_supported`
+until a team rolling-stretch route and result contract exist.
 
 ## Splits
 

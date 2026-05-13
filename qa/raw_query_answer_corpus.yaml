@@ -413,33 +413,49 @@ cases:
     query: "What were the most assists in a game this season?"
     category: top_performances
     priority: p2
-    expected_status: error
-    expected_route:
-    expected_reason: unrouted
-    expected_shape: error
-    review_notes: "Top single-game assists are not currently routed from this wording."
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ast
+      - path: result.sections.leaderboard.0.ast
+        equals: 23
+      - path: result.sections.leaderboard.0.player_name
+        equals: Ryan Nembhard
+    review_notes: "Top single-game assists route to top_player_games using the selected AST stat."
     manual_review:
-      status: needs_product_decision
+      status: pass
       tags:
         - top_performance
         - assists
-      notes: "Decide whether non-scoring top single-game phrasing should route to top_player_games."
+      notes: "Wave 6 fixed non-scoring top single-game phrasing to route to top_player_games."
 
   - id: most_rebounds_single_game
     query: "What were the most rebounds in a game this season?"
     category: top_performances
     priority: p2
-    expected_status: error
-    expected_route:
-    expected_reason: unrouted
-    expected_shape: error
-    review_notes: "Top single-game rebounds are not currently routed from this wording."
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: reb
+      - path: result.sections.leaderboard.0.reb
+        equals: 25
+      - path: result.sections.leaderboard.0.player_name
+        equals: Scottie Barnes
+    review_notes: "Top single-game rebounds route to top_player_games using the selected REB stat."
     manual_review:
-      status: needs_product_decision
+      status: pass
       tags:
         - top_performance
         - rebounds
-      notes: "Decide whether non-scoring top single-game phrasing should route to top_player_games."
+      notes: "Wave 6 fixed non-scoring top single-game phrasing to route to top_player_games."
 
   - id: top_team_scoring_games
     query: "top team scoring games this season"
@@ -959,18 +975,21 @@ cases:
     query: "best 5-game team scoring stretch this season"
     category: rolling_stretch
     priority: p2
-    expected_status: ok
+    expected_status: no_result
     expected_route: player_stretch_leaderboard
-    expected_shape: rolling_stretch
-    expected_sections:
-      - leaderboard
-    review_notes: "Manual review: team rolling-stretch wording currently routes to player_stretch_leaderboard."
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: team_rolling_stretch
+    review_notes: "Team rolling-stretch leaderboards are intentionally unsupported until a team route/result contract exists."
     manual_review:
-      status: needs_product_decision
+      status: expected_unsupported
       tags:
         - rolling_stretch
         - team_scope
-      notes: "Either document team rolling stretches as unsupported or add a team-backed route."
+      notes: "Wave 6 fixed this boundary so team-scoped rolling-stretch wording no longer returns player windows."
 
   - id: lakers_finals_appearances
     query: "Lakers Finals appearances"

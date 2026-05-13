@@ -1119,6 +1119,27 @@ def detect_stretch_query(text: str) -> dict | None:
     }
 
 
+def detect_team_rolling_stretch_boundary(text: str) -> bool:
+    """Detect explicit team-scoped rolling-stretch wording.
+
+    Team rolling-window leaderboards do not have a route/result contract yet.
+    This detector only covers clear generic team scope so player rolling-stretch
+    queries continue to use ``player_stretch_leaderboard``.
+    """
+    if detect_stretch_query(text) is None:
+        return False
+
+    team_scope_patterns = (
+        r"\bwhich\s+teams?\b",
+        r"\bteams?\s+have\b",
+        r"\bteam\s+\d+\s*(?:-\s*|\s+)games?\b",
+        r"\b\d+\s*(?:-\s*|\s+)games?\s+team\b",
+        r"\bstretch(?:es)?\s+by\s+(?:a\s+)?team\b",
+        r"\bby\s+(?:a\s+)?team\b",
+    )
+    return any(re.search(pattern, text) for pattern in team_scope_patterns)
+
+
 def _extract_player_mentions(text: str) -> list[str]:
     matched_spans: list[tuple[int, int]] = []
     ordered_matches: list[tuple[int, str]] = []
@@ -1323,18 +1344,34 @@ def detect_season_high_intent(text: str) -> bool:
     - 'biggest scoring game(s)'
     - 'most dominant game(s)'
     """
-    return bool(
-        re.search(
-            r"\bseason[- ]?high\b"
-            r"|\bbest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
-            r"|\bhighest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
-            r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"
-            r"|\bmost\s+dominant\s+(?:single\s+)?games?\b"
-            r"|\bgame[- ]?high\b"
-            r"|\bsingle[- ]?game\s+(?:high|best|record)\b",
-            text,
-        )
+    if re.search(
+        r"\bseason[- ]?high\b"
+        r"|\bbest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
+        r"|\bhighest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
+        r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"
+        r"|\bmost\s+dominant\s+(?:single\s+)?games?\b"
+        r"|\bgame[- ]?high\b"
+        r"|\bsingle[- ]?game\s+(?:high|best|record)\b",
+        text,
+    ):
+        return True
+
+    if detect_stat(text) is None:
+        return False
+
+    single_game_marker = re.search(r"\bin a game\b|\bsingle[- ]game\b", text)
+    ranking_marker = re.search(
+        r"\b(?:most|highest|biggest|best|top|leaders?)\b",
+        text,
     )
+    if single_game_marker and ranking_marker:
+        return True
+
+    stat_games_marker = re.search(
+        rf"\b(?:highest|biggest|best)\s+{STAT_PATTERN}\s+games?\b",
+        text,
+    )
+    return bool(stat_games_marker)
 
 
 def detect_distinct_player_count(text: str) -> bool:

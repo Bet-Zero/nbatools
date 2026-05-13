@@ -136,6 +136,66 @@ class TestSeasonHighQueries:
         assert parsed["route_kwargs"]["stat"] == "plus_minus"
 
 
+class TestTopPerformanceAndTeamStretchBoundaries:
+    """Regression coverage for raw answer QA AQ-006/AQ-008 boundaries."""
+
+    @pytest.mark.needs_data
+    def test_single_game_assist_leaders_execute_as_top_performances(self):
+        qr = execute_natural_query("What were the most assists in a game this season?")
+
+        assert qr.route == "top_player_games"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "ast"
+
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows
+        assert rows[0]["ast"] == 23
+        assert rows[0]["player_name"] == "Ryan Nembhard"
+        assert "ast_per_game" not in rows[0]
+
+    @pytest.mark.needs_data
+    def test_single_game_rebound_leaders_execute_as_top_performances(self):
+        qr = execute_natural_query("What were the most rebounds in a game this season?")
+
+        assert qr.route == "top_player_games"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "reb"
+
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows
+        assert rows[0]["reb"] == 25
+        assert rows[0]["player_name"] == "Scottie Barnes"
+        assert "reb_per_game" not in rows[0]
+
+    @pytest.mark.needs_data
+    def test_team_scoped_rolling_stretch_returns_unsupported_not_player_rows(self):
+        qr = execute_natural_query("best 5-game team scoring stretch this season")
+
+        assert qr.route == "player_stretch_leaderboard"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["team_rolling_stretch"]
+        assert qr.to_dict()["sections"] == {}
+        notes = qr.metadata.get("notes", []) + qr.result.notes
+        assert any("team rolling-stretch leaderboards" in note for note in notes)
+
+    @pytest.mark.needs_data
+    def test_player_rolling_stretch_still_returns_rows(self):
+        qr = execute_natural_query(
+            "Which players have the hottest 3-game scoring stretch this year?"
+        )
+
+        assert qr.route == "player_stretch_leaderboard"
+        assert qr.result.result_status == "ok"
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows
+        assert rows[0]["window_size"] == 3
+
+
 # ---------------------------------------------------------------------------
 # 3. Stat phrase expansion
 # ---------------------------------------------------------------------------

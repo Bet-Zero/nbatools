@@ -408,6 +408,7 @@ Examples:
 - `best free throw percentage` (recognized stat alias → ft_pct)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 - `biggest scoring games this season` / `most dominant games by plus-minus this season` (single-game leaderboard variants)
+- `most assists in a game this season` / `single-game rebound leaders this season` (non-scoring single-game leaderboard variants)
 - `Who scored the most points on January 1 2026?` (explicit-date top-scorer question → date-filtered `top_player_games`)
 - `who leads the NBA in points per game` / `who leads the league in assists` (question form; routes to leaderboard)
 - `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
@@ -459,6 +460,7 @@ Current behavior:
 - parser routes to `player_stretch_leaderboard`
 - `window_size` comes from the `N-game` or `rolling N games` phrase
 - named counting stats rank rolling per-game averages; shooting percentages use rolling makes/attempts; `game_score` ranks rolling average Game Score
+- team-scoped rolling-stretch leaderboards such as `best 5-game team scoring stretch` are not currently supported; they return `no_result` / `filter_not_supported` instead of player rows
 
 ### Lineup leaderboards
 

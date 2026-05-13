@@ -781,6 +781,42 @@ def test_lineup_parser_does_not_add_placeholder_note_after_source_backed_executi
 
 
 # ---------------------------------------------------------------------------
+# Top single-game performance query intent and routing
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("most assists in a game this season", "ast"),
+        ("most rebounds in a game this season", "reb"),
+        ("single-game assist leaders this season", "ast"),
+        ("highest assist games this season", "ast"),
+        ("highest rebound games this season", "reb"),
+        ("most rebounds by a player in a game this season", "reb"),
+    ],
+)
+def test_non_scoring_single_game_top_performance_routes_to_top_player_games(query, stat):
+    parsed = parse_query(query)
+    assert parsed["route"] == "top_player_games"
+    assert parsed["route_kwargs"]["stat"] == stat
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "assist leaders this season",
+        "most assists this season",
+        "Who leads the NBA in assists this season?",
+    ],
+)
+def test_ordinary_assist_leaderboards_stay_season_leaders(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "season_leaders"
+    assert parsed["route_kwargs"]["stat"] == "ast"
+
+
+# ---------------------------------------------------------------------------
 # Stretch / rolling-window query intent and routing
 # ---------------------------------------------------------------------------
 
@@ -825,3 +861,34 @@ def test_player_specific_stretch_query_preserves_subject():
     assert parsed["player"] == "Devin Booker"
     assert parsed["window_size"] == 4
     assert parsed["stretch_display_mode"] == "named_player"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best 5-game team scoring stretch this season",
+        "best team 5-game scoring stretch this season",
+        "which teams have the best 5-game scoring stretch this season",
+        "best 5-game scoring stretch by team",
+        "best 5-game offensive stretch by a team",
+    ],
+)
+def test_team_scoped_rolling_stretch_sets_unsupported_filter(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["team_rolling_stretch"]
+    assert any("team rolling-stretch" in note for note in parsed.get("notes", []))
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Which players have the hottest 3-game scoring stretch this year?",
+        "Jokic best 5-game rebounding stretch this season",
+        "Booker hottest 4-game scoring stretch",
+    ],
+)
+def test_player_rolling_stretch_queries_do_not_set_team_boundary(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_stretch_leaderboard"
+    assert "unsupported_filters" not in parsed["route_kwargs"]

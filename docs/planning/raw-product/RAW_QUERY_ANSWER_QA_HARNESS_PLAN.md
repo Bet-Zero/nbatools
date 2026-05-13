@@ -535,6 +535,32 @@ Verified top-performance outlier policy is added for QA reporting.
   boundaries, frontend-rendered answer extraction, non-scoring top-performance
   product decisions, and team-scoped rolling-stretch product decisions.
 
+## Fix Wave 6 Status
+
+Top-performance routing and the team rolling-stretch product boundary are fixed.
+
+- Target cases: `most_assists_single_game`, `most_rebounds_single_game`, and
+  `team_5_game_scoring_stretch`
+- AQ-006 support: non-scoring single-game top-performance wording such as
+  `most assists in a game` and `single-game rebound leaders` now routes to
+  `top_player_games` with `stat=ast` / `stat=reb` and keeps the existing
+  `top_performances` shape.
+- AQ-008 unsupported boundary: team-scoped rolling-stretch wording such as
+  `best 5-game team scoring stretch` returns `no_result` /
+  `filter_not_supported` with
+  `unsupported_filters=["team_rolling_stretch"]` instead of player rolling
+  windows.
+- Latest targeted harness output:
+  `outputs/raw_query_answer_qa/20260513T040756Z/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260513T040809Z/report.md`
+- Latest full run summary: 80 cases; result statuses `ok: 70`,
+  `no_result: 6`, `error: 4`; expectation cases `pass: 80`; expectation
+  checks `pass: 409`; failed case IDs `[]`; suspicious flag cases `22`;
+  suspicious flags `missing_backend_answer_text: 22`; verified outlier cases
+  `1`; verified outliers `top_performance_high_points: 1`.
+- Remaining family: frontend answer extraction / backend answer text limitation.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

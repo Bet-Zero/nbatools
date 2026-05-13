@@ -392,6 +392,13 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "try a single-player absence query such as 'Lakers record without LeBron' "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "team_rolling_stretch":
+        return (
+            "team rolling-stretch leaderboards are not supported with current routes; "
+            "try a player rolling stretch such as 'hottest 3-game scoring stretch' "
+            "or a team single-game query such as 'top team scoring games this season' "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     return (
         f"{filter_id} filter is not supported with current data; try removing this filter "
         f"or asking for standard player, team, or game stats "
