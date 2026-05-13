@@ -281,6 +281,90 @@ def test_under_query_parses_max_value_for_player():
     assert len(parsed["threshold_conditions"]) == 1
 
 
+def test_team_allow_fewer_than_points_maps_to_opponent_points():
+    parsed = parse_query("Knicks record when they allow fewer than 110 points")
+
+    assert parsed["team"] == "NYK"
+    assert parsed["route"] == "team_record"
+    assert parsed["stat"] == "opponent_pts"
+    assert parsed["min_value"] is None
+    assert parsed["max_value"] == pytest.approx(109.9999)
+
+
+def test_team_score_fewer_than_points_stays_team_points():
+    parsed = parse_query("Knicks record when they score fewer than 110 points")
+
+    assert parsed["team"] == "NYK"
+    assert parsed["route"] == "team_record"
+    assert parsed["stat"] == "pts"
+    assert parsed["min_value"] is None
+    assert parsed["max_value"] == pytest.approx(109.9999)
+
+
+def test_held_opponents_under_points_still_maps_to_opponent_points():
+    parsed = parse_query("Lakers held opponents under 100 points")
+
+    assert parsed["team"] == "LAL"
+    assert parsed["route"] == "game_finder"
+    assert parsed["stat"] == "opponent_pts"
+    assert parsed["max_value"] == pytest.approx(99.9999)
+
+
+def test_points_allowed_team_leaderboard_uses_opponent_ppg():
+    parsed = parse_query("Which team has allowed the fewest points per game this season?")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["ascending"] is True
+
+
+def test_team_scoring_fewest_points_leaderboard_stays_scoring_ppg():
+    parsed = parse_query("Which team scores the fewest points per game this season?")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert parsed["route_kwargs"]["ascending"] is True
+
+
+def test_best_defensive_rating_stays_defensive_rating():
+    parsed = parse_query("best defensive rating this season")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["route_kwargs"]["stat"] == "def_rating"
+    assert parsed["route_kwargs"]["ascending"] is True
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Boston record when Tatum shoots under 40%",
+        "Boston record when Tatum FG% under 40%",
+        "Boston record when Tatum shoots under .400",
+    ],
+)
+def test_clear_fg_percentage_thresholds_parse_to_zero_scale(query):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Jayson Tatum"
+    assert parsed["team"] == "BOS"
+    assert parsed["stat"] == "fg_pct"
+    assert parsed["min_value"] is None
+    assert parsed["max_value"] == pytest.approx(0.3999)
+
+
+def test_from_three_percentage_threshold_parses_to_fg3_pct():
+    parsed = parse_query("Warriors record when Curry shoots over 40% from three")
+
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Stephen Curry"
+    assert parsed["team"] == "GSW"
+    assert parsed["stat"] == "fg3_pct"
+    assert parsed["min_value"] == pytest.approx(0.4001)
+    assert parsed["max_value"] is None
+
+
 def test_between_query_parses_min_and_max_for_player():
     parsed = parse_query("Jokic between 20 and 30 points")
     assert parsed["player"] == "Nikola Jokić"

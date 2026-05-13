@@ -491,6 +491,26 @@ class TestWithoutPlayer:
         assert by_season["losses"] == summary["losses"]
 
     @pytest.mark.needs_data
+    def test_knicks_record_allowing_under_110_uses_opponent_points(self):
+        qr = execute_natural_query(
+            "What is the Knicks record when they allow fewer than 110 points?"
+        )
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert {
+            "label": "OPP PTS max",
+            "value": "109.9999",
+            "kind": "threshold",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["games"] == 35
+        assert summary["wins"] == 32
+        assert summary["losses"] == 3
+        assert (summary["games"], summary["wins"], summary["losses"]) != (26, 8, 18)
+
+    @pytest.mark.needs_data
     def test_celtics_record_scoring_over_120_uses_filtered_sample(self):
         qr = execute_natural_query("What is the Celtics record when they score over 120 points?")
 
@@ -509,6 +529,39 @@ class TestWithoutPlayer:
         by_season = sections["by_season"][0]
         assert by_season["games"] == summary["games"]
         assert by_season["wins"] + by_season["losses"] == by_season["games"]
+
+    @pytest.mark.needs_data
+    def test_points_allowed_leaderboard_ranks_opponent_ppg(self):
+        qr = execute_natural_query("Which team has allowed the fewest points per game this season?")
+
+        assert qr.route == "season_team_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "opponent_pts_per_game"
+
+        top_row = qr.to_dict()["sections"]["leaderboard"][0]
+        assert top_row["team_abbr"] == "BOS"
+        assert top_row["team_name"] == "Boston Celtics"
+        assert top_row["opponent_pts_per_game"] == pytest.approx(107.159, abs=0.001)
+        assert top_row["team_abbr"] != "BKN"
+
+    @pytest.mark.needs_data
+    def test_tatum_under_40_fg_record_uses_percentage_filter(self):
+        qr = execute_natural_query("What's Boston's record when Jayson Tatum shoots under 40%?")
+
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert any(
+            item["kind"] == "threshold"
+            and item["label"] == "fg_pct max"
+            and float(item["value"]) == pytest.approx(0.3999)
+            for item in qr.metadata["applied_filters"]
+        )
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["games"] == 6
+        assert summary["wins"] == 4
+        assert summary["losses"] == 2
+        assert (summary["games"], summary["wins"], summary["losses"]) != (16, 13, 3)
 
     @pytest.mark.needs_data
     def test_record_leaderboard_without_player_returns_no_match(self):

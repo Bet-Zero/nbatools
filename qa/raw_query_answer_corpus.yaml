@@ -1511,13 +1511,18 @@ cases:
     expected_shape: leaderboard_table
     expected_sections:
       - leaderboard
+    hard_assertions:
+      - path: result.sections.leaderboard.0.team_name
+        equals: Boston Celtics
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: BOS
     review_notes: "Defensive scoring phrasing should rank points allowed, not team scoring."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - stat_mapping
         - phrasing_variant
-      notes: "Review whether allowed-points wording maps to a defensive metric."
+      notes: "Fix Wave 4A: allowed-points wording maps to opponent points per game; top row is Boston in the current dataset."
 
   - id: team_scoring_leaders
     query: "Which teams score the most points this season?"
@@ -1937,13 +1942,20 @@ cases:
         label: OPP PTS max
     expected_sections:
       - summary
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 35
+      - path: result.sections.summary.0.wins
+        equals: 32
+      - path: result.sections.summary.0.losses
+        equals: 3
     review_notes: "Opponent-points threshold record phrasing."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - record_when
         - context_filter
-      notes: "Review that allow/fewer-than maps to opponent points rather than team points."
+      notes: "Fix Wave 4A: allow/fewer-than maps to OPP PTS max and returns the 35-game, 32-3 opponent-points sample."
 
   - id: cavaliers_scored_under_105_record
     query: "What's the Cavaliers' record when they score fewer than 105 points?"
@@ -2020,13 +2032,20 @@ cases:
     expected_sections:
       - summary
       - game_log
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 6
+      - path: result.sections.summary.0.wins
+        equals: 4
+      - path: result.sections.summary.0.losses
+        equals: 2
     review_notes: "Player field-goal percentage threshold should not be dropped."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - record_when
         - stat_mapping
-      notes: "Initial probe returned OK without an applied FG% threshold."
+      notes: "Fix Wave 4A: clear shooting-percentage wording infers fg_pct max on 0.xx scale and returns the 6-game, 4-2 sample."
 
   - id: lakers_lebron_10_assists_record
     query: "What is the Lakers record when LeBron James has 10+ assists?"

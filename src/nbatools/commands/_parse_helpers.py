@@ -537,20 +537,80 @@ def detect_split_type(text: str) -> str | None:
     return None
 
 
+_PERCENTAGE_THRESHOLD_STATS = {"fg_pct", "fg3_pct", "ft_pct", "efg_pct", "ts_pct"}
+
+
+def _normalize_threshold_value(value_text: str, stat: str) -> float:
+    value = float(value_text)
+    if stat in _PERCENTAGE_THRESHOLD_STATS and value > 1:
+        return value / 100
+    return value
+
+
+def _threshold_bounds(
+    value_text: str,
+    stat: str,
+    mode: str,
+    epsilon: float,
+) -> tuple[float | None, float | None]:
+    value = _normalize_threshold_value(value_text, stat)
+    if mode == "min":
+        return value + epsilon, None
+    return None, value - epsilon
+
+
 def _parse_threshold_match(
     value_text: str, stat_text: str, mode: str, epsilon: float
 ) -> tuple[str, float | None, float | None]:
-    value = float(value_text)
     stat = detect_stat(stat_text)
     if stat is None:
         raise ValueError(f"Unsupported stat phrase: {stat_text}")
-    if mode == "min":
-        return stat, value + epsilon, None
-    return stat, None, value - epsilon
+    min_value, max_value = _threshold_bounds(value_text, stat, mode, epsilon)
+    return stat, min_value, max_value
+
+
+def _shooting_percentage_stat_for_context(match_text: str) -> str:
+    if re.search(r"\b(?:from\s+)?(?:three|3)\b", match_text):
+        return "fg3_pct"
+    if re.search(r"\b(?:free\s+throws?|from\s+the\s+line)\b", match_text):
+        return "ft_pct"
+    return "fg_pct"
+
+
+def _extract_shooting_percentage_conditions(text: str) -> list[dict]:
+    """Infer shooting percentage thresholds from clear shooting contexts only."""
+    _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
+    operator = r"(over|above|at\s+least|under|below|less\s+than)"
+    patterns = [
+        rf"\b(?:shoots?|shooting|shot)\s+{operator}\s+{_NUM}(?:\s+from\s+(?:the\s+)?(?:field|three|3))?\b",
+        rf"\b(?:from\s+(?:the\s+)?(?:field|three|3))\s+{operator}\s+{_NUM}\b",
+        rf"\b(?:free\s+throws?|from\s+the\s+line)\s+{operator}\s+{_NUM}\b",
+    ]
+
+    matches = []
+    for pattern in patterns:
+        for m in re.finditer(pattern, text):
+            op = m.group(1)
+            value_text = m.group(2)
+            mode = "min" if op in {"over", "above", "at least"} else "max"
+            epsilon = 0.0 if op == "at least" else 0.0001
+            stat = _shooting_percentage_stat_for_context(m.group(0))
+            min_value, max_value = _threshold_bounds(value_text, stat, mode, epsilon)
+            matches.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": stat,
+                    "min_value": min_value,
+                    "max_value": max_value,
+                    "text": m.group(0),
+                }
+            )
+    return matches
 
 
 def extract_threshold_conditions(text: str) -> list[dict]:
-    _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
+    _NUM = r"(\d+(?:\.\d+)?|\.\d+)(?:\s*(?:%|percent))?"
 
     # Standard patterns: operator NUMBER STAT
     patterns = [
@@ -635,13 +695,13 @@ def extract_threshold_conditions(text: str) -> list[dict]:
     for pattern, mode, epsilon in patterns:
         for m in re.finditer(pattern, text):
             if mode == "between":
-                low = float(m.group(1))
-                high = float(m.group(2))
-                if low > high:
-                    low, high = high, low
                 stat = detect_stat(m.group(3))
                 if stat is None:
                     continue
+                low = _normalize_threshold_value(m.group(1), stat)
+                high = _normalize_threshold_value(m.group(2), stat)
+                if low > high:
+                    low, high = high, low
                 matches.append(
                     {
                         "start": m.start(),
@@ -677,8 +737,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
             if stat is None:
                 continue
             if mode == "between":
-                low = float(m.group(2))
-                high = float(m.group(3))
+                low = _normalize_threshold_value(m.group(2), stat)
+                high = _normalize_threshold_value(m.group(3), stat)
                 if low > high:
                     low, high = high, low
                 matches.append(
@@ -692,13 +752,7 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                     }
                 )
             else:
-                value = float(m.group(2))
-                if mode == "min":
-                    min_value = value + epsilon
-                    max_value = None
-                else:
-                    min_value = None
-                    max_value = value - epsilon
+                min_value, max_value = _threshold_bounds(m.group(2), stat, mode, epsilon)
                 matches.append(
                     {
                         "start": m.start(),
@@ -709,6 +763,8 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                         "text": m.group(0),
                     }
                 )
+
+    matches.extend(_extract_shooting_percentage_conditions(text))
 
     matches.sort(key=lambda x: x["start"])
 
@@ -736,7 +792,10 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
         rf"\bheld\s+them\s+to\s+under\s+{_NUM}\s+(?:points?|pts)\b",
         rf"\blimited\s+opponents\s+to\s+under\s+{_NUM}\s+(?:points?|pts)\b",
         rf"\bkept\s+the\s+other\s+team\s+below\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\ballow(?:s|ing|ed)?\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\s+(?:points?|pts)\b",
         rf"\ballowed\s+under\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\b(?:points?|pts)\s+allowed\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
+        rf"\b(?:opponent|opp)\s+(?:points?|pts)\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
         rf"\b(?:gave|given)\s+up\s+fewer\s+than\s+{_NUM}\s+(?:points?|pts)\b",
         rf"\bopponents?\s+under\s+{_NUM}(?:\s+(?:points?|pts))?\b",
     ]

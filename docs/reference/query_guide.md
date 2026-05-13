@@ -40,6 +40,7 @@ Natural examples:
 - `best offensive teams`
 - `teams with best efg%`
 - `teams with most threes`
+- `fewest points allowed per game` (team stat alias → opponent_pts_per_game)
 - `best 3 point percentage` (stat alias → fg3_pct)
 - `best field goal percentage` (stat alias → fg_pct)
 - `team ft%` (stat alias → ft_pct)
@@ -58,6 +59,7 @@ Natural examples:
 - `Jokic under 20 points`
 - `Jokic between 20 and 30 points`
 - `Celtics wins vs Bucks over 120 points`
+- `Knicks record when they allow fewer than 110 points` (points allowed → opponent points)
 - `Cade Cunningham season high` (routes to top single games)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 - `most assists in a game this season` (routes to top_player_games, not assist-per-game leaders)
@@ -176,6 +178,7 @@ Natural examples:
 - `teams with best efg%`
 - `teams with best ts%`
 - `teams with most threes`
+- `fewest points allowed per game`
 - `best 3 point percentage`
 - `best field goal percentage`
 - `team fg%`
@@ -264,6 +267,9 @@ Examples:
 - `Jokic over 25 points`
 - `Jokic under 20 points`
 - `Jokic between 20 and 30 points`
+- `Knicks record when they allow fewer than 110 points` (uses opponent points / points allowed)
+- `Boston record when Tatum shoots under 40%` (uses FG% on the 0.xx scale)
+- `Warriors record when Curry shoots over 40% from three` (uses 3PT% on the 0.xx scale)
 
 ## Multi-condition chaining
 

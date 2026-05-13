@@ -1440,7 +1440,7 @@ def _finalize_route(parsed: dict) -> dict:
         # "best defensive teams" → def_rating ascending (lower is better)
         # "best/lowest turnover teams" → turnovers ascending
         # But "worst defensive teams" → def_rating descending (higher = worse)
-        _lower_is_better_stats = {"def_rating", "tov", "tov_pct"}
+        _lower_is_better_stats = {"def_rating", "opponent_pts_per_game", "tov", "tov_pct"}
 
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
@@ -1831,6 +1831,8 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["half"] = half
     out["route"] = route
     out["route_kwargs"] = route_kwargs
+    if route == "season_team_leaders" and route_kwargs.get("stat"):
+        out["stat"] = route_kwargs["stat"]
     out["intent"] = route_to_intent(route, count_intent=count_intent)
 
     if clutch:

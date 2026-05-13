@@ -664,6 +664,46 @@ Recommended next phase:
 - Keep frontend hero extraction and broad backend answer enrichment deferred
   unless a focused answer-text wave is explicitly scheduled.
 
+## Fix Wave 4A Status
+
+Scalar stat and threshold semantics are fixed for the targeted cases. This wave
+changed parser/stat mapping, team leaderboard aggregation, tests, docs, and QA
+corpus expectations. It did not change frontend rendering, backend answer
+phrase enrichment, source data, or compound-threshold representation.
+
+- Defensive/opponent-points scalar mapping: phrases such as
+  `allow fewer than 110 points`, `points allowed under 110`, `opponent points
+  under 110`, and `opp pts under 110` now bind to `opponent_pts` rather than
+  team `pts`; team scoring forms such as `score fewer than 110 points` remain
+  team `pts`.
+- Points-allowed leaderboard support: `Which team has allowed the fewest points
+  per game this season?` routes to `season_team_leaders` with
+  `opponent_pts_per_game`, derived from team game rows, and ranks ascending.
+  The current dataset top row is Boston at about 107.159 opponent PPG.
+- Percentage threshold normalization: clear shooting contexts such as
+  `shoots under 40%`, `FG% under 40%`, `shoots under .400`, and
+  `from three over 40%` normalize to the stored 0.xx scale and preserve the
+  right shooting stat (`fg_pct`, `fg3_pct`, or `ft_pct`).
+- Compound thresholds deferred: `celtics_120_15_threes_count_missing_filter`
+  and `jokic_30_points_10_assists_finder_misparsed` remain open for the next
+  compound-threshold representation/execution wave.
+- Latest targeted scalar harness output:
+  `outputs/raw_query_answer_qa/20260513T071000Z_wave4a_targeted/report.md`
+- Latest adjacent regression harness output:
+  `outputs/raw_query_answer_qa/20260513T071100Z_wave4a_adjacent/report.md`
+- Latest full harness output:
+  `outputs/raw_query_answer_qa/20260513T072000Z_wave4a_full/report.md`
+- Latest full run summary: 145 cases; result statuses `ok: 126`,
+  `no_result: 13`, `error: 6`; expectation cases `pass: 139`, `fail: 6`;
+  expectation checks `pass: 705`, `fail: 15`; failed case IDs
+  `anthony_edwards_last_10_summary_no_match`,
+  `kd_ts_top_defenses_missing_filters`, `lakers_road_record_last_season`,
+  `celtics_120_15_threes_count_missing_filter`,
+  `jokic_30_points_10_assists_finder_misparsed`, and
+  `anthony_edwards_wins_losses_split_no_match`.
+- Recommended next phase: compound threshold representation/execution for
+  count/finder routes.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

@@ -19,6 +19,14 @@ ALLOWED_STATS = {
     "ppg": "pts_per_game",
     "points per game": "pts_per_game",
     "pts_per_game": "pts_per_game",
+    "opponent_pts": "opponent_pts_per_game",
+    "opponent points": "opponent_pts_per_game",
+    "opponent points per game": "opponent_pts_per_game",
+    "opp pts": "opponent_pts_per_game",
+    "opp pts per game": "opponent_pts_per_game",
+    "points allowed": "opponent_pts_per_game",
+    "points allowed per game": "opponent_pts_per_game",
+    "opponent_pts_per_game": "opponent_pts_per_game",
     "reb": "reb_per_game",
     "rebounds": "reb_per_game",
     "rpg": "reb_per_game",
@@ -128,6 +136,33 @@ def _is_playoff_season_type(season_type: str | None) -> bool:
     return season_type.strip().lower() in {"playoff", "playoffs"}
 
 
+def _add_opponent_pts(work: pd.DataFrame) -> pd.DataFrame:
+    """Add opponent points from trusted row context when available."""
+    if "opponent_pts" in work.columns:
+        work["opponent_pts"] = pd.to_numeric(work["opponent_pts"], errors="coerce")
+        return work
+
+    if {"pts", "plus_minus"}.issubset(work.columns):
+        work["opponent_pts"] = pd.to_numeric(work["pts"], errors="coerce") - pd.to_numeric(
+            work["plus_minus"], errors="coerce"
+        )
+        return work
+
+    if {"game_id", "team_id", "opponent_team_id", "pts"}.issubset(work.columns):
+        lookup = work.set_index(["game_id", "team_id"])["pts"]
+        keys = list(zip(work["game_id"], work["opponent_team_id"], strict=False))
+        work["opponent_pts"] = [lookup.get(key) for key in keys]
+        return work
+
+    if {"game_id", "team_abbr", "opponent_team_abbr", "pts"}.issubset(work.columns):
+        lookup = work.set_index(["game_id", "team_abbr"])["pts"]
+        keys = list(zip(work["game_id"], work["opponent_team_abbr"], strict=False))
+        work["opponent_pts"] = [lookup.get(key) for key in keys]
+        return work
+
+    return work
+
+
 def _recommended_min_games(
     target_col: str,
     season_type: str | None = None,
@@ -164,8 +199,12 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         if col in basic.columns:
             agg_spec[f"{col}_total"] = (col, "sum")
 
-    # Pre-compute win flag for aggregation
+    # Pre-compute derived game context for aggregation
     work = basic.copy()
+    work = _add_opponent_pts(work)
+    if "opponent_pts" in work.columns:
+        agg_spec["opponent_pts_total"] = ("opponent_pts", "sum")
+
     if "wl" in work.columns:
         work["_is_win"] = (work["wl"] == "W").astype(int)
         agg_spec["wins"] = ("_is_win", "sum")
@@ -188,6 +227,8 @@ def _build_from_game_logs(basic: pd.DataFrame) -> pd.DataFrame:
         total_col = f"{col}_total"
         if total_col in grouped.columns:
             grouped[f"{col}_per_game"] = grouped[total_col] / grouped["games_played"]
+    if "opponent_pts_total" in grouped.columns:
+        grouped["opponent_pts_per_game"] = grouped["opponent_pts_total"] / grouped["games_played"]
     grouped["fg3m_per_game"] = grouped["fg3m_total"] / grouped["games_played"]
 
     grouped["fg_pct"] = safe_divide(grouped["fgm_total"], grouped["fga_total"], fill=None)
@@ -311,6 +352,8 @@ def _leaderboard_context_columns(target_col: str) -> list[str]:
         return ["losses"]
     if target_col == "losses":
         return ["wins"]
+    if target_col == "opponent_pts_per_game":
+        return ["opponent_pts_total", "pts_per_game", "plus_minus_per_game"]
     if target_col in {"fg_pct", "efg_pct"}:
         return ["fgm_total", "fga_total"]
     if target_col == "ts_pct":
