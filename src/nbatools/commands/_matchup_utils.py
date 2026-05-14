@@ -140,9 +140,70 @@ def extract_player_comparison(text: str) -> tuple[str | None, str | None]:
             continue
 
         phrase_b = m.group(1).strip()
+        if detect_team_in_text(phrase_b):
+            continue
         player_b = detect_player(phrase_b)
         if player_b:
             return player_a, player_b
+
+    explicit = _extract_full_name_comparison(cleaned_text)
+    if explicit != (None, None):
+        return explicit
+
+    return None, None
+
+
+_PLAYER_AS_OPPONENT_CONTEXT_RE = re.compile(
+    r"\b(?:show|list|stats?|games?|game\s+log|logs?|box\s+score|finder|"
+    r"summary|averages?|record|numbers?|performance|scoring)\b"
+)
+
+
+def _clean_comparison_player_phrase(phrase: str) -> str:
+    cleaned = normalize_text(phrase)
+    cleaned = re.sub(r"^(?:compare|comparing)\s+", "", cleaned)
+    cleaned = re.sub(r"\bcomparison\b.*$", "", cleaned)
+    return normalize_text(cleaned.strip(" ."))
+
+
+def _resolve_comparison_player_phrase(phrase: str) -> str | None:
+    cleaned = _clean_comparison_player_phrase(phrase)
+    if not cleaned:
+        return None
+    if detect_team_in_text(cleaned):
+        return None
+    result = resolve_player_in_query(cleaned)
+    if result.is_confident:
+        return result.resolved
+    return detect_player(cleaned)
+
+
+def _extract_full_name_comparison(cleaned_text: str) -> tuple[str | None, str | None]:
+    compare_and = re.search(
+        r"\bcompare\s+([a-z0-9 .&'\-]+?)\s+(?:and|with)\s+([a-z0-9 .&'\-]+)$",
+        cleaned_text,
+    )
+    if compare_and:
+        player_a = _resolve_comparison_player_phrase(compare_and.group(1))
+        player_b = _resolve_comparison_player_phrase(compare_and.group(2))
+        if player_a and player_b and player_a != player_b:
+            return player_a, player_b
+
+    vs_match = re.search(
+        r"^(?:compare\s+)?([a-z0-9 .&'\-]+?)\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+)$",
+        cleaned_text,
+    )
+    if not vs_match:
+        return None, None
+
+    left_phrase = _clean_comparison_player_phrase(vs_match.group(1))
+    if _PLAYER_AS_OPPONENT_CONTEXT_RE.search(left_phrase):
+        return None, None
+
+    player_a = _resolve_comparison_player_phrase(left_phrase)
+    player_b = _resolve_comparison_player_phrase(vs_match.group(2))
+    if player_a and player_b and player_a != player_b:
+        return player_a, player_b
 
     return None, None
 

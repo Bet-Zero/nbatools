@@ -75,11 +75,15 @@ _POSITION_GROUP_PATTERNS: dict[str, str] = {
     "guards": "guards",
     "guard": "guards",
     "point guards": "guards",
+    "point guard": "guards",
     "shooting guards": "guards",
+    "shooting guard": "guards",
     "forwards": "forwards",
     "forward": "forwards",
     "small forwards": "forwards",
+    "small forward": "forwards",
     "power forwards": "forwards",
+    "power forward": "forwards",
     "centers": "centers",
     "center": "centers",
     "bigs": "bigs",
@@ -90,11 +94,18 @@ _POSITION_GROUP_PATTERNS: dict[str, str] = {
 }
 
 
+def _position_term_pattern() -> str:
+    terms = sorted(_POSITION_GROUP_PATTERNS, key=len, reverse=True)
+    return "|".join(re.escape(term) for term in terms)
+
+
 def extract_position_filter(text: str) -> str | None:
     """Extract a position-group filter from the query text.
 
     Returns the canonical position group name or None.
     """
+    position_pattern = _position_term_pattern()
+
     # "among guards", "among centers", "among big men", etc.
     m = re.search(r"\bamong\s+([\w\s]+?)(?:\s+(?:since|this|last|over|in|from|during|$))", text)
     if m:
@@ -103,13 +114,81 @@ def extract_position_filter(text: str) -> str | None:
             return _POSITION_GROUP_PATTERNS[candidate]
 
     # "by guards", "for centers", etc.
-    m = re.search(r"\b(?:by|for)\s+(guards?|forwards?|centers?|bigs?|big\s+men|wings?)\b", text)
+    m = re.search(rf"\b(?:by|for)\s+({position_pattern})\b", text)
     if m:
         candidate = m.group(1).strip()  # already lowercase from pipeline normalization
         if candidate in _POSITION_GROUP_PATTERNS:
             return _POSITION_GROUP_PATTERNS[candidate]
 
+    # Noun-prefix leaderboard forms:
+    # "centers rebound leaders", "guard scoring leaders",
+    # "Which centers have the most rebounds".
+    m = re.search(
+        rf"^(?:which\s+|what\s+)?({position_pattern})\b"
+        r"(?=\s+(?:"
+        r"have|has|had|average|averages|averaged|lead|leads|led|leaders?|"
+        r"scoring|score|scores|points?|pts|rebound(?:s|ing)?|reb|assists?|ast|"
+        r"blocks?|blk|steals?|stl|turnovers?|tov|fg|field|effective|true|"
+        r"three|3|ts|efg|ft|free"
+        r")\b)",
+        text,
+    )
+    if m:
+        candidate = m.group(1).strip()
+        if candidate in _POSITION_GROUP_PATTERNS:
+            return _POSITION_GROUP_PATTERNS[candidate]
+
     return None
+
+
+def detect_rookie_leaderboard_boundary(text: str) -> bool:
+    """Detect unsupported rookie leaderboard requests."""
+    return bool(re.search(r"\brookies?\b", text) and wants_leaderboard(text))
+
+
+def detect_role_leaderboard_boundary(text: str) -> bool:
+    """Detect unsupported league-wide starter/bench leaderboard requests."""
+    if not wants_leaderboard(text):
+        return False
+    return bool(
+        re.search(
+            r"\b(?:bench|off\s+the\s+bench|reserves?|starters?|starting)\b",
+            text,
+        )
+    )
+
+
+def detect_team_bench_scoring_boundary(text: str) -> bool:
+    """Detect unsupported team bench scoring requests."""
+    return bool(
+        re.search(r"\b(?:bench|reserves?)\b", text)
+        and re.search(r"\b(?:scoring|score|points?|pts)\b", text)
+    )
+
+
+def detect_personal_foul_leaderboard_boundary(text: str) -> bool:
+    """Detect unsupported personal-foul leaderboard requests."""
+    if re.search(r"\b(?:draw|draws|drawing|drawn)\s+fouls?\b", text):
+        return False
+    if not wants_leaderboard(text):
+        return False
+    return bool(
+        re.search(r"\bpersonal\s+fouls?\b", text)
+        or re.search(r"\bfouls?\s+leaders?\b", text)
+        or re.search(r"\bmost\s+fouls?\b", text)
+    )
+
+
+def detect_opponent_conference_boundary(text: str) -> bool:
+    """Detect unsupported opponent-conference filters."""
+    return bool(
+        re.search(
+            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+            r"(?:east|west|eastern\s+conference|western\s+conference)"
+            r"(?:\s+teams?)?\b",
+            text,
+        )
+    )
 
 
 def wants_team_leaderboard(text: str) -> bool:

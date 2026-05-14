@@ -8,30 +8,25 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260514T113039Z_wave6b_full`
+- Run ID: `20260514T125056Z`
 - Corpus size: 195 cases
 - Output report path:
-  `outputs/raw_query_answer_qa/20260514T113039Z_wave6b_full/report.md`
+  `outputs/raw_query_answer_qa/20260514T125056Z/report.md`
 - Summary counts:
-  - Result statuses: `ok: 171`, `no_result: 16`, `error: 8`
-  - Expectation cases: `pass: 187`, `fail: 8`
-  - Expectation checks: `pass: 990`, `fail: 28`
-  - Failed case IDs:
-    `centers_rebound_leaders_wave4`, `rookie_scoring_leaders_wave4`,
-    `bench_scoring_leaders_wave4`, `starter_assist_leaders_wave4`,
-    `celtics_bench_scoring_boundary_wave4`,
-    `lebron_durant_comparison_wave4`, `personal_foul_leaders_wave4`,
-    `celtics_against_east_record_wave4`
-  - Manual review statuses: `unreviewed: 164`, `expected_unsupported: 11`,
-    `pass: 19`, `verified_outlier: 1`
+  - Result statuses: `ok: 165`, `no_result: 22`, `error: 8`
+  - Expectation cases: `pass: 195`
+  - Expectation checks: `pass: 1037`
+  - Failed case IDs: none
+  - Manual review statuses: `unreviewed: 151`, `expected_unsupported: 17`,
+    `pass: 26`, `verified_outlier: 1`
   - Answer text policies: `frontend_hero_expected: 112`,
     `requires_backend_answer_text: 10`, `no_answer_text_expected: 30`,
     `<unspecified>: 43`
   - Answer text statuses: `frontend_hero_expected: 112`,
     `backend_answer_text_present: 10`, `no_answer_text_expected: 30`,
     `not_required: 43`
-  - Suspicious flag cases: 6
-  - Suspicious flags: `expected_unsupported_returned_ok: 6`
+  - Suspicious flag cases: 0
+  - Suspicious flags: none
   - Informational flag cases: 112
   - Informational flags: `frontend_hero_expected: 112`
   - Verified outlier cases: 1
@@ -110,15 +105,15 @@ New review signals are grouped into these families:
 | AQ-012 | P1 | Date/context filters | `lakers_road_record_last_season` | missing_filter | fixed | Fixed in Raw Query Answer QA Fix Wave 5. Singular `last season` resolves to the previous latest regular season (`2024-25` when latest is `2025-26`) and preserves road/away location filters. The Lakers road record last season returns 41 games, 19 wins, and 22 losses with explicit relative-season metadata/filter context. Latest run: `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`. | relative season parsing/filter preservation |
 | AQ-013 | P1 | Record-when player condition | `boston_tatum_under_40_fg_record_missing_filter` | missing_filter | fixed | Fixed in Raw Query Answer QA Fix Wave 4A. Clear shooting percentage thresholds infer `fg_pct`, normalize `40%` / `40 percent` to 0.40, and Tatum under 40% returns 6 games, 4-2 with an applied `fg_pct max` filter. Latest run: `outputs/raw_query_answer_qa/20260513T072000Z_wave4a_full/report.md`. | percentage threshold parsing/execution |
 | AQ-014 | P1 | Compound thresholds | `celtics_120_15_threes_count_missing_filter`, `jokic_30_points_10_assists_finder_misparsed` | missing_filter / stat_binding_issue | fixed | Fixed in Raw Query Answer QA Fix Wave 4B. Compound stat thresholds now use a route-consumed `conditions` list instead of duplicating the same filters into unsafe post-aggregate `extra_conditions`. Finder routes apply compound conditions before sorting/limiting. Celtics `120+ points` and `15+ threes` since 2022 returns count 125 with both applied filters; Jokic `30 points and 10 assists` returns 14 finder rows satisfying both thresholds. Latest run: `outputs/raw_query_answer_qa/20260513T084000Z_wave4b_full/report.md`. | compound threshold parsing/execution |
-| AQ-015 | P2 | Leaderboard context filters | `guards_fg_percentage_leaders` | missing_filter | open | `among guards` is ignored; the top row is Jaxson Hayes, indicating position context is not applied on this leaderboard. | position-filtered leaderboards |
+| AQ-015 | P2 | Leaderboard context filters | `guards_fg_percentage_leaders` | missing_filter | fixed | Position-filtered leaderboards preserve the existing `position_filter` metadata and applied filter. Wave 7A also hardened nearby position corpus assertions so broad leaderboards no longer pass as filtered results. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | position-filtered leaderboards |
 | AQ-016 | P2 | Backend answer text quality | `players_40_point_count`, `players_10_assist_count`, `curry_5_threes_count`, `luka_40_point_count`, `wemby_5_blocks_count`, `teams_120_point_count_answer_text_review` | awkward_answer_text | open | Backend count phrases are present but sometimes too generic (`Result has recorded...`) or expose raw stat labels (`fg3ms`, `blks`, `pts`) instead of natural threshold phrasing. | count phrase generation |
 | AQ-017 | P2 | Product boundary / stat coverage | `minutes_leaders_unsupported`, `biggest_team_three_point_games_boundary` | needs_product_decision | open | `minutes` is documented as a stat alias but leaderboard execution returns unsupported; team single-game threes wording is unrouted even though top-team-game scoring exists. Decide whether to support or document these as explicit boundaries. | product boundary / stat coverage |
-| AQ-018 | P2 | Position/role-filtered leaderboards | `centers_rebound_leaders_wave4`, `rookie_scoring_leaders_wave4`, `bench_scoring_leaders_wave4`, `starter_assist_leaders_wave4`, `celtics_bench_scoring_boundary_wave4` | missing_filter / unsupported_no_result_policy | open | Position context is absent from returned filters, and rookie/bench/starter/team-bench forms return broad player or team tables instead of execution-backed role filters or clean unsupported responses. | position/role-filtered leaderboards |
-| AQ-019 | P2 | Player comparison routing | `lebron_durant_comparison_wave4` | route_mismatch | open | Explicit `LeBron James vs Kevin Durant comparison` returns a LeBron player-game finder instead of a `player_compare` comparison table. | comparison routing / player-vs-player intent |
+| AQ-018 | P2 | Position/role-filtered leaderboards | `centers_rebound_leaders_wave4`, `rookie_scoring_leaders_wave4`, `bench_scoring_leaders_wave4`, `starter_assist_leaders_wave4`, `celtics_bench_scoring_boundary_wave4` | missing_filter / unsupported_no_result_policy | fixed_partial_support_and_expected_unsupported | Fixed in Wave 7A. Noun-prefix/question-form position leaderboards now apply `position_filter` through the existing `season_leaders` position contract. Rookie, league-wide role, and team bench-scoring forms now return `no_result` / `filter_not_supported` with explicit `unsupported_filters` instead of broad player/team tables. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | position/role-filtered leaderboards |
+| AQ-019 | P2 | Player comparison routing | `lebron_durant_comparison_wave4` | route_mismatch | fixed | Fixed in Wave 7A. Full-name comparison phrasing such as `LeBron James vs Kevin Durant comparison` and `Compare LeBron James and Kevin Durant` routes to `player_compare`, while player-game forms such as `Jokic game log vs Embiid` remain player finder/opponent-player queries. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | comparison routing / player-vs-player intent |
 | AQ-020 | P1 | Playoff round and matchup phrasing | `bulls_finals_record_wave4`, `warriors_finals_record_since_2015_wave4`, `celtics_conference_finals_record_wave4`, `heat_knicks_playoff_series_record_wave4` | route_and_season_type_issue | fixed_as_expected_unsupported | Fixed in Raw Query Answer QA Fix Wave 6B. Adjacent `Heat Knicks playoff series record` now routes to `playoff_matchup_history` with MIA/NYK and passes as a matchup result. Single-team Finals/conference-finals record phrasing no longer falls through to regular-season `team_record`; it returns `no_result` / `filter_not_supported` with `unsupported_filters=["single_team_playoff_round_record"]`. Bulls Finals remains unsupported because current pre-2001 round labels are not reliable. Latest run: `outputs/raw_query_answer_qa/20260514T113039Z_wave6b_full/report.md`. | playoff round/matchup routing |
 | AQ-021 | P1 | Defensive stat aliases | `most_points_allowed_team_leaders_wave4`, `opponent_ppg_leaders_wave4` | stat_mapping_issue / route_mismatch | fixed | Fixed in Raw Query Answer QA Fix Wave 6A. `allow the most points per game`, `most points allowed`, and `opponent PPG leaders` now bind to team opponent-points semantics via `season_team_leaders` with `opponent_pts_per_game`; the current highest opponent-PPG top row is Utah. Latest run: `outputs/raw_query_answer_qa/20260514T050631Z/report.md`. | defensive/opponent-points stat mapping |
-| AQ-022 | P2 | Unsupported stat alias boundary | `personal_foul_leaders_wave4` | unsupported_no_result_policy | open | `personal fouls leaders` falls back to points leaders. Personal fouls/PF need a support decision; until then the route should return a clean unsupported/no-result response. | product boundary / stat coverage |
-| AQ-023 | P2 | Opponent conference filters | `celtics_against_east_record_wave4` | missing_filter / unsupported_no_result_policy | open | `against the East` is dropped and returns the Celtics full-season record. Conference opponent filters need execution-backed support or clean unsupported handling. | context filter preservation |
+| AQ-022 | P2 | Unsupported stat alias boundary | `personal_foul_leaders_wave4` | unsupported_no_result_policy | fixed_as_expected_unsupported | Fixed in Wave 7A as an explicit product boundary. `personal fouls leaders` now returns `no_result` / `filter_not_supported` with `unsupported_filters=["personal_foul_leaderboard"]` instead of falling back to points. Actual PF leaderboard support remains deferred pending a stat contract decision. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | product boundary / stat coverage |
+| AQ-023 | P2 | Opponent conference filters | `celtics_against_east_record_wave4` | missing_filter / unsupported_no_result_policy | fixed_as_expected_unsupported | Fixed in Wave 7A as an explicit product boundary. `against the East/West` record phrasing now returns `no_result` / `filter_not_supported` with `unsupported_filters=["opponent_conference"]` instead of a full-season record. Actual opponent-conference support remains deferred until complete team-conference metadata exists. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | context filter preservation |
 
 ## Notes
 
@@ -129,6 +124,8 @@ New review signals are grouped into these families:
   single-team playoff round records are explicitly unsupported until a route
   and round-data contract is approved. Bulls Finals-era round labels remain a
   documented data boundary.
+- Wave 7A resolved the remaining eight Wave 6B failures. The 195-case corpus
+  now has 195 expectation passes, zero suspicious flags, and no failed case IDs.
 - Exact frontend rendered-answer extraction is still deferred; targeted backend `answer_phrase` enrichment remains an optional future improvement for high-value direct-answer routes.
 - The manual corpus should remain review-oriented. Promote only objective, stable failures into focused tests near the behavior they protect.
 - Fix Wave 4A resolved AQ-011 and AQ-013 scalar semantics. Fix Wave 4B

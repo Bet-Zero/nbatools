@@ -110,6 +110,34 @@ def test_player_comparison_multiseason_route():
     assert parsed["route"] == "player_compare"
 
 
+def test_full_name_player_comparison_route():
+    parsed = parse_query("LeBron James vs Kevin Durant comparison")
+    assert parsed["route"] == "player_compare"
+    assert parsed["player_a"] == "LeBron James"
+    assert parsed["player_b"] == "Kevin Durant"
+
+
+def test_compare_full_names_and_route():
+    parsed = parse_query("Compare LeBron James and Kevin Durant")
+    assert parsed["route"] == "player_compare"
+    assert parsed["player_a"] == "LeBron James"
+    assert parsed["player_b"] == "Kevin Durant"
+
+
+def test_alias_player_comparison_still_routes():
+    parsed = parse_query("LeBron vs Durant")
+    assert parsed["route"] == "player_compare"
+    assert parsed["player_a"] == "LeBron James"
+    assert parsed["player_b"] == "Kevin Durant"
+
+
+def test_player_game_log_vs_player_stays_finder():
+    parsed = parse_query("Jokic game log vs Embiid")
+    assert parsed["route"] == "player_game_finder"
+    assert parsed["player"] == "Nikola Jokić"
+    assert parsed["opponent_player"] == "Joel Embiid"
+
+
 def test_team_comparison_regular_season_route():
     parsed = parse_query("Celtics vs Bucks from 2021-22 to 2023-24")
     assert parsed["team_a"] == "BOS"
@@ -455,6 +483,33 @@ def test_bare_ppg_leaders_stays_player_leaderboard():
     assert parsed["route_kwargs"]["stat"] == "pts"
 
 
+@pytest.mark.parametrize(
+    ("query", "stat", "position"),
+    [
+        ("Which centers have the most rebounds this season?", "reb", "centers"),
+        ("guard scoring leaders this season", "pts", "guards"),
+        ("forwards FG% leaders this season", "fg_pct", "forwards"),
+        ("point guard assist leaders this season", "ast", "guards"),
+    ],
+)
+def test_position_prefix_leaderboards_set_position_filter(query, stat, position):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["stat"] == stat
+    assert parsed["position_filter"] == position
+    assert parsed["route_kwargs"]["position"] == position
+
+
+def test_among_position_leaderboard_still_sets_position_filter():
+    parsed = parse_query("best ts% among centers this season")
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["stat"] == "ts_pct"
+    assert parsed["position_filter"] == "centers"
+    assert parsed["route_kwargs"]["position"] == "centers"
+
+
 def test_best_defensive_rating_stays_defensive_rating():
     parsed = parse_query("best defensive rating teams this season")
 
@@ -756,6 +811,23 @@ def test_starting_surface_form_sets_starter_role():
 def test_team_bench_scoring_does_not_set_role():
     parsed = parse_query("Celtics bench scoring")
     assert parsed["role"] is None
+
+
+@pytest.mark.parametrize(
+    ("query", "unsupported_filter"),
+    [
+        ("rookie scoring leaders this season", "rookie_leaderboard"),
+        ("bench players scoring leaders this season", "role_leaderboard"),
+        ("starter assist leaders this season", "role_leaderboard"),
+        ("Celtics bench scoring this season", "team_bench_scoring"),
+        ("personal fouls leaders this season", "personal_foul_leaderboard"),
+        ("Celtics record against the East this season", "opponent_conference"),
+    ],
+)
+def test_p2_boundary_queries_set_unsupported_filter(query, unsupported_filter):
+    parsed = parse_query(query)
+    assert parsed["route_kwargs"]["unsupported_filters"] == [unsupported_filter]
+    assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
 
 def test_role_note_not_appended_for_supported_role_route():

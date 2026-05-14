@@ -112,7 +112,13 @@ from nbatools.commands._parse_helpers import (
     detect_one_possession as detect_one_possession,
 )
 from nbatools.commands._parse_helpers import (
+    detect_opponent_conference_boundary as detect_opponent_conference_boundary,
+)
+from nbatools.commands._parse_helpers import (
     detect_opponent_quality as detect_opponent_quality,
+)
+from nbatools.commands._parse_helpers import (
+    detect_personal_foul_leaderboard_boundary as detect_personal_foul_leaderboard_boundary,
 )
 from nbatools.commands._parse_helpers import (
     detect_quarter as detect_quarter,
@@ -122,6 +128,12 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_role as detect_role,
+)
+from nbatools.commands._parse_helpers import (
+    detect_role_leaderboard_boundary as detect_role_leaderboard_boundary,
+)
+from nbatools.commands._parse_helpers import (
+    detect_rookie_leaderboard_boundary as detect_rookie_leaderboard_boundary,
 )
 from nbatools.commands._parse_helpers import (
     detect_season_high_intent as detect_season_high_intent,
@@ -137,6 +149,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_stretch_query as detect_stretch_query,
+)
+from nbatools.commands._parse_helpers import (
+    detect_team_bench_scoring_boundary as detect_team_bench_scoring_boundary,
 )
 from nbatools.commands._parse_helpers import (
     detect_team_rolling_stretch_boundary as detect_team_rolling_stretch_boundary,
@@ -482,6 +497,11 @@ def _build_parse_state(query: str) -> dict:
     window_size = stretch_request["window_size"] if stretch_request else None
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
+    rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
+    role_leaderboard_boundary = detect_role_leaderboard_boundary(q)
+    team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
+    personal_foul_leaderboard_boundary = detect_personal_foul_leaderboard_boundary(q)
+    opponent_conference_boundary = detect_opponent_conference_boundary(q)
 
     if (
         stretch_request
@@ -748,6 +768,11 @@ def _build_parse_state(query: str) -> dict:
         "stretch_metric": stretch_metric,
         "stretch_display_mode": stretch_display_mode,
         "team_rolling_stretch_boundary": team_rolling_stretch_boundary,
+        "rookie_leaderboard_boundary": rookie_leaderboard_boundary,
+        "role_leaderboard_boundary": role_leaderboard_boundary,
+        "team_bench_scoring_boundary": team_bench_scoring_boundary,
+        "personal_foul_leaderboard_boundary": personal_foul_leaderboard_boundary,
+        "opponent_conference_boundary": opponent_conference_boundary,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -926,6 +951,11 @@ def _finalize_route(parsed: dict) -> dict:
     stretch_metric = parsed.get("stretch_metric")
     stretch_display_mode = parsed.get("stretch_display_mode")
     team_rolling_stretch_boundary = parsed.get("team_rolling_stretch_boundary", False)
+    rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
+    role_leaderboard_boundary = parsed.get("role_leaderboard_boundary", False)
+    team_bench_scoring_boundary = parsed.get("team_bench_scoring_boundary", False)
+    personal_foul_leaderboard_boundary = parsed.get("personal_foul_leaderboard_boundary", False)
+    opponent_conference_boundary = parsed.get("opponent_conference_boundary", False)
 
     notes: list[str] = []
     route = None
@@ -1437,6 +1467,144 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
+    elif personal_foul_leaderboard_boundary:
+        route = "season_leaders"
+        notes.append(
+            "unsupported_boundary: personal-foul leaderboards are not supported "
+            "until a fouls-committed stat contract is approved"
+        )
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": "pf",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+            "position": position_filter,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "unsupported_filters": ["personal_foul_leaderboard"],
+        }
+    elif rookie_leaderboard_boundary and not any(
+        [player, player_a, player_b, team, team_a, team_b]
+    ):
+        route = "season_leaders"
+        notes.append(
+            "unsupported_boundary: rookie leaderboards are not supported until "
+            "roster-experience semantics are approved"
+        )
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": stat or detect_player_leaderboard_stat(q) or "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": wants_ascending_leaderboard(q),
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+            "position": position_filter,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "unsupported_filters": ["rookie_leaderboard"],
+        }
+    elif role_leaderboard_boundary and not any([player, player_a, player_b, team, team_a, team_b]):
+        route = "season_leaders"
+        notes.append(
+            "unsupported_boundary: league-wide starter/bench leaderboards are "
+            "not supported by the current season leaderboard contract"
+        )
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": stat or detect_player_leaderboard_stat(q) or "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": wants_ascending_leaderboard(q),
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+            "position": position_filter,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "unsupported_filters": ["role_leaderboard"],
+        }
+    elif (
+        team_bench_scoring_boundary
+        and team
+        and not any([player, player_a, player_b, team_a, team_b])
+    ):
+        route = "game_finder"
+        notes.append(
+            "unsupported_boundary: team bench scoring is not supported by the "
+            "current team game finder contract"
+        )
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat or "pts",
+            "min_value": min_value,
+            "max_value": max_value,
+            "limit": 25,
+            "sort_by": "stat",
+            "ascending": False,
+            "last_n": last_n,
+            "unsupported_filters": ["team_bench_scoring"],
+        }
+    elif opponent_conference_boundary and team and record_intent and not any([team_a, team_b]):
+        route = "team_record"
+        notes.append(
+            "unsupported_boundary: opponent-conference record filters are not "
+            "supported until complete conference metadata is available"
+        )
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
+            "unsupported_filters": ["opponent_conference"],
+        }
     elif (
         _specific_date_top_scorer_intent(q, start_date, end_date)
         and not player

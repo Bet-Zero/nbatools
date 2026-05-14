@@ -441,6 +441,39 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "playoff matchup history instead "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "rookie_leaderboard":
+        return (
+            "rookie leaderboards are not supported by the current season "
+            "leaderboard contract; use standard player leaderboards instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "role_leaderboard":
+        return (
+            "league-wide starter/bench leaderboards are not supported by the "
+            "current season leaderboard contract; use named-player starter or "
+            "bench queries instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "team_bench_scoring":
+        return (
+            "team bench scoring is not supported by the current team game "
+            "finder contract; use standard team scoring queries instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "personal_foul_leaderboard":
+        return (
+            "personal-foul leaderboards are not supported by the current season "
+            "leaderboard contract; use supported box-score leaderboards such as "
+            "turnovers, steals, blocks, assists, rebounds, or points "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "opponent_conference":
+        return (
+            "opponent-conference record filters are not supported with current "
+            "conference metadata; use a direct opponent or supported opponent "
+            "quality filter instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     return (
         f"{filter_id} filter is not supported with current data; try removing this filter "
         f"or asking for standard player, team, or game stats "

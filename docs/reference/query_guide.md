@@ -46,6 +46,17 @@ Natural examples:
 - `best 3 point percentage` (stat alias → fg3_pct)
 - `best field goal percentage` (stat alias → fg_pct)
 - `team ft%` (stat alias → ft_pct)
+- `Which centers have the most rebounds this season?` (position-filtered leaderboard)
+- `guard scoring leaders this season` (position-filtered leaderboard)
+- `forwards FG% leaders this season` (position-filtered leaderboard)
+
+Unsupported leaderboard boundaries currently return `no_result` /
+`filter_not_supported` rather than broad fallback leaderboards:
+
+- rookie leaderboards, such as `rookie scoring leaders this season`
+- league-wide starter/bench leaderboards, such as `starter assist leaders this season`
+- personal-foul leaderboards, such as `personal fouls leaders this season`
+- team bench scoring, such as `Celtics bench scoring this season`
 
 ## Finders
 
@@ -99,6 +110,8 @@ Structured commands:
 Natural examples:
 
 - `Jokic vs Embiid recent form`
+- `LeBron James vs Kevin Durant comparison`
+- `Compare LeBron James and Kevin Durant`
 - `Kobe vs LeBron playoffs in 2008-09`
 - `Celtics vs Bucks from 2021-22 to 2023-24`
 
@@ -203,6 +216,7 @@ Natural examples:
 - `Celtics h2h vs Bucks home`
 - `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
 - `Jokic averages against Stephen Curry`
+- `LeBron James vs Kevin Durant comparison` (player comparison)
 
 ## Without-player queries
 
@@ -215,6 +229,11 @@ Natural examples:
 - `Lakers road record last season` (`last season` resolves to `2024-25` when the latest regular season is `2025-26`)
 - `Lakers 2024-25 road record`
 - `Celtics record against playoff teams`
+
+Opponent-conference record filters, such as `Celtics record against the East`
+or `Lakers record against Western Conference teams`, are not currently
+supported. They return `no_result` / `filter_not_supported` until complete
+team-conference metadata and route semantics are approved.
 
 ## Playoff history and rounds
 

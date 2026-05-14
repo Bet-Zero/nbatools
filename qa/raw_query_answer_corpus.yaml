@@ -2665,10 +2665,10 @@ cases:
       leaderboard: 10
     hard_assertions:
       - path: result.metadata.position_filter
-        equals: center
+        equals: centers
     review_notes: "Wave 4 representative case for position-filtered player leaderboards."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - position_filter
         - stat_alias
@@ -2687,9 +2687,12 @@ cases:
       - leaderboard
     expected_row_counts:
       leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: guards
     review_notes: "Search-fragment position alias for scoring leaders."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - position_filter
         - phrasing_variant
@@ -2707,9 +2710,12 @@ cases:
       - leaderboard
     expected_row_counts:
       leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: forwards
     review_notes: "Position-filtered advanced shooting alias."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - position_filter
         - advanced_metric
@@ -2728,9 +2734,12 @@ cases:
       - leaderboard
     expected_row_counts:
       leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: guards
     review_notes: "Role-position phrase variant for assist leaders."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - position_filter
         - stat_alias
@@ -2749,9 +2758,12 @@ cases:
       - leaderboard
     expected_row_counts:
       leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: centers
     review_notes: "Position-filtered defensive box-score leaderboard."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - position_filter
         - defensive_stat
@@ -2769,9 +2781,12 @@ cases:
       - leaderboard
     expected_row_counts:
       leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: forwards
     review_notes: "Forward-position phrase variant for field goal percentage leaders."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - position_filter
         - stat_alias
@@ -2783,12 +2798,16 @@ cases:
     priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
+    expected_route: season_leaders
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: rookie_leaderboard
     review_notes: "Rookie leaderboard should be execution-backed or clearly unsupported, not a broad scoring leaderboard."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - role_filter
         - unsupported_boundary
@@ -2801,12 +2820,16 @@ cases:
     priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
+    expected_route: season_leaders
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: role_leaderboard
     review_notes: "Bench-player leaderboard should be execution-backed or clearly unsupported."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - role_filter
         - unsupported_boundary
@@ -2818,12 +2841,16 @@ cases:
     priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
+    expected_route: season_leaders
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: role_leaderboard
     review_notes: "Starter leaderboard should be execution-backed or clearly unsupported."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - role_filter
         - unsupported_boundary
@@ -2881,12 +2908,16 @@ cases:
     priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
+    expected_route: game_finder
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: team_bench_scoring
     review_notes: "Team bench scoring should be a clean unsupported boundary until role-scoped team scoring is execution-backed."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - role_filter
         - unsupported_boundary
@@ -3104,9 +3135,14 @@ cases:
     expected_sections:
       - summary
       - comparison
+    hard_assertions:
+      - path: result.metadata.players_context.0.player_name
+        equals: LeBron James
+      - path: result.metadata.players_context.1.player_name
+        equals: Kevin Durant
     review_notes: "Explicit player comparison wording should route to player_compare."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - comparison
         - matchup
@@ -3405,12 +3441,16 @@ cases:
     priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
-    expected_reason: unsupported
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: personal_foul_leaderboard
     review_notes: "Personal fouls are not a documented stat alias; should not fall back to points leaders."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - stat_alias
         - unsupported_boundary
@@ -3596,12 +3636,16 @@ cases:
     priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
+    expected_route: team_record
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_conference
     review_notes: "Conference opponent filters should be execution-backed or cleanly unsupported, not broad full-season records."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - context_filter
         - unsupported_boundary

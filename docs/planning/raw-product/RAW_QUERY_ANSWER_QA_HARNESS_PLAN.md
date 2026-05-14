@@ -951,6 +951,59 @@ Remaining families:
 - AQ-022 personal-foul stat boundary.
 - AQ-023 opponent-conference filters.
 
+## Fix Wave 7A P2 Boundary / Routing Cleanup Status
+
+Fix Wave 7A resolved the eight remaining Wave 6B expectation failures as a
+focused P2 parser/routing and product-boundary cleanup. It did not change
+frontend rendering, backend answer-phrase enrichment, source data, rookie
+leaderboard execution, league-wide role leaderboard execution, team bench
+scoring execution, personal-foul leaderboard execution, or opponent-conference
+filter execution.
+
+Behavior now verified:
+
+- Position noun-prefix/question-form leaderboards such as
+  `Which centers have the most rebounds this season?`, `guard scoring leaders
+  this season`, and `forwards FG% leaders this season` route to
+  `season_leaders` with the canonical `position_filter` preserved.
+- Full-name player comparisons such as
+  `LeBron James vs Kevin Durant comparison` and
+  `Compare LeBron James and Kevin Durant` route to `player_compare`.
+- Player-game/opponent-player guardrails such as `Jokic game log vs Embiid`
+  remain player finder queries.
+- Rookie leaderboards, league-wide starter/bench leaderboards, team bench
+  scoring, personal-foul leaderboards, and opponent-conference record filters
+  now return `no_result` / `filter_not_supported` with explicit
+  `unsupported_filters` instead of broad plausible answers.
+
+Latest harness outputs:
+
+- Targeted eight-case run:
+  `outputs/raw_query_answer_qa/20260514T125005Z/report.md`
+- Adjacent regression run:
+  `outputs/raw_query_answer_qa/20260514T125038Z/report.md`
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260514T125056Z/report.md`
+
+Full corpus result after Wave 7A:
+
+- Cases: 195
+- Result statuses: `ok: 165`, `no_result: 22`, `error: 8`
+- Expectation cases: `pass: 195`
+- Expectation checks: `pass: 1037`
+- Suspicious flag cases: 0
+- Informational flag cases: 112
+- Verified outlier cases: 1
+- Remaining failed case IDs: none
+
+Current status:
+
+- AQ-018: position noun-prefix support fixed; rookie/role/team-bench cases fixed
+  as expected unsupported boundaries.
+- AQ-019: fixed.
+- AQ-022: fixed as expected unsupported.
+- AQ-023: fixed as expected unsupported.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

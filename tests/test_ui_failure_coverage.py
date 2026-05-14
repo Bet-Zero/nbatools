@@ -196,6 +196,105 @@ class TestTopPerformanceAndTeamStretchBoundaries:
         assert rows[0]["window_size"] == 3
 
 
+class TestP2BoundaryRoutingCleanup:
+    """Regression coverage for Raw Query Answer QA Wave 7A boundaries."""
+
+    @pytest.mark.needs_data
+    def test_center_rebound_leaders_execute_with_position_filter(self):
+        qr = execute_natural_query("Which centers have the most rebounds this season?")
+
+        assert qr.route == "season_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "reb"
+        assert qr.metadata["position_filter"] == "centers"
+        assert {
+            "label": "Position",
+            "value": "centers",
+            "kind": "position",
+        } in qr.metadata["applied_filters"]
+
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows
+
+    @pytest.mark.needs_data
+    def test_full_name_lebron_durant_comparison_executes_as_comparison(self):
+        qr = execute_natural_query("LeBron James vs Kevin Durant comparison")
+
+        assert qr.route == "player_compare"
+        assert qr.result.result_status == "ok"
+        sections = qr.to_dict()["sections"]
+        assert set(sections) == {"summary", "comparison"}
+        assert {row["player_name"] for row in sections["summary"]} == {
+            "LeBron James",
+            "Kevin Durant",
+        }
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "route", "unsupported_filter"),
+        [
+            ("rookie scoring leaders this season", "season_leaders", "rookie_leaderboard"),
+            (
+                "bench players scoring leaders this season",
+                "season_leaders",
+                "role_leaderboard",
+            ),
+            ("starter assist leaders this season", "season_leaders", "role_leaderboard"),
+            ("Celtics bench scoring this season", "game_finder", "team_bench_scoring"),
+            (
+                "personal fouls leaders this season",
+                "season_leaders",
+                "personal_foul_leaderboard",
+            ),
+            ("Celtics record against the East this season", "team_record", "opponent_conference"),
+        ],
+    )
+    def test_unsupported_boundary_queries_return_no_result(self, query, route, unsupported_filter):
+        qr = execute_natural_query(query)
+
+        assert qr.route == route
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == [unsupported_filter]
+        assert qr.to_dict()["sections"] == {}
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "route", "metadata_key", "metadata_value"),
+        [
+            ("Malik Monk off the bench this season", "player_game_summary", "role", "bench"),
+            ("Nikola Jokic as a starter this season", "player_game_summary", "role", "starter"),
+            (
+                "top scorers among guards since 2021",
+                "season_leaders",
+                "position_filter",
+                "guards",
+            ),
+            (
+                "Jayson Tatum vs Jaylen Brown last 10 games",
+                "player_compare",
+                "query_class",
+                "comparison",
+            ),
+            (
+                "Celtics record against playoff teams last season",
+                "team_record",
+                "query_class",
+                "summary",
+            ),
+        ],
+    )
+    def test_nearby_supported_queries_still_execute(
+        self, query, route, metadata_key, metadata_value
+    ):
+        qr = execute_natural_query(query)
+
+        assert qr.route == route
+        assert qr.result.result_status == "ok"
+        assert qr.metadata[metadata_key] == metadata_value
+        assert qr.to_dict()["sections"]
+
+
 class TestPlayoffRoutingBoundaries:
     @pytest.mark.needs_data
     def test_adjacent_heat_knicks_series_record_matches_vs_family(self):

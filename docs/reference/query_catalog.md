@@ -121,9 +121,10 @@ If a feature is not reflected here, it should not be assumed shipped.
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
   (parser-recognized and engine-executed for player summary/finder queries when trusted
   `player_game_starter_roles` coverage exists for the requested slice; otherwise execution
-  appends an explicit unfiltered-results note. Team-only phrases like `Celtics bench scoring`
-  are intentionally ignored and broader role route expansion is out of scope for
-  the core finish line unless a future product queue reopens it)
+  appends an explicit unfiltered-results note. Team-only phrases like
+  `Celtics bench scoring` and league-wide role leaderboards are explicit
+  unsupported boundaries unless a future product queue reopens role route
+  expansion)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against teams over .500`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
@@ -354,6 +355,8 @@ Examples:
 
 - `Jokic vs Embiid recent form`
 - `Jokic vs Embiid since 2021`
+- `LeBron James vs Kevin Durant comparison`
+- `Compare LeBron James and Kevin Durant`
 - `Jokic head-to-head vs Embiid since 2021`
 - `Kobe vs LeBron playoffs in 2008-09`
 
@@ -447,6 +450,10 @@ Leaderboard no-match behavior:
   such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
   shot creation, and per-game attempt minimums are unsupported boundaries; routed
   fallbacks include an explicit `unsupported_boundary` note
+- rookie leaderboards, league-wide starter/bench leaderboards, and
+  personal-foul leaderboards are unsupported boundaries; these return
+  `no_result` / `filter_not_supported` rather than broad points/assist
+  leaderboards
 
 ### Position-filtered leaderboards
 
@@ -455,6 +462,10 @@ Examples:
 - `best ts% among centers this season`
 - `top scorers among guards since 2021`
 - `best rebounders among big men`
+- `Which centers have the most rebounds this season?`
+- `guard scoring leaders this season`
+- `forwards FG% leaders this season`
+- `point guard assist leaders this season` (maps to the supported `guards` group)
 
 ### Stretch leaderboards
 
@@ -775,8 +786,9 @@ Current behavior:
 - parser sets `role` for player-context queries only
 - `player_game_summary` and `player_game_finder` apply starter / bench filtering only when the requested slice has complete trusted coverage in `player_game_starter_roles`
 - if trusted starter-role coverage is missing or untrusted for any row in the requested slice, execution keeps the explicit unfiltered-results note instead of partially filtering
-- team-level bench semantics and broader role route expansion are out of scope
-  for the core finish line unless a future product queue reopens them
+- league-wide starter/bench leaderboards and team-level bench scoring are
+  explicit unsupported boundaries and return `no_result` /
+  `filter_not_supported`
 
 ### Opponent-quality filter
 
@@ -794,7 +806,11 @@ Current behavior:
 - execution resolves that bucket to a concrete opponent-team list on the supported single-entity summary/finder/record routes
 - `top defenses` is accepted as shorthand for `top-10 defenses` only in explicit opponent context such as `against`, `vs`, or `versus`
 - `playoff teams` includes postseason-team phrasings such as `postseason teams` and `teams that made the playoffs`; this remains a regular-season opponent-quality context unless the query also explicitly asks for playoff competition
-- unsupported routes append an explicit note and remain unfiltered
+- opponent-conference filters such as `Celtics record against the East` or
+  `Lakers record against Western Conference teams` are not currently supported;
+  they return `no_result` / `filter_not_supported`
+- unsupported routes append an explicit note or return a clean unsupported
+  response instead of silently broadening
 
 ---
 
