@@ -1004,8 +1004,78 @@ Current status:
 - AQ-022: fixed as expected unsupported.
 - AQ-023: fixed as expected unsupported.
 
+## Frontend Hero / Copy QA Wave 1 Status
+
+Frontend hero/copy QA now has a report-first harness that renders selected
+backend QA results through the actual React result components. This is a
+separate frontend review layer; it does not change backend query behavior,
+backend answer phrases, corpus expectations, or production frontend copy.
+
+Approach:
+
+- Selected corpus/config:
+  `qa/frontend_copy_corpus.yaml`
+- Source backend run:
+  `outputs/raw_query_answer_qa/20260514T125056Z/report.jsonl`
+- Runner:
+  `frontend/src/test/frontendCopyQaReport.test.tsx`
+- Harness helper:
+  `frontend/src/test/frontendCopyQaHarness.tsx`
+- Intentional report command:
+  `cd frontend && npm run qa:frontend-copy`
+- Output path pattern:
+  `outputs/frontend_copy_qa/<run_id>/`
+
+The harness rehydrates backend QA JSONL rows into the frontend
+`QueryResponse` envelope, renders `ResultEnvelope` plus `ResultRenderer`, and
+extracts review-oriented visible copy:
+
+- result shape/pattern
+- hero/headline text
+- supporting/context text
+- applied filter chips
+- result headings/titles
+- table headers and first-row text
+- no-result title/message/details/suggestions
+- rendered notes/caveats
+- report-only soft checks from the selected corpus config
+
+Latest run:
+
+- Run ID: `20260514T153729Z`
+- Markdown report:
+  `outputs/frontend_copy_qa/20260514T153729Z/frontend_copy_report.md`
+- JSONL report:
+  `outputs/frontend_copy_qa/20260514T153729Z/frontend_copy_report.jsonl`
+- Summary:
+  `outputs/frontend_copy_qa/20260514T153729Z/summary.json`
+- Selected cases: 59
+- Rendered successfully: 59
+- Render failures: 0
+- Missing backend records: 0
+- Soft checks: `pass: 151`, `fail: 5`, `not_checked: 0`
+
+Review process:
+
+1. Review the Markdown report by family, starting with the five report-only soft
+   check misses and the high-risk categories: team defensive leaderboards,
+   unsupported/no-result guidance, record-when conditions, playoff matchup
+   phrasing, and comparison labels.
+2. Record confirmed frontend-copy defects as frontend findings grouped by
+   family. Do not treat a soft-check miss as a defect until reviewed.
+3. Promote only stable, high-risk semantic failures into hard frontend tests
+   near the component behavior they protect.
+4. Keep screenshots/manual visual review separate for hierarchy, wrapping,
+   layout, and visual emphasis.
+
 ## Open Questions
 
-- Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.
-- Should frontend shape classification be reproduced in Python or extracted by Node? Recommendation: backend approximation in Wave 1; defer exact frontend classification.
+- Should future frontend-copy waves expand from the hand-curated 59-case list
+  into all 112 `frontend_hero_expected` informational cases? Recommendation:
+  review Wave 1 findings first, then expand only the families that need more
+  coverage.
+- Should the backend QA harness continue using backend shape approximations now
+  that frontend-copy QA extracts exact rendered shapes with Vitest? Recommendation:
+  yes; keep backend QA transport-agnostic and keep frontend shape extraction in
+  the frontend harness.
 - Should exact hero sentences ever become hard assertions? Recommendation: only after a separate rendered-output harness exists and only for targeted regressions.

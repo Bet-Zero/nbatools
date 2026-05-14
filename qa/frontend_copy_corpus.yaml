@@ -1,0 +1,605 @@
+version: 1
+source_backend_run: outputs/raw_query_answer_qa/20260514T125056Z/report.jsonl
+description: Frontend hero/copy QA Wave 1 selected review subset.
+cases:
+  - id: celtics_record_playoff_teams
+    category: team_record
+    review_focus:
+      - hero_record
+      - opponent_quality_filter
+      - table_columns
+    expected_semantic_facts:
+      - Celtics
+      - playoff teams
+    expected_table_header_fragments:
+      - Record
+
+  - id: lakers_road_record_last_season
+    category: team_record
+    review_focus:
+      - hero_record
+      - season_context
+      - location_filter
+    expected_semantic_facts:
+      - Lakers
+      - 2024-25
+    expected_filter_chip_fragments:
+      - Away
+      - 2024-25
+
+  - id: thunder_since_all_star_record
+    category: team_record
+    review_focus:
+      - hero_record
+      - date_filter
+      - table_columns
+    expected_semantic_facts:
+      - Thunder
+      - All-Star
+
+  - id: celtics_regular_season_record_vs_playoff_teams_wave4
+    category: team_record
+    review_focus:
+      - hero_record
+      - season_type
+      - opponent_quality_filter
+    expected_semantic_facts:
+      - Celtics
+      - regular season
+      - playoff teams
+
+  - id: jokic_season_summary
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - player_entity
+      - table_columns
+    expected_semantic_facts:
+      - Nikola Jokic
+      - 2025-26
+
+  - id: tatum_good_teams
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - opponent_quality_filter
+    expected_semantic_facts:
+      - Jayson Tatum
+      - good teams
+
+  - id: luka_last_5_summary
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - last_n_context
+    expected_semantic_facts:
+      - Luka Doncic
+      - last 5
+
+  - id: sga_playoff_teams_last_season_wave4
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - season_context
+      - opponent_quality_filter
+    expected_semantic_facts:
+      - Shai Gilgeous-Alexander
+      - 2024-25
+      - playoff teams
+
+  - id: jokic_assists_since_all_star_wave4
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - metric_label
+      - date_filter
+    expected_semantic_facts:
+      - Nikola Jokic
+      - assists
+      - All-Star
+
+  - id: record_when_jokic_triple_double
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - special_event_filter
+      - table_columns
+    expected_semantic_facts:
+      - Nikola Jokic
+      - triple-double
+      - record
+
+  - id: lakers_held_opponents_under_100_record
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - threshold_filter
+    expected_semantic_facts:
+      - Lakers
+      - under 100
+      - record
+
+  - id: knicks_allowed_under_110_record
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - defensive_threshold
+    expected_semantic_facts:
+      - Knicks
+      - fewer than 110
+      - record
+
+  - id: boston_tatum_under_40_fg_record_missing_filter
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - threshold_filter
+      - team_context
+    expected_semantic_facts:
+      - Jayson Tatum
+      - under 40
+      - Celtics
+
+  - id: warriors_curry_3_threes_record
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - player_condition
+    expected_semantic_facts:
+      - Stephen Curry
+      - 3+ threes
+      - Warriors
+
+  - id: suns_without_booker_shorthand
+    category: without_player
+    review_focus:
+      - hero_record
+      - without_player_filter
+    expected_semantic_facts:
+      - Suns
+      - without
+      - Devin Booker
+
+  - id: knicks_without_brunson
+    category: without_player
+    review_focus:
+      - hero_record
+      - without_player_filter
+    expected_semantic_facts:
+      - Knicks
+      - without
+      - Jalen Brunson
+
+  - id: lakers_without_lebron
+    category: without_player
+    review_focus:
+      - hero_record
+      - without_player_filter
+    expected_semantic_facts:
+      - Lakers
+      - without
+      - LeBron James
+
+  - id: jokic_home_away_split
+    category: split
+    review_focus:
+      - hero_split
+      - split_labels
+      - table_columns
+    expected_semantic_facts:
+      - Nikola Jokic
+      - home
+      - away
+
+  - id: curry_home_away_last_20_split_wave4
+    category: split
+    review_focus:
+      - hero_split
+      - split_labels
+      - last_n_context
+    expected_semantic_facts:
+      - Stephen Curry
+      - home
+      - away
+      - last 20
+
+  - id: anthony_edwards_wins_losses_split_no_match
+    category: split
+    review_focus:
+      - no_result_guidance
+      - split_boundary
+    expected_semantic_facts:
+      - Anthony Edwards
+      - wins/losses
+
+  - id: brunson_wins_losses_split_wave4
+    category: split
+    review_focus:
+      - hero_split
+      - split_labels
+    expected_semantic_facts:
+      - Jalen Brunson
+      - wins
+      - losses
+
+  - id: biggest_scoring_games
+    category: top_performances
+    review_focus:
+      - hero_top_performance
+      - verified_outlier
+      - table_columns
+    expected_semantic_facts:
+      - points
+      - top
+    expected_table_header_fragments:
+      - Player
+      - PTS
+
+  - id: most_threes_single_game
+    category: top_performances
+    review_focus:
+      - hero_top_performance
+      - metric_label
+    expected_semantic_facts:
+      - threes
+    expected_table_header_fragments:
+      - 3PM
+
+  - id: most_blocks_single_game
+    category: top_performances
+    review_focus:
+      - hero_top_performance
+      - metric_label
+    expected_semantic_facts:
+      - blocks
+    expected_table_header_fragments:
+      - BLK
+
+  - id: plus_minus_single_game
+    category: top_performances
+    review_focus:
+      - hero_top_performance
+      - metric_label
+    expected_semantic_facts:
+      - plus-minus
+    expected_table_header_fragments:
+      - +/-
+
+  - id: top_team_scoring_games
+    category: top_performances
+    review_focus:
+      - hero_top_performance
+      - team_subject
+    expected_semantic_facts:
+      - team
+      - points
+    expected_table_header_fragments:
+      - Team
+      - PTS
+
+  - id: points_per_game_leader
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - metric_label
+    expected_semantic_facts:
+      - points per game
+    expected_table_header_fragments:
+      - PPG
+
+  - id: guards_fg_percentage_leaders
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - position_filter
+      - metric_label
+    expected_semantic_facts:
+      - guards
+      - field goal
+    expected_filter_chip_fragments:
+      - guards
+
+  - id: centers_rebound_leaders_wave4
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - position_filter
+      - metric_label
+    expected_semantic_facts:
+      - centers
+      - rebounds
+    expected_filter_chip_fragments:
+      - centers
+    expected_table_header_fragments:
+      - RPG
+
+  - id: turnover_rate_leader_wave4
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - metric_label
+    expected_semantic_facts:
+      - turnover rate
+    expected_table_header_fragments:
+      - TOV Pct
+
+  - id: most_30_point_games
+    category: leaderboard
+    review_focus:
+      - hero_occurrence_leaderboard
+      - count_metric
+    expected_semantic_facts:
+      - 30 point games
+    expected_table_header_fragments:
+      - Games
+
+  - id: offensive_rating_team_leader
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - metric_label
+    expected_semantic_facts:
+      - offensive rating
+    expected_table_header_fragments:
+      - ORtg
+
+  - id: fewest_points_allowed_team_leader
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - defensive_metric_label
+    expected_semantic_facts:
+      - points allowed
+    expected_table_header_fragments:
+      - Opponent PTS
+
+  - id: most_points_allowed_team_leaders_wave4
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - defensive_metric_label
+    expected_semantic_facts:
+      - points allowed
+    expected_table_header_fragments:
+      - Opponent PTS
+
+  - id: opponent_ppg_leaders_wave4
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - opponent_metric_label
+    expected_semantic_facts:
+      - opponent
+      - points per game
+    expected_table_header_fragments:
+      - Opponent PTS
+
+  - id: team_road_record_leaders
+    category: team_leaderboard
+    review_focus:
+      - hero_record_leaderboard
+      - location_filter
+    expected_semantic_facts:
+      - road
+      - record
+    expected_table_header_fragments:
+      - W-L
+
+  - id: lakers_playoff_history
+    category: playoff_history
+    review_focus:
+      - hero_playoff_history
+      - table_columns
+    expected_semantic_facts:
+      - Lakers
+      - playoffs
+
+  - id: lakers_finals_appearances
+    category: playoff_history
+    review_focus:
+      - hero_appearances
+      - round_label
+    expected_semantic_facts:
+      - Lakers
+      - Finals
+      - appearances
+
+  - id: most_finals_appearances_since_1980
+    category: playoff_history
+    review_focus:
+      - hero_appearances_leaderboard
+      - era_filter
+    expected_semantic_facts:
+      - Finals
+      - 1980
+      - appearances
+
+  - id: best_second_round_record
+    category: playoff_history
+    review_focus:
+      - hero_round_record
+      - round_label
+      - table_columns
+    expected_semantic_facts:
+      - second round
+      - record
+
+  - id: spurs_playoff_history_since_2000_wave4
+    category: playoff_history
+    review_focus:
+      - hero_playoff_history
+      - era_filter
+    expected_semantic_facts:
+      - Spurs
+      - 2000
+      - playoffs
+
+  - id: heat_knicks_playoff_history
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - series_game_distinction
+    expected_semantic_facts:
+      - Heat
+      - Knicks
+      - playoff
+
+  - id: lakers_celtics_playoff_history
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - series_game_distinction
+    expected_semantic_facts:
+      - Lakers
+      - Celtics
+      - playoff
+
+  - id: heat_knicks_playoff_series_record_wave4
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - series_record
+    expected_semantic_facts:
+      - Heat
+      - Knicks
+      - series
+
+  - id: lakers_celtics_by_decade
+    category: playoff_matchup_history
+    review_focus:
+      - matchup_by_decade
+      - table_columns
+    expected_semantic_facts:
+      - Lakers
+      - Celtics
+      - decade
+
+  - id: warriors_lakers_by_decade_wave4
+    category: playoff_matchup_history
+    review_focus:
+      - matchup_by_decade
+      - table_columns
+    expected_semantic_facts:
+      - Warriors
+      - Lakers
+      - decade
+
+  - id: jokic_embiid_recent_comparison
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - recent_window
+    expected_semantic_facts:
+      - Nikola Jokic
+      - Joel Embiid
+
+  - id: tatum_brown_last10_comparison_wave4
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - last_n_context
+    expected_semantic_facts:
+      - Jayson Tatum
+      - Jaylen Brown
+      - last 10
+
+  - id: celtics_bucks_range_comparison
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - date_range
+    expected_semantic_facts:
+      - Celtics
+      - Bucks
+
+  - id: warriors_lakers_this_season_comparison_wave4
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - season_context
+    expected_semantic_facts:
+      - Warriors
+      - Lakers
+      - 2025-26
+
+  - id: lebron_durant_comparison_wave4
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - player_entities
+    expected_semantic_facts:
+      - LeBron James
+      - Kevin Durant
+
+  - id: lakers_celtics_h2h_record_wave4
+    category: comparison
+    review_focus:
+      - hero_head_to_head
+      - record_label
+    expected_semantic_facts:
+      - Lakers
+      - Celtics
+      - head-to-head
+
+  - id: most_points_last_night
+    category: no_result_unsupported
+    review_focus:
+      - no_result_guidance
+      - date_boundary
+    expected_semantic_facts:
+      - No Matching Results
+      - Apr 11, 2026
+
+  - id: top_scorer_feb_14_2026_wave4
+    category: no_result_unsupported
+    review_focus:
+      - no_result_guidance
+      - date_boundary
+    expected_semantic_facts:
+      - No Matching Results
+      - Feb 14, 2026
+
+  - id: cooled_off_last_10
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_guidance
+      - unsupported_analysis_boundary
+    expected_semantic_facts:
+      - Unsupported Query
+      - cooled off
+
+  - id: rookie_scoring_leaders_wave4
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_filter_guidance
+      - roster_experience_boundary
+    expected_semantic_facts:
+      - Unavailable Filter
+      - rookie
+
+  - id: starter_assist_leaders_wave4
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_filter_guidance
+      - role_boundary
+    expected_semantic_facts:
+      - Unavailable Filter
+      - starter
+
+  - id: celtics_against_east_record_wave4
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_filter_guidance
+      - conference_boundary
+    expected_semantic_facts:
+      - Unavailable Filter
+      - conference
+
+  - id: personal_foul_leaders_wave4
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_metric_guidance
+      - metric_boundary
+    expected_semantic_facts:
+      - Unavailable Metric
+      - personal fouls
