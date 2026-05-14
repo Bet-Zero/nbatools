@@ -139,7 +139,8 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
             return "ambiguous_expected", "Stress subsection documents this as ambiguous."
         return (
             "stress_clean_failure_ok",
-            "Stress input; clean routed result, ambiguity, no-result, or unsupported response is acceptable.",
+            "Stress input; clean routed result, ambiguity, no-result, or unsupported "
+            "response is acceptable.",
         )
 
     if section.startswith("8.1") or subsection.startswith("8.1"):
@@ -153,13 +154,15 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
     if any(term in q for term in future_or_unsupported):
         return (
             "unsupported_expected",
-            "Examples/reference docs mark this broader semantic family as unsupported or outside the core finish line.",
+            "Examples/reference docs mark this broader semantic family as unsupported "
+            "or outside the core finish line.",
         )
 
     if any(term in q for term in boundary_terms):
         return (
             "supported_with_fallback",
-            "Context/source-backed family is coverage-gated or can carry an explicit unfiltered/unsupported-data note.",
+            "Context/source-backed family is coverage-gated or can carry an explicit "
+            "unfiltered/unsupported-data note.",
         )
 
     if any(term in q for term in opponent_quality_terms):
@@ -170,7 +173,8 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
             )
         return (
             "supported_with_fallback",
-            "Opponent-quality filters are supported on core single-entity routes; unsupported routes should note unfiltered behavior.",
+            "Opponent-quality filters are supported on core single-entity routes; "
+            "unsupported routes should note unfiltered behavior.",
         )
 
     if section.startswith("7.7") or section.startswith("7.8") or section.startswith("7.9"):
@@ -186,7 +190,8 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
     if section.startswith("7.13") or section.startswith("7.14") or section.startswith("7.15"):
         return (
             "supported_with_fallback",
-            "Equivalence group includes an explicit coverage-gated or unsupported-data execution note.",
+            "Equivalence group includes an explicit coverage-gated or unsupported-data "
+            "execution note.",
         )
     if section.startswith("7.16") or section.startswith("7.17"):
         return "supported_with_fallback", "Lineup equivalence group is source-coverage gated."
@@ -203,7 +208,8 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
 
     return (
         "supported_exact",
-        "Documented shipped query surface or canonical parser example without an explicit fallback/unsupported note.",
+        "Documented shipped query surface or canonical parser example without an explicit "
+        "fallback/unsupported note.",
     )
 
 

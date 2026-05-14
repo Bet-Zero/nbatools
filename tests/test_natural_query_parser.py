@@ -413,6 +413,24 @@ def test_points_allowed_team_leaderboard_uses_opponent_ppg():
     assert parsed["route_kwargs"]["ascending"] is True
 
 
+def test_most_points_allowed_team_leaderboard_uses_opponent_ppg_descending():
+    parsed = parse_query("which teams allow the most points per game this season")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["ascending"] is False
+
+
+def test_opponent_ppg_leaders_route_to_team_leaderboard():
+    parsed = parse_query("opponent PPG leaders this season")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["ascending"] is False
+
+
 def test_team_scoring_fewest_points_leaderboard_stays_scoring_ppg():
     parsed = parse_query("Which team scores the fewest points per game this season?")
 
@@ -421,8 +439,24 @@ def test_team_scoring_fewest_points_leaderboard_stays_scoring_ppg():
     assert parsed["route_kwargs"]["ascending"] is True
 
 
+def test_team_scoring_most_points_leaderboard_stays_scoring_ppg():
+    parsed = parse_query("Which teams score the most points per game this season?")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert parsed["route_kwargs"]["ascending"] is False
+
+
+def test_bare_ppg_leaders_stays_player_leaderboard():
+    parsed = parse_query("PPG leaders this season")
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["stat"] == "pts"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+
+
 def test_best_defensive_rating_stays_defensive_rating():
-    parsed = parse_query("best defensive rating this season")
+    parsed = parse_query("best defensive rating teams this season")
 
     assert parsed["route"] == "season_team_leaders"
     assert parsed["route_kwargs"]["stat"] == "def_rating"

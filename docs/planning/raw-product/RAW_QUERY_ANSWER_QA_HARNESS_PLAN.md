@@ -842,6 +842,59 @@ Recommended next phase:
 - After those fixes or product decisions, rerun the 195-case corpus before
   starting frontend hero/copy QA.
 
+## Fix Wave 6A Status
+
+Fix Wave 6A resolved the defensive/opponent-points alias gap from AQ-021. This
+was a focused alias/routing completion wave only: no playoff routing, frontend
+rendering, backend answer-phrase enrichment, source data, or opponent-points
+execution semantics changed.
+
+Target cases:
+
+- `most_points_allowed_team_leaders_wave4`
+- `opponent_ppg_leaders_wave4`
+
+Behavior now verified:
+
+- `which teams allow the most points per game this season` routes to
+  `season_team_leaders`, uses `opponent_pts_per_game`, sorts descending, and
+  returns Utah as the current highest opponent-PPG team.
+- `opponent PPG leaders this season` routes to `season_team_leaders`, uses
+  `opponent_pts_per_game`, and returns team rows rather than player scoring
+  leaders.
+- `fewest_points_allowed_team_leader` still ranks `opponent_pts_per_game`
+  ascending with Boston first.
+- `def_rating_team_leaders_wave4` still maps to defensive rating rather than
+  opponent points allowed.
+
+Latest harness outputs:
+
+- Targeted run:
+  `outputs/raw_query_answer_qa/20260514T050605Z/report.md`
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260514T050631Z/report.md`
+
+Full corpus result after Wave 6A:
+
+- Cases: 195
+- Result statuses: `ok: 172`, `no_result: 15`, `error: 8`
+- Expectation cases: `pass: 183`, `fail: 12`
+- Expectation checks: `pass: 964`, `fail: 45`
+- Remaining failed case IDs: `centers_rebound_leaders_wave4`,
+  `rookie_scoring_leaders_wave4`, `bench_scoring_leaders_wave4`,
+  `starter_assist_leaders_wave4`, `celtics_bench_scoring_boundary_wave4`,
+  `lebron_durant_comparison_wave4`, `bulls_finals_record_wave4`,
+  `warriors_finals_record_since_2015_wave4`,
+  `celtics_conference_finals_record_wave4`,
+  `heat_knicks_playoff_series_record_wave4`,
+  `personal_foul_leaders_wave4`, `celtics_against_east_record_wave4`
+
+Remaining families:
+
+- AQ-020 playoff round/matchup routing remains open.
+- P2 position/role leaderboards, player comparison routing, personal-foul
+  stat boundary, and opponent-conference filters remain open.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.
