@@ -2650,3 +2650,1048 @@ cases:
         - unsupported_boundary
         - subjective
       notes: "Review product boundary and guidance for subjective lineup/duo phrasing."
+
+  - id: centers_rebound_leaders_wave4
+    query: "Which centers have the most rebounds this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: center
+    review_notes: "Wave 4 representative case for position-filtered player leaderboards."
+    manual_review:
+      status: unreviewed
+      tags:
+        - position_filter
+        - stat_alias
+        - phrasing_variant
+      notes: "Review whether center context is applied rather than returning the broad rebound leaderboard."
+
+  - id: guards_scoring_leaders_wave4
+    query: "guard scoring leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Search-fragment position alias for scoring leaders."
+    manual_review:
+      status: unreviewed
+      tags:
+        - position_filter
+        - phrasing_variant
+      notes: "Light expectation; manually verify whether guard context is respected."
+
+  - id: forwards_efg_leaders_wave4
+    query: "forwards effective FG% leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Position-filtered advanced shooting alias."
+    manual_review:
+      status: unreviewed
+      tags:
+        - position_filter
+        - advanced_metric
+        - stat_alias
+      notes: "Review whether forward context and eFG% are both preserved."
+
+  - id: point_guard_assist_leaders_wave4
+    query: "point guard assist leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Role-position phrase variant for assist leaders."
+    manual_review:
+      status: unreviewed
+      tags:
+        - position_filter
+        - stat_alias
+        - phrasing_variant
+      notes: "Review whether point guard context is applied."
+
+  - id: centers_blocks_leaders_wave4
+    query: "Which centers have the most blocks this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Position-filtered defensive box-score leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - position_filter
+        - defensive_stat
+      notes: "Review whether center context is applied."
+
+  - id: forwards_fg_percentage_leaders_wave4
+    query: "forwards FG% leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Forward-position phrase variant for field goal percentage leaders."
+    manual_review:
+      status: unreviewed
+      tags:
+        - position_filter
+        - stat_alias
+      notes: "Review whether forward context is applied."
+
+  - id: rookie_scoring_leaders_wave4
+    query: "rookie scoring leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Rookie leaderboard should be execution-backed or clearly unsupported, not a broad scoring leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - role_filter
+        - unsupported_boundary
+        - product_decision
+      notes: "Current product boundary needs review for rookie filters."
+
+  - id: bench_scoring_leaders_wave4
+    query: "bench players scoring leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Bench-player leaderboard should be execution-backed or clearly unsupported."
+    manual_review:
+      status: unreviewed
+      tags:
+        - role_filter
+        - unsupported_boundary
+      notes: "Review whether bench role context is ignored on league leaderboards."
+
+  - id: starter_assist_leaders_wave4
+    query: "starter assist leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Starter leaderboard should be execution-backed or clearly unsupported."
+    manual_review:
+      status: unreviewed
+      tags:
+        - role_filter
+        - unsupported_boundary
+      notes: "Review whether starter role context is ignored on league leaderboards."
+
+  - id: jokic_as_starter_summary_wave4
+    query: "Nikola Jokic stats as a starter this season"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.role
+        equals: starter
+      - path: result.sections.summary.0.player_name
+        equals: Nikola Jokić
+    review_notes: "Player summary role-filter support sample."
+    manual_review:
+      status: unreviewed
+      tags:
+        - role_filter
+        - context_filter
+      notes: "Review starter role metadata and returned sample."
+
+  - id: malik_monk_off_bench_summary_wave4
+    query: "Malik Monk scoring off the bench this season"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.metadata.role
+        equals: bench
+    review_notes: "Bench role context on a named-player stat query."
+    manual_review:
+      status: unreviewed
+      tags:
+        - role_filter
+        - context_filter
+      notes: "Review finder-vs-summary default and bench role filtering."
+
+  - id: celtics_bench_scoring_boundary_wave4
+    query: "Celtics bench scoring this season"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Team bench scoring should be a clean unsupported boundary until role-scoped team scoring is execution-backed."
+    manual_review:
+      status: unreviewed
+      tags:
+        - role_filter
+        - unsupported_boundary
+        - product_decision
+      notes: "Review whether current behavior returns broad team scoring games."
+
+  - id: curry_home_away_last_20_split_wave4
+    query: "Stephen Curry home away split last 20 games"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_sections:
+      - summary
+      - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.metadata.split_type
+        equals: home_away
+    review_notes: "Player home/away split with recent-window phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+      notes: "Review last-20 sample and home/away buckets."
+
+  - id: lakers_home_away_split_wave4
+    query: "Lakers home away split this season"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_sections:
+      - summary
+      - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.metadata.split_type
+        equals: home_away
+    review_notes: "Team home/away split sample."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+      notes: "Review team split summary rows."
+
+  - id: thunder_wins_losses_split_wave4
+    query: "Thunder wins losses split this season"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_split_summary
+    expected_sections:
+      - summary
+      - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.metadata.split_type
+        equals: wins_losses
+    review_notes: "Team wins/losses split sample."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+      notes: "Review wins/losses split buckets."
+
+  - id: brunson_wins_losses_split_wave4
+    query: "Jalen Brunson wins vs losses split"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_split_summary
+    expected_sections:
+      - summary
+      - split_comparison
+    expected_row_counts:
+      summary: 1
+      split_comparison: 2
+    hard_assertions:
+      - path: result.metadata.split_type
+        equals: wins_losses
+    review_notes: "Named-player wins/losses split shorthand."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - phrasing_variant
+      notes: "Review player identity and split buckets."
+
+  - id: tatum_brown_last10_comparison_wave4
+    query: "Jayson Tatum vs Jaylen Brown last 10 games"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Player comparison with same-team players and last-N window."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - context_filter
+      notes: "Review last-10 comparison metrics and identities."
+
+  - id: lakers_celtics_h2h_record_wave4
+    query: "Lakers vs Celtics head to head record"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_matchup_record
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+      - path: result.metadata.head_to_head_used
+        equals: true
+    review_notes: "Team matchup record comparison."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - matchup
+      notes: "Review head-to-head participant rows."
+
+  - id: heat_knicks_h2h_since_2020_wave4
+    query: "Heat vs Knicks h2h since 2020"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    hard_assertions:
+      - path: result.metadata.head_to_head_used
+        equals: true
+    review_notes: "Head-to-head shorthand plus era filter may use team_compare when head-to-head metadata/caveats are preserved."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - matchup
+        - era
+      notes: "Review head-to-head metadata/caveats and season range."
+
+  - id: warriors_lakers_this_season_comparison_wave4
+    query: "Warriors vs Lakers this season comparison"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Team-vs-team comparison phrasing without H2H wording."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+      notes: "Review team comparison metrics."
+
+  - id: celtics_tatum_on_off_boundary_wave4
+    query: "Celtics net rating with Jayson Tatum on the floor vs off"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_on_off
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "On/off split remains unsupported without trusted stint data."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - unsupported_boundary
+      notes: "Review on/off unsupported guidance."
+
+  - id: lebron_durant_comparison_wave4
+    query: "LeBron James vs Kevin Durant comparison"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Explicit player comparison wording should route to player_compare."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - matchup
+      notes: "Review whether comparison wording is misread as a player-vs-player opponent finder."
+
+  - id: bulls_finals_record_wave4
+    query: "Bulls Finals record"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_round_record
+    expected_shape: playoff_round_record
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Single-team Finals-record phrasing should use playoff round semantics."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - matchup
+      notes: "Review current no-result/team-record behavior."
+
+  - id: warriors_finals_record_since_2015_wave4
+    query: "Warriors Finals record since 2015"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_round_record
+    expected_shape: playoff_round_record
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Finals plus since-year phrasing should not return a broad regular-season team record."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - era
+      notes: "Review round-record route and date/era mapping."
+
+  - id: most_conference_finals_appearances_wave4
+    query: "most conference finals appearances"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Conference-finals appearance leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+      notes: "Review round label and appearance counts."
+
+  - id: celtics_conference_finals_record_wave4
+    query: "Celtics conference finals record"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_round_record
+    expected_shape: playoff_round_record
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Single-team conference-finals record should use playoff round semantics."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+      notes: "Review current no-result/team-record behavior."
+
+  - id: spurs_playoff_history_since_2000_wave4
+    query: "Spurs playoff history since 2000"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_history
+    expected_shape: playoff_history
+    expected_sections:
+      - summary
+      - by_season
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Single-team playoff history with since-year era phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - era
+      notes: "Review since-year playoff season range."
+
+  - id: heat_knicks_playoff_series_record_wave4
+    query: "Heat Knicks playoff series record"
+    category: playoff_matchup_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Playoff series-record wording should use matchup history semantics."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - matchup
+      notes: "Review whether route returns a single-team playoff history instead."
+
+  - id: lakers_record_since_2010_wave4
+    query: "Lakers record since 2010"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+      - by_season
+    review_notes: "Era phrasing on regular-season team record."
+    manual_review:
+      status: unreviewed
+      tags:
+        - era
+        - context_filter
+      notes: "Review season range and record totals."
+
+  - id: best_record_2020s_wave4
+    query: "best NBA record in the 2020s"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: record_by_decade_leaderboard
+    expected_shape: record_by_decade_leaderboard
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "2020s era leaderboard phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - era
+      notes: "Review decade range and leaderboard sorting."
+
+  - id: warriors_lakers_by_decade_wave4
+    query: "Warriors vs Lakers by decade"
+    category: playoff_matchup_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: matchup_by_decade
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Historical matchup-by-decade route for a non-Lakers/Celtics pair."
+    manual_review:
+      status: unreviewed
+      tags:
+        - matchup
+        - era
+      notes: "Review matchup rows by decade."
+
+  - id: celtics_regular_season_record_vs_playoff_teams_wave4
+    query: "Celtics regular season record against playoff teams"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Regular Season
+    review_notes: "Explicit regular-season guardrail for playoff-team opponent quality."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - opponent_quality
+        - season_type
+      notes: "Review that opponent-quality wording does not switch to playoff games."
+
+  - id: efg_player_leader_wave4
+    query: "Who has the highest effective field goal percentage this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: efg_pct
+    review_notes: "Full effective-field-goal alias for player leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+        - advanced_metric
+      notes: "Review primary metric and leaderboard rows."
+
+  - id: turnover_leaders_wave4
+    query: "Who averages the most turnovers per game this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: tov
+    review_notes: "Turnover alias leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+      notes: "Review most-turnovers direction."
+
+  - id: fewest_turnovers_leaders_wave4
+    query: "Who averages the fewest turnovers per game this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: tov
+    review_notes: "Ascending-direction turnover leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+      notes: "Review fewest/ascending direction and minimum-games behavior."
+
+  - id: personal_foul_leaders_wave4
+    query: "personal fouls leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Personal fouls are not a documented stat alias; should not fall back to points leaders."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+        - unsupported_boundary
+      notes: "Review product decision for personal fouls / PF support."
+
+  - id: pace_team_leaders_wave4
+    query: "team pace leaders this season"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pace
+    review_notes: "Team advanced pace leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - advanced_metric
+        - stat_alias
+      notes: "Review team pace leaderboard rows."
+
+  - id: def_rating_team_leaders_wave4
+    query: "best defensive rating teams this season"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: def_rating
+    review_notes: "Defensive rating team leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - advanced_metric
+        - defensive_stat
+      notes: "Review ascending defensive-rating direction."
+
+  - id: most_points_allowed_team_leaders_wave4
+    query: "which teams allow the most points per game this season"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts_per_game
+    review_notes: "Defensive points-allowed wording should bind to opponent PPG, not team scoring."
+    manual_review:
+      status: unreviewed
+      tags:
+        - defensive_stat
+        - stat_alias
+      notes: "Review current stat mapping for allow/allowed phrasing."
+
+  - id: opponent_ppg_leaders_wave4
+    query: "opponent PPG leaders this season"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts_per_game
+    review_notes: "Opponent PPG abbreviation should route to team opponent-points leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - defensive_stat
+        - stat_alias
+        - phrasing_variant
+      notes: "Review current routing for opponent PPG shorthand."
+
+  - id: assist_percentage_leader_wave4
+    query: "assist percentage leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ast_pct
+    review_notes: "Assist percentage advanced player stat alias."
+    manual_review:
+      status: unreviewed
+      tags:
+        - advanced_metric
+        - stat_alias
+      notes: "Review AST% leaderboard rows."
+
+  - id: turnover_rate_leader_wave4
+    query: "turnover rate leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: tov_pct
+    review_notes: "Turnover-rate advanced player stat alias."
+    manual_review:
+      status: unreviewed
+      tags:
+        - advanced_metric
+        - stat_alias
+      notes: "Review TOV% leaderboard rows and direction."
+
+  - id: warriors_road_record_2024_25_wave4
+    query: "Warriors road record in 2024-25"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2024-25
+    review_notes: "Explicit season plus road-record filter."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Review road filter and season preservation."
+
+  - id: celtics_against_east_record_wave4
+    query: "Celtics record against the East this season"
+    category: team_record
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Conference opponent filters should be execution-backed or cleanly unsupported, not broad full-season records."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - unsupported_boundary
+      notes: "Review current handling of East/West opponent conference phrasing."
+
+  - id: sga_playoff_teams_last_season_wave4
+    query: "SGA points against playoff teams last season"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2024-25
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Opponent-quality plus relative-season player stat context."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - opponent_quality
+        - date_filter
+      notes: "Review last-season and playoff-team filters together."
+
+  - id: jokic_assists_since_all_star_wave4
+    query: "Nikola Jokic assists since All-Star break"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ast
+    review_notes: "Since-All-Star plus stat query."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - stat_alias
+      notes: "Review finder-vs-summary default and date-window preservation."
+
+  - id: top_scorer_feb_14_2026_wave4
+    query: "Who scored the most points on February 14 2026?"
+    category: no_result_date
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: top_player_games
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Explicit-date top-performance no-match should stay clean."
+    manual_review:
+      status: unreviewed
+      tags:
+        - date_filter
+        - top_performance
+      notes: "Review date parsing and no-match guidance."
+
+  - id: best_perimeter_defenders_wave4
+    query: "Who are the best perimeter defenders this season?"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_reason: unrouted
+    expected_shape: error
+    expected_sections: []
+    review_notes: "Subjective defensive-role ranking is outside current product boundary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+        - defensive_stat
+        - subjective
+      notes: "Review unsupported-boundary guidance."
+
+  - id: mvp_right_now_wave4
+    query: "Who should win MVP right now?"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_reason: unrouted
+    expected_shape: error
+    expected_sections: []
+    review_notes: "Awards/opinion query is outside current product boundary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+        - product_decision
+        - subjective
+      notes: "Review unrouted subjective-awards behavior."
+
+  - id: lineups_edwards_gobert_wave4
+    query: "lineups with Anthony Edwards and Rudy Gobert"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: lineup_summary
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Lineup membership remains unsupported without trusted lineup coverage."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+        - product_decision
+      notes: "Review lineup unsupported guidance."

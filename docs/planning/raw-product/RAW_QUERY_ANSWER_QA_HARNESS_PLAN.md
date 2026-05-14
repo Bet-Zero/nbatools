@@ -780,6 +780,68 @@ fixed scalar/compound threshold behavior.
   remaining P2 product-boundary families such as position-filtered
   leaderboards / count phrase quality.
 
+## Corpus Expansion Wave 4 Status
+
+Corpus Expansion Wave 4 broadened the manual QA corpus from 145 to 195 curated
+cases. This was a corpus/docs/review wave only: no production query behavior,
+frontend rendering, backend answer metadata, harness logic, or source data was
+changed.
+
+Coverage strategy:
+
+- Position/role/context aliases: position-filtered leaderboards, rookie/bench/
+  starter leaderboard boundaries, and named-player starter/bench role contexts.
+- Splits/comparisons: player and team home-away/wins-losses splits, player/team
+  comparisons, head-to-head matchup records, and on/off unsupported behavior.
+- Playoff/history/era: Finals/conference-finals record phrasing, playoff
+  appearances/history, series-record phrasing, since-year and decade queries,
+  and regular-season vs playoff-team guardrails.
+- Stat aliases/advanced metrics: eFG%, turnovers, personal fouls, pace,
+  defensive rating, points allowed/opponent PPG, AST%, and turnover rate.
+- Context/filter combinations: explicit road season records, East/West-style
+  opponent context, opponent-quality last season, since All-Star plus stat, and
+  explicit-date no-match behavior.
+- Unsupported boundaries: subjective defensive ranking, MVP/award opinion, and
+  lineup membership without trusted lineup coverage.
+
+Latest run:
+
+- Run ID: `20260513T214500Z_wave4_full`
+- Output path:
+  `outputs/raw_query_answer_qa/20260513T214500Z_wave4_full/report.md`
+- Cases: 195
+- Result statuses: `ok: 172`, `no_result: 15`, `error: 8`
+- Expectation cases: `pass: 181`, `fail: 14`
+- Expectation checks: `pass: 953`, `fail: 48`
+- Suspicious flag cases: 8
+- Suspicious flags: `expected_ok_returned_non_ok: 2`,
+  `expected_unsupported_returned_ok: 6`
+- Informational flag cases: 113
+- Informational flags: `frontend_hero_expected: 113`
+- Verified outlier cases: 1
+- Verified outliers: `top_performance_high_points: 1`
+
+New finding summary:
+
+- AQ-018: position/role-filtered leaderboards and role/team-scope broad
+  fallbacks
+- AQ-019: explicit player comparison wording routing to a player-game finder
+- AQ-020: playoff round-record and playoff matchup-record phrasing gaps
+- AQ-021: defensive/opponent-points alias gaps
+- AQ-022: unsupported personal-foul stat alias fallback
+- AQ-023: opponent-conference context filters falling back to full-season
+  records
+
+Recommended next phase:
+
+- Do not start frontend hero/copy QA yet if product-answer correctness is the
+  priority. Group the Wave 4 failures into fix families first, with P1 attention
+  on playoff round/matchup routing and defensive/opponent-points aliases.
+- Then triage P2 boundaries for position/role leaderboards, unsupported stat
+  aliases, player comparison intent, and East/West opponent-conference filters.
+- After those fixes or product decisions, rerun the 195-case corpus before
+  starting frontend hero/copy QA.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

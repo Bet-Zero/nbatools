@@ -8,21 +8,38 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260513T094000Z_wave5_full`
-- Corpus size: 145 cases
-- Output report path: `outputs/raw_query_answer_qa/20260513T094000Z_wave5_full/report.md`
+- Run ID: `20260513T214500Z_wave4_full`
+- Corpus size: 195 cases
+- Output report path:
+  `outputs/raw_query_answer_qa/20260513T214500Z_wave4_full/report.md`
 - Summary counts:
-  - Result statuses: `ok: 129`, `no_result: 10`, `error: 6`
-  - Expectation cases: `pass: 145`
-  - Expectation checks: `pass: 746`
-  - Failed case IDs: none
-  - Manual review statuses: `unreviewed: 120`, `expected_unsupported: 8`, `pass: 16`, `verified_outlier: 1`
-  - Answer text policies: `frontend_hero_expected: 76`, `requires_backend_answer_text: 10`, `no_answer_text_expected: 16`, `<unspecified>: 43`
-  - Answer text statuses: `frontend_hero_expected: 76`, `backend_answer_text_present: 10`, `no_answer_text_expected: 16`, `not_required: 43`
-  - Suspicious flag cases: 0
-  - Suspicious flags: none
-  - Informational flag cases: 76
-  - Informational flags: `frontend_hero_expected: 76`
+  - Result statuses: `ok: 172`, `no_result: 15`, `error: 8`
+  - Expectation cases: `pass: 181`, `fail: 14`
+  - Expectation checks: `pass: 953`, `fail: 48`
+  - Failed case IDs:
+    `centers_rebound_leaders_wave4`, `rookie_scoring_leaders_wave4`,
+    `bench_scoring_leaders_wave4`, `starter_assist_leaders_wave4`,
+    `celtics_bench_scoring_boundary_wave4`,
+    `lebron_durant_comparison_wave4`, `bulls_finals_record_wave4`,
+    `warriors_finals_record_since_2015_wave4`,
+    `celtics_conference_finals_record_wave4`,
+    `heat_knicks_playoff_series_record_wave4`,
+    `personal_foul_leaders_wave4`,
+    `most_points_allowed_team_leaders_wave4`,
+    `opponent_ppg_leaders_wave4`, `celtics_against_east_record_wave4`
+  - Manual review statuses: `unreviewed: 170`, `expected_unsupported: 8`,
+    `pass: 16`, `verified_outlier: 1`
+  - Answer text policies: `frontend_hero_expected: 115`,
+    `requires_backend_answer_text: 10`, `no_answer_text_expected: 27`,
+    `<unspecified>: 43`
+  - Answer text statuses: `frontend_hero_expected: 113`,
+    `backend_answer_text_present: 10`, `no_answer_text_expected: 27`,
+    `not_required: 45`
+  - Suspicious flag cases: 8
+  - Suspicious flags: `expected_ok_returned_non_ok: 2`,
+    `expected_unsupported_returned_ok: 6`
+  - Informational flag cases: 113
+  - Informational flags: `frontend_hero_expected: 113`
   - Verified outlier cases: 1
   - Verified outliers: `top_performance_high_points: 1`
 
@@ -45,6 +62,42 @@ New review signals are grouped into these families:
 - answer text quality: backend count phrases that are present but too generic
   or expose raw stat labels
 
+## Corpus Expansion Wave 4 summary
+
+Expansion Wave 4 grew the curated corpus from 145 to 195 cases. It did not
+change production query behavior, frontend rendering, backend answer metadata,
+or source data. The wave was narrower than Wave 3 and focused on P2/deeper
+coverage rather than broad surface repetition.
+
+Coverage strategy:
+
+- Position/role/context aliases: 12 added cases for position-filtered
+  leaderboards, rookie/bench/starter leaderboard boundaries, and named-player
+  starter/bench role contexts.
+- Splits/comparisons: 10 added cases for player/team home-away and wins-losses
+  splits, player/team comparisons, head-to-head matchup records, and on/off
+  unsupported guidance.
+- Playoff/history/era: 10 added cases for Finals/conference-finals record
+  phrasing, playoff appearances/history, series-record phrasing, since-year and
+  decade era queries, and regular-season vs playoff-team guardrails.
+- Stat aliases/advanced metrics: 10 added cases for eFG%, turnovers,
+  personal fouls, pace, defensive rating, points allowed/opponent PPG, AST%,
+  and turnover rate.
+- Context/filter combinations: 5 added cases for explicit road season records,
+  East/West-style opponent context, opponent-quality last season, since
+  All-Star plus stat, and explicit-date no-match behavior.
+- Unsupported/product boundaries: 3 added cases for subjective defensive,
+  award, and lineup coverage boundaries.
+
+New review signals are grouped into these families:
+
+- position/role-filtered leaderboards and role/team-scope broad fallbacks
+- player comparison phrasing routing
+- playoff round-record and playoff matchup-record phrasing
+- defensive/opponent-points alias coverage
+- unsupported stat aliases falling back to points
+- opponent-conference context filters falling back to full-season records
+
 ## Finding summary
 
 | Finding ID | Priority | Category | Query / Case ID | Finding type | Status | Notes | Recommended fix family |
@@ -66,6 +119,12 @@ New review signals are grouped into these families:
 | AQ-015 | P2 | Leaderboard context filters | `guards_fg_percentage_leaders` | missing_filter | open | `among guards` is ignored; the top row is Jaxson Hayes, indicating position context is not applied on this leaderboard. | position-filtered leaderboards |
 | AQ-016 | P2 | Backend answer text quality | `players_40_point_count`, `players_10_assist_count`, `curry_5_threes_count`, `luka_40_point_count`, `wemby_5_blocks_count`, `teams_120_point_count_answer_text_review` | awkward_answer_text | open | Backend count phrases are present but sometimes too generic (`Result has recorded...`) or expose raw stat labels (`fg3ms`, `blks`, `pts`) instead of natural threshold phrasing. | count phrase generation |
 | AQ-017 | P2 | Product boundary / stat coverage | `minutes_leaders_unsupported`, `biggest_team_three_point_games_boundary` | needs_product_decision | open | `minutes` is documented as a stat alias but leaderboard execution returns unsupported; team single-game threes wording is unrouted even though top-team-game scoring exists. Decide whether to support or document these as explicit boundaries. | product boundary / stat coverage |
+| AQ-018 | P2 | Position/role-filtered leaderboards | `centers_rebound_leaders_wave4`, `rookie_scoring_leaders_wave4`, `bench_scoring_leaders_wave4`, `starter_assist_leaders_wave4`, `celtics_bench_scoring_boundary_wave4` | missing_filter / unsupported_no_result_policy | open | Position context is absent from returned filters, and rookie/bench/starter/team-bench forms return broad player or team tables instead of execution-backed role filters or clean unsupported responses. | position/role-filtered leaderboards |
+| AQ-019 | P2 | Player comparison routing | `lebron_durant_comparison_wave4` | route_mismatch | open | Explicit `LeBron James vs Kevin Durant comparison` returns a LeBron player-game finder instead of a `player_compare` comparison table. | comparison routing / player-vs-player intent |
+| AQ-020 | P1 | Playoff round and matchup phrasing | `bulls_finals_record_wave4`, `warriors_finals_record_since_2015_wave4`, `celtics_conference_finals_record_wave4`, `heat_knicks_playoff_series_record_wave4` | route_and_season_type_issue | open | Single-team Finals/conference-finals record phrasing routes to `team_record` no-result or broad regular-season records; Heat/Knicks playoff series-record wording returns single-team playoff history instead of matchup history. | playoff round/matchup routing |
+| AQ-021 | P1 | Defensive stat aliases | `most_points_allowed_team_leaders_wave4`, `opponent_ppg_leaders_wave4` | stat_mapping_issue / route_mismatch | open | `allow the most points per game` maps to team scoring `pts`; `opponent PPG leaders` routes to player points leaders. Both should bind to team opponent-points semantics or cleanly unsupported behavior. | defensive/opponent-points stat mapping |
+| AQ-022 | P2 | Unsupported stat alias boundary | `personal_foul_leaders_wave4` | unsupported_no_result_policy | open | `personal fouls leaders` falls back to points leaders. Personal fouls/PF need a support decision; until then the route should return a clean unsupported/no-result response. | product boundary / stat coverage |
+| AQ-023 | P2 | Opponent conference filters | `celtics_against_east_record_wave4` | missing_filter / unsupported_no_result_policy | open | `against the East` is dropped and returns the Celtics full-season record. Conference opponent filters need execution-backed support or clean unsupported handling. | context filter preservation |
 
 ## Notes
 
@@ -82,3 +141,6 @@ New review signals are grouped into these families:
   that appear to expose real behavior gaps. Do not "green" those cases by
   encoding wrong current behavior unless product review decides they are
   unsupported boundaries.
+- Corpus Expansion Wave 4 intentionally leaves 14 expectation failures in place
+  for new P2/deeper coverage cases that expose product gaps or product-decision
+  boundaries. The original 145 clean cases remain preserved.
