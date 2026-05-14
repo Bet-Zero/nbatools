@@ -545,6 +545,34 @@ class TestWithoutPlayer:
         assert top_row["team_abbr"] != "BKN"
 
     @pytest.mark.needs_data
+    def test_most_points_allowed_leaderboard_ranks_highest_opponent_ppg(self):
+        qr = execute_natural_query("which teams allow the most points per game this season")
+
+        assert qr.route == "season_team_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "opponent_pts_per_game"
+
+        top_row = qr.to_dict()["sections"]["leaderboard"][0]
+        assert top_row["team_abbr"] == "UTA"
+        assert top_row["team_name"] == "Utah Jazz"
+        assert top_row["opponent_pts_per_game"] == pytest.approx(126.012, abs=0.001)
+        assert "player_name" not in top_row
+        assert top_row["team_abbr"] != "DEN"
+
+    @pytest.mark.needs_data
+    def test_opponent_ppg_leaders_use_team_leaderboard_rows(self):
+        qr = execute_natural_query("opponent PPG leaders this season")
+
+        assert qr.route == "season_team_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "opponent_pts_per_game"
+
+        top_row = qr.to_dict()["sections"]["leaderboard"][0]
+        assert top_row["team_abbr"] == "UTA"
+        assert top_row["opponent_pts_per_game"] == pytest.approx(126.012, abs=0.001)
+        assert "player_name" not in top_row
+
+    @pytest.mark.needs_data
     def test_tatum_under_40_fg_record_uses_percentage_filter(self):
         qr = execute_natural_query("What's Boston's record when Jayson Tatum shoots under 40%?")
 

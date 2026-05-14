@@ -431,7 +431,11 @@ Examples:
 - `best record since 2015`
 - `worst away record since 2020`
 - `best scoring teams vs Lakers since 2018`
-- `Which team has allowed the fewest points per game this season?` (team stat alias → `opponent_pts_per_game`; points allowed, not defensive rating)
+- `Which team has allowed the fewest points per game this season?`
+- `which teams allow the most points per game this season`
+- `opponent PPG leaders this season`
+- `opponent points per game leaders`
+- points allowed / opponent PPG leaderboards rank opponent scoring allowed, not defensive rating
 - `best team 3 point percentage` (team stat alias → fg3_pct)
 - `team fg%` (team stat alias → fg_pct)
 - `team ft%` (team stat alias → ft_pct)

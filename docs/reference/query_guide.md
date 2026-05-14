@@ -41,6 +41,8 @@ Natural examples:
 - `teams with best efg%`
 - `teams with most threes`
 - `fewest points allowed per game` (team stat alias → opponent_pts_per_game)
+- `most points allowed per game`
+- `opponent PPG leaders` (points allowed / opponent points, not defensive rating)
 - `best 3 point percentage` (stat alias → fg3_pct)
 - `best field goal percentage` (stat alias → fg_pct)
 - `team ft%` (stat alias → ft_pct)
@@ -184,6 +186,8 @@ Natural examples:
 - `teams with best ts%`
 - `teams with most threes`
 - `fewest points allowed per game`
+- `most points allowed per game`
+- `opponent PPG leaders`
 - `best 3 point percentage`
 - `best field goal percentage`
 - `team fg%`

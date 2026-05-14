@@ -3455,16 +3455,24 @@ cases:
     expected_shape: leaderboard_table
     expected_sections:
       - leaderboard
+    expected_row_counts:
+      leaderboard: 10
     hard_assertions:
       - path: result.metadata.stat
         equals: opponent_pts_per_game
+      - path: result.sections.leaderboard.0.team_name
+        equals: Utah Jazz
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: UTA
+      - path: result.sections.leaderboard.0.opponent_pts_per_game
+        equals: 126.01219512195122
     review_notes: "Defensive points-allowed wording should bind to opponent PPG, not team scoring."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - defensive_stat
         - stat_alias
-      notes: "Review current stat mapping for allow/allowed phrasing."
+      notes: "Fix Wave 6A: allow-the-most wording maps to opponent points per game; top row is Utah in the current dataset."
 
   - id: opponent_ppg_leaders_wave4
     query: "opponent PPG leaders this season"
@@ -3476,17 +3484,25 @@ cases:
     expected_shape: leaderboard_table
     expected_sections:
       - leaderboard
+    expected_row_counts:
+      leaderboard: 10
     hard_assertions:
       - path: result.metadata.stat
         equals: opponent_pts_per_game
+      - path: result.sections.leaderboard.0.team_name
+        equals: Utah Jazz
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: UTA
+      - path: result.sections.leaderboard.0.opponent_pts_per_game
+        equals: 126.01219512195122
     review_notes: "Opponent PPG abbreviation should route to team opponent-points leaderboard."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - defensive_stat
         - stat_alias
         - phrasing_variant
-      notes: "Review current routing for opponent PPG shorthand."
+      notes: "Fix Wave 6A: opponent PPG shorthand routes to the team opponent-points leaderboard."
 
   - id: assist_percentage_leader_wave4
     query: "assist percentage leaders this season"
