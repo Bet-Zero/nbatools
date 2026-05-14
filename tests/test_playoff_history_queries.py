@@ -240,6 +240,13 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         result = self._parse("knicks vs heat playoff history since 1999")
         assert result["route"] == "playoff_matchup_history", result["route"]
 
+    def test_adjacent_playoff_matchup_history_routes(self):
+        """'Heat Knicks playoff series record' → playoff_matchup_history."""
+        result = self._parse("Heat Knicks playoff series record")
+        assert result["route"] == "playoff_matchup_history", result["route"]
+        assert result["route_kwargs"]["team_a"] == "MIA"
+        assert result["route_kwargs"]["team_b"] == "NYK"
+
     def test_playoff_series_matchup_routes(self):
         """'Lakers playoff series record vs Celtics' → playoff_matchup_history."""
         result = self._parse("lakers vs celtics playoff series since 2000")
@@ -291,6 +298,13 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         assert result["route_kwargs"]["season"] is None
         assert result["route_kwargs"]["start_season"] is not None
         assert result["route_kwargs"]["playoff_round"] == "02"
+
+    def test_single_team_finals_record_is_unsupported_boundary(self):
+        result = self._parse("Warriors Finals record since 2015")
+        assert result["route"] == "playoff_history", result["route"]
+        assert result["season_type"] == "Playoffs"
+        assert result["route_kwargs"]["playoff_round"] == "04"
+        assert result["route_kwargs"]["unsupported_filters"] == ["single_team_playoff_round_record"]
 
 
 # ---------------------------------------------------------------------------

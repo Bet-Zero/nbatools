@@ -31,6 +31,7 @@ from nbatools.commands._matchup_utils import (
     detect_player_resolved,
     detect_team_resolved,
     detect_without_player,
+    extract_adjacent_playoff_team_comparison,
     extract_player_comparison,
     extract_team_comparison,
 )
@@ -514,6 +515,13 @@ def _build_parse_state(query: str) -> dict:
     playoff_history_intent = detect_playoff_history_intent(q)
     playoff_round_filter = detect_playoff_round_filter(q)
     by_round_intent = detect_by_round_intent(q)
+    if playoff_round_filter and season_type != "Playoffs":
+        from nbatools.commands._seasons import default_end_season
+
+        regular_default_end = default_end_season(season_type)
+        season_type = "Playoffs"
+        if start_season and end_season == regular_default_end:
+            end_season = default_end_season("Playoffs")
     historical_route_intent = bool(
         by_decade_intent
         or playoff_appearance_intent
@@ -573,6 +581,8 @@ def _build_parse_state(query: str) -> dict:
 
     if not (player_a and player_b):
         team_a, team_b = extract_team_comparison(q)
+        if not (team_a and team_b):
+            team_a, team_b = extract_adjacent_playoff_team_comparison(q)
 
     player = None
     entity_ambiguity: dict | None = None
@@ -1230,6 +1240,11 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     elif (ppr := try_playoff_record_route(parsed)) is not None:
         route, route_kwargs = ppr
+        if route_kwargs.get("unsupported_filters") == ["single_team_playoff_round_record"]:
+            notes.append(
+                "unsupported_boundary: single-team playoff round records are not supported "
+                "until the route and round-data contract is approved"
+            )
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
         route_kwargs = {
@@ -1897,6 +1912,13 @@ def _finalize_route(parsed: dict) -> dict:
     out = dict(parsed)
     out["route"] = route
     out["route_kwargs"] = route_kwargs
+    if route in {
+        "playoff_appearances",
+        "playoff_history",
+        "playoff_matchup_history",
+        "playoff_round_record",
+    }:
+        out["season_type"] = "Playoffs"
     if route == "season_team_leaders" and route_kwargs.get("stat"):
         out["stat"] = route_kwargs["stat"]
     out["intent"] = route_to_intent(route, count_intent=count_intent)

@@ -848,6 +848,78 @@ def test_playoff_history_phrase_still_routes_to_playoff_history():
     assert parsed["season_type"] == "Playoffs"
 
 
+@pytest.mark.parametrize(
+    ("query", "team_a", "team_b", "playoff_round"),
+    [
+        ("Heat Knicks playoff series record", "MIA", "NYK", None),
+        ("Heat Knicks playoff history", "MIA", "NYK", None),
+        ("Lakers Celtics playoff series record", "LAL", "BOS", None),
+        ("Warriors Cavaliers Finals history", "GSW", "CLE", "04"),
+    ],
+)
+def test_adjacent_playoff_team_phrasing_routes_to_matchup_history(
+    query, team_a, team_b, playoff_round
+):
+    parsed = parse_query(query)
+    assert parsed["route"] == "playoff_matchup_history"
+    assert parsed["season_type"] == "Playoffs"
+    assert parsed["team_a"] == team_a
+    assert parsed["team_b"] == team_b
+    assert parsed["team"] is None
+    assert parsed["route_kwargs"]["team_a"] == team_a
+    assert parsed["route_kwargs"]["team_b"] == team_b
+    assert parsed["route_kwargs"]["playoff_round"] == playoff_round
+
+
+def test_explicit_vs_playoff_matchup_still_routes_to_matchup_history():
+    parsed = parse_query("Heat vs Knicks playoff history")
+    assert parsed["route"] == "playoff_matchup_history"
+    assert parsed["team_a"] == "MIA"
+    assert parsed["team_b"] == "NYK"
+
+
+def test_single_team_playoff_series_record_vs_opponent_preserves_opponent_filter():
+    parsed = parse_query("Lakers playoff series record vs Celtics")
+    assert parsed["route"] == "playoff_history"
+    assert parsed["team"] == "LAL"
+    assert parsed["opponent"] == "BOS"
+    assert parsed["team_a"] is None
+    assert parsed["team_b"] is None
+
+
+def test_adjacent_team_parsing_does_not_apply_without_playoff_context():
+    parsed = parse_query("Heat Knicks record")
+    assert parsed["team_a"] is None
+    assert parsed["team_b"] is None
+    assert parsed["route"] != "playoff_matchup_history"
+
+
+@pytest.mark.parametrize(
+    ("query", "team", "playoff_round"),
+    [
+        ("Bulls Finals record", "CHI", "04"),
+        ("Warriors Finals record since 2015", "GSW", "04"),
+        ("Celtics conference finals record", "BOS", "03"),
+    ],
+)
+def test_single_team_playoff_round_records_are_unsupported_boundary(query, team, playoff_round):
+    parsed = parse_query(query)
+    assert parsed["route"] == "playoff_history"
+    assert parsed["season_type"] == "Playoffs"
+    assert parsed["team"] == team
+    assert parsed["route_kwargs"]["team"] == team
+    assert parsed["route_kwargs"]["playoff_round"] == playoff_round
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["single_team_playoff_round_record"]
+    assert parsed["route"] != "team_record"
+    assert any("single-team playoff round records" in note for note in parsed.get("notes", []))
+
+
+def test_single_team_playoff_round_record_since_preserves_start_season():
+    parsed = parse_query("Warriors Finals record since 2015")
+    assert parsed["route_kwargs"]["start_season"] == "2015-16"
+    assert parsed["route_kwargs"]["end_season"] == "2024-25"
+
+
 def test_teams_over_point_five_surface_form_sets_opponent_quality_slot():
     parsed = parse_query("Jokic against teams over .500")
     assert parsed["opponent_quality"]["surface_term"] == "teams over .500"

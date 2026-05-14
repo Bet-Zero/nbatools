@@ -196,6 +196,54 @@ class TestTopPerformanceAndTeamStretchBoundaries:
         assert rows[0]["window_size"] == 3
 
 
+class TestPlayoffRoutingBoundaries:
+    @pytest.mark.needs_data
+    def test_adjacent_heat_knicks_series_record_matches_vs_family(self):
+        adjacent = execute_natural_query("Heat Knicks playoff series record")
+        explicit = execute_natural_query("Heat vs Knicks playoff history")
+
+        assert adjacent.route == "playoff_matchup_history"
+        assert adjacent.result.result_status == "ok"
+        assert explicit.route == "playoff_matchup_history"
+        assert explicit.result.result_status == "ok"
+
+        adjacent_sections = adjacent.to_dict()["sections"]
+        explicit_sections = explicit.to_dict()["sections"]
+        assert set(adjacent_sections) == {"summary", "comparison"}
+        assert len(adjacent_sections["summary"]) == len(explicit_sections["summary"]) == 2
+        assert len(adjacent_sections["comparison"]) == len(explicit_sections["comparison"]) == 6
+        assert {row["team_name"] for row in adjacent_sections["summary"]} == {
+            "Miami Heat",
+            "New York Knicks",
+        }
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "team", "start_season"),
+        [
+            ("Warriors Finals record since 2015", "GSW", "2015-16"),
+            ("Celtics conference finals record", "BOS", None),
+            ("Bulls Finals record", "CHI", None),
+        ],
+    )
+    def test_single_team_round_records_return_unsupported_not_team_record(
+        self, query, team, start_season
+    ):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "playoff_history"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["season_type"] == "Playoffs"
+        assert qr.metadata["team"] == team
+        assert qr.metadata["unsupported_filters"] == ["single_team_playoff_round_record"]
+        assert qr.to_dict()["sections"] == {}
+        if start_season is not None:
+            assert qr.metadata["start_season"] == start_season
+        notes = qr.metadata.get("notes", []) + qr.result.notes
+        assert any("single-team playoff round records" in note for note in notes)
+
+
 # ---------------------------------------------------------------------------
 # 3. Stat phrase expansion
 # ---------------------------------------------------------------------------

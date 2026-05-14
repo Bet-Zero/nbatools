@@ -131,6 +131,17 @@ def _resolve_season_defaults(
     return season, start_season, end_season
 
 
+def _resolve_playoff_span_defaults(
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+) -> tuple[str | None, str | None, str | None]:
+    """Resolve round-scoped playoff spans without regular-season defaults."""
+    if start_season and end_season == default_end_season("Regular Season"):
+        end_season = default_end_season("Playoffs")
+    return _resolve_season_defaults(season, start_season, end_season, "Playoffs")
+
+
 def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
     """Try to resolve a playoff/record/decade-bucketed route.
 
@@ -185,7 +196,11 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
 
     # -- Playoff matchup history: team_a vs team_b --
     if (
-        (playoff_history_intent or (season_type == "Playoffs" and record_intent))
+        (
+            playoff_history_intent
+            or (season_type == "Playoffs" and record_intent)
+            or (playoff_round_filter and re.search(r"\b(?:history|series|record)\b", q))
+        )
         and team_a
         and team_b
     ):
@@ -200,6 +215,29 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "end_season": pm_end,
             "playoff_round": playoff_round_filter,
             "by_round": by_round_intent,
+        }
+
+    # -- Unsupported boundary: single-team playoff round records/history --
+    if (
+        team
+        and not team_a
+        and not team_b
+        and playoff_round_filter
+        and not playoff_appearance_intent
+        and (record_intent or re.search(r"\bhistory\b", q))
+    ):
+        pr_season, pr_start, pr_end = _resolve_playoff_span_defaults(
+            season, start_season, end_season
+        )
+        return "playoff_history", {
+            "team": team,
+            "season": pr_season,
+            "start_season": pr_start,
+            "end_season": pr_end,
+            "playoff_round": playoff_round_filter,
+            "by_decade": by_decade_intent,
+            "opponent": opponent,
+            "unsupported_filters": ["single_team_playoff_round_record"],
         }
 
     # -- Matchup by decade: team_a vs team_b by decade --

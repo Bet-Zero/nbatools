@@ -3116,43 +3116,48 @@ cases:
     query: "Bulls Finals record"
     category: playoff_history
     priority: p2
-    answer_text_policy: frontend_hero_expected
-    expected_status: ok
-    expected_route: playoff_round_record
-    expected_shape: playoff_round_record
-    expected_sections:
-      - leaderboard
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_history
+    expected_reason: filter_not_supported
+    expected_shape: no_result
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-    review_notes: "Single-team Finals-record phrasing should use playoff round semantics."
+      - path: result.metadata.unsupported_filters.0
+        equals: single_team_playoff_round_record
+    review_notes: "Single-team Finals-record phrasing is an expected unsupported boundary; Bulls Finals-era round data is not reliable in the current dataset."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - playoff
-        - matchup
-      notes: "Review current no-result/team-record behavior."
+        - unsupported_boundary
+      notes: "Single-team playoff round records are deferred until the route/round-data contract is approved; Bulls pre-2001 Finals round labels are not reliable."
 
   - id: warriors_finals_record_since_2015_wave4
     query: "Warriors Finals record since 2015"
     category: playoff_history
     priority: p2
-    answer_text_policy: frontend_hero_expected
-    expected_status: ok
-    expected_route: playoff_round_record
-    expected_shape: playoff_round_record
-    expected_sections:
-      - leaderboard
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_history
+    expected_reason: filter_not_supported
+    expected_shape: no_result
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-    review_notes: "Finals plus since-year phrasing should not return a broad regular-season team record."
+      - path: result.metadata.start_season
+        equals: 2015-16
+      - path: result.metadata.unsupported_filters.0
+        equals: single_team_playoff_round_record
+    review_notes: "Finals plus since-year phrasing should not return a broad regular-season team record; single-team round records are deferred."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - playoff
         - era
-      notes: "Review round-record route and date/era mapping."
+        - unsupported_boundary
+      notes: "Single-team round records are deferred until round extraction and the route/shape contract are approved."
 
   - id: most_conference_finals_appearances_wave4
     query: "most conference finals appearances"
@@ -3176,21 +3181,23 @@ cases:
     query: "Celtics conference finals record"
     category: playoff_history
     priority: p2
-    answer_text_policy: frontend_hero_expected
-    expected_status: ok
-    expected_route: playoff_round_record
-    expected_shape: playoff_round_record
-    expected_sections:
-      - leaderboard
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_history
+    expected_reason: filter_not_supported
+    expected_shape: no_result
     hard_assertions:
       - path: result.metadata.season_type
         equals: Playoffs
-    review_notes: "Single-team conference-finals record should use playoff round semantics."
+      - path: result.metadata.unsupported_filters.0
+        equals: single_team_playoff_round_record
+    review_notes: "Single-team conference-finals record phrasing should not fall through to a regular-season record; single-team round records are deferred."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - playoff
-      notes: "Review current no-result/team-record behavior."
+        - unsupported_boundary
+      notes: "Single-team round records are deferred until round extraction and the route/shape contract are approved."
 
   - id: spurs_playoff_history_since_2000_wave4
     query: "Spurs playoff history since 2000"
@@ -3225,13 +3232,23 @@ cases:
     expected_sections:
       - summary
       - comparison
+    expected_row_counts:
+      summary: 2
+      comparison: 6
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.sections.summary.0.team_name
+        equals: Miami Heat
+      - path: result.sections.summary.1.team_name
+        equals: New York Knicks
     review_notes: "Playoff series-record wording should use matchup history semantics."
     manual_review:
-      status: unreviewed
+      status: pass
       tags:
         - playoff
         - matchup
-      notes: "Review whether route returns a single-team playoff history instead."
+      notes: "Wave 6B fixed adjacent playoff team-team phrasing to route to playoff_matchup_history."
 
   - id: lakers_record_since_2010_wave4
     query: "Lakers record since 2010"

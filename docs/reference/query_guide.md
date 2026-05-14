@@ -216,6 +216,23 @@ Natural examples:
 - `Lakers 2024-25 road record`
 - `Celtics record against playoff teams`
 
+## Playoff history and rounds
+
+- `Lakers playoff history`
+- `Heat vs Knicks playoff history`
+- `Heat Knicks playoff series record`
+- `Lakers playoff series record vs Celtics`
+- `Lakers Finals appearances`
+- `most Finals appearances since 1980`
+- `best Finals record since 1980`
+
+Adjacent team names are only treated as a matchup in explicit playoff
+series/history contexts. Single-team round-record phrasing such as
+`Warriors Finals record since 2015`, `Celtics conference finals record`, and
+`Bulls Finals record` is currently unsupported and returns
+`no_result` / `filter_not_supported` rather than a broad regular-season record.
+Bulls Finals-era round labels are not reliable in the current pre-2001 data.
+
 ## Season-high / best-game queries
 
 - `Cade Cunningham season high`

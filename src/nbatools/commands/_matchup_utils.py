@@ -170,6 +170,56 @@ def extract_team_comparison(text: str) -> tuple[str | None, str | None]:
     return None, None
 
 
+_ADJACENT_TEAM_SEPARATOR_RE = re.compile(r"^[\s/&,+-]+$")
+
+
+def _non_overlapping_team_mentions(text: str) -> list[tuple[int, int, str]]:
+    """Return longest non-overlapping team mentions in text order."""
+    mentions: list[tuple[int, int, str]] = []
+
+    for alias, team in sorted(TEAM_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+        for match in re.finditer(rf"\b{re.escape(alias)}\b", text):
+            span = match.span()
+            if any(not (span[1] <= start or span[0] >= end) for start, end, _ in mentions):
+                continue
+            mentions.append((span[0], span[1], team))
+
+    return sorted(mentions, key=lambda item: item[0])
+
+
+def extract_adjacent_playoff_team_comparison(text: str) -> tuple[str | None, str | None]:
+    """Detect adjacent team-team phrasing in playoff series/history contexts.
+
+    This intentionally does not generalize adjacency parsing to ordinary
+    comparisons. It only promotes phrases like "Heat Knicks playoff history"
+    or "Warriors Cavaliers Finals history" where a playoff series/history
+    context is explicit and the two team mentions are directly adjacent.
+    """
+    cleaned_text = strip_matchup_noise(text)
+    has_playoff_context = bool(
+        re.search(r"\b(?:playoff|postseason)\s+(?:history|series|matchups?|record)\b", cleaned_text)
+        or re.search(
+            r"\b(?:nba\s+finals?|the\s+finals|finals?|conference\s+finals?|conf\s+finals?)"
+            r"\s+(?:history|series|matchups?|record)\b",
+            cleaned_text,
+        )
+    )
+    if not has_playoff_context:
+        return None, None
+
+    mentions = _non_overlapping_team_mentions(cleaned_text)
+    for first, second in zip(mentions, mentions[1:]):
+        _, first_end, team_a = first
+        second_start, _, team_b = second
+        if team_a == team_b:
+            continue
+        separator = cleaned_text[first_end:second_start]
+        if _ADJACENT_TEAM_SEPARATOR_RE.fullmatch(separator):
+            return team_a, team_b
+
+    return None, None
+
+
 # ---------------------------------------------------------------------------
 # Player-vs-player-as-opponent detection
 # ---------------------------------------------------------------------------

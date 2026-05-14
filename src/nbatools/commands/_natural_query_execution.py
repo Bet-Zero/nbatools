@@ -434,6 +434,13 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "or a team single-game query such as 'top team scoring games this season' "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "single_team_playoff_round_record":
+        return (
+            "single-team playoff round records are not supported with the current "
+            "route and round-data contract; use round appearance leaderboards or "
+            "playoff matchup history instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     return (
         f"{filter_id} filter is not supported with current data; try removing this filter "
         f"or asking for standard player, team, or game stats "

@@ -895,6 +895,62 @@ Remaining families:
 - P2 position/role leaderboards, player comparison routing, personal-foul
   stat boundary, and opponent-conference filters remain open.
 
+## Fix Wave 6B Status
+
+Fix Wave 6B resolved AQ-020 as a focused playoff routing and product-boundary
+wave. It did not change defensive/opponent-points aliases, frontend rendering,
+backend answer-phrase enrichment, source data, or playoff round-record
+execution.
+
+Target cases:
+
+- `heat_knicks_playoff_series_record_wave4`
+- `bulls_finals_record_wave4`
+- `warriors_finals_record_since_2015_wave4`
+- `celtics_conference_finals_record_wave4`
+
+Behavior now verified:
+
+- `Heat Knicks playoff series record` routes to `playoff_matchup_history` with
+  `team_a=MIA` and `team_b=NYK`, matching the existing
+  `Heat vs Knicks playoff history` result family.
+- `Bulls Finals record`, `Warriors Finals record since 2015`, and
+  `Celtics conference finals record` no longer return broad regular-season
+  `team_record` answers.
+- Single-team playoff round records are an explicit unsupported boundary for
+  now: these queries return `no_result` / `filter_not_supported` with
+  `unsupported_filters=["single_team_playoff_round_record"]`.
+- Bulls Finals remains unsupported because current Bulls Finals-era rows are
+  pre-2001 and do not have reliable round labels in the current dataset.
+
+Latest harness outputs:
+
+- Targeted AQ-020 run:
+  `outputs/raw_query_answer_qa/20260514T113039Z_wave6b_aq020_targeted/report.md`
+- Adjacent playoff regression run:
+  `outputs/raw_query_answer_qa/20260514T113039Z_wave6b_playoff_regression/report.md`
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260514T113039Z_wave6b_full/report.md`
+
+Full corpus result after Wave 6B:
+
+- Cases: 195
+- Result statuses: `ok: 171`, `no_result: 16`, `error: 8`
+- Expectation cases: `pass: 187`, `fail: 8`
+- Expectation checks: `pass: 990`, `fail: 28`
+- Remaining failed case IDs: `centers_rebound_leaders_wave4`,
+  `rookie_scoring_leaders_wave4`, `bench_scoring_leaders_wave4`,
+  `starter_assist_leaders_wave4`, `celtics_bench_scoring_boundary_wave4`,
+  `lebron_durant_comparison_wave4`, `personal_foul_leaders_wave4`,
+  `celtics_against_east_record_wave4`
+
+Remaining families:
+
+- AQ-018 position/role-filtered leaderboards and role/team-scope boundaries.
+- AQ-019 explicit player comparison routing.
+- AQ-022 personal-foul stat boundary.
+- AQ-023 opponent-conference filters.
+
 ## Open Questions
 
 - Should Wave 1 seed from `tests/_query_smoke.py`, the recent visual QA failures, or a hand-curated raw-product list? Recommendation: hand-curate the first 10-15 cases, then optionally import smoke cases later.

@@ -587,7 +587,14 @@ Examples:
 
 - `Lakers playoff history`
 - `Heat vs Knicks playoff history`
+- `Heat Knicks playoff history`
+- `Heat Knicks playoff series record`
 - `Lakers playoff series record vs Celtics`
+
+Adjacent team-team phrasing is supported only inside explicit playoff
+series/history contexts. `Heat Knicks playoff series record` is treated as a
+Heat-vs-Knicks playoff matchup-history query; ordinary non-playoff adjacent
+team names are not promoted to a matchup.
 
 ### Playoff appearances / rounds
 
@@ -613,13 +620,21 @@ Examples:
 Examples outside the shipped playoff/era-history surface:
 
 - `Celtics finals record`
+- `Warriors Finals record since 2015`
+- `Celtics conference finals record`
+- `Bulls Finals record`
 - `LeBron record in the Finals`
 
-Finals-specific team/player records require an approved playoff-round record
-data contract for the requested entity grain. Current shipped support covers
-single-team playoff history, playoff appearances, playoff matchup history, and
-league-wide playoff-round record leaderboards; it does not claim entity-specific
-Finals record splits.
+Finals- or conference-finals-specific team/player records require an approved
+playoff-round record data contract for the requested entity grain. Current
+shipped support covers single-team playoff history, playoff appearances,
+playoff matchup history, and league-wide playoff-round record leaderboards; it
+does not claim entity-specific Finals or conference-finals record splits.
+Single-team round-record phrasing returns `no_result` /
+`filter_not_supported` instead of falling back to a broad regular-season record.
+The current dataset also does not provide reliable round labels for Bulls
+Finals-era pre-2001 rows, so `Bulls Finals record` remains unsupported until a
+round backfill or explicit inference contract exists.
 
 ---
 
