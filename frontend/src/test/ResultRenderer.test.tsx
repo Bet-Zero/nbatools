@@ -784,6 +784,104 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("uses lowest-direction copy for fewest points allowed leaderboards", () => {
+    const data = makeResponse({
+      query: "Which team has allowed the fewest points per game this season?",
+      route: "season_team_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text:
+            "Which team has allowed the fewest points per game this season?",
+          route: "season_team_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "opponent_pts_per_game",
+          ascending: true,
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Boston Celtics",
+              team_abbr: "BOS",
+              team_id: 1610612738,
+              games_played: 82,
+              opponent_pts_per_game: 107.1585,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Boston Celtics allowed the fewest points per game in the 2025-26 regular season, with 107.2 per game.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/most opponent pts per game/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Opponent PTS Per Game" }),
+    ).toBeInTheDocument();
+  });
+
+  it("uses highest-direction copy for most points allowed leaderboards", () => {
+    const data = makeResponse({
+      query: "which teams allow the most points per game this season",
+      route: "season_team_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "which teams allow the most points per game this season",
+          route: "season_team_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+          stat: "opponent_pts_per_game",
+          ascending: false,
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Utah Jazz",
+              team_abbr: "UTA",
+              team_id: 1610612762,
+              games_played: 82,
+              opponent_pts_per_game: 126.0122,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Utah Jazz allowed the most points per game in the 2025-26 regular season, with 126 per game.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Opponent PTS Per Game" }),
+    ).toBeInTheDocument();
+  });
+
   it("keeps wins as the primary metric for team season wins leaderboards", () => {
     const data = makeResponse({
       query: "most wins by a team in 2025-26",

@@ -163,6 +163,9 @@ export function readableNoResultMessage(
   const unsupportedPhrase = unsupportedPhraseMessage(metadata);
   if (unsupportedPhrase) return unsupportedPhrase;
 
+  const unsupportedBoundary = unsupportedBoundaryMessage(metadata);
+  if (unsupportedBoundary) return unsupportedBoundary;
+
   if (isDateNoMatch(reason, metadata)) {
     const dateRange = noResultDateRange(metadata);
     if (dateRange) return `No NBA games matched ${dateRange}.`;
@@ -190,6 +193,58 @@ export function readableNoResultMessage(
   }
 
   return humanizeBackendCopy(fallback, metadata);
+}
+
+export function unsupportedBoundaryTitle(
+  metadata: ResultMetadata | null | undefined,
+): string | null {
+  const filters = unsupportedFilters(metadata);
+  if (
+    filters.includes("personal_foul_leaderboard") ||
+    filters.includes("rookie_leaderboard") ||
+    filters.includes("role_leaderboard")
+  ) {
+    return "Unsupported Leaderboard";
+  }
+  if (filters.includes("team_bench_scoring")) {
+    return "Unsupported Summary";
+  }
+  if (filters.includes("opponent_conference")) {
+    return "Unavailable Filter";
+  }
+  return null;
+}
+
+function unsupportedBoundaryMessage(
+  metadata: ResultMetadata | null | undefined,
+): string | null {
+  const filters = unsupportedFilters(metadata);
+  if (filters.includes("personal_foul_leaderboard")) {
+    return "Personal-foul leaderboards are not supported yet.";
+  }
+  if (filters.includes("rookie_leaderboard")) {
+    return "Rookie leaderboards are not supported yet.";
+  }
+  if (filters.includes("role_leaderboard")) {
+    return "League-wide starter/bench leaderboards are not supported yet.";
+  }
+  if (filters.includes("team_bench_scoring")) {
+    return "Team bench-scoring summaries are not supported yet.";
+  }
+  if (filters.includes("opponent_conference")) {
+    return "Opponent-conference record filters are not supported yet.";
+  }
+  return null;
+}
+
+function unsupportedFilters(
+  metadata: ResultMetadata | null | undefined,
+): string[] {
+  const raw = metadata?.unsupported_filters;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((filter) => (typeof filter === "string" ? filter.trim() : ""))
+    .filter(Boolean);
 }
 
 function unsupportedPhraseMessage(
@@ -377,6 +432,7 @@ function metricLabel(metric: string): string {
     off_rating: "Offensive rating",
     opponent_pts: "Opponent points",
     pace: "Pace",
+    pf: "Personal fouls",
     pts: "Points",
     pts_avg: "Points per game",
     reb: "Rebounds",

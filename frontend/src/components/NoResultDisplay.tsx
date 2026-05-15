@@ -6,6 +6,7 @@ import {
   isColumnUnavailableReason,
   isMetricUnavailableNoResult,
   readableNoResultMessage,
+  unsupportedBoundaryTitle,
 } from "./noResultDisplayUtils";
 import styles from "./NoResultDisplay.module.css";
 
@@ -36,6 +37,7 @@ function stateProfile(
   reason: string | null | undefined,
   status: string,
   metricUnavailable = false,
+  boundaryTitle: string | null = null,
 ): StateProfile {
   if (reason === "unrouted") {
     return {
@@ -63,6 +65,17 @@ function stateProfile(
       title: "Unavailable Metric",
       label: "Metric unavailable",
       message: "The requested metric is not available in the current dataset.",
+      badgeVariant: "warning",
+    };
+  }
+
+  if (reason === "filter_not_supported" && boundaryTitle) {
+    return {
+      variant: "unsupported",
+      title: boundaryTitle,
+      label: "Unsupported boundary",
+      message:
+        "The requested filter or metric is not available in the current dataset.",
       badgeVariant: "warning",
     };
   }
@@ -148,6 +161,7 @@ export default function NoResultDisplay({
     reason,
     status,
     isMetricUnavailableNoResult(reason, metadata, detailTexts),
+    unsupportedBoundaryTitle(metadata),
   );
   const message = readableNoResultMessage(
     profile.message,

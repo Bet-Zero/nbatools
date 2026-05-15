@@ -1016,7 +1016,7 @@ Approach:
 - Selected corpus/config:
   `qa/frontend_copy_corpus.yaml`
 - Source backend run:
-  `outputs/raw_query_answer_qa/20260514T125056Z/report.jsonl`
+  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`
 - Runner:
   `frontend/src/test/frontendCopyQaReport.test.tsx`
 - Harness helper:
@@ -1042,18 +1042,38 @@ extracts review-oriented visible copy:
 
 Latest run:
 
-- Run ID: `20260514T153729Z`
+- Run ID: `20260515T024718Z`
 - Markdown report:
-  `outputs/frontend_copy_qa/20260514T153729Z/frontend_copy_report.md`
+  `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.md`
 - JSONL report:
-  `outputs/frontend_copy_qa/20260514T153729Z/frontend_copy_report.jsonl`
+  `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.jsonl`
 - Summary:
-  `outputs/frontend_copy_qa/20260514T153729Z/summary.json`
+  `outputs/frontend_copy_qa/20260515T024718Z/summary.json`
 - Selected cases: 59
 - Rendered successfully: 59
 - Render failures: 0
 - Missing backend records: 0
-- Soft checks: `pass: 151`, `fail: 5`, `not_checked: 0`
+- Soft checks: `pass: 156`, `fail: 0`, `not_checked: 0`
+
+Frontend Copy QA Fix Wave 1: Semantic Copy Cleanup status:
+
+- FCQ-001 fixed at the source/backend layer. `guards_fg_percentage_leaders`
+  now parses and executes with `position_filter=guards`, exposes a Position
+  applied filter, and renders as a guard-filtered FG% leaderboard rather than
+  a broad unfiltered leaderboard.
+- FCQ-002 fixed in frontend leaderboard copy using structured
+  `metadata.ascending`. Fewest-points-allowed leaderboards render
+  `allowed the fewest points per game`; most-points-allowed/opponent-PPG
+  leaderboards render high opponent scoring as `allowed the most points per
+  game`, not as best defense.
+- FCQ-003 fixed in no-result primary guidance. Unsupported filters for
+  personal-foul, rookie, league-wide starter/bench, and team bench-scoring
+  boundaries now use boundary-specific human-readable messages instead of
+  generic stat-unavailable copy such as `Pf is not available for this query`.
+- Raw QA source run:
+  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`
+- Frontend-copy run:
+  `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.md`
 
 Review process:
 

@@ -460,6 +460,7 @@ Leaderboard no-match behavior:
 Examples:
 
 - `best ts% among centers this season`
+- `What players have the best field goal percentage among guards?`
 - `top scorers among guards since 2021`
 - `best rebounders among big men`
 - `Which centers have the most rebounds this season?`

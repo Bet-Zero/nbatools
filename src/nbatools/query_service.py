@@ -493,6 +493,7 @@ def _build_query_metadata(
             else route_kwargs.get("max_value")
         ),
         "sort_by": parsed.get("sort_by") or route_kwargs.get("sort_by"),
+        "ascending": route_kwargs.get("ascending"),
         "ranked_intent": bool(
             parsed.get("leaderboard_intent")
             or parsed.get("season_high_intent")
@@ -1394,6 +1395,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "max_value": kwargs.get("max_value"),
         "conditions": kwargs.get("conditions"),
         "sort_by": kwargs.get("sort_by"),
+        "ascending": kwargs.get("ascending"),
         "ranked_intent": kwargs.get("sort_by") == "stat",
         "split_type": kwargs.get("split"),
         "clutch": kwargs.get("clutch"),

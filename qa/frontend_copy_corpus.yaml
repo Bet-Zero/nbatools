@@ -1,5 +1,5 @@
 version: 1
-source_backend_run: outputs/raw_query_answer_qa/20260514T125056Z/report.jsonl
+source_backend_run: outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl
 description: Frontend hero/copy QA Wave 1 selected review subset.
 cases:
   - id: celtics_record_playoff_teams
@@ -349,9 +349,9 @@ cases:
       - hero_team_leaderboard
       - defensive_metric_label
     expected_semantic_facts:
-      - points allowed
+      - [allowed the fewest points per game, fewest points allowed per game, lowest opponent points per game, lowest points allowed per game]
     expected_table_header_fragments:
-      - Opponent PTS
+      - [Opponent PTS, Opponent Points, points allowed per game]
 
   - id: most_points_allowed_team_leaders_wave4
     category: team_leaderboard
@@ -359,9 +359,9 @@ cases:
       - hero_team_leaderboard
       - defensive_metric_label
     expected_semantic_facts:
-      - points allowed
+      - [allowed the most points per game, most opponent pts per game, most opponent points per game, points allowed per game]
     expected_table_header_fragments:
-      - Opponent PTS
+      - [Opponent PTS, Opponent Points, points allowed per game]
 
   - id: opponent_ppg_leaders_wave4
     category: team_leaderboard
@@ -370,9 +370,9 @@ cases:
       - opponent_metric_label
     expected_semantic_facts:
       - opponent
-      - points per game
+      - [pts per game, points per game, points allowed per game]
     expected_table_header_fragments:
-      - Opponent PTS
+      - [Opponent PTS, Opponent Points, points allowed per game]
 
   - id: team_road_record_leaders
     category: team_leaderboard
@@ -574,8 +574,8 @@ cases:
       - unsupported_filter_guidance
       - roster_experience_boundary
     expected_semantic_facts:
-      - Unavailable Filter
-      - rookie
+      - [Unsupported Leaderboard, Unavailable Filter]
+      - rookie leaderboards
 
   - id: starter_assist_leaders_wave4
     category: no_result_unsupported
@@ -583,8 +583,8 @@ cases:
       - unsupported_filter_guidance
       - role_boundary
     expected_semantic_facts:
-      - Unavailable Filter
-      - starter
+      - [Unsupported Leaderboard, Unavailable Filter]
+      - starter/bench
 
   - id: celtics_against_east_record_wave4
     category: no_result_unsupported
@@ -601,5 +601,5 @@ cases:
       - unsupported_metric_guidance
       - metric_boundary
     expected_semantic_facts:
-      - Unavailable Metric
-      - personal fouls
+      - [Unsupported Leaderboard, Unavailable Metric]
+      - Personal-foul leaderboards

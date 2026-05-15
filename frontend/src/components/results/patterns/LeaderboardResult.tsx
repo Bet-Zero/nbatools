@@ -700,7 +700,14 @@ function heroSentence(
   }
 
   if (rowEntityKind(row) === "team") {
-    return teamHeroSentence(row, metric, leader, context, options);
+    return teamHeroSentence(
+      row,
+      metric,
+      leader,
+      context,
+      options,
+      data.result?.metadata,
+    );
   }
 
   if (!options.verb && !options.sentenceMetricLabel && !options.valueSuffix) {
@@ -726,6 +733,7 @@ function teamHeroSentence(
     valueSuffix?: string;
     verb?: string;
   },
+  metadata: ResultMetadata | undefined,
 ): string {
   if (metric === "win_pct" && hasValue(row.wins) && hasValue(row.losses)) {
     return `The ${leader} had the best record${context}, going ${formatValue(
@@ -746,6 +754,12 @@ function teamHeroSentence(
       row.losses,
       "losses",
     )} losses.`;
+  }
+
+  if (metric === "opponent_pts_per_game") {
+    const direction = metadata?.ascending === true ? "fewest" : "most";
+    const value = metricValuePhrase(row, metric, options.valueSuffix);
+    return `The ${leader} allowed the ${direction} points per game${context}, with ${value}.`;
   }
 
   return `The ${leader} ${options.verb ?? "had"} the most ${

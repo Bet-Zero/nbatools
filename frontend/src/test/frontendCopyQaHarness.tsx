@@ -6,14 +6,16 @@ import ResultEnvelope from "../components/ResultEnvelope";
 import ResultRenderer from "../components/results/ResultRenderer";
 import { classifyResultShape } from "../components/results/resultShapes";
 
+type FragmentExpectation = string | string[];
+
 export interface FrontendCopyCaseConfig {
   id: string;
   category: string;
   review_focus: string[];
-  expected_semantic_facts: string[];
-  expected_table_header_fragments: string[];
-  expected_filter_chip_fragments: string[];
-  expected_absent_fragments: string[];
+  expected_semantic_facts: FragmentExpectation[];
+  expected_table_header_fragments: FragmentExpectation[];
+  expected_filter_chip_fragments: FragmentExpectation[];
+  expected_absent_fragments: FragmentExpectation[];
 }
 
 export interface FrontendCopyCorpus {
@@ -273,7 +275,11 @@ export function parseFrontendCopyCorpus(text: string): FrontendCopyCorpus {
     if (listItem && activeList) {
       const list = activeCase[activeList];
       if (Array.isArray(list)) {
-        list.push(parseYamlScalar(listItem[1]));
+        if (activeList === "review_focus") {
+          list.push(parseYamlScalar(listItem[1]));
+        } else {
+          (list as FragmentExpectation[]).push(parseYamlListItem(listItem[1]));
+        }
       }
       continue;
     }
@@ -736,8 +742,8 @@ function runSoftChecks(
   for (const fragment of caseConfig.expected_semantic_facts) {
     checks.push({
       kind: "semantic_fact",
-      fragment,
-      status: includesFragment(visibleText, fragment) ? "pass" : "fail",
+      fragment: fragmentLabel(fragment),
+      status: includesExpectedFragment(visibleText, fragment) ? "pass" : "fail",
       haystack: "visible_text",
     });
   }
@@ -745,8 +751,10 @@ function runSoftChecks(
   for (const fragment of caseConfig.expected_table_header_fragments) {
     checks.push({
       kind: "table_header_fragment",
-      fragment,
-      status: includesFragment(tableHeaders, fragment) ? "pass" : "fail",
+      fragment: fragmentLabel(fragment),
+      status: includesExpectedFragment(tableHeaders, fragment)
+        ? "pass"
+        : "fail",
       haystack: "table_headers",
     });
   }
@@ -754,8 +762,8 @@ function runSoftChecks(
   for (const fragment of caseConfig.expected_filter_chip_fragments) {
     checks.push({
       kind: "filter_chip_fragment",
-      fragment,
-      status: includesFragment(filterChips, fragment) ? "pass" : "fail",
+      fragment: fragmentLabel(fragment),
+      status: includesExpectedFragment(filterChips, fragment) ? "pass" : "fail",
       haystack: "filter_chips",
     });
   }
@@ -763,8 +771,8 @@ function runSoftChecks(
   for (const fragment of caseConfig.expected_absent_fragments) {
     checks.push({
       kind: "absent_fragment",
-      fragment,
-      status: includesFragment(visibleText, fragment) ? "fail" : "pass",
+      fragment: fragmentLabel(fragment),
+      status: includesExpectedFragment(visibleText, fragment) ? "fail" : "pass",
       haystack: "visible_text",
     });
   }
@@ -887,6 +895,19 @@ function parseYamlScalar(value: string | undefined): string {
   return trimmed;
 }
 
+function parseYamlListItem(value: string | undefined): FragmentExpectation {
+  const trimmed = (value ?? "").trim();
+  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
+    return parseYamlScalar(trimmed);
+  }
+
+  return trimmed
+    .slice(1, -1)
+    .split(",")
+    .map((part) => parseYamlScalar(part))
+    .filter(Boolean);
+}
+
 function duplicateValues(values: string[]): string[] {
   const seen = new Set<string>();
   const duplicates = new Set<string>();
@@ -945,6 +966,20 @@ function compareText(value: string): string {
 
 function includesFragment(haystack: string, fragment: string): boolean {
   return haystack.includes(compareText(fragment));
+}
+
+function includesExpectedFragment(
+  haystack: string,
+  fragment: FragmentExpectation,
+): boolean {
+  if (Array.isArray(fragment)) {
+    return fragment.some((candidate) => includesFragment(haystack, candidate));
+  }
+  return includesFragment(haystack, fragment);
+}
+
+function fragmentLabel(fragment: FragmentExpectation): string {
+  return Array.isArray(fragment) ? fragment.join(" | ") : fragment;
 }
 
 function uniqueTexts(values: string[]): string[] {

@@ -189,6 +189,94 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("uses boundary-specific copy for personal-foul leaderboards", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "pf",
+          unsupported_filters: ["personal_foul_leaderboard"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Leaderboard")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Personal-foul leaderboards are not supported yet.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Pf is not available/)).not.toBeInTheDocument();
+  });
+
+  it("uses boundary-specific copy for rookie leaderboards", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          unsupported_filters: ["rookie_leaderboard"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText("Rookie leaderboards are not supported yet."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses boundary-specific copy for role leaderboards", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "ast",
+          unsupported_filters: ["role_leaderboard"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "League-wide starter/bench leaderboards are not supported yet.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Assists is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses boundary-specific copy for team bench scoring", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "game_finder",
+          stat: "pts",
+          unsupported_filters: ["team_bench_scoring"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Summary")).toBeInTheDocument();
+    expect(
+      screen.getByText("Team bench-scoring summaries are not supported yet."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
   it("guides recent defensive-rating unsupported queries to safe alternatives", () => {
     render(
       <NoResultDisplay

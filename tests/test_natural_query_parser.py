@@ -501,13 +501,25 @@ def test_position_prefix_leaderboards_set_position_filter(query, stat, position)
     assert parsed["route_kwargs"]["position"] == position
 
 
-def test_among_position_leaderboard_still_sets_position_filter():
-    parsed = parse_query("best ts% among centers this season")
+@pytest.mark.parametrize(
+    ("query", "stat", "position"),
+    [
+        (
+            "What players have the best field goal percentage among guards?",
+            "fg_pct",
+            "guards",
+        ),
+        ("best ts% among centers this season", "ts_pct", "centers"),
+        ("top scorers among guards since 2021", "pts", "guards"),
+    ],
+)
+def test_among_position_leaderboards_set_position_filter(query, stat, position):
+    parsed = parse_query(query)
 
     assert parsed["route"] == "season_leaders"
-    assert parsed["stat"] == "ts_pct"
-    assert parsed["position_filter"] == "centers"
-    assert parsed["route_kwargs"]["position"] == "centers"
+    assert parsed["stat"] == stat
+    assert parsed["position_filter"] == position
+    assert parsed["route_kwargs"]["position"] == position
 
 
 def test_best_defensive_rating_stays_defensive_rating():

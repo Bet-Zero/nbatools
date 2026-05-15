@@ -47,6 +47,7 @@ Natural examples:
 - `best field goal percentage` (stat alias → fg_pct)
 - `team ft%` (stat alias → ft_pct)
 - `Which centers have the most rebounds this season?` (position-filtered leaderboard)
+- `What players have the best field goal percentage among guards?` (position-filtered leaderboard)
 - `guard scoring leaders this season` (position-filtered leaderboard)
 - `forwards FG% leaders this season` (position-filtered leaderboard)
 

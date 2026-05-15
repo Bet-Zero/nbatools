@@ -1348,6 +1348,13 @@ cases:
     expected_shape: leaderboard_table
     expected_sections:
       - leaderboard
+    hard_assertions:
+      - path: result.metadata.position_filter
+        equals: guards
+      - path: result.metadata.applied_filters.0.kind
+        equals: position
+      - path: result.metadata.applied_filters.0.value
+        equals: guards
     review_notes: "Position-filtered shooting leaderboard phrasing."
     manual_review:
       status: unreviewed
@@ -1512,6 +1519,10 @@ cases:
     expected_sections:
       - leaderboard
     hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts_per_game
+      - path: result.metadata.ascending
+        equals: true
       - path: result.sections.leaderboard.0.team_name
         equals: Boston Celtics
       - path: result.sections.leaderboard.0.team_abbr
@@ -3517,6 +3528,8 @@ cases:
     hard_assertions:
       - path: result.metadata.stat
         equals: opponent_pts_per_game
+      - path: result.metadata.ascending
+        equals: false
       - path: result.sections.leaderboard.0.team_name
         equals: Utah Jazz
       - path: result.sections.leaderboard.0.team_abbr
@@ -3546,6 +3559,8 @@ cases:
     hard_assertions:
       - path: result.metadata.stat
         equals: opponent_pts_per_game
+      - path: result.metadata.ascending
+        equals: false
       - path: result.sections.leaderboard.0.team_name
         equals: Utah Jazz
       - path: result.sections.leaderboard.0.team_abbr

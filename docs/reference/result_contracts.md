@@ -221,6 +221,8 @@ Future result objects should carry:
 - **team_context** — team identity (id + abbr + name) where applicable
 - **opponent_context** — opponent identity when an opponent filter was applied
 - **split_type** — when the result is a split summary
+- **sort_by / ascending** — the executed sort metric and direction for ranked
+  results when applicable
 - **grouped_boolean_used** — whether a grouped boolean expression was parsed and applied
 - **head_to_head_used** — whether a head-to-head restriction was applied
 - **current_through** — freshness marker for the underlying data; should align with the working definition in [docs/planning/data_freshness_plan.md](../planning/data_freshness_plan.md#9-current-through--what-users-should-be-able-to-trust). Future-ready — not all results carry this today.

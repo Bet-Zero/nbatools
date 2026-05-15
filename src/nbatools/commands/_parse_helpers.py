@@ -107,7 +107,10 @@ def extract_position_filter(text: str) -> str | None:
     position_pattern = _position_term_pattern()
 
     # "among guards", "among centers", "among big men", etc.
-    m = re.search(r"\bamong\s+([\w\s]+?)(?:\s+(?:since|this|last|over|in|from|during|$))", text)
+    m = re.search(
+        r"\bamong\s+([\w\s]+?)(?=\s+(?:since|this|last|over|in|from|during)\b|[^\w\s]|$)",
+        text,
+    )
     if m:
         candidate = m.group(1).strip()  # already lowercase from pipeline normalization
         if candidate in _POSITION_GROUP_PATTERNS:

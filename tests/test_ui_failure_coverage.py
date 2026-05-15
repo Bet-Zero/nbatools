@@ -217,6 +217,23 @@ class TestP2BoundaryRoutingCleanup:
         assert rows
 
     @pytest.mark.needs_data
+    def test_guards_fg_percentage_leaders_execute_with_position_filter(self):
+        qr = execute_natural_query("What players have the best field goal percentage among guards?")
+
+        assert qr.route == "season_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "fg_pct"
+        assert qr.metadata["position_filter"] == "guards"
+        assert {
+            "label": "Position",
+            "value": "guards",
+            "kind": "position",
+        } in qr.metadata["applied_filters"]
+
+        rows = qr.to_dict()["sections"]["leaderboard"]
+        assert rows
+
+    @pytest.mark.needs_data
     def test_full_name_lebron_durant_comparison_executes_as_comparison(self):
         qr = execute_natural_query("LeBron James vs Kevin Durant comparison")
 
@@ -684,6 +701,7 @@ class TestWithoutPlayer:
         assert qr.route == "season_team_leaders"
         assert qr.result.result_status == "ok"
         assert qr.metadata["stat"] == "opponent_pts_per_game"
+        assert qr.metadata["ascending"] is True
 
         top_row = qr.to_dict()["sections"]["leaderboard"][0]
         assert top_row["team_abbr"] == "BOS"
@@ -698,6 +716,7 @@ class TestWithoutPlayer:
         assert qr.route == "season_team_leaders"
         assert qr.result.result_status == "ok"
         assert qr.metadata["stat"] == "opponent_pts_per_game"
+        assert qr.metadata["ascending"] is False
 
         top_row = qr.to_dict()["sections"]["leaderboard"][0]
         assert top_row["team_abbr"] == "UTA"
