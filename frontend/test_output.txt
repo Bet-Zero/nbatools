@@ -1,0 +1,431 @@
+
+> frontend@0.0.0 test
+> vitest run --no-file-parallelism src/test/VisualQaPage.test.tsx
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.4 [39m[90m/Users/brenthibbitts/nba_tools/frontend[39m
+
+ [31m❯[39m src/test/VisualQaPage.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 10408[2mms[22m[39m
+     [33m[2m✓[22m[39m renders all 15 visual QA case ids and focus text from the manifest [33m 3437[2mms[22m[39m
+[31m     [31m×[31m does not crash when some cases are loading and others hit request errors[39m[33m 3266[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the capture button and passes every loaded case card to the screenshot helper [33m 3692[2mms[22m[39m
+     [32m✓[39m routes the internal visual QA path to the visual QA page[32m 7[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/VisualQaPage.test.tsx[2m > [22mVisualQaPage[2m > [22mdoes not crash when some cases are loading and others hit request errors
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: Loading live /query response...
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"_statusBadge_17bd89"[39m
+[36m>[39m
+  [0mLoading live /query response...[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"_resultState_17bd89"[39m
+[36m>[39m
+  [0mLoading live /query response...[0m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"_page_17bd89"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_shell_17bd89"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"_hero_17bd89"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_eyebrow_17bd89"[39m
+            [36m>[39m
+              [0mInternal / Dev QA Surface[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"_title_17bd89"[39m
+            [36m>[39m
+              [0mFrontend Visual QA Wave 1[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_lede_17bd89"[39m
+            [36m>[39m
+              [0mThis route renders the 15 approved visual QA cases through live[0m
+              [36m<span>[39m
+                [0m [0m
+              [36m</span>[39m
+              [36m<strong>[39m
+                [0m/query[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0m [0m
+              [36m</span>[39m
+              [0mcalls and the existing product result composition.[0m
+              [36m<span>[39m
+                [0m [0m
+              [36m</span>[39m
+              [0mNo renderer overrides or visual fixes are applied here.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_toolbar_17bd89"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"_button_17bd89"[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mRefreshing live cases...[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"_button_17bd89 _buttonSecondary_17bd89"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mDownload current viewport screenshots ZIP[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33maria-live[39m=[32m"polite"[39m
+            [33mclass[39m=[32m"_summaryGrid_17bd89"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mRun progress[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0m14[0m
+                [0m / [0m
+                [0m15[0m
+                [0m cases completed[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mLoaded responses[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0m13[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mBackend statuses[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0mok [0m
+                [0m0[0m
+                [0m / no result [0m
+                [0m13[0m
+                [0m / error [0m
+                [0m0[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mRequest errors[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_metaGrid_17bd89"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"_metaPanel_17bd89"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0mCapture workflow[0m
+              [36m</h2>[39m
+              [36m<ul>[39m
+                [36m<li>[39m
+                  [0mUse desktop around 1280px and mobile around 390px.[0m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mCapture each card by its stable selector and keep notes in the checklist doc.[0m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mStable selector pattern: [0m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_path_17bd89"[39m
+                  [36m>[39m
+                    [0mdata-visual-case-id="&lt;case_id&gt;"[0m
+                  [36m</span>[39m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mChecklist path: [0m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_path_17bd89"[39m
+                  [36m>[39m
+                    [0mdocs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md[0m
+                  [36m</span>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"_metaPanel_17bd89"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0mManifest sources[0m
+              [36m</h2>[39m
+              [36m<ul>[39m
+                [36m<li>[39m
+                  [0mRaw QA source:[0m
+                  [36m<span>[39m
+                    [0m [0m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_path_17bd89"[39m
+                  [36m>[39m
+                    [0moutputs/raw_query_answer_qa/20260515T021820Z/report.jsonl[0m
+                  [36m</span>[39m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mFrontend-copy source:[0m
+                  [36m<span>[39m
+                    [0m [0m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[3...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"_page_17bd89"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_shell_17bd89"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"_hero_17bd89"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_eyebrow_17bd89"[39m
+            [36m>[39m
+              [0mInternal / Dev QA Surface[0m
+            [36m</p>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"_title_17bd89"[39m
+            [36m>[39m
+              [0mFrontend Visual QA Wave 1[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"_lede_17bd89"[39m
+            [36m>[39m
+              [0mThis route renders the 15 approved visual QA cases through live[0m
+              [36m<span>[39m
+                [0m [0m
+              [36m</span>[39m
+              [36m<strong>[39m
+                [0m/query[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0m [0m
+              [36m</span>[39m
+              [0mcalls and the existing product result composition.[0m
+              [36m<span>[39m
+                [0m [0m
+              [36m</span>[39m
+              [0mNo renderer overrides or visual fixes are applied here.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_toolbar_17bd89"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"_button_17bd89"[39m
+              [33mdisabled[39m=[32m""[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mRefreshing live cases...[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"_button_17bd89 _buttonSecondary_17bd89"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mDownload current viewport screenshots ZIP[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33maria-live[39m=[32m"polite"[39m
+            [33mclass[39m=[32m"_summaryGrid_17bd89"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mRun progress[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0m14[0m
+                [0m / [0m
+                [0m15[0m
+                [0m cases completed[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mLoaded responses[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0m13[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mBackend statuses[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0mok [0m
+                [0m0[0m
+                [0m / no result [0m
+                [0m13[0m
+                [0m / error [0m
+                [0m0[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"_summaryCard_17bd89"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryLabel_17bd89"[39m
+              [36m>[39m
+                [0mRequest errors[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"_summaryValue_17bd89"[39m
+              [36m>[39m
+                [0m1[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"_metaGrid_17bd89"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"_metaPanel_17bd89"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0mCapture workflow[0m
+              [36m</h2>[39m
+              [36m<ul>[39m
+                [36m<li>[39m
+                  [0mUse desktop around 1280px and mobile around 390px.[0m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mCapture each card by its stable selector and keep notes in the checklist doc.[0m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mStable selector pattern: [0m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_path_17bd89"[39m
+                  [36m>[39m
+                    [0mdata-visual-case-id="&lt;case_id&gt;"[0m
+                  [36m</span>[39m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mChecklist path: [0m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_path_17bd89"[39m
+                  [36m>[39m
+                    [0mdocs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md[0m
+                  [36m</span>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+            [36m</section>[39m
+            [36m<section[39m
+              [33mclass[39m=[32m"_metaPanel_17bd89"[39m
+            [36m>[39m
+              [36m<h2>[39m
+                [0mManifest sources[0m
+              [36m</h2>[39m
+              [36m<ul>[39m
+                [36m<li>[39m
+                  [0mRaw QA source:[0m
+                  [36m<span>[39m
+                    [0m [0m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"_path_17bd89"[39m
+                  [36m>[39m
+                    [0moutputs/raw_query_answer_qa/20260515T021820Z/report.jsonl[0m
+                  [36m</span>[39m
+                [36m</li>[39m
+                [36m<li>[39m
+                  [0mFrontend-copy source:[0m
+                  [36m<span>[39m
+                    [0m [0m
+                  [36m</span>[39m
+                  [36m<span[39m
+                    [33mclass[3...
+[90m [2m❯[22m waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/test/VisualQaPage.test.tsx:[2m103:20[22m[39m
+    [90m101|[39m
+    [90m102|[39m     [34mexpect[39m(
+    [90m103|[39m       [35mawait[39m screen[33m.[39m[34mfindByText[39m([32m"Loading live /query response..."[39m)[33m,[39m
+    [90m   |[39m                    [31m^[39m
+    [90m104|[39m     )[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+    [90m105|[39m     expect(await screen.findByText("Backend unavailable")).toBeInTheDo…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 02:55:15
+[2m   Duration [22m 33.22s[2m (transform 7.43s, setup 1.03s, import 9.10s, tests 10.41s, environment 10.96s)[22m
+

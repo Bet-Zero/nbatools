@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
@@ -5,6 +6,9 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
+    fs: {
+      allow: [fileURLToPath(new URL("..", import.meta.url))],
+    },
     port: 5173,
     proxy: {
       // Proxy API calls to the FastAPI backend during development

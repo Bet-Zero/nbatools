@@ -1,0 +1,315 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 24px 80px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(201, 159, 82, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(77, 114, 159, 0.16),
+      transparent 28%
+    ),
+    var(--bg-page);
+  color: var(--text-primary);
+}
+
+.shell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+
+.hero {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  background: rgba(16, 20, 27, 0.78);
+  box-shadow: 0 24px 56px rgba(5, 8, 12, 0.32);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.title {
+  font-size: clamp(1.8rem, 2.5vw, 3rem);
+  line-height: 1.1;
+  margin-top: 6px;
+}
+
+.lede {
+  max-width: 76ch;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.button {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.85rem 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.button:hover:enabled,
+.button:focus-visible:enabled {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.64;
+}
+
+.buttonSecondary {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.summaryCard {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.summaryLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.summaryValue {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.metaPanel {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metaPanel h2 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.metaPanel ul {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.metaPanel li {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.caseList {
+  display: grid;
+  gap: 20px;
+}
+
+.caseCard {
+  display: grid;
+  gap: 20px;
+  padding: 22px;
+  border-radius: 26px;
+  background: rgba(14, 18, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 40px rgba(3, 6, 10, 0.24);
+}
+
+.caseHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.caseHeading {
+  display: grid;
+  gap: 8px;
+}
+
+.caseHeading h2 {
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+
+.caseQuery {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.statusBadge {
+  align-self: flex-start;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.caseMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.metaChip {
+  padding: 0.42rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.cardBody {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.checklist {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.checklist h3 {
+  font-size: 1rem;
+}
+
+.checklistBlock {
+  display: grid;
+  gap: 6px;
+}
+
+.checklistLabel {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.checklist ul {
+  list-style: disc;
+  padding-left: 1.1rem;
+  color: rgba(255, 255, 255, 0.82);
+  display: grid;
+  gap: 4px;
+}
+
+.placeholder {
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.resultColumn {
+  display: grid;
+  gap: 14px;
+}
+
+.resultState {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.errorState {
+  border-color: rgba(255, 120, 120, 0.28);
+  background: rgba(120, 18, 18, 0.16);
+}
+
+.captureTarget {
+  display: grid;
+  gap: 14px;
+}
+
+.captureTargetLabel {
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 24px 16px 64px;
+  }
+
+  .hero,
+  .caseCard {
+    padding: 18px;
+  }
+
+  .cardBody {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 540px) {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}

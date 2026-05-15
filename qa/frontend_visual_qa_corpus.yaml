@@ -1,0 +1,413 @@
+{
+  "version": 1,
+  "source_raw_run": "outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl",
+  "source_frontend_copy_run": "outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.jsonl",
+  "cases":
+    [
+      {
+        "id": "guards_fg_percentage_leaders",
+        "category": "position_filtered_leaderboard",
+        "query": "What players have the best field goal percentage among guards?",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Position guards chip stays visually tied to the generic leaderboard hero",
+            "FG% header remains readable before the first row",
+            "Filter context is still obvious when the table starts scrolling",
+          ],
+        "desktop_focus":
+          [
+            "Chip-to-hero spacing keeps the guard filter obvious",
+            "FG% header and first player row align cleanly",
+          ],
+        "mobile_focus":
+          [
+            "Filter chips wrap without separating the guard context from the hero",
+            "FG% header and first row do not clip at narrow width",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Filter context can feel detached from the generic leaderboard hero",
+            "FG% header or player/team cells may wrap awkwardly on mobile",
+          ],
+      },
+      {
+        "id": "centers_rebound_leaders_wave4",
+        "category": "position_filtered_leaderboard",
+        "query": "Which centers have the most rebounds this season?",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Position centers context stays visible above the leaderboard",
+            "RPG header remains legible at first glance",
+            "Hero, chips, and top row read as one answer block",
+          ],
+        "desktop_focus":
+          [
+            "Center filter chip placement near the hero",
+            "RPG column header visibility and first-row scanability",
+          ],
+        "mobile_focus":
+          [
+            "Chips stack without pushing the center context too far from the table",
+            "Player and team cells stay readable without horizontal clipping",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Position filter can become visually secondary to the broad leaderboard hero",
+            "RPG or player/team cells may tighten noticeably on mobile",
+          ],
+      },
+      {
+        "id": "fewest_points_allowed_team_leader",
+        "category": "team_defense_leaderboard",
+        "query": "Which team has allowed the fewest points per game this season?",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Hero wording clearly communicates fewest allowed rather than team scoring",
+            "Opponent PTS Per Game header is readable without clipping",
+            "Top row context does not imply an offensive leaderboard",
+          ],
+        "desktop_focus":
+          [
+            "Hero and defensive metric header read together",
+            "Opponent PTS Per Game column label remains fully visible",
+          ],
+        "mobile_focus":
+          [
+            "Long defensive metric labels wrap cleanly",
+            "Primary answer remains visible before deeper table details",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Allowed-points context can be visually diluted by a generic leaderboard layout",
+            "Long opponent metric labels may wrap or clip on mobile",
+          ],
+      },
+      {
+        "id": "most_points_allowed_team_leaders_wave4",
+        "category": "team_defense_leaderboard",
+        "query": "which teams allow the most points per game this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Hero says most allowed and does not read like a positive scoring leader",
+            "Opponent PTS Per Game header stays readable in the first viewport",
+            "The defensive framing remains obvious when scanning the card quickly",
+          ],
+        "desktop_focus":
+          [
+            "Hero wording and table header stay aligned semantically",
+            "Utah top-row context stays easy to scan",
+          ],
+        "mobile_focus":
+          [
+            "Long metric labels wrap without hiding defensive context",
+            "Top row remains readable without collapsing into stacked fragments",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Users may misread the card as an offensive leaderboard if the hero/header are visually disconnected",
+            "Long defensive metric text may become cramped on mobile",
+          ],
+      },
+      {
+        "id": "opponent_ppg_leaders_wave4",
+        "category": "team_defense_leaderboard",
+        "query": "opponent PPG leaders this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Opponent PPG alias still reads as points allowed visually",
+            "Hero and table header preserve defensive context together",
+            "Metric abbreviation does not overpower the answer hierarchy",
+          ],
+        "desktop_focus":
+          [
+            "Alias wording and header stay semantically aligned",
+            "Metric header remains visible without truncation",
+          ],
+        "mobile_focus":
+          [
+            "Opponent PPG wording remains understandable at narrow width",
+            "Header and first row remain readable without clipping",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Alias phrasing can look ambiguous if the table header is not easy to see",
+            "Metric labels may compress on mobile",
+          ],
+      },
+      {
+        "id": "personal_foul_leaders_wave4",
+        "category": "unsupported_stat_leaderboard",
+        "query": "personal fouls leaders this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Primary unsupported message appears above diagnostics",
+            "No-result hierarchy stays product-facing rather than backend-facing",
+            "PF shorthand does not look like the answer",
+          ],
+        "desktop_focus":
+          [
+            "Primary title and message dominate the card",
+            "Diagnostic notes stay clearly secondary",
+          ],
+        "mobile_focus":
+          [
+            "Long unsupported details wrap below the primary message",
+            "The first visible state is still the product-facing message",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Diagnostic details can visually compete with the unsupported message",
+            "Long no-result text may push the primary message below the fold on mobile",
+          ],
+      },
+      {
+        "id": "rookie_scoring_leaders_wave4",
+        "category": "unsupported_role_leaderboard",
+        "query": "rookie scoring leaders this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Unsupported rookie message is the first thing a reviewer sees",
+            "Title, body, and diagnostics read in clear hierarchy",
+            "Long unsupported details do not crowd the primary state",
+          ],
+        "desktop_focus":
+          [
+            "Primary rookie boundary message remains dominant",
+            "Secondary diagnostics stay visually recessed",
+          ],
+        "mobile_focus":
+          [
+            "Primary title and message stay visible before the diagnostics",
+            "Unsupported copy wraps cleanly without collapsing spacing",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Unsupported messaging can be visually buried beneath diagnostics",
+            "Mobile wrapping may make the boundary message feel secondary",
+          ],
+      },
+      {
+        "id": "starter_assist_leaders_wave4",
+        "category": "unsupported_role_leaderboard",
+        "query": "starter assist leaders this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "League-wide starter/bench unsupported message is prominent",
+            "Long role wording stays readable without awkward breaks",
+            "Diagnostics remain below the primary explanation",
+          ],
+        "desktop_focus":
+          [
+            "Primary starter/bench boundary copy dominates the card",
+            "Long role phrasing keeps its intended reading order",
+          ],
+        "mobile_focus":
+          [
+            "Role wording wraps cleanly in the title and message area",
+            "Diagnostic copy remains secondary after wrapping",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Lengthy role wording may wrap into visually noisy lines",
+            "Diagnostics can compete with the primary unsupported message",
+          ],
+      },
+      {
+        "id": "bench_scoring_leaders_wave4",
+        "category": "unsupported_role_leaderboard",
+        "query": "bench players scoring leaders this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "League-wide bench unsupported boundary is clear before diagnostics",
+            "The no-result layout stays balanced even though the card is content-light",
+            "Bench wording does not feel hidden or secondary",
+          ],
+        "desktop_focus":
+          [
+            "Primary bench boundary message remains the dominant element",
+            "Whitespace and diagnostics do not make the card feel unfinished",
+          ],
+        "mobile_focus":
+          [
+            "No-result state keeps its hierarchy after line wraps",
+            "Bench boundary message remains visible without scrolling",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Short no-result cards can feel sparse or unbalanced",
+            "Bench boundary wording may be crowded by diagnostics on mobile",
+          ],
+      },
+      {
+        "id": "celtics_bench_scoring_boundary_wave4",
+        "category": "unsupported_team_role_boundary",
+        "query": "Celtics bench scoring this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Team context remains visible alongside the unsupported bench-scoring message",
+            "Primary no-result state stays above deeper detail text",
+            "Team identity chips do not crowd the unsupported message",
+          ],
+        "desktop_focus":
+          [
+            "Team context and unsupported message read as one unit",
+            "The card still feels balanced with minimal result content",
+          ],
+        "mobile_focus":
+          [
+            "Team context chips do not push the primary message too low",
+            "Long unsupported detail remains secondary after wrapping",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Team context can compete with the unsupported message in the header area",
+            "Narrow layouts may stack chips and no-result copy too tightly",
+          ],
+      },
+      {
+        "id": "record_when_jokic_triple_double",
+        "category": "record_when_condition",
+        "query": "What is Denver's record when Nikola Jokic has a triple-double?",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Special-event chip stays visually connected to the hero answer",
+            "Summary-style result does not look empty or broken",
+            "Primary record wording reads as the main answer without extra hunting",
+          ],
+        "desktop_focus":
+          [
+            "Triple-double filter chip placement near the hero",
+            "Summary card hierarchy remains obvious without large tables",
+          ],
+        "mobile_focus":
+          [
+            "Special-event context stays visible when chips wrap",
+            "Primary record answer remains above the supporting summary details",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Event-filter chips can feel detached from a summary-only hero",
+            "The card may feel under-filled if the answer hierarchy is weak",
+          ],
+      },
+      {
+        "id": "lakers_road_record_last_season",
+        "category": "team_record_filtered",
+        "query": "Lakers road record last season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Away and Season 2024-25 chips remain easy to see",
+            "Record detail table headers stay readable in the first viewport",
+            "Hero and table feel like a single filtered answer",
+          ],
+        "desktop_focus":
+          [
+            "Away and season chips stay near the hero",
+            "Home/Away column and first row remain easy to scan",
+          ],
+        "mobile_focus":
+          [
+            "Filter chips wrap without losing season or location context",
+            "Record table remains readable without clipping key columns",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Filter chips may feel too far from the record hero",
+            "Dense record columns can tighten noticeably on mobile",
+          ],
+      },
+      {
+        "id": "heat_knicks_playoff_series_record_wave4",
+        "category": "playoff_matchup_history",
+        "query": "Heat Knicks playoff series record",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Dense playoff matchup tables remain readable without visual collapse",
+            "Round and season columns are visible on first scan",
+            "Summary and comparison sections feel clearly separated",
+          ],
+        "desktop_focus":
+          [
+            "Comparison table density stays readable across the row",
+            "Summary-to-comparison spacing supports quick scanning",
+          ],
+        "mobile_focus":
+          [
+            "Playoff comparison rows remain legible without overlapping labels",
+            "Round, wins, and losses remain understandable after wrapping",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Dense playoff tables are the highest clipping risk in this wave",
+            "Section transitions may feel cramped on mobile",
+          ],
+      },
+      {
+        "id": "lebron_durant_comparison_wave4",
+        "category": "player_comparison",
+        "query": "LeBron James vs Kevin Durant comparison",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Both player identities remain obvious in the comparison header",
+            "Dense comparison rows stay readable without overlap",
+            "Edge or difference context remains visible near the leading stat",
+          ],
+        "desktop_focus":
+          [
+            "Player identities and comparison framing remain balanced",
+            "Dense stat rows still scan horizontally without clipping",
+          ],
+        "mobile_focus":
+          [
+            "Player names and comparison cells stack cleanly",
+            "Columns or labels do not collapse into unreadable fragments",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Two-player comparison cards can become visually dense very quickly",
+            "Mobile stacking may make identity or edge labels hard to scan",
+          ],
+      },
+      {
+        "id": "biggest_scoring_games",
+        "category": "top_performances",
+        "query": "What were the biggest scoring games this season?",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Top-performances hero and the 83-point outlier row remain visually stable",
+            "Wide leaderboard columns stay readable in the first viewport",
+            "Outlier context does not cause the card to feel visually broken",
+          ],
+        "desktop_focus":
+          [
+            "Top row visibility with the verified outlier remains intact",
+            "Player, PTS, opponent, and date columns stay readable together",
+          ],
+        "mobile_focus":
+          [
+            "Top-performances table remains scannable without clipped headers",
+            "Outlier row wraps without hiding the key point total",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Wide top-performance tables can clip or crowd columns",
+            "The verified outlier row may dominate the card if spacing is weak",
+          ],
+      },
+    ],
+}

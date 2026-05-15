@@ -3,10 +3,18 @@ import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import App from "./App.tsx";
 import ReviewPage from "./ReviewPage.tsx";
+import VisualQaPage from "./VisualQaPage.tsx";
 
-const normalizedPath = window.location.pathname.replace(/\/+$/, "") || "/";
-const rootView = normalizedPath === "/review" ? <ReviewPage /> : <App />;
+export function resolveRootView(pathname = window.location.pathname) {
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>{rootView}</StrictMode>,
-);
+  if (normalizedPath === "/review") return <ReviewPage />;
+  if (normalizedPath === "/visual-qa") return <VisualQaPage />;
+  return <App />;
+}
+
+const rootElement = document.getElementById("root");
+
+if (rootElement) {
+  createRoot(rootElement).render(<StrictMode>{resolveRootView()}</StrictMode>);
+}

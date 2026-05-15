@@ -203,7 +203,63 @@ Section summaries should include:
 Example JSONL row:
 
 ```json
-{"id":"record_when_jokic_triple_double","query":"What is Denver's record when Nikola Jokic has a triple-double?","route":"player_game_summary","intent":"summary","query_class":"summary","result_status":"ok","result_reason":null,"answer_text":null,"answer_text_source":null,"shape_hint":"entity_summary","shape_source":"backend_approximation","applied_filters":[{"label":"Special Event","value":"Triple Double","kind":"special_event"}],"section_summaries":{"summary":{"row_count":1,"columns":["player_name","games","wins","losses","win_pct"],"top_rows":[{"player_name":"Nikola Jokic","games":34,"wins":24,"losses":10,"win_pct":0.706}]},"game_log":{"row_count":34,"columns":["game_date","team_abbr","opp_abbr","wl","pts","reb","ast"],"top_rows":[{"team_abbr":"DEN","wl":"W","pts":32,"reb":14,"ast":10}]}},"expectation_results":{"status":"pass","checks":[{"name":"expected_route","status":"pass"},{"name":"summary.games","status":"pass"}]}}
+{
+  "id": "record_when_jokic_triple_double",
+  "query": "What is Denver's record when Nikola Jokic has a triple-double?",
+  "route": "player_game_summary",
+  "intent": "summary",
+  "query_class": "summary",
+  "result_status": "ok",
+  "result_reason": null,
+  "answer_text": null,
+  "answer_text_source": null,
+  "shape_hint": "entity_summary",
+  "shape_source": "backend_approximation",
+  "applied_filters": [
+    {
+      "label": "Special Event",
+      "value": "Triple Double",
+      "kind": "special_event"
+    }
+  ],
+  "section_summaries": {
+    "summary": {
+      "row_count": 1,
+      "columns": ["player_name", "games", "wins", "losses", "win_pct"],
+      "top_rows": [
+        {
+          "player_name": "Nikola Jokic",
+          "games": 34,
+          "wins": 24,
+          "losses": 10,
+          "win_pct": 0.706
+        }
+      ]
+    },
+    "game_log": {
+      "row_count": 34,
+      "columns": [
+        "game_date",
+        "team_abbr",
+        "opp_abbr",
+        "wl",
+        "pts",
+        "reb",
+        "ast"
+      ],
+      "top_rows": [
+        { "team_abbr": "DEN", "wl": "W", "pts": 32, "reb": 14, "ast": 10 }
+      ]
+    }
+  },
+  "expectation_results": {
+    "status": "pass",
+    "checks": [
+      { "name": "expected_route", "status": "pass" },
+      { "name": "summary.games", "status": "pass" }
+    ]
+  }
+}
 ```
 
 Markdown report should include:
@@ -232,9 +288,9 @@ Example Markdown card:
 
 Summary row:
 
-| player_name | games | wins | losses | win_pct |
-|---|---:|---:|---:|---:|
-| Nikola Jokic | 34 | 24 | 10 | 0.706 |
+| player_name  | games | wins | losses | win_pct |
+| ------------ | ----: | ---: | -----: | ------: |
+| Nikola Jokic |    34 |   24 |     10 |   0.706 |
 ```
 
 ## Execution Wave 1
@@ -427,11 +483,11 @@ record queries.
 
 - Target case: `lakers_lebron_ad_both_play`
 - Fix: multi-player availability record phrasing such as `Lakers record when
-  LeBron and AD both play` now carries an explicit unsupported-filter marker
+LeBron and AD both play` now carries an explicit unsupported-filter marker
   and returns `no_result` / `filter_not_supported` before `team_record`
   execution, instead of returning an unfiltered full-season record.
 - Single-player availability preserved: `Suns without Booker`, `Bucks record
-  when Giannis was out`, `Knicks record when Jalen Brunson does not play`, and
+when Giannis was out`, `Knicks record when Jalen Brunson does not play`, and
   `Lakers record without LeBron` still execute as filtered `team_record`
   results with `Without player` applied filters.
 - Latest targeted harness output:
@@ -458,7 +514,7 @@ queries.
 - Working date-window cases preserved: `top scorers in March` still returns a
   date-window `season_leaders` leaderboard, `Jokic since All-Star break` still
   returns filtered `player_game_finder` rows, and `Who scored the most points
-  last night?` still returns `no_result` / `no_match` with its single-day date
+last night?` still returns `no_result` / `no_match` with its single-day date
   filter.
 - Latest targeted harness output:
   `outputs/raw_query_answer_qa/20260512T105137Z/report.md`
@@ -478,10 +534,10 @@ Opponent-quality playoff-team semantics are fixed.
 
 - Target case: `celtics_record_playoff_teams`
 - Fix: opponent-quality phrases such as `against playoff teams`, `against
-  postseason teams`, and `against teams that made the playoffs` now keep
+postseason teams`, and `against teams that made the playoffs` now keep
   `season_type=Regular Season` and resolve the existing `playoff teams`
   opponent bucket. Explicit playoff-competition phrases such as `playoff
-  record`, `in the playoffs`, and `playoff history` still use Playoffs
+record`, `in the playoffs`, and `playoff history` still use Playoffs
   semantics or dedicated playoff routes.
 - Corpus additions: `celtics_record_teams_made_playoffs` covers a phrase
   variant, and `celtics_playoff_record` protects explicit playoff-record
@@ -673,11 +729,11 @@ phrase enrichment, source data, or compound-threshold representation.
 
 - Defensive/opponent-points scalar mapping: phrases such as
   `allow fewer than 110 points`, `points allowed under 110`, `opponent points
-  under 110`, and `opp pts under 110` now bind to `opponent_pts` rather than
+under 110`, and `opp pts under 110` now bind to `opponent_pts` rather than
   team `pts`; team scoring forms such as `score fewer than 110 points` remain
   team `pts`.
 - Points-allowed leaderboard support: `Which team has allowed the fewest points
-  per game this season?` routes to `season_team_leaders` with
+per game this season?` routes to `season_team_leaders` with
   `opponent_pts_per_game`, derived from team game rows, and ranks ascending.
   The current dataset top row is Boston at about 107.159 opponent PPG.
 - Percentage threshold normalization: clear shooting contexts such as
@@ -757,7 +813,7 @@ fixed scalar/compound threshold behavior.
   regular-season data set to `2025-26`, `Lakers road record last season`
   resolves to `2024-25` and returns 41 games, 19 wins, and 22 losses.
 - `top defenses` shorthand: fixed for explicit opponent context. `against top
-  defenses`, `vs top defenses`, and `versus top defenses` map to the existing
+defenses`, `vs top defenses`, and `versus top defenses` map to the existing
   `top-10 defenses` opponent-quality bucket without turning free-standing team
   defense leaderboard wording into opponent-quality context.
 - KD stat/context routing: fixed. `KD TS% vs top defenses` preserves
@@ -964,7 +1020,7 @@ Behavior now verified:
 
 - Position noun-prefix/question-form leaderboards such as
   `Which centers have the most rebounds this season?`, `guard scoring leaders
-  this season`, and `forwards FG% leaders this season` route to
+this season`, and `forwards FG% leaders this season` route to
   `season_leaders` with the canonical `position_filter` preserved.
 - Full-name player comparisons such as
   `LeBron James vs Kevin Durant comparison` and
@@ -1065,7 +1121,7 @@ Frontend Copy QA Fix Wave 1: Semantic Copy Cleanup status:
   `metadata.ascending`. Fewest-points-allowed leaderboards render
   `allowed the fewest points per game`; most-points-allowed/opponent-PPG
   leaderboards render high opponent scoring as `allowed the most points per
-  game`, not as best defense.
+game`, not as best defense.
 - FCQ-003 fixed in no-result primary guidance. Unsupported filters for
   personal-foul, rookie, league-wide starter/bench, and team bench-scoring
   boundaries now use boundary-specific human-readable messages instead of
@@ -1087,6 +1143,71 @@ Review process:
    near the component behavior they protect.
 4. Keep screenshots/manual visual review separate for hierarchy, wrapping,
    layout, and visual emphasis.
+
+## Frontend Screenshot / Visual QA Wave 1 Status
+
+Frontend screenshot / visual QA Wave 1 now has a case-targeted manual baseline
+surface for the 15 approved review cases. This is an internal QA layer only: it
+does not change backend query behavior, production result rendering, or add any
+Playwright/screenshot diff automation.
+
+Artifacts and entry points:
+
+- Visual corpus:
+  `qa/frontend_visual_qa_corpus.yaml`
+- Internal route/page:
+  `/visual-qa`
+- Page implementation:
+  `frontend/src/VisualQaPage.tsx`
+- Route wiring:
+  `frontend/src/main.tsx`
+- Screenshot helper reuse:
+  `frontend/src/lib/reviewScreenshots.ts`
+- Manual checklist:
+  `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
+- Source raw QA run:
+  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`
+- Source frontend-copy run:
+  `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.jsonl`
+
+Page behavior:
+
+- Reads the 15-case visual corpus and issues live `POST /query` calls through
+  the existing frontend API client.
+- Renders each case through the real product result composition:
+  `ResultEnvelope` plus `ResultRenderer`.
+- Exposes one stable capture target per case via
+  `data-visual-case-id="<case_id>"`.
+- Shows case metadata, visual-focus notes, desktop/mobile checklist items, and
+  live backend route/result status when available.
+- Reuses the existing browser-side screenshot ZIP helper for a manual
+  current-viewport capture button, without adding Playwright.
+
+Manual capture workflow:
+
+1. Start the local backend that serves `/query`.
+2. Start the frontend dev server and open `/visual-qa`.
+3. Let all 15 cases load through live `/query` calls.
+4. Capture a desktop pass at about `1280px` wide.
+5. Capture a mobile pass at about `390px` wide.
+6. Record pass/fail notes in the checklist doc and any follow-up review
+   package.
+
+Output artifact plan:
+
+- Checklist source of truth:
+  `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
+- Recommended screenshot storage after manual capture:
+  `outputs/frontend_visual_qa/<run_id>/screenshots/desktop/<case_id>.png`
+  and `outputs/frontend_visual_qa/<run_id>/screenshots/mobile/<case_id>.png`
+- Recommended summary/report storage after manual review:
+  `outputs/frontend_visual_qa/<run_id>/`
+
+Next step:
+
+- Capture and review the manual desktop/mobile baseline first.
+- Do not add Playwright, pixel baselines, or screenshot diffing until the
+  manual baseline has been reviewed and accepted.
 
 ## Open Questions
 
