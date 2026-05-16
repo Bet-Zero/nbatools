@@ -878,16 +878,18 @@ def extract_opponent_points_allowed_conditions(text: str) -> list[dict]:
     ``pts`` threshold path so team finders filter on ``opponent_pts``.
     """
     _NUM = r"(\d+(?:\.\d+)?|\.\d+)"
+    _POINT_SUFFIX = (
+        r"(?:\s+(?:points?|pts))?"
+        r"(?=\s*(?:[?.!,]|$|\b(?:this|that|in|during|last|season|year|record|when|and|or)\b))"
+    )
     patterns = [
-        rf"\bheld\s+opponents\s+under\s+{_NUM}\s+(?:points?|pts)\b",
-        rf"\bheld\s+them\s+to\s+under\s+{_NUM}\s+(?:points?|pts)\b",
-        rf"\blimited\s+opponents\s+to\s+under\s+{_NUM}\s+(?:points?|pts)\b",
-        rf"\bkept\s+the\s+other\s+team\s+below\s+{_NUM}\s+(?:points?|pts)\b",
-        rf"\ballow(?:s|ing|ed)?\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\s+(?:points?|pts)\b",
-        rf"\ballowed\s+under\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\bheld\s+(?:opponents?|teams?|them)\s+(?:to\s+)?(?:under|below)\s+{_NUM}{_POINT_SUFFIX}",
+        rf"\blimited\s+opponents\s+to\s+(?:under|below)\s+{_NUM}{_POINT_SUFFIX}",
+        rf"\bkept\s+the\s+other\s+team\s+below\s+{_NUM}{_POINT_SUFFIX}",
+        rf"\ballow(?:s|ing|ed)?\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
         rf"\b(?:points?|pts)\s+allowed\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
         rf"\b(?:opponent|opp)\s+(?:points?|pts)\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}\b",
-        rf"\b(?:gave|given)\s+up\s+fewer\s+than\s+{_NUM}\s+(?:points?|pts)\b",
+        rf"\b(?:gave|given|giving)\s+up\s+(?:under|below|fewer\s+than|less\s+than)\s+{_NUM}{_POINT_SUFFIX}",
         rf"\bopponents?\s+under\s+{_NUM}(?:\s+(?:points?|pts))?\b",
     ]
 

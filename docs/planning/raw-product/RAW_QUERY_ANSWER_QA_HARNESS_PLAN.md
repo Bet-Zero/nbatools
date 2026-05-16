@@ -1116,7 +1116,7 @@ Latest run:
 
 New findings summary:
 
-- AQ-024: remaining defensive/opponent-points phrase variants.
+- AQ-024: defensive/opponent-points phrase variants, fixed in Fix Wave 8A.
 - AQ-025: `How did X do...` record-summary intent routes to finder.
 - AQ-026: possessive player record-when phrasing resolves to no-result.
 - AQ-027: `since January 1` parses as a single-day date range.
@@ -1127,9 +1127,9 @@ New findings summary:
 
 Recommended next phase:
 
-- Group fixes by family rather than one-off cases. Start with AQ-024 defensive
-  alias cleanup and AQ-029 playoff phrase routing because they affect already
-  documented supported families.
+- Group fixes by family rather than one-off cases. AQ-024 defensive alias
+  cleanup is fixed; start the next backend wave with AQ-029 playoff phrase
+  routing because it affects already documented supported families.
 - Then address AQ-025/AQ-026 record-intent routing and AQ-027/AQ-028 context
   preservation.
 - Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before any
@@ -1138,6 +1138,69 @@ Recommended next phase:
   243-case corpus. If it is clean, move to frontend-copy corpus expansion or a
   release-readiness checklist; visual QA automation should remain optional
   until the manual visual baseline process needs repeatable capture at scale.
+
+## Fix Wave 8A Status
+
+Fix Wave 8A resolved AQ-024 as a focused backend parser/stat-alias cleanup. It
+did not change frontend rendering, backend answer-phrase behavior, source data,
+playoff routing, record/date/stat-context behavior, or product boundaries.
+
+Defensive alias coverage fixed:
+
+- Team leaderboards now bind `gave up the fewest points per game`, `gave up the
+  most points per game`, `giving up the fewest/most points`, `teams allowing
+  the fewest/most points`, `allow the fewest/most points`, `opponent points per
+  game`, `opponent PPG`, and `points allowed per game` to
+  `opponent_pts_per_game`.
+- Direction is preserved: `fewest` / `lowest` sorts ascending; `most` /
+  `highest` sorts descending.
+- Team record thresholds now bind `held teams under N`, `held teams below N`,
+  `held opponents under/below N`, `allowed under N`, `gave up under N`, and
+  `gave up fewer than N` to `opponent_pts` max thresholds.
+- Guardrails remain intact: `scored under N` stays team `pts`, bare `PPG
+  leaders` stays the existing player leaderboard behavior, and `best defensive
+  rating teams` stays `def_rating`.
+
+Harness validation:
+
+- Targeted AQ-024 run:
+  `outputs/raw_query_answer_qa/20260516T075816Z/report.md`
+  - Cases: 3
+  - Result statuses: `ok: 3`
+  - Expectation cases: `pass: 3`
+  - Failed case IDs: none
+- Adjacent defensive run:
+  `outputs/raw_query_answer_qa/20260516T075832Z/report.md`
+  - Cases: 5
+  - Result statuses: `ok: 5`
+  - Expectation cases: `pass: 5`
+  - Failed case IDs: none
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260516T075849Z/report.md`
+  - Cases: 243
+  - Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
+  - Expectation cases: `pass: 235`, `fail: 8`
+  - Expectation checks: `pass: 1315`, `fail: 25`
+  - Suspicious flag cases: 3, unchanged case family
+  - Informational flag cases: 147
+  - Verified outlier cases: 1
+  - Remaining failed IDs: `lakers_how_did_road_last_season_wave5`,
+    `jokic_possessive_triple_double_record_wave5`,
+    `curry_last_20_from_three_wave5`,
+    `celtics_road_record_since_jan_1_wave5`,
+    `best_second_round_record_since_2010_wave5`,
+    `lakers_celtics_playoff_matchup_history_wave5`,
+    `players_personal_fouls_wave5`,
+    `warriors_net_rating_single_team_wave5`
+
+Recommended next phase:
+
+- Fix AQ-029 playoff phrasing next because it affects documented playoff
+  history/round/matchup families.
+- Then handle the record/date/stat-context group: AQ-025, AQ-026, AQ-027, and
+  AQ-028.
+- Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before
+  adding any new execution surface.
 
 ## Frontend Hero / Copy QA Wave 1 Status
 

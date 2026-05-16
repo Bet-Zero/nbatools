@@ -432,6 +432,26 @@ def test_held_opponents_under_points_still_maps_to_opponent_points():
     assert parsed["max_value"] == pytest.approx(99.9999)
 
 
+def test_held_teams_under_points_record_maps_to_opponent_points():
+    parsed = parse_query("Lakers record when they held teams under 100")
+
+    assert parsed["team"] == "LAL"
+    assert parsed["route"] == "team_record"
+    assert parsed["stat"] == "opponent_pts"
+    assert parsed["max_value"] == pytest.approx(99.9999)
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts"
+
+
+def test_team_scored_under_points_stays_team_points():
+    parsed = parse_query("Lakers record when they scored under 100")
+
+    assert parsed["team"] == "LAL"
+    assert parsed["route"] == "team_record"
+    assert parsed["stat"] == "pts"
+    assert parsed["max_value"] == pytest.approx(99.9999)
+    assert parsed["route_kwargs"]["stat"] == "pts"
+
+
 def test_points_allowed_team_leaderboard_uses_opponent_ppg():
     parsed = parse_query("Which team has allowed the fewest points per game this season?")
 
@@ -441,6 +461,24 @@ def test_points_allowed_team_leaderboard_uses_opponent_ppg():
     assert parsed["route_kwargs"]["ascending"] is True
 
 
+def test_gave_up_fewest_points_team_leaderboard_uses_opponent_ppg():
+    parsed = parse_query("Which team gave up the fewest points per game this season?")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["ascending"] is True
+
+
+def test_gave_up_most_points_team_leaderboard_uses_opponent_ppg_descending():
+    parsed = parse_query("Which team gave up the most points per game this season?")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["ascending"] is False
+
+
 def test_most_points_allowed_team_leaderboard_uses_opponent_ppg_descending():
     parsed = parse_query("which teams allow the most points per game this season")
 
@@ -448,6 +486,15 @@ def test_most_points_allowed_team_leaderboard_uses_opponent_ppg_descending():
     assert parsed["stat"] == "opponent_pts_per_game"
     assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
     assert parsed["route_kwargs"]["ascending"] is False
+
+
+def test_teams_allowing_fewest_points_team_leaderboard_uses_opponent_ppg():
+    parsed = parse_query("teams allowing the fewest points this season")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["stat"] == "opponent_pts_per_game"
+    assert parsed["route_kwargs"]["ascending"] is True
 
 
 def test_opponent_ppg_leaders_route_to_team_leaderboard():

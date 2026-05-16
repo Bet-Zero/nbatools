@@ -3852,14 +3852,18 @@ cases:
         equals: opponent_pts_per_game
       - path: result.metadata.ascending
         equals: true
+      - path: result.sections.leaderboard.0.team_name
+        equals: Boston Celtics
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: BOS
     review_notes: "Defensive phrasing variant should rank opponent points allowed, not team scoring."
     manual_review:
-      status: semantics_issue
+      status: pass
       tags:
         - phrasing_variant
         - defensive_stat
         - stat_alias
-      notes: "Probe showed 'gave up the fewest' binding to team pts ascending; inspect as defensive alias coverage."
+      notes: "Fix Wave 8A: gave-up defensive leaderboard phrasing maps to opponent points per game ascending; top row is Boston in the current dataset."
 
   - id: lakers_how_did_road_last_season_wave5
     query: "How did the Lakers do on the road last season?"
@@ -4006,14 +4010,23 @@ cases:
         label: OPP PTS max
     expected_sections:
       - summary
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts
+      - path: result.sections.summary.0.games
+        equals: 7
+      - path: result.sections.summary.0.wins
+        equals: 7
+      - path: result.sections.summary.0.losses
+        equals: 0
     review_notes: "Held-teams-to phrasing should map to opponent points allowed."
     manual_review:
-      status: semantics_issue
+      status: pass
       tags:
         - phrasing_variant
         - record_when
         - defensive_stat
-      notes: "Probe showed this phrase binding to team pts max; inspect defensive threshold alias coverage."
+      notes: "Fix Wave 8A: held-teams-to wording maps to OPP PTS max and matches the canonical Lakers held-opponents-under-100 7-0 sample."
 
   - id: warriors_gave_up_under_100_wave5
     query: "What was the Warriors record when they gave up fewer than 100 points?"
@@ -4908,11 +4921,15 @@ cases:
         equals: opponent_pts_per_game
       - path: result.metadata.ascending
         equals: true
+      - path: result.sections.leaderboard.0.team_name
+        equals: Boston Celtics
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: BOS
     review_notes: "Allowing-the-fewest defensive phrasing should rank opponent PPG ascending."
     manual_review:
-      status: semantics_issue
+      status: pass
       tags:
         - stat_alias
         - defensive_stat
         - phrasing_variant
-      notes: "Probe showed this variant binding to team pts ascending; inspect defensive alias coverage."
+      notes: "Fix Wave 8A: allowing-the-fewest defensive phrasing maps to opponent points per game ascending; top row is Boston in the current dataset."

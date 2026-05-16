@@ -139,7 +139,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - `25+ points`
 - `5+ threes`
 - reverse phrasing for some stats: `ts% over .600`, `efg% under .500`
-- opponent-points defensive thresholds: `held opponents under 100 points`, `held them to under 100 points`, `limited opponents to under 100 points`, `kept the other team below 100 points`, `allowed under 100 points`, `allow fewer than 110 points`, `points allowed under 110`, `opponent points under 110`, `opp pts under 110`, `gave up fewer than 100 points`
+- opponent-points defensive thresholds: `held opponents under 100 points`, `held teams under 100`, `held teams to under 100 points`, `held them to under 100 points`, `limited opponents to under 100 points`, `kept the other team below 100 points`, `allowed under 100 points`, `allow fewer than 110 points`, `points allowed under 110`, `opponent points under 110`, `opp pts under 110`, `gave up under 100`, `gave up fewer than 100 points`
 - clear shooting percentage thresholds normalize to the stored 0.xx scale: `shoots under 40%`, `shoots below 40 percent`, `FG% under 40%`, `field goal percentage below 40%`, `shoots under .400`, `3PT% over 40%`, `from three over 40%`, `FT% under 80%`
 
 ### 2.6 Stat name aliases
@@ -435,6 +435,8 @@ Examples:
 - `worst away record since 2020`
 - `best scoring teams vs Lakers since 2018`
 - `Which team has allowed the fewest points per game this season?`
+- `Which team gave up the fewest points per game?`
+- `teams allowing the fewest points`
 - `which teams allow the most points per game this season`
 - `opponent PPG leaders this season`
 - `opponent points per game leaders`

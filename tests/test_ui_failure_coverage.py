@@ -655,6 +655,30 @@ class TestWithoutPlayer:
         assert by_season["losses"] == summary["losses"]
 
     @pytest.mark.needs_data
+    def test_lakers_record_holding_teams_under_100_matches_opponents_alias(self):
+        held_teams = execute_natural_query(
+            "What was the Lakers record when they held teams to under 100 points?"
+        )
+        held_opponents = execute_natural_query(
+            "What is the Lakers record when they held opponents under 100 points?"
+        )
+
+        assert held_teams.route == "team_record"
+        assert held_teams.result.result_status == "ok"
+        assert held_teams.metadata["stat"] == "opponent_pts"
+        assert {
+            "label": "OPP PTS max",
+            "value": "99.9999",
+            "kind": "threshold",
+        } in held_teams.metadata["applied_filters"]
+
+        teams_summary = held_teams.to_dict()["sections"]["summary"][0]
+        opponents_summary = held_opponents.to_dict()["sections"]["summary"][0]
+        assert teams_summary["games"] == opponents_summary["games"] == 7
+        assert teams_summary["wins"] == opponents_summary["wins"] == 7
+        assert teams_summary["losses"] == opponents_summary["losses"] == 0
+
+    @pytest.mark.needs_data
     def test_knicks_record_allowing_under_110_uses_opponent_points(self):
         qr = execute_natural_query(
             "What is the Knicks record when they allow fewer than 110 points?"
@@ -697,6 +721,28 @@ class TestWithoutPlayer:
     @pytest.mark.needs_data
     def test_points_allowed_leaderboard_ranks_opponent_ppg(self):
         qr = execute_natural_query("Which team has allowed the fewest points per game this season?")
+
+        assert qr.route == "season_team_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "opponent_pts_per_game"
+        assert qr.metadata["ascending"] is True
+
+        top_row = qr.to_dict()["sections"]["leaderboard"][0]
+        assert top_row["team_abbr"] == "BOS"
+        assert top_row["team_name"] == "Boston Celtics"
+        assert top_row["opponent_pts_per_game"] == pytest.approx(107.159, abs=0.001)
+        assert top_row["team_abbr"] != "BKN"
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "Which team gave up the fewest points per game?",
+            "teams allowing the fewest points",
+        ],
+    )
+    def test_wave5_defensive_fewest_aliases_rank_opponent_ppg(self, query):
+        qr = execute_natural_query(query)
 
         assert qr.route == "season_team_leaders"
         assert qr.result.result_status == "ok"

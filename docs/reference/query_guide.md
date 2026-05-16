@@ -41,6 +41,8 @@ Natural examples:
 - `teams with best efg%`
 - `teams with most threes`
 - `fewest points allowed per game` (team stat alias → opponent_pts_per_game)
+- `gave up the fewest points per game`
+- `teams allowing the fewest points`
 - `most points allowed per game`
 - `opponent PPG leaders` (points allowed / opponent points, not defensive rating)
 - `best 3 point percentage` (stat alias → fg3_pct)
@@ -200,6 +202,8 @@ Natural examples:
 - `teams with best ts%`
 - `teams with most threes`
 - `fewest points allowed per game`
+- `gave up the fewest points per game`
+- `teams allowing the fewest points`
 - `most points allowed per game`
 - `opponent PPG leaders`
 - `best 3 point percentage`
@@ -320,6 +324,8 @@ Examples:
 - `Jokic under 20 points`
 - `Jokic between 20 and 30 points`
 - `Knicks record when they allow fewer than 110 points` (uses opponent points / points allowed)
+- `Lakers record when they held teams under 100` (uses opponent points / points allowed)
+- `Lakers record when they held opponents under 100`
 - `Boston record when Tatum shoots under 40%` (uses FG% on the 0.xx scale)
 - `Warriors record when Curry shoots over 40% from three` (uses 3PT% on the 0.xx scale)
 
