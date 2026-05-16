@@ -462,9 +462,15 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "personal_foul_leaderboard":
         return (
-            "personal-foul leaderboards are not supported by the current season "
+            "personal-foul leaderboards are not supported yet by the current season "
             "leaderboard contract; use supported box-score leaderboards such as "
             "turnovers, steals, blocks, assists, rebounds, or points "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "single_team_advanced_stat_summary":
+        return (
+            "single-team advanced-stat summaries are not supported yet; try a "
+            "team advanced leaderboard, like 'Which teams have the best net rating?' "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id == "opponent_conference":

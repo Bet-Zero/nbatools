@@ -702,6 +702,80 @@ def test_best_defensive_rating_stays_defensive_rating():
 @pytest.mark.parametrize(
     "query",
     [
+        "personal fouls leaders this season",
+        "personal foul leaders this season",
+        "players with most personal fouls this season",
+        "players with the most personal fouls",
+        "most personal fouls this season",
+    ],
+)
+def test_personal_foul_leaderboard_variants_are_unsupported_boundaries(query):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["stat"] == "pf"
+    assert parsed["route_kwargs"]["stat"] == "pf"
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["personal_foul_leaderboard"]
+
+
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("Who averages the most turnovers per game this season?", "tov"),
+        ("Who leads the league in steals this season?", "stl"),
+        ("Who leads the league in blocks this season?", "blk"),
+    ],
+)
+def test_supported_defensive_and_turnover_leaderboards_still_route(query, stat):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["stat"] == stat
+    assert parsed["route_kwargs"]["stat"] == stat
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("Warriors net rating this season", "net_rating"),
+        ("Warriors offensive rating this season", "off_rating"),
+        ("Warriors defensive rating this season", "def_rating"),
+        ("Warriors pace this season", "pace"),
+    ],
+)
+def test_single_team_advanced_stat_scalar_queries_are_unsupported_boundaries(query, stat):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "game_summary"
+    assert parsed["route"] != "game_finder"
+    assert parsed["team"] == "GSW"
+    assert parsed["stat"] == stat
+    assert parsed["route_kwargs"]["stat"] == stat
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["single_team_advanced_stat_summary"]
+
+
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("What teams have the best net rating this year?", "net_rating"),
+        ("What team has the highest offensive rating this season?", "off_rating"),
+        ("best defensive rating teams this season", "def_rating"),
+        ("fastest pace teams this season", "pace"),
+    ],
+)
+def test_league_wide_team_advanced_leaderboards_still_route(query, stat):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["stat"] == stat
+    assert parsed["route_kwargs"]["stat"] == stat
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
         "Boston record when Tatum shoots under 40%",
         "Boston record when Tatum FG% under 40%",
         "Boston record when Tatum shoots under .400",

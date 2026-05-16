@@ -48,6 +48,10 @@ Natural examples:
 - `best 3 point percentage` (stat alias → fg3_pct)
 - `best field goal percentage` (stat alias → fg_pct)
 - `team ft%` (stat alias → ft_pct)
+- `What teams have the best net rating this year?`
+- `What team has the highest offensive rating this season?`
+- `best defensive rating teams this season`
+- `fastest pace teams this season`
 - `Which centers have the most rebounds this season?` (position-filtered leaderboard)
 - `What players have the best field goal percentage among guards?` (position-filtered leaderboard)
 - `guard scoring leaders this season` (position-filtered leaderboard)
@@ -58,8 +62,10 @@ Unsupported leaderboard boundaries currently return `no_result` /
 
 - rookie leaderboards, such as `rookie scoring leaders this season`
 - league-wide starter/bench leaderboards, such as `starter assist leaders this season`
-- personal-foul leaderboards, such as `personal fouls leaders this season`
+- personal-foul leaderboards, such as `personal fouls leaders this season` and `players with most personal fouls`
 - team bench scoring, such as `Celtics bench scoring this season`
+- single-team advanced-stat summaries, such as `Warriors net rating this season`
+  (league-wide team advanced-stat leaderboards remain supported)
 
 ## Finders
 

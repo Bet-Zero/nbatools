@@ -263,6 +263,11 @@ class TestP2BoundaryRoutingCleanup:
                 "season_leaders",
                 "personal_foul_leaderboard",
             ),
+            (
+                "players with most personal fouls this season",
+                "season_leaders",
+                "personal_foul_leaderboard",
+            ),
             ("Celtics record against the East this season", "team_record", "opponent_conference"),
         ],
     )
@@ -274,6 +279,71 @@ class TestP2BoundaryRoutingCleanup:
         assert qr.result.result_reason == "filter_not_supported"
         assert qr.metadata["unsupported_filters"] == [unsupported_filter]
         assert qr.to_dict()["sections"] == {}
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "stat"),
+        [
+            ("Warriors net rating this season", "net_rating"),
+            ("Warriors offensive rating this season", "off_rating"),
+            ("Warriors defensive rating this season", "def_rating"),
+            ("Warriors pace this season", "pace"),
+        ],
+    )
+    def test_single_team_advanced_stat_summaries_return_unsupported_boundary(self, query, stat):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "game_summary"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["team"] == "GSW"
+        assert qr.metadata["stat"] == stat
+        assert qr.metadata["unsupported_filters"] == ["single_team_advanced_stat_summary"]
+        assert qr.to_dict()["sections"] == {}
+        notes = qr.metadata.get("notes", []) + qr.result.notes
+        assert any("single-team advanced-stat summaries" in note for note in notes)
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "stat"),
+        [
+            ("Who averages the most turnovers per game this season?", "tov"),
+            ("Who leads the league in steals this season?", "stl"),
+            ("Who leads the league in blocks this season?", "blk"),
+        ],
+    )
+    def test_supported_turnover_steal_block_leaderboards_still_execute(self, query, stat):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "season_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == stat
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert qr.to_dict()["sections"]["leaderboard"]
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "stat"),
+        [
+            ("What teams have the best net rating this year?", "net_rating"),
+            ("What team has the highest offensive rating this season?", "off_rating"),
+            ("best defensive rating teams this season", "def_rating"),
+            ("team pace leaders this season", "pace"),
+            ("fastest pace teams this season", "pace"),
+        ],
+    )
+    def test_league_wide_team_advanced_leaderboards_still_execute(self, query, stat):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "season_team_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == stat
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert qr.to_dict()["sections"]["leaderboard"]
 
     @pytest.mark.needs_data
     @pytest.mark.parametrize(

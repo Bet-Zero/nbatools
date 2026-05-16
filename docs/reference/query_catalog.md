@@ -448,6 +448,10 @@ Examples:
 - `best team 3 point percentage` (team stat alias → fg3_pct)
 - `team fg%` (team stat alias → fg_pct)
 - `team ft%` (team stat alias → ft_pct)
+- `What teams have the best net rating this year?`
+- `What team has the highest offensive rating this season?`
+- `best defensive rating teams this season`
+- `fastest pace teams this season`
 
 Leaderboard no-match behavior:
 
@@ -460,6 +464,14 @@ Leaderboard no-match behavior:
   personal-foul leaderboards are unsupported boundaries; these return
   `no_result` / `filter_not_supported` rather than broad points/assist
   leaderboards
+- personal-foul leaderboard variants such as `players with most personal fouls`
+  and `most personal fouls this season` share the same unsupported boundary;
+  fouls-drawn wording is not mapped to personal fouls committed
+- league-wide team advanced-stat leaderboards for net rating, offensive rating,
+  defensive rating, and pace are supported, but single-team scalar summaries
+  such as `Warriors net rating this season` return `no_result` /
+  `filter_not_supported` until a single-team advanced-stat result contract is
+  approved
 
 ### Position-filtered leaderboards
 

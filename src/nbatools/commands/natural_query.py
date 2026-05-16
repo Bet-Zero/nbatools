@@ -272,6 +272,8 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "above .600",
 )
 
+_TEAM_SEASON_ADVANCED_STATS = {"off_rating", "def_rating", "net_rating", "pace"}
+
 
 def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | None:
     if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or re.search(
@@ -295,6 +297,33 @@ def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | 
             )
 
     return None
+
+
+def _single_team_advanced_stat_summary_boundary(parsed: dict) -> bool:
+    """Detect single-team season-advanced stat lookups with no scalar contract."""
+    if parsed.get("stat") not in _TEAM_SEASON_ADVANCED_STATS:
+        return False
+    if not parsed.get("team") or parsed.get("team_a") or parsed.get("team_b"):
+        return False
+    if parsed.get("player") or parsed.get("player_a") or parsed.get("player_b"):
+        return False
+    if parsed.get("lineup_members") or parsed.get("presence_state") is not None:
+        return False
+    if parsed.get("record_intent") or parsed.get("finder_intent") or parsed.get("count_intent"):
+        return False
+    if parsed.get("min_value") is not None or parsed.get("max_value") is not None:
+        return False
+    if parsed.get("threshold_conditions"):
+        return False
+    if (
+        parsed.get("split_type")
+        or parsed.get("streak_request")
+        or parsed.get("team_streak_request")
+    ):
+        return False
+    if parsed.get("window_size") is not None:
+        return False
+    return True
 
 
 def _multi_player_availability_boundary(q: str) -> bool:
@@ -527,6 +556,8 @@ def _build_parse_state(query: str) -> dict:
     team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
     personal_foul_leaderboard_boundary = detect_personal_foul_leaderboard_boundary(q)
     opponent_conference_boundary = detect_opponent_conference_boundary(q)
+    if personal_foul_leaderboard_boundary:
+        leaderboard_intent = True
 
     if (
         stretch_request
@@ -622,6 +653,7 @@ def _build_parse_state(query: str) -> dict:
             or max_value is not None
             or leaderboard_intent
             or team_leaderboard_intent
+            or personal_foul_leaderboard_boundary
             or record_intent
             or window_size is not None
         ) and not historical_route_intent:
@@ -1501,6 +1533,7 @@ def _finalize_route(parsed: dict) -> dict:
         notes.extend(rl_notes)
     elif personal_foul_leaderboard_boundary:
         route = "season_leaders"
+        stat = "pf"
         notes.append(
             "unsupported_boundary: personal-foul leaderboards are not supported "
             "until a fouls-committed stat contract is approved"
@@ -1636,6 +1669,32 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "unsupported_filters": ["opponent_conference"],
+        }
+    elif _single_team_advanced_stat_summary_boundary(parsed):
+        route = "game_summary"
+        notes.append(
+            "unsupported_boundary: single-team advanced-stat summaries are not "
+            "supported until a route/result contract is approved"
+        )
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "last_n": last_n,
+            "unsupported_filters": ["single_team_advanced_stat_summary"],
         }
     elif (
         _specific_date_top_scorer_intent(q, start_date, end_date)
@@ -2139,6 +2198,8 @@ def _finalize_route(parsed: dict) -> dict:
         "playoff_round_record",
     }:
         out["season_type"] = "Playoffs"
+    if route_kwargs.get("unsupported_filters") == ["personal_foul_leaderboard"]:
+        out["stat"] = route_kwargs["stat"]
     if route == "season_team_leaders" and route_kwargs.get("stat"):
         out["stat"] = route_kwargs["stat"]
     out["intent"] = route_to_intent(route, count_intent=count_intent)

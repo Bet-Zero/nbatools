@@ -1359,8 +1359,65 @@ Harness validation:
 
 Recommended next phase:
 
-- Resolve AQ-030 and AQ-031 as product-boundary cleanup/decision work. Do not
-  treat Wave 8C2 as fixing the personal-foul or Warriors net-rating cases.
+- Fix Wave 8D completed the AQ-030/AQ-031 product-boundary cleanup below.
+
+## Fix Wave 8D Status
+
+Fix Wave 8D resolved AQ-030 and AQ-031 as explicit product-boundary behavior. It
+did not add personal-foul leaderboard support, single-team advanced-stat scalar
+support, frontend rendering changes, backend answer-phrase enrichment, source
+data changes, or changes to league-wide team advanced-stat leaderboards.
+
+Product-boundary coverage fixed:
+
+- `players with most personal fouls this season` now shares the existing
+  personal-foul unsupported boundary. It routes to `season_leaders` only to
+  preserve leaderboard context and returns `no_result` / `filter_not_supported`
+  with `metadata.stat=pf` and
+  `unsupported_filters=["personal_foul_leaderboard"]`.
+- `Warriors net rating this season` now returns an explicit single-team
+  advanced-stat unsupported boundary instead of falling through to
+  `game_finder`. It routes to `game_summary` only to preserve team/stat context
+  and returns `unsupported_filters=["single_team_advanced_stat_summary"]`.
+- Guardrails remain intact: turnover, steal, and block leaderboards still
+  execute through `season_leaders`; league-wide net rating, offensive rating,
+  defensive rating, and pace team leaderboards still execute through
+  `season_team_leaders`.
+
+Harness validation:
+
+- Targeted 8D run:
+  `outputs/raw_query_answer_qa/20260516T221628Z/report.md`
+  - Cases: 2
+  - Result statuses: `no_result: 2`
+  - Expectation cases: `pass: 2`
+  - Expectation checks: `pass: 15`
+  - Suspicious flag cases: 0
+  - Failed case IDs: none
+- Adjacent boundary/advanced run:
+  `outputs/raw_query_answer_qa/20260516T221638Z/report.md`
+  - Cases: 9
+  - Result statuses: `ok: 8`, `no_result: 1`
+  - Expectation cases: `pass: 9`
+  - Expectation checks: `pass: 47`
+  - Suspicious flag cases: 0
+  - Failed case IDs: none
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260516T221654Z/report.md`
+  - Cases: 243
+  - Result statuses: `ok: 202`, `no_result: 32`, `error: 9`
+  - Expectation cases: `pass: 243`
+  - Expectation checks: `pass: 1368`
+  - Suspicious flag cases: 0
+  - Informational flag cases: 149
+  - Verified outlier cases: 1
+  - Remaining failed IDs: none
+
+Recommended next phase:
+
+- With the 243-case raw product corpus clean, choose between frontend-copy
+  corpus expansion, a release-readiness checklist, or selecting one unsupported
+  family to promote into real support behind an approved route/result contract.
 
 ## Frontend Hero / Copy QA Wave 1 Status
 
