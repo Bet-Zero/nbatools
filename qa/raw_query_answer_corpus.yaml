@@ -3787,3 +3787,1132 @@ cases:
         - unsupported_boundary
         - product_decision
       notes: "Review lineup unsupported guidance."
+
+  - id: which_player_assist_leaders_wave5
+    query: "Which player averaged the most assists this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ast
+    review_notes: "Wave 5 phrasing variant: question-form assist leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - stat_alias
+      notes: "Review assist stat binding for 'which player averaged' wording."
+
+  - id: who_had_highest_true_shooting_wave5
+    query: "Who had the highest true shooting percentage this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ts_pct
+    review_notes: "Wave 5 phrasing variant for full true-shooting wording."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - stat_alias
+        - advanced_metric
+      notes: "Review true-shooting leaderboard rows and minimum-filter behavior."
+
+  - id: team_gave_up_fewest_ppg_wave5
+    query: "Which team gave up the fewest points per game?"
+    category: team_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts_per_game
+      - path: result.metadata.ascending
+        equals: true
+    review_notes: "Defensive phrasing variant should rank opponent points allowed, not team scoring."
+    manual_review:
+      status: semantics_issue
+      tags:
+        - phrasing_variant
+        - defensive_stat
+        - stat_alias
+      notes: "Probe showed 'gave up the fewest' binding to team pts ascending; inspect as defensive alias coverage."
+
+  - id: lakers_how_did_road_last_season_wave5
+    query: "How did the Lakers do on the road last season?"
+    category: team_record
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Away
+      - kind: season
+        value: 2024-25
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2024-25
+    review_notes: "How-did-team-do phrasing should preserve record-summary intent, road, and last-season context."
+    manual_review:
+      status: routing_issue
+      tags:
+        - phrasing_variant
+        - context_filter
+        - date_filter
+      notes: "Probe returned a game finder despite record-like wording; review whether summary routing should be preferred."
+
+  - id: jokic_possessive_triple_double_record_wave5
+    query: "What was Jokic's record in games with a triple-double?"
+    category: record_when_player_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: special_event
+        value: Triple Double
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Possessive player-record wording should resolve Jokic and preserve the triple-double condition."
+    manual_review:
+      status: routing_issue
+      tags:
+        - phrasing_variant
+        - record_when
+        - context_filter
+      notes: "Probe returned no_result with incorrect context; inspect possessive player-record parsing."
+
+  - id: thirty_point_games_hyphen_wave5
+    query: "Who has the most 30-point games this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+        value: "30.0"
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.occurrence_event.stat
+        equals: pts
+      - path: result.metadata.occurrence_event.min_value
+        equals: 30.0
+    review_notes: "Hyphenated 30-point phrasing should keep the occurrence threshold."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - stat_alias
+        - record_when
+      notes: "Review threshold preservation for hyphenated occurrence wording."
+
+  - id: leaders_in_steals_wave5
+    query: "leaders in steals this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: stl
+    review_notes: "Search-fragment 'leaders in' defensive-stat phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - defensive_stat
+        - stat_alias
+      notes: "Review steals leaderboard stat binding."
+
+  - id: worst_road_record_wave5
+    query: "Who has the worst road record this season?"
+    category: team_record_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: location
+        value: Away
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: win_pct
+      - path: result.metadata.ascending
+        equals: true
+    review_notes: "Worst-road-record leaderboard should sort win percentage ascending and preserve road context."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - context_filter
+      notes: "Review road filter and ascending sort."
+
+  - id: lakers_held_teams_under_100_wave5
+    query: "What was the Lakers record when they held teams to under 100 points?"
+    category: record_when_team_condition
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: threshold
+        label: OPP PTS max
+    expected_sections:
+      - summary
+    review_notes: "Held-teams-to phrasing should map to opponent points allowed."
+    manual_review:
+      status: semantics_issue
+      tags:
+        - phrasing_variant
+        - record_when
+        - defensive_stat
+      notes: "Probe showed this phrase binding to team pts max; inspect defensive threshold alias coverage."
+
+  - id: warriors_gave_up_under_100_wave5
+    query: "What was the Warriors record when they gave up fewer than 100 points?"
+    category: record_when_team_condition
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: threshold
+        label: OPP PTS max
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts
+    review_notes: "Gave-up defensive threshold phrasing should map to opponent points."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - record_when
+        - defensive_stat
+      notes: "Review opponent-points threshold behavior for gave-up wording."
+
+  - id: tatum_versus_good_teams_wave5
+    query: "Jayson Tatum versus good teams this season"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: quality
+        value: good teams
+    expected_sections:
+      - summary
+      - game_log
+    review_notes: "Versus plus opponent-quality player summary variant."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - context_filter
+      notes: "Review opponent-quality preservation for versus wording."
+
+  - id: who_averaged_blocks_wave5
+    query: "Who averaged the most blocks this season?"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: blk
+    review_notes: "Who-averaged wording for block leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - phrasing_variant
+        - defensive_stat
+        - stat_alias
+      notes: "Review block stat binding."
+
+  - id: luka_last_10_summary_wave5
+    query: "Luka last 10 games summary"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 10
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: Luka Dončić
+    review_notes: "Last-10 player summary shorthand."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Review Luka alias resolution and last-10 sample."
+
+  - id: curry_last_20_from_three_wave5
+    query: "Curry last 20 games from three"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: window
+        value: "20"
+    expected_sections:
+      - summary
+      - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 20
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: fg3m
+    review_notes: "Last-20 context plus from-three stat phrasing."
+    manual_review:
+      status: missing_filter
+      tags:
+        - context_filter
+        - date_filter
+        - stat_alias
+      notes: "Probe preserved last-20 but did not expose fg3m stat context; review whether from-three should bind a stat."
+
+  - id: lakers_home_record_2024_25_wave5
+    query: "Lakers home record in 2024-25"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Home
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2024-25
+    review_notes: "Explicit season plus home record context."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Review home filter and 2024-25 season preservation."
+
+  - id: celtics_road_record_since_jan_1_wave5
+    query: "Celtics road record since January 1"
+    category: team_record
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Away
+      - kind: date
+        value: "2026-01-01 – 2026-04-12"
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.metadata.start_date
+        equals: "2026-01-01"
+      - path: result.metadata.end_date
+        equals: "2026-04-12"
+    review_notes: "Since-explicit-date plus road context should create an open-ended date window."
+    manual_review:
+      status: missing_filter
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Probe treated 'since January 1' as a single-day filter; inspect date-window semantics."
+
+  - id: knicks_record_in_march_wave5
+    query: "Knicks record in March"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - summary
+    review_notes: "Month date-window team record variant."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Review March date-window handling for team record."
+
+  - id: sga_scoring_since_all_star_wave5
+    query: "SGA scoring since All-Star break"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: date
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Since-All-Star plus scoring stat shorthand."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+        - stat_alias
+      notes: "Review finder-vs-summary default and date/stat preservation."
+
+  - id: nuggets_home_record_last_season_wave5
+    query: "Nuggets record at home last season"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: location
+        value: Home
+      - kind: season
+        value: 2024-25
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2024-25
+    review_notes: "At-home plus last-season team record phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Review relative season and home filter together."
+
+  - id: warriors_last_10_record_wave5
+    query: "Warriors record over the last 10 games"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+    review_notes: "Team record over-last-N phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - date_filter
+      notes: "Review last-10 team record sample and sorting."
+
+  - id: tatum_points_in_wins_wave5
+    query: "Jayson Tatum points in wins this season"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_filters:
+      - kind: outcome
+        value: Wins
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "In-wins context on named-player stat finder."
+    manual_review:
+      status: unreviewed
+      tags:
+        - split
+        - context_filter
+        - stat_alias
+      notes: "Review outcome filter and finder-vs-summary default."
+
+  - id: heat_knicks_playoff_history_no_vs_wave5
+    query: "Heat Knicks playoff history"
+    category: playoff_matchup_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+      comparison: 6
+    review_notes: "Adjacent team-team playoff history phrasing without vs."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - matchup
+        - phrasing_variant
+      notes: "Review matchup team resolution and series rows."
+
+  - id: lakers_celtics_playoff_series_history_wave5
+    query: "Lakers Celtics playoff series history"
+    category: playoff_matchup_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+      comparison: 2
+    review_notes: "Adjacent team-team playoff series history phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - matchup
+        - phrasing_variant
+      notes: "Review Lakers/Celtics playoff matchup history rows."
+
+  - id: warriors_cavs_finals_history_wave5
+    query: "Warriors Cavaliers Finals history"
+    category: playoff_matchup_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+      comparison: 4
+    review_notes: "Finals matchup-history phrasing for Warriors/Cavaliers."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - matchup
+        - phrasing_variant
+      notes: "Review whether Finals wording is reflected in matchup interpretation."
+
+  - id: most_conf_finals_appearances_since_2000_wave5
+    query: "most conference finals appearances since 2000"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_appearances
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.start_season
+        equals: 2000-01
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Since-year context on conference-finals appearance leaderboard."
+    manual_review:
+      status: unreviewed
+      tags:
+        - playoff
+        - era
+        - context_filter
+      notes: "Review since-year season range and round label."
+
+  - id: best_second_round_record_since_2010_wave5
+    query: "best second-round record since 2010"
+    category: playoff_history
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_round_record
+    expected_shape: playoff_round_record
+    expected_filters:
+      - kind: season
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.metadata.start_season
+        equals: 2010-11
+    review_notes: "Hyphenated second-round plus since-year phrasing should stay on playoff round-record semantics."
+    manual_review:
+      status: routing_issue
+      tags:
+        - playoff
+        - era
+        - phrasing_variant
+      notes: "Probe routed to regular-season team record leaderboard; inspect hyphenated round parsing."
+
+  - id: bulls_finals_record_question_wave5
+    query: "What is the Bulls Finals record?"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_history
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: single_team_playoff_round_record
+    review_notes: "Question-form Bulls Finals record should remain an explicit unsupported boundary."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - playoff
+        - unsupported_boundary
+        - product_decision
+      notes: "Single-team Finals records remain deferred until round-data contract coverage is approved."
+
+  - id: celtics_record_in_conference_finals_wave5
+    query: "What was the Celtics record in conference finals?"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_history
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: single_team_playoff_round_record
+    review_notes: "Question-form single-team conference-finals record should remain unsupported."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - playoff
+        - unsupported_boundary
+        - product_decision
+      notes: "Single-team conference-finals record support is out of scope without a round-record entity contract."
+
+  - id: lakers_celtics_playoff_matchup_history_wave5
+    query: "Lakers Celtics playoff matchup history"
+    category: playoff_matchup_history
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: playoff_matchup_history
+    expected_shape: playoff_matchup_history
+    expected_sections:
+      - summary
+      - comparison
+    review_notes: "Playoff matchup-history wording should use playoff matchup history, not regular team comparison."
+    manual_review:
+      status: routing_issue
+      tags:
+        - playoff
+        - matchup
+        - phrasing_variant
+      notes: "Probe returned team_compare/no_match; inspect 'matchup history' phrase handling."
+
+  - id: compare_lebron_durant_wave5
+    query: "Compare LeBron James and Kevin Durant"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Compare-X-and-Y full-name player comparison phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - phrasing_variant
+      notes: "Review comparison rows for full-name player compare wording."
+
+  - id: lebron_durant_last10_wave5
+    query: "LeBron James vs Kevin Durant last 10 games"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Full-name player comparison plus last-N context."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - context_filter
+      notes: "Review last-10 filter preservation in player comparison."
+
+  - id: compare_jokic_embiid_recent_wave5
+    query: "Compare Jokic and Embiid recent form"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_filters:
+      - kind: window
+        value: "10"
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Compare-and recent-form player comparison phrasing."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - context_filter
+        - phrasing_variant
+      notes: "Review recent-form default window and comparison shape."
+
+  - id: celtics_bucks_comparison_this_season_wave5
+    query: "Celtics vs Bucks comparison this season"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Team-vs-team comparison route with explicit current season."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - matchup
+      notes: "Review team comparison metrics."
+
+  - id: warriors_lakers_record_this_season_wave5
+    query: "Warriors vs Lakers record this season"
+    category: split
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_matchup_record
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    review_notes: "Team-vs-team record phrasing should use matchup-record semantics."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - matchup
+      notes: "Review matchup record rows and current-season context."
+
+  - id: jokic_game_log_vs_embiid_wave5
+    query: "Jokic game log vs Embiid"
+    category: split
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Game-log wording should not be hijacked into player comparison."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - no_broad_fallback
+      notes: "Current product policy keeps player game-log vs player as finder/opponent-player behavior."
+
+  - id: lebron_stats_vs_durant_wave5
+    query: "LeBron stats vs Kevin Durant"
+    category: player_summary
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_sections:
+      - finder
+    review_notes: "Stats-vs-player wording should remain opponent-player finder behavior, not comparison."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - matchup
+        - no_broad_fallback
+      notes: "Review player-vs-player opponent filter behavior and returned games."
+
+  - id: rookie_assist_leaders_wave5
+    query: "rookie assist leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: rookie_leaderboard
+    review_notes: "Rookie assist leaderboard boundary should not broaden to all players."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - role_filter
+        - no_broad_fallback
+      notes: "Expected unsupported until rookie leaderboard execution is product-approved."
+
+  - id: bench_rebound_leaders_wave5
+    query: "bench rebound leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: role_leaderboard
+    review_notes: "League-wide bench rebound leaderboard should remain an unsupported boundary."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - role_filter
+        - no_broad_fallback
+      notes: "Expected unsupported until league-wide role leaderboards are execution-backed."
+
+  - id: celtics_bench_points_wave5
+    query: "Celtics bench points this season"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: game_finder
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: team_bench_scoring
+    review_notes: "Team bench points should be unsupported, not broad team scoring."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - role_filter
+        - no_broad_fallback
+      notes: "Expected unsupported until team bench-scoring contract exists."
+
+  - id: players_personal_fouls_wave5
+    query: "players with most personal fouls this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: personal_foul_leaderboard
+    review_notes: "Personal-foul leaderboard phrase variant should hit the explicit unsupported boundary."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - stat_alias
+        - no_broad_fallback
+      notes: "Probe returned unrouted; review whether this variant should share the personal-foul boundary message."
+
+  - id: lakers_record_against_west_wave5
+    query: "Lakers record against the West"
+    category: team_record
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_conference
+    review_notes: "Opponent-conference filter should remain unsupported instead of broadening."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - context_filter
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-conference team metadata is complete."
+
+  - id: most_clutch_player_wave5
+    query: "Who is the most clutch player this season?"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.clutch
+        equals: true
+    review_notes: "Subjective clutch-player leaderboard should not broaden to normal points leaders."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - product_decision
+        - no_broad_fallback
+      notes: "Review boundary guidance for subjective clutch leaderboard phrasing."
+
+  - id: cooled_off_lately_wave5
+    query: "who has cooled off lately"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    expected_filters:
+      - kind: window
+        value: "10"
+    review_notes: "Subjective cooled-off query should remain unsupported."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - subjective
+        - no_broad_fallback
+      notes: "Expected unsupported until trend/drop-off semantics are defined."
+
+  - id: true_shooting_leaders_phrase_wave5
+    query: "true shooting leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: ts_pct
+    review_notes: "Search-fragment true-shooting alias coverage."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+        - advanced_metric
+      notes: "Review true-shooting stat binding."
+
+  - id: warriors_net_rating_single_team_wave5
+    query: "Warriors net rating this season"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: net_rating
+    review_notes: "Single-team net-rating phrasing needs product review: summary scalar, team finder, or unsupported boundary."
+    manual_review:
+      status: needs_product_decision
+      tags:
+        - stat_alias
+        - advanced_metric
+        - product_decision
+      notes: "Probe returned unsupported game_finder; decide whether single-team advanced stat summaries are in product scope."
+
+  - id: fastest_pace_teams_wave5
+    query: "fastest pace teams this season"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pace
+      - path: result.metadata.ascending
+        equals: false
+    review_notes: "Fastest-pace team leaderboard alias."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+        - advanced_metric
+      notes: "Review pace sorting and rows."
+
+  - id: opponent_points_per_game_leaders_wave5
+    query: "opponent points per game leaders"
+    category: team_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts_per_game
+      - path: result.metadata.ascending
+        equals: false
+    review_notes: "Full opponent-points-per-game alias coverage."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_alias
+        - defensive_stat
+      notes: "Review opponent-PPG defensive stat behavior."
+
+  - id: teams_allowing_fewest_points_wave5
+    query: "teams allowing the fewest points"
+    category: team_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: opponent_pts_per_game
+      - path: result.metadata.ascending
+        equals: true
+    review_notes: "Allowing-the-fewest defensive phrasing should rank opponent PPG ascending."
+    manual_review:
+      status: semantics_issue
+      tags:
+        - stat_alias
+        - defensive_stat
+        - phrasing_variant
+      notes: "Probe showed this variant binding to team pts ascending; inspect defensive alias coverage."

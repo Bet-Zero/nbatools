@@ -1060,6 +1060,85 @@ Current status:
 - AQ-022: fixed as expected unsupported.
 - AQ-023: fixed as expected unsupported.
 
+## Corpus Expansion Wave 5 Status
+
+Corpus Expansion Wave 5 broadened the manual QA corpus from 195 to 243 curated
+cases. This was a controlled corpus/docs/review wave only: no production query
+behavior, frontend rendering, backend answer-phrase enrichment, harness logic,
+or source data was changed.
+
+Coverage strategy:
+
+- Supported-route phrasing variants: question-form and search-fragment
+  leaderboards, `which player`, `who had`, `who averaged`, `leaders in`,
+  `worst`, `gave up`, `held teams to`, and `versus` wording.
+- Date/window/context combinations: last-10/last-20 windows, since All-Star,
+  since explicit date, month windows, last season, explicit 2024-25, home/away,
+  and in-wins context.
+- Playoff/history phrasing: adjacent playoff matchup history, playoff series
+  history, Finals matchup history, conference-finals appearances since 2000,
+  second-round record since 2010, and expected unsupported single-team round
+  records.
+- Comparison edge cases: full-name player comparisons, recent/last-N player
+  comparisons, team comparisons, team matchup-record phrasing, and game-log /
+  stats-vs-player guardrails.
+- Unsupported boundaries: rookie/bench/team-bench, personal fouls, opponent
+  conference, subjective clutch, and cooled-off phrasing.
+- Advanced/stat aliases: true shooting, net rating, pace, opponent PPG, and
+  points-allowed variants.
+
+Latest run:
+
+- Run ID: `20260516T072725Z`
+- Output path:
+  `outputs/raw_query_answer_qa/20260516T072725Z/report.md`
+- Cases: 243
+- Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
+- Expectation cases: `pass: 232`, `fail: 11`
+- Expectation checks: `pass: 1304`, `fail: 28`
+- Suspicious flag cases: 3
+- Suspicious flags: `expected_ok_returned_non_ok: 3`
+- Informational flag cases: 147
+- Informational flags: `frontend_hero_expected: 147`
+- Verified outlier cases: 1
+- Verified outliers: `top_performance_high_points: 1`
+- Failed case IDs: `team_gave_up_fewest_ppg_wave5`,
+  `lakers_how_did_road_last_season_wave5`,
+  `jokic_possessive_triple_double_record_wave5`,
+  `lakers_held_teams_under_100_wave5`,
+  `curry_last_20_from_three_wave5`,
+  `celtics_road_record_since_jan_1_wave5`,
+  `best_second_round_record_since_2010_wave5`,
+  `lakers_celtics_playoff_matchup_history_wave5`,
+  `players_personal_fouls_wave5`,
+  `warriors_net_rating_single_team_wave5`,
+  `teams_allowing_fewest_points_wave5`
+
+New findings summary:
+
+- AQ-024: remaining defensive/opponent-points phrase variants.
+- AQ-025: `How did X do...` record-summary intent routes to finder.
+- AQ-026: possessive player record-when phrasing resolves to no-result.
+- AQ-027: `since January 1` parses as a single-day date range.
+- AQ-028: `from three` stat context is dropped on a last-20 Curry summary.
+- AQ-029: playoff hyphenated round and matchup-history phrase variants.
+- AQ-030: personal-foul unsupported-boundary wording variant is unrouted.
+- AQ-031: single-team advanced metric scalar product decision.
+
+Recommended next phase:
+
+- Group fixes by family rather than one-off cases. Start with AQ-024 defensive
+  alias cleanup and AQ-029 playoff phrase routing because they affect already
+  documented supported families.
+- Then address AQ-025/AQ-026 record-intent routing and AQ-027/AQ-028 context
+  preservation.
+- Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before any
+  execution expansion.
+- After those backend families are resolved or explicitly deferred, rerun the
+  243-case corpus. If it is clean, move to frontend-copy corpus expansion or a
+  release-readiness checklist; visual QA automation should remain optional
+  until the manual visual baseline process needs repeatable capture at scale.
+
 ## Frontend Hero / Copy QA Wave 1 Status
 
 Frontend hero/copy QA now has a report-first harness that renders selected

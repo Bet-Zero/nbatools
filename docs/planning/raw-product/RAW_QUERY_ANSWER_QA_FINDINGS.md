@@ -8,27 +8,39 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260515T021820Z`
-- Corpus size: 195 cases
+- Run ID: `20260516T072725Z`
+- Corpus size: 243 cases
 - Output report path:
-  `outputs/raw_query_answer_qa/20260515T021820Z/report.md`
+  `outputs/raw_query_answer_qa/20260516T072725Z/report.md`
 - Summary counts:
-  - Result statuses: `ok: 165`, `no_result: 22`, `error: 8`
-  - Expectation cases: `pass: 195`
-  - Expectation checks: `pass: 1044`
-  - Failed case IDs: none
-  - Manual review statuses: `unreviewed: 151`, `expected_unsupported: 17`,
-    `pass: 26`, `verified_outlier: 1`
-  - Answer text policies: `frontend_hero_expected: 112`,
-    `requires_backend_answer_text: 10`, `no_answer_text_expected: 30`,
+  - Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
+  - Expectation cases: `pass: 232`, `fail: 11`
+  - Expectation checks: `pass: 1304`, `fail: 28`
+  - Failed case IDs: `team_gave_up_fewest_ppg_wave5`,
+    `lakers_how_did_road_last_season_wave5`,
+    `jokic_possessive_triple_double_record_wave5`,
+    `lakers_held_teams_under_100_wave5`,
+    `curry_last_20_from_three_wave5`,
+    `celtics_road_record_since_jan_1_wave5`,
+    `best_second_round_record_since_2010_wave5`,
+    `lakers_celtics_playoff_matchup_history_wave5`,
+    `players_personal_fouls_wave5`,
+    `warriors_net_rating_single_team_wave5`,
+    `teams_allowing_fewest_points_wave5`
+  - Manual review statuses: `unreviewed: 180`, `expected_unsupported: 26`,
+    `pass: 26`, `routing_issue: 4`, `semantics_issue: 3`,
+    `missing_filter: 2`, `needs_product_decision: 1`,
+    `verified_outlier: 1`
+  - Answer text policies: `frontend_hero_expected: 150`,
+    `requires_backend_answer_text: 10`, `no_answer_text_expected: 40`,
     `<unspecified>: 43`
-  - Answer text statuses: `frontend_hero_expected: 112`,
-    `backend_answer_text_present: 10`, `no_answer_text_expected: 30`,
-    `not_required: 43`
-  - Suspicious flag cases: 0
-  - Suspicious flags: none
-  - Informational flag cases: 112
-  - Informational flags: `frontend_hero_expected: 112`
+  - Answer text statuses: `frontend_hero_expected: 147`,
+    `backend_answer_text_present: 10`, `no_answer_text_expected: 40`,
+    `not_required: 46`
+  - Suspicious flag cases: 3
+  - Suspicious flags: `expected_ok_returned_non_ok: 3`
+  - Informational flag cases: 147
+  - Informational flags: `frontend_hero_expected: 147`
   - Verified outlier cases: 1
   - Verified outliers: `top_performance_high_points: 1`
 
@@ -87,6 +99,51 @@ New review signals are grouped into these families:
 - unsupported stat aliases falling back to points
 - opponent-conference context filters falling back to full-season records
 
+## Corpus Expansion Wave 5 summary
+
+Expansion Wave 5 grew the curated corpus from 195 to 243 cases. It did not
+change production query behavior, frontend rendering, backend answer metadata,
+harness logic, or source data. The wave focused on supported-route phrasing
+variants, date/window/context combinations, playoff/history phrasing,
+comparison guardrails, unsupported-boundary variants, and advanced/stat aliases.
+
+Latest Wave 5 run:
+
+- Run ID: `20260516T072725Z`
+- Output path:
+  `outputs/raw_query_answer_qa/20260516T072725Z/report.md`
+- Cases: 243
+- Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
+- Expectation cases: `pass: 232`, `fail: 11`
+- Expectation checks: `pass: 1304`, `fail: 28`
+- Suspicious flag cases: 3
+- Suspicious flags: `expected_ok_returned_non_ok: 3`
+- Informational flag cases: 147
+- Informational flags: `frontend_hero_expected: 147`
+- Verified outlier cases: 1
+- Verified outliers: `top_performance_high_points: 1`
+
+New review signals are grouped into these families:
+
+- defensive phrasing variants that still bind to team points instead of
+  opponent points: `gave up the fewest`, `held teams to under`, and
+  `teams allowing the fewest`
+- record/summary intent variants: `How did the Lakers do...` routes to a game
+  finder, and possessive `Jokic's record...` returns no-result despite the
+  triple-double condition
+- context preservation: `since January 1` is treated as a single-day window,
+  and `Curry ... from three` preserves last-20 but drops the three-point stat
+  context
+- playoff phrasing variants: hyphenated `second-round` falls into regular
+  season record leaderboards, and `playoff matchup history` misses the playoff
+  matchup-history route
+- unsupported-boundary variant coverage: `players with most personal fouls`
+  is unrouted instead of the personal-foul unsupported boundary
+- product decision: single-team advanced metric phrasing such as
+  `Warriors net rating this season` currently returns unsupported; decide
+  whether this should become a scalar/team-summary route or remain a documented
+  boundary
+
 ## Finding summary
 
 | Finding ID | Priority | Category | Query / Case ID | Finding type | Status | Notes | Recommended fix family |
@@ -114,6 +171,14 @@ New review signals are grouped into these families:
 | AQ-021 | P1 | Defensive stat aliases | `most_points_allowed_team_leaders_wave4`, `opponent_ppg_leaders_wave4` | stat_mapping_issue / route_mismatch | fixed | Fixed in Raw Query Answer QA Fix Wave 6A. `allow the most points per game`, `most points allowed`, and `opponent PPG leaders` now bind to team opponent-points semantics via `season_team_leaders` with `opponent_pts_per_game`; the current highest opponent-PPG top row is Utah. Latest run: `outputs/raw_query_answer_qa/20260514T050631Z/report.md`. | defensive/opponent-points stat mapping |
 | AQ-022 | P2 | Unsupported stat alias boundary | `personal_foul_leaders_wave4` | unsupported_no_result_policy | fixed_as_expected_unsupported | Fixed in Wave 7A as an explicit product boundary. `personal fouls leaders` now returns `no_result` / `filter_not_supported` with `unsupported_filters=["personal_foul_leaderboard"]` instead of falling back to points. Actual PF leaderboard support remains deferred pending a stat contract decision. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | product boundary / stat coverage |
 | AQ-023 | P2 | Opponent conference filters | `celtics_against_east_record_wave4` | missing_filter / unsupported_no_result_policy | fixed_as_expected_unsupported | Fixed in Wave 7A as an explicit product boundary. `against the East/West` record phrasing now returns `no_result` / `filter_not_supported` with `unsupported_filters=["opponent_conference"]` instead of a full-season record. Actual opponent-conference support remains deferred until complete team-conference metadata exists. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | context filter preservation |
+| AQ-024 | P1 | Defensive stat aliases | `team_gave_up_fewest_ppg_wave5`, `lakers_held_teams_under_100_wave5`, `teams_allowing_fewest_points_wave5` | stat_mapping_issue | open | Wave 5 found remaining defensive phrasing variants that bind to team points rather than opponent points. `gave up the fewest points per game` and `teams allowing the fewest points` return `season_team_leaders` with `stat=pts` ascending; `held teams to under 100` applies `pts max` rather than `OPP PTS max`. | defensive/opponent-points stat mapping |
+| AQ-025 | P2 | Team record phrasing | `lakers_how_did_road_last_season_wave5` | route_mismatch | open | `How did the Lakers do on the road last season?` preserves road and 2024-25 filters but routes to `game_finder` with finder rows instead of the expected record-summary `team_record` shape. | summary-vs-finder intent routing |
+| AQ-026 | P1 | Record-when player condition | `jokic_possessive_triple_double_record_wave5` | routing_or_data_gap | open | Possessive `Jokic's record in games with a triple-double` returns `no_result` on `player_game_summary` with team context `WAS`, despite preserving the triple-double filter. The non-possessive canonical Jokic triple-double record case remains supported. | player/team context resolution |
+| AQ-027 | P1 | Date/window context | `celtics_road_record_since_jan_1_wave5` | missing_filter | open | `since January 1` on a team record is parsed as a single-day `2026-01-01 - 2026-01-01` date range rather than an open-ended `2026-01-01 - current_through` window. | date-window parsing/filter preservation |
+| AQ-028 | P2 | Player stat context | `curry_last_20_from_three_wave5` | missing_filter | open | `Curry last 20 games from three` preserves the last-20 window but does not expose `stat=fg3m` or equivalent three-point context in metadata. | stat alias + context preservation |
+| AQ-029 | P1 | Playoff/history phrasing | `best_second_round_record_since_2010_wave5`, `lakers_celtics_playoff_matchup_history_wave5` | route_and_season_type_issue | open | Hyphenated `second-round` routes to regular-season `team_record_leaderboard` instead of playoff round records; `Lakers Celtics playoff matchup history` routes to `team_compare` and returns no-result instead of `playoff_matchup_history`. Adjacent `playoff series history` and `playoff history` variants still pass. | playoff round/matchup routing |
+| AQ-030 | P2 | Unsupported stat alias boundary | `players_personal_fouls_wave5` | unsupported_no_result_policy | open | `players with most personal fouls this season` is unrouted (`error` / `unrouted`) rather than using the explicit personal-foul unsupported boundary (`no_result` / `filter_not_supported`). It does not broaden to points, but the boundary guidance is less specific than the fixed `personal fouls leaders` phrase. | product boundary / stat coverage |
+| AQ-031 | P2 | Advanced metric product boundary | `warriors_net_rating_single_team_wave5` | needs_product_decision | open | `Warriors net rating this season` returns `no_result` / `unsupported` on `game_finder` with `stat=net_rating`. Decide whether single-team advanced metric scalar summaries are in scope or should become a documented unsupported boundary with specific guidance. | product boundary / stat coverage |
 
 ## Frontend Copy QA Findings
 
@@ -146,6 +211,9 @@ Latest frontend-copy run:
   documented data boundary.
 - Wave 7A resolved the remaining eight Wave 6B failures. The 195-case corpus
   now has 195 expectation passes, zero suspicious flags, and no failed case IDs.
+- Corpus Expansion Wave 5 intentionally leaves 11 expectation failures in the
+  expanded 243-case corpus for newly exposed review families. The original
+  195 clean cases were preserved.
 - Exact frontend rendered-answer extraction is still deferred; targeted backend `answer_phrase` enrichment remains an optional future improvement for high-value direct-answer routes.
 - The manual corpus should remain review-oriented. Promote only objective, stable failures into focused tests near the behavior they protect.
 - Fix Wave 4A resolved AQ-011 and AQ-013 scalar semantics. Fix Wave 4B
