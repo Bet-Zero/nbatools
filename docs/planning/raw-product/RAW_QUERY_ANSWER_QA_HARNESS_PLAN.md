@@ -1648,6 +1648,59 @@ Validation artifacts:
   `/private/tmp/visualqa_mobile_guards_fg_percentage_leaders.png`, and
   `/private/tmp/visualqa_mobile_centers_rebound_leaders_wave4.png`
 
+## Raw Product Release Readiness Checklist Status
+
+The release-readiness checklist for the current supported and explicitly
+unsupported Raw Product QA boundary is complete.
+
+- Checklist doc:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
+- Final status: `READY_WITH_KNOWN_LIMITATIONS`
+- Production query behavior changed? no
+- Frontend rendering changed? no
+- Corpus expectations changed? no
+- New corpus cases added? no
+
+Validation command results:
+
+- Raw QA full corpus:
+  `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml`
+  wrote `outputs/raw_query_answer_qa/20260516T230058Z`; 243 cases;
+  result statuses `error: 9`, `no_result: 32`, `ok: 202`; expectation cases
+  `pass: 243`; suspicious flag cases 0; informational flag cases 149;
+  verified outlier cases 1; failed case IDs none.
+- Frontend-copy QA:
+  `cd frontend && npm run qa:frontend-copy` passed 1 test file and 4 tests;
+  latest report
+  `outputs/frontend_copy_qa/20260516T230102Z/frontend_copy_report.md`; 59
+  selected cases; 59 rendered successfully; render failures 0; soft-check
+  failures 0. The selected frontend-copy corpus still uses configured source
+  backend run `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`.
+- Frontend build:
+  `cd frontend && npm run build` passed; assets were written to
+  `src/nbatools/ui/dist/`; the existing Vite large-chunk warning remains.
+- Frontend lint:
+  `cd frontend && npm run lint` passed with 0 errors and the existing
+  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
+- Parser smoke:
+  `make PYTEST=.venv/bin/pytest test-parser` passed, 747 tests in 142.20s.
+- Static check:
+  `git diff --check` passed with no output.
+- Preview validation:
+  pending until a live preview URL exists.
+
+Next options after the checklist:
+
+1. Release/preview manual QA on the next live preview URL, including `/`,
+   `/review`, `/visual-qa`, and the six-query smoke set documented in the
+   checklist.
+2. Frontend-copy corpus expansion beyond the selected 59 cases if the next risk
+   to reduce is user-facing interpretation and rendered copy breadth.
+3. Unsupported-family promotion preflight after choosing a product boundary and
+   writing route/result/data contracts.
+4. Harness/tooling efficiency improvements when future corpus or fix waves need
+   faster targeted iteration.
+
 ## Open Questions
 
 - Should future frontend-copy waves expand from the hand-curated 59-case list

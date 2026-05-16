@@ -9,16 +9,22 @@
 - Deploy parity status: `/visual-qa` now follows the same local and deployed SPA
   shell routing path as `/review`; preview validation remains pending until a
   preview URL exists.
+- Release-readiness checklist:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`.
+- Latest checklist status: `READY_WITH_KNOWN_LIMITATIONS`.
 - Release-readiness verdict: backend product QA is release-ready for the
-  currently supported and intentionally unsupported corpus boundaries. Treat a
-  deploy-preview check, frontend-copy rerun, and full raw corpus rerun as the
-  final release checklist before shipping.
+  currently supported and intentionally unsupported corpus boundaries. The
+  release checklist completed with current raw QA, frontend-copy QA, frontend
+  build/lint, parser smoke, and diff-check validation; deployed preview manual
+  validation remains pending until a preview URL exists.
 
 ## 2. Backend Raw Query Answer QA
 
 - Corpus size: 243 cases.
 - Latest run:
   `outputs/raw_query_answer_qa/20260516T221654Z/report.md`.
+- Latest release-checklist run:
+  `outputs/raw_query_answer_qa/20260516T230058Z/report.md`.
 - Pass/fail: expectation cases `pass: 243`; failed case IDs: none.
 - Result statuses: `ok: 202`, `no_result: 32`, `error: 9`.
 - Expectation checks: `pass: 1368`.
@@ -206,8 +212,12 @@ They are not current product failures.
 ## 6. Frontend-copy QA status
 
 - Selected case count: 59.
+- Configured source backend run:
+  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`.
 - Latest clean run path:
   `outputs/frontend_copy_qa/20260515T224620Z/frontend_copy_report.md`.
+- Latest release-checklist run path:
+  `outputs/frontend_copy_qa/20260516T230102Z/frontend_copy_report.md`.
 - Status: 59 rendered successfully, 0 render failures, 0 soft-check failures.
 - Earlier semantic-copy clean run:
   `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.md`.
@@ -253,6 +263,26 @@ Remaining limitations:
 
 ## 8. Validation strategy going forward
 
+Latest release-readiness checklist validation:
+
+- Checklist doc:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
+- Status: `READY_WITH_KNOWN_LIMITATIONS`.
+- Raw QA full corpus:
+  `outputs/raw_query_answer_qa/20260516T230058Z/report.md`; 243 cases;
+  expectation cases `pass: 243`; failed case IDs none; suspicious flags 0.
+- Frontend-copy QA:
+  `outputs/frontend_copy_qa/20260516T230102Z/frontend_copy_report.md`; 59
+  selected cases from configured source backend run
+  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`; render
+  failures 0; soft-check failures 0.
+- Frontend build: passed; existing Vite large-chunk warning remains.
+- Frontend lint: passed with 0 errors and the existing
+  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
+- Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 747 tests.
+- Static check: `git diff --check` passed.
+- Preview validation: pending until a live preview URL exists.
+
 - Tier 1: targeted tests plus targeted/adjacent harness runs, `ruff`, and
   `git diff --check`.
 - Tier 2: `make test-parser` when parser, entity, date, or routing recognition
@@ -270,7 +300,7 @@ Remaining limitations:
 
 Recommended order:
 
-1. Option C - Release-readiness checklist.
+1. Release/preview manual QA on the next live preview URL.
 2. Option A - Frontend-copy corpus expansion.
 3. Option B - Promote one unsupported family into real support.
 4. Option D - Harness/tooling efficiency improvements.
