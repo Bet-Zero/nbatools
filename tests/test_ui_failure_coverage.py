@@ -660,6 +660,68 @@ class TestWithoutPlayer:
         assert all(_is_triple_double(row) for row in game_log)
 
     @pytest.mark.needs_data
+    def test_possessive_jokic_triple_double_record_ignores_auxiliary_was(self):
+        query = "What was Jokic's record in games with a triple-double?"
+        parsed = parse_query(query)
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["player"] == "Nikola Jokić"
+        assert parsed["team"] is None
+        assert parsed["route_kwargs"]["team"] is None
+        assert parsed["route_kwargs"]["special_event"] == "triple_double"
+
+        qr = execute_natural_query(query)
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] is None
+        assert qr.metadata.get("team_context") is None
+        assert qr.metadata["occurrence_event"] == {"special_event": "triple_double"}
+        assert {
+            "label": "Special Event",
+            "value": "Triple Double",
+            "kind": "special_event",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        game_log = sections["game_log"]
+        assert summary["games"] == 34
+        assert summary["wins"] == 24
+        assert summary["losses"] == 10
+        assert len(game_log) == 34
+        assert all(_is_triple_double(row) for row in game_log)
+
+    @pytest.mark.needs_data
+    def test_curry_last_20_from_three_preserves_summary_stat_context(self):
+        query = "Curry last 20 games from three"
+        parsed = parse_query(query)
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["player"] == "Stephen Curry"
+        assert parsed["last_n"] == 20
+        assert parsed["stat"] == "fg3m"
+        assert parsed["route_kwargs"]["stat"] == "fg3m"
+        assert parsed["route_kwargs"]["min_value"] is None
+        assert parsed["route_kwargs"]["max_value"] is None
+
+        qr = execute_natural_query(query)
+        assert qr.route == "player_game_summary"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["stat"] == "fg3m"
+        assert qr.metadata["min_value"] is None
+        assert qr.metadata["max_value"] is None
+        assert {
+            "label": "Last N games",
+            "value": "20",
+            "kind": "window",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["games"] == 20
+        assert summary["fg3m_avg"] == pytest.approx(4.05)
+        assert summary["fg3m_sum"] == 81
+        assert len(sections["game_log"]) == 20
+
+    @pytest.mark.needs_data
     def test_lakers_record_holding_opponents_under_100_uses_filtered_sample(self):
         qr = execute_natural_query(
             "What is the Lakers record when they held opponents under 100 points?"

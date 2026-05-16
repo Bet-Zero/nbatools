@@ -1303,8 +1303,64 @@ Harness validation:
 
 Recommended next phase:
 
-- Wave 8C2 for AQ-026/AQ-028 player/entity/stat-context preservation.
+- Wave 8C2 for AQ-026/AQ-028 player/entity/stat-context preservation
+  completed below.
 - Then resolve AQ-030 and AQ-031 as product-boundary cleanup/decision work.
+
+## Fix Wave 8C2 Status
+
+Fix Wave 8C2 resolved AQ-026 and AQ-028 as a focused player/entity/stat-context
+cleanup. It did not change frontend rendering, backend answer-phrase behavior,
+source data, team/date behavior from Wave 8C1, or unsupported product-boundary
+cases.
+
+Player/entity/stat-context coverage fixed:
+
+- Auxiliary `was` in question phrasing no longer resolves to Washington when
+  there is no explicit Washington/Wizards/WAS reference. `What was Jokic's
+  record in games with a triple-double?` now routes to `player_game_summary`
+  with `team=None`, preserves `special_event=triple_double`, and returns 34
+  games with a 24-10 record.
+- Standalone last-N player `from three` phrasing now preserves a made-threes
+  summary stat context without adding a threshold or rerouting to finder.
+  `Curry last 20 games from three` keeps `player_game_summary`, `last_n=20`,
+  `stat=fg3m`, and returns 20 game-log rows with `fg3m_avg=4.05` and
+  `fg3m_sum=81`.
+- Guardrails remained intact: clear Washington/Wizards/WAS team references
+  still resolve to `WAS`, `was out` availability wording still preserves
+  `without_player`, `Curry 5+ threes` remains threshold/finder behavior, and
+  `from three over 40%` remains `fg3_pct` percentage-threshold behavior.
+
+Harness validation:
+
+- Targeted 8C2 run:
+  `outputs/raw_query_answer_qa/20260516T112238Z/report.md`
+  - Cases: 2
+  - Result statuses: `ok: 2`
+  - Expectation cases: `pass: 2`
+  - Failed case IDs: none
+- Adjacent player/entity/stat run:
+  `outputs/raw_query_answer_qa/20260516T112300Z/report.md`
+  - Cases: 7
+  - Result statuses: `ok: 7`
+  - Expectation cases: `pass: 7`
+  - Failed case IDs: none
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260516T112341Z/report.md`
+  - Cases: 243
+  - Result statuses: `ok: 202`, `no_result: 31`, `error: 10`
+  - Expectation cases: `pass: 241`, `fail: 2`
+  - Expectation checks: `pass: 1355`, `fail: 9`
+  - Suspicious flag cases: 1
+  - Informational flag cases: 149
+  - Verified outlier cases: 1
+  - Remaining failed IDs: `players_personal_fouls_wave5`,
+    `warriors_net_rating_single_team_wave5`
+
+Recommended next phase:
+
+- Resolve AQ-030 and AQ-031 as product-boundary cleanup/decision work. Do not
+  treat Wave 8C2 as fixing the personal-foul or Warriors net-rating cases.
 
 ## Frontend Hero / Copy QA Wave 1 Status
 

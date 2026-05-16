@@ -98,6 +98,7 @@ Natural examples:
 - `Jokic summary vs Lakers`
 - `Anthony Edwards last 10 games summary`
 - `KD TS% vs top defenses` (uses the `top-10 defenses` opponent-quality bucket)
+- `Curry last 20 games from three` (last-N summary with made-threes stat context)
 - `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
 - `Jokic averages against Stephen Curry`
 
@@ -333,6 +334,7 @@ Examples:
 - `Lakers record when they held opponents under 100`
 - `Boston record when Tatum shoots under 40%` (uses FG% on the 0.xx scale)
 - `Warriors record when Curry shoots over 40% from three` (uses 3PT% on the 0.xx scale)
+- `What was Jokic's record in games with a triple-double?`
 
 ## Multi-condition chaining
 

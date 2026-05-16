@@ -3913,14 +3913,26 @@ cases:
     expected_sections:
       - summary
       - game_log
+    expected_row_counts:
+      summary: 1
+      game_log: 34
+    hard_assertions:
+      - path: result.metadata.team
+        equals: null
+      - path: result.sections.summary.0.games
+        equals: 34
+      - path: result.sections.summary.0.wins
+        equals: 24
+      - path: result.sections.summary.0.losses
+        equals: 10
     review_notes: "Possessive player-record wording should resolve Jokic and preserve the triple-double condition."
     manual_review:
-      status: routing_issue
+      status: pass
       tags:
         - phrasing_variant
         - record_when
         - context_filter
-      notes: "Probe returned no_result with incorrect context; inspect possessive player-record parsing."
+      notes: "Fix Wave 8C2: auxiliary question-word 'was' no longer resolves as WAS; Jokic triple-double record returns 34 games and a 24-10 record."
 
   - id: thirty_point_games_hyphen_wave5
     query: "Who has the most 30-point games this season?"
@@ -4154,14 +4166,18 @@ cases:
     hard_assertions:
       - path: result.metadata.stat
         equals: fg3m
+      - path: result.sections.summary.0.fg3m_avg
+        equals: 4.05
+      - path: result.sections.summary.0.fg3m_sum
+        equals: 81
     review_notes: "Last-20 context plus from-three stat phrasing."
     manual_review:
-      status: missing_filter
+      status: pass
       tags:
         - context_filter
         - date_filter
         - stat_alias
-      notes: "Probe preserved last-20 but did not expose fg3m stat context; review whether from-three should bind a stat."
+      notes: "Fix Wave 8C2: standalone last-N player 'from three' phrasing keeps the summary route and exposes fg3m stat context without adding a threshold."
 
   - id: lakers_home_record_2024_25_wave5
     query: "Lakers home record in 2024-25"

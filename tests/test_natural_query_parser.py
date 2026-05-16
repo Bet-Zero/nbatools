@@ -447,6 +447,66 @@ def test_single_stat_threshold_still_uses_scalar_route_kwargs():
     assert parsed["extra_conditions"] == []
 
 
+def test_auxiliary_was_does_not_resolve_washington_for_player_record():
+    parsed = parse_query("What was Jokic's record in games with a triple-double?")
+
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Nikola Jokić"
+    assert parsed["team"] is None
+    assert parsed["route_kwargs"]["team"] is None
+    assert parsed["occurrence_event"] == {"special_event": "triple_double"}
+    assert parsed["route_kwargs"]["special_event"] == "triple_double"
+
+
+def test_current_tense_jokic_triple_double_record_still_routes():
+    parsed = parse_query("What is Jokic's record in games with a triple-double?")
+
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Nikola Jokić"
+    assert parsed["team"] is None
+    assert parsed["route_kwargs"]["special_event"] == "triple_double"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "WAS record this season",
+        "Washington record this season",
+        "What was Washington's record this season?",
+        "Wizards record this season",
+    ],
+)
+def test_clear_washington_team_references_still_resolve(query):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "team_record"
+    assert parsed["team"] == "WAS"
+    assert parsed["route_kwargs"]["team"] == "WAS"
+
+
+def test_was_out_guard_still_preserves_without_player_context():
+    parsed = parse_query("Celtics record when Giannis was out")
+
+    assert parsed["route"] == "team_record"
+    assert parsed["team"] == "BOS"
+    assert parsed["without_player"] == "Giannis Antetokounmpo"
+
+
+def test_from_three_last_n_player_summary_sets_made_threes_context():
+    parsed = parse_query("Curry last 20 games from three")
+
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Stephen Curry"
+    assert parsed["last_n"] == 20
+    assert parsed["stat"] == "fg3m"
+    assert parsed["route_kwargs"]["stat"] == "fg3m"
+    assert parsed["min_value"] is None
+    assert parsed["max_value"] is None
+    assert parsed["route_kwargs"]["min_value"] is None
+    assert parsed["route_kwargs"]["max_value"] is None
+    assert "conditions" not in parsed["route_kwargs"]
+
+
 def test_compact_shorthand_is_not_expanded_to_compound_conditions():
     parsed = parse_query("Jokic 25/10/10")
 
@@ -664,6 +724,16 @@ def test_from_three_percentage_threshold_parses_to_fg3_pct():
     assert parsed["route"] == "player_game_summary"
     assert parsed["player"] == "Stephen Curry"
     assert parsed["team"] == "GSW"
+    assert parsed["stat"] == "fg3_pct"
+    assert parsed["min_value"] == pytest.approx(0.4001)
+    assert parsed["max_value"] is None
+
+
+def test_player_from_three_percentage_threshold_stays_fg3_pct_finder():
+    parsed = parse_query("Curry from three over 40%")
+
+    assert parsed["route"] == "player_game_finder"
+    assert parsed["player"] == "Stephen Curry"
     assert parsed["stat"] == "fg3_pct"
     assert parsed["min_value"] == pytest.approx(0.4001)
     assert parsed["max_value"] is None

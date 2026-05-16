@@ -172,6 +172,9 @@ Every recognized stat phrasing grouped by canonical stat name. Both standard nam
 | `pace`         | `pace`                                                                                                                                                                               |
 
 > **Source of truth:** `STAT_ALIASES` in `src/nbatools/commands/_constants.py`. `STAT_PATTERN` is auto-generated from this dict.
+> Standalone `from three` is additionally recognized as `fg3m` only for guarded
+> player last-N summary stat context; percentage thresholds such as
+> `from three over 40%` remain `fg3_pct`.
 
 ### 2.5 Boolean logic
 
@@ -284,6 +287,7 @@ Examples:
 - `Anthony Edwards last 10 games summary`
 - `How has Jayson Tatum played against winning teams this season?` (verb-phrase question form → summary)
 - `KD TS% vs top defenses` (stat + opponent-quality context → summary; `top defenses` maps to `top-10 defenses`)
+- `Curry last 20 games from three` (last-N summary with made-threes stat context)
 - `Jokic playoff stats vs Suns since 2021`
 - `LeBron stats vs Kevin Durant` (player-vs-player as opponent filter)
 - `Jokic averages against Stephen Curry` (summary filtered to games where opponent played)
@@ -560,6 +564,7 @@ Examples:
 - `best home record over the last 5 seasons`
 - `worst away record since 2020`
 - `Celtics record when scoring 120+ since 2022`
+- `What was Jokic's record in games with a triple-double?`
 - `Lakers record without LeBron James`
 - `Warriors wins without Stephen Curry`
 

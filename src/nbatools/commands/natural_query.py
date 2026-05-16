@@ -121,6 +121,9 @@ from nbatools.commands._parse_helpers import (
     detect_personal_foul_leaderboard_boundary as detect_personal_foul_leaderboard_boundary,
 )
 from nbatools.commands._parse_helpers import (
+    detect_player_summary_stat_context as detect_player_summary_stat_context,
+)
+from nbatools.commands._parse_helpers import (
     detect_quarter as detect_quarter,
 )
 from nbatools.commands._parse_helpers import (
@@ -361,6 +364,18 @@ def _team_how_did_do_record_intent(q: str) -> bool:
     )
 
 
+def _explicit_washington_reference(raw_query: str, normalized_query: str) -> bool:
+    if re.search(r"\b(?:washington|wizards|wiz)\b", normalized_query):
+        return True
+    return bool(re.search(r"\bWAS\b", raw_query))
+
+
+def _was_team_alias_is_auxiliary(raw_query: str, normalized_query: str) -> bool:
+    if _explicit_washington_reference(raw_query, normalized_query):
+        return False
+    return bool(re.search(r"^\s*(?:what|how|who|which|when|where)\s+was\b", normalized_query))
+
+
 def _ambiguous_fragment_note(q: str) -> str | None:
     for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
         if re.search(pattern, q):
@@ -566,6 +581,7 @@ def _build_parse_state(query: str) -> dict:
     )
 
     extra_conditions = []
+    stat_context_only = False
     if threshold_conditions:
         primary = threshold_conditions[0]
         stat = primary["stat"]
@@ -573,6 +589,11 @@ def _build_parse_state(query: str) -> dict:
         max_value = primary["max_value"]
         extra_conditions = threshold_conditions[1:]
     else:
+        if stat is None and last_n is not None:
+            stat_context = detect_player_summary_stat_context(q)
+            if stat_context is not None:
+                stat = stat_context
+                stat_context_only = True
         min_value = extract_min_value(q, stat)
         max_value = None
 
@@ -683,7 +704,7 @@ def _build_parse_state(query: str) -> dict:
     if team == "MIN" and re.search(r"\bmin(?:imum)?\s+\d+", q):
         team = None
         team_resolution_confidence = "none"
-    if team == "WAS" and re.search(r"\bwas\s+out\b", q):
+    if team == "WAS" and (re.search(r"\bwas\s+out\b", q) or _was_team_alias_is_auxiliary(query, q)):
         team = None
         team_resolution_confidence = "none"
 
@@ -825,6 +846,7 @@ def _build_parse_state(query: str) -> dict:
         "entity_ambiguity": entity_ambiguity,
         "team_resolution_confidence": team_resolution_confidence,
         "stat_resolution_confidence": stat_resolution_confidence,
+        "stat_context_only": stat_context_only,
         "by_decade_intent": by_decade_intent,
         "playoff_appearance_intent": playoff_appearance_intent,
         "playoff_history_intent": playoff_history_intent,
@@ -1907,6 +1929,7 @@ def _finalize_route(parsed: dict) -> dict:
         or ("averages" in q)
         or ("average" in q)
         or without_player
+        or parsed.get("stat_context_only")
         or player_stat_context_summary_default(parsed)[0]
         or player_timeframe_summary_default(parsed)[0]
     ):

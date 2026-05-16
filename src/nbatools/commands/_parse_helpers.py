@@ -581,6 +581,13 @@ def detect_stat(text: str) -> str | None:
     return None
 
 
+def detect_player_summary_stat_context(text: str) -> str | None:
+    """Detect narrow stat-context phrases that should not imply thresholds."""
+    if re.search(r"\bfrom\s+(?:three|3)\b", text):
+        return "fg3m"
+    return None
+
+
 _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
     r"\b(?:against|vs\.?|versus)\s+(?:playoff|postseason)\s+teams\b",
     r"\b(?:against|vs\.?|versus)\s+teams?\s+that\s+(?:made|make|qualified\s+for|qualify\s+for)\s+(?:the\s+)?(?:playoffs|postseason)\b",
