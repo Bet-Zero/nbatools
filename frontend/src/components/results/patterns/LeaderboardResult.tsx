@@ -694,9 +694,12 @@ function heroSentence(
 ): string {
   const leader = entityLabel(row);
   const context = contextPhrase(row, data.result?.metadata, data.query);
+  const leadScope = playerLeaderboardLeadScope(data.result?.metadata);
 
   if (!metric) {
-    return `${leader} leads the leaderboard${context}.`;
+    return `${leader} leads ${
+      leadScope ? `the ${leadScope} leaderboard` : "the leaderboard"
+    }${context}.`;
   }
 
   if (rowEntityKind(row) === "team") {
@@ -711,7 +714,7 @@ function heroSentence(
   }
 
   if (!options.verb && !options.sentenceMetricLabel && !options.valueSuffix) {
-    return `${leader} led the NBA with ${metricLeaderValuePhrase(
+    return `${leader} led ${leadScope ?? "the NBA"} with ${metricLeaderValuePhrase(
       row,
       metric,
     )}${context}.`;
@@ -720,7 +723,7 @@ function heroSentence(
   const value = metricValuePhrase(row, metric, options.valueSuffix);
   return `${leader} ${options.verb ?? metricVerb(metric)} the most ${
     options.sentenceMetricLabel ?? sentenceMetricLabel(metric)
-  }${context}, with ${value}.`;
+  }${leadScope ? ` among ${leadScope}` : ""}${context}, with ${value}.`;
 }
 
 function teamHeroSentence(
@@ -824,6 +827,41 @@ function contextPhrase(
   }
 
   return "";
+}
+
+function playerLeaderboardLeadScope(
+  metadata: ResultMetadata | undefined,
+): string | null {
+  const direct = metadataText(metadata, "position_filter");
+  const applied = metadata?.applied_filters?.find(
+    (filter) =>
+      filter.kind.trim().toLowerCase() === "position" ||
+      filter.label.trim().toLowerCase() === "position",
+  )?.value;
+  const value = direct ?? applied;
+  return value ? positionGroupLabel(value) : null;
+}
+
+function positionGroupLabel(value: string): string | null {
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/^position\s+group[:\s]*/i, "")
+    .replace(/^position[:\s]*/i, "")
+    .trim();
+  if (!normalized) return null;
+
+  const labels: Record<string, string> = {
+    guard: "guards",
+    guards: "guards",
+    center: "centers",
+    centers: "centers",
+    forward: "forwards",
+    forwards: "forwards",
+  };
+
+  return labels[normalized] ?? normalized;
 }
 
 function seasonRange(start: string | null, end: string | null): string | null {

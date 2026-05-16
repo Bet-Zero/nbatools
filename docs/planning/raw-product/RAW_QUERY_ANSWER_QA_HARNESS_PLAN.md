@@ -1209,6 +1209,44 @@ Next step:
 - Do not add Playwright, pixel baselines, or screenshot diffing until the
   manual baseline has been reviewed and accepted.
 
+## Frontend Screenshot / Visual QA Fix Wave 1 Status
+
+Frontend Screenshot / Visual QA Fix Wave 1 targets the confirmed mobile-table
+and filtered-leaderboard hero findings from the manual baseline review. It does
+not change backend query behavior or raw answer contracts.
+
+Confirmed findings addressed:
+
+- FVQ-001 mobile dense table clipping: `biggest_scoring_games`,
+  `lebron_durant_comparison_wave4`, and
+  `heat_knicks_playoff_series_record_wave4`.
+- FCQ/FVQ-002 filtered leaderboard hero context:
+  `guards_fg_percentage_leaders` and `centers_rebound_leaders_wave4`.
+
+Targeted frontend behavior:
+
+- Top-performance mobile tables prioritize Rank, Player, Date, and the requested
+  stat column so `PTS` remains visible without relying on horizontal scrolling.
+- Comparison mobile tables keep Metric, both compared entities, and
+  `Edge / Difference` visible, with long edge copy allowed to wrap.
+- Playoff matchup mobile tables keep Season, Round, Winner, and
+  `Series Result` visible; lower-priority team record and games columns remain
+  desktop-visible.
+- Position-filtered player leaderboard heroes use the existing structured
+  `position_filter` / applied filter metadata, so guard and center examples say
+  `led guards` / `led centers` instead of generic `led the NBA`.
+
+Validation artifacts:
+
+- Frontend-copy QA run:
+  `outputs/frontend_copy_qa/20260515T224620Z/frontend_copy_report.md`
+- Mobile local visual recheck screenshots:
+  `/private/tmp/visualqa_mobile_biggest_scoring_games.png`,
+  `/private/tmp/visualqa_mobile_lebron_durant_comparison_wave4_after_wrap.png`,
+  `/private/tmp/visualqa_mobile_heat_knicks_playoff_series_record_wave4.png`,
+  `/private/tmp/visualqa_mobile_guards_fg_percentage_leaders.png`, and
+  `/private/tmp/visualqa_mobile_centers_rebound_leaders_wave4.png`
+
 ## Open Questions
 
 - Should future frontend-copy waves expand from the hand-curated 59-case list

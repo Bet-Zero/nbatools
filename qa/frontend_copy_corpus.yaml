@@ -294,10 +294,13 @@ cases:
       - position_filter
       - metric_label
     expected_semantic_facts:
+      - led guards
       - guards
       - field goal
     expected_filter_chip_fragments:
       - guards
+    expected_absent_fragments:
+      - led the NBA
 
   - id: centers_rebound_leaders_wave4
     category: leaderboard
@@ -306,12 +309,15 @@ cases:
       - position_filter
       - metric_label
     expected_semantic_facts:
+      - led centers
       - centers
       - rebounds
     expected_filter_chip_fragments:
       - centers
     expected_table_header_fragments:
       - RPG
+    expected_absent_fragments:
+      - led the NBA
 
   - id: turnover_rate_leader_wave4
     category: leaderboard

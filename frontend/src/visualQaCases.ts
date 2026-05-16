@@ -1,4 +1,4 @@
-import visualQaCorpusText from "../../qa/frontend_visual_qa_corpus.yaml?raw";
+import visualQaCorpusJson from "../../qa/frontend_visual_qa_corpus.json";
 
 export type VisualQaViewport = "desktop_1280" | "mobile_390";
 
@@ -20,30 +20,30 @@ interface VisualQaCorpus {
   cases: VisualQaCase[];
 }
 
-function parseVisualQaCorpus(text: string): VisualQaCorpus {
-  const parsed = JSON.parse(text) as Partial<VisualQaCorpus>;
+function parseVisualQaCorpus(parsed: unknown): VisualQaCorpus {
+  const corpus = parsed as Partial<VisualQaCorpus>;
 
-  if (!Array.isArray(parsed.cases)) {
+  if (!Array.isArray(corpus.cases)) {
     throw new Error("Visual QA corpus is missing its cases array.");
   }
 
-  if (typeof parsed.source_raw_run !== "string") {
+  if (typeof corpus.source_raw_run !== "string") {
     throw new Error("Visual QA corpus is missing source_raw_run.");
   }
 
-  if (typeof parsed.source_frontend_copy_run !== "string") {
+  if (typeof corpus.source_frontend_copy_run !== "string") {
     throw new Error("Visual QA corpus is missing source_frontend_copy_run.");
   }
 
   return {
-    version: typeof parsed.version === "number" ? parsed.version : 1,
-    source_raw_run: parsed.source_raw_run,
-    source_frontend_copy_run: parsed.source_frontend_copy_run,
-    cases: parsed.cases as VisualQaCase[],
+    version: typeof corpus.version === "number" ? corpus.version : 1,
+    source_raw_run: corpus.source_raw_run,
+    source_frontend_copy_run: corpus.source_frontend_copy_run,
+    cases: corpus.cases as VisualQaCase[],
   };
 }
 
-const visualQaCorpus = parseVisualQaCorpus(visualQaCorpusText);
+const visualQaCorpus = parseVisualQaCorpus(visualQaCorpusJson);
 
 export const VISUAL_QA_INTERNAL_ROUTE = "/visual-qa";
 export const VISUAL_QA_CHECKLIST_DOC =

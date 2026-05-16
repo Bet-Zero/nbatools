@@ -723,6 +723,103 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("includes position context in guard-filtered leaderboard heroes", () => {
+    const data = makeResponse({
+      query: "What players have the best field goal percentage among guards?",
+      route: "season_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text:
+            "What players have the best field goal percentage among guards?",
+          route: "season_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+          position_filter: "guards",
+          stat: "fg_pct",
+          applied_filters: [
+            { label: "Position", value: "guards", kind: "position" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Gary Payton II",
+              player_id: 1627780,
+              team_abbr: "GSW",
+              games_played: 73,
+              fg_pct: 0.583,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Gary Payton II led guards with 58.3% field-goal percentage in the 2025-26 regular season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/led the NBA/i)).not.toBeInTheDocument();
+  });
+
+  it("includes position context in center-filtered leaderboard heroes", () => {
+    const data = makeResponse({
+      query: "Which centers have the most rebounds this season?",
+      route: "season_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "Which centers have the most rebounds this season?",
+          route: "season_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+          position_filter: "centers",
+          stat: "reb",
+          applied_filters: [
+            { label: "Position", value: "centers", kind: "position" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              player_name: "Nikola Jokić",
+              player_id: 203999,
+              team_abbr: "DEN",
+              games_played: 65,
+              reb_per_game: 12.862,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "Nikola Jokić led centers with 12.9 RPG in the 2025-26 regular season.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/led the NBA/i)).not.toBeInTheDocument();
+  });
+
   it("renders season team leaderboards with a team-first sentence and highlighted metric", () => {
     const data = makeResponse({
       query: "team assists leaders this season",
@@ -2436,6 +2533,24 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "3PM" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Rank" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Player" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Date" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "PTS" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Opp" }),
+    ).toHaveAttribute("data-mobile-priority", "secondary");
+    expect(
+      screen.getByRole("columnheader", { name: "3PM" }),
+    ).toHaveAttribute("data-mobile-priority", "secondary");
     expect(screen.getByText("Showing top 2 of 35")).toBeInTheDocument();
     expect(
       screen.queryByRole("table", { name: "Game log" }),
@@ -3469,6 +3584,29 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("columnheader", { name: "Series Result" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Season" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Round" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Winner" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Series Result" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(screen.getByRole("columnheader", { name: "BOS" })).toHaveAttribute(
+      "data-mobile-priority",
+      "secondary",
+    );
+    expect(screen.getByRole("columnheader", { name: "MIA" })).toHaveAttribute(
+      "data-mobile-priority",
+      "secondary",
+    );
+    expect(
+      screen.getByRole("columnheader", { name: "Games" }),
+    ).toHaveAttribute("data-mobile-priority", "secondary");
     expect(screen.getByText("MIA won 4-3")).toBeInTheDocument();
     expect(screen.queryByText("Unknown Round")).not.toBeInTheDocument();
     expect(screen.getByText("Round unavailable")).toBeInTheDocument();
@@ -3553,6 +3691,18 @@ describe("ResultRenderer (substrate)", () => {
     expect(
       screen.getByRole("table", { name: "Comparison metrics" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Metric" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Nikola Jokic" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Joel Embiid" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(
+      screen.getByRole("columnheader", { name: "Edge / Difference" }),
+    ).toHaveAttribute("data-mobile-priority", "primary");
     expect(screen.getByText("PTS Avg")).toBeInTheDocument();
     expect(screen.getAllByText("Joel Embiid +3.7 PTS").length).toBeGreaterThan(
       0,

@@ -8,6 +8,7 @@ import {
 import { isValidElement, type ReactElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
+import visualQaCorpusRawText from "../../../qa/frontend_visual_qa_corpus.yaml?raw";
 
 vi.mock("../api/client", () => ({
   postQuery: vi.fn(),
@@ -22,6 +23,24 @@ import { postQuery } from "../api/client";
 import { downloadReviewScreenshots } from "../lib/reviewScreenshots";
 import { resolveRootView } from "../main";
 import { VISUAL_QA_CASES, VISUAL_QA_INTERNAL_ROUTE } from "../visualQaCases";
+
+const APPROVED_VISUAL_QA_CASE_IDS = [
+  "guards_fg_percentage_leaders",
+  "centers_rebound_leaders_wave4",
+  "fewest_points_allowed_team_leader",
+  "most_points_allowed_team_leaders_wave4",
+  "opponent_ppg_leaders_wave4",
+  "personal_foul_leaders_wave4",
+  "rookie_scoring_leaders_wave4",
+  "starter_assist_leaders_wave4",
+  "bench_scoring_leaders_wave4",
+  "celtics_bench_scoring_boundary_wave4",
+  "record_when_jokic_triple_double",
+  "lakers_road_record_last_season",
+  "heat_knicks_playoff_series_record_wave4",
+  "lebron_durant_comparison_wave4",
+  "biggest_scoring_games",
+] as const;
 
 function deferred<T>() {
   let resolve: (value: T) => void = () => {};
@@ -64,7 +83,9 @@ beforeEach(() => {
 });
 
 describe("VisualQaPage", () => {
-  it("renders all 15 visual QA case ids and focus text from the manifest", async () => {
+  it("loads the visual QA corpus even though raw corpus text is not valid JSON", async () => {
+    expect(() => JSON.parse(visualQaCorpusRawText)).toThrow();
+
     vi.mocked(postQuery).mockImplementation((query) =>
       Promise.resolve(makeNoResult(query)),
     );
@@ -77,9 +98,16 @@ describe("VisualQaPage", () => {
     expect(document.querySelectorAll("[data-visual-case-id]").length).toBe(
       VISUAL_QA_CASES.length,
     );
-    expect(
-      screen.getByText("guards_fg_percentage_leaders"),
-    ).toBeInTheDocument();
+    expect(VISUAL_QA_CASES).toHaveLength(15);
+    expect(APPROVED_VISUAL_QA_CASE_IDS).toHaveLength(15);
+    expect(VISUAL_QA_CASES.map((caseItem) => caseItem.id).sort()).toEqual(
+      [...APPROVED_VISUAL_QA_CASE_IDS].sort(),
+    );
+
+    for (const caseId of APPROVED_VISUAL_QA_CASE_IDS) {
+      expect(screen.getByText(caseId)).toBeInTheDocument();
+    }
+
     expect(
       screen.getByText(
         "Position guards chip stays visually tied to the generic leaderboard hero",

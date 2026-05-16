@@ -21,6 +21,8 @@ export interface ResultTableColumn<Row> {
   minWidth?: CSSProperties["minWidth"];
   width?: CSSProperties["width"];
   nowrap?: boolean;
+  /** Hide lower-priority columns on narrow screens while preserving desktop. */
+  mobilePriority?: "primary" | "secondary";
   className?: string;
   headerClassName?: string;
   cellClassName?: string;
@@ -154,9 +156,12 @@ export default function ResultTable<Row>({
           column.numeric && styles.numeric,
           isHighlighted && styles.highlightCell,
           column.nowrap === false && styles.allowWrap,
+          column.mobilePriority === "secondary" &&
+            styles.mobileSecondaryColumn,
           isHeader ? column.headerClassName : column.cellClassName,
           column.className,
         )}
+        data-mobile-priority={column.mobilePriority}
         style={columnStyle(column)}
       >
         {cell}

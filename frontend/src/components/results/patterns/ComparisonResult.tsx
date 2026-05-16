@@ -583,6 +583,10 @@ function metricColumns(
       key: "metric",
       sourceKeys: ["metric"],
       header: "Metric",
+      minWidth: "4.75rem",
+      width: "4.75rem",
+      nowrap: false,
+      mobilePriority: "primary",
       render: (row) => metricLabel(metricKey(row)),
     },
   ];
@@ -593,6 +597,10 @@ function metricColumns(
       sourceKeys: [key],
       header: key,
       numeric: rows.some((row) => numericValue(row, key) !== null),
+      minWidth: "4rem",
+      width: "4rem",
+      nowrap: false,
+      mobilePriority: "primary",
       render: (row) => metricValue(row, key),
     });
   }
@@ -600,6 +608,10 @@ function metricColumns(
   columns.push({
     key: "edge",
     header: "Edge / Difference",
+    minWidth: "6.25rem",
+    width: "6.25rem",
+    nowrap: false,
+    mobilePriority: "primary",
     render: (row) => {
       const explicit = textValue(row, "__edge_label");
       if (explicit) return explicit;

@@ -483,12 +483,21 @@ function matchupColumns(
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [];
 
-  columns.push(textColumn("season", "Season"));
+  columns.push({
+    ...textColumn("season", "Season"),
+    minWidth: "4.25rem",
+    width: "4.25rem",
+    mobilePriority: "primary",
+  });
 
   columns.push({
     key: "round",
     sourceKeys: ["round", "playoff_round", "round_reached", "deepest_round"],
     header: "Round",
+    minWidth: "4.75rem",
+    width: "4.75rem",
+    nowrap: false,
+    mobilePriority: "primary",
     render: (row) => roundCell(row),
   });
 
@@ -496,6 +505,10 @@ function matchupColumns(
     key: "winner",
     sourceKeys: ["winner", "winner_team_name", "winner_team_abbr"],
     header: "Winner",
+    minWidth: "4.75rem",
+    width: "4.75rem",
+    nowrap: false,
+    mobilePriority: "primary",
     render: (row) => winnerValue(row, teams),
   });
 
@@ -503,6 +516,10 @@ function matchupColumns(
     key: "result",
     sourceKeys: ["series_result", "result"],
     header: "Series Result",
+    minWidth: "5.75rem",
+    width: "5.75rem",
+    nowrap: false,
+    mobilePriority: "primary",
     render: (row) => playoffResultValue(row, teams),
   });
 
@@ -520,6 +537,7 @@ function matchupColumns(
       sourceKeys: [winsKey, lossesKey],
       header: team.teamAbbr,
       align: "center",
+      mobilePriority: "secondary",
       render: (row) => recordText(row, winsKey, lossesKey) ?? EMPTY_CELL,
     });
   }
@@ -549,6 +567,7 @@ function matchupColumns(
       sourceKeys: ["games"],
       header: "Games",
       numeric: true,
+      mobilePriority: "secondary",
       render: (row) => playoffSeriesGames(row, teams) ?? EMPTY_CELL,
     });
   }

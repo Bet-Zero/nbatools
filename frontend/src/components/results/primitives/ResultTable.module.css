@@ -52,6 +52,12 @@
 
 .allowWrap {
   white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.table .allowWrap {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .table tbody tr:first-child td {
@@ -136,4 +142,21 @@
 .rowToggle:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .tableScroll {
+    scrollbar-gutter: auto;
+  }
+
+  .table thead th,
+  .table tbody td,
+  .footerRow td {
+    padding-left: var(--space-1);
+    padding-right: var(--space-1);
+  }
+
+  .mobileSecondaryColumn {
+    display: none;
+  }
 }

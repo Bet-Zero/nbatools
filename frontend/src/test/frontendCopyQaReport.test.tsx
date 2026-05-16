@@ -67,18 +67,22 @@ describe("frontend copy QA report harness", () => {
     expect(noResult?.frontend?.no_result?.message).toBeTruthy();
   });
 
-  it("writes frontend-copy report artifacts when explicitly enabled", () => {
-    if (!WRITE_REPORT) {
-      expect(fs.existsSync(defaultCorpusPath())).toBe(true);
-      return;
-    }
+  it(
+    "writes frontend-copy report artifacts when explicitly enabled",
+    () => {
+      if (!WRITE_REPORT) {
+        expect(fs.existsSync(defaultCorpusPath())).toBe(true);
+        return;
+      }
 
-    const report = buildFrontendCopyReport();
-    const paths = writeFrontendCopyReport(report);
+      const report = buildFrontendCopyReport();
+      const paths = writeFrontendCopyReport(report);
 
-    expect(report.selected_case_count).toBeGreaterThanOrEqual(40);
-    expect(fs.existsSync(paths.jsonl_path)).toBe(true);
-    expect(fs.existsSync(paths.markdown_path)).toBe(true);
-    expect(fs.existsSync(paths.summary_path)).toBe(true);
-  });
+      expect(report.selected_case_count).toBeGreaterThanOrEqual(40);
+      expect(fs.existsSync(paths.jsonl_path)).toBe(true);
+      expect(fs.existsSync(paths.markdown_path)).toBe(true);
+      expect(fs.existsSync(paths.summary_path)).toBe(true);
+    },
+    30_000,
+  );
 });

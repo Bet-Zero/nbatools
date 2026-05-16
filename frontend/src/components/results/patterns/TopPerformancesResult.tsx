@@ -147,28 +147,39 @@ function tableColumns(
       key: "rank",
       header: "Rank",
       align: "center",
+      minWidth: "2.75rem",
+      width: "2.75rem",
+      mobilePriority: "primary",
       render: rankCell,
     },
     {
       key: "identity",
       header: subject === "team" ? "Team" : "Player",
+      minWidth: "7.25rem",
+      width: "7.25rem",
+      mobilePriority: "primary",
       render: (row) =>
         subject === "team" ? teamCell(row, data) : playerCell(row),
     },
     {
       key: "date",
       header: "Date",
+      minWidth: "4.25rem",
+      width: "4.25rem",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "game_date")),
     },
     {
       key: "opponent",
       header: "Opp",
+      mobilePriority: "secondary",
       render: (row) => opponentCell(row, data),
     },
     {
       key: "wl",
       header: "Result",
       align: "center",
+      mobilePriority: "secondary",
       render: resultCell,
     },
   ];
@@ -182,6 +193,7 @@ function tableColumns(
           : ["team_score", "team_pts", "opponent_score", "opponent_pts"],
       header: "Score",
       align: "center",
+      mobilePriority: "secondary",
       render: (row) => scoreText(row, subject) ?? "—",
     });
   }
@@ -191,6 +203,9 @@ function tableColumns(
     header: statLabel(metric),
     numeric: metric !== "triple_double",
     align: metric === "triple_double" ? "center" : "right",
+    minWidth: metric === "triple_double" ? "6.5rem" : "3.75rem",
+    width: metric === "triple_double" ? "6.5rem" : "3.75rem",
+    mobilePriority: "primary",
     render: (row) => metricTableValue(row, metric),
   });
 
@@ -199,6 +214,7 @@ function tableColumns(
       key,
       header: statLabel(key),
       numeric: true,
+      mobilePriority: "secondary",
       render: (row) => statValue(row, key),
     });
   }

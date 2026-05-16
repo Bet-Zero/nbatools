@@ -23,12 +23,19 @@
 6. Record pass/fail notes and any visual findings in this checklist or the follow-up review package.
 7. Defer Playwright, screenshot diffing, and visual fixes until the manual baseline is reviewed.
 
+## Fix Wave 1 Findings
+
+| Finding | Cases | Status | Follow-up check |
+| --- | --- | --- | --- |
+| FVQ-001 mobile dense table clipping | `biggest_scoring_games`, `lebron_durant_comparison_wave4`, `heat_knicks_playoff_series_record_wave4` | Confirmed and targeted in Fix Wave 1 | Recheck mobile `390px` cards for visible `PTS`, `Edge / Difference`, and `Series Result` columns. |
+| FCQ/FVQ-002 filtered leaderboard hero context | `guards_fg_percentage_leaders`, `centers_rebound_leaders_wave4` | Confirmed and targeted in Fix Wave 1 | Recheck hero copy for `led guards` / `led centers` and absence of generic `led the NBA` wording in filtered cases. |
+
 ## Case Checklist
 
 | Case ID                                   | Query                                                          | Desktop capture | Mobile capture | Visual focus                                                                                            | Pass/fail notes       |
 | ----------------------------------------- | -------------------------------------------------------------- | --------------- | -------------- | ------------------------------------------------------------------------------------------------------- | --------------------- |
-| `guards_fg_percentage_leaders`            | What players have the best field goal percentage among guards? | required        | required       | Position guards chip near hero; FG% header visibility; filter context still obvious before first row    | Pending manual review |
-| `centers_rebound_leaders_wave4`           | Which centers have the most rebounds this season?              | required        | required       | Position centers context; RPG header visibility; hero/table alignment                                   | Pending manual review |
+| `guards_fg_percentage_leaders`            | What players have the best field goal percentage among guards? | required        | required       | Hero includes guard context; FG% header visibility; filter context still obvious before first row       | Fix Wave 1 targeted: hero should say `led guards`, not `led the NBA` |
+| `centers_rebound_leaders_wave4`           | Which centers have the most rebounds this season?              | required        | required       | Hero includes center context; RPG header visibility; hero/table alignment                               | Fix Wave 1 targeted: hero should say `led centers`, not `led the NBA` |
 | `fewest_points_allowed_team_leader`       | Which team has allowed the fewest points per game this season? | required        | required       | Fewest allowed hero wording; Opponent PTS Per Game header; defensive context stays obvious              | Pending manual review |
 | `most_points_allowed_team_leaders_wave4`  | which teams allow the most points per game this season         | required        | required       | Most allowed hero wording; defensive framing; top-row readability                                       | Pending manual review |
 | `opponent_ppg_leaders_wave4`              | opponent PPG leaders this season                               | required        | required       | Opponent PPG alias clarity; defensive header visibility; hero/header semantic alignment                 | Pending manual review |
@@ -39,6 +46,6 @@
 | `celtics_bench_scoring_boundary_wave4`    | Celtics bench scoring this season                              | required        | required       | Team context with unsupported message; no-result hierarchy; chip spacing                                | Pending manual review |
 | `record_when_jokic_triple_double`         | What is Denver's record when Nikola Jokic has a triple-double? | required        | required       | Triple-double chip proximity; summary-card hierarchy; primary record answer visibility                  | Pending manual review |
 | `lakers_road_record_last_season`          | Lakers road record last season                                 | required        | required       | Away and Season 2024-25 chips; record headers; filtered hero/table cohesion                             | Pending manual review |
-| `heat_knicks_playoff_series_record_wave4` | Heat Knicks playoff series record                              | required        | required       | Dense playoff table readability; round/season visibility; summary/comparison separation                 | Pending manual review |
-| `lebron_durant_comparison_wave4`          | LeBron James vs Kevin Durant comparison                        | required        | required       | Two-player identity clarity; dense comparison rows; mobile stacking/readability                         | Pending manual review |
-| `biggest_scoring_games`                   | What were the biggest scoring games this season?               | required        | required       | 83-point outlier row visibility; wide leaderboard headers; top-row wrapping at mobile width             | Pending manual review |
+| `heat_knicks_playoff_series_record_wave4` | Heat Knicks playoff series record                              | required        | required       | Dense playoff table readability; `Series Result` visibility; summary/comparison separation              | Fix Wave 1 targeted: mobile table keeps Season, Round, Winner, Series Result visible |
+| `lebron_durant_comparison_wave4`          | LeBron James vs Kevin Durant comparison                        | required        | required       | Two-player identity clarity; `Edge / Difference` visibility; mobile stacking/readability                | Fix Wave 1 targeted: mobile table keeps Metric, both players, and Edge / Difference visible |
+| `biggest_scoring_games`                   | What were the biggest scoring games this season?               | required        | required       | 83-point outlier row visibility; `PTS` visibility; top-row wrapping at mobile width                     | Fix Wave 1 targeted: mobile table keeps Rank, Player, Date, and PTS visible |
