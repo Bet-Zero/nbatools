@@ -273,6 +273,33 @@ def test_team_record_road_last_season_relative_season():
     assert parsed["away_only"] is True
 
 
+def test_how_did_team_do_road_last_season_routes_to_team_record():
+    parsed = parse_query("How did the Lakers do on the road last season?")
+
+    assert parsed["route"] == "team_record"
+    assert parsed["team"] == "LAL"
+    assert parsed["season"] == "2024-25"
+    assert parsed["explicit_relative_season"] is True
+    assert parsed["away_only"] is True
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Lakers road games last season",
+        "show Lakers games on the road last season",
+        "Lakers scores on the road last season",
+    ],
+)
+def test_team_road_game_list_phrasing_stays_finder(query):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "game_finder"
+    assert parsed["team"] == "LAL"
+    assert parsed["season"] == "2024-25"
+    assert parsed["away_only"] is True
+
+
 def test_team_record_away_last_season_relative_season():
     parsed = parse_query("Lakers away record last season")
     assert parsed["route"] == "team_record"
@@ -286,6 +313,41 @@ def test_team_record_explicit_season_road_still_works():
     assert parsed["season"] == "2024-25"
     assert parsed["explicit_relative_season"] is False
     assert parsed["away_only"] is True
+
+
+def test_team_record_since_explicit_calendar_date_uses_since_window():
+    parsed = parse_query("Celtics road record since January 1")
+
+    assert parsed["route"] == "team_record"
+    assert parsed["team"] == "BOS"
+    assert parsed["away_only"] is True
+    assert parsed["start_date"] == "2026-01-01"
+    assert parsed["end_date"] == "2026-04-12"
+
+
+def test_explicit_on_calendar_date_remains_single_day():
+    parsed = parse_query("Who scored the most points on January 1 2026?")
+
+    assert parsed["route"] == "top_player_games"
+    assert parsed["start_date"] == "2026-01-01"
+    assert parsed["end_date"] == "2026-01-01"
+
+
+def test_month_window_remains_closed_month_range():
+    parsed = parse_query("top scorers in March")
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["start_date"] == "2026-03-01"
+    assert parsed["end_date"] == "2026-03-31"
+
+
+def test_since_all_star_break_remains_open_since_window():
+    parsed = parse_query("Thunder record since All-Star break")
+
+    assert parsed["route"] == "team_record"
+    assert parsed["team"] == "OKC"
+    assert parsed["start_date"] == "2026-02-16"
+    assert parsed["end_date"] is None
 
 
 def test_last_n_games_does_not_parse_as_last_season():

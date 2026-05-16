@@ -119,6 +119,33 @@ def _extract_explicit_calendar_date(
     return value, value
 
 
+def _extract_since_explicit_calendar_date(
+    text: str,
+    season: str | None,
+    anchor_date: pd.Timestamp,
+) -> tuple[str | None, str | None]:
+    month_pattern = _month_name_pattern()
+    m = re.search(
+        rf"\b(?:since|after|post)\s+({month_pattern})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?"
+        rf"(?:,?\s+((?:19|20)\d{{2}}))?\b",
+        text,
+    )
+    if not m:
+        return None, None
+
+    month_num = MONTH_NAME_TO_NUM[m.group(1)]
+    day = int(m.group(2))
+    year = int(m.group(3)) if m.group(3) else _resolve_year_for_month_in_season(season, month_num)
+
+    last_day = monthrange(year, month_num)[1]
+    if day < 1 or day > last_day:
+        return None, None
+
+    start = f"{year}-{month_num:02d}-{day:02d}"
+    end = anchor_date.date().isoformat()
+    return start, end
+
+
 def extract_date_range(
     text: str,
     season: str | None,
@@ -153,6 +180,14 @@ def extract_date_range(
             return start, end
 
     month_pattern = "|".join(MONTH_NAME_TO_NUM.keys())
+
+    since_explicit_start, since_explicit_end = _extract_since_explicit_calendar_date(
+        text,
+        season,
+        anchor,
+    )
+    if since_explicit_start or since_explicit_end:
+        return since_explicit_start, since_explicit_end
 
     explicit_start, explicit_end = _extract_explicit_calendar_date(text, season)
     if explicit_start or explicit_end:

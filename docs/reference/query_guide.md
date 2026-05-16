@@ -232,7 +232,9 @@ Natural examples:
 ## Team records
 
 - `Lakers road record last season` (`last season` resolves to `2024-25` when the latest regular season is `2025-26`)
+- `How did the Lakers do on the road last season?`
 - `Lakers 2024-25 road record`
+- `Celtics road record since January 1`
 - `Celtics record against playoff teams`
 
 Opponent-conference record filters, such as `Celtics record against the East`
@@ -278,6 +280,7 @@ Bulls Finals-era round labels are not reliable in the current pre-2001 data.
 - `best offensive teams in March`
 - `teams with best efg% in March`
 - `best offensive teams since January`
+- `Celtics road record since January 1`
 - `Jokic since All-Star break`
 - `best offensive teams since All-Star break`
 
@@ -387,6 +390,7 @@ Examples:
 - `Jokic last 8 games summary`
 - `top scorers in March`
 - `best offensive teams since January`
+- `Celtics road record since January 1`
 - `Jokic since All-Star break`
 
 ---

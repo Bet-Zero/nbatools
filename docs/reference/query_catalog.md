@@ -77,7 +77,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - career / all-time: `career`, `all-time`
 - last N games: `last 10 games`
 - rolling windows: `3-game stretch`, `5-game scoring stretch`, `rolling 10-game stretch`
-- month / date windows: `in March`, `since January`, `since All-Star break`, `last 30 days`
+- month / date windows: `in March`, `since January`, `since January 1`, `since All-Star break`, `last 30 days`
 - explicit calendar dates: `January 1 2026`, `Jan. 1, 2026`
 - fuzzy time words: `lately`, `recently` (→ last 10 games), `past month`, `last month` (→ rolling 30 days), `last couple weeks`, `past 2 weeks` (→ rolling 14 days)
 - single-day: `last night`, `yesterday`, `today`, `tonight`
@@ -554,6 +554,8 @@ Examples:
 - `Celtics record since 2020`
 - `Lakers playoff record since 2015`
 - `Lakers road record last season`
+- `How did the Lakers do on the road last season?`
+- `Celtics road record since January 1`
 - `Celtics record against playoff teams`
 - `best home record over the last 5 seasons`
 - `worst away record since 2020`

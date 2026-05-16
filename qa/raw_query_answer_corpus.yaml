@@ -3880,17 +3880,24 @@ cases:
         value: 2024-25
     expected_sections:
       - summary
+      - by_season
     hard_assertions:
       - path: result.metadata.season
         equals: 2024-25
+      - path: result.sections.summary.0.games
+        equals: 41
+      - path: result.sections.summary.0.wins
+        equals: 19
+      - path: result.sections.summary.0.losses
+        equals: 22
     review_notes: "How-did-team-do phrasing should preserve record-summary intent, road, and last-season context."
     manual_review:
-      status: routing_issue
+      status: pass
       tags:
         - phrasing_variant
         - context_filter
         - date_filter
-      notes: "Probe returned a game finder despite record-like wording; review whether summary routing should be preferred."
+      notes: "Fix Wave 8C1: how-did-team-do phrasing routes to team_record while preserving road and last-season context; Lakers return the 41-game, 19-22 road sample."
 
   - id: jokic_possessive_triple_double_record_wave5
     query: "What was Jokic's record in games with a triple-double?"
@@ -4202,13 +4209,19 @@ cases:
         equals: "2026-01-01"
       - path: result.metadata.end_date
         equals: "2026-04-12"
+      - path: result.sections.summary.0.games
+        equals: 24
+      - path: result.sections.summary.0.wins
+        equals: 16
+      - path: result.sections.summary.0.losses
+        equals: 8
     review_notes: "Since-explicit-date plus road context should create an open-ended date window."
     manual_review:
-      status: missing_filter
+      status: pass
       tags:
         - context_filter
         - date_filter
-      notes: "Probe treated 'since January 1' as a single-day filter; inspect date-window semantics."
+      notes: "Fix Wave 8C1: since-explicit-date wording now creates a window from 2026-01-01 through current data coverage, returning the 24-game 16-8 Celtics road sample."
 
   - id: knicks_record_in_march_wave5
     query: "Knicks record in March"

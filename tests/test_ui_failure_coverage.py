@@ -900,6 +900,60 @@ class TestDateFilterDropPrevention:
         assert "pts_per_game" not in rows[0]
 
     @pytest.mark.needs_data
+    def test_team_record_since_explicit_calendar_date_uses_current_data_window(self):
+        qr = execute_natural_query("Celtics road record since January 1")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "BOS"
+        assert {"label": "Location", "value": "Away", "kind": "location"} in qr.metadata[
+            "applied_filters"
+        ]
+        assert qr.metadata["start_date"] == "2026-01-01"
+        assert qr.metadata["end_date"] == "2026-04-12"
+        assert {
+            "label": "Date range",
+            "value": "2026-01-01 – 2026-04-12",
+            "kind": "date",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["games"] == 24
+        assert summary["wins"] == 16
+        assert summary["losses"] == 8
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        ("query", "expected_start", "expected_end", "away_only"),
+        [
+            ("What is the Knicks road record this season?", None, None, True),
+            ("Thunder record since All-Star break", "2026-02-16", None, False),
+            ("Warriors record in March", "2026-03-01", "2026-03-31", False),
+            ("Knicks record in March", "2026-03-01", "2026-03-31", False),
+        ],
+    )
+    def test_team_record_location_and_date_guardrails(
+        self,
+        query,
+        expected_start,
+        expected_end,
+        away_only,
+    ):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["start_date"] == expected_start
+        assert qr.metadata["end_date"] == expected_end
+        location_filter_present = {
+            "label": "Location",
+            "value": "Away",
+            "kind": "location",
+        } in qr.metadata["applied_filters"]
+        assert location_filter_present is away_only
+        assert qr.to_dict()["sections"]["summary"]
+
+    @pytest.mark.needs_data
     def test_working_date_window_cases_still_preserve_date_filters(self):
         march = execute_natural_query("top scorers in March")
         assert march.route == "season_leaders"
@@ -920,6 +974,18 @@ class TestDateFilterDropPrevention:
             "kind": "date",
         } in all_star.metadata["applied_filters"]
         assert all_star.to_dict()["sections"]["finder"]
+
+        offensive = execute_natural_query("best offensive teams since January")
+        assert offensive.route == "season_team_leaders"
+        assert offensive.result.result_status == "ok"
+        assert offensive.metadata["start_date"] == "2026-01-01"
+        assert offensive.metadata["end_date"] is None
+        assert {
+            "label": "Date range",
+            "value": "2026-01-01",
+            "kind": "date",
+        } in offensive.metadata["applied_filters"]
+        assert offensive.to_dict()["sections"]["leaderboard"]
 
         last_night = execute_natural_query("Who scored the most points last night?")
         assert last_night.route == "season_leaders"
@@ -1040,6 +1106,29 @@ class TestRawQueryAnswerWave5Coverage:
 
         summary = qr.to_dict()["sections"]["summary"][0]
         assert summary["season_start"] == "2024-25"
+        assert summary["games"] == 41
+        assert summary["wins"] == 19
+        assert summary["losses"] == 22
+
+    @pytest.mark.needs_data
+    def test_how_did_lakers_do_road_last_season_returns_team_record(self):
+        qr = execute_natural_query("How did the Lakers do on the road last season?")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "LAL"
+        assert qr.metadata["season"] == "2024-25"
+        assert qr.metadata["explicit_relative_season"] is True
+        assert {"label": "Location", "value": "Away", "kind": "location"} in qr.metadata[
+            "applied_filters"
+        ]
+        assert {"label": "Season", "value": "2024-25", "kind": "season"} in qr.metadata[
+            "applied_filters"
+        ]
+
+        sections = qr.to_dict()["sections"]
+        assert set(sections) >= {"summary", "by_season"}
+        summary = sections["summary"][0]
         assert summary["games"] == 41
         assert summary["wins"] == 19
         assert summary["losses"] == 22

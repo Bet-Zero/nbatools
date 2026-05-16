@@ -351,6 +351,16 @@ def _specific_date_top_scorer_intent(q: str, start_date: str | None, end_date: s
     )
 
 
+def _team_how_did_do_record_intent(q: str) -> bool:
+    """Detect narrow team W/L summary phrasing like ``how did the Lakers do``."""
+    return bool(
+        re.search(
+            r"\bhow\s+did\s+(?:the\s+)?[\w'.-]+(?:\s+[\w'.-]+){0,4}\s+do\b",
+            q,
+        )
+    )
+
+
 def _ambiguous_fragment_note(q: str) -> str | None:
     for pattern, reason in _AMBIGUOUS_FRAGMENT_PATTERNS:
         if re.search(pattern, q):
@@ -1946,6 +1956,25 @@ def _finalize_route(parsed: dict) -> dict:
         and (
             record_intent
             or (without_player and stat is None and re.search(r"\b(?:without|w/o)\b", q))
+            or (
+                _team_how_did_do_record_intent(q)
+                and not any(
+                    [
+                        finder_intent,
+                        count_intent,
+                        leaderboard_intent,
+                        team_leaderboard_intent,
+                        occurrence_event,
+                        season_high_intent,
+                        streak_request,
+                        team_streak_request,
+                        window_size,
+                    ]
+                )
+                and stat is None
+                and min_value is None
+                and max_value is None
+            )
         )
     ):
         route = "team_record"

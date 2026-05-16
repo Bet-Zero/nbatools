@@ -1089,37 +1089,30 @@ Coverage strategy:
 
 Latest run:
 
-- Run ID: `20260516T072725Z`
+- Run ID: `20260516T101507Z`
 - Output path:
-  `outputs/raw_query_answer_qa/20260516T072725Z/report.md`
+  `outputs/raw_query_answer_qa/20260516T101507Z/report.md`
 - Cases: 243
-- Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
-- Expectation cases: `pass: 232`, `fail: 11`
-- Expectation checks: `pass: 1304`, `fail: 28`
-- Suspicious flag cases: 3
-- Suspicious flags: `expected_ok_returned_non_ok: 3`
-- Informational flag cases: 147
-- Informational flags: `frontend_hero_expected: 147`
+- Result statuses: `ok: 201`, `no_result: 32`, `error: 10`
+- Expectation cases: `pass: 239`, `fail: 4`
+- Expectation checks: `pass: 1343`, `fail: 13`
+- Suspicious flag cases: 2
+- Suspicious flags: `expected_ok_returned_non_ok: 2`
+- Informational flag cases: 148
+- Informational flags: `frontend_hero_expected: 148`
 - Verified outlier cases: 1
 - Verified outliers: `top_performance_high_points: 1`
-- Failed case IDs: `team_gave_up_fewest_ppg_wave5`,
-  `lakers_how_did_road_last_season_wave5`,
-  `jokic_possessive_triple_double_record_wave5`,
-  `lakers_held_teams_under_100_wave5`,
+- Failed case IDs: `jokic_possessive_triple_double_record_wave5`,
   `curry_last_20_from_three_wave5`,
-  `celtics_road_record_since_jan_1_wave5`,
-  `best_second_round_record_since_2010_wave5`,
-  `lakers_celtics_playoff_matchup_history_wave5`,
   `players_personal_fouls_wave5`,
-  `warriors_net_rating_single_team_wave5`,
-  `teams_allowing_fewest_points_wave5`
+  `warriors_net_rating_single_team_wave5`
 
 New findings summary:
 
 - AQ-024: defensive/opponent-points phrase variants, fixed in Fix Wave 8A.
-- AQ-025: `How did X do...` record-summary intent routes to finder.
+- AQ-025: `How did X do...` record-summary intent, fixed in Fix Wave 8C1.
 - AQ-026: possessive player record-when phrasing resolves to no-result.
-- AQ-027: `since January 1` parses as a single-day date range.
+- AQ-027: `since January 1` date-window preservation, fixed in Fix Wave 8C1.
 - AQ-028: `from three` stat context is dropped on a last-20 Curry summary.
 - AQ-029: playoff hyphenated round and matchup-history phrase variants, fixed
   in Fix Wave 8B.
@@ -1129,9 +1122,9 @@ New findings summary:
 Recommended next phase:
 
 - Group fixes by family rather than one-off cases. AQ-024 defensive alias
-  cleanup and AQ-029 playoff phrase routing are fixed.
-- Next address AQ-025/AQ-026 record-intent routing and AQ-027/AQ-028 context
-  preservation.
+  cleanup, AQ-029 playoff phrase routing, and AQ-025/AQ-027 team-record/date
+  context are fixed.
+- Next address AQ-026/AQ-028 player/entity/stat-context preservation.
 - Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before any
   execution expansion.
 - After those backend families are resolved or explicitly deferred, rerun the
@@ -1195,8 +1188,8 @@ Harness validation:
 
 Recommended next phase:
 
-- Handle the record/date/stat-context group: AQ-025, AQ-026, AQ-027, and
-  AQ-028.
+- Continue with the remaining player/entity/stat-context portion of the
+  record/date/stat-context group: AQ-026 and AQ-028.
 - Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before
   adding any new execution surface.
 
@@ -1254,7 +1247,63 @@ Harness validation:
 
 Recommended next phase:
 
-- Handle AQ-025 through AQ-028 as the record/date/stat-context group.
+- Continue with Wave 8C2 for AQ-026/AQ-028 player/entity/stat-context
+  preservation.
+- Then resolve AQ-030 and AQ-031 as product-boundary cleanup/decision work.
+
+## Fix Wave 8C1 Status
+
+Fix Wave 8C1 resolved AQ-025 and AQ-027 as a focused team-record/date-context
+cleanup. It did not change frontend rendering, backend answer-phrase behavior,
+source data, player/entity/stat-context cases, or unsupported product-boundary
+cases.
+
+Team-record/date coverage fixed:
+
+- `How did TEAM do...` now routes to `team_record` for single-team W/L summary
+  phrasing when there is no explicit list/count/leaderboard/stat request.
+  Finder/list guardrails such as `Lakers road games last season`, `show Lakers
+  games on the road last season`, and `Lakers scores on the road last season`
+  remain `game_finder`.
+- `since <explicit calendar date>` and `after <explicit calendar date>` now
+  parse as date windows through the current data anchor instead of single-day
+  filters. Exact `on January 1 2026`, closed month windows, `since January`,
+  and `since All-Star break` remain unchanged.
+- Target data-backed results: Lakers road last season returns 41 games, 19-22;
+  Celtics road since January 1 returns the `2026-01-01 - 2026-04-12` window,
+  24 games, and 16-8.
+
+Harness validation:
+
+- Targeted AQ-025/AQ-027 run:
+  `outputs/raw_query_answer_qa/20260516T101436Z/report.md`
+  - Cases: 2
+  - Result statuses: `ok: 2`
+  - Expectation cases: `pass: 2`
+  - Failed case IDs: none
+- Adjacent team/date run:
+  `outputs/raw_query_answer_qa/20260516T101449Z/report.md`
+  - Cases: 7
+  - Result statuses: `ok: 7`
+  - Expectation cases: `pass: 7`
+  - Failed case IDs: none
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260516T101507Z/report.md`
+  - Cases: 243
+  - Result statuses: `ok: 201`, `no_result: 32`, `error: 10`
+  - Expectation cases: `pass: 239`, `fail: 4`
+  - Expectation checks: `pass: 1343`, `fail: 13`
+  - Suspicious flag cases: 2
+  - Informational flag cases: 148
+  - Verified outlier cases: 1
+  - Remaining failed IDs: `jokic_possessive_triple_double_record_wave5`,
+    `curry_last_20_from_three_wave5`,
+    `players_personal_fouls_wave5`,
+    `warriors_net_rating_single_team_wave5`
+
+Recommended next phase:
+
+- Wave 8C2 for AQ-026/AQ-028 player/entity/stat-context preservation.
 - Then resolve AQ-030 and AQ-031 as product-boundary cleanup/decision work.
 
 ## Frontend Hero / Copy QA Wave 1 Status
