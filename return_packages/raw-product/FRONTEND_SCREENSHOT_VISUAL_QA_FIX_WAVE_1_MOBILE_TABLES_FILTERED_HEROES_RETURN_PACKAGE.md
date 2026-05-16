@@ -13,36 +13,38 @@
 
 ## 2. Findings addressed
 
-| Finding | Cases | Status | Notes |
-|---|---|---|---|
-| FVQ-001 | `biggest_scoring_games`, `lebron_durant_comparison_wave4`, `heat_knicks_playoff_series_record_wave4` | fixed/targeted | Mobile tables now prioritize the requested answer columns and hide lower-priority dense columns below `640px`. |
-| FCQ/FVQ-002 | `guards_fg_percentage_leaders`, `centers_rebound_leaders_wave4` | fixed | Heroes now say `led guards` / `led centers`; unfiltered leaderboards still say `led the NBA`. |
+| Finding     | Cases                                                                                                | Status         | Notes                                                                                                          |
+| ----------- | ---------------------------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------- |
+| FVQ-001     | `biggest_scoring_games`, `lebron_durant_comparison_wave4`, `heat_knicks_playoff_series_record_wave4` | fixed/targeted | Mobile tables now prioritize the requested answer columns and hide lower-priority dense columns below `640px`. |
+| FCQ/FVQ-002 | `guards_fg_percentage_leaders`, `centers_rebound_leaders_wave4`                                      | fixed          | Heroes now say `led guards` / `led centers`; unfiltered leaderboards still say `led the NBA`.                  |
 
 ## 3. Behavior before/after
 
 ### FVQ-001 mobile dense table clipping
+
 - Before: top-performance `PTS`, comparison `Edge / Difference`, and playoff `Series Result` could be off-screen or clipped on mobile.
 - After: top performances show Rank, Player, Date, and requested stat; comparisons show Metric, both players, and Edge / Difference; playoff matchup tables show Season, Round, Winner, and Series Result.
 
 ### FCQ/FVQ-002 filtered leaderboard hero context
+
 - Before: filtered player leaderboards said `led the NBA`.
 - After: guard and center leaderboards include position context, while unfiltered leaderboards keep `led the NBA`.
 
 ## 4. Files changed
 
-| File | Change type | Why |
-|---|---|---|
-| `frontend/src/components/results/primitives/ResultTable.tsx` | Updated | Added column-level mobile priority metadata. |
-| `frontend/src/components/results/primitives/ResultTable.module.css` | Updated | Hides secondary columns on mobile and lets wrapped dense cells break cleanly. |
-| `frontend/src/components/results/patterns/TopPerformancesResult.tsx` | Updated | Prioritizes Rank, Player, Date, and requested stat on mobile. |
-| `frontend/src/components/results/patterns/ComparisonResult.tsx` | Updated | Keeps comparison metric/value/edge columns visible on mobile. |
-| `frontend/src/components/results/patterns/PlayoffHistoryResult.tsx` | Updated | Keeps playoff matchup interpretation columns visible on mobile. |
-| `frontend/src/components/results/patterns/LeaderboardResult.tsx` | Updated | Uses `position_filter` / applied position filter metadata in player leaderboard hero copy. |
-| `frontend/src/test/ResultRenderer.test.tsx` | Updated | Covers filtered hero wording and mobile-priority column contracts. |
-| `frontend/src/test/frontendCopyQaReport.test.tsx` | Updated | Adds an explicit timeout for the full report artifact-writing test. |
-| `qa/frontend_copy_corpus.yaml` | Updated | Tightens guard/center hero soft checks. |
-| `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` | Updated | Records confirmed findings and targeted checks. |
-| `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` | Updated | Records Fix Wave 1 status and validation artifacts. |
+| File                                                                 | Change type | Why                                                                                        |
+| -------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
+| `frontend/src/components/results/primitives/ResultTable.tsx`         | Updated     | Added column-level mobile priority metadata.                                               |
+| `frontend/src/components/results/primitives/ResultTable.module.css`  | Updated     | Hides secondary columns on mobile and lets wrapped dense cells break cleanly.              |
+| `frontend/src/components/results/patterns/TopPerformancesResult.tsx` | Updated     | Prioritizes Rank, Player, Date, and requested stat on mobile.                              |
+| `frontend/src/components/results/patterns/ComparisonResult.tsx`      | Updated     | Keeps comparison metric/value/edge columns visible on mobile.                              |
+| `frontend/src/components/results/patterns/PlayoffHistoryResult.tsx`  | Updated     | Keeps playoff matchup interpretation columns visible on mobile.                            |
+| `frontend/src/components/results/patterns/LeaderboardResult.tsx`     | Updated     | Uses `position_filter` / applied position filter metadata in player leaderboard hero copy. |
+| `frontend/src/test/ResultRenderer.test.tsx`                          | Updated     | Covers filtered hero wording and mobile-priority column contracts.                         |
+| `frontend/src/test/frontendCopyQaReport.test.tsx`                    | Updated     | Adds an explicit timeout for the full report artifact-writing test.                        |
+| `qa/frontend_copy_corpus.yaml`                                       | Updated     | Tightens guard/center hero soft checks.                                                    |
+| `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`   | Updated     | Records confirmed findings and targeted checks.                                            |
+| `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`      | Updated     | Records Fix Wave 1 status and validation artifacts.                                        |
 
 ## 5. Test coverage
 

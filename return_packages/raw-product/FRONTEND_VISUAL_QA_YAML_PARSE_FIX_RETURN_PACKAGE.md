@@ -49,19 +49,24 @@ All required case IDs remain present and are enforced in tests:
 Executed requested commands:
 
 1. `cd frontend && npm test -- src/test/VisualQaPage.test.tsx --run`
+
 - Result: pass (`4/4`)
 - Includes a guard test asserting raw corpus text is not valid JSON while page load still succeeds.
 
 2. `cd frontend && npm test -- src/test/reviewScreenshots.test.ts src/test/ReviewPage.test.tsx --run`
+
 - Result: pass (`11/11`)
 
 3. `cd frontend && npm run build`
+
 - Result: pass
 
 4. `cd frontend && npm run lint`
+
 - Result: pass with one pre-existing warning in `src/ReviewPage.tsx` (`react-hooks/exhaustive-deps`)
 
 5. `git diff --check`
+
 - Result: clean (no whitespace errors)
 
 ## Manual `/visual-qa` confirmation
