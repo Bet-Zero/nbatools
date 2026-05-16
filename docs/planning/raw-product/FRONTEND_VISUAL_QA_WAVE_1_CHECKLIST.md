@@ -16,7 +16,9 @@
 ## Manual Capture Workflow
 
 1. Start the local backend that serves `/query`.
-2. Start the frontend dev server and open `/visual-qa`.
+2. Open `/visual-qa` through either the local production API shell
+   (`http://127.0.0.1:8000/visual-qa`) or the frontend dev server
+   (`http://127.0.0.1:5173/visual-qa`, or the current Vite-selected port).
 3. Let all 15 cases finish loading through the live query path.
 4. Capture the desktop pass at about `1280px` wide.
 5. Capture the mobile pass at about `390px` wide.

@@ -1170,6 +1170,18 @@ Artifacts and entry points:
 - Source frontend-copy run:
   `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.jsonl`
 
+Deployment/local route parity:
+
+- `/visual-qa` deploy parity is complete: the hidden/internal visual QA route is
+  deployed alongside `/review` and serves the same internal SPA shell.
+- Route exposure policy: `/visual-qa` remains hidden/internal but reachable with
+  the same ungated posture as `/review`; no additional auth or gating was added.
+- Local production API URL:
+  `http://127.0.0.1:8000/visual-qa`
+- Vite dev URL:
+  `http://127.0.0.1:5173/visual-qa` when Vite uses its default port, or the
+  current Vite-selected port if 5173 is occupied.
+
 Page behavior:
 
 - Reads the 15-case visual corpus and issues live `POST /query` calls through

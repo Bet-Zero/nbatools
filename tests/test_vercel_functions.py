@@ -18,6 +18,7 @@ pytestmark = pytest.mark.api
 def test_vercel_entrypoints_export_handlers():
     modules = [
         "api.index",
+        "api.review",
         "api.ui_fallback_asset",
         "api.assets",
         "api.health",

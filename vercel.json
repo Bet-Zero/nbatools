@@ -58,6 +58,10 @@
       "destination": "/api/review"
     },
     {
+      "source": "/visual-qa",
+      "destination": "/api/review"
+    },
+    {
       "source": "/assets/index-fallback.js",
       "destination": "/api/ui_fallback_asset"
     },
