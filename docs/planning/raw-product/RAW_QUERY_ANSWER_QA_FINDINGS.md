@@ -133,6 +133,16 @@ Review signals are grouped into these families:
   expected unsupported boundary as of Fix Wave 8D; league-wide team advanced
   leaderboards remain supported
 
+Current checkpoint:
+
+- All Wave 5 findings AQ-024 through AQ-031 are resolved as either `fixed` or
+  `fixed_as_expected_unsupported`.
+- There are no open failed corpus cases in the latest 243-case run.
+- Future promotion of unsupported families is a product decision and contract
+  design task, not a current Raw Query Answer QA failure.
+- Release-readiness checkpoint:
+  `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
+
 ## Finding summary
 
 | Finding ID | Priority | Category | Query / Case ID | Finding type | Status | Notes | Recommended fix family |

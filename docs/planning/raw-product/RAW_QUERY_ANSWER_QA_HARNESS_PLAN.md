@@ -1419,6 +1419,36 @@ Recommended next phase:
   corpus expansion, a release-readiness checklist, or selecting one unsupported
   family to promote into real support behind an approved route/result contract.
 
+## Raw Product QA Release Readiness Checkpoint Status
+
+A release-readiness checkpoint has been recorded in
+`docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`.
+
+Current backend Raw QA checkpoint:
+
+- Latest run: `outputs/raw_query_answer_qa/20260516T221654Z/report.md`
+- Corpus size: 243 cases
+- Expectation cases: `pass: 243`
+- Expectation checks: `pass: 1368`
+- Failed case IDs: none
+- Suspicious flag cases: 0
+- Verified outlier cases: 1 (`top_performance_high_points`)
+
+Checkpoint recommendation:
+
+- First option: run a release-readiness checklist for the current supported and
+  explicitly unsupported product boundary. Include deploy preview validation,
+  `/visual-qa` preview validation, a smoke query set, frontend-copy QA rerun,
+  full raw corpus rerun, and docs review.
+- Second option: expand frontend-copy QA beyond the selected 59-case corpus,
+  starting with high-risk families.
+- Third option: promote one unsupported family into real support behind an
+  approved route/result contract. Best first candidate: opponent-conference
+  filters.
+- Fourth option: improve harness efficiency with wave tags, slices,
+  run-new-cases-only mode, saved adjacent groups, and validation command
+  presets.
+
 ## Frontend Hero / Copy QA Wave 1 Status
 
 Frontend hero/copy QA now has a report-first harness that renders selected
