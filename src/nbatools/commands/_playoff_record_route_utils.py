@@ -68,12 +68,13 @@ def detect_playoff_appearance_intent(text: str) -> bool:
     - "conference finals appearances"
     - "second round appearances"
     """
+    t = _normalize_playoff_round_phrase_hyphens(text)
     return bool(
         re.search(
             r"\b(?:playoff|postseason|finals?|conference\s+finals?|"
-            r"(?:first|1st|second|2nd)\s+round|semifinal)"
+            r"(?:first|1st|second|2nd|third|3rd)\s+round|semifinal)"
             r"\s+appearance",
-            text,
+            t,
         )
     )
 
@@ -84,13 +85,27 @@ def detect_playoff_history_intent(text: str) -> bool:
     Triggers on:
     - "playoff history"
     - "playoff series"
+    - "playoff matchup history"
+    - "playoff matchup record"
     - "postseason history"
     """
     return bool(
         re.search(
-            r"\b(?:playoff|postseason)\s+(?:history|series)\b",
+            r"\b(?:playoff|postseason)\s+(?:"
+            r"history|series(?:\s+(?:history|record))?|"
+            r"matchups?\s+(?:history|record|series(?:\s+(?:history|record))?)"
+            r")\b",
             text,
         )
+    )
+
+
+def _normalize_playoff_round_phrase_hyphens(text: str) -> str:
+    """Normalize hyphens only inside known playoff round phrases."""
+    return re.sub(
+        r"\b(first|1st|second|2nd|third|3rd|conference|conf|nba|the)-(?=round|finals?\b)",
+        r"\1 ",
+        text,
     )
 
 
@@ -100,7 +115,7 @@ def detect_playoff_round_filter(text: str) -> str | None:
     Returns a round code ('01'-'04') or None.
     """
     # Receives pre-normalized (lowercased) text from _build_parse_state.
-    t = text
+    t = _normalize_playoff_round_phrase_hyphens(text)
     # Longest-match first to avoid "finals" matching before "conference finals"
     sorted_aliases = sorted(ROUND_ALIASES.keys(), key=len, reverse=True)
     for alias in sorted_aliases:

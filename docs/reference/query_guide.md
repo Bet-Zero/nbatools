@@ -245,10 +245,12 @@ team-conference metadata and route semantics are approved.
 - `Lakers playoff history`
 - `Heat vs Knicks playoff history`
 - `Heat Knicks playoff series record`
+- `Lakers Celtics playoff matchup history`
 - `Lakers playoff series record vs Celtics`
 - `Lakers Finals appearances`
 - `most Finals appearances since 1980`
 - `best Finals record since 1980`
+- `best second-round record since 2010`
 
 Adjacent team names are only treated as a matchup in explicit playoff
 series/history contexts. Single-team round-record phrasing such as

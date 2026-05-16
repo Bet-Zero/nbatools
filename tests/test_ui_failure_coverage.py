@@ -314,6 +314,37 @@ class TestP2BoundaryRoutingCleanup:
 
 class TestPlayoffRoutingBoundaries:
     @pytest.mark.needs_data
+    def test_best_second_round_hyphenated_since_routes_to_round_record(self):
+        qr = execute_natural_query("best second-round record since 2010")
+
+        assert qr.route == "playoff_round_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season_type"] == "Playoffs"
+        assert qr.metadata["start_season"] == "2010-11"
+        assert qr.metadata["end_season"] == "2024-25"
+
+        sections = qr.to_dict()["sections"]
+        assert set(sections) == {"leaderboard"}
+        assert sections["leaderboard"]
+        assert {row["round"] for row in sections["leaderboard"][:3]} == {"Second Round"}
+
+    @pytest.mark.needs_data
+    def test_lakers_celtics_playoff_matchup_history_phrase_executes(self):
+        qr = execute_natural_query("Lakers Celtics playoff matchup history")
+
+        assert qr.route == "playoff_matchup_history"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season_type"] == "Playoffs"
+
+        sections = qr.to_dict()["sections"]
+        assert set(sections) == {"summary", "comparison"}
+        assert {row["team_name"] for row in sections["summary"]} == {
+            "Los Angeles Lakers",
+            "Boston Celtics",
+        }
+        assert sections["comparison"]
+
+    @pytest.mark.needs_data
     def test_adjacent_heat_knicks_series_record_matches_vs_family(self):
         adjacent = execute_natural_query("Heat Knicks playoff series record")
         explicit = execute_natural_query("Heat vs Knicks playoff history")

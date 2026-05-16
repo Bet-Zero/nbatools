@@ -8,35 +8,33 @@ findings here should be grouped into fix families before implementation.
 
 ## Latest run
 
-- Run ID: `20260516T075849Z`
+- Run ID: `20260516T084330Z`
 - Corpus size: 243 cases
 - Output report path:
-  `outputs/raw_query_answer_qa/20260516T075849Z/report.md`
+  `outputs/raw_query_answer_qa/20260516T084330Z/report.md`
 - Summary counts:
-  - Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
-  - Expectation cases: `pass: 235`, `fail: 8`
-  - Expectation checks: `pass: 1315`, `fail: 25`
+  - Result statuses: `ok: 201`, `no_result: 32`, `error: 10`
+  - Expectation cases: `pass: 237`, `fail: 6`
+  - Expectation checks: `pass: 1332`, `fail: 18`
   - Failed case IDs: `lakers_how_did_road_last_season_wave5`,
     `jokic_possessive_triple_double_record_wave5`,
     `curry_last_20_from_three_wave5`,
     `celtics_road_record_since_jan_1_wave5`,
-    `best_second_round_record_since_2010_wave5`,
-    `lakers_celtics_playoff_matchup_history_wave5`,
     `players_personal_fouls_wave5`,
     `warriors_net_rating_single_team_wave5`
   - Manual review statuses: `unreviewed: 180`, `expected_unsupported: 26`,
-    `pass: 29`, `routing_issue: 4`, `missing_filter: 2`,
+    `pass: 31`, `routing_issue: 2`, `missing_filter: 2`,
     `needs_product_decision: 1`, `verified_outlier: 1`
   - Answer text policies: `frontend_hero_expected: 150`,
     `requires_backend_answer_text: 10`, `no_answer_text_expected: 40`,
     `<unspecified>: 43`
-  - Answer text statuses: `frontend_hero_expected: 147`,
+  - Answer text statuses: `frontend_hero_expected: 148`,
     `backend_answer_text_present: 10`, `no_answer_text_expected: 40`,
-    `not_required: 46`
-  - Suspicious flag cases: 3
-  - Suspicious flags: `expected_ok_returned_non_ok: 3`
-  - Informational flag cases: 147
-  - Informational flags: `frontend_hero_expected: 147`
+    `not_required: 45`
+  - Suspicious flag cases: 2
+  - Suspicious flags: `expected_ok_returned_non_ok: 2`
+  - Informational flag cases: 148
+  - Informational flags: `frontend_hero_expected: 148`
   - Verified outlier cases: 1
   - Verified outliers: `top_performance_high_points: 1`
 
@@ -103,19 +101,19 @@ harness logic, or source data. The wave focused on supported-route phrasing
 variants, date/window/context combinations, playoff/history phrasing,
 comparison guardrails, unsupported-boundary variants, and advanced/stat aliases.
 
-Latest Wave 5 run after Fix Wave 8A:
+Latest Wave 5 run after Fix Wave 8B:
 
-- Run ID: `20260516T075849Z`
+- Run ID: `20260516T084330Z`
 - Output path:
-  `outputs/raw_query_answer_qa/20260516T075849Z/report.md`
+  `outputs/raw_query_answer_qa/20260516T084330Z/report.md`
 - Cases: 243
-- Result statuses: `ok: 200`, `no_result: 33`, `error: 10`
-- Expectation cases: `pass: 235`, `fail: 8`
-- Expectation checks: `pass: 1315`, `fail: 25`
-- Suspicious flag cases: 3
-- Suspicious flags: `expected_ok_returned_non_ok: 3`
-- Informational flag cases: 147
-- Informational flags: `frontend_hero_expected: 147`
+- Result statuses: `ok: 201`, `no_result: 32`, `error: 10`
+- Expectation cases: `pass: 237`, `fail: 6`
+- Expectation checks: `pass: 1332`, `fail: 18`
+- Suspicious flag cases: 2
+- Suspicious flags: `expected_ok_returned_non_ok: 2`
+- Informational flag cases: 148
+- Informational flags: `frontend_hero_expected: 148`
 - Verified outlier cases: 1
 - Verified outliers: `top_performance_high_points: 1`
 
@@ -129,9 +127,9 @@ Review signals are grouped into these families:
 - context preservation: `since January 1` is treated as a single-day window,
   and `Curry ... from three` preserves last-20 but drops the three-point stat
   context
-- playoff phrasing variants: hyphenated `second-round` falls into regular
-  season record leaderboards, and `playoff matchup history` misses the playoff
-  matchup-history route
+- playoff phrasing variants from AQ-029 are fixed as of Fix Wave 8B;
+  hyphenated `second-round` stays on playoff round-record semantics, and
+  `playoff matchup history` routes to playoff matchup history
 - unsupported-boundary variant coverage: `players with most personal fouls`
   is unrouted instead of the personal-foul unsupported boundary
 - product decision: single-team advanced metric phrasing such as
@@ -171,7 +169,7 @@ Review signals are grouped into these families:
 | AQ-026 | P1 | Record-when player condition | `jokic_possessive_triple_double_record_wave5` | routing_or_data_gap | open | Possessive `Jokic's record in games with a triple-double` returns `no_result` on `player_game_summary` with team context `WAS`, despite preserving the triple-double filter. The non-possessive canonical Jokic triple-double record case remains supported. | player/team context resolution |
 | AQ-027 | P1 | Date/window context | `celtics_road_record_since_jan_1_wave5` | missing_filter | open | `since January 1` on a team record is parsed as a single-day `2026-01-01 - 2026-01-01` date range rather than an open-ended `2026-01-01 - current_through` window. | date-window parsing/filter preservation |
 | AQ-028 | P2 | Player stat context | `curry_last_20_from_three_wave5` | missing_filter | open | `Curry last 20 games from three` preserves the last-20 window but does not expose `stat=fg3m` or equivalent three-point context in metadata. | stat alias + context preservation |
-| AQ-029 | P1 | Playoff/history phrasing | `best_second_round_record_since_2010_wave5`, `lakers_celtics_playoff_matchup_history_wave5` | route_and_season_type_issue | open | Hyphenated `second-round` routes to regular-season `team_record_leaderboard` instead of playoff round records; `Lakers Celtics playoff matchup history` routes to `team_compare` and returns no-result instead of `playoff_matchup_history`. Adjacent `playoff series history` and `playoff history` variants still pass. | playoff round/matchup routing |
+| AQ-029 | P1 | Playoff/history phrasing | `best_second_round_record_since_2010_wave5`, `lakers_celtics_playoff_matchup_history_wave5` | route_and_season_type_issue | fixed | Fixed in Raw Query Answer QA Fix Wave 8B. Hyphenated playoff round phrases such as `second-round` now route through the existing playoff round-record detector; `best second-round record since 2010` returns `playoff_round_record` with Second Round playoff rows. `playoff matchup history` now counts as playoff-history intent for team pairs; `Lakers Celtics playoff matchup history` returns `playoff_matchup_history` with LAL/BOS summary and comparison sections. Latest run: `outputs/raw_query_answer_qa/20260516T084330Z/report.md`. | playoff round/matchup routing |
 | AQ-030 | P2 | Unsupported stat alias boundary | `players_personal_fouls_wave5` | unsupported_no_result_policy | open | `players with most personal fouls this season` is unrouted (`error` / `unrouted`) rather than using the explicit personal-foul unsupported boundary (`no_result` / `filter_not_supported`). It does not broaden to points, but the boundary guidance is less specific than the fixed `personal fouls leaders` phrase. | product boundary / stat coverage |
 | AQ-031 | P2 | Advanced metric product boundary | `warriors_net_rating_single_team_wave5` | needs_product_decision | open | `Warriors net rating this season` returns `no_result` / `unsupported` on `game_finder` with `stat=net_rating`. Decide whether single-team advanced metric scalar summaries are in scope or should become a documented unsupported boundary with specific guidance. | product boundary / stat coverage |
 
@@ -206,9 +204,10 @@ Latest frontend-copy run:
   documented data boundary.
 - Wave 7A resolved the remaining eight Wave 6B failures. The 195-case corpus
   now has 195 expectation passes, zero suspicious flags, and no failed case IDs.
-- Fix Wave 8A resolved AQ-024. The expanded 243-case corpus now has 235
-  expectation passes and 8 remaining expectation failures in unrelated review
-  families. The original 195 clean cases remain preserved.
+- Fix Wave 8A resolved AQ-024. Fix Wave 8B resolved AQ-029. The expanded
+  243-case corpus now has 237 expectation passes and 6 remaining expectation
+  failures in unrelated review families. The original 195 clean cases remain
+  preserved.
 - Exact frontend rendered-answer extraction is still deferred; targeted backend `answer_phrase` enrichment remains an optional future improvement for high-value direct-answer routes.
 - The manual corpus should remain review-oriented. Promote only objective, stable failures into focused tests near the behavior they protect.
 - Fix Wave 4A resolved AQ-011 and AQ-013 scalar semantics. Fix Wave 4B

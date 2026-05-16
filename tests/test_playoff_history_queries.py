@@ -174,6 +174,11 @@ class TestPlayoffIntentDetection(unittest.TestCase):
         assert detect_playoff_history_intent("lakers playoff history") is True
         assert detect_playoff_history_intent("celtics postseason history") is True
         assert detect_playoff_history_intent("knicks playoff series vs heat") is True
+        assert detect_playoff_history_intent("lakers celtics playoff matchup history") is True
+        assert detect_playoff_history_intent("heat knicks playoff matchup record") is True
+        assert (
+            detect_playoff_history_intent("lakers celtics playoff matchup series history") is True
+        )
         assert detect_playoff_history_intent("lakers career averages") is False
 
     def test_detect_playoff_round_filter(self):
@@ -181,8 +186,12 @@ class TestPlayoffIntentDetection(unittest.TestCase):
 
         assert detect_playoff_round_filter("best finals record since 1980") == "04"
         assert detect_playoff_round_filter("most conference finals appearances since 2000") == "03"
+        assert detect_playoff_round_filter("most conference-finals appearances since 2000") == "03"
         assert detect_playoff_round_filter("second round appearances") == "02"
+        assert detect_playoff_round_filter("second-round appearances") == "02"
         assert detect_playoff_round_filter("first round record") == "01"
+        assert detect_playoff_round_filter("first-round record") == "01"
+        assert detect_playoff_round_filter("third-round record") == "03"
         assert detect_playoff_round_filter("lakers playoff record") is None
 
     def test_detect_by_round_intent(self):
@@ -247,6 +256,14 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         assert result["route_kwargs"]["team_a"] == "MIA"
         assert result["route_kwargs"]["team_b"] == "NYK"
 
+    def test_adjacent_playoff_matchup_history_phrase_routes(self):
+        """'Lakers Celtics playoff matchup history' → playoff_matchup_history."""
+        result = self._parse("Lakers Celtics playoff matchup history")
+        assert result["route"] == "playoff_matchup_history", result["route"]
+        assert result["season_type"] == "Playoffs"
+        assert result["route_kwargs"]["team_a"] == "LAL"
+        assert result["route_kwargs"]["team_b"] == "BOS"
+
     def test_playoff_series_matchup_routes(self):
         """'Lakers playoff series record vs Celtics' → playoff_matchup_history."""
         result = self._parse("lakers vs celtics playoff series since 2000")
@@ -298,6 +315,14 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         assert result["route_kwargs"]["season"] is None
         assert result["route_kwargs"]["start_season"] is not None
         assert result["route_kwargs"]["playoff_round"] == "02"
+
+    def test_best_second_round_hyphenated_record_since_routes(self):
+        result = self._parse("best second-round record since 2010")
+        assert result["route"] == "playoff_round_record", result["route"]
+        assert result["season_type"] == "Playoffs"
+        assert result["route_kwargs"]["playoff_round"] == "02"
+        assert result["route_kwargs"]["start_season"] == "2010-11"
+        assert result["route_kwargs"]["end_season"] == "2024-25"
 
     def test_single_team_finals_record_is_unsupported_boundary(self):
         result = self._parse("Warriors Finals record since 2015")

@@ -1121,16 +1121,16 @@ New findings summary:
 - AQ-026: possessive player record-when phrasing resolves to no-result.
 - AQ-027: `since January 1` parses as a single-day date range.
 - AQ-028: `from three` stat context is dropped on a last-20 Curry summary.
-- AQ-029: playoff hyphenated round and matchup-history phrase variants.
+- AQ-029: playoff hyphenated round and matchup-history phrase variants, fixed
+  in Fix Wave 8B.
 - AQ-030: personal-foul unsupported-boundary wording variant is unrouted.
 - AQ-031: single-team advanced metric scalar product decision.
 
 Recommended next phase:
 
 - Group fixes by family rather than one-off cases. AQ-024 defensive alias
-  cleanup is fixed; start the next backend wave with AQ-029 playoff phrase
-  routing because it affects already documented supported families.
-- Then address AQ-025/AQ-026 record-intent routing and AQ-027/AQ-028 context
+  cleanup and AQ-029 playoff phrase routing are fixed.
+- Next address AQ-025/AQ-026 record-intent routing and AQ-027/AQ-028 context
   preservation.
 - Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before any
   execution expansion.
@@ -1195,12 +1195,67 @@ Harness validation:
 
 Recommended next phase:
 
-- Fix AQ-029 playoff phrasing next because it affects documented playoff
-  history/round/matchup families.
-- Then handle the record/date/stat-context group: AQ-025, AQ-026, AQ-027, and
+- Handle the record/date/stat-context group: AQ-025, AQ-026, AQ-027, and
   AQ-028.
 - Treat AQ-030 and AQ-031 as product-boundary cleanup/decision work before
   adding any new execution surface.
+
+## Fix Wave 8B Status
+
+Fix Wave 8B resolved AQ-029 as a focused playoff parser/routing cleanup. It did
+not change frontend rendering, backend answer-phrase behavior, source data, or
+the unsupported boundary for single-team playoff round records.
+
+Playoff phrasing coverage fixed:
+
+- Hyphenated playoff round phrases such as `first-round`, `second-round`,
+  `third-round`, and `conference-finals` are normalized inside the playoff
+  round detector before matching existing round aliases.
+- `best second-round record since 2010` now routes to `playoff_round_record`
+  with `season_type=Playoffs`, `playoff_round=02`, `start_season=2010-11`,
+  and `end_season=2024-25`.
+- `playoff matchup history`, `playoff matchup record`, and playoff matchup
+  series-history variants now count as playoff-history intent for team-pair
+  routing.
+- Adjacent team-team parsing remains limited to explicit playoff
+  history/series/matchup contexts. Non-playoff adjacent comparison guardrails
+  and single-team Finals/conference-finals unsupported boundaries remain
+  intact.
+
+Harness validation:
+
+- Targeted AQ-029 run:
+  `outputs/raw_query_answer_qa/20260516T084243Z/report.md`
+  - Cases: 2
+  - Result statuses: `ok: 2`
+  - Expectation cases: `pass: 2`
+  - Failed case IDs: none
+- Adjacent playoff run:
+  `outputs/raw_query_answer_qa/20260516T084257Z/report.md`
+  - Cases: 10
+  - Result statuses: `ok: 7`, `no_result: 3`
+  - Expectation cases: `pass: 10`
+  - Failed case IDs: none
+- Full corpus run:
+  `outputs/raw_query_answer_qa/20260516T084330Z/report.md`
+  - Cases: 243
+  - Result statuses: `ok: 201`, `no_result: 32`, `error: 10`
+  - Expectation cases: `pass: 237`, `fail: 6`
+  - Expectation checks: `pass: 1332`, `fail: 18`
+  - Suspicious flag cases: 2
+  - Informational flag cases: 148
+  - Verified outlier cases: 1
+  - Remaining failed IDs: `lakers_how_did_road_last_season_wave5`,
+    `jokic_possessive_triple_double_record_wave5`,
+    `curry_last_20_from_three_wave5`,
+    `celtics_road_record_since_jan_1_wave5`,
+    `players_personal_fouls_wave5`,
+    `warriors_net_rating_single_team_wave5`
+
+Recommended next phase:
+
+- Handle AQ-025 through AQ-028 as the record/date/stat-context group.
+- Then resolve AQ-030 and AQ-031 as product-boundary cleanup/decision work.
 
 ## Frontend Hero / Copy QA Wave 1 Status
 

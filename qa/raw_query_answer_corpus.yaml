@@ -4435,14 +4435,20 @@ cases:
         equals: Playoffs
       - path: result.metadata.start_season
         equals: 2010-11
+      - path: result.metadata.end_season
+        equals: 2024-25
+      - path: result.sections.leaderboard.0.round
+        equals: Second Round
+      - path: result.sections.leaderboard.0.season_type
+        equals: Playoffs
     review_notes: "Hyphenated second-round plus since-year phrasing should stay on playoff round-record semantics."
     manual_review:
-      status: routing_issue
+      status: pass
       tags:
         - playoff
         - era
         - phrasing_variant
-      notes: "Probe routed to regular-season team record leaderboard; inspect hyphenated round parsing."
+      notes: "Fixed in Raw Query Answer QA Fix Wave 8B; hyphenated second-round routes to playoff_round_record."
 
   - id: bulls_finals_record_question_wave5
     query: "What is the Bulls Finals record?"
@@ -4499,14 +4505,28 @@ cases:
     expected_sections:
       - summary
       - comparison
+    expected_row_counts:
+      summary: 2
+      comparison: 2
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.metadata.teams_context.0.team_abbr
+        equals: LAL
+      - path: result.metadata.teams_context.1.team_abbr
+        equals: BOS
+      - path: result.sections.summary.0.team_name
+        equals: Los Angeles Lakers
+      - path: result.sections.summary.1.team_name
+        equals: Boston Celtics
     review_notes: "Playoff matchup-history wording should use playoff matchup history, not regular team comparison."
     manual_review:
-      status: routing_issue
+      status: pass
       tags:
         - playoff
         - matchup
         - phrasing_variant
-      notes: "Probe returned team_compare/no_match; inspect 'matchup history' phrase handling."
+      notes: "Fixed in Raw Query Answer QA Fix Wave 8B; playoff matchup-history phrasing routes to playoff_matchup_history."
 
   - id: compare_lebron_durant_wave5
     query: "Compare LeBron James and Kevin Durant"

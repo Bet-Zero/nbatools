@@ -602,6 +602,7 @@ Examples:
 - `Lakers playoff history`
 - `Heat vs Knicks playoff history`
 - `Heat Knicks playoff history`
+- `Lakers Celtics playoff matchup history`
 - `Heat Knicks playoff series record`
 - `Lakers playoff series record vs Celtics`
 
@@ -620,6 +621,7 @@ Examples:
 - `most conference finals appearances since 2000`
 - `best finals record since 1980`
 - `best second round record`
+- `best second-round record since 2010`
 
 ### By-decade / era-bucket queries
 

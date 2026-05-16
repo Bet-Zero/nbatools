@@ -984,7 +984,9 @@ def test_playoff_history_phrase_still_routes_to_playoff_history():
     [
         ("Heat Knicks playoff series record", "MIA", "NYK", None),
         ("Heat Knicks playoff history", "MIA", "NYK", None),
+        ("Heat Knicks playoff matchup history", "MIA", "NYK", None),
         ("Lakers Celtics playoff series record", "LAL", "BOS", None),
+        ("Lakers Celtics playoff matchup history", "LAL", "BOS", None),
         ("Warriors Cavaliers Finals history", "GSW", "CLE", "04"),
     ],
 )
@@ -1023,6 +1025,22 @@ def test_adjacent_team_parsing_does_not_apply_without_playoff_context():
     assert parsed["team_a"] is None
     assert parsed["team_b"] is None
     assert parsed["route"] != "playoff_matchup_history"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best second round record since 2010",
+        "best second-round record since 2010",
+    ],
+)
+def test_second_round_record_since_routes_to_playoff_round_record(query):
+    parsed = parse_query(query)
+    assert parsed["route"] == "playoff_round_record"
+    assert parsed["season_type"] == "Playoffs"
+    assert parsed["route_kwargs"]["playoff_round"] == "02"
+    assert parsed["route_kwargs"]["start_season"] == "2010-11"
+    assert parsed["route_kwargs"]["end_season"] == "2024-25"
 
 
 @pytest.mark.parametrize(
