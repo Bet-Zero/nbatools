@@ -1,0 +1,11 @@
+name: defensive_aliases
+description: Defensive and opponent-points alias cases from recent Raw QA waves.
+case_ids:
+  - team_gave_up_fewest_ppg_wave5
+  - teams_allowing_fewest_points_wave5
+  - lakers_held_teams_under_100_wave5
+  - fewest_points_allowed_team_leader
+  - most_points_allowed_team_leaders_wave4
+  - opponent_ppg_leaders_wave4
+  - knicks_allowed_under_110_record
+  - lakers_held_opponents_under_100_record

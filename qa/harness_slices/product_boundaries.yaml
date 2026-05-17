@@ -1,0 +1,14 @@
+name: product_boundaries
+description: Product-boundary cases for explicit unsupported or no-result behavior.
+case_ids:
+  - players_personal_fouls_wave5
+  - warriors_net_rating_single_team_wave5
+  - personal_foul_leaders_wave4
+  - turnover_leaders_wave4
+  - steal_leaders_this_season
+  - block_leaders_this_season
+  - net_rating_team_leaders
+  - offensive_rating_team_leader
+  - def_rating_team_leaders_wave4
+  - pace_team_leaders_wave4
+  - fastest_pace_teams_wave5

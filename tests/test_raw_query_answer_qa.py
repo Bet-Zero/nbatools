@@ -1,3 +1,7 @@
+import json
+
+import pytest
+
 from tools import raw_query_answer_qa as qa
 
 
@@ -215,3 +219,165 @@ def test_summary_counts_distinguish_informational_and_suspicious_flags() -> None
         "frontend_hero_expected": 1,
         "requires_backend_answer_text": 1,
     }
+
+
+def test_slice_loading_by_name_uses_saved_slice_file() -> None:
+    case_ids = qa.load_slice_case_ids("product_boundaries")
+
+    assert case_ids[:2] == [
+        "players_personal_fouls_wave5",
+        "warriors_net_rating_single_team_wave5",
+    ]
+
+
+def test_slice_loading_by_direct_path(tmp_path) -> None:
+    slice_path = tmp_path / "custom_slice.yaml"
+    slice_path.write_text(
+        "\n".join(
+            [
+                "name: custom",
+                "case_ids:",
+                "  - case_b",
+                "  - case_c",
+                "",
+            ]
+        )
+    )
+
+    assert qa.load_slice_case_ids(str(slice_path)) == ["case_b", "case_c"]
+
+
+def test_unknown_case_ids_fail_loudly() -> None:
+    cases = [{"id": "case_a"}, {"id": "case_b"}]
+
+    with pytest.raises(ValueError, match="Unknown case id"):
+        qa.filter_cases(
+            cases,
+            case_ids={"case_a", "missing_case"},
+            limit=None,
+            explicit_selection=True,
+        )
+
+
+def test_case_and_slice_selection_composes_deduplicates_and_preserves_corpus_order(
+    tmp_path,
+) -> None:
+    slice_path = tmp_path / "selection_slice.yaml"
+    slice_path.write_text("case_ids:\n  - case_b\n  - case_c\n")
+    cases = [{"id": "case_a"}, {"id": "case_b"}, {"id": "case_c"}, {"id": "case_d"}]
+
+    selected_ids, explicit = qa.collect_selected_case_ids(
+        case_values=["case_c,case_a"],
+        slice_values=[str(slice_path)],
+        failed_from_values=[],
+    )
+    selected = qa.filter_cases(
+        cases,
+        case_ids=selected_ids,
+        limit=None,
+        explicit_selection=explicit,
+    )
+
+    assert explicit
+    assert [case["id"] for case in selected] == ["case_a", "case_b", "case_c"]
+
+
+def test_failed_from_summary_json_parsing(tmp_path) -> None:
+    summary_path = tmp_path / "summary.json"
+    summary_path.write_text(json.dumps({"failed_case_ids": ["case_b", "case_a"]}))
+
+    assert qa.load_failed_case_ids(summary_path) == ["case_b", "case_a"]
+
+
+def test_failed_from_report_jsonl_parsing(tmp_path) -> None:
+    report_path = tmp_path / "report.jsonl"
+    rows = [
+        {"id": "case_a", "expectation_results": {"status": "pass", "fail_count": 0}},
+        {"id": "case_b", "expectation_results": {"status": "fail", "fail_count": 1}},
+        {"id": "case_c", "expectation_results": {"status": "pass", "fail_count": 2}},
+    ]
+    report_path.write_text("\n".join(json.dumps(row) for row in rows) + "\n")
+
+    assert qa.load_failed_case_ids(report_path) == ["case_b", "case_c"]
+
+
+def _comparison_row(
+    case_id: str,
+    *,
+    expectation_status: str,
+    result_status: str = "ok",
+    route: str = "team_record",
+    suspicious_flags: list[dict] | None = None,
+    verified_outliers: list[dict] | None = None,
+) -> dict:
+    return {
+        "id": case_id,
+        "query": case_id,
+        "result_status": result_status,
+        "route": route,
+        "suspicious_flags": suspicious_flags or [],
+        "verified_outliers": verified_outliers or [],
+        "expectation_results": {"status": expectation_status, "fail_count": 0},
+    }
+
+
+def test_compare_summary_generation_from_report_jsonl(tmp_path) -> None:
+    previous_path = tmp_path / "report.jsonl"
+    previous_rows = [
+        _comparison_row("case_a", expectation_status="pass", route="old_route"),
+        _comparison_row(
+            "case_b",
+            expectation_status="pass",
+            suspicious_flags=[{"id": "old_flag"}],
+        ),
+        _comparison_row(
+            "case_c",
+            expectation_status="fail",
+            verified_outliers=[{"id": "top_performance_high_points"}],
+        ),
+    ]
+    previous_path.write_text("\n".join(json.dumps(row) for row in previous_rows) + "\n")
+    current_rows = [
+        _comparison_row("case_a", expectation_status="pass", route="new_route"),
+        _comparison_row("case_b", expectation_status="fail"),
+        _comparison_row("case_c", expectation_status="pass"),
+    ]
+
+    comparison = qa.build_run_comparison(current_rows, previous_path)
+
+    assert comparison["newly_failing_case_ids"] == ["case_b"]
+    assert comparison["newly_passing_case_ids"] == ["case_c"]
+    assert comparison["failed_case_delta"] == 0
+    assert comparison["result_status_count_delta"] == {}
+    assert comparison["suspicious_flag_count_delta"] == -1
+    assert comparison["verified_outlier_count_delta"] == -1
+    assert comparison["route_status_drift"] == [
+        {
+            "id": "case_a",
+            "previous_route": "old_route",
+            "current_route": "new_route",
+            "previous_result_status": "ok",
+            "current_result_status": "ok",
+        }
+    ]
+
+
+def test_duration_and_slowest_summary_from_synthetic_rows() -> None:
+    rows = [
+        {**_comparison_row("case_a", expectation_status="pass"), "duration_seconds": 0.25},
+        {**_comparison_row("case_b", expectation_status="pass"), "duration_seconds": 1.5},
+        {**_comparison_row("case_c", expectation_status="pass"), "duration_seconds": 0.75},
+    ]
+
+    slowest = qa.build_slowest_cases(rows, limit=2)
+    summary = qa.summarize_rows(
+        rows,
+        run_id="test",
+        started_at="2026-05-17T00:00:00+00:00",
+        completed_at="2026-05-17T00:00:01+00:00",
+        corpus_path=qa.ROOT / "qa/raw_query_answer_corpus.yaml",
+        output_paths={"summary_json": qa.ROOT / "outputs/test/summary.json"},
+    )
+
+    assert [row["id"] for row in slowest] == ["case_b", "case_c"]
+    assert [row["id"] for row in summary["slowest_cases"]] == ["case_b", "case_c", "case_a"]

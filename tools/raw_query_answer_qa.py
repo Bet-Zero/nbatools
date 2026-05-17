@@ -7,6 +7,7 @@ import json
 import math
 import re
 import sys
+import time
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -144,6 +145,7 @@ PREFERRED_MARKDOWN_COLUMNS = [
     "end_date",
 ]
 DEFAULT_VERIFIED_OUTLIERS_PATH = ROOT / "qa" / "verified_outliers.yaml"
+DEFAULT_SLICE_DIR = ROOT / "qa" / "harness_slices"
 
 
 def parse_args() -> argparse.Namespace:
@@ -155,6 +157,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--case", action="append", default=[])
+    parser.add_argument("--slice", action="append", default=[])
+    parser.add_argument("--failed-from", action="append", default=[])
+    parser.add_argument("--compare-to", default=None)
     parser.add_argument("--top-rows", type=int, default=3)
     parser.add_argument("--verified-outliers", default=str(DEFAULT_VERIFIED_OUTLIERS_PATH))
     parser.add_argument("--fail-on-expectation-failure", action="store_true")
@@ -166,6 +171,10 @@ def resolve_path(path_text: str) -> Path:
     if path.is_absolute():
         return path
     return ROOT / path
+
+
+def display_path(path: Path) -> str:
+    return str(path.relative_to(ROOT) if path.is_relative_to(ROOT) else path)
 
 
 def load_corpus(path: Path) -> tuple[int | None, list[dict[str, Any]]]:
@@ -215,6 +224,13 @@ def load_verified_outliers(path: Path) -> list[dict[str, Any]]:
     return entries
 
 
+def read_yaml_or_json(path: Path) -> Any:
+    raw = path.read_text()
+    if yaml is not None:
+        return yaml.safe_load(raw)
+    return json.loads(raw)
+
+
 def selected_case_ids(values: list[str]) -> set[str]:
     ids: set[str] = set()
     for value in values:
@@ -225,14 +241,112 @@ def selected_case_ids(values: list[str]) -> set[str]:
     return ids
 
 
+def resolve_slice_path(value: str) -> Path:
+    raw_path = Path(value)
+    if raw_path.is_absolute() or raw_path.parent != Path(".") or raw_path.suffix:
+        path = raw_path if raw_path.is_absolute() else ROOT / raw_path
+    else:
+        path = DEFAULT_SLICE_DIR / f"{value}.yaml"
+    if not path.exists():
+        raise ValueError(f"Slice file not found for {value!r}: {display_path(path)}")
+    return path
+
+
+def load_slice_case_ids(value: str) -> list[str]:
+    path = resolve_slice_path(value)
+    data = read_yaml_or_json(path)
+    if isinstance(data, dict):
+        raw_case_ids = data.get("case_ids")
+    elif isinstance(data, list):
+        raw_case_ids = data
+    else:
+        raise ValueError(f"Slice file must be a mapping or list: {display_path(path)}")
+    if not isinstance(raw_case_ids, list):
+        raise ValueError(f"Slice file must contain a case_ids list: {display_path(path)}")
+
+    case_ids: list[str] = []
+    for index, raw_case_id in enumerate(raw_case_ids, start=1):
+        case_id = str(raw_case_id).strip()
+        if not case_id:
+            raise ValueError(f"Slice {display_path(path)} has blank case id at index {index}")
+        case_ids.append(case_id)
+    return case_ids
+
+
+def read_jsonl_rows(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for line_number, line in enumerate(path.read_text().splitlines(), start=1):
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if not isinstance(row, dict):
+            raise ValueError(f"JSONL row {line_number} must be a mapping: {display_path(path)}")
+        rows.append(row)
+    return rows
+
+
+def expectation_failed(row: dict[str, Any]) -> bool:
+    expectation_results = row.get("expectation_results") or {}
+    if not isinstance(expectation_results, dict):
+        return False
+    status = str(expectation_results.get("status") or "").casefold()
+    if status in {"fail", "failed"}:
+        return True
+    fail_count = expectation_results.get("fail_count")
+    if isinstance(fail_count, int | float) and fail_count > 0:
+        return True
+    return any(
+        str(check.get("status") or "").casefold() in {"fail", "failed"}
+        for check in expectation_results.get("checks") or []
+        if isinstance(check, dict)
+    )
+
+
+def failed_case_ids_from_rows(rows: list[dict[str, Any]]) -> list[str]:
+    return [str(row.get("id")) for row in rows if row.get("id") and expectation_failed(row)]
+
+
+def load_failed_case_ids(path: Path) -> list[str]:
+    if not path.exists():
+        raise ValueError(f"Failed-from path does not exist: {display_path(path)}")
+    if path.suffix == ".jsonl":
+        return failed_case_ids_from_rows(read_jsonl_rows(path))
+
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict):
+        raise ValueError(f"Failed-from JSON must be a mapping: {display_path(path)}")
+    raw_case_ids = data.get("failed_case_ids")
+    if not isinstance(raw_case_ids, list):
+        raise ValueError(
+            f"Failed-from summary must contain failed_case_ids list: {display_path(path)}"
+        )
+    return [str(case_id).strip() for case_id in raw_case_ids if str(case_id).strip()]
+
+
+def collect_selected_case_ids(
+    *,
+    case_values: list[str],
+    slice_values: list[str],
+    failed_from_values: list[str],
+) -> tuple[set[str], bool]:
+    case_ids = selected_case_ids(case_values)
+    for slice_value in slice_values:
+        case_ids.update(load_slice_case_ids(slice_value))
+    for failed_from_value in failed_from_values:
+        case_ids.update(load_failed_case_ids(resolve_path(failed_from_value)))
+    explicit_selection = bool(case_values or slice_values or failed_from_values)
+    return case_ids, explicit_selection
+
+
 def filter_cases(
     cases: list[dict[str, Any]],
     *,
     case_ids: set[str],
     limit: int | None,
+    explicit_selection: bool = False,
 ) -> list[dict[str, Any]]:
     filtered = cases
-    if case_ids:
+    if explicit_selection:
         known = {str(case["id"]) for case in cases}
         unknown = sorted(case_ids - known)
         if unknown:
@@ -1254,6 +1368,18 @@ def run_case(
     )
 
 
+def run_case_with_timing(
+    case: dict[str, Any],
+    *,
+    top_rows: int,
+    verified_outliers: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    started = time.monotonic()
+    row = run_case(case, top_rows=top_rows, verified_outliers=verified_outliers)
+    row["duration_seconds"] = round(time.monotonic() - started, 6)
+    return row
+
+
 def dump_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(json_ready(data), ensure_ascii=False, indent=2) + "\n")
 
@@ -1262,6 +1388,183 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open("w") as f:
         for row in rows:
             f.write(json.dumps(json_ready(row), ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def build_slowest_cases(rows: list[dict[str, Any]], *, limit: int = 10) -> list[dict[str, Any]]:
+    timed_rows: list[dict[str, Any]] = []
+    for row in rows:
+        duration = row.get("duration_seconds")
+        if not isinstance(duration, int | float):
+            continue
+        timed_rows.append(
+            {
+                "id": row.get("id"),
+                "query": row.get("query"),
+                "duration_seconds": round(float(duration), 6),
+                "result_status": row.get("result_status"),
+                "route": row.get("route"),
+            }
+        )
+    timed_rows.sort(key=lambda row: float(row["duration_seconds"]), reverse=True)
+    return timed_rows[:limit]
+
+
+def count_flag_ids(rows: list[dict[str, Any]], flag_key: str) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for row in rows:
+        for flag in row.get(flag_key) or []:
+            if isinstance(flag, dict):
+                counts[str(flag.get("id"))] += 1
+    return dict(sorted(counts.items()))
+
+
+def result_status_counts_from_rows(rows: list[dict[str, Any]]) -> dict[str, int]:
+    return dict(sorted(Counter(str(row.get("result_status")) for row in rows).items()))
+
+
+def count_delta(current: dict[str, int], previous: dict[str, int]) -> dict[str, int]:
+    delta = {
+        key: int(current.get(key, 0)) - int(previous.get(key, 0))
+        for key in sorted(set(current) | set(previous))
+    }
+    return {key: value for key, value in delta.items() if value}
+
+
+def load_comparison_reference(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        raise ValueError(f"Compare-to path does not exist: {display_path(path)}")
+    if path.suffix == ".jsonl":
+        rows = read_jsonl_rows(path)
+        return {
+            "source_path": display_path(path),
+            "source_type": "report_jsonl",
+            "detail_level": "per_case",
+            "case_count": len(rows),
+            "failed_case_ids": failed_case_ids_from_rows(rows),
+            "result_status_counts": result_status_counts_from_rows(rows),
+            "suspicious_flag_counts": count_flag_ids(rows, "suspicious_flags"),
+            "verified_outlier_counts": count_flag_ids(rows, "verified_outliers"),
+            "rows_by_id": {str(row.get("id")): row for row in rows if row.get("id")},
+        }
+
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict):
+        raise ValueError(f"Compare-to summary must be a mapping: {display_path(path)}")
+    return {
+        "source_path": display_path(path),
+        "source_type": "summary_json",
+        "detail_level": "summary_only",
+        "case_count": int(data.get("case_count") or 0),
+        "failed_case_ids": [str(case_id) for case_id in data.get("failed_case_ids") or []],
+        "result_status_counts": {
+            str(key): int(value) for key, value in (data.get("result_status_counts") or {}).items()
+        },
+        "suspicious_flag_counts": {
+            str(key): int(value)
+            for key, value in (data.get("suspicious_flag_counts") or {}).items()
+        },
+        "verified_outlier_counts": {
+            str(key): int(value)
+            for key, value in (data.get("verified_outlier_counts") or {}).items()
+        },
+        "rows_by_id": {},
+    }
+
+
+def build_route_status_drift(
+    rows: list[dict[str, Any]],
+    previous_rows_by_id: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    drift: list[dict[str, Any]] = []
+    for row in rows:
+        case_id = str(row.get("id"))
+        previous = previous_rows_by_id.get(case_id)
+        if not previous:
+            continue
+        previous_route = previous.get("route")
+        current_route = row.get("route")
+        previous_status = previous.get("result_status")
+        current_status = row.get("result_status")
+        if previous_route == current_route and previous_status == current_status:
+            continue
+        drift.append(
+            {
+                "id": case_id,
+                "previous_route": previous_route,
+                "current_route": current_route,
+                "previous_result_status": previous_status,
+                "current_result_status": current_status,
+            }
+        )
+    return drift
+
+
+def build_run_comparison(rows: list[dict[str, Any]], compare_to_path: Path) -> dict[str, Any]:
+    reference = load_comparison_reference(compare_to_path)
+    current_failed_case_ids = failed_case_ids_from_rows(rows)
+    current_failed = set(current_failed_case_ids)
+    previous_failed = set(reference["failed_case_ids"])
+    current_case_ids = [str(row.get("id")) for row in rows if row.get("id")]
+    current_case_id_set = set(current_case_ids)
+    previous_rows_by_id = reference["rows_by_id"]
+
+    current_result_counts = result_status_counts_from_rows(rows)
+    current_suspicious_counts = count_flag_ids(rows, "suspicious_flags")
+    current_verified_counts = count_flag_ids(rows, "verified_outliers")
+    suspicious_flag_counts_delta = count_delta(
+        current_suspicious_counts,
+        reference["suspicious_flag_counts"],
+    )
+    verified_outlier_counts_delta = count_delta(
+        current_verified_counts,
+        reference["verified_outlier_counts"],
+    )
+    route_status_drift = build_route_status_drift(rows, previous_rows_by_id)
+
+    notes: list[str] = []
+    if reference["detail_level"] == "summary_only":
+        notes.append(
+            "Comparison source is summary-only; route/status drift and overlapping-case "
+            "presence are unavailable."
+        )
+    if len(rows) != reference["case_count"]:
+        notes.append(
+            "Case count differs; count deltas compare this run selection against the "
+            "reference source."
+        )
+
+    return {
+        "source_path": reference["source_path"],
+        "source_type": reference["source_type"],
+        "detail_level": reference["detail_level"],
+        "current_case_count": len(rows),
+        "previous_case_count": reference["case_count"],
+        "case_count_delta": len(rows) - reference["case_count"],
+        "current_failed_case_count": len(current_failed),
+        "previous_failed_case_count": len(previous_failed),
+        "failed_case_delta": len(current_failed) - len(previous_failed),
+        "newly_failing_case_ids": [
+            case_id for case_id in current_failed_case_ids if case_id not in previous_failed
+        ],
+        "newly_passing_case_ids": [
+            case_id
+            for case_id in current_case_ids
+            if case_id in previous_failed and case_id not in current_failed
+        ],
+        "previous_failed_not_rerun_case_ids": sorted(previous_failed - current_case_id_set),
+        "result_status_count_delta": count_delta(
+            current_result_counts,
+            reference["result_status_counts"],
+        ),
+        "suspicious_flag_count_delta": sum(current_suspicious_counts.values())
+        - sum(reference["suspicious_flag_counts"].values()),
+        "suspicious_flag_counts_delta": suspicious_flag_counts_delta,
+        "verified_outlier_count_delta": sum(current_verified_counts.values())
+        - sum(reference["verified_outlier_counts"].values()),
+        "verified_outlier_counts_delta": verified_outlier_counts_delta,
+        "route_status_drift": route_status_drift,
+        "notes": notes,
+    }
 
 
 def summarize_rows(
@@ -1323,14 +1626,11 @@ def summarize_rows(
         for check in expectation_results.get("checks", []):
             expectation_check_counts[str(check.get("status"))] += 1
 
-    corpus_display = (
-        corpus_path.relative_to(ROOT) if corpus_path.is_relative_to(ROOT) else corpus_path
-    )
     return {
         "run_id": run_id,
         "started_at": started_at,
         "completed_at": completed_at,
-        "corpus_path": str(corpus_display),
+        "corpus_path": display_path(corpus_path),
         "case_count": len(rows),
         "result_status_counts": dict(sorted(status_counts.items())),
         "category_counts": dict(sorted(category_counts.items())),
@@ -1352,10 +1652,8 @@ def summarize_rows(
         "expectation_case_counts": dict(sorted(expectation_case_counts.items())),
         "expectation_check_counts": dict(sorted(expectation_check_counts.items())),
         "failed_case_ids": failed_case_ids,
-        "output_file_paths": {
-            key: str(path.relative_to(ROOT) if path.is_relative_to(ROOT) else path)
-            for key, path in output_paths.items()
-        },
+        "slowest_cases": build_slowest_cases(rows),
+        "output_file_paths": {key: display_path(path) for key, path in output_paths.items()},
     }
 
 
@@ -1462,6 +1760,110 @@ def failed_checks(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return failures
 
 
+def append_slowest_cases_section(lines: list[str], summary: dict[str, Any]) -> None:
+    lines.extend(["", "## Slowest Cases", ""])
+    slowest_cases = summary.get("slowest_cases") or []
+    if not slowest_cases:
+        lines.append("_None._")
+        return
+    lines.extend(
+        [
+            "| Case | Seconds | Status | Route |",
+            "|---|---:|---|---|",
+        ]
+    )
+    for row in slowest_cases:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    md_escape(row.get("id")),
+                    md_escape(compact_value(row.get("duration_seconds"))),
+                    md_escape(row.get("result_status")),
+                    md_escape(row.get("route")),
+                ]
+            )
+            + " |"
+        )
+
+
+def append_comparison_section(lines: list[str], summary: dict[str, Any]) -> None:
+    comparison = summary.get("comparison")
+    if not isinstance(comparison, dict):
+        return
+
+    lines.extend(
+        [
+            "",
+            "## Comparison",
+            "",
+            f"- Source: {md_code(comparison.get('source_path'))}",
+            f"- Source type: {md_code(comparison.get('source_type'))}",
+            f"- Detail level: {md_code(comparison.get('detail_level'))}",
+            f"- Previous cases: {md_code(comparison.get('previous_case_count'))}",
+            f"- Current cases: {md_code(comparison.get('current_case_count'))}",
+            f"- Case count delta: {md_code(comparison.get('case_count_delta'))}",
+            f"- Failed case delta: {md_code(comparison.get('failed_case_delta'))}",
+            f"- Newly failing cases: {md_code(comparison.get('newly_failing_case_ids'))}",
+            f"- Newly passing cases: {md_code(comparison.get('newly_passing_case_ids'))}",
+            (
+                "- Previous failed cases not rerun: "
+                f"{md_code(comparison.get('previous_failed_not_rerun_case_ids'))}"
+            ),
+            f"- Result status count delta: {md_code(comparison.get('result_status_count_delta'))}",
+            (
+                "- Suspicious flag count delta: "
+                f"{md_code(comparison.get('suspicious_flag_count_delta'))}"
+            ),
+            (
+                "- Suspicious flag counts delta: "
+                f"{md_code(comparison.get('suspicious_flag_counts_delta'))}"
+            ),
+            (
+                "- Verified outlier count delta: "
+                f"{md_code(comparison.get('verified_outlier_count_delta'))}"
+            ),
+            (
+                "- Verified outlier counts delta: "
+                f"{md_code(comparison.get('verified_outlier_counts_delta'))}"
+            ),
+        ]
+    )
+    notes = comparison.get("notes") or []
+    if notes:
+        lines.extend(["", "Notes:"])
+        for note in notes:
+            lines.append(f"- {md_escape(note)}")
+
+    drift = comparison.get("route_status_drift") or []
+    lines.extend(["", "Route/status drift:"])
+    if drift:
+        lines.extend(
+            [
+                "",
+                "| Case | Previous route | Current route | Previous status | Current status |",
+                "|---|---|---|---|---|",
+            ]
+        )
+        for row in drift:
+            lines.append(
+                "| "
+                + " | ".join(
+                    md_escape(row.get(key))
+                    for key in (
+                        "id",
+                        "previous_route",
+                        "current_route",
+                        "previous_result_status",
+                        "current_result_status",
+                    )
+                )
+                + " |"
+            )
+    else:
+        lines.append("_None._")
+
+
 def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, Any]) -> None:
     lines: list[str] = [
         "# Raw Query Answer QA Report",
@@ -1493,10 +1895,11 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         f"- Expectation cases: {md_code(summary['expectation_case_counts'])}",
         f"- Expectation checks: {md_code(summary['expectation_check_counts'])}",
         f"- Failed case IDs: {md_code(summary['failed_case_ids'])}",
-        "",
-        "## Suspicious / Review Flags",
-        "",
     ]
+
+    append_slowest_cases_section(lines, summary)
+    append_comparison_section(lines, summary)
+    lines.extend(["", "## Suspicious / Review Flags", ""])
 
     flagged_rows = [row for row in rows if row.get("suspicious_flags")]
     if flagged_rows:
@@ -1728,11 +2131,21 @@ def main() -> int:
     version, cases = load_corpus(corpus_path)
     del version
     verified_outliers = load_verified_outliers(resolve_path(args.verified_outliers))
-    selected = filter_cases(cases, case_ids=selected_case_ids(args.case), limit=args.limit)
+    selected_ids, explicit_selection = collect_selected_case_ids(
+        case_values=args.case,
+        slice_values=args.slice,
+        failed_from_values=args.failed_from,
+    )
+    selected = filter_cases(
+        cases,
+        case_ids=selected_ids,
+        limit=args.limit,
+        explicit_selection=explicit_selection,
+    )
 
     started_at = datetime.now(UTC).isoformat()
     rows = [
-        run_case(case, top_rows=args.top_rows, verified_outliers=verified_outliers)
+        run_case_with_timing(case, top_rows=args.top_rows, verified_outliers=verified_outliers)
         for case in selected
     ]
     completed_at = datetime.now(UTC).isoformat()
@@ -1751,6 +2164,8 @@ def main() -> int:
         corpus_path=corpus_path,
         output_paths=output_paths,
     )
+    if args.compare_to:
+        summary["comparison"] = build_run_comparison(rows, resolve_path(args.compare_to))
 
     write_jsonl(report_jsonl_path, rows)
     dump_json(summary_path, summary)

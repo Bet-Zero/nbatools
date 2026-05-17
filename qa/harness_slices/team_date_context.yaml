@@ -1,0 +1,12 @@
+name: team_date_context
+description: Team record cases with road, date, month, season, and recent context.
+case_ids:
+  - lakers_how_did_road_last_season_wave5
+  - celtics_road_record_since_jan_1_wave5
+  - lakers_road_record_last_season
+  - knicks_road_record
+  - thunder_since_all_star_record
+  - warriors_march_record
+  - knicks_record_in_march_wave5
+  - specific_date_jan_1
+  - best_offensive_teams_since_january

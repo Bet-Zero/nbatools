@@ -1,0 +1,15 @@
+name: playoff_phrasing
+description: Playoff history, matchup, Finals, and round-record phrasing cases.
+case_ids:
+  - best_second_round_record_since_2010_wave5
+  - lakers_celtics_playoff_matchup_history_wave5
+  - heat_knicks_playoff_series_record_wave4
+  - heat_knicks_playoff_history_no_vs_wave5
+  - lakers_celtics_playoff_history
+  - lakers_celtics_playoff_series_history_wave5
+  - best_second_round_record
+  - best_finals_record_since_1980
+  - most_finals_appearances_since_1980
+  - bulls_finals_record_wave4
+  - warriors_finals_record_since_2015_wave4
+  - celtics_conference_finals_record_wave4

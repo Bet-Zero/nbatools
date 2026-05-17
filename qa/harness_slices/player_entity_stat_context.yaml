@@ -1,0 +1,12 @@
+name: player_entity_stat_context
+description: Player entity, stat alias, count/finder, and recent-context cases.
+case_ids:
+  - jokic_possessive_triple_double_record_wave5
+  - curry_last_20_from_three_wave5
+  - record_when_jokic_triple_double
+  - jokic_triple_double_count
+  - curry_5_threes_finder
+  - curry_5_threes_count
+  - most_threes_single_game
+  - curry_home_away_last_20_split_wave4
+  - jokic_assists_since_all_star_wave4

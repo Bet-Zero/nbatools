@@ -1701,6 +1701,95 @@ Next options after the checklist:
 4. Harness/tooling efficiency improvements when future corpus or fix waves need
    faster targeted iteration.
 
+## Harness Efficiency Wave 1 Status
+
+Raw Query Answer QA iteration now supports targeted saved slices, prior-failure
+reruns, comparison metadata, and per-case timing. This is harness/tooling only:
+production query behavior, frontend rendering, backend answer behavior, result
+contracts, and existing corpus expectations are unchanged.
+
+New CLI options:
+
+- `--slice <name-or-path>`: selects case IDs from a saved slice. Slice names
+  resolve from `qa/harness_slices/<name>.yaml`; direct YAML paths are also
+  accepted.
+- `--failed-from <summary.json-or-report.jsonl>`: reruns failed expectation
+  cases from a previous harness run. `summary.json` uses `failed_case_ids`;
+  `report.jsonl` selects rows whose `expectation_results` failed.
+- `--compare-to <summary.json-or-report.jsonl>`: writes non-gating comparison
+  metadata to `summary.json` and adds a concise comparison section to
+  `report.md`.
+
+Selection behavior:
+
+- `--case`, `--slice`, and `--failed-from` compose as a union.
+- Selected IDs are deduplicated and executed in corpus order.
+- Unknown case IDs fail loudly.
+- `--limit` applies after selection.
+- If no selection option is passed, the full corpus runs as before.
+- If `--failed-from` finds zero failures and no other selected IDs, the run
+  writes a zero-case report instead of falling back to the full corpus. This
+  keeps explicit failure-rerun requests from doing surprising broad work.
+
+Saved slice schema:
+
+```yaml
+name: product_boundaries
+description: Product-boundary cases for explicit unsupported behavior.
+case_ids:
+  - personal_foul_leaders_wave4
+  - players_personal_fouls_wave5
+  - warriors_net_rating_single_team_wave5
+```
+
+Saved slices:
+
+- `qa/harness_slices/defensive_aliases.yaml`
+- `qa/harness_slices/playoff_phrasing.yaml`
+- `qa/harness_slices/team_date_context.yaml`
+- `qa/harness_slices/player_entity_stat_context.yaml`
+- `qa/harness_slices/product_boundaries.yaml`
+
+Comparison output:
+
+- `summary.json` includes `comparison` when `--compare-to` is provided.
+- `report.md` includes source metadata, newly failing/passing cases, failed
+  case delta, count deltas, route/status drift when comparing to `report.jsonl`,
+  and notes when the source is summary-only or the case counts differ.
+- Comparison never changes the harness exit status in this wave.
+
+Timing output:
+
+- Each `report.jsonl` row includes `duration_seconds`.
+- `summary.json` includes `slowest_cases`.
+- `report.md` includes a top-10 slowest-case table, or all cases when fewer
+  than 10 ran.
+
+Recommended tiered validation flow:
+
+1. Run target cases while iterating on a localized fix.
+2. Run the closest adjacent saved slice before broadening.
+3. If a full or adjacent run fails, rerun only prior failures with
+   `--failed-from`.
+4. Compare against the latest clean run with `--compare-to` before writing a
+   return package.
+5. Run the full 243-case corpus before closing a fix, expansion, or release
+   validation wave.
+
+Example commands:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --case record_when_jokic_triple_double --case points_per_game_leader
+
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice product_boundaries
+
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --failed-from outputs/raw_query_answer_qa/20260516T112341Z/summary.json
+
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --compare-to outputs/raw_query_answer_qa/20260516T221654Z/report.jsonl --case record_when_jokic_triple_double
+
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+```
+
 ## Open Questions
 
 - Should future frontend-copy waves expand from the hand-curated 59-case list
