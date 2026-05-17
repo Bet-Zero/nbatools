@@ -21,12 +21,23 @@
   filters are supported for trusted seasons `2024-25` and `2025-26`; missing
   coverage, geography, divisions, and single-team playoff-round phrasing remain
   guarded unsupported boundaries.
+- R2 preview blocker status: resolved. R2 now contains
+  `raw/teams/team_conference_membership.csv`; dry-run, sync, and `head_object`
+  evidence passed; the latest preview opponent-conference smoke passed on
+  `https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app`.
+- Latest deployment smoke:
+  `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`;
+  `ok: true`, `case_count: 7`, `failure_count: 0`, and the
+  opponent-conference membership-data check returned 15 East opponents.
+- Latest `/visual-qa` preview status: loaded 15/15 cases with request errors 0.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
-  build/lint, parser smoke, diff-check validation, and preview manual QA. The
-  remaining notes are selected frontend-copy coverage, manual visual QA, guarded
-  unsupported boundaries, and existing frontend build/lint warnings.
+  build/lint, parser smoke, diff-check validation, preview manual QA, R2 data
+  availability, deployment smoke, and opponent-conference preview smoke. The
+  remaining notes are selected frontend-copy coverage, manual visual QA,
+  trusted-season limits for opponent-conference support, guarded unsupported
+  boundaries, and existing frontend build/lint warnings.
 
 ## 2. Backend Raw Query Answer QA
 
@@ -281,6 +292,9 @@ Remaining limitations:
 - Latest preview manual rerun:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
   status `PREVIEW_READY_WITH_NOTES`.
+- Latest preview request-health rerun:
+  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`;
+  `/visual-qa` loaded 15/15 cases with request errors 0.
 
 Remaining limitations:
 
@@ -314,6 +328,23 @@ Latest release-readiness checklist validation:
 - Team conference data validation:
   `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed,
   15 tests.
+- R2 data availability:
+  `raw/teams/team_conference_membership.csv` was included in dry-run, uploaded
+  during sync, and verified by `head_object` with `ContentLength=4999`,
+  `LastModified=2026-05-17T09:03:29+00:00`, and
+  `nbatools-md5=f9cc9a60c8f659651723a55640966d73`.
+- Deployment smoke:
+  `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`;
+  `ok: true`, `case_count: 7`, `failure_count: 0`, and
+  `query_celtics_record_against_east_current` returned `team_record` / `ok`
+  with `opponent_conference=East` and 15 resolved opponents.
+- Opponent-conference preview smoke:
+  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`;
+  Celtics vs East, Lakers vs West, Lakers road vs West last season, and Knicks
+  vs Eastern Conference teams since January 1 passed; east-coast geography and
+  Conference Finals guardrails passed.
+- Visual-QA request health:
+  latest preview `/visual-qa` loaded 15/15 cases with request errors 0.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check: `git diff --check` passed.
@@ -339,11 +370,12 @@ Latest release-readiness checklist validation:
 
 Recommended order:
 
-1. Option B - Promote one unsupported family into real support.
+1. Option G - Release candidate handoff.
 2. Option E - Visual QA automation.
-3. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
-4. Option D - Harness tag/category filters.
-5. Option F - Broader release/CI artifact packaging.
+3. Option F - Broader release/CI artifact packaging.
+4. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
+5. Option B - Promote one unsupported family into real support.
+6. Option D - Harness tag/category filters.
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
@@ -400,3 +432,14 @@ Recommended order:
   visual QA evidence into repeatable release artifacts.
 - Use this when release readiness needs to be reproducible outside manual return
   packages.
+
+### Option G - Release candidate handoff
+
+- Current status: `RELEASE_CANDIDATE_WITH_NOTES` with preview status
+  `PREVIEW_READY_WITH_NOTES`.
+- Why: the previous R2 preview blocker is resolved, deployment smoke includes
+  the R2-sensitive opponent-conference membership-data check, and the latest
+  preview `/visual-qa` request-health check is clean.
+- Remaining handoff notes: selected frontend-copy coverage, manual visual QA,
+  opponent-conference support limited to trusted seasons `2024-25` and
+  `2025-26`, and unsupported divisions/geography/historical coverage.

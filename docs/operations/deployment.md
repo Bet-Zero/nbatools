@@ -68,6 +68,51 @@ The one-off manual upload/download test from the original setup checklist was
 intentionally skipped. The `pipeline sync-r2` command is the production path
 and is the meaningful verification.
 
+## Data Sync Before Preview Smoke
+
+Vercel preview/runtime functions use `DATA_SOURCE=r2` and do not include
+`data/**` in the function bundle. After adding or changing any data file that
+runtime queries need, run the R2 dry-run and sync before preview smoke:
+
+```bash
+.venv/bin/nbatools-cli pipeline sync-r2 --dry-run
+.venv/bin/nbatools-cli pipeline sync-r2
+```
+
+Treat missing required R2 data as a deploy blocker. A local file existing under
+`data/` is not enough for preview or production if the deployed runtime reads
+from R2.
+
+For opponent-conference support, the required object is:
+
+```text
+raw/teams/team_conference_membership.csv
+```
+
+Verify it exists in R2 with a read-only head-object check before running
+opponent-conference preview smoke:
+
+```bash
+.venv/bin/python - <<'PY'
+from nbatools.commands.pipeline.sync_r2 import create_r2_client, load_r2_config
+
+config = load_r2_config()
+response = create_r2_client(config).head_object(
+    Bucket=config.bucket_name,
+    Key="raw/teams/team_conference_membership.csv",
+)
+print(
+    response["ContentLength"],
+    response.get("LastModified"),
+    response.get("Metadata", {}).get("nbatools-md5"),
+)
+PY
+```
+
+Expected current evidence for the release candidate is
+`ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and
+`nbatools-md5=f9cc9a60c8f659651723a55640966d73`.
+
 ## Vercel Frontend Build
 
 Phase N2 deploys the React UI by running the frontend build during Vercel's
@@ -112,6 +157,10 @@ The JSON report records:
 Each case captures status, latency, selected deployment headers, a short body
 preview, and a compact payload summary so Phase N3 and the later custom-domain
 wrap-up can compare like-for-like evidence.
+
+If the opponent-conference smoke case returns `no_data`, lacks
+`metadata.opponent_team_abbrs`, or resolves fewer than 15 East teams, stop the
+deploy and verify the R2 object above before treating the preview as ready.
 
 ## Custom-Domain Closure Checklist
 

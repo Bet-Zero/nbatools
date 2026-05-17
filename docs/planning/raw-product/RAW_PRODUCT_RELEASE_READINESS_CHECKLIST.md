@@ -18,7 +18,13 @@
   expanded from 59 to 125 cases across Wave 1 and Wave 2.
 - Release posture: release-candidate ready with notes; the latest preview manual
   QA rerun passed `/`, `/review`, `/visual-qa`, the six-query smoke set, and the
-  five mobile blocker rechecks.
+  five mobile blocker rechecks. The later opponent-conference preview R2
+  blocker is also resolved: R2 now contains
+  `raw/teams/team_conference_membership.csv`, supported opponent-conference
+  preview smoke passed, deployment smoke includes the membership-data check,
+  and `/visual-qa` loaded 15/15 cases with request errors 0.
+- Latest refresh type: docs/release packaging only; no production code, parser,
+  frontend rendering, test, or corpus changes.
 
 Known limitations:
 
@@ -29,6 +35,9 @@ Known limitations:
 - Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
   horizontal-overflow blocker. The local wrapper fix was validated and the
   latest preview manual rerun is `PREVIEW_READY_WITH_NOTES`.
+- Deployed preview validation later found an opponent-conference `no_data`
+  blocker caused by missing R2 membership data. The R2 sync fix resolved this;
+  future missing required R2 files remain deploy blockers.
 - Unsupported product families are guarded and documented; opponent-conference
   team-record filters are now supported only inside the trusted current-era
   conference coverage boundary.
@@ -94,6 +103,7 @@ coverage, not full 246-case rendered-copy or visual layout coverage.
 | Fixed finding | mobile dense table clipping for top performance, comparison, and playoff matchup tables |
 | Fixed finding | filtered leaderboard hero context for guard and center examples |
 | Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport and the latest preview rerun passed the five mobile blocker cases |
+| Latest preview `/visual-qa` request health | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; loaded 15/15 cases with request errors 0 |
 | Accepted baseline | no-result card baseline |
 | Automation limitation | no Playwright or screenshot diffing in this wave |
 
@@ -113,12 +123,17 @@ limitation is that visual QA is manual, not screenshot-diff automation.
 | Vercel rewrite | `/visual-qa` rewrites to `/api/review` |
 | Local production API parity | validated in the deploy-parity wave |
 | Preview validation | `PREVIEW_READY_WITH_NOTES`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker rechecks passed |
+| R2 opponent-conference data | `raw/teams/team_conference_membership.csv` exists in R2; `head_object` passed with `ContentLength=4999` and `LastModified=2026-05-17T09:03:29+00:00` |
+| Latest deployment smoke | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and opponent-conference membership-data case passed |
+| Latest opponent-conference preview smoke | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported checks passed, two guardrails passed, `/visual-qa` request errors 0 |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
-Rationale: route parity remains implemented. The preview blocker was fixed and
-the latest deployed preview rerun passed the route, smoke, and mobile blocker
-checks with non-blocking notes.
+Rationale: route parity remains implemented. The mobile preview blocker was
+fixed, and the later R2 data blocker for opponent-conference support was
+resolved by syncing the required membership CSV. The latest deployed preview
+checks passed the route, smoke, deployment-smoke, `/visual-qa`, and
+opponent-conference data-path checks with non-blocking notes.
 
 ## 6. Unsupported Boundaries
 
@@ -361,6 +376,48 @@ Result:
 752 passed
 ```
 
+### Opponent-conference R2 sync and preview smoke
+
+R2 sync evidence:
+
+```text
+.venv/bin/nbatools-cli pipeline sync-r2 --dry-run
+[661/663] would-upload raw/teams/team_conference_membership.csv (4999 bytes)
+
+.venv/bin/nbatools-cli pipeline sync-r2
+[661/663] upload raw/teams/team_conference_membership.csv (4999 bytes)
+
+head_object raw/teams/team_conference_membership.csv
+ContentLength=4999
+LastModified=2026-05-17T09:03:29+00:00
+nbatools-md5=f9cc9a60c8f659651723a55640966d73
+```
+
+Latest preview smoke:
+
+```text
+Preview URL: https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app
+Celtics record against the East this season: ok, 52 games, 36-16
+Lakers record against the West: ok, 52 games, 33-19
+Lakers road record against West last season: ok, 26 games, 14-12
+Knicks record against Eastern Conference teams since January 1: ok, 26 games, 17-9
+Celtics record against east coast teams: unsupported/no-result guardrail pass
+Celtics conference finals record: playoff-round guardrail pass
+/visual-qa: loaded 15/15, request errors 0
+```
+
+Deployment smoke:
+
+```text
+outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json
+ok: true
+case_count: 7
+failure_count: 0
+query_celtics_record_against_east_current: team_record / ok
+opponent_conference: East
+opponent_team_abbrs_count: 15
+```
+
 ### Static diff check
 
 Command:
@@ -377,7 +434,7 @@ passed with no output
 
 ## 10. Preview Manual Validation
 
-Latest preview rerun status: `PREVIEW_READY_WITH_NOTES`.
+Baseline preview rerun status: `PREVIEW_READY_WITH_NOTES`.
 
 Evidence:
 
@@ -389,6 +446,22 @@ Evidence:
 - Smoke queries checked: 6
 - Mobile blocker cases checked: 5
 - Blocking issues: none
+
+Latest opponent-conference/R2 preview smoke status: `PASS`.
+
+Evidence:
+
+- R2 sync fix return package:
+  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`
+- Preview URL checked:
+  `https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app`
+- Supported opponent-conference checks: 4 passed
+- Guardrail checks: 2 passed
+- `/visual-qa`: loaded 15/15 cases with request errors 0
+- Deployment smoke:
+  `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`
+  with `ok: true`, `failure_count: 0`, and 15 resolved East opponents for the
+  R2-sensitive team-record check
 
 For future previews, validate these routes:
 
@@ -423,6 +496,8 @@ Final readiness status: `RELEASE_CANDIDATE_WITH_NOTES`.
 
 Backend, frontend-copy, docs, and data-quality findings remain clean for the
 current boundary. The previous mobile `/visual-qa` overflow blocker was fixed
-and the latest preview manual QA rerun passed with notes. The remaining release
-notes are selected frontend-copy coverage, manual visual QA, guarded unsupported
-families, and the existing frontend build/lint warnings.
+and the later opponent-conference preview R2 blocker is resolved. The latest
+preview and deployment-smoke evidence passed with notes. The remaining release
+notes are selected frontend-copy coverage, manual visual QA, trusted-season
+limits for opponent-conference support, guarded unsupported families, and the
+existing frontend build/lint warnings.

@@ -17,7 +17,12 @@
 This boundary is release-candidate ready for the current product surface. The
 backend raw QA corpus is clean, selected frontend-copy QA is clean, the accepted
 15-case visual baseline has a clean preview rerun, and the manual preview smoke
-set passed with notes.
+set passed with notes. The later opponent-conference preview blocker is now
+resolved: R2 contains `raw/teams/team_conference_membership.csv`, the latest
+opponent-conference preview smoke passed on
+`https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app`, deployment
+smoke includes the R2-sensitive membership-data check, and `/visual-qa` loaded
+15/15 cases with request errors 0.
 
 Human sign-off still needed:
 
@@ -34,8 +39,11 @@ Human sign-off still needed:
 |---|---|---|
 | Backend Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. |
 | Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
-| Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`; 15-case desktop/mobile manual baseline accepted; no screenshot diff automation. |
+| Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`; 15-case desktop/mobile manual baseline accepted; latest preview `/visual-qa` loaded 15/15 with request errors 0; no screenshot diff automation. |
 | Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
+| Opponent-conference preview smoke | `PASS` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference queries passed, geography/playoff-round guardrails passed, and `/visual-qa` request errors were 0. |
+| R2 data availability | `PASS` | R2 dry-run included `raw/teams/team_conference_membership.csv`; sync uploaded it; `head_object` returned `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
+| Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and `query_celtics_record_against_east_current` returned `team_record` / `ok` with 15 East opponents. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -204,6 +212,8 @@ Latest release artifacts:
   `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
 - Backend harness plan:
   `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
+- Latest deployment smoke:
+  `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`
 - Harness slices:
   - `qa/harness_slices/defensive_aliases.yaml`
   - `qa/harness_slices/playoff_phrasing.yaml`
@@ -217,8 +227,11 @@ Supporting return packages:
 - `return_packages/raw-product/FRONTEND_COPY_QA_EXPANSION_WAVE_1_RETURN_PACKAGE.md`
 - `return_packages/raw-product/FRONTEND_COPY_QA_EXPANSION_WAVE_2_RETURN_PACKAGE.md`
 - `return_packages/raw-product/OPPONENT_CONFERENCE_PROMOTION_RETURN_PACKAGE.md`
+- `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_SMOKE_RERUN_RETURN_PACKAGE.md`
+- `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`
 - `return_packages/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST_RETURN_PACKAGE.md`
 - `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_RELEASE_PACKAGE_REFRESH_AFTER_R2_SYNC_FIX_RETURN_PACKAGE.md`
 
 ## 6. Known Limitations
 
@@ -230,6 +243,9 @@ Supporting return packages:
   checks, not automated Playwright screenshot diffing.
 - Preview manual QA is `PREVIEW_READY_WITH_NOTES`; notes include the manual
   nature of visual QA and selected frontend-copy coverage.
+- The previous opponent-conference preview `BLOCKED` status is resolved by the
+  R2 sync fix; missing R2 data for required release files remains a deploy
+  blocker for future previews.
 - Unsupported features are guarded and documented; opponent-conference
   `team_record` filters are execution-backed only for trusted seasons
   `2024-25` and `2025-26`.
@@ -252,6 +268,14 @@ Before deploying this boundary again:
 - Run frontend build and lint:
   `cd frontend && npm run build`
   `cd frontend && npm run lint`
+- If any new or changed data file is required at runtime, run the R2 dry-run and
+  sync before preview smoke:
+  `.venv/bin/nbatools-cli pipeline sync-r2 --dry-run`
+  `.venv/bin/nbatools-cli pipeline sync-r2`
+- Verify `raw/teams/team_conference_membership.csv` exists in R2 before any
+  opponent-conference preview smoke or release handoff.
+- Run deployment smoke against the target URL and confirm the
+  opponent-conference membership-data case passes.
 - Open `/`, `/review`, and `/visual-qa` on the target preview or production URL.
 - Run the six smoke queries:
   - `Who leads the NBA in points per game this season?`
@@ -260,6 +284,13 @@ Before deploying this boundary again:
   - `Lakers Celtics playoff matchup history`
   - `Warriors net rating this season`
   - `players with most personal fouls this season`
+- Run the opponent-conference preview smoke set:
+  - `Celtics record against the East this season`
+  - `Lakers record against the West`
+  - `Lakers road record against West last season`
+  - `Knicks record against Eastern Conference teams since January 1`
+  - `Celtics record against east coast teams`
+  - `Celtics conference finals record`
 - Run a mobile visual QA five-case spot check:
   - `biggest_scoring_games`
   - `lebron_durant_comparison_wave4`
@@ -271,11 +302,11 @@ Before deploying this boundary again:
 
 ## 8. Next Roadmap Options
 
-Recommended order after this release package:
+Recommended order after this release package refresh:
 
-1. Preview smoke rerun for opponent-conference support.
-   - Add `Celtics record against the East this season` and
-     `Lakers record against the West` to the next targeted preview smoke pass.
+1. Release candidate handoff or CI/release artifact packaging.
+   - The R2 blocker is resolved and the current preview/deployment smoke
+     evidence is clean with notes.
 2. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.

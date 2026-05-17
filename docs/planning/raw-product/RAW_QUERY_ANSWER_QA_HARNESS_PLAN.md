@@ -31,20 +31,31 @@ Current status:
   `return_packages/raw-product/OPPONENT_CONFERENCE_PROMOTION_RETURN_PACKAGE.md`;
   current-era East/West `team_record` filters are supported for trusted seasons
   `2024-25` and `2025-26`.
+- Latest opponent-conference R2 sync fix package:
+  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`;
+  R2 now contains `raw/teams/team_conference_membership.csv`, the preview
+  opponent-conference smoke passed, deployment smoke includes the
+  membership-data check, and `/visual-qa` loaded 15/15 with request errors 0.
 - Latest relevant validation: team conference data 15 passed, parser 751 passed,
   and query 752 passed.
 - Latest preview manual QA:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
   `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker
   cases passed with notes.
+- Latest deployment smoke:
+  `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`;
+  `ok: true`, `case_count: 7`, `failure_count: 0`, and 15 resolved East
+  opponents for the R2-sensitive team-record check.
 
 Recommended next roadmap options:
 
-1. Run a preview smoke rerun for opponent-conference support.
+1. Release candidate handoff.
 2. Add visual QA automation.
-3. Promote another unsupported family into real support.
+3. Add broader release/CI artifact packaging.
 4. Run frontend-copy Wave 3 only after a fresh gap analysis.
-5. Add harness tag/category filters or broader release/CI artifact packaging.
+5. Promote another unsupported family into real support after a contract
+   preflight.
+6. Add harness tag/category filters when iteration cost justifies it.
 
 ## Existing Infrastructure To Reuse
 
@@ -1472,15 +1483,17 @@ Current backend Raw QA checkpoint:
 
 Checkpoint recommendation:
 
-- First option: run a preview smoke rerun for the newly supported
-  opponent-conference record cases.
+- First option: release candidate handoff. The previous opponent-conference R2
+  preview blocker is resolved, deployment smoke includes the membership-data
+  check, and the latest `/visual-qa` request-health check is clean.
 - Second option: add visual QA automation for the accepted manual baseline.
-- Third option: promote another unsupported family into real support behind an
-  approved route/result/data contract.
+- Third option: package broader release/CI artifacts.
 - Fourth option: expand frontend-copy QA beyond the selected 125-case corpus
   only after a follow-up gap analysis identifies remaining high-risk rendered
   shapes.
-- Fifth option: improve harness efficiency with wave tags, slices,
+- Fifth option: promote another unsupported family into real support behind an
+  approved route/result/data contract.
+- Sixth option: improve harness efficiency with wave tags, slices,
   run-new-cases-only mode, saved adjacent groups, and validation command
   presets.
 
@@ -1775,16 +1788,23 @@ Validation command results:
 - Preview validation:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
   records `PREVIEW_READY_WITH_NOTES`.
+- R2 sync fix validation:
+  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`
+  records R2 dry-run/sync/head-object success for
+  `raw/teams/team_conference_membership.csv`, successful
+  opponent-conference preview smoke, deployment smoke with the
+  membership-data check, and `/visual-qa` loaded 15/15 with request errors 0.
 
 Next options after the checklist:
 
-1. Preview smoke rerun for opponent-conference support.
+1. Release candidate handoff.
 2. Visual QA automation preflight.
-3. Frontend-copy expansion wave 3 if a follow-up rendered-shape gap analysis
+3. Broader release/CI artifact packaging.
+4. Frontend-copy expansion wave 3 if a follow-up rendered-shape gap analysis
    identifies meaningful remaining coverage gaps.
-4. Unsupported-family promotion preflight after choosing a product boundary and
+5. Unsupported-family promotion preflight after choosing a product boundary and
    writing route/result/data contracts.
-5. Harness/tooling efficiency improvements when future corpus or fix waves need
+6. Harness/tooling efficiency improvements when future corpus or fix waves need
    faster targeted iteration.
 
 ## Harness Efficiency Wave 1 Status
