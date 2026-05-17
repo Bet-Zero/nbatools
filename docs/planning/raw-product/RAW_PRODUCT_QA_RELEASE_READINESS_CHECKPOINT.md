@@ -3,7 +3,8 @@
 ## 1. Executive summary
 
 - Backend raw QA status: clean for the current 243-case corpus.
-- Frontend-copy QA status: clean for the selected 59-case rendered-copy corpus.
+- Frontend-copy QA status: clean for the selected 100-case rendered-copy corpus
+  sourced from the latest clean 243-case backend run.
 - Visual QA status: 15-case manual baseline completed; targeted mobile/table and
   filtered-leaderboard hero fixes were verified locally.
 - Deploy parity status: `/visual-qa` now follows the same local and deployed SPA
@@ -211,16 +212,19 @@ They are not current product failures.
 
 ## 6. Frontend-copy QA status
 
-- Selected case count: 59.
+- Selected case count: 100.
 - Configured source backend run:
-  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`.
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`.
 - Latest clean run path:
-  `outputs/frontend_copy_qa/20260515T224620Z/frontend_copy_report.md`.
+  `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md`.
 - Latest release-checklist run path:
-  `outputs/frontend_copy_qa/20260516T230102Z/frontend_copy_report.md`.
-- Status: 59 rendered successfully, 0 render failures, 0 soft-check failures.
+  `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md`.
+- Status: 100 rendered successfully, 0 render failures, 0 missing backend
+  records, soft checks `pass: 304`, `fail: 0`, `not_checked: 0`.
 - Earlier semantic-copy clean run:
   `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.md`.
+- Gating behavior: `qa:frontend-copy` now fails on render failures, missing
+  backend records, soft-check failures, or unchecked soft checks.
 
 Fixed findings:
 
@@ -272,10 +276,11 @@ Latest release-readiness checklist validation:
   `outputs/raw_query_answer_qa/20260516T230058Z/report.md`; 243 cases;
   expectation cases `pass: 243`; failed case IDs none; suspicious flags 0.
 - Frontend-copy QA:
-  `outputs/frontend_copy_qa/20260516T230102Z/frontend_copy_report.md`; 59
+  `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md`; 100
   selected cases from configured source backend run
-  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`; render
-  failures 0; soft-check failures 0.
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`; rendered
+  successfully 100; render failures 0; missing backend records 0; soft checks
+  `304/0/0`.
 - Frontend build: passed; existing Vite large-chunk warning remains.
 - Frontend lint: passed with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
@@ -301,17 +306,18 @@ Latest release-readiness checklist validation:
 Recommended order:
 
 1. Release/preview manual QA on the next live preview URL.
-2. Option A - Frontend-copy corpus expansion.
+2. Option A - Frontend-copy corpus expansion wave 2 for streak/finder/count
+   shapes.
 3. Option B - Promote one unsupported family into real support.
 4. Option D - Harness/tooling efficiency improvements.
 
 ### Option A - Frontend-copy corpus expansion
 
 - Why: backend QA now has a clean 243-case corpus, while frontend-copy QA still
-  covers a selected 59-case rendered subset.
-- Scope: expand by high-risk families first: summary heroes, leaderboards,
-  unsupported/no-result cards, playoff history, comparisons, date-window
-  summaries, and record-when outputs.
+  covers a selected 100-case rendered subset.
+- Scope: expand the next selected set by remaining high-risk shapes: streaks,
+  rolling stretches, finder/count outputs, game summaries, record-by-decade,
+  and team split/on-off no-result surfaces.
 - When to choose: choose this when the next risk is user-facing interpretation
   and copy quality rather than backend route correctness.
 

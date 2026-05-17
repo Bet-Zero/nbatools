@@ -17,9 +17,9 @@ describe("frontend copy QA report harness", () => {
 
     expect(corpus.version).toBe(1);
     expect(corpus.source_backend_run).toBe(
-      "outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl",
+      "outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl",
     );
-    expect(corpus.cases.length).toBeGreaterThanOrEqual(40);
+    expect(corpus.cases.length).toBe(100);
     expect(corpus.cases[0]).toMatchObject({
       id: "celtics_record_playoff_teams",
       category: "team_record",
@@ -78,7 +78,12 @@ describe("frontend copy QA report harness", () => {
       const report = buildFrontendCopyReport();
       const paths = writeFrontendCopyReport(report);
 
-      expect(report.selected_case_count).toBeGreaterThanOrEqual(40);
+      expect(report.selected_case_count).toBe(100);
+      expect(report.rendered_successfully).toBe(100);
+      expect(report.render_failures).toBe(0);
+      expect(report.missing_backend_records).toBe(0);
+      expect(report.soft_check_summary.fail).toBe(0);
+      expect(report.soft_check_summary.not_checked).toBe(0);
       expect(fs.existsSync(paths.jsonl_path)).toBe(true);
       expect(fs.existsSync(paths.markdown_path)).toBe(true);
       expect(fs.existsSync(paths.summary_path)).toBe(true);

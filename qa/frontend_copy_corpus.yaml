@@ -1,5 +1,5 @@
 version: 1
-source_backend_run: outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl
+source_backend_run: outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl
 description: Frontend hero/copy QA Wave 1 selected review subset.
 cases:
   - id: celtics_record_playoff_teams
@@ -27,6 +27,21 @@ cases:
       - Away
       - 2024-25
 
+  - id: lakers_how_did_road_last_season_wave5
+    category: team_record
+    review_focus:
+      - hero_record
+      - search_fragment_phrasing
+      - season_context
+      - location_filter
+    expected_semantic_facts:
+      - Lakers
+      - 19-22
+      - 2024-25
+    expected_filter_chip_fragments:
+      - Away
+      - 2024-25
+
   - id: thunder_since_all_star_record
     category: team_record
     review_focus:
@@ -36,6 +51,54 @@ cases:
     expected_semantic_facts:
       - Thunder
       - All-Star
+
+  - id: celtics_road_record_since_jan_1_wave5
+    category: team_record
+    review_focus:
+      - hero_record
+      - date_filter
+      - location_filter
+    expected_semantic_facts:
+      - Celtics
+      - [Jan 1, Jan]
+      - road
+    expected_filter_chip_fragments:
+      - Away
+      - [Jan 1, Jan]
+
+  - id: knicks_record_in_march_wave5
+    category: team_record
+    review_focus:
+      - hero_record
+      - month_filter
+    expected_semantic_facts:
+      - Knicks
+      - March
+
+  - id: lakers_home_record_2024_25_wave5
+    category: team_record
+    review_focus:
+      - hero_record
+      - season_context
+      - location_filter
+    expected_semantic_facts:
+      - Lakers
+      - 2024-25
+      - home
+    expected_filter_chip_fragments:
+      - Home
+      - 2024-25
+
+  - id: warriors_last_10_record_wave5
+    category: team_record
+    review_focus:
+      - hero_record
+      - last_n_context
+    expected_semantic_facts:
+      - Warriors
+      - last 10
+    expected_filter_chip_fragments:
+      - Last 10
 
   - id: celtics_regular_season_record_vs_playoff_teams_wave4
     category: team_record
@@ -98,6 +161,50 @@ cases:
       - assists
       - All-Star
 
+  - id: curry_last_20_from_three_wave5
+    category: player_summary
+    review_focus:
+      - metric_label
+      - last_n_context
+      - table_columns
+    expected_semantic_facts:
+      - Stephen Curry
+      - [threes, 3PM, from three]
+      - last 20
+    expected_table_header_fragments:
+      - 3P
+
+  - id: sga_scoring_since_all_star_wave5
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - date_filter
+      - metric_label
+    expected_semantic_facts:
+      - Shai Gilgeous-Alexander
+      - All-Star
+      - [points, PTS]
+
+  - id: tatum_points_in_wins_wave5
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - wins_context
+      - metric_label
+    expected_semantic_facts:
+      - Jayson Tatum
+      - points
+      - wins
+
+  - id: malik_monk_off_bench_summary_wave4
+    category: player_summary
+    review_focus:
+      - hero_summary
+      - role_filter
+    expected_semantic_facts:
+      - Malik Monk
+      - [off the bench, bench]
+
   - id: record_when_jokic_triple_double
     category: record_when
     review_focus:
@@ -109,6 +216,17 @@ cases:
       - triple-double
       - record
 
+  - id: jokic_possessive_triple_double_record_wave5
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - possessive_phrasing
+      - special_event_filter
+    expected_semantic_facts:
+      - Nikola Jokic
+      - triple-double
+      - regular season
+
   - id: lakers_held_opponents_under_100_record
     category: record_when
     review_focus:
@@ -118,6 +236,32 @@ cases:
       - Lakers
       - under 100
       - record
+
+  - id: lakers_held_teams_under_100_wave5
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - defensive_threshold
+      - phrasing_variant
+    expected_semantic_facts:
+      - Lakers
+      - under 100
+      - record
+    expected_filter_chip_fragments:
+      - OPP PTS
+
+  - id: warriors_gave_up_under_100_wave5
+    category: record_when
+    review_focus:
+      - hero_record_when
+      - defensive_threshold
+      - phrasing_variant
+    expected_semantic_facts:
+      - Warriors
+      - [fewer than 100, under 100]
+      - record
+    expected_filter_chip_fragments:
+      - OPP PTS
 
   - id: knicks_allowed_under_110_record
     category: record_when
@@ -319,6 +463,100 @@ cases:
     expected_absent_fragments:
       - led the NBA
 
+  - id: forwards_efg_leaders_wave4
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - position_filter
+      - advanced_metric_label
+    expected_semantic_facts:
+      - led forwards
+      - forwards
+      - effective field-goal
+    expected_filter_chip_fragments:
+      - forwards
+    expected_table_header_fragments:
+      - eFG%
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: point_guard_assist_leaders_wave4
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - position_filter
+      - metric_label
+    expected_semantic_facts:
+      - [point guards, guards]
+      - [assists, APG]
+    expected_filter_chip_fragments:
+      - guards
+    expected_table_header_fragments:
+      - APG
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: centers_blocks_leaders_wave4
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - position_filter
+      - defensive_metric_label
+    expected_semantic_facts:
+      - led centers
+      - centers
+      - blocks
+    expected_filter_chip_fragments:
+      - centers
+    expected_table_header_fragments:
+      - BPG
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: which_player_assist_leaders_wave5
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - metric_label
+      - question_phrasing
+    expected_semantic_facts:
+      - assists
+    expected_table_header_fragments:
+      - APG
+
+  - id: who_had_highest_true_shooting_wave5
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - advanced_metric_label
+      - question_phrasing
+    expected_semantic_facts:
+      - [true-shooting, true shooting, TS%]
+    expected_table_header_fragments:
+      - TS%
+
+  - id: true_shooting_leaders_phrase_wave5
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - advanced_metric_label
+      - fragment_phrasing
+    expected_semantic_facts:
+      - [true-shooting, true shooting, TS%]
+    expected_table_header_fragments:
+      - TS%
+
+  - id: who_averaged_blocks_wave5
+    category: leaderboard
+    review_focus:
+      - hero_leaderboard
+      - defensive_metric_label
+      - question_phrasing
+    expected_semantic_facts:
+      - blocks
+    expected_table_header_fragments:
+      - BPG
+
   - id: turnover_rate_leader_wave4
     category: leaderboard
     review_focus:
@@ -359,6 +597,34 @@ cases:
     expected_table_header_fragments:
       - [Opponent PTS, Opponent Points, points allowed per game]
 
+  - id: team_gave_up_fewest_ppg_wave5
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - defensive_metric_label
+      - phrasing_variant
+    expected_semantic_facts:
+      - [allowed the fewest points per game, gave up the fewest, opponent points]
+    expected_table_header_fragments:
+      - [Opponent PTS, Opp PPG, points allowed per game]
+    expected_absent_fragments:
+      - scored the fewest
+      - scored the most
+
+  - id: teams_allowing_fewest_points_wave5
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - defensive_metric_label
+      - fragment_phrasing
+    expected_semantic_facts:
+      - [allowed the fewest points per game, allowing the fewest, opponent points]
+    expected_table_header_fragments:
+      - [Opponent PTS, Opp PPG, points allowed per game]
+    expected_absent_fragments:
+      - scored the fewest
+      - scored the most
+
   - id: most_points_allowed_team_leaders_wave4
     category: team_leaderboard
     review_focus:
@@ -368,6 +634,18 @@ cases:
       - [allowed the most points per game, most opponent pts per game, most opponent points per game, points allowed per game]
     expected_table_header_fragments:
       - [Opponent PTS, Opponent Points, points allowed per game]
+
+  - id: opponent_points_per_game_leaders_wave5
+    category: team_leaderboard
+    review_focus:
+      - hero_team_leaderboard
+      - opponent_metric_label
+      - fragment_phrasing
+    expected_semantic_facts:
+      - opponent
+      - [points per game, points allowed per game]
+    expected_table_header_fragments:
+      - [Opponent PTS, Opp PPG, points allowed per game]
 
   - id: opponent_ppg_leaders_wave4
     category: team_leaderboard
@@ -420,6 +698,17 @@ cases:
       - 1980
       - appearances
 
+  - id: most_conf_finals_appearances_since_2000_wave5
+    category: playoff_history
+    review_focus:
+      - hero_appearances_leaderboard
+      - round_label
+      - era_filter
+    expected_semantic_facts:
+      - Conference Finals
+      - 2000
+      - appearances
+
   - id: best_second_round_record
     category: playoff_history
     review_focus:
@@ -428,6 +717,17 @@ cases:
       - table_columns
     expected_semantic_facts:
       - second round
+      - record
+
+  - id: best_second_round_record_since_2010_wave5
+    category: playoff_history
+    review_focus:
+      - hero_round_record
+      - round_label
+      - era_filter
+    expected_semantic_facts:
+      - second round
+      - 2010
       - record
 
   - id: spurs_playoff_history_since_2000_wave4
@@ -440,10 +740,43 @@ cases:
       - 2000
       - playoffs
 
+  - id: bulls_finals_record_question_wave5
+    category: playoff_history
+    review_focus:
+      - unsupported_filter_guidance
+      - playoff_round_boundary
+    expected_semantic_facts:
+      - Unavailable Filter
+      - Bulls
+      - Finals
+      - single-team playoff round records
+
+  - id: celtics_record_in_conference_finals_wave5
+    category: playoff_history
+    review_focus:
+      - unsupported_filter_guidance
+      - playoff_round_boundary
+    expected_semantic_facts:
+      - Unavailable Filter
+      - Celtics
+      - conference finals
+      - single-team playoff round records
+
   - id: heat_knicks_playoff_history
     category: playoff_matchup_history
     review_focus:
       - hero_playoff_matchup
+      - series_game_distinction
+    expected_semantic_facts:
+      - Heat
+      - Knicks
+      - playoff
+
+  - id: heat_knicks_playoff_history_no_vs_wave5
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - no_vs_phrasing
       - series_game_distinction
     expected_semantic_facts:
       - Heat
@@ -455,6 +788,36 @@ cases:
     review_focus:
       - hero_playoff_matchup
       - series_game_distinction
+    expected_semantic_facts:
+      - Lakers
+      - Celtics
+      - playoff
+
+  - id: lakers_celtics_playoff_series_history_wave5
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - series_history
+    expected_semantic_facts:
+      - Lakers
+      - Celtics
+      - series
+
+  - id: warriors_cavs_finals_history_wave5
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - finals_context
+    expected_semantic_facts:
+      - Warriors
+      - [Cavaliers, Cavs]
+      - Finals
+
+  - id: lakers_celtics_playoff_matchup_history_wave5
+    category: playoff_matchup_history
+    review_focus:
+      - hero_playoff_matchup
+      - matchup_history
     expected_semantic_facts:
       - Lakers
       - Celtics
@@ -537,6 +900,74 @@ cases:
       - LeBron James
       - Kevin Durant
 
+  - id: compare_lebron_durant_wave5
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - player_entities
+      - imperative_phrasing
+    expected_semantic_facts:
+      - LeBron James
+      - Kevin Durant
+    expected_table_header_fragments:
+      - Edge / Difference
+
+  - id: lebron_durant_last10_wave5
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - player_entities
+      - last_n_context
+    expected_semantic_facts:
+      - LeBron James
+      - Kevin Durant
+      - last 10
+    expected_filter_chip_fragments:
+      - Last 10
+    expected_table_header_fragments:
+      - Edge / Difference
+
+  - id: compare_jokic_embiid_recent_wave5
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - player_entities
+      - recent_window
+    expected_semantic_facts:
+      - Nikola Jokic
+      - Joel Embiid
+      - [last 10, recent]
+    expected_filter_chip_fragments:
+      - Last 10
+    expected_table_header_fragments:
+      - Edge / Difference
+
+  - id: celtics_bucks_comparison_this_season_wave5
+    category: comparison
+    review_focus:
+      - hero_comparison
+      - team_entities
+      - season_context
+    expected_semantic_facts:
+      - Celtics
+      - Bucks
+      - 2025-26
+    expected_table_header_fragments:
+      - Edge / Difference
+
+  - id: warriors_lakers_record_this_season_wave5
+    category: comparison
+    review_focus:
+      - hero_head_to_head
+      - team_entities
+      - record_label
+    expected_semantic_facts:
+      - Warriors
+      - Lakers
+      - head-to-head
+    expected_table_header_fragments:
+      - Edge / Difference
+
   - id: lakers_celtics_h2h_record_wave4
     category: comparison
     review_focus:
@@ -609,3 +1040,73 @@ cases:
     expected_semantic_facts:
       - [Unsupported Leaderboard, Unavailable Metric]
       - Personal-foul leaderboards
+
+  - id: players_personal_fouls_wave5
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_metric_guidance
+      - metric_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unsupported Leaderboard
+      - Personal-foul leaderboards
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: warriors_net_rating_single_team_wave5
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_summary_guidance
+      - advanced_metric_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unavailable Filter
+      - Net rating
+      - single-team advanced-stat summaries
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: rookie_assist_leaders_wave5
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_filter_guidance
+      - roster_experience_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unsupported Leaderboard
+      - Rookie leaderboards
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: celtics_bench_points_wave5
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_summary_guidance
+      - team_bench_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unsupported Summary
+      - Team bench-scoring
+
+  - id: lakers_record_against_west_wave5
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_filter_guidance
+      - conference_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unavailable Filter
+      - Opponent-conference
+      - Lakers
+
+  - id: most_clutch_player_wave5
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_filter_guidance
+      - subjective_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unavailable Filter
+      - clutch
+    expected_filter_chip_fragments:
+      - Clutch
