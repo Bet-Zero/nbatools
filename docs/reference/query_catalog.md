@@ -129,6 +129,10 @@ If a feature is not reflected here, it should not be assumed shipped.
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
   unsupported routes append an explicit note and remain unfiltered)
+- opponent-conference context for team records: `against the East`, `against East teams`, `against Eastern Conference teams`, `vs the West`, `versus Western Conference opponents`
+  (resolved through trusted `team_conference_membership` coverage for `2024-25`
+  and `2025-26`; missing or untrusted coverage returns `no_result` /
+  `filter_not_supported`, not a broad full-season record)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language
@@ -573,6 +577,10 @@ Examples:
 - `How did the Lakers do on the road last season?`
 - `Celtics road record since January 1`
 - `Celtics record against playoff teams`
+- `Celtics record against the East this season`
+- `Lakers record against Western Conference teams`
+- `Lakers road record against West last season`
+- `Knicks record against Eastern Conference teams since January 1`
 - `best home record over the last 5 seasons`
 - `worst away record since 2020`
 - `Celtics record when scoring 120+ since 2022`
@@ -831,8 +839,15 @@ Current behavior:
 - `top defenses` is accepted as shorthand for `top-10 defenses` only in explicit opponent context such as `against`, `vs`, or `versus`
 - `playoff teams` includes postseason-team phrasings such as `postseason teams` and `teams that made the playoffs`; this remains a regular-season opponent-quality context unless the query also explicitly asks for playoff competition
 - opponent-conference filters such as `Celtics record against the East` or
-  `Lakers record against Western Conference teams` are not currently supported;
-  they return `no_result` / `filter_not_supported`
+  `Lakers record against Western Conference teams` are supported for
+  `team_record` queries in trusted seasons `2024-25` and `2025-26`; the filter
+  composes with home/away and date filters
+- the resolved conference list keeps all 15 conference members, including the
+  subject team when applicable; this has no effect because teams do not play
+  themselves
+- east/west geography phrases such as `east coast teams`, division requests,
+  and seasons outside trusted conference coverage remain unsupported and return
+  `no_result` / `filter_not_supported` instead of broad full-season records
 - unsupported routes append an explicit note or return a clean unsupported
   response instead of silently broadening
 

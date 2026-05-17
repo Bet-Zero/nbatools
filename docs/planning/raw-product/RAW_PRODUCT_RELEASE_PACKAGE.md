@@ -22,7 +22,7 @@ set passed with notes.
 Human sign-off still needed:
 
 - Product owner acceptance that selected frontend-copy coverage is sufficient
-  for this release and does not need all 243 backend cases rendered.
+  for this release and does not need all 246 backend cases rendered.
 - Product owner acceptance that visual QA remains manual, not screenshot-diff
   automation.
 - Product owner acceptance that the explicitly guarded unsupported families
@@ -32,13 +32,13 @@ Human sign-off still needed:
 
 | Area | Status | Evidence |
 |---|---|---|
-| Backend Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T033806Z/report.md`; 243 cases; expectation cases `pass: 243`; expectation checks `pass: 1368`; failed IDs none; suspicious flags 0. |
-| Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `475/0/0`. |
+| Backend Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. |
+| Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
 | Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`; 15-case desktop/mobile manual baseline accepted; no screenshot diff automation. |
 | Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
-| Parser smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-parser` passing 747 tests. |
+| Parser smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-parser` passing 751 tests. |
 | Static diff check | `PASS` | This release-package pass ran `git diff --check` successfully. |
 
 ## 3. Supported Product Boundary
@@ -169,7 +169,7 @@ return explicit no-result, unsupported, unsupported-data, or
 | Rookie leaderboards | Returns explicit unsupported-filter no-result. | Rookie status is not part of the trusted current leaderboard filter contract. | Add trusted rookie metadata, parser slots, execution filtering, docs, and tests. |
 | League-wide starter/bench leaderboards | Returns explicit unsupported-filter no-result for starter/bench leaderboard phrasing. | League-wide role filters need trusted role classification, minimums, and route contracts. | Define role coverage and minimums, then add execution-backed filters and rendered-copy coverage. |
 | Team bench scoring | Returns explicit unsupported-filter no-result for team bench scoring/points. | Team bench scoring needs role-scoped team aggregation outside the current team summary contract. | Define a team bench/unit scoring dataset or derived aggregation with stable summary sections. |
-| Opponent-conference filters | Returns explicit `opponent_conference` unsupported-filter no-result instead of broad full-season records. | A season-aware conference metadata prerequisite now exists for `2024-25` and `2025-26`, but parser/execution promotion and route semantics are not approved. | Use `team_conference_membership.csv` for season-aware joins, then add parser/execution promotion, filter preservation tests, metadata/copy behavior, and no-match behavior. |
+| Opponent-conference missing coverage / geography | Current-era `team_record` opponent-conference filters are supported for trusted seasons `2024-25` and `2025-26`; seasons outside trusted coverage and geography phrases such as `east coast teams` return explicit no-result instead of broad full-season records. | Historical conference coverage, divisions, and geography semantics are not part of the approved data contract. | Add trusted historical conference membership or division/geography contracts before expanding beyond the current-era East/West team-record filter. |
 | Single-team playoff round records | Single-team Finals/conference-finals record phrasing returns unsupported-filter no-result. | Current contracts support round leaderboards and matchup history, not single-team round records; some historical round labels are unreliable. | Approve single-team playoff round semantics and fallback behavior for unreliable labels, then add route/output coverage. |
 | Subjective/trend queries | Clutch, cooled off, best defender, MVP candidate, best player lately, and similar opinion/trend requests return unsupported/no-result instead of invented definitions. | Product-approved metric definitions and source coverage are required. | Define metric-backed semantics one family at a time, then add parser, execution, copy, and QA coverage. |
 | Multi-player availability | Multi-player availability record phrasing returns explicit unsupported/no-result instead of an unfiltered team record. | Multi-player availability semantics are outside the current whole-game single-player absence contract. | Add a dedicated availability model, trusted coverage fields, filter semantics, and result contract. |
@@ -184,11 +184,11 @@ return explicit no-result, unsupported, unsupported-data, or
 Latest release artifacts:
 
 - Backend raw QA report:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Backend raw QA Markdown report:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.md`
 - Frontend-copy report:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`
 - Visual QA checklist:
   `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
 - Preview manual QA rerun:
@@ -217,19 +217,18 @@ Supporting return packages:
 ## 6. Known Limitations
 
 - Frontend-copy QA is selected coverage: 125 rendered cases from the latest
-  clean 243-case backend run, not all 243 backend cases.
+  clean 246-case backend run, not all 246 backend cases.
 - Frontend-copy QA checks DOM text and rendered component output; it is not
   visual layout or screenshot diff automation.
 - Visual QA remains a manual 15-case baseline with accepted desktop/mobile
   checks, not automated Playwright screenshot diffing.
 - Preview manual QA is `PREVIEW_READY_WITH_NOTES`; notes include the manual
   nature of visual QA and selected frontend-copy coverage.
-- Unsupported features are guarded and documented, but not promoted into
-  execution-backed support.
-- Opponent-conference filters remain unsupported even though the
-  `team_conference_membership.csv` data prerequisite now validates for
-  `2024-25` and `2025-26`; raw and frontend-copy corpus expectations remain
-  unchanged.
+- Unsupported features are guarded and documented; opponent-conference
+  `team_record` filters are execution-backed only for trusted seasons
+  `2024-25` and `2025-26`.
+- Opponent-conference expansion outside trusted current-era coverage, divisions,
+  and geography phrases remains unsupported/no-result.
 - Frontend lint remains clean with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Frontend build remains clean with the existing Vite large-chunk warning.

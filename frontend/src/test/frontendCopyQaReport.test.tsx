@@ -17,7 +17,7 @@ describe("frontend copy QA report harness", () => {
 
     expect(corpus.version).toBe(1);
     expect(corpus.source_backend_run).toBe(
-      "outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl",
+      "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
     );
     expect(corpus.cases.length).toBe(125);
     expect(corpus.cases[0]).toMatchObject({

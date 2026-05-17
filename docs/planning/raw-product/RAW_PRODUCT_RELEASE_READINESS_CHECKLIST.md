@@ -7,11 +7,13 @@
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Release package:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
-- Production query behavior changed: no.
+- Production query behavior changed: yes; current-era opponent-conference
+  `team_record` filters now execute for trusted seasons `2024-25` and `2025-26`.
 - Frontend rendering changed: no in the frontend-copy expansion wave; previous
   `/visual-qa` mobile wrapper/layout-only fix remains the latest production
   rendering change.
-- Corpus expectations changed: no.
+- Corpus expectations changed: yes; opponent-conference backend and
+  frontend-copy cases were migrated from unsupported to supported expectations.
 - New frontend-copy corpus cases added: yes, selected rendered-copy coverage
   expanded from 59 to 125 cases across Wave 1 and Wave 2.
 - Release posture: release-candidate ready with notes; the latest preview manual
@@ -21,29 +23,30 @@
 Known limitations:
 
 - Frontend-copy QA covers a selected 125-case corpus from the latest clean
-  243-case backend run, not all 243 backend cases.
+  246-case backend run, not all 246 backend cases.
 - Frontend-copy QA is DOM-copy QA, not visual layout or screenshot QA.
 - Visual QA is a manual 15-case baseline, not Playwright or screenshot diffing.
 - Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
   horizontal-overflow blocker. The local wrapper fix was validated and the
   latest preview manual rerun is `PREVIEW_READY_WITH_NOTES`.
-- Unsupported product families are guarded and documented, but not promoted
-  into execution-backed support.
+- Unsupported product families are guarded and documented; opponent-conference
+  team-record filters are now supported only inside the trusted current-era
+  conference coverage boundary.
 
 ## 2. Backend Raw QA
 
 | Item | Status |
 |---|---|
 | Corpus | `qa/raw_query_answer_corpus.yaml` |
-| Case count | 243 |
-| Latest checkpoint run | `outputs/raw_query_answer_qa/20260517T033806Z/report.md` |
-| Latest release-package run | `outputs/raw_query_answer_qa/20260517T033806Z/report.md` |
-| Result statuses | `ok: 202`, `no_result: 32`, `error: 9` |
-| Expectation cases | `pass: 243` |
-| Expectation checks | `pass: 1368` |
+| Case count | 246 |
+| Latest checkpoint run | `outputs/raw_query_answer_qa/20260517T070422Z/report.md` |
+| Latest release-package run | `outputs/raw_query_answer_qa/20260517T070422Z/report.md` |
+| Result statuses | `ok: 206`, `no_result: 31`, `error: 9` |
+| Expectation cases | `pass: 246` |
+| Expectation checks | `pass: 1421` |
 | Failed case IDs | none |
 | Suspicious flags | 0 |
-| Informational flags | `frontend_hero_expected: 149` |
+| Informational flags | `frontend_hero_expected: 153` |
 | Verified outlier | `top_performance_high_points: 1` |
 
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.
@@ -58,23 +61,23 @@ expectations.
 |---|---|
 | Corpus | `qa/frontend_copy_corpus.yaml` |
 | Selected case count | 125 |
-| Configured source backend run | `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl` |
-| Latest checkpoint run | `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md` |
-| Latest checklist run | `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md` |
+| Configured source backend run | `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl` |
+| Latest checkpoint run | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md` |
+| Latest checklist run | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md` |
 | Rendered successfully | 125 |
 | Render failures | 0 |
 | Missing backend records | 0 |
-| Soft checks | `pass: 475`, `fail: 0`, `not_checked: 0` |
+| Soft checks | `pass: 480`, `fail: 0`, `not_checked: 0` |
 | Gating | `qa:frontend-copy` fails on render failures, missing backend records, soft-check failures, or unchecked soft checks |
 
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.
 
 Rationale: the selected rendered-copy corpus is clean and now sources the
-latest clean 243-case backend run. Wave 2 added streak tables, rolling
+latest clean 246-case backend run. Wave 2 added streak tables, rolling
 stretches, finder/count outputs, game-summary logs, team splits,
 record-by-decade shapes, top-performance variants, and on/off plus lineup
 unsupported no-result boundaries. The remaining limitation is coverage breadth:
-this is selected DOM-copy coverage, not full 243-case rendered-copy or visual
+this is selected DOM-copy coverage, not full 246-case rendered-copy or visual
 layout coverage.
 
 ## 4. Visual QA
@@ -127,7 +130,8 @@ instead of broad plausible answers.
 - Rookie leaderboards.
 - League-wide starter/bench role leaderboards.
 - Team bench scoring summaries.
-- Opponent-conference filters.
+- Opponent-conference seasons outside trusted coverage, divisions, and
+  geography phrases such as `east coast teams`.
 - Single-team playoff round records.
 - Subjective/trend queries such as clutch, cooled off, best defender, MVP
   candidate, and best player lately.
@@ -187,12 +191,12 @@ Command:
 Result:
 
 ```text
-Wrote raw query answer QA report: outputs/raw_query_answer_qa/20260517T033806Z
-Cases: 243
-Result statuses: {'error': 9, 'no_result': 32, 'ok': 202}
-Expectation cases: {'pass': 243}
+Wrote raw query answer QA report: outputs/raw_query_answer_qa/20260517T070422Z
+Cases: 246
+Result statuses: {'error': 9, 'no_result': 31, 'ok': 206}
+Expectation cases: {'pass': 246}
 Suspicious flag cases: 0
-Informational flag cases: 149
+Informational flag cases: 153
 Verified outlier cases: 1
 Failed case IDs: none
 ```
@@ -216,12 +220,12 @@ Duration  7.68s
 Report summary:
 
 ```text
-Run ID: 20260517T054758Z
+Run ID: 20260517T071053Z
 Selected cases: 125
 Rendered successfully: 125
 Render failures: 0
 Missing backend records: 0
-Soft check pass/fail/not checked: 475/0/0
+Soft check pass/fail/not checked: 480/0/0
 ```
 
 Gating behavior: `qa:frontend-copy` now asserts 125 selected cases, 125

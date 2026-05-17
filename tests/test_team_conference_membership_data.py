@@ -132,6 +132,11 @@ def test_unknown_season_has_no_trusted_conference_coverage():
     assert get_teams_by_conference("2099-00", "East") == []
 
 
+def test_require_trusted_coverage_rejects_unknown_season():
+    with pytest.raises(ValueError, match="Missing trusted team-conference coverage"):
+        get_teams_by_conference("2099-00", "East", require_trusted_coverage=True)
+
+
 def test_get_teams_by_conference_rejects_unknown_conference():
     with pytest.raises(ValueError, match="Unsupported conference"):
         get_teams_by_conference("2025-26", "Central")

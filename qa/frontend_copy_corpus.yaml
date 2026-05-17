@@ -1,5 +1,5 @@
 version: 1
-source_backend_run: outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl
+source_backend_run: outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl
 description: Frontend hero/copy QA Wave 2 selected review subset.
 cases:
   - id: celtics_record_playoff_teams
@@ -1024,13 +1024,19 @@ cases:
       - starter/bench
 
   - id: celtics_against_east_record_wave4
-    category: no_result_unsupported
+    category: team_record
     review_focus:
-      - unsupported_filter_guidance
-      - conference_boundary
+      - hero_record
+      - conference_filter
+      - table_columns
     expected_semantic_facts:
-      - Unavailable Filter
-      - conference
+      - Celtics
+      - East
+      - record
+    expected_table_header_fragments:
+      - [Record, W-L, GP]
+    expected_filter_chip_fragments:
+      - East
 
   - id: personal_foul_leaders_wave4
     category: no_result_unsupported
@@ -1089,15 +1095,19 @@ cases:
       - Team bench-scoring
 
   - id: lakers_record_against_west_wave5
-    category: no_result_unsupported
+    category: team_record
     review_focus:
-      - unsupported_filter_guidance
-      - conference_boundary
-      - no_broad_fallback
+      - hero_record
+      - conference_filter
+      - table_columns
     expected_semantic_facts:
-      - Unavailable Filter
-      - Opponent-conference
       - Lakers
+      - West
+      - record
+    expected_table_header_fragments:
+      - [Record, W-L, GP]
+    expected_filter_chip_fragments:
+      - West
 
   - id: most_clutch_player_wave5
     category: no_result_unsupported

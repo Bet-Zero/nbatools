@@ -2,9 +2,9 @@
 
 ## 1. Executive summary
 
-- Backend raw QA status: clean for the current 243-case corpus.
+- Backend raw QA status: clean for the current 246-case corpus.
 - Frontend-copy QA status: clean for the selected 125-case rendered-copy corpus
-  sourced from the latest clean 243-case backend run.
+  sourced from the latest clean 246-case backend run.
 - Visual QA status: 15-case manual baseline completed; targeted mobile/table and
   filtered-leaderboard hero fixes were verified locally and in the latest
   preview rerun.
@@ -26,19 +26,19 @@
 
 ## 2. Backend Raw Query Answer QA
 
-- Corpus size: 243 cases.
+- Corpus size: 246 cases.
 - Latest run:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`.
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.md`.
 - Latest release-package run:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`.
-- Pass/fail: expectation cases `pass: 243`; failed case IDs: none.
-- Result statuses: `ok: 202`, `no_result: 32`, `error: 9`.
-- Expectation checks: `pass: 1368`.
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.md`.
+- Pass/fail: expectation cases `pass: 246`; failed case IDs: none.
+- Result statuses: `ok: 206`, `no_result: 31`, `error: 9`.
+- Expectation checks: `pass: 1421`.
 - Suspicious flags: 0.
-- Informational flags: `frontend_hero_expected: 149`.
+- Informational flags: `frontend_hero_expected: 153`.
 - Verified outliers: `top_performance_high_points: 1`.
-- Manual review statuses: `pass: 35`, `expected_unsupported: 27`,
-  `verified_outlier: 1`, `unreviewed: 180`.
+- Manual review statuses: `pass: 35`, `expected_unsupported: 26`,
+  `verified_outlier: 1`, `unreviewed: 184`.
 
 Main coverage areas:
 
@@ -156,12 +156,14 @@ They are not current product failures.
   - Future support path: define a team bench/unit scoring dataset or derived
     aggregation and expose stable summary sections.
 - Opponent-conference filters:
-  - Current behavior: returns explicit `opponent_conference` unsupported-filter
-    no-results instead of broad full-season records.
-  - Why unsupported: complete, trusted team-conference metadata and route
-    semantics are not yet approved.
-  - Future support path: add conference metadata coverage, season-aware joins,
-    and filter preservation tests.
+  - Current behavior: `team_record` queries support East/West opponent
+    conference filters for trusted seasons `2024-25` and `2025-26`.
+    Missing/untrusted seasons return `conference_coverage` no-result, and
+    geography phrases such as `east coast teams` remain unsupported.
+  - Why limited: historical conference membership, divisions, and geography
+    semantics are not part of the approved current-era data contract.
+  - Future support path: add trusted historical conference membership or a
+    dedicated division/geography contract before expanding the boundary.
 - Single-team playoff round records:
   - Current behavior: single-team Finals/conference-finals record phrasing
     returns explicit unsupported-filter no-results.
@@ -219,13 +221,13 @@ They are not current product failures.
 
 - Selected case count: 125.
 - Configured source backend run:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`.
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`.
 - Latest clean run path:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`.
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`.
 - Latest release-checklist run path:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`.
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`.
 - Status: 125 rendered successfully, 0 render failures, 0 missing backend
-  records, soft checks `pass: 475`, `fail: 0`, `not_checked: 0`.
+  records, soft checks `pass: 480`, `fail: 0`, `not_checked: 0`.
 - Earlier semantic-copy clean run:
   `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.md`.
 - Gating behavior: `qa:frontend-copy` now fails on render failures, missing
@@ -289,14 +291,14 @@ Latest release-readiness checklist validation:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
 - Status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Raw QA full corpus:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`; 243 cases;
-  expectation cases `pass: 243`; failed case IDs none; suspicious flags 0.
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases;
+  expectation cases `pass: 246`; failed case IDs none; suspicious flags 0.
 - Frontend-copy QA:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125
   selected cases from configured source backend run
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`; rendered
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`; rendered
   successfully 125; render failures 0; missing backend records 0; soft checks
-  `475/0/0`.
+  `480/0/0`.
 - Frontend build: passed; existing Vite large-chunk warning remains.
 - Frontend lint: passed with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
@@ -332,7 +334,7 @@ Recommended order:
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
-- Why: backend QA now has a clean 243-case corpus, while frontend-copy QA still
+- Why: backend QA now has a clean 246-case corpus, while frontend-copy QA still
   covers a selected 125-case rendered subset.
 - Scope: expand only if a follow-up gap analysis identifies remaining
   high-risk route/shape families not represented in the 125-case set.
@@ -342,14 +344,14 @@ Recommended order:
 ### Option B - Promote one unsupported family into real support
 
 - Candidates:
-  - opponent-conference filters
+  - historical opponent-conference expansion beyond trusted current-era seasons
   - rookie leaderboards
   - single-team advanced-stat scalar summaries
   - personal-foul leaderboards
   - bench/starter role leaderboards
-- Recommended first candidate: opponent-conference filters, because they are a
-  common sports-query shape and already have explicit guardrails preventing
-  broad full-season fallbacks.
+- Recommended first candidate: choose between historical opponent-conference
+  expansion and another unsupported-family preflight, depending on whether the
+  next priority is broader team-record filtering or a new query family.
 - Required contract work: document dataset source/coverage, route semantics,
   structured result shape, metadata/applied-filter keys, frontend rendering
   needs, no-match behavior, and migration from `expected_unsupported` corpus

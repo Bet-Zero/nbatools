@@ -191,13 +191,40 @@ def detect_personal_foul_leaderboard_boundary(text: str) -> bool:
     )
 
 
+def detect_opponent_conference(text: str) -> str | None:
+    """Extract a normalized opponent-conference filter from supported phrasing."""
+    patterns = [
+        r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+        r"(?P<direction>eastern|western)\s+conference\s+(?:teams?|opponents?)\b",
+        r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+        r"(?P<direction>east|west)\s+(?:teams?|opponents?)\b",
+        r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+        r"(?P<direction>eastern|western)\s+conference\b(?!\s+finals?\b)",
+        r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+        r"(?P<direction>east|west)\b(?!\s+(?:coast|conference\s+finals?|finals?)\b)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if not match:
+            continue
+        direction = match.group("direction")
+        if direction in {"east", "eastern"}:
+            return "East"
+        if direction in {"west", "western"}:
+            return "West"
+    return None
+
+
 def detect_opponent_conference_boundary(text: str) -> bool:
-    """Detect unsupported opponent-conference filters."""
+    """Detect supported opponent-conference filter phrasing."""
+    return detect_opponent_conference(text) is not None
+
+
+def detect_opponent_conference_geography_boundary(text: str) -> bool:
+    """Detect unsupported geography wording that resembles a conference filter."""
     return bool(
         re.search(
-            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
-            r"(?:east|west|eastern\s+conference|western\s+conference)"
-            r"(?:\s+teams?)?\b",
+            r"\b(?:against|vs\.?|versus)\s+(?:the\s+)?(?:east|west)\s+coast\s+teams?\b",
             text,
         )
     )

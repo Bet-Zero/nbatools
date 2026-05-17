@@ -514,8 +514,17 @@ def get_team_conference_map(season: str) -> dict[str, str]:
     return {row.team_abbr: row.conference for row in trusted.itertuples()}
 
 
-def get_teams_by_conference(season: str, conference: str) -> list[str]:
-    """Return trusted team abbreviations for a season and conference."""
+def get_teams_by_conference(
+    season: str,
+    conference: str,
+    *,
+    require_trusted_coverage: bool = False,
+) -> list[str]:
+    """Return trusted team abbreviations for a season and conference.
+
+    Pass ``require_trusted_coverage=True`` when query execution must prove that
+    the season has the full 30-team trusted contract and a 15-team conference.
+    """
     conference_value = str(conference).strip().lower()
     if conference_value in {"east", "eastern"}:
         normalized = "East"
@@ -525,10 +534,21 @@ def get_teams_by_conference(season: str, conference: str) -> list[str]:
         raise ValueError(f"Unsupported conference: {conference}")
 
     df = load_team_conference_membership()
-    trusted = df.loc[
-        df["season"].eq(season) & df["conference"].eq(normalized) & df["coverage_trusted"].eq(1)
-    ]
-    return sorted(trusted["team_abbr"].astype(str).str.upper().tolist())
+    season_trusted = df.loc[df["season"].eq(season) & df["coverage_trusted"].eq(1)]
+    conference_trusted = season_trusted.loc[season_trusted["conference"].eq(normalized)]
+
+    if require_trusted_coverage:
+        counts = season_trusted["conference"].value_counts().to_dict()
+        if (
+            len(season_trusted) != 30
+            or season_trusted["team_abbr"].nunique() != 30
+            or counts.get("East") != 15
+            or counts.get("West") != 15
+            or len(conference_trusted) != 15
+        ):
+            raise ValueError(f"Missing trusted team-conference coverage for {season}")
+
+    return sorted(conference_trusted["team_abbr"].astype(str).str.upper().tolist())
 
 
 def resolve_opponent_quality_teams(

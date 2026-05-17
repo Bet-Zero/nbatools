@@ -268,7 +268,6 @@ class TestP2BoundaryRoutingCleanup:
                 "season_leaders",
                 "personal_foul_leaderboard",
             ),
-            ("Celtics record against the East this season", "team_record", "opponent_conference"),
         ],
     )
     def test_unsupported_boundary_queries_return_no_result(self, query, route, unsupported_filter):
@@ -279,6 +278,24 @@ class TestP2BoundaryRoutingCleanup:
         assert qr.result.result_reason == "filter_not_supported"
         assert qr.metadata["unsupported_filters"] == [unsupported_filter]
         assert qr.to_dict()["sections"] == {}
+
+    @pytest.mark.needs_data
+    def test_opponent_conference_team_record_filter_returns_supported_result(self):
+        qr = execute_natural_query("Celtics record against the East this season")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "BOS"
+        assert qr.metadata["opponent_conference"] == "East"
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert {
+            "label": "Opponent conference",
+            "value": "East",
+            "kind": "conference",
+        } in qr.metadata["applied_filters"]
+        assert set(qr.to_dict()["sections"]) >= {"summary", "by_season"}
 
     @pytest.mark.needs_data
     @pytest.mark.parametrize(

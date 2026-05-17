@@ -17,6 +17,7 @@ import pandas as pd
 import pytest
 
 import nbatools.query_service as query_service
+from nbatools.commands.data_utils import get_teams_by_conference
 from nbatools.commands.structured_results import (
     ComparisonResult,
     FinderResult,
@@ -1196,6 +1197,141 @@ class TestExportParity:
         payload = json.loads(json_path.read_text())
         assert "metadata" in payload
         assert "leaderboard" in payload
+
+
+# ===================================================================
+# Opponent-conference team records
+# ===================================================================
+
+
+@pytest.mark.needs_data
+class TestOpponentConferenceTeamRecords:
+    def test_celtics_current_season_record_against_east(self):
+        qr = execute_natural_query("Celtics record against the East this season")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "BOS"
+        assert qr.metadata["season"] == "2025-26"
+        assert qr.metadata["opponent_conference"] == "East"
+        assert len(qr.metadata["opponent_team_abbrs"]) == 15
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert {
+            "label": "Opponent conference",
+            "value": "East",
+            "kind": "conference",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        assert set(sections) >= {"summary", "by_season"}
+        assert sections["summary"][0]["games"] == 52
+        assert sections["summary"][0]["wins"] == 36
+        assert sections["summary"][0]["losses"] == 16
+
+    def test_lakers_default_season_record_against_west(self):
+        qr = execute_natural_query("Lakers record against the West")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "LAL"
+        assert qr.metadata["season"] == "2025-26"
+        assert qr.metadata["opponent_conference"] == "West"
+        assert len(qr.metadata["opponent_team_abbrs"]) == 15
+        assert {
+            "label": "Opponent conference",
+            "value": "West",
+            "kind": "conference",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        assert set(sections) >= {"summary", "by_season"}
+        assert sections["summary"][0]["games"] == 52
+        assert sections["summary"][0]["wins"] == 33
+        assert sections["summary"][0]["losses"] == 19
+
+    def test_lakers_road_record_against_west_last_season_composes_filters(self):
+        qr = execute_natural_query("Lakers road record against West last season")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "LAL"
+        assert qr.metadata["season"] == "2024-25"
+        assert qr.metadata["explicit_relative_season"] is True
+        assert qr.metadata["opponent_conference"] == "West"
+        assert {"label": "Location", "value": "Away", "kind": "location"} in qr.metadata[
+            "applied_filters"
+        ]
+        assert {
+            "label": "Opponent conference",
+            "value": "West",
+            "kind": "conference",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["games"] == 26
+        assert summary["wins"] == 14
+        assert summary["losses"] == 12
+
+    def test_knicks_record_against_eastern_conference_since_january_1_composes_date(self):
+        qr = execute_natural_query("Knicks record against Eastern Conference teams since January 1")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "NYK"
+        assert qr.metadata["opponent_conference"] == "East"
+        assert qr.metadata["start_date"] == "2026-01-01"
+        assert {
+            "label": "Opponent conference",
+            "value": "East",
+            "kind": "conference",
+        } in qr.metadata["applied_filters"]
+        assert {
+            "label": "Date range",
+            "value": "2026-01-01 – 2026-04-12",
+            "kind": "date",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["games"] == 26
+        assert summary["wins"] == 17
+        assert summary["losses"] == 9
+
+    def test_east_coast_teams_remains_unsupported_without_broad_record(self):
+        qr = execute_natural_query("Celtics record against east coast teams")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["opponent_conference"]
+        assert qr.to_dict()["sections"] == {}
+
+    def test_missing_conference_coverage_returns_no_result_without_broad_record(self):
+        qr = execute_natural_query("Celtics record against the East in 2023-24")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["opponent_conference"] == "East"
+        assert qr.metadata["unsupported_filters"] == ["conference_coverage"]
+        assert qr.to_dict()["sections"] == {}
+
+    def test_conference_record_matches_explicit_opponent_list(self):
+        natural = execute_natural_query("Celtics record against the East this season")
+        explicit = execute_structured_query(
+            "team_record",
+            team="BOS",
+            season="2025-26",
+            season_type="Regular Season",
+            opponent=get_teams_by_conference("2025-26", "East"),
+        )
+
+        assert natural.to_dict()["sections"]["summary"] == explicit.to_dict()["sections"]["summary"]
+        assert (
+            natural.to_dict()["sections"]["by_season"]
+            == explicit.to_dict()["sections"]["by_season"]
+        )
 
 
 # ===================================================================

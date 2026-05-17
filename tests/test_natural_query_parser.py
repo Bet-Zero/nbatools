@@ -1086,13 +1086,40 @@ def test_team_bench_scoring_does_not_set_role():
         ("starter assist leaders this season", "role_leaderboard"),
         ("Celtics bench scoring this season", "team_bench_scoring"),
         ("personal fouls leaders this season", "personal_foul_leaderboard"),
-        ("Celtics record against the East this season", "opponent_conference"),
     ],
 )
 def test_p2_boundary_queries_set_unsupported_filter(query, unsupported_filter):
     parsed = parse_query(query)
     assert parsed["route_kwargs"]["unsupported_filters"] == [unsupported_filter]
     assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+
+@pytest.mark.parametrize(
+    ("query", "conference"),
+    [
+        ("Celtics record against the East this season", "East"),
+        ("Lakers record against Western Conference teams", "West"),
+        ("Celtics record vs East teams", "East"),
+        ("Lakers record versus Western Conference opponents", "West"),
+    ],
+)
+def test_team_record_opponent_conference_phrases_set_normalized_slot(query, conference):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "team_record"
+    assert parsed["opponent_conference"] == conference
+    assert parsed["route_kwargs"]["opponent_conference"] == conference
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+def test_east_coast_teams_does_not_parse_as_opponent_conference():
+    parsed = parse_query("Celtics record against east coast teams")
+
+    assert parsed["route"] == "team_record"
+    assert parsed["opponent_conference"] is None
+    assert parsed["opponent_conference_boundary"] is False
+    assert parsed["opponent_conference_geography_boundary"] is True
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["opponent_conference"]
 
 
 def test_role_note_not_appended_for_supported_role_route():
@@ -1265,6 +1292,7 @@ def test_single_team_playoff_round_records_are_unsupported_boundary(query, team,
     assert parsed["route_kwargs"]["team"] == team
     assert parsed["route_kwargs"]["playoff_round"] == playoff_round
     assert parsed["route_kwargs"]["unsupported_filters"] == ["single_team_playoff_round_record"]
+    assert parsed["opponent_conference"] is None
     assert parsed["route"] != "team_record"
     assert any("single-team playoff round records" in note for note in parsed.get("notes", []))
 

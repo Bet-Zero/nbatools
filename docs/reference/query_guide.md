@@ -243,11 +243,20 @@ Natural examples:
 - `Lakers 2024-25 road record`
 - `Celtics road record since January 1`
 - `Celtics record against playoff teams`
+- `Celtics record against the East this season`
+- `Lakers record against Western Conference teams`
+- `Lakers road record against West last season`
+- `Knicks record against Eastern Conference teams since January 1`
 
-Opponent-conference record filters, such as `Celtics record against the East`
-or `Lakers record against Western Conference teams`, are not currently
-supported. They return `no_result` / `filter_not_supported` until complete
-team-conference metadata and route semantics are approved.
+Opponent-conference team-record filters are supported for trusted current-era
+conference coverage (`2024-25` and `2025-26`). Supported phrases include
+`against the East`, `against East teams`, `against Eastern Conference teams`,
+`vs the West`, `vs West teams`, and `versus Western Conference opponents`.
+Missing/untrusted seasons, division requests, and geography phrases such as
+`east coast teams` remain unsupported and return `no_result` /
+`filter_not_supported` instead of broad full-season records. The resolved
+conference opponent list keeps all 15 conference members, including the subject
+team when applicable; this has no effect because teams do not play themselves.
 
 ## Playoff history and rounds
 

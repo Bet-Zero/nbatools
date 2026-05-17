@@ -849,9 +849,10 @@ and exactly 15 West teams.
 
 ### Primary consumer(s)
 
-- no production query route currently consumes this table
-- intended future consumer: opponent-conference filtering for `team_record`
-  after parser, execution, metadata, and corpus promotion are approved
+- `team_record` opponent-conference filters for trusted current-era seasons
+  (`2024-25`, `2025-26`)
+- data validation tests for membership coverage and game-log abbreviation
+  consistency
 
 ### Validation rules
 
@@ -874,9 +875,10 @@ For each trusted season:
 Do not infer conference membership from standings rank ordering. Do not use the
 incomplete `teams_reference.csv` file as the source of truth for this contract.
 
-Missing or untrusted conference coverage must keep opponent-conference query
+Missing or untrusted conference coverage keeps opponent-conference query
 behavior unsupported/no-result. It must never broaden into an unfiltered
-full-season team record.
+full-season team record. Division filtering and geography phrases such as
+`east coast teams` are outside this contract.
 
 ---
 

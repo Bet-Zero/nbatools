@@ -259,6 +259,17 @@ def _build_applied_filters(
     route_kwargs = route_kwargs or {}
     applied_filters: list[dict[str, str]] = []
 
+    opponent_conference = source.get("opponent_conference") or route_kwargs.get(
+        "opponent_conference"
+    )
+    if opponent_conference:
+        applied_filters.append(
+            {
+                "label": "Opponent conference",
+                "value": str(opponent_conference),
+                "kind": "conference",
+            }
+        )
     if source.get("opponent"):
         applied_filters.append({"label": "Opponent", "value": source["opponent"], "kind": "team"})
     if source.get("without_player"):
@@ -466,6 +477,9 @@ def _build_query_metadata(
         "player": player,
         "team": team,
         "opponent": parsed.get("opponent"),
+        "opponent_conference": parsed.get("opponent_conference")
+        or route_kwargs.get("opponent_conference"),
+        "opponent_team_abbrs": route_kwargs.get("opponent_team_abbrs"),
         "without_player": parsed.get("without_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": parsed.get("opponent_quality"),
@@ -1376,6 +1390,8 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "player": player,
         "team": team,
         "opponent": kwargs.get("opponent"),
+        "opponent_conference": kwargs.get("opponent_conference"),
+        "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
         "without_player": kwargs.get("without_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": kwargs.get("opponent_quality"),

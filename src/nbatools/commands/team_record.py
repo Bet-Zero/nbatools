@@ -205,7 +205,7 @@ def build_team_record_result(
     start_season: str | None = None,
     end_season: str | None = None,
     season_type: str = "Regular Season",
-    opponent: str | None = None,
+    opponent: str | list[str] | tuple[str, ...] | None = None,
     without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,

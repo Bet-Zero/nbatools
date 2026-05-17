@@ -3649,22 +3649,40 @@ cases:
     query: "Celtics record against the East this season"
     category: team_record
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: team_record
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: team_record
+    expected_filters:
+      - kind: conference
+        label: Opponent conference
+        value: East
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: opponent_conference
-    review_notes: "Conference opponent filters should be execution-backed or cleanly unsupported, not broad full-season records."
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.opponent_conference
+        equals: East
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 52
+      - path: result.sections.summary.0.wins
+        equals: 36
+      - path: result.sections.summary.0.losses
+        equals: 16
+    review_notes: "Conference opponent filters are execution-backed for trusted current-era team-conference coverage."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - context_filter
-        - unsupported_boundary
-      notes: "Review current handling of East/West opponent conference phrasing."
+        - opponent_conference
+      notes: "Review current-era East opponent list resolution and record totals."
 
   - id: sga_playoff_teams_last_season_wave4
     query: "SGA points against playoff teams last season"
@@ -4799,6 +4817,135 @@ cases:
     query: "Lakers record against the West"
     category: team_record
     priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: conference
+        label: Opponent conference
+        value: West
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
+    hard_assertions:
+      - path: result.metadata.team
+        equals: LAL
+      - path: result.metadata.opponent_conference
+        equals: West
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 52
+      - path: result.sections.summary.0.wins
+        equals: 33
+      - path: result.sections.summary.0.losses
+        equals: 19
+    review_notes: "Opponent-conference filter is execution-backed for trusted West membership coverage."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - opponent_conference
+      notes: "Review current-era West opponent list resolution and record totals."
+
+  - id: lakers_road_record_against_west_last_season
+    query: "Lakers road record against West last season"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: conference
+        label: Opponent conference
+        value: West
+      - kind: location
+        value: Away
+      - kind: season
+        value: 2024-25
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
+    hard_assertions:
+      - path: result.metadata.team
+        equals: LAL
+      - path: result.metadata.season
+        equals: 2024-25
+      - path: result.metadata.opponent_conference
+        equals: West
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 26
+      - path: result.sections.summary.0.wins
+        equals: 14
+      - path: result.sections.summary.0.losses
+        equals: 12
+    review_notes: "Opponent-conference, road, and relative-season filters compose without broad fallback."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - opponent_conference
+        - location_filter
+      notes: "Review West road record totals for 2024-25."
+
+  - id: knicks_record_against_east_since_january_1
+    query: "Knicks record against Eastern Conference teams since January 1"
+    category: team_record
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: conference
+        label: Opponent conference
+        value: East
+      - kind: date
+        value: "2026-01-01 – 2026-04-12"
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
+    hard_assertions:
+      - path: result.metadata.team
+        equals: NYK
+      - path: result.metadata.opponent_conference
+        equals: East
+      - path: result.metadata.start_date
+        equals: "2026-01-01"
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 26
+      - path: result.sections.summary.0.wins
+        equals: 17
+      - path: result.sections.summary.0.losses
+        equals: 9
+    review_notes: "Opponent-conference and date filters compose without broad fallback."
+    manual_review:
+      status: unreviewed
+      tags:
+        - context_filter
+        - opponent_conference
+        - date_filter
+      notes: "Review East date-window record totals."
+
+  - id: celtics_against_east_coast_teams_guard
+    query: "Celtics record against east coast teams"
+    category: unsupported_boundary
+    priority: p2
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: team_record
@@ -4806,16 +4953,20 @@ cases:
     expected_shape: no_result
     expected_sections: []
     hard_assertions:
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.opponent_conference
+        equals:
       - path: result.metadata.unsupported_filters.0
         equals: opponent_conference
-    review_notes: "Opponent-conference filter should remain unsupported instead of broadening."
+    review_notes: "East/west coast geography should not parse as conference support or fall back to broad team records."
     manual_review:
       status: expected_unsupported
       tags:
         - unsupported_boundary
-        - context_filter
+        - geography_guard
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-conference team metadata is complete."
+      notes: "Expected unsupported because geography phrases are outside the conference contract."
 
   - id: most_clutch_player_wave5
     query: "Who is the most clutch player this season?"

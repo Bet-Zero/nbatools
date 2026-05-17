@@ -149,11 +149,12 @@ and reviewable.
 - `division` is included for future division support and must be non-empty for
   trusted rows
 
-### Future use
-This table is the data prerequisite for future opponent-conference filters.
-Parser and execution promotion are separate work. If trusted coverage is
-missing for a requested season, query behavior must remain unsupported/no-result
-instead of falling back to an unfiltered full-season record.
+### Current use
+This table powers current-era opponent-conference `team_record` filters for
+trusted seasons `2024-25` and `2025-26`. If trusted coverage is missing for a
+requested season, query behavior remains unsupported/no-result instead of
+falling back to an unfiltered full-season record. Division filters and geography
+phrases such as `east coast teams` are not supported by this table.
 
 ---
 

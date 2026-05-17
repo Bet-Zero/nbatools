@@ -112,7 +112,13 @@ from nbatools.commands._parse_helpers import (
     detect_one_possession as detect_one_possession,
 )
 from nbatools.commands._parse_helpers import (
+    detect_opponent_conference as detect_opponent_conference,
+)
+from nbatools.commands._parse_helpers import (
     detect_opponent_conference_boundary as detect_opponent_conference_boundary,
+)
+from nbatools.commands._parse_helpers import (
+    detect_opponent_conference_geography_boundary as detect_opponent_conference_geography_boundary,
 )
 from nbatools.commands._parse_helpers import (
     detect_opponent_quality as detect_opponent_quality,
@@ -460,6 +466,9 @@ __all__ = [
     "detect_role",
     "detect_stretch_query",
     "detect_team_rolling_stretch_boundary",
+    "detect_opponent_conference",
+    "detect_opponent_conference_boundary",
+    "detect_opponent_conference_geography_boundary",
     "detect_opponent_quality",
     "detect_quarter",
     "detect_half",
@@ -555,7 +564,9 @@ def _build_parse_state(query: str) -> dict:
     role_leaderboard_boundary = detect_role_leaderboard_boundary(q)
     team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
     personal_foul_leaderboard_boundary = detect_personal_foul_leaderboard_boundary(q)
-    opponent_conference_boundary = detect_opponent_conference_boundary(q)
+    opponent_conference = detect_opponent_conference(q)
+    opponent_conference_boundary = opponent_conference is not None
+    opponent_conference_geography_boundary = detect_opponent_conference_geography_boundary(q)
     if personal_foul_leaderboard_boundary:
         leaderboard_intent = True
 
@@ -835,7 +846,9 @@ def _build_parse_state(query: str) -> dict:
         "role_leaderboard_boundary": role_leaderboard_boundary,
         "team_bench_scoring_boundary": team_bench_scoring_boundary,
         "personal_foul_leaderboard_boundary": personal_foul_leaderboard_boundary,
+        "opponent_conference": opponent_conference,
         "opponent_conference_boundary": opponent_conference_boundary,
+        "opponent_conference_geography_boundary": opponent_conference_geography_boundary,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -1019,7 +1032,11 @@ def _finalize_route(parsed: dict) -> dict:
     role_leaderboard_boundary = parsed.get("role_leaderboard_boundary", False)
     team_bench_scoring_boundary = parsed.get("team_bench_scoring_boundary", False)
     personal_foul_leaderboard_boundary = parsed.get("personal_foul_leaderboard_boundary", False)
+    opponent_conference = parsed.get("opponent_conference")
     opponent_conference_boundary = parsed.get("opponent_conference_boundary", False)
+    opponent_conference_geography_boundary = parsed.get(
+        "opponent_conference_geography_boundary", False
+    )
 
     notes: list[str] = []
     route = None
@@ -1645,11 +1662,16 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "unsupported_filters": ["team_bench_scoring"],
         }
-    elif opponent_conference_boundary and team and record_intent and not any([team_a, team_b]):
+    elif (
+        opponent_conference_geography_boundary
+        and team
+        and record_intent
+        and not any([team_a, team_b])
+    ):
         route = "team_record"
         notes.append(
-            "unsupported_boundary: opponent-conference record filters are not "
-            "supported until complete conference metadata is available"
+            "unsupported_boundary: east/west coast geography filters are not "
+            "supported as opponent-conference record filters"
         )
         route_kwargs = {
             "team": team,
@@ -1669,6 +1691,27 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "unsupported_filters": ["opponent_conference"],
+        }
+    elif opponent_conference_boundary and team and record_intent and not any([team_a, team_b]):
+        route = "team_record"
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "opponent_conference": opponent_conference,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
         }
     elif _single_team_advanced_stat_summary_boundary(parsed):
         route = "game_summary"
@@ -2280,6 +2323,7 @@ def _merge_inherited_context(base: dict, clause: dict) -> dict:
         "team_b",
         "opponent",
         "opponent_quality",
+        "opponent_conference",
         "lineup_members",
         "presence_state",
         "unit_size",

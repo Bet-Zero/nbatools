@@ -34,7 +34,7 @@ from nbatools.commands._parse_helpers import (
     build_opponent_quality_note,
 )
 from nbatools.commands._seasons import resolve_seasons
-from nbatools.commands.data_utils import resolve_opponent_quality_teams
+from nbatools.commands.data_utils import get_teams_by_conference, resolve_opponent_quality_teams
 from nbatools.commands.entity_resolution import PLAYER_ALIASES, TEAM_ALIASES
 from nbatools.commands.format_output import (
     build_error_output,
@@ -380,6 +380,87 @@ def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, li
     return sanitized, notes
 
 
+def _normalize_opponent_conference(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = str(value).strip().lower()
+    if normalized in {"east", "eastern"}:
+        return "East"
+    if normalized in {"west", "western"}:
+        return "West"
+    return None
+
+
+def _mark_original_unsupported_filter(kwargs: dict | None, filter_id: str) -> None:
+    if kwargs is None:
+        return
+    existing = _normalize_unsupported_filters(kwargs.get("unsupported_filters"))
+    if filter_id not in existing:
+        existing.append(filter_id)
+    kwargs["unsupported_filters"] = existing
+
+
+def _resolve_opponent_conference_kwargs(
+    route: str,
+    kwargs: dict,
+    *,
+    original_kwargs: dict | None = None,
+) -> tuple[dict, list[str], list[str]]:
+    sanitized = dict(kwargs)
+    conference = _normalize_opponent_conference(sanitized.pop("opponent_conference", None))
+    if conference is None:
+        return sanitized, [], []
+
+    if original_kwargs is not None:
+        original_kwargs["opponent_conference"] = conference
+
+    if route != "team_record":
+        _mark_original_unsupported_filter(original_kwargs, "opponent_conference")
+        return sanitized, [], ["opponent_conference"]
+
+    season = sanitized.get("season")
+    start_season = sanitized.get("start_season")
+    end_season = sanitized.get("end_season")
+    season_type = sanitized.get("season_type") or "Regular Season"
+    seasons = resolve_seasons(season, start_season, end_season)
+
+    opponents_by_season: dict[str, list[str]] = {}
+    for resolved_season in seasons:
+        try:
+            teams = get_teams_by_conference(
+                resolved_season,
+                conference,
+                require_trusted_coverage=True,
+            )
+        except ValueError:
+            _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
+            return sanitized, [], ["conference_coverage"]
+        if len(teams) != 15:
+            _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
+            return sanitized, [], ["conference_coverage"]
+        opponents_by_season[resolved_season] = teams
+
+    opponent_sets = {tuple(teams) for teams in opponents_by_season.values()}
+    if len(opponent_sets) != 1:
+        _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
+        return sanitized, [], ["conference_coverage"]
+
+    resolved_opponents = list(next(iter(opponent_sets)))
+    sanitized["opponent"] = resolved_opponents
+    if original_kwargs is not None:
+        original_kwargs["opponent_team_abbrs"] = resolved_opponents
+        original_kwargs["opponent_conference_seasons"] = seasons
+
+    season_label = seasons[0] if len(seasons) == 1 else f"{seasons[0]} to {seasons[-1]}"
+    notes = [
+        f"opponent conference filter: {conference} resolved to 15 trusted teams for {season_label}"
+    ]
+    if season_type != "Regular Season":
+        notes.append("opponent conference membership is season-scoped team metadata")
+
+    return sanitized, notes, []
+
+
 def _normalize_unsupported_filters(value) -> list[str]:
     if value is None:
         return []
@@ -475,9 +556,16 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "opponent_conference":
         return (
-            "opponent-conference record filters are not supported with current "
-            "conference metadata; use a direct opponent or supported opponent "
-            "quality filter instead "
+            "opponent-conference filters are only supported for trusted team-record "
+            "conference phrasing; geography or unsupported route variants cannot be "
+            "executed as conference filters "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "conference_coverage":
+        return (
+            "opponent-conference record filters require trusted team-conference "
+            "membership coverage for every requested season; no broad team record "
+            "was returned because coverage is missing or incomplete "
             f"(blocked: {', '.join(all_filters)})"
         )
     return (
@@ -531,6 +619,10 @@ def _execute_build_result(
 
     build_fn = _get_build_result_map()[route]
     sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
+    sanitized_kwargs, conference_notes, conference_blocked_filters = (
+        _resolve_opponent_conference_kwargs(route, sanitized_kwargs, original_kwargs=kwargs)
+    )
+    notes.extend(conference_notes)
     unsupported_filters = _normalize_unsupported_filters(
         sanitized_kwargs.pop("unsupported_filters", None)
     )
@@ -549,6 +641,16 @@ def _execute_build_result(
             result_status="no_result",
             result_reason="filter_not_supported",
             notes=[_unsupported_filter_note(primary, unsupported_filters)],
+        )
+
+    if conference_blocked_filters:
+        primary = conference_blocked_filters[0]
+        return NoResult(
+            query_class=route_to_query_class(route),
+            reason="filter_not_supported",
+            result_status="no_result",
+            result_reason="filter_not_supported",
+            notes=[_unsupported_filter_note(primary, conference_blocked_filters)],
         )
 
     if blocked_filters:
