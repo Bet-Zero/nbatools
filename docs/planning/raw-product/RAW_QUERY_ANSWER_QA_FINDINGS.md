@@ -135,7 +135,8 @@ Review signals are grouped into these families:
 
 Current checkpoint:
 
-- All Wave 5 findings AQ-024 through AQ-031 are resolved as either `fixed` or
+- AQ-023 is fixed as supported for trusted current-era seasons, and all Wave 5
+  findings AQ-024 through AQ-031 are resolved as either `fixed` or
   `fixed_as_expected_unsupported`.
 - There are no open failed corpus cases in the latest 246-case run.
 - Future promotion of unsupported families is a product decision and contract
@@ -172,7 +173,7 @@ Current checkpoint:
 | AQ-020 | P1 | Playoff round and matchup phrasing | `bulls_finals_record_wave4`, `warriors_finals_record_since_2015_wave4`, `celtics_conference_finals_record_wave4`, `heat_knicks_playoff_series_record_wave4` | route_and_season_type_issue | fixed_as_expected_unsupported | Fixed in Raw Query Answer QA Fix Wave 6B. Adjacent `Heat Knicks playoff series record` now routes to `playoff_matchup_history` with MIA/NYK and passes as a matchup result. Single-team Finals/conference-finals record phrasing no longer falls through to regular-season `team_record`; it returns `no_result` / `filter_not_supported` with `unsupported_filters=["single_team_playoff_round_record"]`. Bulls Finals remains unsupported because current pre-2001 round labels are not reliable. Latest run: `outputs/raw_query_answer_qa/20260514T113039Z_wave6b_full/report.md`. | playoff round/matchup routing |
 | AQ-021 | P1 | Defensive stat aliases | `most_points_allowed_team_leaders_wave4`, `opponent_ppg_leaders_wave4` | stat_mapping_issue / route_mismatch | fixed | Fixed in Raw Query Answer QA Fix Wave 6A. `allow the most points per game`, `most points allowed`, and `opponent PPG leaders` now bind to team opponent-points semantics via `season_team_leaders` with `opponent_pts_per_game`; the current highest opponent-PPG top row is Utah. Latest run: `outputs/raw_query_answer_qa/20260514T050631Z/report.md`. | defensive/opponent-points stat mapping |
 | AQ-022 | P2 | Unsupported stat alias boundary | `personal_foul_leaders_wave4` | unsupported_no_result_policy | fixed_as_expected_unsupported | Fixed in Wave 7A as an explicit product boundary. `personal fouls leaders` now returns `no_result` / `filter_not_supported` with `unsupported_filters=["personal_foul_leaderboard"]` instead of falling back to points. Actual PF leaderboard support remains deferred pending a stat contract decision. Latest run: `outputs/raw_query_answer_qa/20260514T125056Z/report.md`. | product boundary / stat coverage |
-| AQ-023 | P2 | Opponent conference filters | `celtics_against_east_record_wave4`, `lakers_record_against_west_wave5` | missing_filter / unsupported_no_result_policy | promoted_current_era_support | Promoted in Opponent-Conference Promotion. `team_record` now resolves East/West opponent-conference filters through trusted `team_conference_membership.csv` coverage for `2024-25` and `2025-26`; supported cases return filtered summaries instead of broad full-season records. Missing/untrusted seasons return `conference_coverage` no-result, and geography phrases such as `east coast teams` remain unsupported. | context filter preservation |
+| AQ-023 | P2 | Opponent conference filters | `celtics_against_east_record_wave4`, `lakers_record_against_west_wave5` | missing_filter / unsupported_no_result_policy | fixed_supported_for_trusted_seasons | Promoted in Opponent-Conference Promotion. `team_record` now resolves East/West opponent-conference filters through trusted `team_conference_membership.csv` coverage for `2024-25` and `2025-26`; supported cases return filtered summaries instead of broad full-season records. Missing/untrusted seasons return `conference_coverage` no-result, geography/division phrases remain unsupported, and Conference Finals wording stays a playoff-round surface. | context filter preservation |
 | AQ-024 | P1 | Defensive stat aliases | `team_gave_up_fewest_ppg_wave5`, `lakers_held_teams_under_100_wave5`, `teams_allowing_fewest_points_wave5` | stat_mapping_issue | fixed | Fixed in Raw Query Answer QA Fix Wave 8A. `gave up the fewest/most points per game`, `giving up the fewest/most points`, `teams allowing the fewest/most points`, and opponent-points/points-allowed variants bind to `season_team_leaders` with `opponent_pts_per_game`. `held teams/opponents under N`, `allowed under N`, and `gave up under/fewer than N` bind record thresholds to `opponent_pts`. Latest run: `outputs/raw_query_answer_qa/20260516T075849Z/report.md`. | defensive/opponent-points stat mapping |
 | AQ-025 | P2 | Team record phrasing | `lakers_how_did_road_last_season_wave5` | route_mismatch | fixed | Fixed in Raw Query Answer QA Fix Wave 8C1. `How did the Lakers do on the road last season?` now routes to `team_record`, preserves road and `2024-25`, and returns 41 games, 19 wins, and 22 losses. Latest run: `outputs/raw_query_answer_qa/20260516T101507Z/report.md`. | summary-vs-finder intent routing |
 | AQ-026 | P1 | Record-when player condition | `jokic_possessive_triple_double_record_wave5` | routing_or_data_gap | fixed | Fixed in Raw Query Answer QA Fix Wave 8C2. Auxiliary question-word `was` no longer resolves as Washington when no explicit Washington/Wizards/WAS reference is present. `What was Jokic's record in games with a triple-double?` returns `player_game_summary` / `ok`, no team context, 34 games, and a 24-10 record. Latest run: `outputs/raw_query_answer_qa/20260516T112341Z/report.md`. | player/team context resolution |
@@ -186,21 +187,23 @@ Current checkpoint:
 
 Latest frontend-copy run:
 
-- Run ID: `20260515T024718Z`
+- Run ID: `20260517T071053Z`
 - Source backend run:
-  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Report:
-  `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.md`
-- Selected cases: 59
-- Rendered successfully: 59
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`
+- Selected cases: 125
+- Rendered successfully: 125
 - Render failures: 0
-- Soft checks: `pass: 156`, `fail: 0`, `not_checked: 0`
+- Missing backend records: 0
+- Soft checks: `pass: 480`, `fail: 0`, `not_checked: 0`
 
 | Finding ID | Priority | Category | Cases | Status | Notes |
 |---|---|---|---|---|---|
 | FCQ-001 | P1 | Position filter source/visibility | `guards_fg_percentage_leaders` | fixed | Parser/backend now recognizes the exact `field goal percentage among guards?` phrasing as `position_filter=guards`; raw QA hard-asserts the position metadata/applied filter, and frontend-copy renders `Position guards`. |
 | FCQ-002 | P1 | Opponent-points leaderboard hero wording | `fewest_points_allowed_team_leader`; guardrails `most_points_allowed_team_leaders_wave4`, `opponent_ppg_leaders_wave4` | fixed | `season_team_leaders` metadata now exposes executed `ascending`; leaderboard hero copy renders fewest/most allowed-points wording according to that direction. |
 | FCQ-003 | P2 | Unsupported/no-result guidance specificity | `personal_foul_leaders_wave4`, `rookie_scoring_leaders_wave4`, `starter_assist_leaders_wave4`; utility coverage also includes `team_bench_scoring` | fixed | No-result primary copy now uses boundary-specific messages for personal-foul, rookie, league-wide starter/bench, and team bench-scoring unsupported filters instead of generic stat-unavailable copy. |
+| FCQ-004 | P2 | Opponent-conference record copy | `celtics_against_east_record_wave4`, `lakers_record_against_west_wave5` | fixed | Frontend-copy QA now sources the clean 246-case backend run and renders the selected opponent-conference record cases as supported record answers with East/West filter context. |
 
 ## Notes
 
@@ -215,9 +218,11 @@ Latest frontend-copy run:
   now has 195 expectation passes, zero suspicious flags, and no failed case IDs.
 - Fix Wave 8A resolved AQ-024, Fix Wave 8B resolved AQ-029, Fix Wave 8C1
   resolved AQ-025/AQ-027, Fix Wave 8C2 resolved AQ-026/AQ-028, and Fix Wave
-  8D resolved AQ-030/AQ-031 as explicit product boundaries. The expanded
-  246-case corpus now has 246 expectation passes, zero suspicious flags, and
-  no failed case IDs. The original 195 clean cases remain preserved.
+  8D resolved AQ-030/AQ-031 as explicit product boundaries. Opponent-Conference
+  Promotion then resolved AQ-023 as supported for trusted current-era seasons,
+  refreshed frontend-copy source coverage, and brought the corpus to 246
+  expectation passes, zero suspicious flags, and no failed case IDs. The
+  original 195 clean cases remain preserved.
 - Exact frontend rendered-answer extraction is still deferred; targeted backend `answer_phrase` enrichment remains an optional future improvement for high-value direct-answer routes.
 - The manual corpus should remain review-oriented. Promote only objective, stable failures into focused tests near the behavior they protect.
 - Fix Wave 4A resolved AQ-011 and AQ-013 scalar semantics. Fix Wave 4B

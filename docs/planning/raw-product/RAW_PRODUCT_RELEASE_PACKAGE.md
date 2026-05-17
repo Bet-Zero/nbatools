@@ -38,7 +38,9 @@ Human sign-off still needed:
 | Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
+| Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
 | Parser smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-parser` passing 751 tests. |
+| Query smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-query` passing 752 tests. |
 | Static diff check | `PASS` | This release-package pass ran `git diff --check` successfully. |
 
 ## 3. Supported Product Boundary
@@ -60,6 +62,9 @@ query guide.
 - Overall, home/away, road, explicit-season, last-season, month-window,
   since-date, since All-Star, opponent-quality, scoring-threshold, and
   opponent-points-threshold team records.
+- Opponent-conference team-record filters for trusted current-era seasons
+  `2024-25` and `2025-26`, resolved from
+  `data/raw/teams/team_conference_membership.csv`.
 - `how did TEAM do` phrasing routes to record-style W/L summaries where the
   slots are supported.
 
@@ -169,8 +174,8 @@ return explicit no-result, unsupported, unsupported-data, or
 | Rookie leaderboards | Returns explicit unsupported-filter no-result. | Rookie status is not part of the trusted current leaderboard filter contract. | Add trusted rookie metadata, parser slots, execution filtering, docs, and tests. |
 | League-wide starter/bench leaderboards | Returns explicit unsupported-filter no-result for starter/bench leaderboard phrasing. | League-wide role filters need trusted role classification, minimums, and route contracts. | Define role coverage and minimums, then add execution-backed filters and rendered-copy coverage. |
 | Team bench scoring | Returns explicit unsupported-filter no-result for team bench scoring/points. | Team bench scoring needs role-scoped team aggregation outside the current team summary contract. | Define a team bench/unit scoring dataset or derived aggregation with stable summary sections. |
-| Opponent-conference missing coverage / geography | Current-era `team_record` opponent-conference filters are supported for trusted seasons `2024-25` and `2025-26`; seasons outside trusted coverage and geography phrases such as `east coast teams` return explicit no-result instead of broad full-season records. | Historical conference coverage, divisions, and geography semantics are not part of the approved data contract. | Add trusted historical conference membership or division/geography contracts before expanding beyond the current-era East/West team-record filter. |
-| Single-team playoff round records | Single-team Finals/conference-finals record phrasing returns unsupported-filter no-result. | Current contracts support round leaderboards and matchup history, not single-team round records; some historical round labels are unreliable. | Approve single-team playoff round semantics and fallback behavior for unreliable labels, then add route/output coverage. |
+| Opponent-conference coverage gaps / geography / divisions | Current-era `team_record` opponent-conference filters are supported for trusted seasons `2024-25` and `2025-26`; seasons outside trusted coverage, geography phrases such as `east coast teams`, and division requests return explicit no-result instead of broad full-season records. | Historical conference coverage, divisions, and geography semantics are not part of the approved data contract. | Add trusted historical conference membership or division/geography contracts before expanding beyond the current-era East/West team-record filter. |
+| Single-team playoff round records | Single-team Finals/conference-finals record phrasing returns unsupported-filter no-result; `conference finals` is playoff-round phrasing, not opponent-conference filtering. | Current contracts support round leaderboards and matchup history, not single-team round records; some historical round labels are unreliable. | Approve single-team playoff round semantics and fallback behavior for unreliable labels, then add route/output coverage. |
 | Subjective/trend queries | Clutch, cooled off, best defender, MVP candidate, best player lately, and similar opinion/trend requests return unsupported/no-result instead of invented definitions. | Product-approved metric definitions and source coverage are required. | Define metric-backed semantics one family at a time, then add parser, execution, copy, and QA coverage. |
 | Multi-player availability | Multi-player availability record phrasing returns explicit unsupported/no-result instead of an unfiltered team record. | Multi-player availability semantics are outside the current whole-game single-player absence contract. | Add a dedicated availability model, trusted coverage fields, filter semantics, and result contract. |
 | Lineup summaries / leaderboards where trusted coverage is unavailable | Current guarded cases such as `best 5-man lineups` and lineup membership summaries return explicit unsupported/no-result responses. | Trusted lineup/stint coverage is unavailable for those release cases, and generic display contracts remain risky for real lineup identity fields. | Add or verify a dedicated lineup dataset with grain, join keys, trust fields, identity columns, frontend rendering, and fallback behavior. |
@@ -183,10 +188,10 @@ return explicit no-result, unsupported, unsupported-data, or
 
 Latest release artifacts:
 
-- Backend raw QA report:
-  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Backend raw QA Markdown report:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.md`
+- Backend raw QA JSONL report:
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Frontend-copy report:
   `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`
 - Visual QA checklist:
@@ -211,6 +216,7 @@ Supporting return packages:
 - `return_packages/raw-product/RAW_QA_HARNESS_EFFICIENCY_WAVE_1_RETURN_PACKAGE.md`
 - `return_packages/raw-product/FRONTEND_COPY_QA_EXPANSION_WAVE_1_RETURN_PACKAGE.md`
 - `return_packages/raw-product/FRONTEND_COPY_QA_EXPANSION_WAVE_2_RETURN_PACKAGE.md`
+- `return_packages/raw-product/OPPONENT_CONFERENCE_PROMOTION_RETURN_PACKAGE.md`
 - `return_packages/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST_RETURN_PACKAGE.md`
 - `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
 
@@ -229,6 +235,8 @@ Supporting return packages:
   `2024-25` and `2025-26`.
 - Opponent-conference expansion outside trusted current-era coverage, divisions,
   and geography phrases remains unsupported/no-result.
+- Conference Finals phrasing remains a playoff-round surface, not an
+  opponent-conference filter.
 - Frontend lint remains clean with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Frontend build remains clean with the existing Vite large-chunk warning.
@@ -265,20 +273,22 @@ Before deploying this boundary again:
 
 Recommended order after this release package:
 
-1. Promote one unsupported family into real support.
-   - Best first candidates: opponent-conference filters now that the
-     current-era data prerequisite exists, single-team advanced scalar
-     summaries, or rookie/role leaderboards, depending on product need and
-     available source contracts.
+1. Preview smoke rerun for opponent-conference support.
+   - Add `Celtics record against the East this season` and
+     `Lakers record against the West` to the next targeted preview smoke pass.
 2. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.
-3. Frontend-copy Wave 3 only after fresh gap analysis.
+3. Promote another unsupported family into real support.
+   - Candidates include historical opponent-conference expansion beyond trusted
+     current-era seasons, single-team advanced scalar summaries, or rookie/role
+     leaderboards, depending on product need and available source contracts.
+4. Frontend-copy Wave 3 only after fresh gap analysis.
    - Expand only if a route/shape risk is still meaningfully undercovered after
      the 125-case set.
-4. Harness tag/category filters.
+5. Harness tag/category filters.
    - Add focused selection by corpus tags/categories if future fix waves need
      faster iteration than saved slices provide.
-5. Broader release/CI artifact packaging.
+6. Broader release/CI artifact packaging.
    - Package raw QA, frontend-copy, preview manual QA, and visual QA outputs
      into a repeatable CI/release artifact bundle.

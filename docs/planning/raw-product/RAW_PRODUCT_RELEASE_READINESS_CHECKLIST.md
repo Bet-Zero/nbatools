@@ -76,9 +76,10 @@ Rationale: the selected rendered-copy corpus is clean and now sources the
 latest clean 246-case backend run. Wave 2 added streak tables, rolling
 stretches, finder/count outputs, game-summary logs, team splits,
 record-by-decade shapes, top-performance variants, and on/off plus lineup
-unsupported no-result boundaries. The remaining limitation is coverage breadth:
-this is selected DOM-copy coverage, not full 246-case rendered-copy or visual
-layout coverage.
+unsupported no-result boundaries. The refreshed source run also covers the
+promoted opponent-conference record cases as supported rendered-copy examples.
+The remaining limitation is coverage breadth: this is selected DOM-copy
+coverage, not full 246-case rendered-copy or visual layout coverage.
 
 ## 4. Visual QA
 
@@ -130,9 +131,10 @@ instead of broad plausible answers.
 - Rookie leaderboards.
 - League-wide starter/bench role leaderboards.
 - Team bench scoring summaries.
-- Opponent-conference seasons outside trusted coverage, divisions, and
-  geography phrases such as `east coast teams`.
-- Single-team playoff round records.
+- Opponent-conference seasons outside trusted coverage, geography phrases such
+  as `east coast teams`, and division requests.
+- Single-team playoff round records, including Conference Finals phrasing as
+  playoff-round phrasing rather than opponent-conference filtering.
 - Subjective/trend queries such as clutch, cooled off, best defender, MVP
   candidate, and best player lately.
 - Multi-player availability, on/off, and lineup membership.
@@ -317,6 +319,20 @@ Mobile blocker cases rechecked: 5.
 Blocking issues: none.
 ```
 
+### Team conference data validation
+
+Command:
+
+```bash
+.venv/bin/pytest tests/test_team_conference_membership_data.py -q
+```
+
+Result:
+
+```text
+15 passed
+```
+
 ### Parser smoke
 
 Command:
@@ -328,7 +344,21 @@ make PYTEST=.venv/bin/pytest test-parser
 Result:
 
 ```text
-747 passed in 142.20s (0:02:22)
+751 passed
+```
+
+### Query smoke
+
+Command:
+
+```bash
+make PYTEST=.venv/bin/pytest test-query
+```
+
+Result:
+
+```text
+752 passed
 ```
 
 ### Static diff check

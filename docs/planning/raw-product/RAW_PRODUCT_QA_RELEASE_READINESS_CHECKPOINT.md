@@ -17,6 +17,10 @@
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`.
 - Latest checklist status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Release package status: `RELEASE_CANDIDATE_WITH_NOTES`.
+- Supported boundary update: current-era opponent-conference `team_record`
+  filters are supported for trusted seasons `2024-25` and `2025-26`; missing
+  coverage, geography, divisions, and single-team playoff-round phrasing remain
+  guarded unsupported boundaries.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
@@ -54,8 +58,8 @@ Main coverage areas:
   round/appearance leaderboards
 - date/window filters, including last-N, month windows, explicit seasons,
   since-date windows, and since All-Star context
-- opponent-quality, position, role, stat alias, and defensive/opponent-points
-  phrasing guardrails
+- opponent-quality, opponent-conference, position, role, stat alias, and
+  defensive/opponent-points phrasing guardrails
 - explicit unsupported-boundary behavior
 
 Recent fix waves:
@@ -66,6 +70,8 @@ Recent fix waves:
 - Fix Wave 8C1: team record intent and since-date windows.
 - Fix Wave 8C2: player entity and stat-context routing.
 - Fix Wave 8D: product-boundary finalization.
+- Opponent-Conference Promotion: current-era East/West `team_record` filters
+  promoted to supported behavior; corpus grew from 243 to 246 cases.
 
 ## 3. Coverage map
 
@@ -75,8 +81,9 @@ Supported/query-covered areas:
   home/away, wins/losses, role context, availability context, and selected stat
   contexts.
 - Team records: overall, home/away, road, date windows, explicit seasons,
-  opponent-quality, scoring thresholds, opponent-points thresholds, and
-  `how did TEAM do` W/L summary phrasing.
+  opponent-quality, opponent-conference filters for trusted current-era seasons,
+  scoring thresholds, opponent-points thresholds, and `how did TEAM do` W/L
+  summary phrasing.
 - Record-when conditions: player stat thresholds, special events such as
   triple-doubles, player shooting thresholds, team scoring thresholds, and team
   opponent-points thresholds.
@@ -155,18 +162,20 @@ They are not current product failures.
     that is not part of the current team summary contract.
   - Future support path: define a team bench/unit scoring dataset or derived
     aggregation and expose stable summary sections.
-- Opponent-conference filters:
+- Opponent-conference coverage gaps, divisions, and geography phrases:
   - Current behavior: `team_record` queries support East/West opponent
     conference filters for trusted seasons `2024-25` and `2025-26`.
     Missing/untrusted seasons return `conference_coverage` no-result, and
-    geography phrases such as `east coast teams` remain unsupported.
+    geography phrases such as `east coast teams` and division requests remain
+    unsupported.
   - Why limited: historical conference membership, divisions, and geography
     semantics are not part of the approved current-era data contract.
   - Future support path: add trusted historical conference membership or a
     dedicated division/geography contract before expanding the boundary.
 - Single-team playoff round records:
   - Current behavior: single-team Finals/conference-finals record phrasing
-    returns explicit unsupported-filter no-results.
+    returns explicit unsupported-filter no-results. Conference Finals wording is
+    playoff-round phrasing, not opponent-conference filtering.
   - Why unsupported: current route/result contracts support round leaderboards
     and matchup history, but not single-team round records; pre-2001 round
     labels are also unreliable for some historical cases.
@@ -302,7 +311,11 @@ Latest release-readiness checklist validation:
 - Frontend build: passed; existing Vite large-chunk warning remains.
 - Frontend lint: passed with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
-- Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 747 tests.
+- Team conference data validation:
+  `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed,
+  15 tests.
+- Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
+- Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check: `git diff --check` passed.
 - Preview validation:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;

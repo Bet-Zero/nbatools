@@ -21,12 +21,18 @@ Current status:
 - Recommended release status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Preview status: `PREVIEW_READY_WITH_NOTES`.
 - Latest backend raw QA:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`; 243 cases;
-  expectation cases `pass: 243`; failed case IDs none; suspicious flags 0.
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases;
+  expectation cases `pass: 246`; failed case IDs none; suspicious flags 0.
 - Latest frontend-copy QA:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125
   selected cases; rendered successfully 125; render failures 0; missing backend
-  records 0; soft checks `475/0/0`.
+  records 0; soft checks `480/0/0`.
+- Latest opponent-conference promotion package:
+  `return_packages/raw-product/OPPONENT_CONFERENCE_PROMOTION_RETURN_PACKAGE.md`;
+  current-era East/West `team_record` filters are supported for trusted seasons
+  `2024-25` and `2025-26`.
+- Latest relevant validation: team conference data 15 passed, parser 751 passed,
+  and query 752 passed.
 - Latest preview manual QA:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
   `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker
@@ -34,11 +40,11 @@ Current status:
 
 Recommended next roadmap options:
 
-1. Promote one unsupported family into real support.
+1. Run a preview smoke rerun for opponent-conference support.
 2. Add visual QA automation.
-3. Run frontend-copy Wave 3 only after a fresh gap analysis.
-4. Add harness tag/category filters.
-5. Add broader release/CI artifact packaging.
+3. Promote another unsupported family into real support.
+4. Run frontend-copy Wave 3 only after a fresh gap analysis.
+5. Add harness tag/category filters or broader release/CI artifact packaging.
 
 ## Existing Infrastructure To Reuse
 
@@ -1445,9 +1451,9 @@ Harness validation:
 
 Recommended next phase:
 
-- With the 243-case raw product corpus clean, choose between frontend-copy
-  corpus expansion, a release-readiness checklist, or selecting one unsupported
-  family to promote into real support behind an approved route/result contract.
+- This recommendation was completed by the frontend-copy expansion,
+  release-readiness checklist, and opponent-conference promotion. The current
+  checkpoint below supersedes this 243-case handoff.
 
 ## Raw Product QA Release Readiness Checkpoint Status
 
@@ -1456,27 +1462,25 @@ A release-readiness checkpoint has been recorded in
 
 Current backend Raw QA checkpoint:
 
-- Latest run: `outputs/raw_query_answer_qa/20260516T221654Z/report.md`
-- Corpus size: 243 cases
-- Expectation cases: `pass: 243`
-- Expectation checks: `pass: 1368`
+- Latest run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`
+- Corpus size: 246 cases
+- Expectation cases: `pass: 246`
+- Expectation checks: `pass: 1421`
 - Failed case IDs: none
 - Suspicious flag cases: 0
 - Verified outlier cases: 1 (`top_performance_high_points`)
 
 Checkpoint recommendation:
 
-- First option: run a release-readiness checklist for the current supported and
-  explicitly unsupported product boundary. Include deploy preview validation,
-  `/visual-qa` preview validation, a smoke query set, frontend-copy QA rerun,
-  full raw corpus rerun, and docs review.
-- Second option: expand frontend-copy QA beyond the selected 125-case corpus
+- First option: run a preview smoke rerun for the newly supported
+  opponent-conference record cases.
+- Second option: add visual QA automation for the accepted manual baseline.
+- Third option: promote another unsupported family into real support behind an
+  approved route/result/data contract.
+- Fourth option: expand frontend-copy QA beyond the selected 125-case corpus
   only after a follow-up gap analysis identifies remaining high-risk rendered
   shapes.
-- Third option: promote one unsupported family into real support behind an
-  approved route/result contract. Best first candidate: opponent-conference
-  filters.
-- Fourth option: improve harness efficiency with wave tags, slices,
+- Fifth option: improve harness efficiency with wave tags, slices,
   run-new-cases-only mode, saved adjacent groups, and validation command
   presets.
 
@@ -1492,7 +1496,7 @@ Approach:
 - Selected corpus/config:
   `qa/frontend_copy_corpus.yaml`
 - Source backend run:
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Runner:
   `frontend/src/test/frontendCopyQaReport.test.tsx`
 - Harness helper:
@@ -1518,18 +1522,18 @@ extracts review-oriented visible copy:
 
 Latest run:
 
-- Run ID: `20260517T054758Z`
+- Run ID: `20260517T071053Z`
 - Markdown report:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`
 - JSONL report:
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.jsonl`
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.jsonl`
 - Summary:
-  `outputs/frontend_copy_qa/20260517T054758Z/summary.json`
+  `outputs/frontend_copy_qa/20260517T071053Z/summary.json`
 - Selected cases: 125
 - Rendered successfully: 125
 - Render failures: 0
 - Missing backend records: 0
-- Soft checks: `pass: 475`, `fail: 0`, `not_checked: 0`
+- Soft checks: `pass: 480`, `fail: 0`, `not_checked: 0`
 
 Frontend Copy QA Fix Wave 1: Semantic Copy Cleanup status:
 
@@ -1583,6 +1587,16 @@ Frontend Copy QA Expansion Wave 2 status:
 - Remaining limitations: selected DOM-copy coverage only, not all 243 backend
   cases; no visual layout or screenshot QA; on/off and lineup are covered only
   as unsupported/no-result surfaces.
+
+Post-promotion frontend-copy refresh:
+
+- Source backend run refreshed to the clean 246-case raw run:
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`.
+- Latest refreshed report:
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`.
+- Opponent-conference selected cases now render as supported team-record
+  answers with East/West filter context.
+- Soft checks are clean at `480/0/0`.
 
 Review process:
 
@@ -1719,28 +1733,30 @@ unsupported Raw Product QA boundary is complete.
 
 - Checklist doc:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
-- Final status: `READY_WITH_KNOWN_LIMITATIONS`
-- Production query behavior changed? no
+- Final status: `RELEASE_CANDIDATE_WITH_NOTES`
+- Production query behavior changed? yes; opponent-conference `team_record`
+  filters are supported for trusted seasons `2024-25` and `2025-26`
 - Frontend rendering changed? no
-- Corpus expectations changed? no
-- New corpus cases added? no
+- Corpus expectations changed? yes; selected opponent-conference cases moved
+  from unsupported to supported expectations
+- New corpus cases added? yes; three raw cases were added in the promotion
 
 Validation command results:
 
 - Raw QA full corpus:
   `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml`
-  wrote `outputs/raw_query_answer_qa/20260516T230058Z`; 243 cases;
-  result statuses `error: 9`, `no_result: 32`, `ok: 202`; expectation cases
-  `pass: 243`; suspicious flag cases 0; informational flag cases 149;
+  wrote `outputs/raw_query_answer_qa/20260517T070422Z`; 246 cases;
+  result statuses `error: 9`, `no_result: 31`, `ok: 206`; expectation cases
+  `pass: 246`; suspicious flag cases 0; informational flag cases 153;
   verified outlier cases 1; failed case IDs none.
 - Frontend-copy QA:
   `cd frontend && npm run qa:frontend-copy` passed 1 test file and 4 tests;
   latest report
-  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125
+  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125
   selected cases; 125 rendered successfully; render failures 0; missing backend
-  records 0; soft checks `475/0/0`. The selected frontend-copy corpus uses
+  records 0; soft checks `480/0/0`. The selected frontend-copy corpus uses
   configured source backend run
-  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`.
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`.
 - Frontend build:
   `cd frontend && npm run build` passed; assets were written to
   `src/nbatools/ui/dist/`; the existing Vite large-chunk warning remains.
@@ -1748,22 +1764,27 @@ Validation command results:
   `cd frontend && npm run lint` passed with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Parser smoke:
-  `make PYTEST=.venv/bin/pytest test-parser` passed, 747 tests in 142.20s.
+  `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
+- Team conference data validation:
+  `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed,
+  15 tests.
+- Query smoke:
+  `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check:
   `git diff --check` passed with no output.
 - Preview validation:
-  pending until a live preview URL exists.
+  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
+  records `PREVIEW_READY_WITH_NOTES`.
 
 Next options after the checklist:
 
-1. Release/preview manual QA on the next live preview URL, including `/`,
-   `/review`, `/visual-qa`, and the six-query smoke set documented in the
-   checklist.
-2. Frontend-copy expansion wave 3 if a follow-up rendered-shape gap analysis
+1. Preview smoke rerun for opponent-conference support.
+2. Visual QA automation preflight.
+3. Frontend-copy expansion wave 3 if a follow-up rendered-shape gap analysis
    identifies meaningful remaining coverage gaps.
-3. Unsupported-family promotion preflight after choosing a product boundary and
+4. Unsupported-family promotion preflight after choosing a product boundary and
    writing route/result/data contracts.
-4. Harness/tooling efficiency improvements when future corpus or fix waves need
+5. Harness/tooling efficiency improvements when future corpus or fix waves need
    faster targeted iteration.
 
 ## Harness Efficiency Wave 1 Status
