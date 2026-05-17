@@ -3,7 +3,7 @@
 ## 1. Overall status
 
 - Checklist status: `PREVIEW_BLOCKER_FIXED_PENDING_REDEPLOY`.
-- Checklist date: 2026-05-16.
+- Checklist date: 2026-05-17.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Production query behavior changed: no.
 - Frontend rendering changed: no in the frontend-copy expansion wave; previous
@@ -11,13 +11,13 @@
   rendering change.
 - Corpus expectations changed: no.
 - New frontend-copy corpus cases added: yes, selected rendered-copy coverage
-  expanded from 59 to 100 cases.
+  expanded from 59 to 125 cases across Wave 1 and Wave 2.
 - Release posture: local fix is ready for redeploy; preview manual QA must be
   rerun against the next preview before this boundary is marked preview-ready.
 
 Known limitations:
 
-- Frontend-copy QA covers a selected 100-case corpus from the latest clean
+- Frontend-copy QA covers a selected 125-case corpus from the latest clean
   243-case backend run, not all 243 backend cases.
 - Frontend-copy QA is DOM-copy QA, not visual layout or screenshot QA.
 - Visual QA is a manual 15-case baseline, not Playwright or screenshot diffing.
@@ -54,20 +54,23 @@ expectations.
 | Item | Status |
 |---|---|
 | Corpus | `qa/frontend_copy_corpus.yaml` |
-| Selected case count | 100 |
+| Selected case count | 125 |
 | Configured source backend run | `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl` |
-| Latest checkpoint run | `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md` |
-| Latest checklist run | `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md` |
-| Rendered successfully | 100 |
+| Latest checkpoint run | `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md` |
+| Latest checklist run | `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md` |
+| Rendered successfully | 125 |
 | Render failures | 0 |
 | Missing backend records | 0 |
-| Soft checks | `pass: 304`, `fail: 0`, `not_checked: 0` |
+| Soft checks | `pass: 475`, `fail: 0`, `not_checked: 0` |
 | Gating | `qa:frontend-copy` fails on render failures, missing backend records, soft-check failures, or unchecked soft checks |
 
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.
 
 Rationale: the selected rendered-copy corpus is clean and now sources the
-latest clean 243-case backend run. The remaining limitation is coverage breadth:
+latest clean 243-case backend run. Wave 2 added streak tables, rolling
+stretches, finder/count outputs, game-summary logs, team splits,
+record-by-decade shapes, top-performance variants, and on/off plus lineup
+unsupported no-result boundaries. The remaining limitation is coverage breadth:
 this is selected DOM-copy coverage, not full 243-case rendered-copy or visual
 layout coverage.
 
@@ -208,15 +211,15 @@ Duration  7.68s
 Report summary:
 
 ```text
-Run ID: 20260517T051450Z
-Selected cases: 100
-Rendered successfully: 100
+Run ID: 20260517T054758Z
+Selected cases: 125
+Rendered successfully: 125
 Render failures: 0
 Missing backend records: 0
-Soft check pass/fail/not checked: 304/0/0
+Soft check pass/fail/not checked: 475/0/0
 ```
 
-Gating behavior: `qa:frontend-copy` now asserts 100 selected cases, 100
+Gating behavior: `qa:frontend-copy` now asserts 125 selected cases, 125
 rendered successes, 0 render failures, 0 missing backend records, 0 soft-check
 failures, and 0 unchecked soft checks.
 

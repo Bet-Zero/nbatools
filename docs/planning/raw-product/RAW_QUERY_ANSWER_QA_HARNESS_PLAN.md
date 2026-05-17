@@ -1440,8 +1440,9 @@ Checkpoint recommendation:
   explicitly unsupported product boundary. Include deploy preview validation,
   `/visual-qa` preview validation, a smoke query set, frontend-copy QA rerun,
   full raw corpus rerun, and docs review.
-- Second option: expand frontend-copy QA beyond the selected 100-case corpus,
-  starting with remaining high-risk shapes.
+- Second option: expand frontend-copy QA beyond the selected 125-case corpus
+  only after a follow-up gap analysis identifies remaining high-risk rendered
+  shapes.
 - Third option: promote one unsupported family into real support behind an
   approved route/result contract. Best first candidate: opponent-conference
   filters.
@@ -1487,18 +1488,18 @@ extracts review-oriented visible copy:
 
 Latest run:
 
-- Run ID: `20260517T051450Z`
+- Run ID: `20260517T054758Z`
 - Markdown report:
-  `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md`
+  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`
 - JSONL report:
-  `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.jsonl`
+  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.jsonl`
 - Summary:
-  `outputs/frontend_copy_qa/20260517T051450Z/summary.json`
-- Selected cases: 100
-- Rendered successfully: 100
+  `outputs/frontend_copy_qa/20260517T054758Z/summary.json`
+- Selected cases: 125
+- Rendered successfully: 125
 - Render failures: 0
 - Missing backend records: 0
-- Soft checks: `pass: 304`, `fail: 0`, `not_checked: 0`
+- Soft checks: `pass: 475`, `fail: 0`, `not_checked: 0`
 
 Frontend Copy QA Fix Wave 1: Semantic Copy Cleanup status:
 
@@ -1535,6 +1536,23 @@ Frontend Copy QA Expansion Wave 1 status:
   `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md`.
 - Remaining limitations: selected coverage only, not all 243 backend cases;
   DOM-copy QA only, not visual layout or screenshot QA.
+
+Frontend Copy QA Expansion Wave 2 status:
+
+- Selected coverage expanded from 100 to exactly 125 rendered-copy cases.
+- Source backend run remained the latest clean 243-case raw run:
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`.
+- Added selected DOM-copy coverage for streak tables, rolling stretches,
+  count/finder outputs, successful team finder tables, game-summary logs, team
+  split summaries, record-by-decade tables, record-by-decade leaderboards, and
+  top-performance variants.
+- Added on/off and lineup no-result boundary coverage only; this does not
+  promote on/off or lineup execution-backed support.
+- Latest expansion report:
+  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`.
+- Remaining limitations: selected DOM-copy coverage only, not all 243 backend
+  cases; no visual layout or screenshot QA; on/off and lineup are covered only
+  as unsupported/no-result surfaces.
 
 Review process:
 
@@ -1688,9 +1706,9 @@ Validation command results:
 - Frontend-copy QA:
   `cd frontend && npm run qa:frontend-copy` passed 1 test file and 4 tests;
   latest report
-  `outputs/frontend_copy_qa/20260517T051450Z/frontend_copy_report.md`; 100
-  selected cases; 100 rendered successfully; render failures 0; missing backend
-  records 0; soft checks `304/0/0`. The selected frontend-copy corpus uses
+  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125
+  selected cases; 125 rendered successfully; render failures 0; missing backend
+  records 0; soft checks `475/0/0`. The selected frontend-copy corpus uses
   configured source backend run
   `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`.
 - Frontend build:
@@ -1711,8 +1729,8 @@ Next options after the checklist:
 1. Release/preview manual QA on the next live preview URL, including `/`,
    `/review`, `/visual-qa`, and the six-query smoke set documented in the
    checklist.
-2. Frontend-copy corpus expansion beyond the selected 100 cases if the next
-   risk to reduce is user-facing interpretation and rendered copy breadth.
+2. Frontend-copy expansion wave 3 if a follow-up rendered-shape gap analysis
+   identifies meaningful remaining coverage gaps.
 3. Unsupported-family promotion preflight after choosing a product boundary and
    writing route/result/data contracts.
 4. Harness/tooling efficiency improvements when future corpus or fix waves need
@@ -1809,7 +1827,7 @@ Example commands:
 
 ## Open Questions
 
-- Should future frontend-copy waves expand from the hand-curated 100-case list
+- Should future frontend-copy waves expand from the hand-curated 125-case list
   into all 149 `frontend_hero_expected` informational cases? Recommendation:
   expand only the remaining families that need more coverage; keep DOM-copy QA
   separate from visual layout QA.

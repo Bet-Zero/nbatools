@@ -1,6 +1,6 @@
 version: 1
 source_backend_run: outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl
-description: Frontend hero/copy QA Wave 1 selected review subset.
+description: Frontend hero/copy QA Wave 2 selected review subset.
 cases:
   - id: celtics_record_playoff_teams
     category: team_record
@@ -1110,3 +1110,410 @@ cases:
       - clutch
     expected_filter_chip_fragments:
       - Clutch
+
+  - id: curry_3_threes_streak
+    category: streak
+    review_focus:
+      - streak_table
+      - player_threshold_streak
+      - table_columns
+    expected_semantic_facts:
+      - Stephen Curry
+      - [threes, 3PM, 3P]
+      - streak
+    expected_table_header_fragments:
+      - Streak
+      - Length
+      - Start
+      - End
+      - 3PM
+    expected_filter_chip_fragments:
+      - 3
+
+  - id: jokic_triple_double_streak
+    category: streak
+    review_focus:
+      - streak_table
+      - special_event_streak
+      - table_columns
+    expected_semantic_facts:
+      - Nikola Jokic
+      - triple-double
+      - streak
+    expected_table_header_fragments:
+      - Streak
+      - Length
+      - Start
+      - End
+    expected_filter_chip_fragments:
+      - Triple Double
+
+  - id: lebron_active_20_point_streak
+    category: streak
+    review_focus:
+      - streak_table
+      - active_streak_status
+      - threshold_context
+    expected_semantic_facts:
+      - LeBron James
+      - 20
+      - streak
+      - [current, ongoing, Active]
+    expected_table_header_fragments:
+      - Streak
+      - Length
+      - PTS
+    expected_filter_chip_fragments:
+      - 20
+
+  - id: lakers_win_streak
+    category: streak
+    review_focus:
+      - streak_table
+      - team_outcome_streak
+      - table_columns
+    expected_semantic_facts:
+      - Lakers
+      - [winning, won]
+      - streak
+    expected_table_header_fragments:
+      - Team
+      - Streak
+      - Length
+      - Record
+
+  - id: celtics_120_point_streak
+    category: streak
+    review_focus:
+      - streak_table
+      - team_threshold_streak
+      - table_columns
+    expected_semantic_facts:
+      - Celtics
+      - 120
+      - streak
+    expected_table_header_fragments:
+      - Team
+      - Streak
+      - Length
+      - PTS
+    expected_filter_chip_fragments:
+      - 120
+
+  - id: hottest_3_game_scoring_stretch
+    category: rolling_stretch
+    review_focus:
+      - rolling_stretch_table
+      - league_window
+      - scoring_metric
+    expected_semantic_facts:
+      - 3-game
+      - scoring stretch
+    expected_table_header_fragments:
+      - Rank
+      - Player
+      - Window
+      - PPG
+      - Start
+      - End
+
+  - id: jokic_5_game_rebound_stretch
+    category: rolling_stretch
+    review_focus:
+      - rolling_stretch_table
+      - named_player_window
+      - rebound_metric
+    expected_semantic_facts:
+      - Nikola Jokic
+      - 5-game
+      - [rebounding, rebound]
+    expected_table_header_fragments:
+      - Window
+      - RPG
+      - Start
+      - End
+
+  - id: efficient_10_game_stretch
+    category: rolling_stretch
+    review_focus:
+      - rolling_stretch_table
+      - efficiency_metric
+      - rolling_window
+    expected_semantic_facts:
+      - [efficient, true-shooting, TS%]
+      - 10-game
+      - stretch
+    expected_table_header_fragments:
+      - Window
+      - TS%
+      - Start
+      - End
+
+  - id: jokic_triple_double_count
+    category: finder
+    review_focus:
+      - count_with_finder
+      - special_event_count
+      - player_game_log
+    expected_semantic_facts:
+      - Nikola Jokic
+      - triple-double
+      - 34
+    expected_table_header_fragments:
+      - Date
+      - TM
+      - Opp
+      - PTS
+      - REB
+      - AST
+    expected_filter_chip_fragments:
+      - Triple Double
+
+  - id: curry_5_threes_count
+    category: finder
+    review_focus:
+      - count_with_finder
+      - shooting_threshold_count
+      - player_game_log
+    expected_semantic_facts:
+      - Stephen Curry
+      - 5
+      - [threes, 3P, 3PM, fg3ms]
+    expected_table_header_fragments:
+      - Date
+      - 3P
+      - PTS
+    expected_filter_chip_fragments:
+      - [5, fg3m]
+
+  - id: lakers_held_opponents_under_100_count
+    category: finder
+    review_focus:
+      - count_with_finder
+      - defensive_threshold_count
+      - team_game_log
+    expected_semantic_facts:
+      - Lakers
+      - under 100
+      - opponent
+    expected_table_header_fragments:
+      - Date
+      - Team
+      - Opp
+      - Opp PTS
+    expected_absent_fragments:
+      - scored the most
+
+  - id: celtics_road_losses_finder
+    category: finder
+    review_focus:
+      - team_game_log
+      - location_filter
+      - outcome_filter
+    expected_semantic_facts:
+      - Celtics
+      - road
+      - losses
+    expected_table_header_fragments:
+      - Date
+      - Team
+      - Opp
+      - W/L
+    expected_filter_chip_fragments:
+      - Away
+      - Losses
+
+  - id: celtics_120_points_15_threes
+    category: finder
+    review_focus:
+      - team_game_log
+      - compound_thresholds
+      - shooting_metric
+    expected_semantic_facts:
+      - Celtics
+      - 120
+      - 15
+      - [threes, 3PM, fg3m]
+    expected_table_header_fragments:
+      - Date
+      - Team
+      - PTS
+      - 3PM
+    expected_filter_chip_fragments:
+      - PTS
+      - [3PM, fg3m]
+
+  - id: jokic_30_points_10_assists_finder_misparsed
+    category: finder
+    review_focus:
+      - player_game_log
+      - compound_thresholds
+      - parser_boundary_regression
+    expected_semantic_facts:
+      - Nikola Jokic
+      - 30
+      - [10 assists, AST]
+    expected_table_header_fragments:
+      - Date
+      - PTS
+      - AST
+
+  - id: suns_without_booker
+    category: game_summary
+    review_focus:
+      - game_summary_log
+      - without_player_filter
+      - top_performer_detail_path
+    expected_semantic_facts:
+      - Suns
+      - Devin Booker
+      - without
+    expected_table_header_fragments:
+      - Team
+      - Opp
+      - PTS
+      - Opp PTS
+
+  - id: celtics_wins_losses_split
+    category: split
+    review_focus:
+      - team_split_summary
+      - wins_losses_split
+      - table_columns
+    expected_semantic_facts:
+      - Celtics
+      - wins
+      - losses
+    expected_table_header_fragments:
+      - Split
+      - GP
+      - Record
+
+  - id: lakers_home_away_split_wave4
+    category: split
+    review_focus:
+      - team_split_summary
+      - home_away_split
+      - table_columns
+    expected_semantic_facts:
+      - Lakers
+      - home
+      - away
+    expected_table_header_fragments:
+      - Split
+      - GP
+      - Record
+    expected_filter_chip_fragments:
+      - Home
+      - Away
+
+  - id: celtics_tatum_on_off_boundary_wave4
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_guidance
+      - on_off_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unsupported Query
+      - Jayson Tatum
+      - [on/off, On/Off]
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: warriors_record_by_decade
+    category: record_by_decade
+    review_focus:
+      - record_by_decade_table
+      - single_team_decade_breakdown
+      - table_columns
+    expected_semantic_facts:
+      - Warriors
+      - decade
+    expected_table_header_fragments:
+      - Decade
+      - W-L
+      - Win %
+
+  - id: winningest_team_2010s
+    category: record_by_decade
+    review_focus:
+      - record_by_decade_leaderboard
+      - decade_range
+      - wins_metric
+    expected_semantic_facts:
+      - 2010s
+      - winningest
+    expected_table_header_fragments:
+      - Team
+      - Wins
+      - W-L
+      - Decade
+
+  - id: best_record_2020s_wave4
+    category: record_by_decade
+    review_focus:
+      - record_by_decade_leaderboard
+      - recent_decade_range
+      - record_metric
+    expected_semantic_facts:
+      - 2020s
+      - record
+    expected_table_header_fragments:
+      - Team
+      - W-L
+      - Win %
+      - Decade
+
+  - id: most_assists_single_game
+    category: top_performances
+    review_focus:
+      - top_performance_variant
+      - non_scoring_metric
+      - table_columns
+    expected_semantic_facts:
+      - [assists, AST]
+    expected_table_header_fragments:
+      - Player
+      - Date
+      - AST
+
+  - id: specific_date_jan_1
+    category: top_performances
+    review_focus:
+      - top_performance_variant
+      - date_filter
+      - scoring_metric
+    expected_semantic_facts:
+      - [Jan 1, 2026, Jan 1]
+      - points
+    expected_table_header_fragments:
+      - Player
+      - Date
+      - PTS
+    expected_filter_chip_fragments:
+      - [Jan 1, Jan]
+
+  - id: best_5_man_lineups_unsupported
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_guidance
+      - lineup_leaderboard_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unsupported Query
+      - lineup
+    expected_absent_fragments:
+      - led the NBA
+
+  - id: lineups_edwards_gobert_wave4
+    category: no_result_unsupported
+    review_focus:
+      - unsupported_guidance
+      - lineup_summary_boundary
+      - no_broad_fallback
+    expected_semantic_facts:
+      - Unsupported Query
+      - lineup
+      - Anthony Edwards
+    expected_absent_fragments:
+      - led the NBA
