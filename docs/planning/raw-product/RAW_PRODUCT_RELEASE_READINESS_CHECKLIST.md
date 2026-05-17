@@ -2,23 +2,24 @@
 
 ## 1. Overall status
 
-- Checklist status: `READY_WITH_KNOWN_LIMITATIONS`.
+- Checklist status: `PREVIEW_BLOCKER_FIXED_PENDING_REDEPLOY`.
 - Checklist date: 2026-05-16.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Production query behavior changed: no.
-- Frontend rendering changed: no.
+- Frontend rendering changed: yes, `/visual-qa` mobile wrapper/layout only.
 - Corpus expectations changed: no.
 - New corpus cases added: no.
-- Release posture: ready for preview review after a live preview URL is
-  available for the manual route checks below.
+- Release posture: local fix is ready for redeploy; preview manual QA must be
+  rerun against the next preview before this boundary is marked preview-ready.
 
 Known limitations:
 
 - Frontend-copy QA covers a selected 59-case corpus from its configured source
   backend run, not all 243 backend cases from the latest raw run.
 - Visual QA is a manual 15-case baseline, not Playwright or screenshot diffing.
-- Deployed preview validation for `/visual-qa` remains pending until a preview
-  URL exists.
+- Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
+  horizontal-overflow blocker. The local wrapper fix is validated; preview
+  rerun remains required after redeploy.
 - Unsupported product families are guarded and documented, but not promoted
   into execution-backed support.
 
@@ -76,14 +77,15 @@ coverage from the latest raw run.
 | Mobile baseline | completed for the approved 15-case set |
 | Fixed finding | mobile dense table clipping for top performance, comparison, and playoff matchup tables |
 | Fixed finding | filtered leaderboard hero context for guard and center examples |
+| Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport |
 | Accepted baseline | no-result card baseline |
 | Automation limitation | no Playwright or screenshot diffing in this wave |
 
-Release verdict: `READY_WITH_KNOWN_LIMITATIONS`.
+Release verdict: `PREVIEW_RERUN_REQUIRED`.
 
-Rationale: the manual baseline and targeted rechecks are complete for the
-current 15 cases. The remaining limitation is process maturity, not a known
-release-blocking visual defect.
+Rationale: the deployed preview found a mobile wrapper overflow defect after the
+manual baseline. The local production route has been fixed and rechecked at
+390px and 1280px, but the deployed preview must be rerun after redeploy.
 
 ## 5. Deploy / Preview Readiness
 
@@ -93,13 +95,13 @@ release-blocking visual defect.
 | `/visual-qa` route | implemented locally and in Vercel rewrite config |
 | Vercel rewrite | `/visual-qa` rewrites to `/api/review` |
 | Local production API parity | validated in the deploy-parity wave |
-| Preview validation | pending until a live preview URL exists |
+| Preview validation | blocked on 2026-05-16 preview by mobile `/visual-qa` overflow; local fix validated and redeploy/rerun required |
 
-Release verdict: `READY_WITH_KNOWN_LIMITATIONS`.
+Release verdict: `PREVIEW_RERUN_REQUIRED`.
 
-Rationale: route parity is implemented, and local checks passed in the
-deploy-parity wave. The only open item is deployed preview validation on an
-actual preview URL.
+Rationale: route parity remains implemented. The preview blocker has a local
+frontend-only fix, but the deployed preview result is still blocked until the
+next preview validates `/visual-qa` at mobile width.
 
 ## 6. Unsupported Boundaries
 
@@ -247,6 +249,48 @@ frontend/src/ReviewPage.tsx react-hooks/exhaustive-deps warning at 159:27
 
 The warning is pre-existing and was also recorded in the deploy-parity wave.
 
+### Preview mobile `/visual-qa` overflow fix
+
+Preview blocker:
+
+```text
+2026-05-16 preview manual QA found mobile /visual-qa result cards overflowing
+horizontally at ~390px, clipping primary result content for:
+biggest_scoring_games, lebron_durant_comparison_wave4,
+heat_knicks_playoff_series_record_wave4, guards_fg_percentage_leaders, and
+centers_rebound_leaders_wave4.
+```
+
+Local fix:
+
+```text
+Changed only the /visual-qa wrapper/container CSS so QA page grids, cards,
+metadata, checklist text, and result columns shrink within the mobile viewport.
+No backend/query behavior or corpus expectations changed.
+```
+
+Local production-shell validation:
+
+```text
+Before fix at mobile width: viewportWidth 375, pageWidth 632, case cards ~528px.
+After fix at 390px: viewportWidth 390, pageWidth 390, bodyWidth 390,
+blocker case cards 378px.
+Required result text present:
+- biggest_scoring_games: 83 and PTS
+- lebron_durant_comparison_wave4: Edge / Difference
+- heat_knicks_playoff_series_record_wave4: Series Result
+- guards_fg_percentage_leaders: guards and FG%
+- centers_rebound_leaders_wave4: centers and RPG
+Desktop spot-check at 1280px: pageWidth 1280 for biggest_scoring_games and
+lebron_durant_comparison_wave4; required result text remained present.
+```
+
+Preview status:
+
+```text
+Preview rerun required after redeploy.
+```
+
 ### Parser smoke
 
 Command:
@@ -302,14 +346,15 @@ For the normal app query path, run this smoke set:
 | `Warriors net rating this season` | clear unsupported/no-result for single-team advanced-stat scalar summary |
 | `players with most personal fouls this season` | clear unsupported/no-result for personal-foul leaderboard |
 
-Preview verdict before URL exists: `PENDING`.
+Preview verdict before redeploy/rerun: `BLOCKED_PENDING_REDEPLOY`.
 
 Preview verdict once those checks pass: `READY_FOR_PREVIEW_REVIEW`.
 
 ## 11. Final Classification
 
-Final readiness status: `READY_WITH_KNOWN_LIMITATIONS`.
+Final readiness status: `PREVIEW_BLOCKER_FIXED_PENDING_REDEPLOY`.
 
-Release is not blocked by current backend, frontend-copy, visual baseline, docs,
-or data-quality findings. The remaining checklist item is preview manual QA on
-a live preview URL.
+Backend, frontend-copy, docs, and data-quality findings remain clean for the
+current boundary. The previous preview is blocked by the mobile `/visual-qa`
+overflow finding; the frontend-only local fix is validated and must be redeployed
+before rerunning preview manual QA.

@@ -23,6 +23,7 @@ import { postQuery } from "../api/client";
 import { downloadReviewScreenshots } from "../lib/reviewScreenshots";
 import { resolveRootView } from "../main";
 import { VISUAL_QA_CASES, VISUAL_QA_INTERNAL_ROUTE } from "../visualQaCases";
+import styles from "../VisualQaPage.module.css";
 
 const APPROVED_VISUAL_QA_CASE_IDS = [
   "guards_fg_percentage_leaders",
@@ -187,6 +188,29 @@ describe("VisualQaPage", () => {
     expect(
       vi.mocked(downloadReviewScreenshots).mock.calls[0]?.[0],
     ).toHaveLength(VISUAL_QA_CASES.length);
+  });
+
+  it("keeps stable case cards inside the visual QA layout wrappers", async () => {
+    vi.mocked(postQuery).mockImplementation((query) =>
+      Promise.resolve(makeNoResult(query)),
+    );
+
+    render(<VisualQaPage />);
+
+    await screen.findByText("15 / 15 cases completed");
+
+    const page = document.querySelector("main");
+    const shell = document.querySelector(`.${styles.shell}`);
+    const card = document.querySelector(
+      '[data-visual-case-id="biggest_scoring_games"]',
+    );
+
+    expect(page).toHaveClass(styles.page);
+    expect(shell).toBeInTheDocument();
+    expect(card).toHaveClass(styles.caseCard);
+    expect(card?.querySelector(`.${styles.cardBody}`)).toBeInTheDocument();
+    expect(card?.querySelector(`.${styles.resultColumn}`)).toBeInTheDocument();
+    expect(card?.querySelector(`.${styles.captureTarget}`)).toBeInTheDocument();
   });
 
   it("routes the internal visual QA path to the visual QA page", () => {
