@@ -10,6 +10,36 @@ The harness should support manual and ChatGPT review first. Selected objective f
 
 This plan is discovery-backed and intentionally keeps Wave 1 small: run a curated query corpus, capture structured result envelopes, extract the most useful answer-review fields, and write JSONL plus Markdown reports. It should not require browser rendering in the first implementation.
 
+## Current Release Package Status
+
+Release package:
+
+- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
+
+Current status:
+
+- Recommended release status: `RELEASE_CANDIDATE_WITH_NOTES`.
+- Preview status: `PREVIEW_READY_WITH_NOTES`.
+- Latest backend raw QA:
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.jsonl`; 243 cases;
+  expectation cases `pass: 243`; failed case IDs none; suspicious flags 0.
+- Latest frontend-copy QA:
+  `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125
+  selected cases; rendered successfully 125; render failures 0; missing backend
+  records 0; soft checks `475/0/0`.
+- Latest preview manual QA:
+  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
+  `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker
+  cases passed with notes.
+
+Recommended next roadmap options:
+
+1. Promote one unsupported family into real support.
+2. Add visual QA automation.
+3. Run frontend-copy Wave 3 only after a fresh gap analysis.
+4. Add harness tag/category filters.
+5. Add broader release/CI artifact packaging.
+
 ## Existing Infrastructure To Reuse
 
 The strongest existing reuse point is the backend query service:

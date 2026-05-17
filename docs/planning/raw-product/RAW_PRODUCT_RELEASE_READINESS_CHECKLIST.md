@@ -2,9 +2,11 @@
 
 ## 1. Overall status
 
-- Checklist status: `PREVIEW_BLOCKER_FIXED_PENDING_REDEPLOY`.
+- Checklist status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Checklist date: 2026-05-17.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
+- Release package:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
 - Production query behavior changed: no.
 - Frontend rendering changed: no in the frontend-copy expansion wave; previous
   `/visual-qa` mobile wrapper/layout-only fix remains the latest production
@@ -12,8 +14,9 @@
 - Corpus expectations changed: no.
 - New frontend-copy corpus cases added: yes, selected rendered-copy coverage
   expanded from 59 to 125 cases across Wave 1 and Wave 2.
-- Release posture: local fix is ready for redeploy; preview manual QA must be
-  rerun against the next preview before this boundary is marked preview-ready.
+- Release posture: release-candidate ready with notes; the latest preview manual
+  QA rerun passed `/`, `/review`, `/visual-qa`, the six-query smoke set, and the
+  five mobile blocker rechecks.
 
 Known limitations:
 
@@ -22,8 +25,8 @@ Known limitations:
 - Frontend-copy QA is DOM-copy QA, not visual layout or screenshot QA.
 - Visual QA is a manual 15-case baseline, not Playwright or screenshot diffing.
 - Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
-  horizontal-overflow blocker. The local wrapper fix is validated; preview
-  rerun remains required after redeploy.
+  horizontal-overflow blocker. The local wrapper fix was validated and the
+  latest preview manual rerun is `PREVIEW_READY_WITH_NOTES`.
 - Unsupported product families are guarded and documented, but not promoted
   into execution-backed support.
 
@@ -33,8 +36,8 @@ Known limitations:
 |---|---|
 | Corpus | `qa/raw_query_answer_corpus.yaml` |
 | Case count | 243 |
-| Latest checkpoint run | `outputs/raw_query_answer_qa/20260516T221654Z/report.md` |
-| Latest checklist run | `outputs/raw_query_answer_qa/20260516T230058Z/report.md` |
+| Latest checkpoint run | `outputs/raw_query_answer_qa/20260517T033806Z/report.md` |
+| Latest release-package run | `outputs/raw_query_answer_qa/20260517T033806Z/report.md` |
 | Result statuses | `ok: 202`, `no_result: 32`, `error: 9` |
 | Expectation cases | `pass: 243` |
 | Expectation checks | `pass: 1368` |
@@ -81,19 +84,21 @@ layout coverage.
 | Corpus | `qa/frontend_visual_qa_corpus.yaml` |
 | Baseline size | 15 cases |
 | Manual checklist | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` |
+| Preview rerun | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md` |
 | Desktop baseline | completed for the approved 15-case set |
 | Mobile baseline | completed for the approved 15-case set |
 | Fixed finding | mobile dense table clipping for top performance, comparison, and playoff matchup tables |
 | Fixed finding | filtered leaderboard hero context for guard and center examples |
-| Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport |
+| Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport and the latest preview rerun passed the five mobile blocker cases |
 | Accepted baseline | no-result card baseline |
 | Automation limitation | no Playwright or screenshot diffing in this wave |
 
-Release verdict: `PREVIEW_RERUN_REQUIRED`.
+Release verdict: `READY_WITH_MANUAL_LIMITATION`.
 
 Rationale: the deployed preview found a mobile wrapper overflow defect after the
-manual baseline. The local production route has been fixed and rechecked at
-390px and 1280px, but the deployed preview must be rerun after redeploy.
+manual baseline. The local production route was fixed and the latest preview
+manual rerun rechecked the five mobile blocker cases successfully. The remaining
+limitation is that visual QA is manual, not screenshot-diff automation.
 
 ## 5. Deploy / Preview Readiness
 
@@ -103,13 +108,13 @@ manual baseline. The local production route has been fixed and rechecked at
 | `/visual-qa` route | implemented locally and in Vercel rewrite config |
 | Vercel rewrite | `/visual-qa` rewrites to `/api/review` |
 | Local production API parity | validated in the deploy-parity wave |
-| Preview validation | blocked on 2026-05-16 preview by mobile `/visual-qa` overflow; local fix validated and redeploy/rerun required |
+| Preview validation | `PREVIEW_READY_WITH_NOTES`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker rechecks passed |
 
-Release verdict: `PREVIEW_RERUN_REQUIRED`.
+Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
-Rationale: route parity remains implemented. The preview blocker has a local
-frontend-only fix, but the deployed preview result is still blocked until the
-next preview validates `/visual-qa` at mobile width.
+Rationale: route parity remains implemented. The preview blocker was fixed and
+the latest deployed preview rerun passed the route, smoke, and mobile blocker
+checks with non-blocking notes.
 
 ## 6. Unsupported Boundaries
 
@@ -182,7 +187,7 @@ Command:
 Result:
 
 ```text
-Wrote raw query answer QA report: outputs/raw_query_answer_qa/20260516T230058Z
+Wrote raw query answer QA report: outputs/raw_query_answer_qa/20260517T033806Z
 Cases: 243
 Result statuses: {'error': 9, 'no_result': 32, 'ok': 202}
 Expectation cases: {'pass': 243}
@@ -261,7 +266,7 @@ frontend/src/ReviewPage.tsx react-hooks/exhaustive-deps warning at 159:27
 
 The warning is pre-existing and was also recorded in the deploy-parity wave.
 
-### Preview mobile `/visual-qa` overflow fix
+### Preview mobile `/visual-qa` overflow fix and rerun
 
 Preview blocker:
 
@@ -300,7 +305,12 @@ lebron_durant_comparison_wave4; required result text remained present.
 Preview status:
 
 ```text
-Preview rerun required after redeploy.
+PREVIEW_READY_WITH_NOTES.
+Latest rerun: return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md.
+Routes checked: /, /review, /visual-qa.
+Smoke queries checked: 6.
+Mobile blocker cases rechecked: 5.
+Blocking issues: none.
 ```
 
 ### Parser smoke
@@ -333,7 +343,20 @@ passed with no output
 
 ## 10. Preview Manual Validation
 
-When a deployed preview URL exists, validate these routes:
+Latest preview rerun status: `PREVIEW_READY_WITH_NOTES`.
+
+Evidence:
+
+- Preview rerun return package:
+  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
+- Preview URL checked:
+  `https://nbatools-fuq06rg4y-brents-projects-686e97fc.vercel.app`
+- Routes checked: `/`, `/review`, `/visual-qa`
+- Smoke queries checked: 6
+- Mobile blocker cases checked: 5
+- Blocking issues: none
+
+For future previews, validate these routes:
 
 - `https://<preview-url>/`
 - `https://<preview-url>/review`
@@ -358,15 +381,14 @@ For the normal app query path, run this smoke set:
 | `Warriors net rating this season` | clear unsupported/no-result for single-team advanced-stat scalar summary |
 | `players with most personal fouls this season` | clear unsupported/no-result for personal-foul leaderboard |
 
-Preview verdict before redeploy/rerun: `BLOCKED_PENDING_REDEPLOY`.
-
-Preview verdict once those checks pass: `READY_FOR_PREVIEW_REVIEW`.
+Preview verdict: `PREVIEW_READY_WITH_NOTES`.
 
 ## 11. Final Classification
 
-Final readiness status: `PREVIEW_BLOCKER_FIXED_PENDING_REDEPLOY`.
+Final readiness status: `RELEASE_CANDIDATE_WITH_NOTES`.
 
 Backend, frontend-copy, docs, and data-quality findings remain clean for the
-current boundary. The previous preview is blocked by the mobile `/visual-qa`
-overflow finding; the frontend-only local fix is validated and must be redeployed
-before rerunning preview manual QA.
+current boundary. The previous mobile `/visual-qa` overflow blocker was fixed
+and the latest preview manual QA rerun passed with notes. The remaining release
+notes are selected frontend-copy coverage, manual visual QA, guarded unsupported
+families, and the existing frontend build/lint warnings.

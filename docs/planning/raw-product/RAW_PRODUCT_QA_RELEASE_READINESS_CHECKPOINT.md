@@ -6,26 +6,31 @@
 - Frontend-copy QA status: clean for the selected 125-case rendered-copy corpus
   sourced from the latest clean 243-case backend run.
 - Visual QA status: 15-case manual baseline completed; targeted mobile/table and
-  filtered-leaderboard hero fixes were verified locally.
+  filtered-leaderboard hero fixes were verified locally and in the latest
+  preview rerun.
 - Deploy parity status: `/visual-qa` now follows the same local and deployed SPA
-  shell routing path as `/review`; preview validation remains pending until a
-  preview URL exists.
+  shell routing path as `/review`; the latest preview manual rerun is
+  `PREVIEW_READY_WITH_NOTES`.
+- Release package:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
 - Release-readiness checklist:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`.
-- Latest checklist status: `READY_WITH_KNOWN_LIMITATIONS`.
+- Latest checklist status: `RELEASE_CANDIDATE_WITH_NOTES`.
+- Release package status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
-  build/lint, parser smoke, and diff-check validation; deployed preview manual
-  validation remains pending until a preview URL exists.
+  build/lint, parser smoke, diff-check validation, and preview manual QA. The
+  remaining notes are selected frontend-copy coverage, manual visual QA, guarded
+  unsupported boundaries, and existing frontend build/lint warnings.
 
 ## 2. Backend Raw Query Answer QA
 
 - Corpus size: 243 cases.
 - Latest run:
-  `outputs/raw_query_answer_qa/20260516T221654Z/report.md`.
-- Latest release-checklist run:
-  `outputs/raw_query_answer_qa/20260516T230058Z/report.md`.
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`.
+- Latest release-package run:
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`.
 - Pass/fail: expectation cases `pass: 243`; failed case IDs: none.
 - Result statuses: `ok: 202`, `no_result: 32`, `error: 9`.
 - Expectation checks: `pass: 1368`.
@@ -262,12 +267,15 @@ Remaining limitations:
 - The current no-result card baseline was accepted.
 - `/visual-qa` route status: implemented locally and in Vercel rewrite config
   with parity to `/review`.
+- Latest preview manual rerun:
+  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
+  status `PREVIEW_READY_WITH_NOTES`.
 
 Remaining limitations:
 
 - There is no Playwright screenshot automation or screenshot diffing yet.
-- Local route parity was validated, but deployed preview `/visual-qa`
-  validation still needs to be done when a preview URL is available.
+- Preview manual QA is accepted with notes, but it remains manual and
+  measurement/spot-check based.
 - Manual screenshots should be refreshed if the 15-case baseline is used as a
   release artifact.
 
@@ -277,9 +285,11 @@ Latest release-readiness checklist validation:
 
 - Checklist doc:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
-- Status: `READY_WITH_KNOWN_LIMITATIONS`.
+- Release package doc:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
+- Status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Raw QA full corpus:
-  `outputs/raw_query_answer_qa/20260516T230058Z/report.md`; 243 cases;
+  `outputs/raw_query_answer_qa/20260517T033806Z/report.md`; 243 cases;
   expectation cases `pass: 243`; failed case IDs none; suspicious flags 0.
 - Frontend-copy QA:
   `outputs/frontend_copy_qa/20260517T054758Z/frontend_copy_report.md`; 125
@@ -292,7 +302,10 @@ Latest release-readiness checklist validation:
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 747 tests.
 - Static check: `git diff --check` passed.
-- Preview validation: pending until a live preview URL exists.
+- Preview validation:
+  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
+  `PREVIEW_READY_WITH_NOTES`; `/`, `/review`, `/visual-qa`, six smoke queries,
+  and five mobile blocker cases passed.
 
 - Tier 1: targeted tests plus targeted/adjacent harness runs, `ruff`, and
   `git diff --check`.
@@ -311,13 +324,13 @@ Latest release-readiness checklist validation:
 
 Recommended order:
 
-1. Release/preview manual QA on the next live preview URL.
-2. Option A - Frontend-copy expansion wave 3 for any remaining high-risk
-   route/shape gaps.
-3. Option B - Promote one unsupported family into real support.
-4. Option D - Harness/tooling efficiency improvements.
+1. Option B - Promote one unsupported family into real support.
+2. Option E - Visual QA automation.
+3. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
+4. Option D - Harness tag/category filters.
+5. Option F - Broader release/CI artifact packaging.
 
-### Option A - Frontend-copy corpus expansion
+### Option A - Frontend-copy Wave 3 gap analysis
 
 - Why: backend QA now has a clean 243-case corpus, while frontend-copy QA still
   covers a selected 125-case rendered subset.
@@ -344,17 +357,12 @@ Recommended order:
 
 ### Option C - Release-readiness checklist
 
-- What it would include:
-  - deploy preview check
-  - `/visual-qa` preview validation
-  - smoke query set across supported and unsupported boundaries
-  - frontend-copy rerun
-  - full raw corpus rerun
-  - docs review for current-state accuracy
-- When to choose: choose this next if the goal is to ship the current supported
-  product boundary without adding new capability.
+- Status: completed for this boundary and summarized by
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
+- Reuse this checklist before a future deployment or after any supported
+  boundary expands.
 
-### Option D - Harness/tooling efficiency improvements
+### Option D - Harness tag/category filters
 
 - Wave tags for targeted corpus selection.
 - Harness slices by family/category/manual-review tag.
@@ -363,3 +371,17 @@ Recommended order:
 - Validation command presets that line up with the tiered strategy above.
 - When to choose: choose this when iteration cost starts slowing future corpus
   or fix waves.
+
+### Option E - Visual QA automation
+
+- Add Playwright/screenshot baselines or layout assertions for the accepted
+  15-case visual QA corpus.
+- Start with the five mobile blocker cases and no-result boundary cards before
+  expanding visual scope.
+
+### Option F - Broader release/CI artifact packaging
+
+- Package raw QA reports, frontend-copy reports, preview manual QA evidence, and
+  visual QA evidence into repeatable release artifacts.
+- Use this when release readiness needs to be reproducible outside manual return
+  packages.
