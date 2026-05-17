@@ -22,8 +22,13 @@ env/
 *~
 .DS_Store
 
-# Data & outputs (large, local-only)
-data/
+# Data & outputs (large, local-only by default)
+data/*
+!data/raw/
+data/raw/*
+!data/raw/teams/
+data/raw/teams/*
+!data/raw/teams/team_conference_membership.csv
 outputs/
 
 # Legacy standalone scripts (retired — see docs/audits/scripts_retirement.md)

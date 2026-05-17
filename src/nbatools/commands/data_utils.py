@@ -256,6 +256,16 @@ SCHEDULE_CONTEXT_REQUIRED_COLUMNS = [
     "schedule_context_source_trusted",
 ]
 
+TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS = [
+    "season",
+    "team_abbr",
+    "team_id",
+    "conference",
+    "division",
+    "source",
+    "coverage_trusted",
+]
+
 PERIOD_DESCRIPTOR_LOOKUP = {
     ("quarter", "1"): (1, 1),
     ("quarter", "2"): (2, 2),
@@ -444,6 +454,81 @@ def _load_latest_team_advanced_cached(season: str, data_root: str) -> pd.DataFra
 
 def load_latest_team_advanced(season: str) -> pd.DataFrame:
     return _load_latest_team_advanced_cached(season, data_source_cache_key()).copy()
+
+
+def _normalize_team_conference_trust_flags(series: pd.Series) -> pd.Series:
+    values = series.fillna("").astype(str).str.strip().str.lower()
+    normalized = values.map(
+        {
+            "1": 1,
+            "true": 1,
+            "yes": 1,
+            "0": 0,
+            "false": 0,
+            "no": 0,
+        }
+    )
+    if normalized.isna().any():
+        raise ValueError("team_conference_membership coverage_trusted must be true/false or 0/1")
+    return normalized.astype(int)
+
+
+@cache
+def _load_team_conference_membership_cached(data_root: str) -> pd.DataFrame:
+    path = "data/raw/teams/team_conference_membership.csv"
+    if not data_exists(path):
+        raise FileNotFoundError(f"Missing team conference membership file: {path}")
+    df = data_read_csv(path)
+    missing = [col for col in TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS if col not in df.columns]
+    if missing:
+        raise ValueError(f"team_conference_membership missing required columns: {missing}")
+
+    df = df.copy()
+    for col in ("season", "team_abbr", "conference", "division", "source"):
+        df[col] = df[col].fillna("").astype(str).str.strip()
+    df["team_abbr"] = df["team_abbr"].str.upper()
+    df["team_id"] = pd.to_numeric(df["team_id"], errors="coerce").astype("Int64")
+    df["coverage_trusted"] = _normalize_team_conference_trust_flags(df["coverage_trusted"])
+
+    if df.duplicated(subset=["season", "team_abbr"]).any():
+        raise ValueError("Duplicate (season, team_abbr) in team_conference_membership")
+    if df[["season", "team_abbr", "conference", "division", "source"]].eq("").any().any():
+        raise ValueError("team_conference_membership has blank required text fields")
+    if df["team_id"].isna().any():
+        raise ValueError("team_conference_membership team_id must be present")
+    if not df["conference"].isin(["East", "West"]).all():
+        raise ValueError("team_conference_membership conference must be East or West")
+
+    return df
+
+
+def load_team_conference_membership() -> pd.DataFrame:
+    """Load the season-aware team conference membership reference table."""
+    return _load_team_conference_membership_cached(data_source_cache_key()).copy()
+
+
+def get_team_conference_map(season: str) -> dict[str, str]:
+    """Return trusted team_abbr -> conference membership for a season."""
+    df = load_team_conference_membership()
+    trusted = df.loc[df["season"].eq(season) & df["coverage_trusted"].eq(1)]
+    return {row.team_abbr: row.conference for row in trusted.itertuples()}
+
+
+def get_teams_by_conference(season: str, conference: str) -> list[str]:
+    """Return trusted team abbreviations for a season and conference."""
+    conference_value = str(conference).strip().lower()
+    if conference_value in {"east", "eastern"}:
+        normalized = "East"
+    elif conference_value in {"west", "western"}:
+        normalized = "West"
+    else:
+        raise ValueError(f"Unsupported conference: {conference}")
+
+    df = load_team_conference_membership()
+    trusted = df.loc[
+        df["season"].eq(season) & df["conference"].eq(normalized) & df["coverage_trusted"].eq(1)
+    ]
+    return sorted(trusted["team_abbr"].astype(str).str.upper().tolist())
 
 
 def resolve_opponent_quality_teams(

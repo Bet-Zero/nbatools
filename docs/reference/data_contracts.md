@@ -793,6 +793,93 @@ Contract rules:
 
 ---
 
+## 2B. `team_conference_membership`
+
+### Path pattern
+
+`data/raw/teams/team_conference_membership.csv`
+
+### Grain
+
+One row per **season-team**.
+
+### Key fields
+
+- `season`
+- `team_abbr`
+
+Recommended uniqueness expectation:
+
+- unique on (`season`, `team_abbr`)
+
+### Required columns
+
+- `season`
+- `team_abbr`
+- `team_id`
+- `conference`
+- `division`
+- `source`
+- `coverage_trusted`
+
+### Current trusted coverage
+
+- `2024-25`
+- `2025-26`
+
+Each trusted season must validate to exactly 30 teams, exactly 15 East teams,
+and exactly 15 West teams.
+
+### Field rules
+
+- `conference` must be exactly `East` or `West`
+- `coverage_trusted` must be a stable boolean/0-1 value
+- `source` must identify the source decision for the row
+- `division` is included for future division support and must be non-empty on
+  trusted rows
+- `team_id` is required for the current trusted rows and must match the
+  corresponding `team_game_stats` identity for the same season
+
+### Producer(s)
+
+- manual curation for the current rows, recorded as
+  `manual_current_nba_alignment_2026-05-17`
+- any future source refresh or historical expansion must preserve this same
+  grain and trust contract
+
+### Primary consumer(s)
+
+- no production query route currently consumes this table
+- intended future consumer: opponent-conference filtering for `team_record`
+  after parser, execution, metadata, and corpus promotion are approved
+
+### Validation rules
+
+For each trusted season:
+
+- no duplicate (`season`, `team_abbr`) rows
+- no null or blank `conference`
+- `conference` values are only `East` and `West`
+- exactly 30 trusted teams
+- exactly 15 East and 15 West teams
+- every trusted `team_abbr` appears in
+  `data/raw/team_game_stats/{season}_regular_season.csv`
+- every team abbreviation in the matching `team_game_stats` season file has a
+  trusted conference membership row
+- included `division` values are non-empty and balanced to five teams per NBA
+  division for the current trusted seasons
+
+### Notes
+
+Do not infer conference membership from standings rank ordering. Do not use the
+incomplete `teams_reference.csv` file as the source of truth for this contract.
+
+Missing or untrusted conference coverage must keep opponent-conference query
+behavior unsupported/no-result. It must never broaden into an unfiltered
+full-season team record.
+
+---
+
 ## 3. `player_season_advanced`
 
 ### Path pattern

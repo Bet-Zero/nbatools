@@ -169,7 +169,7 @@ return explicit no-result, unsupported, unsupported-data, or
 | Rookie leaderboards | Returns explicit unsupported-filter no-result. | Rookie status is not part of the trusted current leaderboard filter contract. | Add trusted rookie metadata, parser slots, execution filtering, docs, and tests. |
 | League-wide starter/bench leaderboards | Returns explicit unsupported-filter no-result for starter/bench leaderboard phrasing. | League-wide role filters need trusted role classification, minimums, and route contracts. | Define role coverage and minimums, then add execution-backed filters and rendered-copy coverage. |
 | Team bench scoring | Returns explicit unsupported-filter no-result for team bench scoring/points. | Team bench scoring needs role-scoped team aggregation outside the current team summary contract. | Define a team bench/unit scoring dataset or derived aggregation with stable summary sections. |
-| Opponent-conference filters | Returns explicit `opponent_conference` unsupported-filter no-result instead of broad full-season records. | Season-aware conference metadata and route semantics are not approved. | Add conference metadata, season-aware joins, filter preservation tests, and no-match behavior. |
+| Opponent-conference filters | Returns explicit `opponent_conference` unsupported-filter no-result instead of broad full-season records. | A season-aware conference metadata prerequisite now exists for `2024-25` and `2025-26`, but parser/execution promotion and route semantics are not approved. | Use `team_conference_membership.csv` for season-aware joins, then add parser/execution promotion, filter preservation tests, metadata/copy behavior, and no-match behavior. |
 | Single-team playoff round records | Single-team Finals/conference-finals record phrasing returns unsupported-filter no-result. | Current contracts support round leaderboards and matchup history, not single-team round records; some historical round labels are unreliable. | Approve single-team playoff round semantics and fallback behavior for unreliable labels, then add route/output coverage. |
 | Subjective/trend queries | Clutch, cooled off, best defender, MVP candidate, best player lately, and similar opinion/trend requests return unsupported/no-result instead of invented definitions. | Product-approved metric definitions and source coverage are required. | Define metric-backed semantics one family at a time, then add parser, execution, copy, and QA coverage. |
 | Multi-player availability | Multi-player availability record phrasing returns explicit unsupported/no-result instead of an unfiltered team record. | Multi-player availability semantics are outside the current whole-game single-player absence contract. | Add a dedicated availability model, trusted coverage fields, filter semantics, and result contract. |
@@ -226,6 +226,10 @@ Supporting return packages:
   nature of visual QA and selected frontend-copy coverage.
 - Unsupported features are guarded and documented, but not promoted into
   execution-backed support.
+- Opponent-conference filters remain unsupported even though the
+  `team_conference_membership.csv` data prerequisite now validates for
+  `2024-25` and `2025-26`; raw and frontend-copy corpus expectations remain
+  unchanged.
 - Frontend lint remains clean with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Frontend build remains clean with the existing Vite large-chunk warning.
@@ -263,9 +267,10 @@ Before deploying this boundary again:
 Recommended order after this release package:
 
 1. Promote one unsupported family into real support.
-   - Best first candidates: opponent-conference filters, single-team advanced
-     scalar summaries, or rookie/role leaderboards, depending on product need
-     and available source contracts.
+   - Best first candidates: opponent-conference filters now that the
+     current-era data prerequisite exists, single-team advanced scalar
+     summaries, or rookie/role leaderboards, depending on product need and
+     available source contracts.
 2. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.

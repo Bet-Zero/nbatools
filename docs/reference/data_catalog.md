@@ -62,6 +62,8 @@ Basic team reference data.
 ### Notes
 This is not the main historical naming source.
 Historical naming is handled by `team_history_reference.csv`.
+The current file is not a complete conference-membership source. Use
+`team_conference_membership.csv` for season-aware East/West membership.
 
 ---
 
@@ -94,6 +96,64 @@ Used to preserve historical team naming across franchise changes, relocations, a
 ### Important note
 `team_id` is the canonical identity key.  
 Names and abbreviations are presentation/history fields.
+
+---
+
+## team_conference_membership
+
+### Path
+`data/raw/teams/team_conference_membership.csv`
+
+### Type
+Reference table
+
+### Grain
+One row per season and `team_abbr`
+
+### Purpose
+Provides trusted season-aware conference membership for current-era team
+context filters.
+
+### Key columns
+- `season`
+- `team_abbr`
+- `team_id`
+- `conference`
+- `division`
+- `source`
+- `coverage_trusted`
+
+### Current coverage
+- `2024-25`
+- `2025-26`
+
+Both covered seasons are trusted and validate to 30 teams, 15 East teams, and
+15 West teams.
+
+### Source notes
+The current rows are manually curated from the current NBA team
+conference/division alignment. They were not scraped. The `source` field uses
+`manual_current_nba_alignment_2026-05-17` so the source decision is explicit
+and reviewable.
+
+### Validation rules
+- no duplicate `season` + `team_abbr` rows
+- `conference` is required and must be exactly `East` or `West`
+- `coverage_trusted` must be a stable boolean/0-1 value
+- each trusted season has exactly 30 teams
+- each trusted season has exactly 15 East and 15 West teams
+- every trusted `team_abbr` appears in the matching
+  `data/raw/team_game_stats/<season>_regular_season.csv`
+- every team abbreviation in the matching team-game file has a trusted
+  conference membership row
+- `division` is included for future division support and must be non-empty for
+  trusted rows
+
+### Future use
+This table is the data prerequisite for future opponent-conference filters.
+Parser and execution promotion are separate work. If trusted coverage is
+missing for a requested season, query behavior must remain unsupported/no-result
+instead of falling back to an unfiltered full-season record.
 
 ---
 
