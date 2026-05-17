@@ -13,6 +13,9 @@
 - Production-ready: yes after human acceptance of the release notes below.
 - Preview-ready: yes, with notes.
 - Release-candidate ready: yes, with notes.
+- Final handoff:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
+  handoff complete with notes.
 
 This boundary is release-candidate ready for the current product surface. The
 backend raw QA corpus is clean, selected frontend-copy QA is clean, the accepted
@@ -208,6 +211,8 @@ Latest release artifacts:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
 - Release-readiness checklist:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
+- Release-candidate handoff:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
 - Release-readiness checkpoint:
   `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
 - Backend harness plan:
@@ -302,24 +307,24 @@ Before deploying this boundary again:
 
 ## 8. Next Roadmap Options
 
-Recommended order after this release package refresh:
+Current handoff status: release-candidate handoff is complete; see
+`docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.
 
-1. Release candidate handoff or CI/release artifact packaging.
-   - The R2 blocker is resolved and the current preview/deployment smoke
-     evidence is clean with notes.
-2. Visual QA automation.
+Recommended order after this handoff:
+
+1. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.
-3. Promote another unsupported family into real support.
+2. Promote another unsupported family into real support.
    - Candidates include historical opponent-conference expansion beyond trusted
      current-era seasons, single-team advanced scalar summaries, or rookie/role
      leaderboards, depending on product need and available source contracts.
+3. Broader release/CI artifact packaging.
+   - Package raw QA, frontend-copy, preview manual QA, and visual QA outputs
+     into a repeatable CI/release artifact bundle.
 4. Frontend-copy Wave 3 only after fresh gap analysis.
    - Expand only if a route/shape risk is still meaningfully undercovered after
      the 125-case set.
 5. Harness tag/category filters.
    - Add focused selection by corpus tags/categories if future fix waves need
      faster iteration than saved slices provide.
-6. Broader release/CI artifact packaging.
-   - Package raw QA, frontend-copy, preview manual QA, and visual QA outputs
-     into a repeatable CI/release artifact bundle.

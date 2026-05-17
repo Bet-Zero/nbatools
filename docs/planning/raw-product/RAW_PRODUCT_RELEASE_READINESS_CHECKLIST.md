@@ -7,6 +7,9 @@
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Release package:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
+- Release-candidate handoff:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
+  handoff complete with notes.
 - Production query behavior changed: yes; current-era opponent-conference
   `team_record` filters now execute for trusted seasons `2024-25` and `2025-26`.
 - Frontend rendering changed: no in the frontend-copy expansion wave; previous
@@ -185,6 +188,7 @@ path.
 |---|---|
 | Query catalog | updated for current supported and unsupported boundaries |
 | Query guide | updated for current supported and unsupported boundaries |
+| Release-candidate handoff | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`; handoff complete with notes |
 | Release checkpoint | `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` |
 | Findings inventory | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md` |
 | Harness plan | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` |
@@ -500,4 +504,6 @@ and the later opponent-conference preview R2 blocker is resolved. The latest
 preview and deployment-smoke evidence passed with notes. The remaining release
 notes are selected frontend-copy coverage, manual visual QA, trusted-season
 limits for opponent-conference support, guarded unsupported families, and the
-existing frontend build/lint warnings.
+existing frontend build/lint warnings. The final release-candidate handoff is
+complete in
+`docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.

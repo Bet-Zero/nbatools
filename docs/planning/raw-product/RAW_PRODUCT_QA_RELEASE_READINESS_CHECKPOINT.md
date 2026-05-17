@@ -15,6 +15,9 @@
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
 - Release-readiness checklist:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`.
+- Release-candidate handoff:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
+  handoff complete with notes.
 - Latest checklist status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Release package status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Supported boundary update: current-era opponent-conference `team_record`
@@ -312,6 +315,9 @@ Latest release-readiness checklist validation:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
 - Release package doc:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
+- Release-candidate handoff:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
+  handoff complete with notes.
 - Status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Raw QA full corpus:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases;
@@ -368,14 +374,17 @@ Latest release-readiness checklist validation:
 
 ## 9. Recommended next options
 
+Completed:
+
+- Option G - Release candidate handoff.
+
 Recommended order:
 
-1. Option G - Release candidate handoff.
-2. Option E - Visual QA automation.
+1. Option E - Visual QA automation.
+2. Option B - Promote one unsupported family into real support.
 3. Option F - Broader release/CI artifact packaging.
 4. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
-5. Option B - Promote one unsupported family into real support.
-6. Option D - Harness tag/category filters.
+5. Option D - Harness tag/category filters.
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
@@ -435,7 +444,9 @@ Recommended order:
 
 ### Option G - Release candidate handoff
 
-- Current status: `RELEASE_CANDIDATE_WITH_NOTES` with preview status
+- Current status: complete with notes; see
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.
+- Release status: `RELEASE_CANDIDATE_WITH_NOTES` with preview status
   `PREVIEW_READY_WITH_NOTES`.
 - Why: the previous R2 preview blocker is resolved, deployment smoke includes
   the R2-sensitive opponent-conference membership-data check, and the latest

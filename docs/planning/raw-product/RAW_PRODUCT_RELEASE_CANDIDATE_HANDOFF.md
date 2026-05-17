@@ -1,0 +1,163 @@
+# Raw Product Release Candidate Handoff
+
+## 1. Executive summary
+
+- Release status: `RELEASE_CANDIDATE_WITH_NOTES`.
+- Preview status: `PREVIEW_READY_WITH_NOTES`.
+- What is ready: the current Raw Product supported and explicitly unsupported
+  boundary is ready for handoff. Backend Raw QA is clean at 246/246 cases,
+  selected frontend-copy QA rendered 125/125 cases with soft checks `480/0/0`,
+  required R2 data is available, deployment smoke passed, and the latest
+  preview `/visual-qa` request-health check loaded 15/15 cases with request
+  errors 0.
+- What remains as known notes: frontend-copy QA is selected coverage, visual QA
+  is manual rather than screenshot-diff automation, opponent-conference support
+  is limited to trusted seasons `2024-25` and `2025-26`, existing frontend
+  build/lint warnings remain non-blocking, and explicitly unsupported
+  boundaries must continue to return guarded no-result or unsupported behavior.
+- Recommended handoff decision: ship or hand off the current release candidate
+  with notes. Missing required R2 data remains a release blocker.
+
+## 2. Validation evidence
+
+| Area | Status | Evidence |
+|---|---|---|
+| Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. |
+| Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125 selected cases rendered; render failures 0; missing backend records 0; soft checks `480/0/0`. |
+| Preview smoke | `PASS_WITH_NOTES` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference preview checks passed, two guardrails passed, and `/visual-qa` request errors were 0. |
+| R2 data availability | `PASS` | `raw/teams/team_conference_membership.csv` exists in R2; dry-run, sync, and `head_object` evidence passed with `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
+| Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and the R2-sensitive opponent-conference team-record check returned 15 East opponents. |
+| Visual QA | `PASS_WITH_MANUAL_LIMITATION` | Manual 15-case baseline remains accepted; latest preview `/visual-qa` loaded 15/15 cases with request errors 0; no screenshot-diff automation exists yet. |
+| Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
+
+## 3. Supported product boundary
+
+The release candidate supports the current Raw Product areas covered by the
+clean raw QA corpus, selected frontend-copy corpus, visual baseline, query
+catalog, and query guide:
+
+- Player summaries: current-season, career, recent, last-N, opponent,
+  opponent-quality, home/away, wins/losses, role-context, selected
+  stat-context, and supported player-vs-player opponent-filter summaries.
+- Team records: overall, home/away, road, explicit-season, last-season,
+  month-window, since-date, since All-Star, opponent-quality,
+  scoring-threshold, opponent-points-threshold, and `how did TEAM do`
+  record-style summaries.
+- Record-when conditions: player stat thresholds, player special events,
+  player shooting thresholds, team scoring thresholds, and team
+  opponent-points thresholds.
+- Without-player conditions: single-player whole-game absence records and
+  summaries where trusted source coverage exists.
+- Leaderboards: standard player and team leaderboards, per-game and percentage
+  aliases, supported advanced-stat aliases, position-filtered player
+  leaderboards, record leaderboards, scoring/team-threes leaderboards, and
+  opponent-points/points-allowed leaderboards.
+- Team advanced leaderboards: league-wide net rating, offensive rating,
+  defensive rating, and pace leaderboards.
+- Top performances: player single-game points, assists, rebounds, threes,
+  blocks, steals, plus-minus, named-player best-game/season-high phrasing, and
+  supported team top scoring games.
+- Finder/count outputs: player and team finder rows, count-with-finder outputs,
+  distinct player/team threshold counts, supported compound thresholds,
+  defensive threshold finders, and selected game-log detail shapes.
+- Streaks: player stat-threshold streaks, player special-event streaks,
+  current/completed phrasing, team win streaks, and team scoring/three-point
+  threshold streaks.
+- Rolling stretches: player rolling-stretch leaderboards for supported counting
+  stats, shooting percentages, Game Score, named-player variants, and
+  league-wide player stretch phrasing.
+- Splits: player and team home-away splits, wins-losses splits, recent/last-N
+  split contexts, and supported stat-context split phrasing.
+- Playoff history: single-team playoff history, playoff appearances,
+  Finals/conference-finals appearance summaries, era/decade records, and
+  supported playoff-history phrasing.
+- Playoff matchup history: explicit team-pair playoff history, series
+  record/history, matchup history, Finals matchup history, and adjacent-team
+  playoff series phrasing.
+- Playoff round/appearance leaderboards: round-record leaderboards and most
+  round or Finals appearance leaderboards, including covered since-year
+  filters.
+- Comparisons: full-name player comparisons, recent player comparisons, team
+  comparisons, matchup records, head-to-head summaries, and guarded
+  stat-vs-player interpretations.
+- Date/window filters: explicit seasons, latest-season defaults, last season,
+  season ranges, explicit dates, month windows, since-date windows, last-N
+  games, recent/lately defaults, since All-Star, and selected rolling-day
+  phrasing.
+- Defensive/opponent-points aliases: points allowed, opponent PPG, `gave up`,
+  `allowing`, `held teams under`, `held opponents under`, `limited opponents
+  to`, and related defensive threshold variants.
+- Opponent-conference team-record filters: East/West team-record filters are
+  execution-backed only for trusted seasons `2024-25` and `2025-26`.
+
+## 4. Explicit unsupported boundaries
+
+The following areas are intentionally outside the current product boundary.
+They should stay guarded by explicit no-result, unsupported, unsupported-data,
+or `filter_not_supported` behavior rather than broad fallback answers:
+
+- Personal-foul leaderboards.
+- Single-team advanced-stat scalar summaries.
+- Rookie leaderboards.
+- League-wide starter/bench leaderboards.
+- Team bench scoring.
+- Single-team playoff round records.
+- Subjective/trend queries such as clutch, cooled off, best defender, MVP
+  candidate, and best player lately.
+- Lineup summaries and lineup leaderboards where trusted coverage is
+  unavailable.
+- On/off surfaces where trusted data is unavailable.
+- Team rolling-stretch leaderboards.
+- Minutes leaderboards.
+- Team single-game threes.
+- Divisions.
+- Geography phrases such as `east coast teams` and `west coast teams`.
+- Historical opponent-conference coverage outside trusted seasons `2024-25` and
+  `2025-26`.
+
+## 5. Deployment/data notes
+
+- Preview uses `DATA_SOURCE=r2`.
+- Vercel excludes `data/**`.
+- New data files required at runtime must be synced to R2 before preview smoke.
+- Current required R2 key: `raw/teams/team_conference_membership.csv`.
+- Deployment smoke now protects opponent-conference data availability through
+  an R2-sensitive team-record case.
+- Missing required R2 data is a release blocker.
+- Deployment workflow details are recorded in
+  `docs/operations/deployment.md`.
+
+## 6. Known limitations
+
+- Frontend-copy QA is selected coverage, not all 246 raw cases.
+- Visual QA is manual, not screenshot-diff automation.
+- Opponent-conference support is limited to trusted seasons `2024-25` and
+  `2025-26`.
+- Frontend lint still has the existing
+  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning in the
+  latest readiness evidence.
+- Frontend build still has the existing Vite large-chunk warning in the latest
+  readiness evidence.
+- External NBA CDN image/logo request failures may occur. They are non-query
+  blockers unless they affect the primary user experience.
+
+## 7. Final release checklist
+
+- [ ] Run the full Raw QA corpus:
+  `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml`
+- [ ] Run frontend-copy QA: `cd frontend && npm run qa:frontend-copy`
+- [ ] Run deployment smoke against the target preview or production URL.
+- [ ] Confirm R2 `head_object` availability for required new data files,
+  including `raw/teams/team_conference_membership.csv`.
+- [ ] Open preview `/`, `/review`, and `/visual-qa`.
+- [ ] Run supported and unsupported smoke queries.
+- [ ] Mobile spot-check primary result readability.
+- [ ] Confirm there is no broad fallback for unsupported boundaries.
+
+## 8. Recommended next roadmap
+
+1. Visual QA automation preflight.
+2. Next unsupported-family promotion preflight.
+3. CI/release artifact packaging.
+4. Frontend-copy Wave 3 only after fresh gap analysis.
+5. Harness tag/category filters if workflow pain returns.
