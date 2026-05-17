@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from time import perf_counter
@@ -117,6 +117,19 @@ def default_smoke_cases() -> list[SmokeCase]:
             body={"query": "Jokic summary (over 25 points and over 10 rebounds) 2025-26"},
             expected_json_fields={"ok": True, "route": "player_game_summary"},
         ),
+        SmokeCase(
+            slug="query_celtics_record_against_east_current",
+            path="/query",
+            method="POST",
+            body={"query": "Celtics record against the East this season"},
+            expected_json_fields={
+                "ok": True,
+                "route": "team_record",
+                "result_status": "ok",
+                "result.metadata.opponent_conference": "East",
+                "result.metadata.opponent_team_abbrs.__len__": 15,
+            },
+        ),
     ]
 
 
@@ -214,7 +227,7 @@ def _evaluate_case(
         else:
             mismatches = []
             for key, expected in case.expected_json_fields.items():
-                actual = payload.get(key)
+                actual = _json_path_value(payload, key)
                 if actual != expected:
                     mismatches.append(f"{key}={actual!r} (expected {expected!r})")
             if mismatches:
@@ -243,6 +256,20 @@ def _parse_json(decoded: str, headers: Mapping[str, str]) -> dict[str, Any] | li
         return json.loads(decoded)
     except json.JSONDecodeError:
         return None
+
+
+def _json_path_value(payload: Mapping[str, Any], path: str) -> Any:
+    current: Any = payload
+    for part in path.split("."):
+        if part == "__len__":
+            if isinstance(current, Sequence) and not isinstance(current, str | bytes | bytearray):
+                current = len(current)
+                continue
+            return None
+        if not isinstance(current, Mapping):
+            return None
+        current = current.get(part)
+    return current
 
 
 def _summarize_payload(
@@ -276,4 +303,13 @@ def _summarize_payload(
     summary = {key: payload[key] for key in fields if key in payload}
     if slug == "freshness" and isinstance(payload.get("seasons"), list):
         summary["season_count"] = len(payload["seasons"])
+    result = payload.get("result")
+    if isinstance(result, dict):
+        metadata = result.get("metadata")
+        if isinstance(metadata, dict):
+            if metadata.get("opponent_conference"):
+                summary["opponent_conference"] = metadata["opponent_conference"]
+            opponent_team_abbrs = metadata.get("opponent_team_abbrs")
+            if isinstance(opponent_team_abbrs, list):
+                summary["opponent_team_abbrs_count"] = len(opponent_team_abbrs)
     return summary

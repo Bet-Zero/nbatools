@@ -18,12 +18,31 @@ beforeEach(() => {
   mockFetch.mockReset();
 });
 
+function jsonResponse(
+  data: unknown,
+  options: { ok?: boolean; status?: number } = {},
+) {
+  return {
+    ok: options.ok ?? true,
+    status: options.status ?? 200,
+    text: () => Promise.resolve(JSON.stringify(data)),
+  };
+}
+
+function textResponse(
+  body: string,
+  options: { ok?: boolean; status?: number } = {},
+) {
+  return {
+    ok: options.ok ?? true,
+    status: options.status ?? 200,
+    text: () => Promise.resolve(body),
+  };
+}
+
 describe("fetchHealth", () => {
   it("returns health response", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ status: "ok", version: "0.5.0" }),
-    });
+    mockFetch.mockResolvedValueOnce(jsonResponse({ status: "ok", version: "0.5.0" }));
     const result = await fetchHealth();
     expect(result.status).toBe("ok");
     expect(result.version).toBe("0.5.0");
@@ -31,22 +50,34 @@ describe("fetchHealth", () => {
   });
 
   it("throws on HTTP error", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: () => Promise.resolve({ error: "internal", detail: "boom" }),
-    });
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({ error: "internal", detail: "boom" }, { ok: false, status: 500 }),
+    );
     await expect(fetchHealth()).rejects.toThrow("boom");
+  });
+
+  it("throws a diagnostic error for empty HTTP error responses", async () => {
+    mockFetch.mockResolvedValueOnce(textResponse("", { ok: false, status: 502 }));
+
+    await expect(fetchHealth()).rejects.toThrow("HTTP 502: empty response body");
+  });
+
+  it("throws a diagnostic error for non-JSON responses", async () => {
+    mockFetch.mockResolvedValueOnce(
+      textResponse("<html>bad gateway</html>", { ok: false, status: 502 }),
+    );
+
+    await expect(fetchHealth()).rejects.toThrow(
+      "HTTP 502 returned non-JSON response: <html>bad gateway</html>",
+    );
   });
 });
 
 describe("fetchRoutes", () => {
   it("returns routes list", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({ routes: ["player_game_finder", "season_leaders"] }),
-    });
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({ routes: ["player_game_finder", "season_leaders"] }),
+    );
     const result = await fetchRoutes();
     expect(result.routes).toEqual(["player_game_finder", "season_leaders"]);
   });
@@ -72,10 +103,7 @@ describe("postQuery", () => {
         sections: { finder: [] },
       },
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockResponse),
-    });
+    mockFetch.mockResolvedValueOnce(jsonResponse(mockResponse));
 
     const result = await postQuery("Jokic last 10");
     expect(result.query).toBe("Jokic last 10");
@@ -107,10 +135,7 @@ describe("postStructuredQuery", () => {
         sections: { leaderboard: [] },
       },
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockResponse),
-    });
+    mockFetch.mockResolvedValueOnce(jsonResponse(mockResponse));
 
     const result = await postStructuredQuery("season_leaders", {
       stat: "pts",
@@ -148,10 +173,7 @@ describe("fetchFreshness", () => {
       last_refresh_at: "2026-04-14T09:00:00",
       last_refresh_error: null,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockResponse),
-    });
+    mockFetch.mockResolvedValueOnce(jsonResponse(mockResponse));
 
     const result = await fetchFreshness();
     expect(result.status).toBe("fresh");
@@ -161,26 +183,24 @@ describe("fetchFreshness", () => {
   });
 
   it("throws on HTTP error", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: () =>
-        Promise.resolve({ error: "internal", detail: "server error" }),
-    });
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse(
+        { error: "internal", detail: "server error" },
+        { ok: false, status: 500 },
+      ),
+    );
     await expect(fetchFreshness()).rejects.toThrow("server error");
   });
 });
 
 describe("fetchDevFixtures", () => {
   it("returns the parser example fixture list", async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          source_path: "docs/architecture/parser/examples.md",
-          fixtures: [{ case_id: "S2_2_1_01", query: "First query" }],
-        }),
-    });
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        source_path: "docs/architecture/parser/examples.md",
+        fixtures: [{ case_id: "S2_2_1_01", query: "First query" }],
+      }),
+    );
 
     const result = await fetchDevFixtures();
     expect(result.source_path).toBe("docs/architecture/parser/examples.md");

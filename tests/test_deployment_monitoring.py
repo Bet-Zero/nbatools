@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping
 
 from nbatools.deployment_monitoring import (
@@ -23,9 +24,12 @@ def test_default_smoke_cases_cover_expected_routes() -> None:
         "query_jokic_last_10",
         "query_top_10_scorers_2025_26",
         "query_jokic_multi_filter",
+        "query_celtics_record_against_east_current",
     ]
     assert cases[3].expected_json_fields["route"] == "player_game_summary"
     assert cases[4].expected_json_fields["route"] == "season_leaders"
+    assert cases[6].expected_json_fields["result.metadata.opponent_conference"] == "East"
+    assert cases[6].expected_json_fields["result.metadata.opponent_team_abbrs.__len__"] == 15
 
 
 def test_run_deployment_smoke_reports_successful_cases() -> None:
@@ -64,6 +68,40 @@ def test_run_deployment_smoke_reports_successful_cases() -> None:
             {"content-type": "application/json"},
             b'{"ok":true,"route":"player_game_summary","result_status":"ok","query_class":"summary"}',
         ),
+        ("POST", "https://deploy.example/query", "Celtics record against the East this season"): (
+            200,
+            {"content-type": "application/json"},
+            json.dumps(
+                {
+                    "ok": True,
+                    "route": "team_record",
+                    "result_status": "ok",
+                    "query_class": "summary",
+                    "result": {
+                        "metadata": {
+                            "opponent_conference": "East",
+                            "opponent_team_abbrs": [
+                                "ATL",
+                                "BKN",
+                                "BOS",
+                                "CHA",
+                                "CHI",
+                                "CLE",
+                                "DET",
+                                "IND",
+                                "MIA",
+                                "MIL",
+                                "NYK",
+                                "ORL",
+                                "PHI",
+                                "TOR",
+                                "WAS",
+                            ],
+                        }
+                    },
+                }
+            ).encode(),
+        ),
     }
 
     def fake_fetcher(
@@ -82,9 +120,11 @@ def test_run_deployment_smoke_reports_successful_cases() -> None:
     assert report.ok is True
     assert report.failure_count == 0
     assert report.failures == []
-    assert report.case_count == 6
+    assert report.case_count == 7
     assert report.cases[0].summary["title"] == "nbatools"
     assert report.cases[2].summary["season_count"] == 1
+    assert report.cases[6].summary["opponent_conference"] == "East"
+    assert report.cases[6].summary["opponent_team_abbrs_count"] == 15
 
 
 def test_run_deployment_smoke_flags_route_mismatches() -> None:
@@ -122,6 +162,39 @@ def test_run_deployment_smoke_flags_route_mismatches() -> None:
             200,
             {"content-type": "application/json"},
             b'{"ok":true,"route":"player_game_summary"}',
+        ),
+        ("POST", "https://deploy.example/query", "Celtics record against the East this season"): (
+            200,
+            {"content-type": "application/json"},
+            json.dumps(
+                {
+                    "ok": True,
+                    "route": "team_record",
+                    "result_status": "ok",
+                    "result": {
+                        "metadata": {
+                            "opponent_conference": "East",
+                            "opponent_team_abbrs": [
+                                "ATL",
+                                "BKN",
+                                "BOS",
+                                "CHA",
+                                "CHI",
+                                "CLE",
+                                "DET",
+                                "IND",
+                                "MIA",
+                                "MIL",
+                                "NYK",
+                                "ORL",
+                                "PHI",
+                                "TOR",
+                                "WAS",
+                            ],
+                        }
+                    },
+                }
+            ).encode(),
         ),
     }
 

@@ -17,14 +17,46 @@ import type {
 
 const BASE = "";
 
+function bodyPreview(body: string): string {
+  const cleaned = body.replace(/\s+/g, " ").trim();
+  if (!cleaned) return "empty response body";
+  return cleaned.length > 180 ? `${cleaned.slice(0, 177)}...` : cleaned;
+}
+
+function isErrorResponse(value: unknown): value is ErrorResponse {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    ("detail" in value || "error" in value)
+  );
+}
+
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(BASE + url, init);
-  const data = await res.json();
+  const body = await res.text();
+  let data: unknown = null;
+
+  if (body.trim()) {
+    try {
+      data = JSON.parse(body);
+    } catch {
+      throw new Error(
+        `HTTP ${res.status} returned non-JSON response: ${bodyPreview(body)}`,
+      );
+    }
+  }
 
   if (!res.ok) {
-    const err = data as ErrorResponse;
-    throw new Error(err.detail ?? err.error ?? `HTTP ${res.status}`);
+    if (isErrorResponse(data)) {
+      throw new Error(data.detail ?? data.error ?? `HTTP ${res.status}`);
+    }
+    throw new Error(`HTTP ${res.status}: ${bodyPreview(body)}`);
   }
+
+  if (data === null) {
+    throw new Error(`HTTP ${res.status}: empty response body`);
+  }
+
   return data as T;
 }
 

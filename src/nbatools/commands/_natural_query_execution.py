@@ -432,7 +432,7 @@ def _resolve_opponent_conference_kwargs(
                 conference,
                 require_trusted_coverage=True,
             )
-        except ValueError:
+        except (FileNotFoundError, ValueError):
             _mark_original_unsupported_filter(original_kwargs, "conference_coverage")
             return sanitized, [], ["conference_coverage"]
         if len(teams) != 15:

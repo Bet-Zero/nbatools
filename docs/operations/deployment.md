@@ -105,6 +105,9 @@ The JSON report records:
 - `GET /health`
 - `GET /freshness`
 - `POST /query` for the canonical N3 smoke queries
+- `POST /query` for `Celtics record against the East this season`, including
+  the R2-backed `team_conference_membership.csv` data-path check that expects
+  `team_record` / `ok` and 15 resolved East teams
 
 Each case captures status, latency, selected deployment headers, a short body
 preview, and a compact payload summary so Phase N3 and the later custom-domain

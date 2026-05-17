@@ -1317,6 +1317,26 @@ class TestOpponentConferenceTeamRecords:
         assert qr.metadata["unsupported_filters"] == ["conference_coverage"]
         assert qr.to_dict()["sections"] == {}
 
+    def test_missing_conference_membership_file_uses_coverage_guardrail(self, monkeypatch):
+        import nbatools.commands._natural_query_execution as execution
+
+        def missing_membership_file(*args, **kwargs):
+            raise FileNotFoundError(
+                "Missing team conference membership file: "
+                "data/raw/teams/team_conference_membership.csv"
+            )
+
+        monkeypatch.setattr(execution, "get_teams_by_conference", missing_membership_file)
+
+        qr = execute_natural_query("Celtics record against the East this season")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["opponent_conference"] == "East"
+        assert qr.metadata["unsupported_filters"] == ["conference_coverage"]
+        assert qr.to_dict()["sections"] == {}
+
     def test_conference_record_matches_explicit_opponent_list(self):
         natural = execute_natural_query("Celtics record against the East this season")
         explicit = execute_structured_query(
