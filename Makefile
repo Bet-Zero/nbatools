@@ -7,7 +7,7 @@
 .PHONY: test-preflight test-unit test-ci-fast
 .PHONY: test-parser test-query test-engine test-api test-output
 .PHONY: test-smoke-queries test-phase-smoke test-smoke-all
-.PHONY: parser-examples-sweep raw-query-answer-qa
+.PHONY: parser-examples-sweep raw-query-answer-qa query-feedback-export
 
 PYTHON ?= python
 PYTEST ?= pytest
@@ -95,3 +95,7 @@ parser-examples-sweep:
 ## Curated raw query answer QA harness; writes ignored artifacts under outputs/.
 raw-query-answer-qa:
 	.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+
+## Read-only query feedback review export; writes ignored artifacts under outputs/.
+query-feedback-export:
+	$(PYTHON) tools/export_query_feedback.py
