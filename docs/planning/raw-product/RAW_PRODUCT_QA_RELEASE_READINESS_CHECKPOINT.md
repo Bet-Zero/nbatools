@@ -37,16 +37,19 @@
   Diagnostic Logging V1 is included in the release candidate and is no longer a
   preview blocker after R2 inspection verified user-submitted records,
   automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa`
-  suppression.
+  suppression. Query Feedback Review Workflow V1 is implemented as a read-only
+  launch review/export path.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
   build/lint, parser smoke, diff-check validation, preview manual QA, R2 data
   availability, deployment smoke, opponent-conference preview smoke, and query
-  feedback R2 inspection. The remaining notes are selected frontend-copy
-  coverage, manual visual QA, trusted-season limits for opponent-conference
-  support, guarded unsupported boundaries, existing frontend build/lint
-  warnings, and feedback operational follow-ups.
+  feedback R2 inspection, and the implemented feedback review/export workflow.
+  The remaining notes are selected frontend-copy coverage, manual visual QA,
+  trusted-season limits for opponent-conference support, guarded unsupported
+  boundaries, existing frontend build/lint warnings, and feedback operational
+  follow-ups: no admin dashboard, no mutable triage overlay, heuristic
+  suggestions only, and manual corpus conversion.
 
 ## 2. Backend Raw Query Answer QA
 
@@ -333,14 +336,22 @@ Evidence:
   `/visual-qa`; the only automatic successful `ok` record was above the
   slow-query threshold.
 
+Query Feedback Review Workflow V1 is now implemented as the launch review path:
+
+- Return package:
+  `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`.
+- Export script: `tools/export_query_feedback.py`.
+- Make target: `make query-feedback-export`.
+- Output artifacts: `feedback_review.md`, `feedback_records.csv`,
+  `feedback_records.jsonl`, `summary.json`, and
+  `triage_decisions_template.csv`.
+
 Remaining feedback limitations are operational notes, not release blockers:
 
-- No admin dashboard/export workflow yet.
-- No full dedupe/rate limiting beyond normalized query hash.
-- Dedicated feedback bucket was unavailable, so preview currently uses
-  `nbatools-data` with isolated prefix `query_feedback/preview`.
-- Frontend network/non-JSON failure logging path was not live-tested in the R2
-  inspection.
+- No admin dashboard.
+- No mutable triage overlay.
+- Triage suggestions are heuristic and reviewer-owned decisions remain manual.
+- Corpus conversion remains manual after review.
 
 ## 9. Validation strategy going forward
 
@@ -391,6 +402,9 @@ Latest release-readiness checklist validation:
   `FEEDBACK_READY_WITH_NOTES`; R2 list/get passed, user-submitted records found,
   automatic diagnostics found, sanitizer/privacy checks passed, and `/review`
   plus `/visual-qa` suppression passed.
+- Query feedback review/export workflow:
+  `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`;
+  implemented with notes; launch review can run `make query-feedback-export`.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check: `git diff --check` passed.
@@ -418,11 +432,12 @@ Completed:
 
 - Option G - Release candidate handoff.
 - Query feedback readiness refresh after R2 record inspection.
+- Option H - Query feedback export/review script.
 
 Recommended order:
 
 1. Option E - Visual QA automation.
-2. Option H - Query feedback export/review script.
+2. First launch feedback review using `make query-feedback-export`.
 3. Option B - Promote one unsupported family into real support.
 4. Option F - Broader release/CI artifact packaging.
 5. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
@@ -497,13 +512,16 @@ Recommended order:
   record inspection passed with notes.
 - Remaining handoff notes: selected frontend-copy coverage, manual visual QA,
   opponent-conference support limited to trusted seasons `2024-25` and
-  `2025-26`, unsupported divisions/geography/historical coverage, and feedback
-  operational follow-ups.
+  `2025-26`, unsupported divisions/geography/historical coverage, and remaining
+  feedback operational notes.
 
 ### Option H - Query feedback export/review script
 
-- Build a small read/list/export workflow for immutable R2 feedback records.
-- Start with the verified preview prefix `query_feedback/preview`, grouped by
-  `feedback_type`, `route`, `reason`, and `query_normalized_hash`.
-- Keep this as operational tooling only; do not change product query behavior or
-  promote unsupported families from feedback records until triaged.
+- Status: implemented with notes.
+- Launch review command: `make query-feedback-export`.
+- Script: `tools/export_query_feedback.py`.
+- Outputs: `feedback_review.md`, `feedback_records.csv`,
+  `feedback_records.jsonl`, `summary.json`, and
+  `triage_decisions_template.csv`.
+- Remaining notes: no admin dashboard, no mutable triage overlay, heuristic
+  suggestions only, and manual corpus conversion.

@@ -28,10 +28,10 @@
   `raw/teams/team_conference_membership.csv`, supported opponent-conference
   preview smoke passed, deployment smoke includes the membership-data check,
   and `/visual-qa` loaded 15/15 cases with request errors 0. Query Feedback +
-  Diagnostic Logging V1 is also included in the release candidate and is no
-  longer a preview blocker after R2 record inspection verified user-submitted
-  records, automatic diagnostics, sanitization/privacy, and `/review` plus
-  `/visual-qa` suppression.
+  Diagnostic Logging V1 is also included in the release candidate, is no longer
+  a preview blocker after R2 record inspection verified user-submitted records,
+  automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa`
+  suppression, and now has an implemented read-only review/export workflow.
 - Latest refresh type: docs/release packaging only; no production code, parser,
   frontend rendering, test, or corpus changes.
 
@@ -50,11 +50,11 @@ Known limitations:
 - Unsupported product families are guarded and documented; opponent-conference
   team-record filters are now supported only inside the trusted current-era
   conference coverage boundary.
-- Query feedback is `FEEDBACK_READY_WITH_NOTES`; remaining feedback limitations
-  are operational follow-ups: no admin/export workflow, no full dedupe/rate
-  limiting beyond hash, dedicated feedback bucket unavailable so preview uses
-  isolated prefix `query_feedback/preview`, and frontend network/non-JSON
-  failure logging was not live-tested.
+- Query feedback is `FEEDBACK_READY_WITH_NOTES`; R2 inspection passed, the
+  read-only review/export workflow is implemented, and launch review can use
+  `make query-feedback-export`. Remaining feedback limitations are operational
+  follow-ups: no admin dashboard, no mutable triage overlay, heuristic
+  suggestions only, and manual corpus conversion.
 
 ## 2. Backend Raw QA
 
@@ -141,6 +141,7 @@ limitation is that visual QA is manual, not screenshot-diff automation.
 | Latest deployment smoke | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and opponent-conference membership-data case passed |
 | Latest opponent-conference preview smoke | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported checks passed, two guardrails passed, `/visual-qa` request errors 0 |
 | Query feedback and diagnostic logging | `FEEDBACK_READY_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; user-submitted R2 records, automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa` suppression verified under `query_feedback/preview` |
+| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
@@ -149,7 +150,8 @@ fixed, and the later R2 data blocker for opponent-conference support was
 resolved by syncing the required membership CSV. The latest deployed preview
 checks passed the route, smoke, deployment-smoke, `/visual-qa`, and
 opponent-conference data-path checks with non-blocking notes. Query feedback is
-ready with notes and is not a preview blocker.
+ready with notes, the review/export workflow is implemented, and feedback is not
+a preview blocker.
 
 ## 6. Unsupported Boundaries
 
@@ -205,7 +207,7 @@ path.
 | Release checkpoint | `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` |
 | Findings inventory | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md` |
 | Harness plan | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` |
-| Query feedback review runbook | `docs/operations/query_feedback_review.md`; updated for verified preview prefix/status |
+| Query feedback review runbook | `docs/operations/query_feedback_review.md`; updated for verified preview prefix/status and export/review workflow usage |
 
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.
 
@@ -452,6 +454,21 @@ Sanitization/privacy: PASS
 Blocking issues: none
 ```
 
+### Query feedback review/export workflow
+
+Evidence:
+
+```text
+return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md
+Workflow status: implemented with notes
+Export script: tools/export_query_feedback.py
+Make target: make query-feedback-export
+Output artifacts: feedback_review.md, feedback_records.csv,
+feedback_records.jsonl, summary.json, triage_decisions_template.csv
+Notes: no admin dashboard, no mutable triage overlay, heuristic suggestions
+only, manual corpus conversion
+```
+
 ### Static diff check
 
 Command:
@@ -536,7 +553,7 @@ Diagnostic Logging V1 is `FEEDBACK_READY_WITH_NOTES` and included in the
 release candidate. The remaining release notes are selected frontend-copy
 coverage, manual visual QA, trusted-season limits for opponent-conference
 support, guarded unsupported families, existing frontend build/lint warnings,
-and feedback operational follow-ups for export/admin tooling, dedupe/rate
-limiting, dedicated bucket provisioning, and frontend network/non-JSON
-failure-path live testing. The final release-candidate handoff is complete in
+and feedback operational follow-ups: no admin dashboard, no mutable triage
+overlay, heuristic suggestions only, and manual corpus conversion. The final
+release-candidate handoff is complete in
 `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.

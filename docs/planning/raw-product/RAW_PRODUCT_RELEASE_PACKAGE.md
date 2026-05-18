@@ -16,6 +16,7 @@
 - Preview-ready: yes, with notes.
 - Release-candidate ready: yes, with notes.
 - Query Feedback + Diagnostic Logging V1 included in release candidate: yes.
+- Query feedback review/export workflow implemented: yes, with notes.
 - Final handoff:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
   handoff complete with notes.
@@ -33,6 +34,11 @@ also no longer a release blocker: the latest R2 record inspection found
 user-submitted records, automatic diagnostics, clean sanitizer/privacy output,
 and `/review` plus `/visual-qa` suppression under the isolated
 `query_feedback/preview` prefix.
+Query Feedback Review Workflow V1 is now implemented as a read-only launch
+review path: `make query-feedback-export` wraps
+`tools/export_query_feedback.py` and writes `feedback_review.md`,
+`feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and
+`triage_decisions_template.csv`.
 
 Human sign-off still needed:
 
@@ -43,9 +49,8 @@ Human sign-off still needed:
 - Product owner acceptance that the explicitly guarded unsupported families
   remain unsupported for this release.
 - Product owner acceptance that remaining feedback limitations are operational
-  follow-ups: export/admin workflow, full dedupe/rate limiting, dedicated
-  feedback bucket provisioning, and frontend network/non-JSON failure-path
-  live testing.
+  follow-ups: no admin dashboard, no mutable triage overlay, heuristic
+  suggestions only, and manual corpus conversion.
 
 ## 2. Validation Summary
 
@@ -59,6 +64,7 @@ Human sign-off still needed:
 | R2 data availability | `PASS` | R2 dry-run included `raw/teams/team_conference_membership.csv`; sync uploaded it; `head_object` returned `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
 | Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and `query_celtics_record_against_east_current` returned `team_record` / `ok` with 15 East opponents. |
 | Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed, user-submitted feedback writes were verified, automatic diagnostics were verified, sanitization/privacy checks passed, no raw result rows/tables were found, and `/review` plus `/visual-qa` suppression passed. |
+| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -229,6 +235,8 @@ Latest release artifacts:
   `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
 - Query feedback R2 inspection:
   `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`
+- Query feedback review workflow V1:
+  `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`
 - Query feedback implementation package:
   `return_packages/raw-product/QUERY_FEEDBACK_DIAGNOSTIC_LOGGING_V1_RETURN_PACKAGE.md`
 - Backend harness plan:
@@ -256,6 +264,7 @@ Supporting return packages:
 - `return_packages/raw-product/QUERY_FEEDBACK_DIAGNOSTIC_LOGGING_V1_RETURN_PACKAGE.md`
 - `return_packages/raw-product/QUERY_FEEDBACK_PREVIEW_R2_ENABLE_RETURN_PACKAGE.md`
 - `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`
+- `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`
 
 ## 6. Known Limitations
 
@@ -281,10 +290,10 @@ Supporting return packages:
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Frontend build remains clean with the existing Vite large-chunk warning.
 - Query feedback is `FEEDBACK_READY_WITH_NOTES`, not blocked: preview records
-  are verified under `nbatools-data` prefix `query_feedback/preview`, while
-  export/admin workflow, full dedupe/rate limiting, a dedicated feedback
-  bucket/token, and frontend network/non-JSON failure-path live testing remain
-  operational follow-ups.
+  are verified under `nbatools-data` prefix `query_feedback/preview`, and the
+  read-only review/export workflow is implemented. Remaining feedback notes are
+  no admin dashboard, no mutable triage overlay, heuristic suggestions only,
+  and manual corpus conversion.
 
 ## 7. Future Deployment Checklist
 
@@ -306,6 +315,8 @@ Before deploying this boundary again:
 - If query feedback env changes, confirm storage still writes compact sanitized
   records and verify the active bucket/prefix. Latest accepted preview evidence
   is `FEEDBACK_READY_WITH_NOTES` under `query_feedback/preview`.
+- Run `make query-feedback-export` for launch feedback review and inspect the
+  generated Markdown, CSV, JSONL, summary, and triage-template artifacts.
 - Run deployment smoke against the target URL and confirm the
   opponent-conference membership-data case passes.
 - Open `/`, `/review`, and `/visual-qa` on the target preview or production URL.
@@ -342,9 +353,10 @@ Recommended order after this handoff:
 1. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.
-2. Query feedback export/review script.
-   - Add a small read/list/export path for immutable feedback records before
-     relying on them for routine triage.
+2. First launch feedback review.
+   - Run `make query-feedback-export`, inspect the generated artifacts, and
+     manually fill the triage decisions template before converting verified
+     issues into corpus or planning updates.
 3. Promote another unsupported family into real support.
    - Candidates include historical opponent-conference expansion beyond trusted
      current-era seasons, single-team advanced scalar summaries, or rookie/role

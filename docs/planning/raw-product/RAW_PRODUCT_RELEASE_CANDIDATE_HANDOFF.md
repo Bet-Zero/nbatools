@@ -11,15 +11,16 @@
   required R2 data is available, deployment smoke passed, and the latest
   preview `/visual-qa` request-health check loaded 15/15 cases with request
   errors 0. Query Feedback + Diagnostic Logging V1 is included in the current
-  release candidate and passed R2 record inspection with notes.
+  release candidate, passed R2 record inspection with notes, and now has an
+  implemented read-only feedback review/export workflow.
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
   is manual rather than screenshot-diff automation, opponent-conference support
   is limited to trusted seasons `2024-25` and `2025-26`, existing frontend
-  build/lint warnings remain non-blocking, feedback export/admin workflow and
-  full dedupe/rate limiting are not built yet, the dedicated feedback bucket is
-  unavailable so preview uses an isolated feedback prefix in `nbatools-data`,
-  and explicitly unsupported boundaries must continue to return guarded
-  no-result or unsupported behavior.
+  build/lint warnings remain non-blocking, feedback review remains operational
+  tooling rather than an admin dashboard or mutable triage overlay, triage
+  suggestions are heuristic, corpus conversion remains manual, and explicitly
+  unsupported boundaries must continue to return guarded no-result or
+  unsupported behavior.
 - Recommended handoff decision: ship or hand off the current release candidate
   with notes. Query feedback is no longer a preview blocker. Missing required
   R2 data remains a release blocker.
@@ -35,6 +36,7 @@
 | Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and the R2-sensitive opponent-conference team-record check returned 15 East opponents. |
 | Visual QA | `PASS_WITH_MANUAL_LIMITATION` | Manual 15-case baseline remains accepted; latest preview `/visual-qa` loaded 15/15 cases with request errors 0; no screenshot-diff automation exists yet. |
 | Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed under `nbatools-data` prefix `query_feedback/preview`, user-submitted feedback records were found, automatic diagnostics were found, sanitizer/privacy checks passed, and `/review` plus `/visual-qa` suppression passed. |
+| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can run `make query-feedback-export`, which wraps `tools/export_query_feedback.py` and writes `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
 
 ## 3. Feedback and diagnostics V1
@@ -57,14 +59,20 @@ Verified feedback evidence:
   `query_feedback/preview` because the dedicated feedback bucket was
   unavailable.
 
+The feedback review/export workflow is also implemented:
+
+- Launch review can run `make query-feedback-export`.
+- The make target is a thin wrapper around `tools/export_query_feedback.py`.
+- Outputs are `feedback_review.md`, `feedback_records.csv`,
+  `feedback_records.jsonl`, `summary.json`, and
+  `triage_decisions_template.csv`.
+
 Remaining feedback notes are operational follow-ups, not preview blockers:
 
-- No admin dashboard/export workflow yet.
-- No full dedupe/rate limiting beyond normalized query hash.
-- Dedicated feedback bucket/token should be provisioned later if the isolated
-  prefix is not kept.
-- Frontend network/non-JSON failure logging path was not live-tested during the
-  R2 inspection.
+- No admin dashboard.
+- No mutable triage overlay.
+- Triage suggestions are heuristic and reviewer-owned decisions remain manual.
+- Corpus conversion remains manual after review.
 
 ## 4. Supported product boundary
 
@@ -172,10 +180,10 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 - Visual QA is manual, not screenshot-diff automation.
 - Opponent-conference support is limited to trusted seasons `2024-25` and
   `2025-26`.
-- Query feedback is ready with notes: no admin dashboard/export workflow yet,
-  no full dedupe/rate limiting beyond hash, dedicated feedback bucket
-  provisioning remains a later operational task, and the frontend
-  network/non-JSON failure path was not live-tested in the R2 inspection.
+- Query feedback is ready with notes: R2 inspection passed, the read-only
+  review/export workflow is implemented, there is no admin dashboard or mutable
+  triage overlay, triage suggestions are heuristic, and corpus conversion
+  remains manual.
 - Frontend lint still has the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning in the
   latest readiness evidence.
@@ -195,6 +203,8 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 - [ ] Confirm feedback storage status if feedback env changes; latest accepted
   preview evidence is `FEEDBACK_READY_WITH_NOTES` under
   `query_feedback/preview`.
+- [ ] Run `make query-feedback-export` for launch feedback review when there
+  are records to triage.
 - [ ] Open preview `/`, `/review`, and `/visual-qa`.
 - [ ] Run supported and unsupported smoke queries.
 - [ ] Mobile spot-check primary result readability.
@@ -203,7 +213,7 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 ## 9. Recommended next roadmap
 
 1. Visual QA automation preflight.
-2. Query feedback export/review script.
+2. First launch feedback review using `make query-feedback-export`.
 3. Next unsupported-family promotion preflight.
 4. CI/release artifact packaging.
 5. Frontend-copy Wave 3 only after fresh gap analysis.
