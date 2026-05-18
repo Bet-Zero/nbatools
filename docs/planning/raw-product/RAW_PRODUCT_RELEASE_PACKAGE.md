@@ -4,7 +4,9 @@
 
 - Recommended status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Preview status: `PREVIEW_READY_WITH_NOTES`.
+- Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Release date: 2026-05-17.
+- Latest feedback readiness refresh: 2026-05-18.
 - Scope: current supported and explicitly unsupported Raw Product boundary.
 - Production code changed for this package: no.
 - Frontend rendering changed for this package: no.
@@ -13,6 +15,7 @@
 - Production-ready: yes after human acceptance of the release notes below.
 - Preview-ready: yes, with notes.
 - Release-candidate ready: yes, with notes.
+- Query Feedback + Diagnostic Logging V1 included in release candidate: yes.
 - Final handoff:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
   handoff complete with notes.
@@ -25,7 +28,11 @@ resolved: R2 contains `raw/teams/team_conference_membership.csv`, the latest
 opponent-conference preview smoke passed on
 `https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app`, deployment
 smoke includes the R2-sensitive membership-data check, and `/visual-qa` loaded
-15/15 cases with request errors 0.
+15/15 cases with request errors 0. Query Feedback + Diagnostic Logging V1 is
+also no longer a release blocker: the latest R2 record inspection found
+user-submitted records, automatic diagnostics, clean sanitizer/privacy output,
+and `/review` plus `/visual-qa` suppression under the isolated
+`query_feedback/preview` prefix.
 
 Human sign-off still needed:
 
@@ -35,6 +42,10 @@ Human sign-off still needed:
   automation.
 - Product owner acceptance that the explicitly guarded unsupported families
   remain unsupported for this release.
+- Product owner acceptance that remaining feedback limitations are operational
+  follow-ups: export/admin workflow, full dedupe/rate limiting, dedicated
+  feedback bucket provisioning, and frontend network/non-JSON failure-path
+  live testing.
 
 ## 2. Validation Summary
 
@@ -47,6 +58,7 @@ Human sign-off still needed:
 | Opponent-conference preview smoke | `PASS` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference queries passed, geography/playoff-round guardrails passed, and `/visual-qa` request errors were 0. |
 | R2 data availability | `PASS` | R2 dry-run included `raw/teams/team_conference_membership.csv`; sync uploaded it; `head_object` returned `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
 | Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and `query_celtics_record_against_east_current` returned `team_record` / `ok` with 15 East opponents. |
+| Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed, user-submitted feedback writes were verified, automatic diagnostics were verified, sanitization/privacy checks passed, no raw result rows/tables were found, and `/review` plus `/visual-qa` suppression passed. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -215,6 +227,10 @@ Latest release artifacts:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
 - Release-readiness checkpoint:
   `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
+- Query feedback R2 inspection:
+  `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`
+- Query feedback implementation package:
+  `return_packages/raw-product/QUERY_FEEDBACK_DIAGNOSTIC_LOGGING_V1_RETURN_PACKAGE.md`
 - Backend harness plan:
   `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
 - Latest deployment smoke:
@@ -237,6 +253,9 @@ Supporting return packages:
 - `return_packages/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST_RETURN_PACKAGE.md`
 - `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
 - `return_packages/raw-product/RAW_PRODUCT_RELEASE_PACKAGE_REFRESH_AFTER_R2_SYNC_FIX_RETURN_PACKAGE.md`
+- `return_packages/raw-product/QUERY_FEEDBACK_DIAGNOSTIC_LOGGING_V1_RETURN_PACKAGE.md`
+- `return_packages/raw-product/QUERY_FEEDBACK_PREVIEW_R2_ENABLE_RETURN_PACKAGE.md`
+- `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`
 
 ## 6. Known Limitations
 
@@ -261,6 +280,11 @@ Supporting return packages:
 - Frontend lint remains clean with 0 errors and the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
 - Frontend build remains clean with the existing Vite large-chunk warning.
+- Query feedback is `FEEDBACK_READY_WITH_NOTES`, not blocked: preview records
+  are verified under `nbatools-data` prefix `query_feedback/preview`, while
+  export/admin workflow, full dedupe/rate limiting, a dedicated feedback
+  bucket/token, and frontend network/non-JSON failure-path live testing remain
+  operational follow-ups.
 
 ## 7. Future Deployment Checklist
 
@@ -279,6 +303,9 @@ Before deploying this boundary again:
   `.venv/bin/nbatools-cli pipeline sync-r2`
 - Verify `raw/teams/team_conference_membership.csv` exists in R2 before any
   opponent-conference preview smoke or release handoff.
+- If query feedback env changes, confirm storage still writes compact sanitized
+  records and verify the active bucket/prefix. Latest accepted preview evidence
+  is `FEEDBACK_READY_WITH_NOTES` under `query_feedback/preview`.
 - Run deployment smoke against the target URL and confirm the
   opponent-conference membership-data case passes.
 - Open `/`, `/review`, and `/visual-qa` on the target preview or production URL.
@@ -315,16 +342,19 @@ Recommended order after this handoff:
 1. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.
-2. Promote another unsupported family into real support.
+2. Query feedback export/review script.
+   - Add a small read/list/export path for immutable feedback records before
+     relying on them for routine triage.
+3. Promote another unsupported family into real support.
    - Candidates include historical opponent-conference expansion beyond trusted
      current-era seasons, single-team advanced scalar summaries, or rookie/role
      leaderboards, depending on product need and available source contracts.
-3. Broader release/CI artifact packaging.
+4. Broader release/CI artifact packaging.
    - Package raw QA, frontend-copy, preview manual QA, and visual QA outputs
      into a repeatable CI/release artifact bundle.
-4. Frontend-copy Wave 3 only after fresh gap analysis.
+5. Frontend-copy Wave 3 only after fresh gap analysis.
    - Expand only if a route/shape risk is still meaningfully undercovered after
      the 125-case set.
-5. Harness tag/category filters.
+6. Harness tag/category filters.
    - Add focused selection by corpus tags/categories if future fix waves need
      faster iteration than saved slices provide.

@@ -42,6 +42,13 @@ The feedback store uses the same S3 endpoint pattern and credential variable
 names as runtime R2 data access, but the recommended production setup is a
 separate feedback bucket and a separate R2 token scoped only to that bucket.
 
+Current preview feedback status as of the May 18, 2026 R2 record inspection is
+`FEEDBACK_READY_WITH_NOTES`. The dedicated feedback bucket was unavailable for
+that preview, so records were verified in the existing `nbatools-data` bucket
+under isolated prefix `query_feedback/preview`. That fallback is acceptable for
+the current release candidate with notes; provision a dedicated feedback bucket
+and token later if this prefix is not kept.
+
 ## Cloudflare R2 Setup
 
 Use this process when recreating the storage setup for a future operator.

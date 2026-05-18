@@ -33,14 +33,20 @@
   `ok: true`, `case_count: 7`, `failure_count: 0`, and the
   opponent-conference membership-data check returned 15 East opponents.
 - Latest `/visual-qa` preview status: loaded 15/15 cases with request errors 0.
+- Query feedback status: `FEEDBACK_READY_WITH_NOTES`. Query Feedback +
+  Diagnostic Logging V1 is included in the release candidate and is no longer a
+  preview blocker after R2 inspection verified user-submitted records,
+  automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa`
+  suppression.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
   build/lint, parser smoke, diff-check validation, preview manual QA, R2 data
-  availability, deployment smoke, and opponent-conference preview smoke. The
-  remaining notes are selected frontend-copy coverage, manual visual QA,
-  trusted-season limits for opponent-conference support, guarded unsupported
-  boundaries, and existing frontend build/lint warnings.
+  availability, deployment smoke, opponent-conference preview smoke, and query
+  feedback R2 inspection. The remaining notes are selected frontend-copy
+  coverage, manual visual QA, trusted-season limits for opponent-conference
+  support, guarded unsupported boundaries, existing frontend build/lint
+  warnings, and feedback operational follow-ups.
 
 ## 2. Backend Raw Query Answer QA
 
@@ -307,7 +313,36 @@ Remaining limitations:
 - Manual screenshots should be refreshed if the 15-case baseline is used as a
   release artifact.
 
-## 8. Validation strategy going forward
+## 8. Query Feedback + Diagnostic Logging V1
+
+Status: `FEEDBACK_READY_WITH_NOTES`.
+
+Evidence:
+
+- Latest inspection:
+  `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`.
+- R2 list/get passed for bucket `nbatools-data` under isolated prefix
+  `query_feedback/preview/2026/05/18/`.
+- Known user-submitted records were found and inspected, including direct
+  endpoint smoke, successful-answer feedback, and no-result feedback.
+- Automatic diagnostics were found for unsupported/no-result and unrouted/error
+  cases.
+- Sanitization/privacy checks passed: no disallowed PII fields and no raw
+  result rows/tables were found in inspected records.
+- Suppression checks passed: inspected records did not come from `/review` or
+  `/visual-qa`; the only automatic successful `ok` record was above the
+  slow-query threshold.
+
+Remaining feedback limitations are operational notes, not release blockers:
+
+- No admin dashboard/export workflow yet.
+- No full dedupe/rate limiting beyond normalized query hash.
+- Dedicated feedback bucket was unavailable, so preview currently uses
+  `nbatools-data` with isolated prefix `query_feedback/preview`.
+- Frontend network/non-JSON failure logging path was not live-tested in the R2
+  inspection.
+
+## 9. Validation strategy going forward
 
 Latest release-readiness checklist validation:
 
@@ -351,6 +386,11 @@ Latest release-readiness checklist validation:
   Conference Finals guardrails passed.
 - Visual-QA request health:
   latest preview `/visual-qa` loaded 15/15 cases with request errors 0.
+- Query feedback R2 inspection:
+  `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`;
+  `FEEDBACK_READY_WITH_NOTES`; R2 list/get passed, user-submitted records found,
+  automatic diagnostics found, sanitizer/privacy checks passed, and `/review`
+  plus `/visual-qa` suppression passed.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check: `git diff --check` passed.
@@ -372,19 +412,21 @@ Latest release-readiness checklist validation:
 - Frontend changes: require the relevant frontend tests and `cd frontend &&
   npm run build` so FastAPI-served assets stay current.
 
-## 9. Recommended next options
+## 10. Recommended next options
 
 Completed:
 
 - Option G - Release candidate handoff.
+- Query feedback readiness refresh after R2 record inspection.
 
 Recommended order:
 
 1. Option E - Visual QA automation.
-2. Option B - Promote one unsupported family into real support.
-3. Option F - Broader release/CI artifact packaging.
-4. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
-5. Option D - Harness tag/category filters.
+2. Option H - Query feedback export/review script.
+3. Option B - Promote one unsupported family into real support.
+4. Option F - Broader release/CI artifact packaging.
+5. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
+6. Option D - Harness tag/category filters.
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
@@ -447,10 +489,21 @@ Recommended order:
 - Current status: complete with notes; see
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.
 - Release status: `RELEASE_CANDIDATE_WITH_NOTES` with preview status
-  `PREVIEW_READY_WITH_NOTES`.
+  `PREVIEW_READY_WITH_NOTES` and query feedback status
+  `FEEDBACK_READY_WITH_NOTES`.
 - Why: the previous R2 preview blocker is resolved, deployment smoke includes
-  the R2-sensitive opponent-conference membership-data check, and the latest
-  preview `/visual-qa` request-health check is clean.
+  the R2-sensitive opponent-conference membership-data check, the latest
+  preview `/visual-qa` request-health check is clean, and query feedback R2
+  record inspection passed with notes.
 - Remaining handoff notes: selected frontend-copy coverage, manual visual QA,
   opponent-conference support limited to trusted seasons `2024-25` and
-  `2025-26`, and unsupported divisions/geography/historical coverage.
+  `2025-26`, unsupported divisions/geography/historical coverage, and feedback
+  operational follow-ups.
+
+### Option H - Query feedback export/review script
+
+- Build a small read/list/export workflow for immutable R2 feedback records.
+- Start with the verified preview prefix `query_feedback/preview`, grouped by
+  `feedback_type`, `route`, `reason`, and `query_normalized_hash`.
+- Keep this as operational tooling only; do not change product query behavior or
+  promote unsupported families from feedback records until triaged.

@@ -11,6 +11,18 @@ This runbook covers v1 query feedback and diagnostic logging review.
 - Object key shape:
   `query_feedback/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json`
 
+Current preview status as of the May 18, 2026 R2 inspection is
+`FEEDBACK_READY_WITH_NOTES`. Preview records were verified in bucket
+`nbatools-data` under isolated prefix `query_feedback/preview` because the
+dedicated feedback bucket was unavailable. The verified preview key shape is:
+
+```text
+query_feedback/preview/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json
+```
+
+Evidence is recorded in
+`return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`.
+
 The endpoint is backend-owned. The frontend never receives R2 credentials and
 does not write directly to storage.
 
@@ -53,6 +65,8 @@ V1 does not include an admin dashboard. Review records through the R2 console,
 Typical review flow:
 
 1. List objects under `query_feedback/YYYY/MM/DD/`.
+   For the verified preview fallback, list under
+   `query_feedback/preview/YYYY/MM/DD/`.
 2. Download a day or date range of JSON records.
 3. Group by `feedback_type`, `route`, `reason`, and `query_normalized_hash`.
 4. Triage duplicate hashes together.
