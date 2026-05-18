@@ -545,9 +545,9 @@ export default function ReviewPage() {
                     <article key={fixture.case_id} className={styles.block}>
                       <h3 className={styles.queryTitle}>{fixture.query}</h3>
                       <p className={styles.caseMeta}>Fixture {index + 1}</p>
-                      <ResultEnvelope data={result} />
+                      <ResultEnvelope data={result} displayMode="debug" />
                       <div className={styles.resultSections}>
-                        <ResultRenderer data={result} displayMode="review" />
+                        <ResultRenderer data={result} displayMode="debug" />
                       </div>
                     </article>
                   ))}
@@ -594,9 +594,9 @@ export default function ReviewPage() {
                   <article className={styles.block}>
                     <h3 className={styles.queryTitle}>{entry.fixture.query}</h3>
                     <p className={styles.caseMeta}>Fixture {entry.index + 1}</p>
-                    <ResultEnvelope data={entry.result} />
+                    <ResultEnvelope data={entry.result} displayMode="debug" />
                     <div className={styles.resultSections}>
-                      <ResultRenderer data={entry.result} displayMode="review" />
+                      <ResultRenderer data={entry.result} displayMode="debug" />
                     </div>
                   </article>
                 </div>

@@ -5,6 +5,7 @@ import type {
   SectionRow,
 } from "../../../api/types";
 import { Stat } from "../../../design-system";
+import type { DisplayMode } from "../../../displayMode";
 import {
   formatAverageValue,
   formatCompactDate,
@@ -26,7 +27,6 @@ import { hasPinnedEntity } from "./entityBinding";
 import styles from "./GameLogResult.module.css";
 
 type GameLogMode = "auto" | "player" | "team";
-type ResultDisplayMode = "product" | "review";
 
 interface Props {
   data: QueryResponse;
@@ -39,7 +39,7 @@ interface Props {
   showSummaryStrip?: boolean;
   rawDetailTitle?: string;
   detailSectionKeys?: string[];
-  displayMode?: ResultDisplayMode;
+  displayMode?: DisplayMode;
 }
 
 interface SummaryItem {
@@ -133,7 +133,7 @@ export default function GameLogResult({
   showSummaryStrip = true,
   rawDetailTitle,
   detailSectionKeys = [],
-  displayMode = "product",
+  displayMode = "public",
 }: Props) {
   const rawRows = sectionRows(data, sectionKey, fallbackSectionKey);
   const rows = orderedRows(rawRows, preserveOrder);
@@ -193,7 +193,7 @@ export default function GameLogResult({
           footerRows={footerRows}
           ariaLabel="Game log"
           getRowKey={rowKey}
-          rowLimit={displayMode === "product" ? 12 : undefined}
+          rowLimit={displayMode === "public" ? 12 : undefined}
           rowNoun="games"
         />
       )}

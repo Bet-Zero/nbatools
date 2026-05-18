@@ -103,7 +103,7 @@ describe("App scoped team theming", () => {
     submitQuery("celtics record");
 
     await waitFor(() =>
-      expect(screen.getByText("Query output")).toBeInTheDocument(),
+      expect(screen.getByText("Result")).toBeInTheDocument(),
     );
 
     const surface = container.querySelector('[data-team-theme="BOS"]');
@@ -137,7 +137,7 @@ describe("App scoped team theming", () => {
     submitQuery("celtics vs lakers");
 
     await waitFor(() =>
-      expect(screen.getByText("Query output")).toBeInTheDocument(),
+      expect(screen.getByText("Result")).toBeInTheDocument(),
     );
 
     expect(container.querySelector("[data-team-theme]")).toBeNull();

@@ -491,7 +491,7 @@ function buildCaseReport(
     const rendered = render(
       <article data-copy-region="case">
         <div data-copy-region="envelope">
-          <ResultEnvelope data={response} />
+          <ResultEnvelope data={response} displayMode="debug" />
         </div>
         <div data-copy-region="result">
           <ResultRenderer data={response} displayMode="review" />

@@ -280,6 +280,25 @@ describe("SavedQueries panel", () => {
 });
 
 describe("QueryHistory panel", () => {
+  it("hides route and query-class badges until debug mode", () => {
+    const props = {
+      entries: [makeHistoryEntry()],
+      onSelect: vi.fn(),
+      onEdit: vi.fn(),
+      onClear: vi.fn(),
+      onSave: vi.fn(),
+    };
+    const { rerender } = render(<QueryHistory {...props} />);
+
+    expect(screen.queryByText("summary")).not.toBeInTheDocument();
+    expect(screen.queryByText("player_game_summary")).not.toBeInTheDocument();
+
+    rerender(<QueryHistory {...props} displayMode="debug" />);
+
+    expect(screen.getByText("summary")).toBeInTheDocument();
+    expect(screen.getByText("player_game_summary")).toBeInTheDocument();
+  });
+
   it("names history actions and supports keyboard activation", () => {
     const onSelect = vi.fn();
     const onEdit = vi.fn();

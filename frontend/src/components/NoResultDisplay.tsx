@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Badge, Card, type BadgeVariant } from "../design-system";
 import type { DisambiguationCandidate, ResultMetadata } from "../api/types";
+import { normalizeDisplayMode, type DisplayModeInput } from "../displayMode";
 import {
   buildNoResultDetails,
   buildNoResultGuidance,
@@ -18,6 +19,11 @@ interface Props {
   notes?: string[];
   caveats?: string[];
   feedbackAction?: ReactNode;
+  displayMode?: DisplayModeInput;
+  route?: string | null;
+  queryClass?: string | null;
+  currentThrough?: string | null;
+  query?: string | null;
 }
 
 type StateVariant =
@@ -156,7 +162,15 @@ export default function NoResultDisplay({
   notes = [],
   caveats = [],
   feedbackAction,
+  displayMode,
+  route,
+  queryClass,
+  currentThrough,
+  query,
 }: Props) {
+  const normalizedDisplayMode = normalizeDisplayMode(displayMode);
+  const isDebugMode = normalizedDisplayMode === "debug";
+  const [detailsOpen, setDetailsOpen] = useState(isDebugMode);
   const candidateLine = candidateSuggestionLine(metadata?.candidates);
   const details = buildNoResultDetails(notes, caveats, metadata);
   const detailTexts = details.map((detail) => detail.text);
@@ -173,6 +187,16 @@ export default function NoResultDisplay({
     detailTexts,
   );
   const guidance = buildNoResultGuidance(reason, status, metadata, detailTexts);
+  const diagnosticDetails = buildDiagnosticDetails({
+    reason,
+    status,
+    metadata,
+    route,
+    queryClass,
+    currentThrough,
+    query,
+  });
+  const showDetails = details.length > 0 || diagnosticDetails.length > 0;
 
   return (
     <Card
@@ -187,9 +211,11 @@ export default function NoResultDisplay({
           <span className={styles.stateLabel}>{profile.label}</span>
           <div className={styles.title}>{profile.title}</div>
         </div>
-        <Badge variant={profile.badgeVariant} size="sm" uppercase>
-          {formatStatus(status)}
-        </Badge>
+        {isDebugMode && (
+          <Badge variant={profile.badgeVariant} size="sm" uppercase>
+            {formatStatus(status)}
+          </Badge>
+        )}
       </div>
       <div className={styles.message}>{message}</div>
       {candidateLine && (
@@ -213,16 +239,51 @@ export default function NoResultDisplay({
           </div>
         </div>
       )}
-      {details.length > 0 && (
-        <div className={styles.details} aria-label="Result details">
-          <div className={styles.sectionTitle}>Why this happened</div>
-          {details.map((detail, i) => (
-            <div key={`${detail.kind}-${i}`} className={styles.detailItem}>
-              <span className={styles.detailKind}>{detail.kind}</span>
-              <span className={styles.detailText}>{detail.text}</span>
+      {showDetails && (
+        <details
+          className={styles.detailsDisclosure}
+          aria-label="Result details"
+          open={detailsOpen}
+        >
+          <summary
+            className={styles.detailsSummary}
+            onClick={(event) => {
+              event.preventDefault();
+              setDetailsOpen((open) => !open);
+            }}
+          >
+            Details
+          </summary>
+          {detailsOpen && (
+            <div className={styles.details}>
+              {details.length > 0 && (
+                <>
+                  <div className={styles.sectionTitle}>Why this happened</div>
+                  {details.map((detail, i) => (
+                    <div
+                      key={`${detail.kind}-${i}`}
+                      className={styles.detailItem}
+                    >
+                      <span className={styles.detailKind}>{detail.kind}</span>
+                      <span className={styles.detailText}>{detail.text}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+              {diagnosticDetails.length > 0 && (
+                <>
+                  <div className={styles.sectionTitle}>Diagnostic details</div>
+                  {diagnosticDetails.map((detail) => (
+                    <div key={detail.kind} className={styles.detailItem}>
+                      <span className={styles.detailKind}>{detail.kind}</span>
+                      <span className={styles.detailText}>{detail.text}</span>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
-          ))}
-        </div>
+          )}
+        </details>
       )}
       {guidance.nextSteps.length > 0 && (
         <div className={styles.suggestions} aria-label="Suggested next steps">
@@ -271,4 +332,63 @@ function stringValue(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+function buildDiagnosticDetails({
+  reason,
+  status,
+  metadata,
+  route,
+  queryClass,
+  currentThrough,
+  query,
+}: {
+  reason: string | null | undefined;
+  status: string;
+  metadata?: ResultMetadata | null;
+  route?: string | null;
+  queryClass?: string | null;
+  currentThrough?: string | null;
+  query?: string | null;
+}): Array<{ kind: string; text: string }> {
+  const details: Array<{ kind: string; text: string }> = [
+    { kind: "Status", text: status },
+  ];
+
+  if (reason) details.push({ kind: "Reason", text: reason });
+  if (route || metadata?.route) {
+    details.push({ kind: "Route", text: String(route ?? metadata?.route) });
+  }
+  if (queryClass ?? metadata?.query_class) {
+    details.push({
+      kind: "Query class",
+      text: String(queryClass ?? metadata?.query_class),
+    });
+  }
+  if (currentThrough ?? metadata?.current_through) {
+    details.push({
+      kind: "Current through",
+      text: String(currentThrough ?? metadata?.current_through),
+    });
+  }
+  if (query || metadata?.query_text) {
+    details.push({ kind: "Full query", text: String(query ?? metadata?.query_text) });
+  }
+
+  const unsupportedFilters = metadataStringList(metadata?.unsupported_filters);
+  if (unsupportedFilters.length > 0) {
+    details.push({
+      kind: "Unsupported filters",
+      text: unsupportedFilters.join(", "),
+    });
+  }
+
+  return details;
+}
+
+function metadataStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean);
 }

@@ -1,4 +1,5 @@
 import { Button } from "../design-system";
+import { normalizeDisplayMode, type DisplayModeInput } from "../displayMode";
 import styles from "./SampleQueries.module.css";
 
 interface StarterQuery {
@@ -240,9 +241,12 @@ const STARTER_QUERY_GROUPS: StarterQueryGroup[] = [
 
 interface Props {
   onSelect: (query: string) => void;
+  displayMode?: DisplayModeInput;
 }
 
-export default function SampleQueries({ onSelect }: Props) {
+export default function SampleQueries({ onSelect, displayMode }: Props) {
+  const isDebugMode = normalizeDisplayMode(displayMode) === "debug";
+
   return (
     <section
       className={styles.sampleQueries}
@@ -279,7 +283,11 @@ export default function SampleQueries({ onSelect }: Props) {
                   fullWidth
                 >
                   <span className={styles.sampleQuery}>{sample.query}</span>
-                  <span className={styles.resultHint}>{sample.resultHint}</span>
+                  {isDebugMode && (
+                    <span className={styles.resultHint}>
+                      {sample.resultHint}
+                    </span>
+                  )}
                 </Button>
               ))}
             </div>

@@ -7,9 +7,11 @@
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Release date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
+- Latest front-facing UI refresh: 2026-05-18.
 - Scope: current supported and explicitly unsupported Raw Product boundary.
-- Production code changed for this package: no.
-- Frontend rendering changed for this package: no.
+- Production code changed for this package: yes, frontend only.
+- Frontend rendering changed for this package: yes, public/default result mode
+  added.
 - Backend query behavior changed for this package: no.
 - QA corpus expectations changed for this package: no.
 - Production-ready: yes after human acceptance of the release notes below.
@@ -39,6 +41,11 @@ review path: `make query-feedback-export` wraps
 `tools/export_query_feedback.py` and writes `feedback_review.md`,
 `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and
 `triage_decisions_template.csv`.
+Front-facing Result UI Productization Wave 1 is also included: `/` now defaults
+to public result rendering, `?debug=1` restores debug chrome, result Details
+preserve route/status/reason/query-class/freshness/query/filter/metadata/JSON
+diagnostics, `/review` remains debug-rich, and `/visual-qa` remains usable for
+public rendering checks.
 
 Human sign-off still needed:
 
@@ -51,13 +58,16 @@ Human sign-off still needed:
 - Product owner acceptance that remaining feedback limitations are operational
   follow-ups: no admin dashboard, no mutable triage overlay, heuristic
   suggestions only, and manual corpus conversion.
+- Product owner acceptance that public result UI productization is only Wave 1;
+  deeper answer hierarchy/mobile polish and broader no-result copy refinement
+  remain recommended before broad public launch.
 
 ## 2. Validation Summary
 
 | Area | Status | Evidence |
 |---|---|---|
 | Backend Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. |
-| Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
+| Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
 | Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`; 15-case desktop/mobile manual baseline accepted; latest preview `/visual-qa` loaded 15/15 with request errors 0; no screenshot diff automation. |
 | Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
 | Opponent-conference preview smoke | `PASS` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference queries passed, geography/playoff-round guardrails passed, and `/visual-qa` request errors were 0. |
@@ -65,6 +75,7 @@ Human sign-off still needed:
 | Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and `query_celtics_record_against_east_current` returned `team_record` / `ok` with 15 East opponents. |
 | Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed, user-submitted feedback writes were verified, automatic diagnostics were verified, sanitization/privacy checks passed, no raw result rows/tables were found, and `/review` plus `/visual-qa` suppression passed. |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
+| Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | Public mode hides route/query-class/status/reason/JSON/dev chrome by default while preserving diagnostics in Details and feedback payloads. `/review` remains debug-rich; `/visual-qa` renders public results with internal case metadata. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -222,7 +233,7 @@ Latest release artifacts:
 - Backend raw QA JSONL report:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Frontend-copy report:
-  `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md`
+  `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`
 - Visual QA checklist:
   `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
 - Preview manual QA rerun:
@@ -294,6 +305,9 @@ Supporting return packages:
   read-only review/export workflow is implemented. Remaining feedback notes are
   no admin dashboard, no mutable triage overlay, heuristic suggestions only,
   and manual corpus conversion.
+- Public result UI productization Wave 1 is implemented, but broader public
+  polish remains recommended: answer hierarchy refinement, mobile density, and
+  more no-result/unsupported copy coverage should continue in Wave 2/Wave 3.
 
 ## 7. Future Deployment Checklist
 
@@ -320,6 +334,9 @@ Before deploying this boundary again:
 - Run deployment smoke against the target URL and confirm the
   opponent-conference membership-data case passes.
 - Open `/`, `/review`, and `/visual-qa` on the target preview or production URL.
+- Confirm `/` is public by default, `/` with `?debug=1` exposes route/status,
+  Copy JSON, Raw JSON, and Dev Tools, `/review` remains debug-rich, and
+  `/visual-qa` renders the visual case results.
 - Run the six smoke queries:
   - `Who leads the NBA in points per game this season?`
   - `What is Denver's record when Nikola Jokic has a triple-double?`
@@ -350,23 +367,26 @@ Current handoff status: release-candidate handoff is complete; see
 
 Recommended order after this handoff:
 
-1. Visual QA automation.
+1. Front-facing result UI Wave 2/Wave 3 polish.
+   - Continue answer hierarchy, mobile density, and broader no-result copy
+     refinement before broad public launch.
+2. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.
-2. First launch feedback review.
+3. First launch feedback review.
    - Run `make query-feedback-export`, inspect the generated artifacts, and
      manually fill the triage decisions template before converting verified
      issues into corpus or planning updates.
-3. Promote another unsupported family into real support.
+4. Promote another unsupported family into real support.
    - Candidates include historical opponent-conference expansion beyond trusted
      current-era seasons, single-team advanced scalar summaries, or rookie/role
      leaderboards, depending on product need and available source contracts.
-4. Broader release/CI artifact packaging.
+5. Broader release/CI artifact packaging.
    - Package raw QA, frontend-copy, preview manual QA, and visual QA outputs
      into a repeatable CI/release artifact bundle.
-5. Frontend-copy Wave 3 only after fresh gap analysis.
+6. Frontend-copy Wave 3 only after fresh gap analysis.
    - Expand only if a route/shape risk is still meaningfully undercovered after
      the 125-case set.
-6. Harness tag/category filters.
+7. Harness tag/category filters.
    - Add focused selection by corpus tags/categories if future fix waves need
      faster iteration than saved slices provide.

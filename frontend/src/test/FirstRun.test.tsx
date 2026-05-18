@@ -187,6 +187,7 @@ describe("first-run starter queries", () => {
   });
 
   it("does not steal focus from dev tools or dialogs", async () => {
+    window.history.replaceState(null, "", "/?debug=1");
     vi.mocked(fetchRoutes).mockResolvedValueOnce({
       routes: ["season_leaders"],
     });
@@ -250,8 +251,69 @@ describe("first-run starter queries", () => {
       "Jokic last 10 games",
     );
     await waitFor(() =>
+      expect(screen.getByText("Result")).toBeInTheDocument(),
+    );
+  });
+
+  it("uses public display mode by default and keeps diagnostics behind Details", async () => {
+    vi.mocked(postQuery).mockResolvedValueOnce(
+      makeResponse("Jokic last 10 games"),
+    );
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+      target: { value: "Jokic last 10 games" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Query" }));
+
+    await waitFor(() => expect(screen.getByText("Result")).toBeInTheDocument());
+    expect(screen.queryByText(/Dev Tools/)).not.toBeInTheDocument();
+    expect(screen.queryByText("API online")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy Query" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Copy JSON" })).toBeNull();
+    expect(screen.queryByText("Raw response")).not.toBeInTheDocument();
+    expect(screen.queryByText("player game summary")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Report issue" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Details"));
+
+    expect(screen.getByText("player_game_summary")).toBeInTheDocument();
+    expect(screen.getByText("Result status")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy Query" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy JSON" })).toBeInTheDocument();
+    expect(screen.getByText("Raw response")).toBeInTheDocument();
+  });
+
+  it("enables debug display mode with the debug URL param", async () => {
+    window.history.replaceState(null, "", "/?debug=1");
+    vi.mocked(postQuery).mockResolvedValueOnce(
+      makeResponse("Jokic last 10 games"),
+    );
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("API online")).toBeInTheDocument();
+    expect(screen.getByText(/Dev Tools/)).toBeInTheDocument();
+    expect(screen.getByText("entity_summary + game_log")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+      target: { value: "Jokic last 10 games" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Query" }));
+
+    await waitFor(() =>
       expect(screen.getByText("Query output")).toBeInTheDocument(),
     );
+    expect(new URLSearchParams(window.location.search).get("debug")).toBe("1");
+    expect(screen.getByText("player game summary")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy JSON" })).toBeInTheDocument();
+    expect(screen.getByText("Raw response")).toBeInTheDocument();
   });
 
   it("shows the shared loading preview for pending natural queries", async () => {
@@ -280,7 +342,7 @@ describe("first-run starter queries", () => {
 
     resolveQuery(makeResponse("Jokic last 10 games"));
     await waitFor(() =>
-      expect(screen.getByText("Query output")).toBeInTheDocument(),
+      expect(screen.getByText("Result")).toBeInTheDocument(),
     );
     expect(container.querySelector("[data-app-state='result']")).not.toBeNull();
     expect(
@@ -289,6 +351,7 @@ describe("first-run starter queries", () => {
   });
 
   it("shows the shared loading preview for pending structured queries", async () => {
+    window.history.replaceState(null, "", "/?debug=1");
     let resolveStructured: (data: QueryResponse) => void = () => {};
     vi.mocked(fetchRoutes).mockResolvedValueOnce({
       routes: ["season_leaders"],
@@ -354,7 +417,7 @@ describe("first-run starter queries", () => {
 
     await waitFor(() => expect(postQuery).toHaveBeenCalledTimes(2));
     await waitFor(() =>
-      expect(screen.getByText("Query output")).toBeInTheDocument(),
+      expect(screen.getByText("Result")).toBeInTheDocument(),
     );
     expect(new URLSearchParams(window.location.search).get("q")).toBe(
       "Jokic last 10 games",
@@ -362,6 +425,7 @@ describe("first-run starter queries", () => {
   });
 
   it("retries a failed structured query through the existing structured path", async () => {
+    window.history.replaceState(null, "", "/?debug=1");
     vi.mocked(fetchRoutes).mockResolvedValueOnce({
       routes: ["season_leaders"],
     });

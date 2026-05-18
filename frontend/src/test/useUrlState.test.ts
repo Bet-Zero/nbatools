@@ -15,6 +15,7 @@ describe("parseUrlParams", () => {
       q: null,
       route: null,
       kwargs: null,
+      debug: false,
     });
   });
 
@@ -23,6 +24,7 @@ describe("parseUrlParams", () => {
       q: "Jokic last 10 games",
       route: null,
       kwargs: null,
+      debug: false,
     });
   });
 
@@ -33,6 +35,7 @@ describe("parseUrlParams", () => {
       q: null,
       route: "player_summary",
       kwargs: '{"player":"Jokic"}',
+      debug: false,
     });
   });
 
@@ -41,6 +44,7 @@ describe("parseUrlParams", () => {
       q: "who had 30+ points",
       route: null,
       kwargs: null,
+      debug: false,
     });
   });
 
@@ -49,6 +53,7 @@ describe("parseUrlParams", () => {
       q: null,
       route: null,
       kwargs: null,
+      debug: false,
     });
   });
 
@@ -57,6 +62,16 @@ describe("parseUrlParams", () => {
       q: "test",
       route: null,
       kwargs: null,
+      debug: false,
+    });
+  });
+
+  it("parses debug mode from the URL", () => {
+    expect(parseUrlParams("?q=test&debug=1")).toEqual({
+      q: "test",
+      route: null,
+      kwargs: null,
+      debug: true,
     });
   });
 });
@@ -95,10 +110,21 @@ describe("buildUrlSearch", () => {
   });
 
   it("round-trips through parseUrlParams", () => {
-    const original = { q: "Luka 30+ point games", route: null, kwargs: null };
+    const original = {
+      q: "Luka 30+ point games",
+      route: null,
+      kwargs: null,
+      debug: false,
+    };
     const search = buildUrlSearch(original);
     const parsed = parseUrlParams(search);
     expect(parsed).toEqual(original);
+  });
+
+  it("builds a debug search string", () => {
+    expect(buildUrlSearch({ q: "test", debug: true })).toBe(
+      "?q=test&debug=1",
+    );
   });
 });
 
@@ -124,6 +150,7 @@ describe("useUrlState hook", () => {
       q: null,
       route: null,
       kwargs: null,
+      debug: false,
     });
   });
 
@@ -134,7 +161,18 @@ describe("useUrlState hook", () => {
     });
     expect(result.current.params.q).toBe("new query");
     expect(result.current.params.route).toBeNull();
+    expect(result.current.params.debug).toBe(false);
     expect(window.location.search).toBe("?q=new+query");
+  });
+
+  it("pushQuery preserves debug mode in URL and params", () => {
+    window.history.replaceState(null, "", "/?debug=1");
+    const { result } = renderHook(() => useUrlState());
+    act(() => {
+      result.current.pushQuery("new query");
+    });
+    expect(result.current.params.debug).toBe(true);
+    expect(window.location.search).toBe("?q=new+query&debug=1");
   });
 
   it("pushStructured updates URL and params", () => {
@@ -184,6 +222,7 @@ describe("useUrlState hook", () => {
       q: "navigated",
       route: null,
       kwargs: null,
+      debug: false,
     });
   });
 

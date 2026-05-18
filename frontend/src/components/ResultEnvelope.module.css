@@ -126,6 +126,109 @@
   overflow-wrap: normal;
 }
 
+.detailsDisclosure {
+  min-width: 0;
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+}
+
+.detailsSummary {
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--space-3) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.detailsSummary:hover {
+  color: var(--text-primary);
+}
+
+.detailsBody {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+}
+
+.detailsActions {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.detailsGrid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.detailItem {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.detailsLabel {
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+  overflow-wrap: anywhere;
+}
+
+.detailsValue,
+.detailsList {
+  min-width: 0;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-small);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.detailsList {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: var(--space-4);
+}
+
+.metadataSummary {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.metadataSummary pre {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-small);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
 @media (max-width: 520px) {
   .separator {
     display: none;
@@ -134,5 +237,13 @@
   .freshness,
   .freshness {
     flex-basis: 100%;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .detailsBody {
+    padding: var(--space-3);
   }
 }

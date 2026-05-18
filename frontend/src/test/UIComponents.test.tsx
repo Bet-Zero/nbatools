@@ -40,6 +40,13 @@ describe("SampleQueries", () => {
         name: "Run starter query: Lakers playoff history",
       }),
     ).toBeInTheDocument();
+    expect(screen.queryByText("entity_summary + game_log")).not.toBeInTheDocument();
+  });
+
+  it("shows renderer hints only in debug starter queries", () => {
+    render(<SampleQueries onSelect={vi.fn()} displayMode="debug" />);
+
+    expect(screen.getByText("entity_summary + game_log")).toBeInTheDocument();
   });
 
   it("submits selected starter query text", () => {
@@ -57,6 +64,10 @@ describe("SampleQueries", () => {
 });
 
 describe("NoResultDisplay", () => {
+  function openDetails() {
+    fireEvent.click(screen.getByText("Details"));
+  }
+
   it("shows no results for no_result status", () => {
     render(<NoResultDisplay reason="no_match" status="no_result" />);
     expect(screen.getByText("No Matching Results")).toBeInTheDocument();
@@ -165,6 +176,7 @@ describe("NoResultDisplay", () => {
         "This query combination is not supported by the engine.",
       ),
     ).toBeInTheDocument();
+    openDetails();
     expect(
       screen.getByText(/Cannot use both home_only and away_only/),
     ).toBeInTheDocument();
@@ -209,6 +221,35 @@ describe("NoResultDisplay", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Pf is not available/)).not.toBeInTheDocument();
+  });
+
+  it("keeps raw unsupported diagnostics out of the public no-result message", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        route="season_leaders"
+        queryClass="leaderboard"
+        metadata={{
+          route: "season_leaders",
+          stat: "pf",
+          unsupported_filters: ["personal_foul_leaderboard"],
+        }}
+        feedbackAction={<button type="button">Submit for review</button>}
+      />,
+    );
+
+    expect(
+      screen.getByText("Personal-foul leaderboards are not supported yet."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("filter_not_supported")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit for review" })).toBeInTheDocument();
+
+    openDetails();
+
+    expect(screen.getByText("filter_not_supported")).toBeInTheDocument();
+    expect(screen.getByText("personal_foul_leaderboard")).toBeInTheDocument();
+    expect(screen.getByText("season_leaders")).toBeInTheDocument();
   });
 
   it("uses boundary-specific copy for rookie leaderboards", () => {
@@ -304,6 +345,7 @@ describe("NoResultDisplay", () => {
     expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
       "Lakers held opponents under 100 points this season",
     );
+    openDetails();
     expect(screen.getByLabelText("Result details")).toHaveTextContent(
       "Column 'def_rating' not available",
     );
@@ -324,10 +366,11 @@ describe("NoResultDisplay", () => {
           stat: "pts",
           start_date: "2026-04-11",
           end_date: "2026-04-11",
-        }}
+      }}
       />,
     );
 
+    openDetails();
     expect(screen.getByLabelText("Result details")).toHaveTextContent(
       "No games matched the specified filters",
     );
@@ -425,6 +468,7 @@ describe("NoResultDisplay", () => {
         caveats={["Recent games may not be loaded yet"]}
       />,
     );
+    openDetails();
     expect(screen.getByLabelText("Result details")).toHaveTextContent("Caveat");
     expect(
       screen.getByText(/Recent games may not be loaded yet/),

@@ -29,7 +29,7 @@ function makeNoResult(query: string): QueryResponse {
   return {
     ok: false,
     query,
-    route: null,
+    route: "season_leaders",
     result_status: "no_result",
     result_reason: "unsupported",
     current_through: null,
@@ -111,6 +111,9 @@ describe("ReviewPage", () => {
       expect(screen.getByText("1 / 2 loaded")).toBeInTheDocument(),
     );
     await screen.findByRole("button", { name: /Message No Result/i });
+    expect(screen.getAllByText("No Result").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("season leaders").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("unsupported").length).toBeGreaterThan(0);
     expect(
       screen.getByRole("heading", { name: "Second fixture", level: 3 }),
     ).toBeInTheDocument();

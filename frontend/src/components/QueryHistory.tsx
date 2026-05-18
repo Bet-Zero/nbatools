@@ -1,5 +1,6 @@
 import type { QueryHistoryEntry } from "../api/types";
 import { Badge, Button, Card, SectionHeader } from "../design-system";
+import { normalizeDisplayMode, type DisplayModeInput } from "../displayMode";
 import styles from "./QueryHistory.module.css";
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
   onEdit: (query: string) => void;
   onClear: () => void;
   onSave?: (query: string) => void;
+  displayMode?: DisplayModeInput;
 }
 
 function statusDot(status: string): string {
@@ -37,7 +39,10 @@ export default function QueryHistory({
   onEdit,
   onClear,
   onSave,
+  displayMode,
 }: Props) {
+  const isDebugMode = normalizeDisplayMode(displayMode) === "debug";
+
   if (entries.length === 0) return null;
 
   return (
@@ -79,16 +84,18 @@ export default function QueryHistory({
               {entry.query}
             </span>
             <span className={styles.meta}>
-              {entry.query_class && (
-                <Badge variant="neutral" size="sm">
-                  {entry.query_class}
-                </Badge>
-              )}
-              {entry.route && (
-                <Badge variant="accent" size="sm">
-                  {entry.route}
-                </Badge>
-              )}
+              {isDebugMode &&
+                entry.query_class && (
+                  <Badge variant="neutral" size="sm">
+                    {entry.query_class}
+                  </Badge>
+                )}
+              {isDebugMode &&
+                entry.route && (
+                  <Badge variant="accent" size="sm">
+                    {entry.route}
+                  </Badge>
+                )}
               <span className={styles.time}>{timeAgo(entry.timestamp)}</span>
             </span>
             <span className={styles.actions}>

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useEffectEvent, useState } from "react";
+import { debugEnabledFromSearch } from "../displayMode";
 
 /** State derived from / synced to the URL search params. */
 export interface UrlParams {
   q: string | null;
   route: string | null;
   kwargs: string | null;
+  debug: boolean;
 }
 
 /** Parse a URL search string into typed params. */
@@ -14,6 +16,7 @@ export function parseUrlParams(search: string): UrlParams {
     q: sp.get("q") || null,
     route: sp.get("route") || null,
     kwargs: sp.get("kwargs") || null,
+    debug: debugEnabledFromSearch(search),
   };
 }
 
@@ -23,6 +26,7 @@ export function buildUrlSearch(params: Partial<UrlParams>): string {
   if (params.q) sp.set("q", params.q);
   if (params.route) sp.set("route", params.route);
   if (params.kwargs && params.kwargs !== "{}") sp.set("kwargs", params.kwargs);
+  if (params.debug) sp.set("debug", "1");
   const str = sp.toString();
   return str ? `?${str}` : "";
 }
@@ -54,7 +58,12 @@ export default function useUrlState(onNavigate?: (params: UrlParams) => void) {
 
   /** Push a natural-query URL entry (clears any structured params). */
   const pushQuery = useCallback((q: string) => {
-    const next: UrlParams = { q, route: null, kwargs: null };
+    const next: UrlParams = {
+      q,
+      route: null,
+      kwargs: null,
+      debug: debugEnabledFromSearch(window.location.search),
+    };
     window.history.pushState(
       null,
       "",
@@ -65,7 +74,12 @@ export default function useUrlState(onNavigate?: (params: UrlParams) => void) {
 
   /** Push a structured-query URL entry (clears any natural-query param). */
   const pushStructured = useCallback((route: string, kwargs: string) => {
-    const next: UrlParams = { q: null, route, kwargs };
+    const next: UrlParams = {
+      q: null,
+      route,
+      kwargs,
+      debug: debugEnabledFromSearch(window.location.search),
+    };
     window.history.pushState(
       null,
       "",
@@ -76,8 +90,18 @@ export default function useUrlState(onNavigate?: (params: UrlParams) => void) {
 
   /** Replace the current history entry with an empty URL (no query params). */
   const clearUrl = useCallback(() => {
-    window.history.replaceState(null, "", window.location.pathname);
-    setParams({ q: null, route: null, kwargs: null });
+    const next: UrlParams = {
+      q: null,
+      route: null,
+      kwargs: null,
+      debug: debugEnabledFromSearch(window.location.search),
+    };
+    window.history.replaceState(
+      null,
+      "",
+      buildUrlSearch(next) || window.location.pathname,
+    );
+    setParams(next);
   }, []);
 
   /** Full shareable URL reflecting the current params. */

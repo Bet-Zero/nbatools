@@ -5,6 +5,7 @@
 - Checklist status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Checklist date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
+- Latest front-facing UI refresh: 2026-05-18.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Release package:
@@ -14,9 +15,9 @@
   handoff complete with notes.
 - Production query behavior changed: yes; current-era opponent-conference
   `team_record` filters now execute for trusted seasons `2024-25` and `2025-26`.
-- Frontend rendering changed: no in the frontend-copy expansion wave; previous
-  `/visual-qa` mobile wrapper/layout-only fix remains the latest production
-  rendering change.
+- Frontend rendering changed: yes. Front-facing Result UI Productization Wave 1
+  adds public/default result mode on `/`, keeps debug diagnostics in Details
+  and `?debug=1`, keeps `/review` debug-rich, and keeps `/visual-qa` useful.
 - Corpus expectations changed: yes; opponent-conference backend and
   frontend-copy cases were migrated from unsupported to supported expectations.
 - New frontend-copy corpus cases added: yes, selected rendered-copy coverage
@@ -32,8 +33,10 @@
   a preview blocker after R2 record inspection verified user-submitted records,
   automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa`
   suppression, and now has an implemented read-only review/export workflow.
-- Latest refresh type: docs/release packaging only; no production code, parser,
-  frontend rendering, test, or corpus changes.
+  Front-facing UI Productization Wave 1 partially addresses the public-launch
+  UI gap without backend/parser/result-contract changes.
+- Latest refresh type: frontend rendering plus docs; no backend query behavior,
+  parser behavior, result contract, or corpus expectation changes.
 
 Known limitations:
 
@@ -55,6 +58,9 @@ Known limitations:
   `make query-feedback-export`. Remaining feedback limitations are operational
   follow-ups: no admin dashboard, no mutable triage overlay, heuristic
   suggestions only, and manual corpus conversion.
+- Public result mode is now implemented for `/`, but Wave 2/Wave 3 UI polish
+  remains recommended for answer hierarchy, mobile density, and broader
+  no-result/unsupported copy refinement before broad launch.
 
 ## 2. Backend Raw QA
 
@@ -85,8 +91,8 @@ expectations.
 | Corpus | `qa/frontend_copy_corpus.yaml` |
 | Selected case count | 125 |
 | Configured source backend run | `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl` |
-| Latest checkpoint run | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md` |
-| Latest checklist run | `outputs/frontend_copy_qa/20260517T071053Z/frontend_copy_report.md` |
+| Latest checkpoint run | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md` |
+| Latest checklist run | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md` |
 | Rendered successfully | 125 |
 | Render failures | 0 |
 | Missing backend records | 0 |
@@ -142,6 +148,7 @@ limitation is that visual QA is manual, not screenshot-diff automation.
 | Latest opponent-conference preview smoke | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported checks passed, two guardrails passed, `/visual-qa` request errors 0 |
 | Query feedback and diagnostic logging | `FEEDBACK_READY_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; user-submitted R2 records, automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa` suppression verified under `query_feedback/preview` |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
+| Public/default result mode | `PASS_WITH_NOTES`; `/` hides debug route/status/reason/query-class/JSON/dev chrome by default, Details preserves diagnostics, `?debug=1` restores debug chrome, `/review` remains debug-rich, and `/visual-qa` renders public results with case metadata |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
@@ -151,7 +158,9 @@ resolved by syncing the required membership CSV. The latest deployed preview
 checks passed the route, smoke, deployment-smoke, `/visual-qa`, and
 opponent-conference data-path checks with non-blocking notes. Query feedback is
 ready with notes, the review/export workflow is implemented, and feedback is not
-a preview blocker.
+a preview blocker. The public result UI gap is partially addressed by Wave 1;
+deeper public result polish remains a recommended follow-up rather than a
+backend readiness issue.
 
 ## 6. Unsupported Boundaries
 
@@ -251,13 +260,13 @@ Result:
 ```text
 Test Files  1 passed (1)
 Tests  4 passed (4)
-Duration  7.68s
+Duration  7.19s
 ```
 
 Report summary:
 
 ```text
-Run ID: 20260517T071053Z
+Run ID: 20260518T175548Z
 Selected cases: 125
 Rendered successfully: 125
 Render failures: 0
@@ -280,14 +289,14 @@ cd frontend && npm run build
 Result:
 
 ```text
-136 modules transformed.
+140 modules transformed.
 index.html 0.77 kB
-assets/index-C-OtNn3G.css 72.22 kB
-assets/index-DhFSwvX9.js 543.51 kB
-built in 806ms
+assets/index-H04hUfD9.css 78.82 kB
+assets/index-CDXI7HnR.js 556.65 kB
+built in 821ms
 ```
 
-Note: Vite emitted the existing large-chunk warning for the 543.51 kB JS
+Note: Vite emitted the existing large-chunk warning for the 556.65 kB JS
 bundle.
 
 ### Frontend lint

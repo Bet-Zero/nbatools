@@ -60,15 +60,20 @@ module replacement during frontend development.
 
 - **Query bar** — type a natural-language NBA query and press Enter or click Query. Includes a clear (✕) button and shows "Running…" state during queries.
 - **Keyboard shortcuts** — `Cmd+K` / `Ctrl+K` focuses and selects the query input, Escape clears active query text from the input, and up/down arrows recall in-session query history from the input.
-- **Sample buttons** — pre-filled example queries with a label, click to run immediately.
+- **Display modes** — `/` defaults to a public result mode. Add `?debug=1`
+  on `/` to show the debug-rich result chrome. `/review` always renders debug
+  review output, while `/visual-qa` keeps its internal case metadata and renders
+  the public result surface by default.
+- **Sample buttons** — pre-filled example queries with a label, click to run
+  immediately. Renderer/pattern hints are hidden in public mode and visible in
+  debug mode.
 - **Empty state** — welcome screen with tips shown before the first query.
-- **Result envelope** — shows query metadata with clear visual hierarchy:
-  - **Status badge** — color-coded pill (Success/No Result/Error)
-  - **Route + query class** — displayed as pills
-  - **Data freshness** — "Data through" date prominently shown
-  - **Context chips** — player, team, season, opponent, split type
-  - **Notes** — blue-bordered info block
-  - **Caveats** — orange/yellow-bordered warning block
+- **Result envelope** — public mode keeps user-facing context chips, applied
+  filters, material caveats, and a collapsed Details disclosure. Details
+  preserves route, status, reason, query class, current-through freshness,
+  full query text, applied filters, resolved entities, notes/caveats, metadata
+  summary, Copy Query, Copy JSON, and an inline Raw JSON toggle. Debug mode
+  keeps the route/status/query-class badges and full metadata context visible.
 - **First-run freshness** — before a query result exists, freshness renders as
   a top banner with fresh/stale/unknown/failed state guidance. Result-level
   freshness remains in the result envelope after a query returns.
@@ -84,18 +89,23 @@ module replacement during frontend development.
 - **Counts** — `count` query-class responses render the supplied count as the primary answer, then keep count rows and any underlying finder/leaderboard/detail sections visible below.
 - **Occurrence leaderboards** — `player_occurrence_leaders` and `team_occurrence_leaders` leaderboard responses use event-count rankings that promote the supplied occurrence metric while preserving full leaderboard detail.
 - **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
-- **Copy buttons** — copy the query text, full JSON response, or shareable link to clipboard, with accessible success/failure feedback and a non-secure-context fallback.
+- **Copy buttons** — public results show Copy Link, Save Query, and feedback
+  actions. Copy Query, Copy JSON, and Raw JSON remain available in Details and
+  in debug/review surfaces.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
-- **Raw JSON** — toggle to inspect the full API response.
+- **Raw JSON** — toggle to inspect the full API response from Details or debug
+  mode.
 - **URL-driven state** — the active query is stored in the URL (`?q=...` for natural queries, `?route=...&kwargs=...` for structured queries). Refreshing the page re-runs the query. Browser back/forward navigates across prior query states.
 - **Parser review page** — `/review` loads the fixture inventory but does not
   run query sweeps automatically. Use the review controls to run all fixtures
   or the first 10 with a small concurrency limit. Keep cached results enabled
   when possible, especially on Vercel, because a full review sweep can issue
-  many expensive `/query` requests.
+  many expensive `/query` requests. Review rendering is intentionally
+  debug-rich: route, status, query class, no-result diagnostics, and result
+  Details remain available for QA.
 - **Query history** — in-session history with:
   - Status dots (green/yellow/red)
-  - Query class and route labels
+  - Query class and route labels in debug mode
   - Query count
   - Keyboard-activatable query labels with query-specific accessible names
   - **Run** button — immediately re-executes the query
@@ -106,9 +116,14 @@ module replacement during frontend development.
 - **Saved queries** — persisted local shortcuts with pinned ordering, tag
   filters that expose pressed state, query-specific run/load/pin/edit/delete
   action names, JSON import/export, and visible import failure feedback.
-- **No-result / error display** — friendly messages for empty results (with suggestions) and errors.
-- **Dev Tools panel** — collapsible structured-query interface for calling `POST /structured-query` with a route selector and kwargs JSON input.
-- **Health indicator** — live green/red dot showing API connectivity and version.
+- **No-result / error display** — public no-result states lead with plain
+  language, suggestions where useful, and Submit for review. Raw reason,
+  unsupported filters, route, query class, and metadata stay in Details.
+- **Dev Tools panel** — collapsible structured-query interface for calling
+  `POST /structured-query` with a route selector and kwargs JSON input. Hidden
+  from the public default page; visible with `?debug=1`.
+- **Health indicator** — public mode shows API outage/offline state only.
+  Debug mode shows live API connectivity and version.
 
 ## Mobile and dense-output behavior
 

@@ -34,6 +34,7 @@ import SampleQueries from "./components/SampleQueries";
 import SavedQueries from "./components/SavedQueries";
 import SaveQueryDialog from "./components/SaveQueryDialog";
 import { Badge, Button, Card, SectionHeader } from "./design-system";
+import type { DisplayMode } from "./displayMode";
 import useQueryHistory from "./hooks/useQueryHistory";
 import useSavedQueries from "./hooks/useSavedQueries";
 import useUrlState, { type UrlParams } from "./hooks/useUrlState";
@@ -409,6 +410,8 @@ export default function App() {
     | CSSProperties
     | undefined;
   const teamThemedSurfaceClass = teamTheme ? styles.teamThemedSurface : "";
+  const displayMode: DisplayMode = urlParams.debug ? "debug" : "public";
+  const isDebugMode = displayMode === "debug";
   const negativeFeedbackAction =
     result && result.result_status !== "ok" ? (
       <QueryFeedbackButton
@@ -426,20 +429,8 @@ export default function App() {
       />
     ) : undefined;
 
-  const header = (
-    <div className={styles.headerContent}>
-      <div className={styles.brandBlock}>
-        <div className={styles.logoMark} aria-hidden="true">
-          NT
-        </div>
-        <div>
-          <div className={styles.eyebrow}>NBA search workspace</div>
-          <h1 className={styles.appTitle}>nbatools</h1>
-          <p className={styles.tagline}>
-            Natural-language lookup for players, teams, streaks, and leaders.
-          </p>
-        </div>
-      </div>
+  const headerStatus =
+    isDebugMode || apiOnline === false ? (
       <div className={styles.statusStack} aria-label="API status">
         <span
           className={[
@@ -458,6 +449,23 @@ export default function App() {
               : "checking"}
         </Badge>
       </div>
+    ) : null;
+
+  const header = (
+    <div className={styles.headerContent}>
+      <div className={styles.brandBlock}>
+        <div className={styles.logoMark} aria-hidden="true">
+          NT
+        </div>
+        <div>
+          <div className={styles.eyebrow}>NBA search workspace</div>
+          <h1 className={styles.appTitle}>nbatools</h1>
+          <p className={styles.tagline}>
+            Natural-language lookup for players, teams, streaks, and leaders.
+          </p>
+        </div>
+      </div>
+      {headerStatus}
     </div>
   );
 
@@ -475,7 +483,7 @@ export default function App() {
 
   const secondaryPanels = (
     <>
-      <SampleQueries onSelect={handleSampleSelect} />
+      <SampleQueries onSelect={handleSampleSelect} displayMode={displayMode} />
       <SavedQueries
         queries={saved.queries}
         onRun={handleSavedQueryRun}
@@ -494,13 +502,16 @@ export default function App() {
         onEdit={handleHistoryEdit}
         onClear={clearHistory}
         onSave={handleSaveFromHistory}
+        displayMode={displayMode}
       />
-      <DevTools
-        onResult={handleStructuredResult}
-        onError={handleStructuredError}
-        onLoading={setLoading}
-        onQueryStart={handleStructuredQueryStart}
-      />
+      {isDebugMode && (
+        <DevTools
+          onResult={handleStructuredResult}
+          onError={handleStructuredError}
+          onLoading={setLoading}
+          onQueryStart={handleStructuredQueryStart}
+        />
+      )}
     </>
   );
 
@@ -569,8 +580,8 @@ export default function App() {
               padding="md"
             >
               <SectionHeader
-                eyebrow="Result"
-                title="Query output"
+                eyebrow={isDebugMode ? "Result" : "Answer"}
+                title={isDebugMode ? "Query output" : "Result"}
                 actions={
                   <div className={styles.resultActions}>
                     <CopyButton
@@ -578,11 +589,15 @@ export default function App() {
                       label="Copy Link"
                       variant="share"
                     />
-                    <CopyButton text={result.query} label="Copy Query" />
-                    <CopyButton
-                      text={JSON.stringify(result, null, 2)}
-                      label="Copy JSON"
-                    />
+                    {isDebugMode && (
+                      <CopyButton text={result.query} label="Copy Query" />
+                    )}
+                    {isDebugMode && (
+                      <CopyButton
+                        text={JSON.stringify(result, null, 2)}
+                        label="Copy JSON"
+                      />
+                    )}
                     <Button
                       type="button"
                       className={styles.saveQueryButton}
@@ -605,24 +620,53 @@ export default function App() {
               />
             </Card>
 
-            <ResultEnvelope
-              data={result}
-              onAlternateSelect={handleSubmit}
-              className={teamThemedSurfaceClass}
-            />
+            {isDebugMode ? (
+              <>
+                <ResultEnvelope
+                  data={result}
+                  onAlternateSelect={handleSubmit}
+                  className={teamThemedSurfaceClass}
+                  displayMode={displayMode}
+                />
 
-            <div
-              className={[styles.resultSections, teamThemedSurfaceClass].join(
-                " ",
-              )}
-            >
-              <ResultRenderer
-                data={result}
-                feedbackAction={negativeFeedbackAction}
-              />
-            </div>
+                <div
+                  className={[
+                    styles.resultSections,
+                    teamThemedSurfaceClass,
+                  ].join(" ")}
+                >
+                  <ResultRenderer
+                    data={result}
+                    feedbackAction={negativeFeedbackAction}
+                    displayMode={displayMode}
+                  />
+                </div>
 
-            <RawJsonToggle data={result} />
+                <RawJsonToggle data={result} />
+              </>
+            ) : (
+              <>
+                <div
+                  className={[
+                    styles.resultSections,
+                    teamThemedSurfaceClass,
+                  ].join(" ")}
+                >
+                  <ResultRenderer
+                    data={result}
+                    feedbackAction={negativeFeedbackAction}
+                    displayMode={displayMode}
+                  />
+                </div>
+
+                <ResultEnvelope
+                  data={result}
+                  onAlternateSelect={handleSubmit}
+                  className={teamThemedSurfaceClass}
+                  displayMode={displayMode}
+                />
+              </>
+            )}
           </section>
         )}
       </div>

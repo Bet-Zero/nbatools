@@ -276,7 +276,7 @@ describe("migrated result envelope", () => {
     });
 
     render(
-      <ResultEnvelope data={data} onAlternateSelect={onAlternateSelect} />,
+      <ResultEnvelope data={data} onAlternateSelect={onAlternateSelect} displayMode="debug" />,
     );
 
     expect(screen.getByText("Success")).toBeInTheDocument();
@@ -342,7 +342,7 @@ describe("migrated result envelope", () => {
     });
 
     render(
-      <ResultEnvelope data={data} onAlternateSelect={onAlternateSelect} />,
+      <ResultEnvelope data={data} onAlternateSelect={onAlternateSelect} displayMode="debug" />,
     );
 
     expect(
@@ -392,7 +392,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     const teamBadge = screen.getByLabelText("Celtics (BOS)");
     expect(teamBadge).toHaveStyle("--team-primary: #007A33");
@@ -437,7 +437,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     expect(screen.getByText("Opponent")).toBeInTheDocument();
     expect(screen.getByText("Lakers")).toBeInTheDocument();
@@ -467,7 +467,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     expect(screen.getByText("Opponent group")).toBeInTheDocument();
     expect(screen.getAllByText("Good Teams").length).toBeGreaterThan(0);
@@ -491,7 +491,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     expect(screen.getByText("Context")).toBeInTheDocument();
     expect(
@@ -524,7 +524,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     expect(screen.getByText("Context")).toBeInTheDocument();
     expect(screen.getByText("Included opponents:")).toBeInTheDocument();
@@ -571,7 +571,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     expect(screen.getByText("Metric:")).toBeInTheDocument();
     expect(screen.getByText("PPG")).toBeInTheDocument();
@@ -604,7 +604,7 @@ describe("migrated result envelope", () => {
       },
     });
 
-    render(<ResultEnvelope data={data} />);
+    render(<ResultEnvelope data={data} displayMode="debug" />);
 
     expect(screen.queryByText("Notes")).not.toBeInTheDocument();
     expect(

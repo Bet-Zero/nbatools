@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
 import type { QueryResponse } from "../../api/types";
+import {
+  normalizeDisplayMode,
+  type DisplayMode,
+  type DisplayModeInput,
+} from "../../displayMode";
 import NoResultDisplay from "../NoResultDisplay";
 import { routeToPattern, type PatternConfig } from "./config/routeToPattern";
 import ComparisonResult from "./patterns/ComparisonResult";
@@ -15,11 +20,9 @@ import StreakResult from "./patterns/StreakResult";
 import TopPerformancesResult from "./patterns/TopPerformancesResult";
 import ResultShell from "./primitives/ResultShell";
 
-type ResultDisplayMode = "product" | "review";
-
 interface Props {
   data: QueryResponse;
-  displayMode?: ResultDisplayMode;
+  displayMode?: DisplayModeInput;
   feedbackAction?: ReactNode;
 }
 
@@ -33,9 +36,10 @@ interface Props {
  */
 export default function ResultRenderer({
   data,
-  displayMode = "product",
+  displayMode,
   feedbackAction,
 }: Props) {
+  const normalizedDisplayMode = normalizeDisplayMode(displayMode);
   const result = data.result;
   const noResultNotes = [...data.notes, ...(data.result?.notes ?? [])];
   const noResultCaveats = [...data.caveats, ...(data.result?.caveats ?? [])];
@@ -50,6 +54,11 @@ export default function ResultRenderer({
           notes={noResultNotes}
           caveats={noResultCaveats}
           feedbackAction={feedbackAction}
+          displayMode={normalizedDisplayMode}
+          route={data.route}
+          queryClass={data.result?.query_class}
+          currentThrough={data.current_through}
+          query={data.query}
         />
       );
     }
@@ -62,6 +71,11 @@ export default function ResultRenderer({
           notes={noResultNotes}
           caveats={noResultCaveats}
           feedbackAction={feedbackAction}
+          displayMode={normalizedDisplayMode}
+          route={data.route}
+          queryClass={data.result?.query_class}
+          currentThrough={data.current_through}
+          query={data.query}
         />
       );
     }
@@ -82,6 +96,11 @@ export default function ResultRenderer({
           notes={noResultNotes}
           caveats={noResultCaveats}
           feedbackAction={feedbackAction}
+          displayMode={normalizedDisplayMode}
+          route={data.route}
+          queryClass={data.result?.query_class}
+          currentThrough={data.current_through}
+          query={data.query}
         />
       );
     }
@@ -92,6 +111,11 @@ export default function ResultRenderer({
         metadata={data.result?.metadata}
         notes={noResultNotes}
         caveats={noResultCaveats}
+        displayMode={normalizedDisplayMode}
+        route={data.route}
+        queryClass={data.result?.query_class}
+        currentThrough={data.current_through}
+        query={data.query}
       />
     );
   }
@@ -105,7 +129,7 @@ export default function ResultRenderer({
           key={`${pattern.type}-${index}`}
           data={data}
           pattern={pattern}
-          displayMode={displayMode}
+          displayMode={normalizedDisplayMode}
         />
       ))}
     </ResultShell>
@@ -115,7 +139,7 @@ export default function ResultRenderer({
 interface PatternBlockProps {
   data: QueryResponse;
   pattern: PatternConfig;
-  displayMode: ResultDisplayMode;
+  displayMode: DisplayMode;
 }
 
 function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {

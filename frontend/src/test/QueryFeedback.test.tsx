@@ -96,8 +96,20 @@ describe("QueryFeedbackButton", () => {
         query: "Jokic last 10 games",
         feedback_source: "user_submitted",
         feedback_type: "wrong_answer",
+        route: "player_game_summary",
+        status: "ok",
+        reason: null,
         user_note: "The average looks off.",
         answer_text_preview: "Nikola Jokic averaged 25 points.",
+        metadata: expect.objectContaining({
+          route: "player_game_summary",
+          status: "ok",
+          reason: null,
+          query_class: "summary",
+          confidence: 0.92,
+          intent: "player_summary",
+          current_through: "2026-04-28",
+        }),
       }),
     );
     expect(
@@ -115,7 +127,9 @@ describe("QueryFeedbackButton", () => {
         query_class: "unknown",
         result_status: "no_result",
         result_reason: "no_match",
-        metadata: {},
+        metadata: {
+          unsupported_filters: ["personal_foul_leaderboard"],
+        },
         notes: [],
         caveats: [],
         sections: {},
@@ -146,6 +160,12 @@ describe("QueryFeedbackButton", () => {
         feedback_type: "no_result",
         status: "no_result",
         reason: "no_match",
+        metadata: expect.objectContaining({
+          unsupported_filters: ["personal_foul_leaderboard"],
+          status: "no_result",
+          reason: "no_match",
+          query_class: "unknown",
+        }),
       }),
     );
   });

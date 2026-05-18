@@ -5,6 +5,11 @@
   max-width: 100%;
 }
 
+.inline {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
 .rawJson {
   box-sizing: border-box;
   width: 100%;

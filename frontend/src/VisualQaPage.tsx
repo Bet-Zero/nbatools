@@ -478,8 +478,8 @@ function VisualQaCaseCard({
 
           {caseState.status === "loaded" && caseState.data ? (
             <div className={styles.captureTarget}>
-              <ResultEnvelope data={caseState.data} />
-              <ResultRenderer data={caseState.data} />
+              <ResultEnvelope data={caseState.data} displayMode="public" />
+              <ResultRenderer data={caseState.data} displayMode="public" />
             </div>
           ) : null}
         </section>

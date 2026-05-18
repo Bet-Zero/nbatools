@@ -1,4 +1,4 @@
-import { type CSSProperties } from "react";
+import { type CSSProperties, type ReactNode, useState } from "react";
 import type { QueryResponse } from "../api/types";
 import {
   Avatar,
@@ -8,11 +8,14 @@ import {
   TeamBadge,
   type BadgeVariant,
 } from "../design-system";
+import { normalizeDisplayMode, type DisplayModeInput } from "../displayMode";
 import { resolvePlayerIdentity, resolveTeamIdentity } from "../lib/identity";
+import CopyButton from "./CopyButton";
 import {
   formatReadableDateRange,
   productFacingNotice,
 } from "./noResultDisplayUtils";
+import RawJsonToggle from "./RawJsonToggle";
 import { formatLongDateRange } from "./tableFormatting";
 import styles from "./ResultEnvelope.module.css";
 
@@ -20,6 +23,7 @@ interface Props {
   data: QueryResponse;
   onAlternateSelect?: (description: string) => void;
   className?: string;
+  displayMode?: DisplayModeInput;
 }
 
 function statusLabel(status: string): string {
@@ -81,7 +85,11 @@ export default function ResultEnvelope({
   data,
   onAlternateSelect,
   className,
+  displayMode,
 }: Props) {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const normalizedDisplayMode = normalizeDisplayMode(displayMode);
+  const isDebugMode = normalizedDisplayMode === "debug";
   const metadata = data.result?.metadata;
   const queryClass = data.result?.query_class;
   const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
@@ -100,11 +108,27 @@ export default function ResultEnvelope({
     ...classifiedCaveats.context,
   ]);
   const noteItems =
-    data.result_status !== "no_result" ? classifiedNotes.remaining : [];
+    isDebugMode && data.result_status !== "no_result"
+      ? classifiedNotes.remaining
+      : [];
   const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
-  const showContext = contextItems.length > 0;
+  const showContext = isDebugMode && contextItems.length > 0;
   const showNotes = noteItems.length > 0;
   const showCaveats = caveatItems.length > 0;
+  const rawCaveats = uniqueStrings([
+    ...data.caveats,
+    ...(data.result?.caveats ?? []),
+  ]);
+  const details = (
+    <ResultDetails
+      data={data}
+      metadata={metadata}
+      queryClass={queryClass}
+      appliedFilters={appliedFilters}
+      rawNotes={rawNotes}
+      rawCaveats={rawCaveats}
+    />
+  );
 
   // Build context chips from metadata
   const contextChips: {
@@ -186,39 +210,41 @@ export default function ResultEnvelope({
     <ResultEnvelopeShell
       className={className}
       meta={
-        <>
-          <Badge
-            variant={STATUS_VARIANTS[data.result_status] ?? "danger"}
-            uppercase
-          >
-            {statusLabel(data.result_status)}
-          </Badge>
-          {data.route && (
-            <Badge className={styles.routeBadge} variant="neutral" size="sm">
-              {routeLabel(data.route)}
+        isDebugMode ? (
+          <>
+            <Badge
+              variant={STATUS_VARIANTS[data.result_status] ?? "danger"}
+              uppercase
+            >
+              {statusLabel(data.result_status)}
             </Badge>
-          )}
-          {queryClass && queryClass !== data.route && (
-            <Badge className={styles.routeBadge} variant="neutral" size="sm">
-              {queryClass}
-            </Badge>
-          )}
-          {data.result_reason && (
-            <span className={[styles.muted, styles.resultReason].join(" ")}>
-              {reasonLabel(data.result_reason)}
-            </span>
-          )}
-          {data.current_through && (
-            <>
-              <span className={styles.separator} />
-              <span className={styles.freshness}>
-                Data through <strong>{data.current_through}</strong>
+            {data.route && (
+              <Badge className={styles.routeBadge} variant="neutral" size="sm">
+                {routeLabel(data.route)}
+              </Badge>
+            )}
+            {queryClass && queryClass !== data.route && (
+              <Badge className={styles.routeBadge} variant="neutral" size="sm">
+                {queryClass}
+              </Badge>
+            )}
+            {data.result_reason && (
+              <span className={[styles.muted, styles.resultReason].join(" ")}>
+                {reasonLabel(data.result_reason)}
               </span>
-            </>
-          )}
-        </>
+            )}
+            {data.current_through && (
+              <>
+                <span className={styles.separator} />
+                <span className={styles.freshness}>
+                  Data through <strong>{data.current_through}</strong>
+                </span>
+              </>
+            )}
+          </>
+        ) : null
       }
-      query={<>&ldquo;{data.query}&rdquo;</>}
+      query={isDebugMode ? <>&ldquo;{data.query}&rdquo;</> : null}
       context={
         contextChips.length > 0 || appliedFilters.length > 0 ? (
           <>
@@ -331,7 +357,117 @@ export default function ResultEnvelope({
           </>
         ) : null
       }
-    />
+    >
+      <details
+        className={styles.detailsDisclosure}
+        data-shortcut-scope="ignore"
+        open={detailsOpen}
+      >
+        <summary
+          className={styles.detailsSummary}
+          onClick={(event) => {
+            event.preventDefault();
+            setDetailsOpen((open) => !open);
+          }}
+        >
+          Details
+        </summary>
+        {detailsOpen && details}
+      </details>
+    </ResultEnvelopeShell>
+  );
+}
+
+interface ResultDetailsProps {
+  data: QueryResponse;
+  metadata: QueryResponse["result"]["metadata"] | undefined;
+  queryClass: string | undefined;
+  appliedFilters: Array<{ key: string; label: string; value: string }>;
+  rawNotes: string[];
+  rawCaveats: string[];
+}
+
+function ResultDetails({
+  data,
+  metadata,
+  queryClass,
+  appliedFilters,
+  rawNotes,
+  rawCaveats,
+}: ResultDetailsProps) {
+  const resolvedEntities = resolvedEntityLines(metadata);
+  const unsupportedFilters = metadataStringList(metadata?.unsupported_filters);
+  const metadataKeys = metadata ? Object.keys(metadata).sort() : [];
+
+  return (
+    <div className={styles.detailsBody} aria-label="Result details">
+      <div className={styles.detailsActions}>
+        <CopyButton text={data.query} label="Copy Query" />
+        <CopyButton text={JSON.stringify(data, null, 2)} label="Copy JSON" />
+      </div>
+      <div className={styles.detailsGrid}>
+        <DetailItem label="Route" value={data.route ?? "unrouted"} />
+        <DetailItem label="Result status" value={data.result_status} />
+        <DetailItem
+          label="Result reason"
+          value={data.result_reason ?? "none"}
+        />
+        <DetailItem label="Query class" value={queryClass ?? "unknown"} />
+        <DetailItem
+          label="Current through"
+          value={
+            data.current_through ??
+            metadataText(metadata, "current_through") ??
+            "unknown"
+          }
+        />
+        <DetailItem label="Full query" value={data.query} />
+        <DetailList
+          label="Applied filters"
+          values={appliedFilters.map(
+            (filter) => `${filter.label}: ${filter.value}`,
+          )}
+        />
+        <DetailList label="Resolved entities" values={resolvedEntities} />
+        <DetailList
+          label="Unsupported filters"
+          values={unsupportedFilters}
+        />
+        <DetailList label="Notes" values={rawNotes} />
+        <DetailList label="Caveats" values={rawCaveats} />
+        <DetailList label="Metadata keys" values={metadataKeys} />
+      </div>
+      {metadata && (
+        <div className={styles.metadataSummary}>
+          <div className={styles.detailsLabel}>Raw metadata summary</div>
+          <pre>{JSON.stringify(metadata, null, 2)}</pre>
+        </div>
+      )}
+      <RawJsonToggle data={data} variant="inline" />
+    </div>
+  );
+}
+
+function DetailItem({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className={styles.detailItem}>
+      <span className={styles.detailsLabel}>{label}</span>
+      <span className={styles.detailsValue}>{value}</span>
+    </div>
+  );
+}
+
+function DetailList({ label, values }: { label: string; values: string[] }) {
+  if (values.length === 0) return null;
+  return (
+    <div className={styles.detailItem}>
+      <span className={styles.detailsLabel}>{label}</span>
+      <ul className={styles.detailsList}>
+        {values.map((value, index) => (
+          <li key={`${label}-${index}`}>{value}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -616,13 +752,52 @@ function seasonRangeLabel(
 }
 
 function metadataText(
-  metadata: QueryResponse["result"]["metadata"],
+  metadata: QueryResponse["result"]["metadata"] | undefined,
   key: string,
 ): string | null {
+  if (!metadata) return null;
   const value = metadata[key];
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+function resolvedEntityLines(
+  metadata: QueryResponse["result"]["metadata"] | undefined,
+): string[] {
+  if (!metadata) return [];
+  const lines: string[] = [];
+
+  if (metadata.player_context) {
+    lines.push(
+      `Player: ${metadata.player_context.player_name} (${metadata.player_context.player_id})`,
+    );
+  }
+  for (const player of metadata.players_context ?? []) {
+    lines.push(`Player: ${player.player_name} (${player.player_id})`);
+  }
+  if (metadata.team_context) {
+    lines.push(
+      `Team: ${metadata.team_context.team_name} (${metadata.team_context.team_abbr}, ${metadata.team_context.team_id})`,
+    );
+  }
+  for (const team of metadata.teams_context ?? []) {
+    lines.push(`Team: ${team.team_name} (${team.team_abbr}, ${team.team_id})`);
+  }
+  if (metadata.opponent_context) {
+    lines.push(
+      `Opponent: ${metadata.opponent_context.team_name} (${metadata.opponent_context.team_abbr}, ${metadata.opponent_context.team_id})`,
+    );
+  }
+
+  return uniqueStrings(lines);
+}
+
+function metadataStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => stringValue(item))
+    .filter((item): item is string => item !== null);
 }
 
 function stripInterpretedPrefix(value: string): string {
