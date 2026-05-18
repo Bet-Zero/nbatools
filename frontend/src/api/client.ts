@@ -11,6 +11,8 @@ import type {
   ErrorResponse,
   FreshnessResponse,
   HealthResponse,
+  QueryFeedbackPayload,
+  QueryFeedbackResponse,
   QueryResponse,
   RoutesResponse,
 } from "./types";
@@ -60,6 +62,11 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   return data as T;
 }
 
+function currentSourcePage(): string {
+  if (typeof window === "undefined") return "/";
+  return window.location.pathname || "/";
+}
+
 export async function fetchHealth(): Promise<HealthResponse> {
   return request<HealthResponse>("/health");
 }
@@ -70,11 +77,14 @@ export async function fetchRoutes(): Promise<RoutesResponse> {
 
 export async function postQuery(
   query: string,
-  options?: { signal?: AbortSignal },
+  options?: { signal?: AbortSignal; sourcePage?: string },
 ): Promise<QueryResponse> {
   return request<QueryResponse>("/query", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-NBATools-Source-Page": options?.sourcePage ?? currentSourcePage(),
+    },
     signal: options?.signal,
     body: JSON.stringify({ query }),
   });
@@ -86,8 +96,27 @@ export async function postStructuredQuery(
 ): Promise<QueryResponse> {
   return request<QueryResponse>("/structured-query", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-NBATools-Source-Page": currentSourcePage(),
+    },
     body: JSON.stringify({ route, kwargs }),
+  });
+}
+
+export async function postQueryFeedback(
+  payload: QueryFeedbackPayload,
+): Promise<QueryFeedbackResponse> {
+  return request<QueryFeedbackResponse>("/query-feedback", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-NBATools-Source-Page": payload.source_page ?? currentSourcePage(),
+    },
+    body: JSON.stringify({
+      ...payload,
+      source_page: payload.source_page ?? currentSourcePage(),
+    }),
   });
 }
 

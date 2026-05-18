@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Badge, Card, type BadgeVariant } from "../design-system";
 import type { DisambiguationCandidate, ResultMetadata } from "../api/types";
 import {
@@ -16,6 +17,7 @@ interface Props {
   metadata?: ResultMetadata | null;
   notes?: string[];
   caveats?: string[];
+  feedbackAction?: ReactNode;
 }
 
 type StateVariant =
@@ -153,6 +155,7 @@ export default function NoResultDisplay({
   metadata,
   notes = [],
   caveats = [],
+  feedbackAction,
 }: Props) {
   const candidateLine = candidateSuggestionLine(metadata?.candidates);
   const details = buildNoResultDetails(notes, caveats, metadata);
@@ -232,6 +235,9 @@ export default function NoResultDisplay({
             ))}
           </div>
         </div>
+      )}
+      {feedbackAction && (
+        <div className={styles.feedbackAction}>{feedbackAction}</div>
       )}
     </Card>
   );

@@ -179,6 +179,53 @@ export interface ErrorResponse {
   detail: string | null;
 }
 
+// --- Query feedback ---
+
+export type FeedbackSource = "automatic" | "user_submitted";
+
+export type FeedbackType =
+  | "wrong_answer"
+  | "expected_supported"
+  | "confusing_answer"
+  | "no_result"
+  | "unsupported"
+  | "error"
+  | "ui_issue"
+  | "other";
+
+export interface QueryFeedbackResultShape {
+  query_class?: string | null;
+  section_keys?: string[];
+  section_row_counts?: Record<string, number>;
+}
+
+export interface QueryFeedbackPayload {
+  query: string;
+  feedback_source: FeedbackSource;
+  feedback_type: FeedbackType;
+  source_page?: string;
+  route?: string | null;
+  status?: string | null;
+  reason?: string | null;
+  result_shape?: QueryFeedbackResultShape;
+  metadata?: Record<string, unknown>;
+  notes?: string[];
+  caveats?: string[];
+  user_note?: string;
+  answer_text_preview?: string | null;
+  error_message?: string | null;
+  elapsed_ms?: number;
+}
+
+export interface QueryFeedbackResponse {
+  ok: boolean;
+  feedback_id?: string;
+  stored: boolean;
+  disabled: boolean;
+  error?: string;
+  detail?: string | null;
+}
+
 // --- Request bodies ---
 
 export interface NaturalQueryRequest {

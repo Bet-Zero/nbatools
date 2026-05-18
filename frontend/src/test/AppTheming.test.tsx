@@ -7,6 +7,7 @@ vi.mock("../api/client", () => ({
   fetchFreshness: vi.fn(),
   fetchRoutes: vi.fn(),
   postQuery: vi.fn(),
+  postQueryFeedback: vi.fn(),
   postStructuredQuery: vi.fn(),
 }));
 
@@ -16,6 +17,7 @@ import {
   fetchHealth,
   fetchRoutes,
   postQuery,
+  postQueryFeedback,
   postStructuredQuery,
 } from "../api/client";
 
@@ -76,6 +78,12 @@ beforeEach(() => {
   vi.mocked(postStructuredQuery).mockRejectedValue(
     new Error("structured query not used"),
   );
+  vi.mocked(postQueryFeedback).mockResolvedValue({
+    ok: true,
+    feedback_id: "qfb_test",
+    stored: true,
+    disabled: false,
+  });
 });
 
 describe("App scoped team theming", () => {

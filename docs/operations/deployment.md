@@ -25,6 +25,23 @@ Required variables:
 
 For the current deployment bucket, `R2_BUCKET_NAME` is `nbatools-data`.
 
+Optional query feedback variables:
+
+- `QUERY_FEEDBACK_STORE`
+- `QUERY_FEEDBACK_BUCKET_NAME`
+- `QUERY_FEEDBACK_PREFIX`
+
+Set `QUERY_FEEDBACK_STORE=r2` to enable query feedback and diagnostic logging.
+Leave it unset or empty to keep `/query-feedback` in disabled mode. Disabled
+mode returns JSON with `ok: true`, `stored: false`, and `disabled: true`; normal
+query UX and `/query` responses continue unchanged.
+
+For deployed feedback storage, use `QUERY_FEEDBACK_BUCKET_NAME=nbatools-feedback`
+or another dedicated bucket and keep `QUERY_FEEDBACK_PREFIX=query_feedback`.
+The feedback store uses the same S3 endpoint pattern and credential variable
+names as runtime R2 data access, but the recommended production setup is a
+separate feedback bucket and a separate R2 token scoped only to that bucket.
+
 ## Cloudflare R2 Setup
 
 Use this process when recreating the storage setup for a future operator.
@@ -43,6 +60,18 @@ Use this process when recreating the storage setup for a future operator.
 
 The token should not have account-wide R2 admin permissions. It only needs to
 read, write, and list objects in the one deployment bucket.
+
+For query feedback, create a separate bucket such as `nbatools-feedback` and a
+separate R2 token scoped to that bucket when possible. Feedback writes need
+object write permission; review/export workflows need list/read permission.
+Do not expose these credentials to the frontend. The browser submits feedback
+only through the backend-owned `POST /query-feedback` endpoint.
+
+Feedback records are compact JSON diagnostics and user reports. They do not
+intentionally collect names, emails, IP addresses, user accounts, phone
+numbers, precise device fingerprints, or session replay. Retain raw feedback
+for 90 days unless a record is converted into a QA case, data issue, or product
+planning artifact.
 
 ## Endpoint Construction
 

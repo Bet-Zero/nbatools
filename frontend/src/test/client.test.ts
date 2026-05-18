@@ -10,12 +10,14 @@ const {
   fetchHealth,
   fetchRoutes,
   postQuery,
+  postQueryFeedback,
   postStructuredQuery,
   fetchFreshness,
 } = await import("../api/client");
 
 beforeEach(() => {
   mockFetch.mockReset();
+  window.history.replaceState(null, "", "/");
 });
 
 function jsonResponse(
@@ -109,9 +111,46 @@ describe("postQuery", () => {
     expect(result.query).toBe("Jokic last 10");
     expect(mockFetch).toHaveBeenCalledWith("/query", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-NBATools-Source-Page": "/",
+      },
       body: JSON.stringify({ query: "Jokic last 10" }),
     });
+  });
+
+  it("sends the current source page header", async () => {
+    window.history.replaceState(null, "", "/visual-qa");
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        ok: true,
+        query: "Visual QA query",
+        route: null,
+        result_status: "no_result",
+        result_reason: "unsupported",
+        current_through: null,
+        notes: [],
+        caveats: [],
+        result: {
+          query_class: "unknown",
+          result_status: "no_result",
+          metadata: {},
+          notes: [],
+          caveats: [],
+          sections: {},
+        },
+      }),
+    );
+
+    await postQuery("Visual QA query");
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/query",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "X-NBATools-Source-Page": "/visual-qa",
+        }),
+      }),
+    );
   });
 });
 
@@ -143,12 +182,84 @@ describe("postStructuredQuery", () => {
     expect(result.route).toBe("season_leaders");
     expect(mockFetch).toHaveBeenCalledWith("/structured-query", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-NBATools-Source-Page": "/",
+      },
       body: JSON.stringify({
         route: "season_leaders",
         kwargs: { stat: "pts" },
       }),
     });
+  });
+});
+
+describe("postQueryFeedback", () => {
+  it("submits feedback to the same-origin endpoint", async () => {
+    window.history.replaceState(null, "", "/");
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        ok: true,
+        feedback_id: "qfb_test",
+        stored: true,
+        disabled: false,
+      }),
+    );
+
+    const result = await postQueryFeedback({
+      query: "Jokic last 10",
+      feedback_source: "user_submitted",
+      feedback_type: "wrong_answer",
+      route: "player_game_summary",
+      status: "ok",
+      reason: null,
+    });
+
+    expect(result.feedback_id).toBe("qfb_test");
+    expect(mockFetch).toHaveBeenCalledWith("/query-feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-NBATools-Source-Page": "/",
+      },
+      body: JSON.stringify({
+        query: "Jokic last 10",
+        feedback_source: "user_submitted",
+        feedback_type: "wrong_answer",
+        route: "player_game_summary",
+        status: "ok",
+        reason: null,
+        source_page: "/",
+      }),
+    });
+  });
+
+  it("throws useful errors for non-JSON feedback responses", async () => {
+    mockFetch.mockResolvedValueOnce(
+      textResponse("<html>bad gateway</html>", { ok: false, status: 502 }),
+    );
+
+    await expect(
+      postQueryFeedback({
+        query: "Jokic last 10",
+        feedback_source: "user_submitted",
+        feedback_type: "wrong_answer",
+      }),
+    ).rejects.toThrow(
+      "HTTP 502 returned non-JSON response: <html>bad gateway</html>",
+    );
+  });
+
+  it("throws useful errors for empty feedback responses", async () => {
+    mockFetch.mockResolvedValueOnce(textResponse("", { ok: true, status: 204 }));
+
+    await expect(
+      postQueryFeedback({
+        query: "Jokic last 10",
+        feedback_source: "user_submitted",
+        feedback_type: "wrong_answer",
+      }),
+    ).rejects.toThrow("HTTP 204: empty response body");
   });
 });
 

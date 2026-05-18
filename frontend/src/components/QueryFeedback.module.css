@@ -1,0 +1,159 @@
+.feedback {
+  min-width: 0;
+  max-width: 100%;
+  display: inline-grid;
+  gap: var(--space-2);
+}
+
+.status {
+  min-width: 0;
+  max-width: 32rem;
+  font-size: var(--font-small);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.success {
+  color: var(--success);
+}
+
+.failure {
+  color: var(--warning);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--bg-page) 76%, transparent);
+}
+
+.dialog {
+  width: min(100%, 30rem);
+  max-height: min(42rem, calc(100vh - var(--space-8)));
+  overflow: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-lg);
+}
+
+.form {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.header {
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.eyebrow,
+.legend,
+.noteField > span {
+  min-width: 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-micro);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+  overflow-wrap: anywhere;
+}
+
+.title {
+  min-width: 0;
+  margin-top: var(--space-1);
+  color: var(--text-primary);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.optionGroup {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-1);
+}
+
+.option {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: var(--font-small);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.option input {
+  margin-top: 0.1rem;
+  flex: 0 0 auto;
+}
+
+.noteField {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.noteField textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  padding: var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font: inherit;
+  line-height: 1.4;
+}
+
+.noteField textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
+}
+
+.privacy {
+  min-width: 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-small);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 520px) {
+  .form {
+    padding: var(--space-4);
+  }
+}

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { QueryResponse } from "../../api/types";
 import NoResultDisplay from "../NoResultDisplay";
 import { routeToPattern, type PatternConfig } from "./config/routeToPattern";
@@ -19,6 +20,7 @@ type ResultDisplayMode = "product" | "review";
 interface Props {
   data: QueryResponse;
   displayMode?: ResultDisplayMode;
+  feedbackAction?: ReactNode;
 }
 
 /**
@@ -32,6 +34,7 @@ interface Props {
 export default function ResultRenderer({
   data,
   displayMode = "product",
+  feedbackAction,
 }: Props) {
   const result = data.result;
   const noResultNotes = [...data.notes, ...(data.result?.notes ?? [])];
@@ -46,6 +49,7 @@ export default function ResultRenderer({
           metadata={data.result?.metadata}
           notes={noResultNotes}
           caveats={noResultCaveats}
+          feedbackAction={feedbackAction}
         />
       );
     }
@@ -57,6 +61,7 @@ export default function ResultRenderer({
           metadata={data.result?.metadata}
           notes={noResultNotes}
           caveats={noResultCaveats}
+          feedbackAction={feedbackAction}
         />
       );
     }
@@ -76,6 +81,7 @@ export default function ResultRenderer({
           metadata={data.result?.metadata}
           notes={noResultNotes}
           caveats={noResultCaveats}
+          feedbackAction={feedbackAction}
         />
       );
     }

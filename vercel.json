@@ -42,6 +42,11 @@
       "maxDuration": 60,
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
     },
+    "api/query_feedback.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
     "api/structured_query.py": {
       "memory": 1024,
       "maxDuration": 60,
@@ -92,6 +97,10 @@
     {
       "source": "/query",
       "destination": "/api/query"
+    },
+    {
+      "source": "/query-feedback",
+      "destination": "/api/query_feedback"
     },
     {
       "source": "/structured-query",

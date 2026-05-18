@@ -61,6 +61,7 @@ Runbooks and operational guides.
 
 - `operations/pipeline_runbook.md` — data pipeline operations
 - `operations/deployment.md` — Cloudflare R2 and Vercel deployment storage setup
+- `operations/query_feedback_review.md` — query feedback storage and triage workflow
 - `operations/query_smoke_workflow.md` — terminal-driven natural-query smoke workflow
 - `operations/ui_guide.md` — web UI setup, dev workflow, component reference
 

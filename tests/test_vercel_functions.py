@@ -25,6 +25,7 @@ def test_vercel_entrypoints_export_handlers():
         "api.routes",
         "api.freshness",
         "api.query",
+        "api.query_feedback",
         "api.structured_query",
     ]
 
@@ -50,6 +51,25 @@ def test_query_response_executes_shared_payload():
     assert status == HTTPStatus.OK
     assert payload == expected
     mock.assert_called_once_with("Jokic last 10")
+
+
+def test_query_feedback_response_delegates_to_feedback_handler():
+    expected = {"ok": True, "feedback_id": "qfb_test", "stored": True, "disabled": False}
+    with patch(
+        "nbatools.vercel_functions.handle_feedback_submission",
+        return_value=(HTTPStatus.OK, expected),
+    ) as mock:
+        status, payload = vercel_functions.query_feedback_response(
+            {"query": "Jokic", "feedback_source": "user_submitted"},
+            source_page="/",
+        )
+
+    assert status == HTTPStatus.OK
+    assert payload == expected
+    mock.assert_called_once_with(
+        {"query": "Jokic", "feedback_source": "user_submitted"},
+        source_page="/",
+    )
 
 
 def test_structured_query_response_defaults_kwargs():

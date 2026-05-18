@@ -11,17 +11,23 @@ Run locally with::
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from nbatools import __version__, api_ui
 from nbatools.api_handlers import dev_fixtures_payload, query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
+from nbatools.query_feedback import (
+    elapsed_ms_since,
+    handle_feedback_submission,
+    maybe_log_query_diagnostic,
+)
 from nbatools.query_service import (
     VALID_ROUTES,
     QueryResult,
@@ -213,14 +219,31 @@ def dev_fixtures() -> DevFixturesResponse:
 
 
 @app.post("/query", response_model=QueryResponse)
-def natural_query(body: NaturalQueryRequest) -> QueryResponse:
+def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse:
     """Execute a natural-language NBA query.
 
     Calls ``execute_natural_query`` from the query service and returns
     the structured result as JSON.
     """
+    start_time = time.monotonic()
     qr = execute_natural_query(body.query)
-    return _query_result_to_response(qr)
+    payload = query_result_to_payload(qr)
+    maybe_log_query_diagnostic(
+        payload,
+        elapsed_ms=elapsed_ms_since(start_time),
+        source_page=request.headers.get("X-NBATools-Source-Page"),
+    )
+    return QueryResponse(**payload)
+
+
+@app.post("/query-feedback")
+def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
+    """Accept user-submitted or automatic query feedback."""
+    status, payload = handle_feedback_submission(
+        body,
+        source_page=request.headers.get("X-NBATools-Source-Page"),
+    )
+    return JSONResponse(status_code=status, content=payload)
 
 
 @app.post("/structured-query", response_model=QueryResponse)

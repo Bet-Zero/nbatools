@@ -5,7 +5,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
+import {
+  fetchHealth,
+  postQuery,
+  postQueryFeedback,
+  postStructuredQuery,
+} from "./api/client";
 import type { SavedQueryInput } from "./api/savedQueryTypes";
 import type { QueryResponse } from "./api/types";
 import AppShell from "./components/AppShell";
@@ -16,6 +21,11 @@ import ErrorBox from "./components/ErrorBox";
 import FreshnessStatus from "./components/FreshnessStatus";
 import Loading from "./components/Loading";
 import QueryBar from "./components/QueryBar";
+import { QueryFeedbackButton } from "./components/QueryFeedback";
+import {
+  buildQueryErrorFeedbackPayload,
+  defaultFeedbackTypeForResult,
+} from "./components/queryFeedbackPayload";
 import QueryHistory from "./components/QueryHistory";
 import RawJsonToggle from "./components/RawJsonToggle";
 import ResultEnvelope from "./components/ResultEnvelope";
@@ -162,7 +172,17 @@ export default function App() {
         setResult(data);
         addEntry(query, data);
       } catch (err) {
-        setError(safeErrorMessage(err));
+        const message = safeErrorMessage(err);
+        setError(message);
+        void postQueryFeedback(
+          buildQueryErrorFeedbackPayload({
+            query,
+            errorMessage: message,
+            feedbackSource: "automatic",
+          }),
+        ).catch(() => {
+          // Feedback logging must not change query UX.
+        });
       } finally {
         setLoading(false);
       }
@@ -389,6 +409,22 @@ export default function App() {
     | CSSProperties
     | undefined;
   const teamThemedSurfaceClass = teamTheme ? styles.teamThemedSurface : "";
+  const negativeFeedbackAction =
+    result && result.result_status !== "ok" ? (
+      <QueryFeedbackButton
+        data={result}
+        defaultFeedbackType={defaultFeedbackTypeForResult(result)}
+        triggerLabel={
+          result.result_status === "error" ? "Report error" : "Submit for review"
+        }
+        title={
+          result.result_status === "error"
+            ? "Report this query error"
+            : "Expected this to work?"
+        }
+        variant="secondary"
+      />
+    ) : undefined;
 
   const header = (
     <div className={styles.headerContent}>
@@ -556,6 +592,14 @@ export default function App() {
                     >
                       Save Query
                     </Button>
+                    {result.result_status === "ok" && (
+                      <QueryFeedbackButton
+                        data={result}
+                        defaultFeedbackType="wrong_answer"
+                        triggerLabel="Report issue"
+                        title="Report an issue with this answer"
+                      />
+                    )}
                   </div>
                 }
               />
@@ -572,7 +616,10 @@ export default function App() {
                 " ",
               )}
             >
-              <ResultRenderer data={result} />
+              <ResultRenderer
+                data={result}
+                feedbackAction={negativeFeedbackAction}
+              />
             </div>
 
             <RawJsonToggle data={result} />

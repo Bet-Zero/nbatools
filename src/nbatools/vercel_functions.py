@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from http import HTTPStatus
 from typing import Any
 
@@ -14,6 +15,11 @@ from nbatools.api_handlers import (
     structured_query_payload,
 )
 from nbatools.api_ui import UI_FALLBACK_SCRIPT, load_ui_html
+from nbatools.query_feedback import (
+    elapsed_ms_since,
+    handle_feedback_submission,
+    maybe_log_query_diagnostic,
+)
 
 
 def ui_response() -> tuple[int, str, str]:
@@ -53,12 +59,32 @@ def dev_fixtures_response() -> tuple[int, dict[str, Any]]:
     return HTTPStatus.OK, dev_fixtures_payload()
 
 
-def query_response(body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+def query_response(
+    body: dict[str, Any],
+    *,
+    source_page: str | None = None,
+) -> tuple[int, dict[str, Any]]:
     """Validate and execute a natural query request body."""
     query = body.get("query")
     if not isinstance(query, str) or not query.strip():
         return _validation_error("Field 'query' must be a non-empty string")
-    return HTTPStatus.OK, natural_query_payload(query)
+    start_time = time.monotonic()
+    payload = natural_query_payload(query)
+    maybe_log_query_diagnostic(
+        payload,
+        elapsed_ms=elapsed_ms_since(start_time),
+        source_page=source_page,
+    )
+    return HTTPStatus.OK, payload
+
+
+def query_feedback_response(
+    body: dict[str, Any],
+    *,
+    source_page: str | None = None,
+) -> tuple[int, dict[str, Any]]:
+    """Validate and persist a query feedback request body."""
+    return handle_feedback_submission(body, source_page=source_page)
 
 
 def structured_query_response(body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
