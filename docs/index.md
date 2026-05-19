@@ -79,10 +79,10 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/LEADERBOARD_SUPPORTING_COLUMNS_PREFLIGHT.md` — product-decision preflight for route-specific leaderboard supporting columns
 - `planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` — plan for a manual-first raw query answer QA harness over a curated natural-language corpus
 - `planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md` — living manual-review findings inventory from raw query answer QA harness runs
-- `planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` — release-readiness checkpoint for backend raw QA, frontend-copy QA, visual QA, deploy parity, and next options
-- `planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` — current Raw Product release-readiness checklist and preview manual validation steps
-- `planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` — final release package for the current supported and explicitly unsupported Raw Product boundary
-- `planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md` — final release-candidate handoff for the current Raw Product boundary; current state is handoff complete with notes
+- `planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` — release-readiness checkpoint for backend raw QA, frontend-copy QA, visual QA, public UI readiness, deploy parity, and next options
+- `planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` — current Raw Product release-readiness checklist, preview manual validation steps, and final public UI readiness evidence
+- `planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` — final release package for the current supported and explicitly unsupported Raw Product boundary; current public UI status is ready with notes
+- `planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md` — final release-candidate handoff for the current Raw Product boundary; current state is handoff complete with public UI ready with notes
 - `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist for the first 15-case visual QA baseline
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs

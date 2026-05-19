@@ -63,7 +63,10 @@ module replacement during frontend development.
 - **Display modes** — `/` defaults to a public result mode. Add `?debug=1`
   on `/` to show the debug-rich result chrome. `/review` always renders debug
   review output, while `/visual-qa` keeps its internal case metadata and renders
-  the public answer-first result surface by default.
+  the public answer-first result surface by default. The final public UI release
+  review classified this boundary as `PUBLIC_UI_READY_WITH_NOTES`: the
+  debug-rich default UI is no longer a broad-public-launch blocker, and
+  remaining UI work is post-launch polish.
 - **Sample buttons** — pre-filled example queries with a label, click to run
   immediately. Renderer/pattern hints are hidden in public mode and visible in
   debug mode.

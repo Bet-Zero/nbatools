@@ -5,6 +5,7 @@
 - Release status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Preview status: `PREVIEW_READY_WITH_NOTES`.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
+- Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - What is ready: the current Raw Product supported and explicitly unsupported
   boundary is ready for handoff. Backend Raw QA is clean at 246/246 cases,
   selected frontend-copy QA rendered 125/125 cases with soft checks `480/0/0`,
@@ -19,7 +20,10 @@
   answer-first public hierarchy pass: successful public results now render the
   answer hero before actions, place user-facing context and material caveats
   near the answer, keep actions secondary, tighten dense mobile tables, and
-  reduce duplicate public no-result Details.
+  reduce duplicate public no-result Details. The final Public UI Release
+  Review passed on the live main preview with 14 desktop query checks, 13
+  mobile 390px family checks, preserved debug/review/visual-QA paths, preserved
+  feedback UI, and no blocking issues.
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
   is manual rather than screenshot-diff automation, opponent-conference support
   is limited to trusted seasons `2024-25` and `2025-26`, existing frontend
@@ -27,12 +31,13 @@
   tooling rather than an admin dashboard or mutable triage overlay, triage
   suggestions are heuristic, corpus conversion remains manual, and explicitly
   unsupported boundaries must continue to return guarded no-result or
-  unsupported behavior. Wave 2 addresses the main public result hierarchy and
-  mobile-density gap; broader unsupported-copy refinement and automated visual
-  regression remain recommended follow-ups before broad public launch.
+  unsupported behavior. Public UI is ready with notes; broader unsupported-copy
+  refinement, visual QA corpus expansion, and automated visual regression are
+  post-launch polish rather than launch blockers.
 - Recommended handoff decision: ship or hand off the current release candidate
-  with notes. Query feedback is no longer a preview blocker. Missing required
-  R2 data remains a release blocker.
+  with notes. Query feedback and the previous debug-heavy default UI are no
+  longer preview/public-launch blockers. Missing required R2 data remains a
+  release blocker.
 
 ## 2. Validation evidence
 
@@ -48,6 +53,7 @@
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can run `make query-feedback-export`, which wraps `tools/export_query_feedback.py` and writes `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | `/` now defaults to public result rendering; `?debug=1` restores debug chrome; `/review` remains debug-rich; `/visual-qa` keeps internal case metadata while rendering public results; feedback payload diagnostics remain preserved. |
 | Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public `/` is answer-first, public context/caveats render near the hero, successful-result actions are secondary, dense mobile tables use tighter shared padding and column priorities, public no-result has one diagnostics disclosure, `?debug=1`, `/review`, `/visual-qa`, and feedback diagnostics remain preserved. |
+| Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; live main preview checked `/`, `/?debug=1`, `/review`, and `/visual-qa`; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
 | Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
 
 ## 3. Feedback and diagnostics V1
@@ -195,9 +201,11 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   review/export workflow is implemented, there is no admin dashboard or mutable
   triage overlay, triage suggestions are heuristic, and corpus conversion
   remains manual.
-- Public result mode is now answer-first on `/` after Wave 2. Remaining UI
-  notes are broader unsupported-copy refinement and automated visual regression,
-  not backend readiness blockers.
+- Public result mode is now answer-first on `/` after Wave 2, and the final
+  Public UI Release Review classified it as `PUBLIC_UI_READY_WITH_NOTES`.
+  Remaining UI notes are post-launch polish: broader unsupported-copy
+  refinement, visual QA corpus expansion, screenshot automation, and continued
+  internal horizontal scrolling for wide tables.
 - Frontend lint still has the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning in the
   latest readiness evidence.
@@ -223,15 +231,19 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 - [ ] Confirm `/` is public by default, `/` with `?debug=1` exposes debug
   chrome, `/review` remains debug-rich, and `/visual-qa` still renders the
   selected visual cases.
+- [ ] Confirm the public UI still matches the final release-review boundary:
+  answer-first `/`, no default debug chrome, debug/details preservation,
+  feedback controls on `/`, and no feedback controls on `/review` or
+  `/visual-qa`.
 - [ ] Run supported and unsupported smoke queries.
 - [ ] Mobile spot-check primary result readability.
 - [ ] Confirm there is no broad fallback for unsupported boundaries.
 
 ## 9. Recommended next roadmap
 
-1. Broader no-result/unsupported public-copy refinement.
-2. Visual QA automation preflight.
-3. First launch feedback review using `make query-feedback-export`.
+1. First launch feedback review using `make query-feedback-export`.
+2. Broader no-result/unsupported public-copy refinement.
+3. Visual QA automation preflight.
 4. Next unsupported-family promotion preflight.
 5. CI/release artifact packaging.
 6. Frontend-copy Wave 3 only after fresh gap analysis.

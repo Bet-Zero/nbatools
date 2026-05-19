@@ -39,17 +39,25 @@
   automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa`
   suppression. Query Feedback Review Workflow V1 is implemented as a read-only
   launch review/export path.
+- Public UI status: `PUBLIC_UI_READY_WITH_NOTES`. The final Public UI Release
+  Review passed on the live main preview with route checks for `/`,
+  `/?debug=1`, `/review`, and `/visual-qa`, 14 desktop public query checks, 13
+  mobile 390px family checks, debug/details preservation, feedback preservation,
+  and no blocking issues.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
   build/lint, parser smoke, diff-check validation, preview manual QA, R2 data
   availability, deployment smoke, opponent-conference preview smoke, and query
-  feedback R2 inspection, and the implemented feedback review/export workflow.
-  The remaining notes are selected frontend-copy coverage, manual visual QA,
-  trusted-season limits for opponent-conference support, guarded unsupported
-  boundaries, existing frontend build/lint warnings, and feedback operational
-  follow-ups: no admin dashboard, no mutable triage overlay, heuristic
-  suggestions only, and manual corpus conversion.
+  feedback R2 inspection, the implemented feedback review/export workflow, and
+  final public UI release review. Broad public launch is no longer blocked by a
+  debug-heavy default UI. The remaining notes are selected frontend-copy
+  coverage, manual visual QA, trusted-season limits for opponent-conference
+  support, guarded unsupported boundaries, existing frontend build/lint
+  warnings, feedback operational follow-ups, and public UI post-launch polish:
+  screenshot automation, visual QA corpus expansion, unsupported/no-result copy
+  taxonomy refinement, and continued internal horizontal scrolling for wide
+  tables.
 
 ## 2. Backend Raw Query Answer QA
 
@@ -405,6 +413,12 @@ Latest release-readiness checklist validation:
 - Query feedback review/export workflow:
   `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`;
   implemented with notes; launch review can run `make query-feedback-export`.
+- Final public UI release review:
+  `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`;
+  `PUBLIC_UI_READY_WITH_NOTES`; routes `/`, `/?debug=1`, `/review`, and
+  `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family
+  checks passed; debug/details and feedback preservation passed; blocking
+  issues none.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check: `git diff --check` passed.
@@ -433,11 +447,12 @@ Completed:
 - Option G - Release candidate handoff.
 - Query feedback readiness refresh after R2 record inspection.
 - Option H - Query feedback export/review script.
+- Final Public UI Release Review - `PUBLIC_UI_READY_WITH_NOTES`.
 
 Recommended order:
 
-1. Option E - Visual QA automation.
-2. First launch feedback review using `make query-feedback-export`.
+1. First launch feedback review using `make query-feedback-export`.
+2. Option E - Visual QA automation.
 3. Option B - Promote one unsupported family into real support.
 4. Option F - Broader release/CI artifact packaging.
 5. Option A - Frontend-copy Wave 3 only after fresh gap analysis.

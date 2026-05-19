@@ -7,6 +7,7 @@
 - Latest feedback readiness refresh: 2026-05-18.
 - Latest front-facing UI refresh: 2026-05-19.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
+- Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Release package:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`.
@@ -38,7 +39,10 @@
   suppression, and now has an implemented read-only review/export workflow.
   Front-facing UI Productization Wave 2 addresses the main public-launch
   answer hierarchy and mobile-density gap without backend/parser/result-contract
-  changes.
+  changes. The final Public UI Release Review passed on the live main preview,
+  covering `/`, `/?debug=1`, `/review`, `/visual-qa`, 14 desktop public query
+  checks, 13 mobile 390px family checks, debug preservation, and feedback
+  preservation with no blocking issues.
 - Latest refresh type: frontend rendering plus docs; no backend query behavior,
   parser behavior, result contract, or corpus expectation changes.
 
@@ -62,9 +66,12 @@ Known limitations:
   `make query-feedback-export`. Remaining feedback limitations are operational
   follow-ups: no admin dashboard, no mutable triage overlay, heuristic
   suggestions only, and manual corpus conversion.
-- Public result mode is now answer-first on `/` after Wave 2. Remaining UI
-  notes are broader no-result/unsupported copy refinement and automated visual
-  regression before broad launch.
+- Public result mode is now answer-first on `/` after Wave 2, and the final
+  Public UI Release Review classified the public UI as
+  `PUBLIC_UI_READY_WITH_NOTES`. Remaining UI notes are post-launch polish:
+  broader no-result/unsupported copy refinement, visual QA corpus expansion,
+  screenshot automation, the existing `ReviewPage` lint hook warning, and
+  accepted internal horizontal scrolling for wide tables.
 
 ## 2. Backend Raw QA
 
@@ -153,6 +160,7 @@ limitation is that visual QA is manual, not screenshot-diff automation.
 | Query feedback and diagnostic logging | `FEEDBACK_READY_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; user-submitted R2 records, automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa` suppression verified under `query_feedback/preview` |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
 | Public/default result mode | `PASS_WITH_NOTES`; `/` is public and answer-first by default, context/caveats render near the answer, successful-result actions are secondary, Details preserves diagnostics, `?debug=1` restores debug chrome, `/review` remains debug-rich, and `/visual-qa` renders public results with case metadata |
+| Final public UI release review | `PUBLIC_UI_READY_WITH_NOTES`; `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
@@ -163,8 +171,10 @@ checks passed the route, smoke, deployment-smoke, `/visual-qa`, and
 opponent-conference data-path checks with non-blocking notes. Query feedback is
 ready with notes, the review/export workflow is implemented, and feedback is not
 a preview blocker. Wave 2 completes the main public result answer hierarchy and
-mobile-density polish; remaining UI follow-ups are broader unsupported-copy
-refinement and visual automation rather than backend readiness issues.
+mobile-density polish. The final public UI release review removes the
+debug-heavy default UI as a broad-public-launch blocker; remaining UI follow-ups
+are post-launch unsupported-copy refinement, visual QA corpus expansion, and
+visual automation rather than readiness issues.
 
 ## 6. Unsupported Boundaries
 
@@ -527,6 +537,24 @@ Evidence:
   with `ok: true`, `failure_count: 0`, and 15 resolved East opponents for the
   R2-sensitive team-record check
 
+Latest final public UI release review status: `PUBLIC_UI_READY_WITH_NOTES`.
+
+Evidence:
+
+- Final public UI return package:
+  `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`
+- Preview URL checked:
+  `https://nbatools-git-main-brents-projects-686e97fc.vercel.app`
+- Routes checked: `/`, `/?debug=1`, `/review`, `/visual-qa`
+- Desktop public query checks: 14 passed
+- Mobile 390px family checks: 13 passed
+- Debug/details preservation: passed
+- Feedback preservation: passed
+- Blocking issues: none
+- Remaining notes: screenshot automation, visual QA corpus expansion,
+  unsupported/no-result copy taxonomy, existing `ReviewPage` lint hook warning,
+  and internal horizontal scrolling for wide tables
+
 For future previews, validate these routes:
 
 - `https://<preview-url>/`
@@ -558,15 +586,20 @@ Preview verdict: `PREVIEW_READY_WITH_NOTES`.
 
 Final readiness status: `RELEASE_CANDIDATE_WITH_NOTES`.
 
+Public UI readiness status: `PUBLIC_UI_READY_WITH_NOTES`.
+
 Backend, frontend-copy, docs, and data-quality findings remain clean for the
 current boundary. The previous mobile `/visual-qa` overflow blocker was fixed
 and the later opponent-conference preview R2 blocker is resolved. The latest
 preview and deployment-smoke evidence passed with notes. Query Feedback +
 Diagnostic Logging V1 is `FEEDBACK_READY_WITH_NOTES` and included in the
-release candidate. The remaining release notes are selected frontend-copy
-coverage, manual visual QA, trusted-season limits for opponent-conference
-support, guarded unsupported families, existing frontend build/lint warnings,
-and feedback operational follow-ups: no admin dashboard, no mutable triage
-overlay, heuristic suggestions only, and manual corpus conversion. The final
-release-candidate handoff is complete in
+release candidate. The final public UI release review passed with no blocking
+issues; broad public launch is no longer blocked by debug-heavy default UI. The
+remaining release notes are selected frontend-copy coverage, manual visual QA,
+trusted-season limits for opponent-conference support, guarded unsupported
+families, existing frontend build/lint warnings, feedback operational follow-ups
+with no admin dashboard or mutable triage overlay, and public UI post-launch
+polish around screenshot automation, visual QA corpus expansion, unsupported
+copy taxonomy, and wide-table internal scrolling. The final release-candidate
+handoff is complete in
 `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.

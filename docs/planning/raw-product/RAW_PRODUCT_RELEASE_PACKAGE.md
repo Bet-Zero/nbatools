@@ -5,6 +5,7 @@
 - Recommended status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Preview status: `PREVIEW_READY_WITH_NOTES`.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
+- Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - Release date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
 - Latest front-facing UI refresh: 2026-05-19.
@@ -19,6 +20,7 @@
 - Release-candidate ready: yes, with notes.
 - Query Feedback + Diagnostic Logging V1 included in release candidate: yes.
 - Query feedback review/export workflow implemented: yes, with notes.
+- Final Public UI Release Review passed: yes, with notes.
 - Final handoff:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
   handoff complete with notes.
@@ -52,6 +54,12 @@ and material caveats near the hero before long tables, makes actions visually
 secondary, tightens dense mobile tables through shared padding and bounded
 column-priority flags, and avoids duplicate public no-result Details while
 preserving diagnostics.
+Final Public UI Release Review has now passed with
+`PUBLIC_UI_READY_WITH_NOTES`: live preview route checks for `/`, `/?debug=1`,
+`/review`, and `/visual-qa` passed; 14 desktop public queries passed; 13 mobile
+390px family checks passed; debug/details preservation passed; feedback UI
+preservation passed; blocking issues were none. Broad public launch is no
+longer blocked by debug-heavy default UI.
 
 Human sign-off still needed:
 
@@ -65,9 +73,10 @@ Human sign-off still needed:
   follow-ups: no admin dashboard, no mutable triage overlay, heuristic
   suggestions only, and manual corpus conversion.
 - Product owner acceptance that public result UI productization has completed
-  the Wave 2 hierarchy/mobile pass, while broader no-result/unsupported copy
-  refinement and automated visual regression remain recommended before broad
-  public launch.
+  the Wave 2 hierarchy/mobile pass and final public UI release review, while
+  broader no-result/unsupported copy refinement, visual QA corpus expansion,
+  screenshot automation, and wide-table internal scrolling remain post-launch
+  polish notes.
 
 ## 2. Validation Summary
 
@@ -84,6 +93,7 @@ Human sign-off still needed:
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | Public mode hides route/query-class/status/reason/JSON/dev chrome by default while preserving diagnostics in Details and feedback payloads. `/review` remains debug-rich; `/visual-qa` renders public results with internal case metadata. |
 | Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public successful results are answer-first, context/caveats sit near the hero, actions are secondary, dense mobile tables use tighter padding and column-priority flags, no-result public diagnostics use a single Details disclosure, and debug/review/visual QA/feedback diagnostics are preserved. |
+| Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -313,9 +323,11 @@ Supporting return packages:
   read-only review/export workflow is implemented. Remaining feedback notes are
   no admin dashboard, no mutable triage overlay, heuristic suggestions only,
   and manual corpus conversion.
-- Public result UI productization Wave 2 is implemented. Remaining public UI
-  follow-ups are broader no-result/unsupported copy coverage and automated
-  visual regression rather than the main answer hierarchy/mobile-density pass.
+- Public result UI productization Wave 2 is implemented and the final public UI
+  release review passed with `PUBLIC_UI_READY_WITH_NOTES`. Remaining public UI
+  follow-ups are post-launch polish: broader no-result/unsupported copy
+  coverage, visual QA corpus expansion, screenshot automation, and accepted
+  internal horizontal scrolling for wide tables.
 
 ## 7. Future Deployment Checklist
 
@@ -346,6 +358,10 @@ Before deploying this boundary again:
   near the answer, `/` with `?debug=1` exposes route/status, Copy JSON, Raw JSON,
   and Dev Tools, `/review` remains debug-rich, and `/visual-qa` renders the
   visual case results.
+- Confirm the final public UI release-review boundary still holds: no default
+  route/status/raw debug chrome on `/`, Details exposes diagnostics, feedback
+  controls remain available on `/`, and feedback controls remain suppressed on
+  `/review` and `/visual-qa`.
 - Run the six smoke queries:
   - `Who leads the NBA in points per game this season?`
   - `What is Denver's record when Nikola Jokic has a triple-double?`
@@ -377,7 +393,8 @@ Current handoff status: release-candidate handoff is complete; see
 Recommended order after this handoff:
 
 1. Broader no-result/unsupported public-copy refinement.
-   - Continue refining unsupported-boundary guidance before broad public launch.
+   - Continue refining unsupported-boundary guidance after launch using feedback
+     records and public-query evidence.
 2. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.
