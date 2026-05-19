@@ -23,6 +23,7 @@ interface Props {
   sentenceMetricLabel?: string;
   valueSuffix?: string;
   verb?: string;
+  afterHero?: ReactNode;
 }
 
 type EntityKind = "player" | "team" | "unknown";
@@ -204,6 +205,7 @@ export default function LeaderboardResult({
   sentenceMetricLabel,
   valueSuffix,
   verb,
+  afterHero,
 }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
@@ -232,6 +234,7 @@ export default function LeaderboardResult({
           entityKind === "team" ? textValue(firstRow, "team_abbr") : null
         }
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}

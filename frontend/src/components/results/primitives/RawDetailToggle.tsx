@@ -20,8 +20,8 @@ export default function RawDetailToggle({
   highlight = false,
   hiddenColumns,
   defaultOpen = false,
-  collapsedLabel = "Show raw table",
-  expandedLabel = "Hide raw table",
+  collapsedLabel = "Show details",
+  expandedLabel = "Hide details",
 }: Props) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();

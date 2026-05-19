@@ -239,6 +239,9 @@ export default function NoResultDisplay({
           </div>
         </div>
       )}
+      {feedbackAction && (
+        <div className={styles.feedbackAction}>{feedbackAction}</div>
+      )}
       {showDetails && (
         <details
           className={styles.detailsDisclosure}
@@ -296,9 +299,6 @@ export default function NoResultDisplay({
             ))}
           </div>
         </div>
-      )}
-      {feedbackAction && (
-        <div className={styles.feedbackAction}>{feedbackAction}</div>
       )}
     </Card>
   );

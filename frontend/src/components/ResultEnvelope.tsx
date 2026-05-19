@@ -81,6 +81,76 @@ type ContextItem = {
   value: string;
 };
 
+type ContextChip = {
+  key: string;
+  label: string;
+  value: string;
+  variant?: BadgeVariant;
+  identity?: "player" | "team";
+  imageUrl?: string | null;
+  identityName?: string | null;
+  abbreviation?: string | null;
+  styleVars?: CSSProperties;
+};
+
+interface ResultContextSummaryProps {
+  data: QueryResponse;
+  className?: string;
+}
+
+export function ResultContextSummary({
+  data,
+  className,
+}: ResultContextSummaryProps) {
+  const metadata = data.result?.metadata;
+  const appliedFilters = appliedFilterLabels(metadata?.applied_filters);
+  const rawNotes = uniqueStrings([
+    ...data.notes,
+    ...(data.result?.notes ?? []),
+    ...metadataNotes(metadata?.notes),
+  ]);
+  const classifiedNotes = classifyNoticeItems(rawNotes);
+  const classifiedCaveats = classifyNoticeItems(
+    uniqueStrings([...data.caveats, ...(data.result?.caveats ?? [])]),
+  );
+  const contextItems = uniqueContextItems([
+    ...buildContextItems(metadata, appliedFilters),
+    ...classifiedNotes.context,
+    ...classifiedCaveats.context,
+  ]);
+  const contextChips = buildContextChips(
+    metadata,
+    appliedFilters,
+    contextItems,
+    true,
+  );
+  const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
+
+  if (contextChips.length === 0 && caveatItems.length === 0) return null;
+
+  return (
+    <div className={[styles.publicContext, className].filter(Boolean).join(" ")}>
+      {contextChips.length > 0 && (
+        <div className={styles.publicContextChips} aria-label="Result context">
+          {contextChips.map((chip) => (
+            <ContextChipBadge chip={chip} key={chip.key} />
+          ))}
+        </div>
+      )}
+      {caveatItems.length > 0 && (
+        <div className={[styles.infoBlock, styles.caveatsBlock].join(" ")}>
+          <div className={styles.infoBlockLabel}>Caveats</div>
+          <ul>
+            {caveatItems.map((caveat, i) => (
+              <li key={i}>{caveat}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ResultEnvelope({
   data,
   onAlternateSelect,
@@ -114,11 +184,17 @@ export default function ResultEnvelope({
   const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
   const showContext = isDebugMode && contextItems.length > 0;
   const showNotes = noteItems.length > 0;
-  const showCaveats = caveatItems.length > 0;
+  const showCaveats = isDebugMode && caveatItems.length > 0;
   const rawCaveats = uniqueStrings([
     ...data.caveats,
     ...(data.result?.caveats ?? []),
   ]);
+  const contextChips = buildContextChips(
+    metadata,
+    appliedFilters,
+    contextItems,
+    false,
+  );
   const details = (
     <ResultDetails
       data={data}
@@ -129,82 +205,6 @@ export default function ResultEnvelope({
       rawCaveats={rawCaveats}
     />
   );
-
-  // Build context chips from metadata
-  const contextChips: {
-    label: string;
-    value: string;
-    identity?: "player" | "team";
-    imageUrl?: string | null;
-    identityName?: string | null;
-    abbreviation?: string | null;
-    styleVars?: CSSProperties;
-  }[] = [];
-  if (metadata) {
-    if (typeof metadata.player === "string") {
-      const playerIdentity = resolvePlayerIdentity({
-        playerId: metadata.player_context?.player_id,
-        playerName: metadata.player_context?.player_name ?? metadata.player,
-      });
-      contextChips.push({
-        label: "Player",
-        value: metadata.player,
-        identity: "player",
-        imageUrl: playerIdentity.headshotUrl,
-        identityName: playerIdentity.playerName,
-      });
-    }
-    if (Array.isArray(metadata.players) && metadata.players.length)
-      contextChips.push({
-        label: "Players",
-        value: metadata.players.join(", "),
-      });
-    if (typeof metadata.team === "string") {
-      const teamIdentity = resolveTeamIdentity({
-        teamId: metadata.team_context?.team_id,
-        teamAbbr: metadata.team_context?.team_abbr,
-        teamName: metadata.team_context?.team_name ?? metadata.team,
-      });
-      contextChips.push({
-        label: "Team",
-        value: metadata.team,
-        identity: "team",
-        imageUrl: teamIdentity.logoUrl,
-        identityName: teamIdentity.teamName,
-        abbreviation: teamIdentity.teamAbbr,
-        styleVars: (teamIdentity.styleVars ?? undefined) as
-          | CSSProperties
-          | undefined,
-      });
-    }
-    if (Array.isArray(metadata.teams) && metadata.teams.length)
-      contextChips.push({
-        label: "Teams",
-        value: metadata.teams.join(", "),
-      });
-    if (typeof metadata.season === "string")
-      contextChips.push({ label: "Season", value: metadata.season });
-    if (typeof metadata.opponent === "string") {
-      const opponentIdentity = resolveTeamIdentity({
-        teamId: metadata.opponent_context?.team_id,
-        teamAbbr: metadata.opponent_context?.team_abbr,
-        teamName: metadata.opponent_context?.team_name ?? metadata.opponent,
-      });
-      contextChips.push({
-        label: "vs",
-        value: metadata.opponent,
-        identity: "team",
-        imageUrl: opponentIdentity.logoUrl,
-        identityName: opponentIdentity.teamName,
-        abbreviation: opponentIdentity.teamAbbr,
-        styleVars: (opponentIdentity.styleVars ?? undefined) as
-          | CSSProperties
-          | undefined,
-      });
-    }
-    if (typeof metadata.split_type === "string")
-      contextChips.push({ label: "Split", value: metadata.split_type });
-  }
 
   return (
     <ResultEnvelopeShell
@@ -246,49 +246,10 @@ export default function ResultEnvelope({
       }
       query={isDebugMode ? <>&ldquo;{data.query}&rdquo;</> : null}
       context={
-        contextChips.length > 0 || appliedFilters.length > 0 ? (
+        isDebugMode && contextChips.length > 0 ? (
           <>
-            {contextChips.map((chip, i) => (
-              <Badge
-                key={i}
-                className={styles.contextChip}
-                variant="neutral"
-                size="sm"
-              >
-                {chip.identity === "player" && (
-                  <Avatar
-                    name={chip.identityName ?? chip.value}
-                    imageUrl={chip.imageUrl}
-                    size="sm"
-                  />
-                )}
-                {chip.identity === "team" && (
-                  <TeamBadge
-                    abbreviation={
-                      chip.abbreviation ??
-                      (isTeamAbbreviation(chip.value) ? chip.value : undefined)
-                    }
-                    name={chip.identityName ?? chip.value}
-                    logoUrl={chip.imageUrl}
-                    size="sm"
-                    showName={false}
-                    style={chip.styleVars}
-                  />
-                )}
-                <span className={styles.contextChipLabel}>{chip.label}</span>
-                {chip.value}
-              </Badge>
-            ))}
-            {appliedFilters.map((filter) => (
-              <Badge
-                key={filter.key}
-                className={styles.contextChip}
-                variant="accent"
-                size="sm"
-              >
-                <span className={styles.contextChipLabel}>{filter.label}</span>
-                {filter.value}
-              </Badge>
+            {contextChips.map((chip) => (
+              <ContextChipBadge chip={chip} key={chip.key} />
             ))}
           </>
         ) : null
@@ -469,6 +430,178 @@ function DetailList({ label, values }: { label: string; values: string[] }) {
       </ul>
     </div>
   );
+}
+
+function ContextChipBadge({ chip }: { chip: ContextChip }) {
+  return (
+    <Badge
+      className={styles.contextChip}
+      variant={chip.variant ?? "neutral"}
+      size="sm"
+    >
+      {chip.identity === "player" && (
+        <Avatar
+          name={chip.identityName ?? chip.value}
+          imageUrl={chip.imageUrl}
+          size="sm"
+        />
+      )}
+      {chip.identity === "team" && (
+        <TeamBadge
+          abbreviation={
+            chip.abbreviation ??
+            (isTeamAbbreviation(chip.value) ? chip.value : undefined)
+          }
+          name={chip.identityName ?? chip.value}
+          logoUrl={chip.imageUrl}
+          size="sm"
+          showName={false}
+          style={chip.styleVars}
+        />
+      )}
+      <span className={styles.contextChipLabel}>{chip.label}</span>
+      {chip.value}
+    </Badge>
+  );
+}
+
+function buildContextChips(
+  metadata: QueryResponse["result"]["metadata"] | undefined,
+  appliedFilters: Array<{ key: string; label: string; value: string }>,
+  contextItems: ContextItem[],
+  includeDerivedContext: boolean,
+): ContextChip[] {
+  const chips: ContextChip[] = [];
+
+  if (metadata) {
+    if (typeof metadata.player === "string") {
+      const playerIdentity = resolvePlayerIdentity({
+        playerId: metadata.player_context?.player_id,
+        playerName: metadata.player_context?.player_name ?? metadata.player,
+      });
+      chips.push({
+        key: "player",
+        label: "Player",
+        value: metadata.player,
+        identity: "player",
+        imageUrl: playerIdentity.headshotUrl,
+        identityName: playerIdentity.playerName,
+      });
+    }
+    if (Array.isArray(metadata.players) && metadata.players.length) {
+      chips.push({
+        key: "players",
+        label: "Players",
+        value: metadata.players.join(", "),
+      });
+    }
+    if (typeof metadata.team === "string") {
+      const teamIdentity = resolveTeamIdentity({
+        teamId: metadata.team_context?.team_id,
+        teamAbbr: metadata.team_context?.team_abbr,
+        teamName: metadata.team_context?.team_name ?? metadata.team,
+      });
+      chips.push({
+        key: "team",
+        label: "Team",
+        value: metadata.team,
+        identity: "team",
+        imageUrl: teamIdentity.logoUrl,
+        identityName: teamIdentity.teamName,
+        abbreviation: teamIdentity.teamAbbr,
+        styleVars: (teamIdentity.styleVars ?? undefined) as
+          | CSSProperties
+          | undefined,
+      });
+    }
+    if (Array.isArray(metadata.teams) && metadata.teams.length) {
+      chips.push({
+        key: "teams",
+        label: "Teams",
+        value: metadata.teams.join(", "),
+      });
+    }
+    if (typeof metadata.season === "string") {
+      chips.push({ key: "season", label: "Season", value: metadata.season });
+    }
+    if (typeof metadata.opponent === "string") {
+      const opponentIdentity = resolveTeamIdentity({
+        teamId: metadata.opponent_context?.team_id,
+        teamAbbr: metadata.opponent_context?.team_abbr,
+        teamName: metadata.opponent_context?.team_name ?? metadata.opponent,
+      });
+      chips.push({
+        key: "opponent",
+        label: "vs",
+        value: metadata.opponent,
+        identity: "team",
+        imageUrl: opponentIdentity.logoUrl,
+        identityName: opponentIdentity.teamName,
+        abbreviation: opponentIdentity.teamAbbr,
+        styleVars: (opponentIdentity.styleVars ?? undefined) as
+          | CSSProperties
+          | undefined,
+      });
+    }
+    if (typeof metadata.split_type === "string") {
+      chips.push({
+        key: "split",
+        label: "Split",
+        value: splitContextLabel(metadata.split_type),
+      });
+    }
+  }
+
+  for (const filter of appliedFilters) {
+    chips.push({
+      key: `filter-${filter.key}`,
+      label: filter.label,
+      value: filter.value,
+      variant: "accent",
+    });
+  }
+
+  if (includeDerivedContext) {
+    for (const item of contextItems) {
+      chips.push({
+        key: `context-${item.key}`,
+        label: item.label,
+        value: item.value,
+        variant: "neutral",
+      });
+    }
+  }
+
+  return uniqueContextChips(chips);
+}
+
+function uniqueContextChips(chips: ContextChip[]): ContextChip[] {
+  const seen = new Set<string>();
+  return chips.filter((chip) => {
+    const key = `${chip.label.toLowerCase()}-${normalizeChipValue(
+      chip.value,
+    )}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function normalizeChipValue(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/\s+[\u2013-]\s+/g, " to ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function splitContextLabel(value: string): string {
+  const labels: Record<string, string> = {
+    home_away: "Home/Away",
+    on_off: "On/Off",
+    wins_losses: "Wins/Losses",
+  };
+  return labels[value] ?? titleCase(value.replace(/_/g, " "));
 }
 
 function buildContextItems(

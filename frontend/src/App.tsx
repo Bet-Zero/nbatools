@@ -28,7 +28,9 @@ import {
 } from "./components/queryFeedbackPayload";
 import QueryHistory from "./components/QueryHistory";
 import RawJsonToggle from "./components/RawJsonToggle";
-import ResultEnvelope from "./components/ResultEnvelope";
+import ResultEnvelope, {
+  ResultContextSummary,
+} from "./components/ResultEnvelope";
 import ResultRenderer from "./components/results/ResultRenderer";
 import SampleQueries from "./components/SampleQueries";
 import SavedQueries from "./components/SavedQueries";
@@ -428,6 +430,15 @@ export default function App() {
         variant="secondary"
       />
     ) : undefined;
+  const successfulFeedbackAction =
+    result && result.result_status === "ok" ? (
+      <QueryFeedbackButton
+        data={result}
+        defaultFeedbackType="wrong_answer"
+        triggerLabel="Report issue"
+        title="Report an issue with this answer"
+      />
+    ) : null;
 
   const headerStatus =
     isDebugMode || apiOnline === false ? (
@@ -523,6 +534,32 @@ export default function App() {
       onCancel={() => setShowSaveDialog(false)}
     />
   ) : null;
+  const resultActions = result ? (
+    <div
+      className={[
+        styles.resultActions,
+        !isDebugMode ? styles.publicResultActions : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <CopyButton text={shareUrl} label="Copy Link" variant="share" />
+      {isDebugMode && <CopyButton text={result.query} label="Copy Query" />}
+      {isDebugMode && (
+        <CopyButton text={JSON.stringify(result, null, 2)} label="Copy JSON" />
+      )}
+      <Button
+        type="button"
+        className={styles.saveQueryButton}
+        onClick={() => setShowSaveDialog(true)}
+        size="sm"
+        variant="secondary"
+      >
+        Save Query
+      </Button>
+      {successfulFeedbackAction}
+    </div>
+  ) : null;
 
   return (
     <AppShell
@@ -571,57 +608,23 @@ export default function App() {
             data-team-theme={teamTheme?.team.teamAbbr ?? undefined}
             style={teamThemeStyle}
           >
-            <Card
-              className={[
-                styles.resultActionsPanel,
-                teamThemedSurfaceClass,
-              ].join(" ")}
-              depth="elevated"
-              padding="md"
-            >
-              <SectionHeader
-                eyebrow={isDebugMode ? "Result" : "Answer"}
-                title={isDebugMode ? "Query output" : "Result"}
-                actions={
-                  <div className={styles.resultActions}>
-                    <CopyButton
-                      text={shareUrl}
-                      label="Copy Link"
-                      variant="share"
-                    />
-                    {isDebugMode && (
-                      <CopyButton text={result.query} label="Copy Query" />
-                    )}
-                    {isDebugMode && (
-                      <CopyButton
-                        text={JSON.stringify(result, null, 2)}
-                        label="Copy JSON"
-                      />
-                    )}
-                    <Button
-                      type="button"
-                      className={styles.saveQueryButton}
-                      onClick={() => setShowSaveDialog(true)}
-                      size="sm"
-                      variant="secondary"
-                    >
-                      Save Query
-                    </Button>
-                    {result.result_status === "ok" && (
-                      <QueryFeedbackButton
-                        data={result}
-                        defaultFeedbackType="wrong_answer"
-                        triggerLabel="Report issue"
-                        title="Report an issue with this answer"
-                      />
-                    )}
-                  </div>
-                }
-              />
-            </Card>
-
             {isDebugMode ? (
               <>
+                <Card
+                  className={[
+                    styles.resultActionsPanel,
+                    teamThemedSurfaceClass,
+                  ].join(" ")}
+                  depth="elevated"
+                  padding="md"
+                >
+                  <SectionHeader
+                    eyebrow="Result"
+                    title="Query output"
+                    actions={resultActions}
+                  />
+                </Card>
+
                 <ResultEnvelope
                   data={result}
                   onAlternateSelect={handleSubmit}
@@ -656,15 +659,37 @@ export default function App() {
                     data={result}
                     feedbackAction={negativeFeedbackAction}
                     displayMode={displayMode}
+                    resultContext={
+                      result.result_status === "ok" ? (
+                        <ResultContextSummary data={result} />
+                      ) : null
+                    }
                   />
                 </div>
 
-                <ResultEnvelope
-                  data={result}
-                  onAlternateSelect={handleSubmit}
-                  className={teamThemedSurfaceClass}
-                  displayMode={displayMode}
-                />
+                {resultActions && (
+                  <Card
+                    className={[
+                      styles.resultActionsPanel,
+                      styles.secondaryActionsPanel,
+                      teamThemedSurfaceClass,
+                    ].join(" ")}
+                    depth="input"
+                    padding="sm"
+                    aria-label="Result actions"
+                  >
+                    {resultActions}
+                  </Card>
+                )}
+
+                {result.result_status === "ok" && (
+                  <ResultEnvelope
+                    data={result}
+                    onAlternateSelect={handleSubmit}
+                    className={teamThemedSurfaceClass}
+                    displayMode={displayMode}
+                  />
+                )}
               </>
             )}
           </section>

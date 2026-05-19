@@ -149,14 +149,30 @@
     scrollbar-gutter: auto;
   }
 
+  .table {
+    font-size: var(--font-micro);
+  }
+
   .table thead th,
   .table tbody td,
   .footerRow td {
+    padding-top: var(--space-1);
+    padding-bottom: var(--space-1);
     padding-left: var(--space-1);
     padding-right: var(--space-1);
   }
 
+  .table thead th {
+    line-height: 1.15;
+  }
+
   .mobileSecondaryColumn {
     display: none;
+  }
+
+  .rowToggle {
+    max-width: 100%;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-micro);
   }
 }

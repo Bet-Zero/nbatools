@@ -27,6 +27,7 @@ interface Props {
   data: QueryResponse;
   subject?: SubjectKind;
   headToHead?: boolean;
+  afterHero?: ReactNode;
 }
 
 type EntityDisplay = {
@@ -163,7 +164,12 @@ const STAT_CANDIDATES: Array<{
   { key: "efg_pct_avg", label: "eFG%" },
 ];
 
-export default function ComparisonResult({ data, subject, headToHead }: Props) {
+export default function ComparisonResult({
+  data,
+  subject,
+  headToHead,
+  afterHero,
+}: Props) {
   const sections = data.result?.sections ?? {};
   const summary = sections.summary ?? [];
   const comparison = comparisonDisplayRows(summary, sections.comparison ?? []);
@@ -197,6 +203,7 @@ export default function ComparisonResult({ data, subject, headToHead }: Props) {
         }
         teamAccentAbbr={teamAccentAbbr}
       />
+      {afterHero}
       {summary.length > 0 && (
         <div
           className={styles.subjectGrid}

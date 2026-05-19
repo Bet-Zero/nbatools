@@ -244,6 +244,13 @@ describe("NoResultDisplay", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("filter_not_supported")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Submit for review" })).toBeInTheDocument();
+    expect(screen.getAllByText("Details")).toHaveLength(1);
+    expect(
+      screen
+        .getByRole("button", { name: "Submit for review" })
+        .compareDocumentPosition(screen.getByText("Details")) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
 
     openDetails();
 

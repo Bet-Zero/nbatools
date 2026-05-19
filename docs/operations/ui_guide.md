@@ -63,13 +63,14 @@ module replacement during frontend development.
 - **Display modes** — `/` defaults to a public result mode. Add `?debug=1`
   on `/` to show the debug-rich result chrome. `/review` always renders debug
   review output, while `/visual-qa` keeps its internal case metadata and renders
-  the public result surface by default.
+  the public answer-first result surface by default.
 - **Sample buttons** — pre-filled example queries with a label, click to run
   immediately. Renderer/pattern hints are hidden in public mode and visible in
   debug mode.
 - **Empty state** — welcome screen with tips shown before the first query.
-- **Result envelope** — public mode keeps user-facing context chips, applied
-  filters, material caveats, and a collapsed Details disclosure. Details
+- **Result envelope** — public mode renders the answer/result hero first, then
+  keeps user-facing context chips, applied filters, and material caveats near
+  that answer before long tables. A trailing collapsed Details disclosure
   preserves route, status, reason, query class, current-through freshness,
   full query text, applied filters, resolved entities, notes/caveats, metadata
   summary, Copy Query, Copy JSON, and an inline Raw JSON toggle. Debug mode
@@ -89,9 +90,10 @@ module replacement during frontend development.
 - **Counts** — `count` query-class responses render the supplied count as the primary answer, then keep count rows and any underlying finder/leaderboard/detail sections visible below.
 - **Occurrence leaderboards** — `player_occurrence_leaders` and `team_occurrence_leaders` leaderboard responses use event-count rankings that promote the supplied occurrence metric while preserving full leaderboard detail.
 - **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
-- **Copy buttons** — public results show Copy Link, Save Query, and feedback
-  actions. Copy Query, Copy JSON, and Raw JSON remain available in Details and
-  in debug/review surfaces.
+- **Copy buttons** — public successful results keep Copy Link, Save Query, and
+  feedback actions available in a secondary action row after the answer. Copy
+  Query, Copy JSON, and Raw JSON remain available in Details and in
+  debug/review surfaces.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
 - **Raw JSON** — toggle to inspect the full API response from Details or debug
   mode.
@@ -117,8 +119,9 @@ module replacement during frontend development.
   filters that expose pressed state, query-specific run/load/pin/edit/delete
   action names, JSON import/export, and visible import failure feedback.
 - **No-result / error display** — public no-result states lead with plain
-  language, suggestions where useful, and Submit for review. Raw reason,
-  unsupported filters, route, query class, and metadata stay in Details.
+  language, suggestions where useful, and Submit for review before heavy
+  diagnostics. Raw reason, unsupported filters, route, query class, and
+  metadata stay in a single Details disclosure.
 - **Dev Tools panel** — collapsible structured-query interface for calling
   `POST /structured-query` with a route selector and kwargs JSON input. Hidden
   from the public default page; visible with `?debug=1`.
@@ -131,8 +134,9 @@ The UI is designed to remain usable from phone widths through desktop:
 
 - The main workspace uses a two-column result/sidebar layout on desktop and
   stacks into one column below 900px. Outer padding tightens below 640px.
-- Result actions and section-header actions wrap instead of overlapping; the
-  main result action buttons become full-width around 520px.
+- Public result actions are secondary to the answer and wrap as compact buttons
+  after the result body. Debug result actions keep the fuller query-output
+  action chrome.
 - Result chrome, saved-query controls, query history, save dialogs, raw JSON,
   and dev tools are explicitly contained on phone widths. Long saved-query
   labels, tags, route badges, JSON keys/values, and structured kwargs wrap or
@@ -157,14 +161,17 @@ The UI is designed to remain usable from phone widths through desktop:
 - Full detail tables remain visible for every result family. Wide tables scroll
   horizontally inside their own framed table wrapper instead of widening the
   app shell; the table primitive sizes wide content to the internal scroll
-  region and keeps the page width fixed on phone viewports.
+  region and keeps the page width fixed on phone viewports. Mobile table
+  padding tightens, secondary columns can be hidden by shared priority flags,
+  and the game-log, record, split, streak, rolling-stretch, playoff matchup,
+  and top-performance patterns keep their highest-value columns visible first.
 - Raw JSON and structured-query kwargs stay inside their panels. Long JSON keys
   and values can wrap, while the panel itself also supports internal scrolling.
 
-Remaining Part 3 polish should focus on first-run onboarding, starter-query
+Remaining UI polish should focus on first-run onboarding, starter-query
 curation, freshness/banner presentation, keyboard shortcuts, transitions,
-loading/error copy, copy/share affordances, and a browser screenshot pass across
-real phone/tablet/desktop fixtures.
+loading/error copy, broader unsupported-copy refinement, and a browser
+screenshot-diff pass across real phone/tablet/desktop fixtures.
 
 ## How it works
 

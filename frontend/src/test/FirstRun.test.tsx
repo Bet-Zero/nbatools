@@ -40,11 +40,16 @@ function makeResponse(query: string): QueryResponse {
       result_status: "ok",
       metadata: {
         route: "player_game_summary",
+        player: "Nikola Jokic",
+        season: "2025-26",
+        applied_filters: [
+          { label: "Last N games", value: "5", kind: "window" },
+        ],
       },
       notes: [],
       caveats: [],
       sections: {
-        summary: [{ player_name: "Nikola Jokic", PTS: 30 }],
+        summary: [{ player_name: "Nikola Jokic", pts_avg: 30 }],
       },
     },
   };
@@ -251,7 +256,7 @@ describe("first-run starter queries", () => {
       "Jokic last 10 games",
     );
     await waitFor(() =>
-      expect(screen.getByText("Result")).toBeInTheDocument(),
+      expect(screen.getByText(/Nikola Jokic has averaged/)).toBeInTheDocument(),
     );
   });
 
@@ -260,14 +265,16 @@ describe("first-run starter queries", () => {
       makeResponse("Jokic last 10 games"),
     );
 
-    render(<App />);
+    const { container } = render(<App />);
 
     fireEvent.change(screen.getByLabelText("Search NBA performance"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
 
-    await waitFor(() => expect(screen.getByText("Result")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/Nikola Jokic has averaged/)).toBeInTheDocument(),
+    );
     expect(screen.queryByText(/Dev Tools/)).not.toBeInTheDocument();
     expect(screen.queryByText("API online")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Copy Query" })).toBeNull();
@@ -277,6 +284,24 @@ describe("first-run starter queries", () => {
     expect(
       screen.getByRole("button", { name: "Report issue" }),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Result context")).toHaveTextContent(
+      "Last 5 games",
+    );
+    expect(screen.getByLabelText("Result actions")).toBeInTheDocument();
+
+    const hero = screen.getByText(/Nikola Jokic has averaged/);
+    const context = screen.getByLabelText("Result context");
+    const actions = screen.getByLabelText("Result actions");
+    expect(
+      hero.compareDocumentPosition(context) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      context.compareDocumentPosition(actions) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      container.querySelector("[data-state-surface='result']"),
+    ).not.toBeNull();
 
     fireEvent.click(screen.getByText("Details"));
 
@@ -342,7 +367,7 @@ describe("first-run starter queries", () => {
 
     resolveQuery(makeResponse("Jokic last 10 games"));
     await waitFor(() =>
-      expect(screen.getByText("Result")).toBeInTheDocument(),
+      expect(screen.getByText(/Nikola Jokic has averaged/)).toBeInTheDocument(),
     );
     expect(container.querySelector("[data-app-state='result']")).not.toBeNull();
     expect(
@@ -417,7 +442,7 @@ describe("first-run starter queries", () => {
 
     await waitFor(() => expect(postQuery).toHaveBeenCalledTimes(2));
     await waitFor(() =>
-      expect(screen.getByText("Result")).toBeInTheDocument(),
+      expect(screen.getByText(/Nikola Jokic has averaged/)).toBeInTheDocument(),
     );
     expect(new URLSearchParams(window.location.search).get("q")).toBe(
       "Jokic last 10 games",

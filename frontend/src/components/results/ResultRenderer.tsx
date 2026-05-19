@@ -24,6 +24,7 @@ interface Props {
   data: QueryResponse;
   displayMode?: DisplayModeInput;
   feedbackAction?: ReactNode;
+  resultContext?: ReactNode;
 }
 
 /**
@@ -38,6 +39,7 @@ export default function ResultRenderer({
   data,
   displayMode,
   feedbackAction,
+  resultContext,
 }: Props) {
   const normalizedDisplayMode = normalizeDisplayMode(displayMode);
   const result = data.result;
@@ -130,6 +132,7 @@ export default function ResultRenderer({
           data={data}
           pattern={pattern}
           displayMode={normalizedDisplayMode}
+          afterHero={index === 0 ? resultContext : null}
         />
       ))}
     </ResultShell>
@@ -140,13 +143,23 @@ interface PatternBlockProps {
   data: QueryResponse;
   pattern: PatternConfig;
   displayMode: DisplayMode;
+  afterHero?: ReactNode;
 }
 
-function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
+function PatternBlock({
+  data,
+  pattern,
+  displayMode,
+  afterHero,
+}: PatternBlockProps) {
   switch (pattern.type) {
     case "entity_summary":
       return (
-        <EntitySummaryResult data={data} sectionKey={pattern.sectionKey} />
+        <EntitySummaryResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          afterHero={afterHero}
+        />
       );
     case "game_log":
       return (
@@ -162,6 +175,7 @@ function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
           rawDetailTitle={pattern.rawDetailTitle}
           detailSectionKeys={pattern.detailSectionKeys}
           displayMode={displayMode}
+          afterHero={afterHero}
         />
       );
     case "leaderboard":
@@ -174,6 +188,7 @@ function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
           sentenceMetricLabel={pattern.sentenceMetricLabel}
           valueSuffix={pattern.valueSuffix}
           verb={pattern.verb}
+          afterHero={afterHero}
         />
       );
     case "top_performances":
@@ -182,11 +197,16 @@ function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
           data={data}
           sectionKey={pattern.sectionKey}
           subject={pattern.subject}
+          afterHero={afterHero}
         />
       );
     case "rolling_stretch":
       return (
-        <RollingStretchResult data={data} sectionKey={pattern.sectionKey} />
+        <RollingStretchResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          afterHero={afterHero}
+        />
       );
     case "split":
       return (
@@ -199,27 +219,43 @@ function PatternBlock({ data, pattern, displayMode }: PatternBlockProps) {
           splitLabelOverride={pattern.splitLabelOverride}
           primaryDetailTitle={pattern.primaryDetailTitle}
           summaryDetailTitle={pattern.summaryDetailTitle}
+          afterHero={afterHero}
         />
       );
     case "streak":
-      return <StreakResult data={data} sectionKey={pattern.sectionKey} />;
+      return (
+        <StreakResult
+          data={data}
+          sectionKey={pattern.sectionKey}
+          afterHero={afterHero}
+        />
+      );
     case "playoff_history":
-      return <PlayoffHistoryResult data={data} mode={pattern.mode} />;
+      return (
+        <PlayoffHistoryResult
+          data={data}
+          mode={pattern.mode}
+          afterHero={afterHero}
+        />
+      );
     case "comparison":
       return (
         <ComparisonResult
           data={data}
           subject={pattern.subject}
           headToHead={pattern.headToHead}
+          afterHero={afterHero}
         />
       );
     case "record":
-      return <RecordResult data={data} mode={pattern.mode} />;
+      return (
+        <RecordResult data={data} mode={pattern.mode} afterHero={afterHero} />
+      );
     case "fallback_table":
-      return <FallbackTableResult data={data} />;
+      return <FallbackTableResult data={data} afterHero={afterHero} />;
     default:
       // Exhaustiveness fallback: future PatternConfig variants safely
       // render through the fallback until their pattern is wired in.
-      return <FallbackTableResult data={data} />;
+      return <FallbackTableResult data={data} afterHero={afterHero} />;
   }
 }

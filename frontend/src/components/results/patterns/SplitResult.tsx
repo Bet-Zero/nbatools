@@ -25,6 +25,7 @@ interface Props {
   splitLabelOverride?: string;
   primaryDetailTitle?: string;
   summaryDetailTitle?: string | null;
+  afterHero?: ReactNode;
 }
 
 type MetricOption = {
@@ -131,6 +132,7 @@ export default function SplitResult({
   splitLabelOverride,
   primaryDetailTitle = "Split Comparison Detail",
   summaryDetailTitle = "Split Summary Detail",
+  afterHero,
 }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
@@ -153,6 +155,7 @@ export default function SplitResult({
         tone={resolvedSubject === "team" ? "team" : "accent"}
         teamAccentAbbr={resolvedSubject === "team" ? entity.teamAbbr : null}
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}
@@ -177,9 +180,21 @@ export default function SplitResult({
         </div>
       )}
       {summaryDetailTitle && summaryRows.length > 0 && summaryKey !== sectionKey && (
-        <RawDetailToggle title={summaryDetailTitle} rows={summaryRows} />
+        <RawDetailToggle
+          title={summaryDetailTitle}
+          rows={summaryRows}
+          collapsedLabel="Show split summary"
+          expandedLabel="Hide split summary"
+        />
       )}
-      {primaryDetailTitle && <RawDetailToggle title={primaryDetailTitle} rows={rows} />}
+      {primaryDetailTitle && (
+        <RawDetailToggle
+          title={primaryDetailTitle}
+          rows={rows}
+          collapsedLabel="Show full split table"
+          expandedLabel="Hide full split table"
+        />
+      )}
     </section>
   );
 }
@@ -192,6 +207,7 @@ function tableColumns(
     {
       key: "bucket",
       header: "Split",
+      mobilePriority: "primary",
       render: (row) => bucketLabel(row[bucketKey]),
     },
   ];
@@ -207,6 +223,7 @@ function tableColumns(
       key: "record",
       header: "Record",
       align: "center",
+      mobilePriority: "primary",
       render: recordValue,
     });
   }
@@ -230,8 +247,27 @@ function valueColumn(
     key,
     header: label,
     numeric: true,
+    mobilePriority: splitMobilePriority(key),
     render: (row) => metricValue(row, key, signed),
   };
+}
+
+function splitMobilePriority(
+  key: string,
+): ResultTableColumn<SectionRow>["mobilePriority"] {
+  if (
+    key === "games" ||
+    key === "gp" ||
+    key === "pts_avg" ||
+    key === "pts" ||
+    key === "reb_avg" ||
+    key === "reb" ||
+    key === "ast_avg" ||
+    key === "ast"
+  ) {
+    return "primary";
+  }
+  return "secondary";
 }
 
 function metricOption(

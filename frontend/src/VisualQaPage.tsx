@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { postQuery } from "./api/client";
 import type { QueryResponse } from "./api/types";
-import ResultEnvelope from "./components/ResultEnvelope";
+import ResultEnvelope, {
+  ResultContextSummary,
+} from "./components/ResultEnvelope";
 import ResultRenderer from "./components/results/ResultRenderer";
 import {
   downloadReviewScreenshots,
@@ -478,8 +480,18 @@ function VisualQaCaseCard({
 
           {caseState.status === "loaded" && caseState.data ? (
             <div className={styles.captureTarget}>
-              <ResultEnvelope data={caseState.data} displayMode="public" />
-              <ResultRenderer data={caseState.data} displayMode="public" />
+              <ResultRenderer
+                data={caseState.data}
+                displayMode="public"
+                resultContext={
+                  caseState.data.result_status === "ok" ? (
+                    <ResultContextSummary data={caseState.data} />
+                  ) : null
+                }
+              />
+              {caseState.data.result_status === "ok" && (
+                <ResultEnvelope data={caseState.data} displayMode="public" />
+              )}
             </div>
           ) : null}
         </section>

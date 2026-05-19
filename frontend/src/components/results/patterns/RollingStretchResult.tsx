@@ -21,6 +21,7 @@ import styles from "./RollingStretchResult.module.css";
 interface Props {
   data: QueryResponse;
   sectionKey?: string;
+  afterHero?: ReactNode;
 }
 
 type StretchDisplayMode = "named_player" | "players" | "windows";
@@ -108,6 +109,7 @@ const TABLE_LABELS: Record<string, string> = {
 export default function RollingStretchResult({
   data,
   sectionKey = "leaderboard",
+  afterHero,
 }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
@@ -134,6 +136,7 @@ export default function RollingStretchResult({
         subjectIllustration={heroIdentity(topRow, namedPlayer)}
         tone="accent"
       />
+      {afterHero}
       {isNamedPlayer ? (
         <NamedPlayerBody
           data={data}
@@ -202,7 +205,7 @@ function NamedPlayerBody({
           <h3 className={styles.sectionTitle}>Best Window Games</h3>
           <ResultTable
             rows={gameRows}
-            columns={gameLogColumns(gameRows)}
+            columns={gameLogColumns(gameRows, metric)}
             highlightColumnKey={gameLogHighlightKey(gameRows, metric)}
             ariaLabel="Best stretch game log"
             getRowKey={gameRowKey}
@@ -222,35 +225,41 @@ function leagueColumns(
       key: "rank",
       header: "Rank",
       align: "center",
+      mobilePriority: "secondary",
       render: rankCell,
     },
     {
       key: "player",
       sourceKeys: ["player_name", "player", "player_id", "team_abbr"],
       header: "Player",
+      mobilePriority: "primary",
       render: playerCell,
     },
     {
       key: "window_size",
       header: "Window",
       align: "center",
+      mobilePriority: "primary",
       render: windowSizeCell,
     },
     stretchValueColumn(metric),
     {
       key: "window_start_date",
       header: "Start",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "window_start_date")),
     },
     {
       key: "window_end_date",
       header: "End",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "window_end_date")),
     },
     {
       key: "season",
       sourceKeys: ["window_end_season", "season"],
       header: "Season",
+      mobilePriority: "secondary",
       render: seasonCell,
     },
   ];
@@ -271,35 +280,41 @@ function namedWindowColumns(
       key: "rank",
       header: "Rank",
       align: "center",
+      mobilePriority: "secondary",
       render: rankCell,
     },
     {
       key: "player",
       sourceKeys: ["player_name", "player", "player_id", "team_abbr"],
       header: "Player",
+      mobilePriority: "secondary",
       render: playerCell,
     },
     {
       key: "window_size",
       header: "Window",
       align: "center",
+      mobilePriority: "primary",
       render: windowSizeCell,
     },
     stretchValueColumn(metric),
     {
       key: "window_start_date",
       header: "Start",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "window_start_date")),
     },
     {
       key: "window_end_date",
       header: "End",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "window_end_date")),
     },
     {
       key: "season",
       sourceKeys: ["window_end_season", "season"],
       header: "Season",
+      mobilePriority: "secondary",
       render: seasonCell,
     },
   ];
@@ -313,29 +328,38 @@ function namedWindowColumns(
 
 function gameLogColumns(
   rows: SectionRow[],
+  metric: string,
 ): Array<ResultTableColumn<SectionRow>> {
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "date",
       header: "Date",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "game_date")),
     },
     {
       key: "opponent",
       header: "Opp",
+      mobilePriority: "primary",
       render: opponentCell,
     },
     {
       key: "wl",
       header: "Result",
       align: "center",
+      mobilePriority: "primary",
       render: resultCell,
     },
   ];
 
   for (const key of GAME_LOG_STAT_KEYS) {
     if (!rows.some((row) => hasValue(row[key]))) continue;
-    columns.push(valueColumn(key));
+    columns.push(
+      valueColumn(
+        key,
+        key === gameLogHighlightKey(rows, metric) ? "primary" : "secondary",
+      ),
+    );
   }
 
   return columns;
@@ -346,6 +370,7 @@ function stretchValueColumn(metric: string): ResultTableColumn<SectionRow> {
     key: "stretch_value",
     header: STRETCH_METRIC_LABELS[metric] ?? tableLabel(metric),
     numeric: true,
+    mobilePriority: "primary",
     render: (row) => (
       <span className={styles.metricValue}>
         {stretchValue(row, metric, true)}
@@ -354,11 +379,15 @@ function stretchValueColumn(metric: string): ResultTableColumn<SectionRow> {
   };
 }
 
-function valueColumn(key: string): ResultTableColumn<SectionRow> {
+function valueColumn(
+  key: string,
+  mobilePriority: ResultTableColumn<SectionRow>["mobilePriority"] = "secondary",
+): ResultTableColumn<SectionRow> {
   return {
     key,
     header: tableLabel(key),
     numeric: isNumericKey(key),
+    mobilePriority,
     render: (row) => formatTableValue(row[key], key),
   };
 }

@@ -5,7 +5,7 @@
 - Checklist status: `RELEASE_CANDIDATE_WITH_NOTES`.
 - Checklist date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
-- Latest front-facing UI refresh: 2026-05-18.
+- Latest front-facing UI refresh: 2026-05-19.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
 - Release package:
@@ -16,8 +16,11 @@
 - Production query behavior changed: yes; current-era opponent-conference
   `team_record` filters now execute for trusted seasons `2024-25` and `2025-26`.
 - Frontend rendering changed: yes. Front-facing Result UI Productization Wave 1
-  adds public/default result mode on `/`, keeps debug diagnostics in Details
-  and `?debug=1`, keeps `/review` debug-rich, and keeps `/visual-qa` useful.
+  adds public/default result mode on `/`, and Wave 2 makes public results
+  answer-first, moves context/caveats near the answer, makes actions secondary,
+  tightens dense mobile tables, and reduces duplicate no-result Details while
+  keeping debug diagnostics in Details and `?debug=1`, `/review` debug-rich,
+  and `/visual-qa` useful.
 - Corpus expectations changed: yes; opponent-conference backend and
   frontend-copy cases were migrated from unsupported to supported expectations.
 - New frontend-copy corpus cases added: yes, selected rendered-copy coverage
@@ -33,8 +36,9 @@
   a preview blocker after R2 record inspection verified user-submitted records,
   automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa`
   suppression, and now has an implemented read-only review/export workflow.
-  Front-facing UI Productization Wave 1 partially addresses the public-launch
-  UI gap without backend/parser/result-contract changes.
+  Front-facing UI Productization Wave 2 addresses the main public-launch
+  answer hierarchy and mobile-density gap without backend/parser/result-contract
+  changes.
 - Latest refresh type: frontend rendering plus docs; no backend query behavior,
   parser behavior, result contract, or corpus expectation changes.
 
@@ -58,9 +62,9 @@ Known limitations:
   `make query-feedback-export`. Remaining feedback limitations are operational
   follow-ups: no admin dashboard, no mutable triage overlay, heuristic
   suggestions only, and manual corpus conversion.
-- Public result mode is now implemented for `/`, but Wave 2/Wave 3 UI polish
-  remains recommended for answer hierarchy, mobile density, and broader
-  no-result/unsupported copy refinement before broad launch.
+- Public result mode is now answer-first on `/` after Wave 2. Remaining UI
+  notes are broader no-result/unsupported copy refinement and automated visual
+  regression before broad launch.
 
 ## 2. Backend Raw QA
 
@@ -148,7 +152,7 @@ limitation is that visual QA is manual, not screenshot-diff automation.
 | Latest opponent-conference preview smoke | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported checks passed, two guardrails passed, `/visual-qa` request errors 0 |
 | Query feedback and diagnostic logging | `FEEDBACK_READY_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; user-submitted R2 records, automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa` suppression verified under `query_feedback/preview` |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
-| Public/default result mode | `PASS_WITH_NOTES`; `/` hides debug route/status/reason/query-class/JSON/dev chrome by default, Details preserves diagnostics, `?debug=1` restores debug chrome, `/review` remains debug-rich, and `/visual-qa` renders public results with case metadata |
+| Public/default result mode | `PASS_WITH_NOTES`; `/` is public and answer-first by default, context/caveats render near the answer, successful-result actions are secondary, Details preserves diagnostics, `?debug=1` restores debug chrome, `/review` remains debug-rich, and `/visual-qa` renders public results with case metadata |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
@@ -158,9 +162,9 @@ resolved by syncing the required membership CSV. The latest deployed preview
 checks passed the route, smoke, deployment-smoke, `/visual-qa`, and
 opponent-conference data-path checks with non-blocking notes. Query feedback is
 ready with notes, the review/export workflow is implemented, and feedback is not
-a preview blocker. The public result UI gap is partially addressed by Wave 1;
-deeper public result polish remains a recommended follow-up rather than a
-backend readiness issue.
+a preview blocker. Wave 2 completes the main public result answer hierarchy and
+mobile-density polish; remaining UI follow-ups are broader unsupported-copy
+refinement and visual automation rather than backend readiness issues.
 
 ## 6. Unsupported Boundaries
 

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { QueryResponse, SectionRow } from "../../../api/types";
 import { Card, SectionHeader } from "../../../design-system";
 import DataTable from "../../DataTable";
@@ -5,6 +6,7 @@ import styles from "./FallbackTableResult.module.css";
 
 interface Props {
   data: QueryResponse;
+  afterHero?: ReactNode;
 }
 
 /**
@@ -16,7 +18,7 @@ interface Props {
  * the response. This is intentionally plain — patterns deliver polish;
  * the fallback's job is to surface the data without losing anything.
  */
-export default function FallbackTableResult({ data }: Props) {
+export default function FallbackTableResult({ data, afterHero }: Props) {
   const sections = data.result?.sections ?? {};
   const keys = Object.keys(sections).filter((key) => {
     const rows = sections[key];
@@ -27,6 +29,7 @@ export default function FallbackTableResult({ data }: Props) {
 
   return (
     <>
+      {afterHero}
       {keys.map((key) => (
         <Card
           className={styles.section}

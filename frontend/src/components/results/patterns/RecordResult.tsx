@@ -29,6 +29,7 @@ type RecordMode =
 interface Props {
   data: QueryResponse;
   mode: RecordMode;
+  afterHero?: ReactNode;
 }
 
 type TeamDisplay = {
@@ -96,20 +97,28 @@ const RECORD_LABELS: Record<string, string> = {
   wins: "Wins",
 };
 
-export default function RecordResult({ data, mode }: Props) {
+export default function RecordResult({ data, mode, afterHero }: Props) {
   switch (mode) {
     case "team_record":
-      return <TeamRecordResult data={data} />;
+      return <TeamRecordResult data={data} afterHero={afterHero} />;
     case "record_by_decade":
-      return <RecordByDecadeResult data={data} />;
+      return <RecordByDecadeResult data={data} afterHero={afterHero} />;
     case "record_by_decade_leaderboard":
-      return <RecordByDecadeLeaderboardResult data={data} />;
+      return (
+        <RecordByDecadeLeaderboardResult data={data} afterHero={afterHero} />
+      );
     case "matchup_by_decade":
-      return <MatchupByDecadeResult data={data} />;
+      return <MatchupByDecadeResult data={data} afterHero={afterHero} />;
   }
 }
 
-function TeamRecordResult({ data }: { data: QueryResponse }) {
+function TeamRecordResult({
+  data,
+  afterHero,
+}: {
+  data: QueryResponse;
+  afterHero?: ReactNode;
+}) {
   const sections = data.result?.sections ?? {};
   const summary = sections.summary ?? [];
   const bySeasonRows = sortedBySeasonRows(sections.by_season ?? []);
@@ -143,6 +152,7 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
         tone="team"
         teamAccentAbbr={team.abbr}
       />
+      {afterHero}
       <ResultTable
         rows={summary}
         columns={summaryColumns}
@@ -181,7 +191,13 @@ function TeamRecordResult({ data }: { data: QueryResponse }) {
   );
 }
 
-function RecordByDecadeResult({ data }: { data: QueryResponse }) {
+function RecordByDecadeResult({
+  data,
+  afterHero,
+}: {
+  data: QueryResponse;
+  afterHero?: ReactNode;
+}) {
   const sections = data.result?.sections ?? {};
   const summary = sections.summary ?? [];
   const rows = sections.by_season ?? [];
@@ -198,6 +214,7 @@ function RecordByDecadeResult({ data }: { data: QueryResponse }) {
         tone="team"
         teamAccentAbbr={team.abbr}
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={decadeRecordColumns(rows)}
@@ -217,7 +234,13 @@ function RecordByDecadeResult({ data }: { data: QueryResponse }) {
   );
 }
 
-function RecordByDecadeLeaderboardResult({ data }: { data: QueryResponse }) {
+function RecordByDecadeLeaderboardResult({
+  data,
+  afterHero,
+}: {
+  data: QueryResponse;
+  afterHero?: ReactNode;
+}) {
   const rows = data.result?.sections?.leaderboard ?? [];
   if (rows.length === 0) return null;
 
@@ -236,6 +259,7 @@ function RecordByDecadeLeaderboardResult({ data }: { data: QueryResponse }) {
         tone="team"
         teamAccentAbbr={team.abbr}
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={recordLeaderboardColumns(rows, metric)}
@@ -251,7 +275,13 @@ function RecordByDecadeLeaderboardResult({ data }: { data: QueryResponse }) {
   );
 }
 
-function MatchupByDecadeResult({ data }: { data: QueryResponse }) {
+function MatchupByDecadeResult({
+  data,
+  afterHero,
+}: {
+  data: QueryResponse;
+  afterHero?: ReactNode;
+}) {
   const sections = data.result?.sections ?? {};
   const summary = sections.summary ?? [];
   const comparison = sections.comparison ?? [];
@@ -266,6 +296,7 @@ function MatchupByDecadeResult({ data }: { data: QueryResponse }) {
         subjectIllustration={<MatchupIdentity teams={teams} />}
         tone="neutral"
       />
+      {afterHero}
       <ResultTable
         rows={comparison}
         columns={matchupColumns(comparison, teams)}
@@ -297,6 +328,7 @@ function teamRecordColumns(
       key: "team",
       sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
       header: "Team",
+      mobilePriority: "primary",
       render: () => (
         <span className={styles.entityCell}>{teamIdentity(team)}</span>
       ),
@@ -308,6 +340,7 @@ function teamRecordColumns(
     sourceKeys: ["wins", "losses"],
     header: "W-L",
     align: "center",
+    mobilePriority: "primary",
     render: (row) => recordText(row),
   });
 
@@ -322,6 +355,7 @@ function teamRecordColumns(
       key: "opponent_group",
       sourceKeys: ["opponent_quality"],
       header: "Opponent Group",
+      mobilePriority: "secondary",
       render: () => opponentGroup,
     });
   }
@@ -331,6 +365,7 @@ function teamRecordColumns(
       key: "location",
       sourceKeys: ["home_only", "away_only"],
       header: "Home/Away",
+      mobilePriority: "secondary",
       render: () => location,
     });
   }
@@ -340,6 +375,7 @@ function teamRecordColumns(
       key: "opponent",
       sourceKeys: ["opponent", "opponent_team_name", "opponent_team_abbr"],
       header: "Opponent",
+      mobilePriority: "secondary",
       render: () => (
         <span className={styles.entityCell}>{teamIdentity(opponent)}</span>
       ),
@@ -518,8 +554,24 @@ function valueColumn(
     header: labelOverride ?? columnLabel(key),
     numeric: isNumericKey(key),
     align: isNumericKey(key) ? "right" : "left",
+    mobilePriority: recordMobilePriority(key),
     render: (row) => formatValue(row[key], key),
   };
+}
+
+function recordMobilePriority(
+  key: string,
+): ResultTableColumn<SectionRow>["mobilePriority"] {
+  if (
+    key === "games" ||
+    key === "games_played" ||
+    key === "win_pct" ||
+    key === "season" ||
+    key === "decade"
+  ) {
+    return "primary";
+  }
+  return "secondary";
 }
 
 function optionalValueColumn(

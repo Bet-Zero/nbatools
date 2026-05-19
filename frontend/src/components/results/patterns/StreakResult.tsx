@@ -28,6 +28,7 @@ type EntityKind = "player" | "team";
 interface Props {
   data: QueryResponse;
   sectionKey?: string;
+  afterHero?: ReactNode;
 }
 
 const TABLE_LABELS: Record<string, string> = {
@@ -63,7 +64,11 @@ const STAT_AVERAGE_COLUMNS: Record<string, string> = {
   ts_pct: "ts_pct_avg",
 };
 
-export default function StreakResult({ data, sectionKey = "streak" }: Props) {
+export default function StreakResult({
+  data,
+  sectionKey = "streak",
+  afterHero,
+}: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
 
@@ -96,6 +101,7 @@ export default function StreakResult({ data, sectionKey = "streak" }: Props) {
         tone={kind === "team" ? "team" : "accent"}
         teamAccentAbbr={kind === "team" ? entity.teamAbbr : null}
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}
@@ -132,12 +138,14 @@ function tableColumns(
       sourceKeys: ["rank"],
       header: "#",
       align: "center",
+      mobilePriority: "secondary",
       render: (_row, index) => index + 1,
     },
     {
       key: "condition",
       sourceKeys: ["condition"],
       header: "Streak",
+      mobilePriority: "primary",
       render: conditionLabel,
     },
     {
@@ -145,6 +153,7 @@ function tableColumns(
       sourceKeys: ["streak_length", "games"],
       header: "Length",
       numeric: true,
+      mobilePriority: "primary",
       render: lengthValue,
     },
   ];
@@ -157,6 +166,7 @@ function tableColumns(
           ? ["team", "team_name", "team_abbr", "team_id"]
           : ["player", "player_name", "player_id", "team_abbr"],
       header: kind === "team" ? "Team" : "Player",
+      mobilePriority: "primary",
       render: (row) => {
         const entity = entityDisplay(kind, data.result?.metadata, row);
         return heroIdentity(kind, entity);
@@ -170,6 +180,7 @@ function tableColumns(
       sourceKeys: ["is_active", "status"],
       header: "Status",
       align: "center",
+      mobilePriority: "primary",
       render: statusCell,
     });
   }
@@ -179,6 +190,7 @@ function tableColumns(
       key: "start_date",
       sourceKeys: ["start_date"],
       header: "Start",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "start_date")),
     });
   }
@@ -188,6 +200,7 @@ function tableColumns(
       key: "end_date",
       sourceKeys: ["end_date"],
       header: "End",
+      mobilePriority: "primary",
       render: (row) => formatCompactDate(textValue(row, "end_date")),
     });
   }
@@ -198,6 +211,7 @@ function tableColumns(
       sourceKeys: ["games"],
       header: "Games",
       numeric: true,
+      mobilePriority: "secondary",
       render: (row) => formatValue(row.games, "games"),
     });
   }
@@ -208,6 +222,7 @@ function tableColumns(
       sourceKeys: ["wins", "losses"],
       header: "Record",
       align: "center",
+      mobilePriority: "secondary",
       render: recordValue,
     });
   }
@@ -219,6 +234,7 @@ function tableColumns(
       sourceKeys: [key],
       header: TABLE_LABELS[key] ?? formatColHeader(key),
       numeric: true,
+      mobilePriority: "secondary",
       render: (row) => signedValue(row[key], key),
     });
   }

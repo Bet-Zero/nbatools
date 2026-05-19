@@ -21,6 +21,7 @@ type PlayoffMode = "history" | "round_record" | "matchup" | "appearances";
 interface Props {
   data: QueryResponse;
   mode?: PlayoffMode;
+  afterHero?: ReactNode;
 }
 
 type TeamDisplay = {
@@ -43,22 +44,23 @@ const EMPTY_CELL = "—";
 const ROUND_UNAVAILABLE = "Round unavailable";
 const RESULT_UNAVAILABLE = "Result unavailable";
 
-export default function PlayoffHistoryResult({ data, mode }: Props) {
+export default function PlayoffHistoryResult({ data, mode, afterHero }: Props) {
   const route = data.route ?? data.result?.metadata?.route;
   const resolvedMode = mode ?? modeFromRoute(route);
 
   if (resolvedMode === "matchup") {
-    return <PlayoffMatchupResult data={data} />;
+    return <PlayoffMatchupResult data={data} afterHero={afterHero} />;
   }
 
   if (resolvedMode === "round_record") {
-    return <PlayoffRoundRecordResult data={data} />;
+    return <PlayoffRoundRecordResult data={data} afterHero={afterHero} />;
   }
 
   return (
     <PlayoffTeamHistoryResult
       data={data}
       variant={resolvedMode === "appearances" ? "appearances" : "history"}
+      afterHero={afterHero}
     />
   );
 }
@@ -66,9 +68,11 @@ export default function PlayoffHistoryResult({ data, mode }: Props) {
 function PlayoffTeamHistoryResult({
   data,
   variant = "history",
+  afterHero,
 }: {
   data: QueryResponse;
   variant?: "history" | "appearances";
+  afterHero?: ReactNode;
 }) {
   const sections = data.result?.sections ?? {};
   const summaryRows = sections.summary ?? [];
@@ -97,6 +101,7 @@ function PlayoffTeamHistoryResult({
         tone="team"
         teamAccentAbbr={team.teamAbbr}
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}
@@ -108,7 +113,13 @@ function PlayoffTeamHistoryResult({
   );
 }
 
-function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
+function PlayoffRoundRecordResult({
+  data,
+  afterHero,
+}: {
+  data: QueryResponse;
+  afterHero?: ReactNode;
+}) {
   const rows =
     data.result?.sections?.leaderboard ??
     data.result?.sections?.summary ??
@@ -142,6 +153,7 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
         tone="team"
         teamAccentAbbr={team.teamAbbr}
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}
@@ -162,7 +174,13 @@ function PlayoffRoundRecordResult({ data }: { data: QueryResponse }) {
   );
 }
 
-function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
+function PlayoffMatchupResult({
+  data,
+  afterHero,
+}: {
+  data: QueryResponse;
+  afterHero?: ReactNode;
+}) {
   const sections = data.result?.sections ?? {};
   const summaryRows = sections.summary ?? [];
   const seriesRows = sections.comparison ?? [];
@@ -183,6 +201,7 @@ function PlayoffMatchupResult({ data }: { data: QueryResponse }) {
         subjectIllustration={<MatchupIdentity teams={teams} />}
         tone="neutral"
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}

@@ -40,6 +40,7 @@ interface Props {
   rawDetailTitle?: string;
   detailSectionKeys?: string[];
   displayMode?: DisplayMode;
+  afterHero?: ReactNode;
 }
 
 interface SummaryItem {
@@ -134,6 +135,7 @@ export default function GameLogResult({
   rawDetailTitle,
   detailSectionKeys = [],
   displayMode = "public",
+  afterHero,
 }: Props) {
   const rawRows = sectionRows(data, sectionKey, fallbackSectionKey);
   const rows = orderedRows(rawRows, preserveOrder);
@@ -142,7 +144,7 @@ export default function GameLogResult({
 
   const resolvedMode = gameLogMode(rows, mode);
   const metrics = metricColumns(rows, data.result?.metadata, metricKey);
-  const columns = tableColumns(rows, data, resolvedMode);
+  const columns = tableColumns(rows, data, resolvedMode, metrics);
   const footerRows = summary ? tableFooters(rows, summary) : [];
   const displayedDetailKeys = resultTableSourceKeys(columns);
   if (
@@ -173,6 +175,7 @@ export default function GameLogResult({
   return (
     <section className={styles.pattern} aria-label="Game log result">
       {heroSentence && <ResultHero sentence={heroSentence} tone="neutral" />}
+      {afterHero}
       {showStrip && (
         <div className={styles.summaryStrip} aria-label="Game-log averages">
           {items.map((item) => (
@@ -243,15 +246,18 @@ function tableColumns(
   rows: SectionRow[],
   data: QueryResponse,
   mode: Exclude<GameLogMode, "auto">,
+  primaryMetricKeys: string[] = [],
 ): Array<ResultTableColumn<SectionRow>> {
   const hidePinnedPlayerColumn =
     mode === "player" && hasPinnedEntity(data.result?.metadata, "player");
+  const primaryMetrics = new Set(primaryMetricKeys);
   const columns: Array<ResultTableColumn<SectionRow>> = [
     {
       key: "rank",
       sourceKeys: ["rank"],
       header: "#",
       align: "center",
+      mobilePriority: "secondary",
       render: (_row, index) => index + 1,
     },
   ];
@@ -270,12 +276,14 @@ function tableColumns(
         key: "date",
         sourceKeys: ["game_date"],
         header: TABLE_LABELS.date,
+        mobilePriority: "primary",
         render: (row) => formatCompactDate(textValue(row, "game_date")),
       },
       {
         key: "team",
         sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
         header: TABLE_LABELS.team,
+        mobilePriority: "primary",
         render: (row) => teamCell(row, data),
       },
     );
@@ -285,12 +293,14 @@ function tableColumns(
         key: "date",
         sourceKeys: ["game_date"],
         header: TABLE_LABELS.date,
+        mobilePriority: "primary",
         render: (row) => formatCompactDate(textValue(row, "game_date")),
       },
       {
         key: "team",
         sourceKeys: ["team", "team_name", "team_abbr", "team_id"],
         header: "Team",
+        mobilePriority: "primary",
         render: (row) => teamCell(row, data),
       },
     );
@@ -302,6 +312,7 @@ function tableColumns(
       sourceKeys: ["is_home", "is_away", "location"],
       header: TABLE_LABELS.location,
       align: "center",
+      mobilePriority: "secondary",
       render: locationCell,
     },
     {
@@ -313,6 +324,7 @@ function tableColumns(
         "opponent_team_id",
       ],
       header: TABLE_LABELS.opponent,
+      mobilePriority: "primary",
       render: (row) => opponentCell(row, data),
     },
   );
@@ -331,6 +343,7 @@ function tableColumns(
       ],
       header: TABLE_LABELS.score,
       align: "center",
+      mobilePriority: "primary",
       render: scoreCell,
     });
   }
@@ -341,6 +354,7 @@ function tableColumns(
       sourceKeys: ["wl"],
       header: TABLE_LABELS.wl,
       align: "center",
+      mobilePriority: "primary",
       render: (row) => textValue(row, "wl")?.toUpperCase() ?? "—",
     });
   }
@@ -349,18 +363,22 @@ function tableColumns(
     mode === "player" ? PLAYER_STAT_COLUMNS : TEAM_STAT_COLUMNS;
   for (const key of statColumns) {
     if (!hasStatColumn(rows, key)) continue;
-    columns.push(statColumn(key));
+    columns.push(statColumn(key, primaryMetrics.has(key)));
   }
 
   return columns;
 }
 
-function statColumn(key: string): ResultTableColumn<SectionRow> {
+function statColumn(
+  key: string,
+  isPrimaryMetric = false,
+): ResultTableColumn<SectionRow> {
   return {
     key,
     sourceKeys: statSourceKeys(key),
     header: TABLE_LABELS[key] ?? key,
     numeric: true,
+    mobilePriority: isPrimaryMetric ? "primary" : "secondary",
     render: (row) => statValue(row, key),
   };
 }

@@ -7,11 +7,11 @@
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Release date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
-- Latest front-facing UI refresh: 2026-05-18.
+- Latest front-facing UI refresh: 2026-05-19.
 - Scope: current supported and explicitly unsupported Raw Product boundary.
 - Production code changed for this package: yes, frontend only.
 - Frontend rendering changed for this package: yes, public/default result mode
-  added.
+  added and Wave 2 answer-first/mobile polish completed.
 - Backend query behavior changed for this package: no.
 - QA corpus expectations changed for this package: no.
 - Production-ready: yes after human acceptance of the release notes below.
@@ -46,6 +46,12 @@ to public result rendering, `?debug=1` restores debug chrome, result Details
 preserve route/status/reason/query-class/freshness/query/filter/metadata/JSON
 diagnostics, `/review` remains debug-rich, and `/visual-qa` remains usable for
 public rendering checks.
+Front-facing Result UI Productization Wave 2 is also included: public `/`
+renders the answer hero before successful-result actions, places context chips
+and material caveats near the hero before long tables, makes actions visually
+secondary, tightens dense mobile tables through shared padding and bounded
+column-priority flags, and avoids duplicate public no-result Details while
+preserving diagnostics.
 
 Human sign-off still needed:
 
@@ -58,9 +64,10 @@ Human sign-off still needed:
 - Product owner acceptance that remaining feedback limitations are operational
   follow-ups: no admin dashboard, no mutable triage overlay, heuristic
   suggestions only, and manual corpus conversion.
-- Product owner acceptance that public result UI productization is only Wave 1;
-  deeper answer hierarchy/mobile polish and broader no-result copy refinement
-  remain recommended before broad public launch.
+- Product owner acceptance that public result UI productization has completed
+  the Wave 2 hierarchy/mobile pass, while broader no-result/unsupported copy
+  refinement and automated visual regression remain recommended before broad
+  public launch.
 
 ## 2. Validation Summary
 
@@ -76,6 +83,7 @@ Human sign-off still needed:
 | Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed, user-submitted feedback writes were verified, automatic diagnostics were verified, sanitization/privacy checks passed, no raw result rows/tables were found, and `/review` plus `/visual-qa` suppression passed. |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | Public mode hides route/query-class/status/reason/JSON/dev chrome by default while preserving diagnostics in Details and feedback payloads. `/review` remains debug-rich; `/visual-qa` renders public results with internal case metadata. |
+| Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public successful results are answer-first, context/caveats sit near the hero, actions are secondary, dense mobile tables use tighter padding and column-priority flags, no-result public diagnostics use a single Details disclosure, and debug/review/visual QA/feedback diagnostics are preserved. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -305,9 +313,9 @@ Supporting return packages:
   read-only review/export workflow is implemented. Remaining feedback notes are
   no admin dashboard, no mutable triage overlay, heuristic suggestions only,
   and manual corpus conversion.
-- Public result UI productization Wave 1 is implemented, but broader public
-  polish remains recommended: answer hierarchy refinement, mobile density, and
-  more no-result/unsupported copy coverage should continue in Wave 2/Wave 3.
+- Public result UI productization Wave 2 is implemented. Remaining public UI
+  follow-ups are broader no-result/unsupported copy coverage and automated
+  visual regression rather than the main answer hierarchy/mobile-density pass.
 
 ## 7. Future Deployment Checklist
 
@@ -334,9 +342,10 @@ Before deploying this boundary again:
 - Run deployment smoke against the target URL and confirm the
   opponent-conference membership-data case passes.
 - Open `/`, `/review`, and `/visual-qa` on the target preview or production URL.
-- Confirm `/` is public by default, `/` with `?debug=1` exposes route/status,
-  Copy JSON, Raw JSON, and Dev Tools, `/review` remains debug-rich, and
-  `/visual-qa` renders the visual case results.
+- Confirm `/` is public by default and answer-first, public context/caveats sit
+  near the answer, `/` with `?debug=1` exposes route/status, Copy JSON, Raw JSON,
+  and Dev Tools, `/review` remains debug-rich, and `/visual-qa` renders the
+  visual case results.
 - Run the six smoke queries:
   - `Who leads the NBA in points per game this season?`
   - `What is Denver's record when Nikola Jokic has a triple-double?`
@@ -367,9 +376,8 @@ Current handoff status: release-candidate handoff is complete; see
 
 Recommended order after this handoff:
 
-1. Front-facing result UI Wave 2/Wave 3 polish.
-   - Continue answer hierarchy, mobile density, and broader no-result copy
-     refinement before broad public launch.
+1. Broader no-result/unsupported public-copy refinement.
+   - Continue refining unsupported-boundary guidance before broad public launch.
 2. Visual QA automation.
    - Add Playwright/screenshot baselines or pixel/layout assertions for the
      accepted 15-case visual corpus before expanding visual scope.

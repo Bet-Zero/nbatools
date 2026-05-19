@@ -15,7 +15,11 @@
   implemented read-only feedback review/export workflow. Front-facing Result
   UI Productization Wave 1 adds a public default result mode on `/`, preserves
   diagnostics in Details and `?debug=1`, keeps `/review` debug-rich, and keeps
-  `/visual-qa` usable for public rendering checks.
+  `/visual-qa` usable for public rendering checks. Wave 2 completes the
+  answer-first public hierarchy pass: successful public results now render the
+  answer hero before actions, place user-facing context and material caveats
+  near the answer, keep actions secondary, tighten dense mobile tables, and
+  reduce duplicate public no-result Details.
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
   is manual rather than screenshot-diff automation, opponent-conference support
   is limited to trusted seasons `2024-25` and `2025-26`, existing frontend
@@ -23,9 +27,9 @@
   tooling rather than an admin dashboard or mutable triage overlay, triage
   suggestions are heuristic, corpus conversion remains manual, and explicitly
   unsupported boundaries must continue to return guarded no-result or
-  unsupported behavior. The public-launch UI gap is partially addressed by
-  Wave 1; deeper answer hierarchy/mobile polish and broader no-result copy
-  refinement remain recommended Wave 2/Wave 3 follow-ups.
+  unsupported behavior. Wave 2 addresses the main public result hierarchy and
+  mobile-density gap; broader unsupported-copy refinement and automated visual
+  regression remain recommended follow-ups before broad public launch.
 - Recommended handoff decision: ship or hand off the current release candidate
   with notes. Query feedback is no longer a preview blocker. Missing required
   R2 data remains a release blocker.
@@ -43,6 +47,7 @@
 | Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed under `nbatools-data` prefix `query_feedback/preview`, user-submitted feedback records were found, automatic diagnostics were found, sanitizer/privacy checks passed, and `/review` plus `/visual-qa` suppression passed. |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can run `make query-feedback-export`, which wraps `tools/export_query_feedback.py` and writes `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | `/` now defaults to public result rendering; `?debug=1` restores debug chrome; `/review` remains debug-rich; `/visual-qa` keeps internal case metadata while rendering public results; feedback payload diagnostics remain preserved. |
+| Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public `/` is answer-first, public context/caveats render near the hero, successful-result actions are secondary, dense mobile tables use tighter shared padding and column priorities, public no-result has one diagnostics disclosure, `?debug=1`, `/review`, `/visual-qa`, and feedback diagnostics remain preserved. |
 | Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
 
 ## 3. Feedback and diagnostics V1
@@ -190,9 +195,9 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   review/export workflow is implemented, there is no admin dashboard or mutable
   triage overlay, triage suggestions are heuristic, and corpus conversion
   remains manual.
-- Public result mode is now the default on `/`, but this is Wave 1
-  productization. Wave 2/Wave 3 should continue with deeper public answer
-  hierarchy, mobile polish, and no-result copy refinement before broad launch.
+- Public result mode is now answer-first on `/` after Wave 2. Remaining UI
+  notes are broader unsupported-copy refinement and automated visual regression,
+  not backend readiness blockers.
 - Frontend lint still has the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning in the
   latest readiness evidence.
@@ -224,8 +229,7 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 
 ## 9. Recommended next roadmap
 
-1. Front-facing result UI Wave 2/Wave 3 polish for answer hierarchy, mobile
-   density, and broader no-result copy.
+1. Broader no-result/unsupported public-copy refinement.
 2. Visual QA automation preflight.
 3. First launch feedback review using `make query-feedback-export`.
 4. Next unsupported-family promotion preflight.

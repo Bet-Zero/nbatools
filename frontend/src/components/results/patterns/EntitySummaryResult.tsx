@@ -18,11 +18,13 @@ import styles from "./EntitySummaryResult.module.css";
 interface Props {
   data: QueryResponse;
   sectionKey?: string;
+  afterHero?: ReactNode;
 }
 
 export default function EntitySummaryResult({
   data,
   sectionKey = "summary",
+  afterHero,
 }: Props) {
   const row = data.result?.sections?.[sectionKey]?.[0];
   if (!row) return null;
@@ -51,6 +53,7 @@ export default function EntitySummaryResult({
         tone={recordWhenSummary ? "team" : "accent"}
         teamAccentAbbr={recordWhenSummary?.teamAbbr ?? null}
       />
+      {afterHero}
       {showBySeason && (
         <ResultTable
           rows={bySeasonRows}

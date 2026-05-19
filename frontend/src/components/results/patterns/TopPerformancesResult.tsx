@@ -20,6 +20,7 @@ interface Props {
   data: QueryResponse;
   sectionKey?: string;
   subject: "player" | "team";
+  afterHero?: ReactNode;
 }
 
 const STAT_ORDER = [
@@ -105,6 +106,7 @@ export default function TopPerformancesResult({
   data,
   sectionKey = "leaderboard",
   subject,
+  afterHero,
 }: Props) {
   const rows = data.result?.sections?.[sectionKey] ?? [];
   if (rows.length === 0) return null;
@@ -124,6 +126,7 @@ export default function TopPerformancesResult({
           subject === "team" ? textValue(firstRow, "team_abbr") : null
         }
       />
+      {afterHero}
       <ResultTable
         rows={rows}
         columns={columns}

@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
-import ResultEnvelope from "../components/ResultEnvelope";
+import ResultEnvelope, {
+  ResultContextSummary,
+} from "../components/ResultEnvelope";
 import {
   Badge,
   Card,
@@ -449,6 +451,54 @@ describe("migrated result envelope", () => {
     expect(screen.getByText("Date range")).toBeInTheDocument();
     expect(screen.getAllByText("Apr 1\u201312, 2026").length).toBeGreaterThan(0);
     expect(screen.queryByText(/2026-04-01/)).not.toBeInTheDocument();
+  });
+
+  it("renders public context chips and material caveats for placement near the answer", () => {
+    const data = makeResponse({
+      caveats: ["playoff round data not available before 2001-02"],
+      result: {
+        query_class: "playoff_history",
+        result_status: "ok",
+        metadata: {
+          team: "LAL",
+          season: "2024-25",
+          split_type: "home_away",
+          applied_filters: [
+            { label: "Last N games", value: "10", kind: "window" },
+            {
+              label: "Date range",
+              value: "2026-04-01 \u2013 2026-04-12",
+              kind: "date",
+            },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultContextSummary data={data} />);
+
+    expect(screen.getByLabelText("Result context")).toHaveTextContent("LAL");
+    expect(screen.getByLabelText("Result context")).toHaveTextContent(
+      "2024-25",
+    );
+    expect(screen.getByLabelText("Result context")).toHaveTextContent(
+      "Home/Away",
+    );
+    expect(screen.getByLabelText("Result context")).toHaveTextContent(
+      "Last 10 games",
+    );
+    expect(screen.getByLabelText("Result context")).toHaveTextContent(
+      "Apr 1\u201312, 2026",
+    );
+    expect(screen.getByText("Caveats")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Round-level data is unavailable before 2001-02, so those seasons are included in totals but not round breakdowns.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("formats opponent-quality filters as opponent-group chips", () => {

@@ -17,7 +17,7 @@ describe("RawDetailToggle", () => {
     render(<RawDetailToggle title="Full Summary" rows={rows} />);
 
     expect(
-      screen.getByRole("button", { name: "Show raw table" }),
+      screen.getByRole("button", { name: "Show details" }),
     ).toHaveAttribute("aria-expanded", "false");
     expect(screen.getByText("Full Summary")).toBeInTheDocument();
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
@@ -27,10 +27,10 @@ describe("RawDetailToggle", () => {
     const user = userEvent.setup();
     render(<RawDetailToggle title="Full Summary" rows={rows} />);
 
-    await user.click(screen.getByRole("button", { name: "Show raw table" }));
+    await user.click(screen.getByRole("button", { name: "Show details" }));
 
     expect(
-      screen.getByRole("button", { name: "Hide raw table" }),
+      screen.getByRole("button", { name: "Hide details" }),
     ).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.getByText("Nikola Jokic")).toBeInTheDocument();
