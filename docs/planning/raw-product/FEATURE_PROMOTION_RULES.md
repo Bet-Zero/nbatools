@@ -90,7 +90,8 @@ code is touched.
 - Decide what raw QA, frontend-copy QA, and visual QA cases will pin the
   promotion's accepted and rejected behavior.
 - Decide the deployment / R2 implications when data-backed (see §3.8 and
-  the Wave 2 promotion checklist).
+  the "Data-backed Feature Promotion Checklist" section of
+  `docs/operations/deployment.md`).
 
 The preflight is a written artifact. It can live in
 `docs/planning/raw-product/` alongside the family it covers.
@@ -173,10 +174,12 @@ behavior, deployment smoke is a required gate.
 - Confirm missing-data behavior returns the clean unsupported shape (no
   broad fallback).
 
-The full data/R2 promotion checklist will live in
-`docs/operations/deployment.md` as part of Wave 2 of the Raw Product
-post-review hardening plan. Until that section lands, the runbook itself is
-the link target.
+The full data/R2 promotion checklist lives in
+`docs/operations/deployment.md` under "Data-backed Feature Promotion
+Checklist". Its rules 1–5 (required runtime data key list, R2 sync
+verification with `head_object` evidence, deployment smoke pointed at the
+feature, missing-data clean unsupported behavior, no broad fallback) are
+the deployment-side gates for this stage.
 
 ### 3.9 Release docs
 
@@ -314,10 +317,11 @@ data/R2 deployment guardrail in `RAW_PRODUCT_POST_REVIEW_NOTES.md` §6. The
 R2 for deployed runtime behavior, and deployment smoke confirmed the
 deployed runtime returned the clean answer rather than a fallback.
 
-The detailed data/R2 promotion checklist will live in
-`docs/operations/deployment.md` as part of Wave 2 of the Raw Product
-post-review hardening plan; the runbook itself is the link target until
-that section lands.
+The detailed data/R2 promotion checklist lives in
+`docs/operations/deployment.md` under "Data-backed Feature Promotion
+Checklist", and its §6 reproduces this same opponent-conference example
+from the deployment side (required-key list, `head_object` evidence,
+deployment smoke case, missing-data unsupported shape).
 
 ### 5.9 Release docs
 
@@ -365,9 +369,9 @@ This policy doc does not:
   reference that explains the path X must traverse.
 - When a reviewer evaluates a promotion, §3 is the stage checklist and §4
   is the contract checklist.
-- When a future promotion is data-backed, the data/R2 promotion checklist
-  in `docs/operations/deployment.md` (added in Wave 2 of the Raw Product
-  post-review hardening plan) is the deployment gate.
+- When a future promotion is data-backed, the "Data-backed Feature
+  Promotion Checklist" section of `docs/operations/deployment.md` is the
+  deployment gate.
 
 This is a policy document. Updates to it are themselves a policy change and
 should be treated with the same care as a feature promotion.

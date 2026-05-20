@@ -198,6 +198,208 @@ If the opponent-conference smoke case returns `no_data`, lacks
 `metadata.opponent_team_abbrs`, or resolves fewer than 15 East teams, stop the
 deploy and verify the R2 object above before treating the preview as ready.
 
+## Data-backed Feature Promotion Checklist
+
+This is the deployment-side gate referenced by
+[`docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+§3.8. Any data-backed feature promotion must satisfy every rule below before
+it is treated as shipped. The rules exist because the project is
+data-dependent and the deployed runtime reads from R2: a feature can pass
+locally while failing in preview or production if a required R2 object is
+missing.
+
+The companion product-level policy lives in
+[`docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md);
+the parser/routing half lives in
+[`docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`](../planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md).
+This section is the deployment half of the same contract.
+
+Working principle:
+
+```text
+No data-backed feature is promoted until:
+  1. the local data contract exists
+  2. required R2 object keys are documented
+  3. the data is synced to R2
+  4. deployment smoke checks the feature against preview/prod data access
+  5. missing data returns clean no_data/unsupported behavior, not broad fallback
+```
+
+### 1. Required runtime data key list rule
+
+Every data-backed feature promotion must list every R2 object key the
+deployed runtime needs for the feature to answer correctly.
+
+- The list lives in the promotion's per-feature contract (see
+  [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+  §4) and is reproduced in the promotion's return package.
+- Keys are written as full bucket-relative paths
+  (`raw/teams/team_conference_membership.csv`), not as glob patterns or
+  shorthand.
+- "No new R2 objects required" is a valid list entry and must be stated
+  explicitly when true. Implicit "nothing changed" is not acceptable.
+- If the feature depends on existing keys, those keys are still listed so
+  the smoke step has a complete set to assert against.
+
+### 2. R2 sync verification rule (head_object evidence)
+
+Every key listed under rule 1 must be confirmed present in R2 before the
+feature's deployment smoke is run.
+
+- Run `nbatools-cli pipeline sync-r2 --dry-run` to surface missing or stale
+  keys, then `nbatools-cli pipeline sync-r2` to upload.
+- For each required key, capture `head_object` evidence and record it in
+  the promotion's return package: `Bucket`, `Key`, `ContentLength`,
+  `LastModified`, and the `nbatools-md5` metadata value.
+- A missing or unreachable key is a deploy blocker. Do not proceed to the
+  deployment smoke step until every required key returns a clean
+  `head_object` response.
+- The `head_object` check is read-only and must use the same credentials
+  the deployed runtime will use, not a more privileged account-wide token.
+
+### 3. Deployment smoke rule (pointed at the feature)
+
+Every data-backed feature promotion must add at least one deployment smoke
+case that exercises the feature against the deployed runtime.
+
+- The smoke case lives in `tools/deployment_smoke.py` (see
+  [Deployment Smoke Monitoring](#deployment-smoke-monitoring) above) and
+  runs against the preview or production base URL via `--base-url`.
+- The smoke case must assert the expected route, the expected result shape,
+  and any feature-specific evidence (e.g. resolved entity counts,
+  metadata keys, scope filters present in the payload).
+- The smoke report is captured in `outputs/deployment_smoke/` and
+  referenced from the promotion's return package.
+- The smoke step runs after R2 sync verification (rule 2) and before the
+  feature is treated as shipped. A smoke pass without rule-2 evidence is
+  not sufficient: a transient R2 cache hit can hide a missing object.
+
+### 4. Missing-data clean no_data / unsupported behavior rule
+
+When a required R2 object is absent, when the feature's scope is outside
+the data's coverage, or when the data is otherwise unavailable, the
+deployed runtime must return a clean unsupported shape — never a broader
+answer.
+
+- Acceptable shapes at the boundary: `no_data`, `filter_not_supported`,
+  `conference_coverage`, or a route-specific guided unsupported response.
+- The exact expected shape for the feature is fixed by the promotion's
+  per-feature contract (see
+  [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+  §4 "expected unsupported behavior").
+- A smoke case must explicitly pin the missing-data behavior whenever the
+  feature has a realistic missing-data path. For
+  `raw/teams/team_conference_membership.csv`, the existing smoke already
+  checks that opponent-conference queries return `no_data` /
+  `conference_coverage` when the file is unreachable.
+- A passing smoke that only covers the happy path is not enough when the
+  feature has a non-trivial missing-data boundary.
+
+### 5. No broad fallback rule
+
+This rule is restated here as a hard deployment-side guardrail because it
+is the rule most likely to be quietly relaxed by an "answer something"
+reflex.
+
+```text
+No broad fallback answers for unsupported or low-confidence queries.
+```
+
+Concrete deployment-side applications:
+
+- If a required R2 object is missing, do not widen the answer to the
+  nearest larger scope (e.g. unfiltered season record) and ship it. Return
+  the clean unsupported shape and treat the deploy as blocked until rule 2
+  passes.
+- If the feature's scope is outside the data's coverage, do not silently
+  collapse the scope filter and answer the broader question. Return
+  `conference_coverage` (or the feature's documented unsupported shape).
+- A broad-fallback answer that smoke-passes is a worse outcome than a
+  clean unsupported response that smoke-fails, because it is harder to
+  detect later. Prefer the visible failure.
+
+### 6. Worked example — `raw/teams/team_conference_membership.csv`
+
+The opponent-conference team-record promotion is the canonical worked
+example for this checklist. It is also the worked example for the parser
+and product-level halves of the contract (see
+[`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+§5).
+
+#### 6.1 Required runtime data key list
+
+```text
+raw/teams/team_conference_membership.csv
+```
+
+That is the only new R2 object the opponent-conference filter requires.
+All other inputs (team metadata, season game logs) already shipped under
+existing keys.
+
+#### 6.2 R2 sync verification (head_object evidence)
+
+Use the head-object snippet from
+[Data Sync Before Preview Smoke](#data-sync-before-preview-smoke) above.
+Current release-candidate evidence:
+
+```text
+Bucket=nbatools-data
+Key=raw/teams/team_conference_membership.csv
+ContentLength=4999
+LastModified=2026-05-17T09:03:29+00:00
+nbatools-md5=f9cc9a60c8f659651723a55640966d73
+```
+
+Any new opponent-conference promotion (new season, new mapping) must
+re-capture this evidence in its return package.
+
+#### 6.3 Deployment smoke (pointed at the feature)
+
+Run the deployment smoke tool against the target base URL:
+
+```bash
+./.venv/bin/python tools/deployment_smoke.py \
+    --base-url https://<deployment-host> \
+    --output outputs/deployment_smoke/<label>.json
+```
+
+The smoke report must show the opponent-conference case (e.g. `Celtics
+record against the East this season`) returning `team_record` / `ok`,
+including `metadata.opponent_team_abbrs` and 15 resolved East teams. See
+[Deployment Smoke Monitoring](#deployment-smoke-monitoring) above for the
+full case set.
+
+#### 6.4 Missing-data clean unsupported behavior
+
+If `raw/teams/team_conference_membership.csv` is missing or unreachable,
+the deployed runtime must return `no_data` for the opponent-conference
+case. If a season outside the trusted-coverage window is requested, the
+runtime must return `conference_coverage`. Neither path may degrade into a
+plain unfiltered `team_record` answer.
+
+#### 6.5 No broad fallback
+
+For the opponent-conference family specifically, a broad fallback would
+look like a plain team-record answer without an `opponent_conference`
+filter applied. That is the exact wrong-route shape this checklist exists
+to prevent. The smoke case asserts the filter is present in the payload;
+the missing-data path asserts the clean unsupported shape; neither is
+allowed to silently widen the scope.
+
+### How this checklist is used
+
+- When a contributor proposes a data-backed feature promotion, this
+  checklist is the deployment-side bar that proposal must clear.
+- When a reviewer evaluates a promotion, rules 1–5 are the minimum
+  deployment-side review surface.
+- When the promotion's return package is written, it must include the
+  required-key list (rule 1), `head_object` evidence (rule 2), and a
+  reference to the deployment smoke report (rule 3); when applicable, it
+  must also include the missing-data smoke evidence (rule 4).
+- When a future promotion changes which R2 objects the feature needs, the
+  list is re-asserted and the `head_object` evidence is re-captured. A
+  promotion that reuses old evidence is not adequately gated.
+
 ## Custom-Domain Closure Checklist
 
 Phase N4 now keeps the custom-domain closure procedure in
