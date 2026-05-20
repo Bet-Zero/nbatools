@@ -120,7 +120,7 @@ Show only non-obvious or trust-relevant context separately.
 Do not duplicate the answer with chips.
 ```
 
-## 5. Feedback review cadence
+## 5. Feedback review cadence and ownership
 
 Query Feedback + Diagnostic Logging V1 is implemented and verified with notes.
 The feedback review/export workflow is also implemented. The operational risk is
@@ -132,14 +132,18 @@ Recommended beta cadence:
 Weekly during beta/early launch:
   1. Run make query-feedback-export
   2. Open feedback_review.md
-  3. Fill triage_decisions_template.csv
-  4. Classify each group:
+  3. Send feedback_review.md or the key sections to ChatGPT for product triage
+  4. Fill triage_decisions_template.csv
+  5. Classify each group:
      - bug
      - support candidate
      - expected unsupported
      - duplicate
      - no action
-  5. Convert only reviewed/verified findings into QA cases, planning docs, or
+     - needs more data
+     - parser/routing risk
+     - UI/copy issue
+  6. Convert only reviewed/verified findings into QA cases, planning docs, or
      product work
 ```
 
@@ -148,6 +152,18 @@ Additional trigger:
 ```text
 Run a feedback review immediately after any larger public test, demo, or user group trial.
 ```
+
+Ownership model:
+
+- The first few feedback reviews should be product-judgment reviews, not only
+  agent reviews.
+- The user can run the export and send the generated `feedback_review.md` to
+  ChatGPT.
+- ChatGPT can help classify feedback into bugs, support candidates, expected
+  unsupported behavior, duplicates, no-action items, parser/routing risks, or
+  UI/copy issues.
+- Agents can execute follow-up work after triage, but an agent should not be the
+  only product judge during early beta.
 
 ## 6. Data/R2 deployment guardrail
 
@@ -274,10 +290,26 @@ README structure to consider:
 This does not need to block the current review, but README should not lag the
 product forever.
 
-## 9. Roadmap boundary discipline
+## 9. Roadmap boundary discipline / feature promotion rules
 
 The product already supports a broad set of query families. Future expansion
 should not happen through casual parser-rule additions.
+
+Roadmap boundary discipline is the product-level version of parser-growth
+discipline.
+
+Parser version:
+
+```text
+Do not casually add phrase rules that can collide.
+```
+
+Product/roadmap version:
+
+```text
+Do not casually promote new capabilities unless the data, route, UI, QA,
+deployment, and docs are ready.
+```
 
 New support areas should follow a promotion path similar to opponent-conference
 support:
@@ -294,13 +326,95 @@ unsupported boundary
   -> release docs
 ```
 
+A permanent Feature Promotion Rules doc should probably be created from this
+review. It should require each new supported area to define:
+
+- accepted phrases
+- rejected/guarded phrases
+- expected route
+- expected no-result/unsupported behavior
+- required data contract
+- result contract expectations
+- frontend rendering expectations
+- raw QA cases
+- frontend-copy cases when copy changes
+- visual QA cases when UI/layout changes
+- deployment/R2 checks if data-backed
+- release-doc updates
+
 The core rule:
 
 ```text
 No broad fallback answers for unsupported or low-confidence queries.
 ```
 
-## 10. Open questions to continue reviewing
+## 10. Naming and product identity
+
+`NBA Tools` / `nbatools` remains the working name for now.
+
+Do not spend hardening-cycle time trying to name or brand the product. The final
+name can change later. The current priority is product clarity, correctness,
+parser/routing guardrails, data/deployment guardrails, and launch workflow.
+
+Working note:
+
+```text
+The name is generic, but naming is not a current blocker.
+```
+
+## 11. Public answer product vs debug/workbench scaffolding
+
+The intended product was always a public answer product: a user types a normal
+basketball stats query and gets a clean, correct, focused answer.
+
+The debug/workbench surfaces were necessary scaffolding to make that product
+reliable, testable, and expandable. They should support the product, not define
+it.
+
+Correct framing:
+
+```text
+Public answer product was always the goal.
+Debug/review/workbench surfaces are support infrastructure.
+```
+
+Product UI rule:
+
+```text
+Search box first.
+Answer first.
+Debug/details second.
+Review/workbench surfaces for development and QA.
+```
+
+## 12. Lightweight product promise/onboarding
+
+The product should teach users what kinds of questions work, but it should not
+make the user feel like they have to read instructions before searching.
+
+Good pattern:
+
+- search box first
+- helpful placeholder text
+- strong starter query examples
+- small "good at" hints below the input
+- no-result suggestions that teach supported phrasing
+- optional/collapsible "What can I ask?" help
+
+Avoid:
+
+- required category selector before search
+- large tutorial before the search box
+- wall of instructions
+- onboarding that makes the tool feel harder to use than it is
+
+Working rule:
+
+```text
+Teach through examples and recovery states, not through a required tutorial.
+```
+
+## 13. Open questions to continue reviewing
 
 1. Should the parser/routing growth guardrails be the next execution work after
    this review?
@@ -312,17 +426,22 @@ No broad fallback answers for unsupported or low-confidence queries.
 5. Should every new data-backed feature be required to add R2 smoke coverage?
 6. Should the public UI answer hero be audited for duplicate context/chips after
    Wave 2?
+7. What is the exact weekly beta feedback-review routine and output handoff?
+8. Should the homepage get a lightweight product-promise/onboarding pass before
+   public launch, or should that be immediate post-launch polish?
 
-## 11. Current working recommendation
+## 14. Current working recommendation
 
 After this review discussion is complete, the likely first hardening work should
 be:
 
 ```text
 1. Parser/routing growth guardrails preflight
-2. Data/R2 promotion checklist hardening
-3. Docs/return-package taxonomy cleanup
-4. README/product-positioning refresh
+2. Feature Promotion Rules doc
+3. Data/R2 promotion checklist hardening
+4. Feedback review cadence/runbook refinement
+5. Docs/return-package taxonomy cleanup
+6. README/product-positioning refresh
 ```
 
 The exact order should be decided after the remaining review points are discussed.
