@@ -1,0 +1,328 @@
+# Raw Product Post-Review Notes
+
+## 1. Purpose
+
+This is the broader working notes document for the current Raw Product review.
+It captures product-level issues, risks, and follow-up ideas that are not limited
+to parser/routing.
+
+Use this document as a scratchpad while the review continues. When the review is
+complete, use it to produce one or more concrete execution plans.
+
+The current release is not being declared broken. The current state remains:
+
+```text
+Release status: RELEASE_CANDIDATE_WITH_NOTES
+Preview status: PREVIEW_READY_WITH_NOTES
+Feedback status: FEEDBACK_READY_WITH_NOTES
+Public UI status: PUBLIC_UI_READY_WITH_NOTES
+```
+
+The point of this review is to catch structural issues now rather than relying
+on future memory to revisit them.
+
+## 2. Working principle
+
+When a potential future issue is identified, the project should not treat it as
+"fine for now" and hope someone remembers later. The preferred workflow is:
+
+```text
+identify the risk
+  -> write it down
+  -> decide whether it needs immediate guardrails
+  -> create a bounded plan
+  -> execute the smallest safe hardening pass
+```
+
+This does not mean panic-rewriting working systems. It means setting up the
+rules, checks, and documentation that prevent known risks from quietly becoming
+large problems later.
+
+## 3. Parser/routing growth risk
+
+Detailed parser/routing notes live in:
+
+```text
+docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md
+```
+
+Summary:
+
+- The current parser/routing works for the tested release boundary.
+- The known risk is future growth, especially overlapping natural-language rules.
+- The main failure mode is wrong-route behavior, not crashes.
+- Wrong-route behavior is dangerous because it can look like a valid answer while
+  answering a different question.
+- The goal is to add parser-growth guardrails before more feature promotion.
+
+Working rule:
+
+```text
+Forgive phrasing.
+Do not invent meaning.
+```
+
+Future planning should consider:
+
+- parser growth rules
+- route collision checks
+- accepted/rejected phrase contracts
+- unsupported-boundary regression requirements
+- gradual `natural_query.py` extraction
+- possible bucket-first intent classification
+
+## 4. Public answer context should be non-repetitive
+
+The public UI should give users enough confidence to understand the answer
+without repeating the same scope/details multiple times.
+
+Important distinction:
+
+- Do not show public chips/details merely to prove the backend parsed something.
+- Do include essential scope in the answer sentence when it naturally fits.
+- Use separate context only when it adds information not already clear from the
+  answer.
+- Keep full route/status/filter/debug proof in Details, `?debug=1`, `/review`,
+  and feedback payloads.
+
+Preferred example:
+
+```text
+The Celtics went 36-16 against Eastern Conference opponents in the 2025-26 regular season.
+```
+
+In that case, the public UI should not also need separate chips for:
+
+```text
+Opponent conference: East
+Season: 2025-26
+Season type: Regular Season
+```
+
+because that would be repetitive.
+
+Separate context is useful when it adds non-obvious trust or scope information,
+for example:
+
+```text
+Data through Apr. 12, 2026
+Includes 15 Eastern Conference opponents
+Since Jan. 1, 2026
+Last 20 games
+Without LeBron James
+```
+
+Working rule:
+
+```text
+Put essential scope in the answer when natural.
+Show only non-obvious or trust-relevant context separately.
+Do not duplicate the answer with chips.
+```
+
+## 5. Feedback review cadence
+
+Query Feedback + Diagnostic Logging V1 is implemented and verified with notes.
+The feedback review/export workflow is also implemented. The operational risk is
+that collected feedback becomes a junk drawer if it is not reviewed regularly.
+
+Recommended beta cadence:
+
+```text
+Weekly during beta/early launch:
+  1. Run make query-feedback-export
+  2. Open feedback_review.md
+  3. Fill triage_decisions_template.csv
+  4. Classify each group:
+     - bug
+     - support candidate
+     - expected unsupported
+     - duplicate
+     - no action
+  5. Convert only reviewed/verified findings into QA cases, planning docs, or
+     product work
+```
+
+Additional trigger:
+
+```text
+Run a feedback review immediately after any larger public test, demo, or user group trial.
+```
+
+## 6. Data/R2 deployment guardrail
+
+The project is data-dependent. Local development can pass while deployed preview
+or production fails if a required runtime data file exists locally but has not
+been synced to R2.
+
+Known risk shape:
+
+```text
+new feature needs a data file
+  -> local file exists
+  -> local tests pass
+  -> Vercel excludes data/**
+  -> deployed runtime uses R2
+  -> R2 object is missing
+  -> preview/prod returns no_data or fails
+```
+
+This is not an argument against R2. The issue is release process discipline.
+Using R2 for deployed data is acceptable if every new runtime data dependency is
+listed, synced, and smoke-tested.
+
+Permanent rule for data-backed features:
+
+```text
+No data-backed feature is promoted until:
+  1. the local data contract exists
+  2. required R2 object keys are documented
+  3. the data is synced to R2
+  4. deployment smoke checks the feature against preview/prod data access
+  5. missing data returns clean no_data/unsupported behavior, not broad fallback
+```
+
+Current example:
+
+```text
+raw/teams/team_conference_membership.csv
+```
+
+was required for opponent-conference support and must exist in R2 for deployed
+runtime behavior.
+
+## 7. Docs and return package taxonomy
+
+Return packages exist mainly as agent-to-ChatGPT communication artifacts. Their
+original purpose was to provide a copyable summary of what the agent changed
+when the agent did not otherwise return enough usable information.
+
+They remain useful as:
+
+- handoff receipts
+- evidence packets
+- temporary work memory
+- source material for the next prompt
+
+But they should not be treated as durable source-of-truth product docs.
+
+Working taxonomy:
+
+```text
+docs/
+  durable product, operations, architecture, and reference docs
+
+return_packages/
+  short-lived handoff/evidence artifacts from execution waves
+
+outputs/
+  generated reports and machine/test artifacts
+
+archive/
+  old completed planning, return packages, and historical evidence when no
+  longer active
+```
+
+Rules to consider:
+
+```text
+Return packages are evidence, not source of truth.
+When long-term behavior changes, update durable docs under docs/.
+When a release cycle or workstream is done, archive old return packages instead
+of letting them compete with active planning docs.
+Prompts should tell agents where return packages belong and when to archive them.
+```
+
+Open process question:
+
+```text
+Should future agent handoffs use shorter copied summaries instead of committed return package files when no long-term evidence is needed?
+```
+
+Potential answer:
+
+```text
+Keep return packages for meaningful execution waves, release evidence, and QA
+checkpoints. Use shorter copied summaries for trivial changes. Archive completed
+return packages on a regular cleanup cadence.
+```
+
+## 8. README/product positioning
+
+The README should eventually be refreshed to match the product's current shape.
+The current product is no longer only a CLI/API/dev workbench. It is now a
+public answer-first NBA stats product with debug/review surfaces preserved.
+
+Potential opening framing:
+
+```text
+NBA Tools is a natural-language NBA stats answer engine for stat-shaped
+questions across players, teams, records, splits, streaks, leaderboards,
+comparisons, and playoff history.
+```
+
+README structure to consider:
+
+1. Product promise
+2. What questions it is good at
+3. What is intentionally unsupported
+4. Web UI quick start
+5. Developer surfaces: CLI/API/structured query
+6. QA/release status pointers
+7. Data/deployment notes
+
+This does not need to block the current review, but README should not lag the
+product forever.
+
+## 9. Roadmap boundary discipline
+
+The product already supports a broad set of query families. Future expansion
+should not happen through casual parser-rule additions.
+
+New support areas should follow a promotion path similar to opponent-conference
+support:
+
+```text
+unsupported boundary
+  -> preflight
+  -> data contract
+  -> route/result contract
+  -> parser support
+  -> raw QA cases
+  -> frontend-copy/visual QA if rendering changes
+  -> preview/deployment smoke
+  -> release docs
+```
+
+The core rule:
+
+```text
+No broad fallback answers for unsupported or low-confidence queries.
+```
+
+## 10. Open questions to continue reviewing
+
+1. Should the parser/routing growth guardrails be the next execution work after
+   this review?
+2. Should we create a permanent feature-promotion policy doc?
+3. Should return packages be archived automatically or by a recurring cleanup
+   prompt?
+4. Should README refresh happen before public launch or as immediate post-launch
+   polish?
+5. Should every new data-backed feature be required to add R2 smoke coverage?
+6. Should the public UI answer hero be audited for duplicate context/chips after
+   Wave 2?
+
+## 11. Current working recommendation
+
+After this review discussion is complete, the likely first hardening work should
+be:
+
+```text
+1. Parser/routing growth guardrails preflight
+2. Data/R2 promotion checklist hardening
+3. Docs/return-package taxonomy cleanup
+4. README/product-positioning refresh
+```
+
+The exact order should be decided after the remaining review points are discussed.
