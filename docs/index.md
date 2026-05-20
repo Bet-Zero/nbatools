@@ -83,6 +83,9 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` — current Raw Product release-readiness checklist, preview manual validation steps, and final public UI readiness evidence
 - `planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` — final release package for the current supported and explicitly unsupported Raw Product boundary; current public UI status is ready with notes
 - `planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md` — final release-candidate handoff for the current Raw Product boundary; current state is handoff complete with public UI ready with notes
+- `planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` — broader Raw Product post-review notes feeding the hardening plan
+- `planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md` — parser/routing growth review notes feeding Wave 1 of the hardening plan
+- `planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md` — ordered hardening roadmap (Waves 1–6) that turns the Raw Product post-review notes and parser/routing growth notes into bounded, docs-first execution waves
 - `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist for the first 15-case visual QA baseline
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
