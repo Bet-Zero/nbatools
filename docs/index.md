@@ -187,6 +187,18 @@ Point-in-time assessments that can remain in `audits/` (and repo-level verdict d
 
 May live near active plans while a phase is open; once phase closes, move them under `archive/.../inventories/`.
 
+### Return Packages
+
+Return packages are agent-to-reviewer handoff artifacts that record what an execution wave changed, what was validated, and what the next wave should pick up. They are evidence, not source of truth. Durable rules:
+
+- **Evidence, not source of truth.** A return package is a point-in-time receipt for one execution wave. Do not treat a return package as the authoritative description of how the product, parser, routing, deployment, or any other surface currently behaves. The authoritative description lives in `docs/`.
+- **Durable behavior changes belong under `docs/`.** When a wave changes long-term behavior, a policy, a runbook, a contract, an interface, or a release-readiness fact, the durable record of that change must land under `docs/` (in `reference/`, `architecture/`, `operations/`, `planning/`, `audits/`, or `archive/` as appropriate) — not only in the return package. The return package may quote or summarize the durable change, but the durable doc is what readers consult later.
+- **Return packages live under `return_packages/`.** Topic-scoped subdirectories such as `return_packages/raw-product/`, `return_packages/result_display/`, and `return_packages/review/` are the home for wave handoff artifacts. Do not place return packages under `docs/`; do not place durable product/operations/architecture/reference content under `return_packages/`.
+- **Generated reports and machine/test artifacts live under `outputs/`.** Items such as exported feedback runs, screenshot bundles, machine-generated QA reports, and similar regeneratable artifacts belong under `outputs/<workflow>/<run_id>/`, not under `return_packages/` or `docs/`. A return package may reference an `outputs/` run id; it should not copy the entire generated artifact into the return package.
+- **Archive completed wave packages on a regular cadence.** Once a workstream, release cycle, or wave series is closed, completed return packages should be archived on a regular cleanup cadence (for example, after a release lands or when a planning authority is retired) so they stop competing visually with active planning docs. The archive sweep is itself a separate, explicitly scoped pass — not a side effect of an unrelated execution wave. No automatic deletion.
+- **Prompts must tell agents where return packages belong.** Execution prompts that produce a return package should state the exact target path (for example, `return_packages/raw-product/<WAVE_NAME>_RETURN_PACKAGE.md`), call out that durable behavior changes must also update `docs/`, and — when appropriate — say whether a short copied summary is acceptable in place of a committed return package file.
+- **Short copied summaries are appropriate for trivial changes.** For meaningful execution waves, release evidence, QA checkpoints, and any wave that changes a contract, runbook, policy, or release-readiness fact, write a committed return package under `return_packages/`. For trivial changes (a typo fix, a single-link addition, a cosmetic doc tweak, a one-line README clarification) it is acceptable — and often preferred — to paste a short copied summary into the handoff prompt or PR description instead of committing a return package file. When in doubt, write the return package.
+
 ## Audits — `audits/`
 
 Point-in-time audit snapshots and historical records.
