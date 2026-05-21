@@ -19,7 +19,14 @@ import re
 import pandas as pd
 import pytest
 
-from nbatools.commands._constants import STAT_ALIASES, STAT_PATTERN
+from nbatools.commands._constants import (
+    LOWER_IS_BETTER_STATS,
+    PLAYER_SEASON_ONLY_STATS,
+    STAT_ALIASES,
+    STAT_PATTERN,
+    TEAM_SEASON_ADVANCED_STATS,
+    TEAM_SEASON_ONLY_STATS,
+)
 from nbatools.commands.metric_registry import (
     GAME_LOG_DERIVABLE,
     METRIC_REGISTRY,
@@ -48,6 +55,21 @@ from nbatools.commands.player_advanced_metrics import (
 pytestmark = pytest.mark.engine
 
 # ── metric_registry ──────────────────────────────────────────────────
+
+
+class TestStatAvailabilityConstants:
+    """Lock the exported natural-query stat availability constants."""
+
+    def test_moved_natural_query_stat_sets_are_available(self) -> None:
+        assert TEAM_SEASON_ADVANCED_STATS == {"off_rating", "def_rating", "net_rating", "pace"}
+        assert TEAM_SEASON_ONLY_STATS == {"off_rating", "def_rating", "net_rating", "pace"}
+        assert PLAYER_SEASON_ONLY_STATS == {"off_rating", "def_rating", "net_rating"}
+        assert LOWER_IS_BETTER_STATS == {
+            "def_rating",
+            "opponent_pts_per_game",
+            "tov",
+            "tov_pct",
+        }
 
 
 class TestMetricRegistry:

@@ -185,6 +185,15 @@ def _build_stat_pattern(aliases: dict[str, str]) -> str:
 STAT_PATTERN = _build_stat_pattern(STAT_ALIASES)
 
 # ---------------------------------------------------------------------------
+# Stat availability sets
+# ---------------------------------------------------------------------------
+
+TEAM_SEASON_ADVANCED_STATS = {"off_rating", "def_rating", "net_rating", "pace"}
+TEAM_SEASON_ONLY_STATS = {"off_rating", "def_rating", "net_rating", "pace"}
+PLAYER_SEASON_ONLY_STATS = {"off_rating", "def_rating", "net_rating"}
+LOWER_IS_BETTER_STATS = {"def_rating", "opponent_pts_per_game", "tov", "tov_pct"}
+
+# ---------------------------------------------------------------------------
 # Query intent enum & route mapping
 # ---------------------------------------------------------------------------
 

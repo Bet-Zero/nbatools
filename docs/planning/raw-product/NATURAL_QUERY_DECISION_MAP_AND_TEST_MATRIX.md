@@ -44,7 +44,7 @@ Core rules for future extraction:
 | Lines | Section | Current responsibility | Extraction note |
 | --- | --- | --- | --- |
 | 1-247 | Imports and helper-module surface | Imports normalization, date, defaulting, leaderboard, matchup, occurrence, parser-helper, playoff, execution, confidence, and entity-resolution helpers. | Many helpers are already extracted. The import and `__all__` surface is compatibility-sensitive. |
-| 249-281 | Local constants | `_UNSUPPORTED_BOUNDARY_PHRASES`; `_TEAM_SEASON_ADVANCED_STATS`. | Pure constants are the lowest-risk later code candidate, but not in this docs wave. |
+| 249-281 | Local constants | `_UNSUPPORTED_BOUNDARY_PHRASES`; stat-availability constants imported from `_constants.py`. | Wave 1 constants extraction is complete; unsupported-boundary phrases remain local. |
 | 284-424 | Local boundary / intent helpers | Unsupported-boundary note, single-team advanced-stat boundary, multi-player availability boundary, stretch display mode, specific-date top-scorer intent, team W/L phrasing, Washington/WAS guards, ambiguous-fragment note, placeholder-template note. | Behavior-sensitive because notes, unsupported filters, and route eligibility are coupled. |
 | 430-504 | `__all__` compatibility exports | Re-exports local and imported helpers used by tests or downstream modules. | Do not trim during extraction without caller checks. |
 | 507-918 | `_build_parse_state(query)` | Normalizes text and extracts season/date/stat/entity/context/threshold/intent/unsupported-boundary slots. | Main parse-state assembly risk. |
@@ -264,27 +264,26 @@ Stop and re-plan if an extraction attempt:
 - removes `__all__` compatibility exports without a caller audit
 - makes the route order harder to explain than this document
 
-## 11. Recommended first code extraction candidate
+## 11. Completed first code extraction wave
 
-The first code extraction candidate remains pure stat-availability constants,
-if a future wave chooses to proceed after this documentation pass.
+The first code extraction candidate has been completed as a pure constants
+move into `src/nbatools/commands/_constants.py`.
 
-Candidate:
+Moved candidate:
 
 - `_TEAM_SEASON_ADVANCED_STATS`
 - local `_team_season_only`
 - local `_player_season_only`
 - local `_lower_is_better_stats`
 
-Reason:
+Current destination names:
 
-- These values are duplicated or local constant-like sets.
-- They are less coupled to route branch order than boundary helpers, note
-  construction, parse-state objects, or route-family extraction.
-- The extraction can be mechanical if values, names, route branches, notes,
-  and result reasons remain unchanged.
+- `TEAM_SEASON_ADVANCED_STATS`
+- `TEAM_SEASON_ONLY_STATS`
+- `PLAYER_SEASON_ONLY_STATS`
+- `LOWER_IS_BETTER_STATS`
 
-Required constraints:
+Preserved constraints:
 
 - Do not change set contents.
 - Do not change branch order.
@@ -293,7 +292,19 @@ Required constraints:
   summaries or league-wide team advanced leaderboards.
 - Validate with the commands in section 9.
 
+Next recommended extraction candidate:
+
+- Do not proceed directly to unsupported-boundary helpers, note/caveat
+  construction, route-family helpers, parse-state objects, or bucket-first
+  intent classification.
+- Before the next behavior-adjacent code extraction, add or confirm the route
+  priority and unsupported-boundary snapshot coverage named in section 8.
+- If another code wave is needed before that coverage exists, keep it to a
+  fresh preflight-approved pure constants/helper move with no route-order,
+  note, result, or corpus-expectation changes.
+
 Do not extract unsupported-boundary helpers, note/caveat construction,
 route-family helpers, parse-state objects, or bucket-first intent
-classification as the first code wave. Those areas remain higher risk because
-they directly affect wrong-route prevention and unsupported-boundary behavior.
+classification as the next code wave without the additional coverage above.
+Those areas remain higher risk because they directly affect wrong-route
+prevention and unsupported-boundary behavior.

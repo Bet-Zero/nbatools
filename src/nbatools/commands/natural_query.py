@@ -4,7 +4,14 @@ import pandas as pd
 
 from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
-from nbatools.commands._constants import normalize_text, route_to_intent
+from nbatools.commands._constants import (
+    LOWER_IS_BETTER_STATS,
+    PLAYER_SEASON_ONLY_STATS,
+    TEAM_SEASON_ADVANCED_STATS,
+    TEAM_SEASON_ONLY_STATS,
+    normalize_text,
+    route_to_intent,
+)
 from nbatools.commands._date_utils import (
     CURRENT_QUERY_DATE,
     extract_date_range,
@@ -278,8 +285,6 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "above .600",
 )
 
-_TEAM_SEASON_ADVANCED_STATS = {"off_rating", "def_rating", "net_rating", "pace"}
-
 
 def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | None:
     if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or re.search(
@@ -307,7 +312,7 @@ def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | 
 
 def _single_team_advanced_stat_summary_boundary(parsed: dict) -> bool:
     """Detect single-team season-advanced stat lookups with no scalar contract."""
-    if parsed.get("stat") not in _TEAM_SEASON_ADVANCED_STATS:
+    if parsed.get("stat") not in TEAM_SEASON_ADVANCED_STATS:
         return False
     if not parsed.get("team") or parsed.get("team_a") or parsed.get("team_b"):
         return False
@@ -1817,26 +1822,23 @@ def _finalize_route(parsed: dict) -> dict:
         # "best defensive teams" → def_rating ascending (lower is better)
         # "best/lowest turnover teams" → turnovers ascending
         # But "worst defensive teams" → def_rating descending (higher = worse)
-        _lower_is_better_stats = {"def_rating", "opponent_pts_per_game", "tov", "tov_pct"}
-
         if team_leaderboard_intent:
             leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
 
             # Semantic ascending for lower-is-better stats
-            if leaderboard_stat in _lower_is_better_stats:
+            if leaderboard_stat in LOWER_IS_BETTER_STATS:
                 if re.search(r"\b(best|top|lowest|fewest|least)\b", q):
                     lb_ascending = True
                 elif re.search(r"\b(worst|most|highest)\b", q):
                     lb_ascending = False
 
             # Season-advanced-only team stats blocked in date-window/multi-season
-            _team_season_only = {"off_rating", "def_rating", "net_rating", "pace"}
-            if (start_date or end_date) and leaderboard_stat in _team_season_only:
+            if (start_date or end_date) and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available with date window, using pts"
                 )
                 leaderboard_stat = "pts"
-            if (lb_start_season and lb_end_season) and leaderboard_stat in _team_season_only:
+            if lb_start_season and lb_end_season and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
                 )
@@ -1862,13 +1864,12 @@ def _finalize_route(parsed: dict) -> dict:
             }
         elif "team" in q or "teams" in q:
             leaderboard_stat = stat or "pts"
-            _team_season_only = {"off_rating", "def_rating", "net_rating", "pace"}
-            if (start_date or end_date) and leaderboard_stat in _team_season_only:
+            if (start_date or end_date) and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available with date window, using pts"
                 )
                 leaderboard_stat = "pts"
-            if (lb_start_season and lb_end_season) and leaderboard_stat in _team_season_only:
+            if lb_start_season and lb_end_season and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
                 )
@@ -1896,20 +1897,19 @@ def _finalize_route(parsed: dict) -> dict:
             leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
 
             # Semantic ascending for lower-is-better stats
-            if leaderboard_stat in _lower_is_better_stats:
+            if leaderboard_stat in LOWER_IS_BETTER_STATS:
                 if re.search(r"\b(best|top|lowest|fewest|least)\b", q):
                     lb_ascending = True
                 elif re.search(r"\b(worst|most|highest)\b", q):
                     lb_ascending = False
 
             # Season-advanced-only player stats blocked in multi-season/opponent contexts
-            _player_season_only = {"off_rating", "def_rating", "net_rating"}
-            if (lb_start_season and lb_end_season) and leaderboard_stat in _player_season_only:
+            if lb_start_season and lb_end_season and leaderboard_stat in PLAYER_SEASON_ONLY_STATS:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
                 )
                 leaderboard_stat = "pts"
-            if opponent and leaderboard_stat in _player_season_only:
+            if opponent and leaderboard_stat in PLAYER_SEASON_ONLY_STATS:
                 notes.append(
                     f"stat_fallback: {leaderboard_stat} not available"
                     " with opponent filter, using pts"
