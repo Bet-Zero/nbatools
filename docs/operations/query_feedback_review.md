@@ -2,6 +2,187 @@
 
 This runbook covers v1 query feedback and diagnostic logging review.
 
+## Weekly Beta Feedback Review Cadence
+
+This is the primary workflow for the runbook. During beta and early launch,
+the goal is to keep collected feedback from becoming a junk drawer by
+reviewing it on a regular cadence with explicit ownership. The cadence
+encodes the working rule from
+[`docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`](../planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md)
+§5:
+
+```text
+identify the risk
+  -> write it down
+  -> decide whether it needs immediate guardrails
+  -> create a bounded plan
+  -> execute the smallest safe hardening pass
+```
+
+The sections below the cadence are the operational reference (record
+schema, exporter filters, grouping, QA conversion, retention). Use the
+cadence as the entry point; reach into the reference sections as the
+cadence calls for them.
+
+### When to run
+
+- **Weekly during beta / early launch.** Pick a fixed weekday and run the
+  routine on that day each week, even when traffic is light. A small
+  empty-handed pass is preferred over skipping the week.
+- **Immediately after any larger public test, demo, or user group trial.**
+  This is a non-negotiable post-event trigger: traffic spikes are the
+  highest-signal feedback the project gets, and waiting for the next
+  weekly slot loses context.
+- **On demand when an incident or single high-priority report surfaces.**
+  An ad-hoc run does not replace the next weekly run.
+
+### Routine — six steps
+
+1. **Run the export.**
+
+   ```bash
+   make query-feedback-export
+   ```
+
+   This is the canonical command. It invokes the read-only exporter
+   (`tools/export_query_feedback.py`) with the runbook's default source
+   (bucket `nbatools-data`, prefix `query_feedback/preview`) and writes the
+   review artifacts under `outputs/query_feedback_exports/<run_id>/`. The
+   raw `python tools/export_query_feedback.py …` invocation shown in the
+   [Export Workflow](#export-workflow) section is the underlying form and
+   is appropriate when filters or alternate sources are needed; the
+   Makefile target is what the weekly cadence uses.
+
+2. **Open the primary handoff artifact.**
+
+   ```text
+   outputs/query_feedback_exports/<run_id>/feedback_review.md
+   ```
+
+   `feedback_review.md` is the human-readable review report. It contains
+   run metadata, filters, counts, duplicate groups, priority groups, smoke
+   summary, diagnostics, user reports, candidate buckets, and next
+   actions. Treat it as the canonical input to triage.
+
+3. **Send `feedback_review.md` (or the key sections) to ChatGPT for product
+   triage.** The user is the one who sends the artifact — see
+   [Ownership model](#ownership-model) below. ChatGPT helps classify each
+   group into the triage categories listed in
+   [Triage categories](#triage-categories) below. ChatGPT is not the final
+   judge; it is a triage helper.
+
+4. **Fill the triage worksheet.**
+
+   ```text
+   outputs/query_feedback_exports/<run_id>/triage_decisions_template.csv
+   ```
+
+   `triage_decisions_template.csv` is the editable review worksheet. One
+   row per group. Fill `review_status`, the chosen triage category,
+   `linked_case_id` when a group becomes a QA case or planning item,
+   `reviewer_notes`, and `next_action`. See
+   [Triage Template Workflow](#triage-template-workflow) for the field
+   conventions and [Triage Statuses](#triage-statuses) for the status
+   vocabulary.
+
+5. **Classify each group into one triage category.** Use the eight
+   categories in [Triage categories](#triage-categories). The category is
+   the product-level decision; the existing operational triage decisions
+   in the [Triage Decisions](#triage-decisions) section are the
+   follow-up action that flows from the category.
+
+6. **Convert only reviewed, verified findings into downstream work.** A
+   triage category alone does not modify QA, parser, frontend, or data
+   artifacts; an agent is then asked to execute the follow-up after
+   triage is complete. See [QA Conversion Rules](#qa-conversion-rules) for
+   the bar each follow-up must clear. Do not mutate
+   `qa/raw_query_answer_corpus.yaml`,
+   `qa/frontend_copy_corpus.yaml`,
+   `qa/frontend_visual_qa_corpus.json`, parser behavior, or feedback
+   collection automatically from this routine.
+
+### Triage categories
+
+Every group in `feedback_review.md` is classified into exactly one of the
+following eight categories. These are the product-level triage labels and
+are the contract for what the routine produces. They are the categories
+named in
+[`docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`](../planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md)
+§5.
+
+| Category | When to use | Typical follow-up |
+| --- | --- | --- |
+| `bug` | The system gave a wrong answer, crashed, or otherwise misbehaved against its own contract. | `raw_qa_case` plus the fix work it implies (backend, parser, data, or frontend depending on the bug). |
+| `support_candidate` | Repeated valid demand for a stat-shaped query the product does not yet answer. | Treat as a future feature promotion candidate; record under planning, do not promote casually. The promotion path is governed by [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md). |
+| `expected_unsupported` | The product correctly declined to answer (out of scope, low confidence, geography phrase, subjective phrase, etc.). | `no_action`; optionally add an unsupported-boundary raw QA case if the boundary is at risk of drifting. |
+| `duplicate` | The group restates a finding already captured under another group, an existing QA case, or an open planning item. | `no_action`; cross-reference the original in `reviewer_notes`. |
+| `no_action` | Smoke/test evidence, non-actionable report, or already-resolved behavior. | `no_action`; record why. |
+| `needs_more_data` | The group cannot be triaged from the export alone; the reviewer needs a repro, a wider query window, additional records, or a closer look at the result payload. | Re-run the export with broader filters, request a repro, or escalate; do not promote to QA without resolution. |
+| `parser_routing_risk` | The phrasing suggests a wrong-route, collision, or unsupported-boundary erosion risk, even when the specific record's behavior was acceptable. | Cross-reference against [`PARSER_ROUTING_GROWTH_GUARDRAILS.md`](../planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md) (route collision rule §5, unsupported-boundary regression rule §6); convert to a guardrail-shaped raw QA case if applicable. |
+| `ui_copy_issue` | Backend behavior is acceptable but rendered wording, copy, chips, or layout is confusing, duplicative, or misleading. | `frontend_copy_case` or `visual_qa_case` depending on whether the issue is copy or layout. |
+
+The eight categories are the primary triage labels for the routine. The
+[Triage Decisions](#triage-decisions) and [Triage Statuses](#triage-statuses)
+sections below describe the follow-up actions and progress states; they
+remain in place as the operational vocabulary for the worksheet.
+
+### Ownership model
+
+The cadence has an explicit ownership split. It exists so an agent is never
+the only product judge during early beta.
+
+- **User** runs `make query-feedback-export` and opens
+  `feedback_review.md`.
+- **User** sends `feedback_review.md` (or the key sections) to ChatGPT.
+  The user chooses what to send and is responsible for redaction if any
+  is needed.
+- **ChatGPT** helps classify each group into one of the eight triage
+  categories above, surfaces duplicates, and flags parser/routing risks.
+  ChatGPT does not modify any file in the repo and does not have final
+  product judgment.
+- **User** records the final triage decision in
+  `triage_decisions_template.csv`. The decision is product judgment, not
+  algorithmic.
+- **Agents** execute follow-up work (raw QA cases, frontend-copy cases,
+  visual QA cases, data issues, planning items, parser/routing guardrail
+  cases) **only after triage is complete** for the relevant groups, and
+  only when the triage row names the agent's work explicitly via
+  `linked_case_id` and `next_action`.
+
+The hard rule:
+
+```text
+Triage = human + ChatGPT.
+Execution = agent.
+Agents do not triage.
+```
+
+A passing weekly run produces a triage worksheet with one row per group, a
+chosen category per row, and a clear `next_action`. It does not produce
+file changes by itself; those come from the agent execution step that
+runs after the worksheet is complete.
+
+### What a passing weekly run looks like
+
+- A run id under `outputs/query_feedback_exports/`.
+- `feedback_review.md` opened and reviewed.
+- `triage_decisions_template.csv` filled: every group has a triage
+  category, a `review_status`, and a `next_action`.
+- High-priority groups (duplicate demand, user-submitted volume, parser/
+  routing risk) have a `linked_case_id` or an explicit planning pointer.
+- Follow-up work, if any, is queued for agent execution as a separate
+  step.
+
+### What this routine intentionally does not do
+
+- It does not mutate source R2 records. The exporter is read-only.
+- It does not modify QA corpora, parser rules, frontend renderers, data
+  files, or the feedback collection endpoint.
+- It does not automatically promote a `support_candidate` into shipped
+  support. Promotion follows
+  [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md).
+- It does not delegate product judgment to an agent.
+
 ## Storage
 
 - Endpoint: `POST /query-feedback`
