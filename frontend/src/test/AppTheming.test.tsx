@@ -102,8 +102,14 @@ describe("App scoped team theming", () => {
     const { container } = render(<App />);
     submitQuery("celtics record");
 
+    // Wait for the themed result surface itself rather than the
+    // debug-only "Result" eyebrow: public mode is the default and does
+    // not render that eyebrow. The data attribute is applied on the
+    // result section regardless of display mode.
     await waitFor(() =>
-      expect(screen.getByText("Result")).toBeInTheDocument(),
+      expect(
+        container.querySelector('[data-team-theme="BOS"]'),
+      ).not.toBeNull(),
     );
 
     const surface = container.querySelector('[data-team-theme="BOS"]');
@@ -136,8 +142,13 @@ describe("App scoped team theming", () => {
     const { container } = render(<App />);
     submitQuery("celtics vs lakers");
 
+    // Wait for the result section to mount via its stable data attribute
+    // (rendered in both public and debug modes), then assert no team
+    // theme was applied for the multi-team result.
     await waitFor(() =>
-      expect(screen.getByText("Result")).toBeInTheDocument(),
+      expect(
+        container.querySelector("[data-state-surface='result']"),
+      ).not.toBeNull(),
     );
 
     expect(container.querySelector("[data-team-theme]")).toBeNull();
