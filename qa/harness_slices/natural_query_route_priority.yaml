@@ -1,0 +1,31 @@
+name: natural_query_route_priority
+description: Route-priority, collision, unsupported-boundary, and no-broad-fallback cases before natural_query.py extraction.
+case_ids:
+  - lakers_record_against_west_wave5
+  - celtics_against_east_coast_teams_guard
+  - celtics_conference_finals_record_wave4
+  - most_conference_finals_appearances_wave4
+  - lakers_record_since_2010_wave4
+  - warriors_lakers_record_this_season_wave5
+  - celtics_bucks_comparison_this_season_wave5
+  - lebron_durant_comparison_wave4
+  - lebron_stats_vs_durant_wave5
+  - jokic_game_log_vs_embiid_wave5
+  - most_assists_single_game
+  - assist_leaders_this_season
+  - nuggets_jokic_on_off_unsupported
+  - lakers_without_lebron
+  - team_5_game_scoring_stretch
+  - jokic_5_game_rebound_stretch
+  - warriors_net_rating_single_team_wave5
+  - net_rating_team_leaders
+  - rookie_assist_leaders_wave5
+  - bench_rebound_leaders_wave5
+  - celtics_bench_points_wave5
+  - players_personal_fouls_wave5
+  - lakers_lebron_ad_both_play
+  - best_5_man_lineups_unsupported
+  - tatum_clutch_stats
+  - most_clutch_player_wave5
+  - cooled_off_lately_wave5
+  - best_duo_unsupported
