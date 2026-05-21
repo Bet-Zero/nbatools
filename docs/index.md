@@ -91,6 +91,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md` — documentation-only preflight for safe incremental `natural_query.py` extraction, current route decision flow, extraction candidate ranking, validation needs, stop conditions, and first-wave recommendation
 - `planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — documentation-only decision map and test matrix for preserving current `natural_query.py` route order, unsupported boundaries, collision groups, validation commands, and first code-extraction candidate before any parser extraction work
 - `planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` — documentation-only preflight for route-priority, collision, unsupported-boundary, and no-broad-fallback snapshot coverage before further `natural_query.py` extraction
+- `planning/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_PREFLIGHT.md` — documentation-only preflight for cleaning up division-opponent phrasing that currently broad-falls back instead of returning a guarded unsupported response
 - `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist for the first 15-case visual QA baseline
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
