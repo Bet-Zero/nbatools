@@ -4,17 +4,21 @@
 
 - Current release status: `RELEASE_CANDIDATE_WITH_NOTES` / `PREVIEW_READY_WITH_NOTES`
   / `FEEDBACK_READY_WITH_NOTES` / `PUBLIC_UI_READY_WITH_NOTES`.
-- Planning decision: turn the post-review notes and parser/routing growth notes
-  into an ordered, bounded hardening roadmap before any further feature
-  expansion.
+- Closure status: **complete with notes.** Raw Product Post-Review Hardening
+  Waves 1–6 have completed, and the follow-up AppTheming test drift fix
+  resolved the pre-existing frontend-suite drift surfaced during Wave 6.
+- Planning decision: the post-review notes and parser/routing growth notes were
+  converted into an ordered, bounded hardening roadmap before further feature
+  expansion. That roadmap has now been executed through Wave 6.
 - Launch blocker? **No.** Inspection of the two review notes docs and the
   current release/handoff docs found no new launch blocker. The Raw Product
-  remains launch-ready with notes as previously declared. All identified items
-  are growth guardrails, process hygiene, or polish — not regressions.
-- First recommended execution wave: **Wave 1 — Parser/Routing Growth Guardrails
-  + Feature Promotion Rules.** This matches both review docs' explicit working
-  recommendation and is the prerequisite for safely promoting any new query
-  family.
+  remains launch-ready with notes as previously declared. All remaining items
+  are post-launch/deferred polish, process, or maintainability notes — not
+  release regressions.
+- Validation refresh: full frontend tests are now clean after the AppTheming
+  test drift fix: **25/25 files, 352/352 tests passing**. Frontend build still
+  passes with the existing Vite large-chunk warning, and lint still passes with
+  the existing `ReviewPage` `react-hooks/exhaustive-deps` warning.
 - What this plan does not do:
   - It does not change parser, routing, backend, or frontend behavior.
   - It does not change result contracts or QA corpus expectations.
@@ -40,30 +44,73 @@
 | `src/nbatools/commands/natural_query.py` | Identified as the parser maintainability risk in PARSER_ROUTING_GROWTH_REVIEW_NOTES §6. |
 | `src/nbatools/query_service.py` | Query service surface; informs Wave 1 collision/route ordering rules. |
 | `Makefile` | Hosts `make query-feedback-export` — Wave 3 cadence anchors here. |
+| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` | Confirms Wave 1 completed: parser/routing guardrails and feature promotion rules. |
+| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_2_RETURN_PACKAGE.md` | Confirms Wave 2 completed: Data/R2 promotion checklist hardening. |
+| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_3_RETURN_PACKAGE.md` | Confirms Wave 3 completed: weekly feedback review cadence. |
+| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_4_RETURN_PACKAGE.md` | Confirms Wave 4 completed: docs/return-package taxonomy. |
+| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_5_RETURN_PACKAGE.md` | Confirms Wave 5 completed: README/product positioning refresh. |
+| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md` | Confirms Wave 6 completed: lightweight homepage/product-promise pass and public context duplication audit. |
+| `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md` | Confirms follow-up AppTheming test drift fix and clean full frontend suite: 352/352 tests passing. |
+
+## 2.1 Closure refresh — 2026-05-21
+
+Post-review hardening closure is recorded as follows:
+
+- Wave 1 — Parser/Routing Growth Guardrails + Feature Promotion Rules:
+  complete.
+- Wave 2 — Data/R2 Promotion Checklist Hardening: complete.
+- Wave 3 — Feedback Review Cadence: complete.
+- Wave 4 — Docs/Return Package Taxonomy: complete.
+- Wave 5 — README/Product Positioning Refresh: complete.
+- Wave 6 — Lightweight Product Promise/Homepage Pass: complete.
+- Follow-up AppTheming test drift fix: complete; full frontend suite is clean
+  at 352/352 tests passing.
+
+No new launch blockers were identified during the closure refresh. The release
+classification remains:
+
+```text
+Release status: RELEASE_CANDIDATE_WITH_NOTES
+Preview status: PREVIEW_READY_WITH_NOTES
+Feedback status: FEEDBACK_READY_WITH_NOTES
+Public UI status: PUBLIC_UI_READY_WITH_NOTES
+```
+
+Remaining notes are post-launch or explicitly deferred:
+
+- Existing Vite large-chunk warning.
+- Existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` lint
+  warning.
+- No screenshot automation yet.
+- Visual QA corpus expansion deferred.
+- Admin dashboard / mutable triage overlay deferred.
+- `natural_query.py` extraction deferred.
+- Return-package archive sweep deferred.
+- Branding/name change deferred.
 
 ## 3. Issue/action inventory
 
 | Concern | Category | Launch-blocking? | Recommended bucket |
 |---|---|---|---|
-| Parser/routing wrong-route risk as new families are added (PARSER §5, POST §3) | Parser/routing guardrails | No | Should do before next feature expansion (Wave 1) |
-| No durable Feature Promotion Rules doc (POST §9) | Process policy | No | Should do before next feature expansion (Wave 1) |
-| Accepted/rejected phrase contract per supported family (PARSER §9) | Parser policy | No | Should do before next feature expansion (Wave 1) |
-| Route collision check strategy across nearby phrase families (PARSER §10C) | Parser policy | No | Should do before next feature expansion (Wave 1) |
-| Unsupported-boundary regression requirement / no broad fallback (PARSER §9, POST §9) | Parser policy | No | Should do before next feature expansion (Wave 1) |
+| Parser/routing wrong-route risk as new families are added (PARSER §5, POST §3) | Parser/routing guardrails | No | Complete in Wave 1 |
+| No durable Feature Promotion Rules doc (POST §9) | Process policy | No | Complete in Wave 1 |
+| Accepted/rejected phrase contract per supported family (PARSER §9) | Parser policy | No | Complete in Wave 1 |
+| Route collision check strategy across nearby phrase families (PARSER §10C) | Parser policy | No | Complete in Wave 1 |
+| Unsupported-boundary regression requirement / no broad fallback (PARSER §9, POST §9) | Parser policy | No | Complete in Wave 1 |
 | Gradual `natural_query.py` extraction plan (PARSER §6, §10D) | Maintainability plan | No | Later cleanup / deferred (documented in Wave 1; execution deferred) |
 | Bucket-first intent classification investigation (PARSER §7, §10E) | Parser architecture | No | Later cleanup / deferred (Wave 1 notes only) |
-| R2 promotion checklist: list/sync/smoke required runtime data (POST §6) | Deployment guardrail | No | Should do before next feature expansion (Wave 2) |
-| Missing-data clean no_data behavior rule (POST §6) | Deployment guardrail | No | Should do before next feature expansion (Wave 2) |
-| `docs/operations/deployment.md` update for the promotion checklist (POST §6) | Docs update | No | Should do before next feature expansion (Wave 2) |
-| Weekly beta feedback review cadence (POST §5) | Operational runbook | No | Immediate post-launch polish (Wave 3) |
-| ChatGPT triage handoff + triage categories (POST §5) | Operational runbook | No | Immediate post-launch polish (Wave 3) |
-| Agent vs human/ChatGPT ownership during early beta (POST §5) | Operational policy | No | Immediate post-launch polish (Wave 3) |
-| Return packages as evidence, not source of truth (POST §7) | Docs taxonomy | No | Immediate post-launch polish (Wave 4) |
-| Return-package archive cadence (POST §7) | Docs taxonomy | No | Immediate post-launch polish (Wave 4) |
-| When to use return packages vs short summaries (POST §7) | Docs taxonomy | No | Immediate post-launch polish (Wave 4) |
-| README product-first refresh (POST §8) | Positioning | No | Immediate post-launch polish (Wave 5) |
-| Lightweight homepage/product-promise pass (POST §12) | UX polish | No | Immediate post-launch polish (Wave 6) |
-| Public answer context duplication audit (POST §4) | UI polish | No | Immediate post-launch polish (folded into Wave 6) |
+| R2 promotion checklist: list/sync/smoke required runtime data (POST §6) | Deployment guardrail | No | Complete in Wave 2 |
+| Missing-data clean no_data behavior rule (POST §6) | Deployment guardrail | No | Complete in Wave 2 |
+| `docs/operations/deployment.md` update for the promotion checklist (POST §6) | Docs update | No | Complete in Wave 2 |
+| Weekly beta feedback review cadence (POST §5) | Operational runbook | No | Complete in Wave 3 |
+| ChatGPT triage handoff + triage categories (POST §5) | Operational runbook | No | Complete in Wave 3 |
+| Agent vs human/ChatGPT ownership during early beta (POST §5) | Operational policy | No | Complete in Wave 3 |
+| Return packages as evidence, not source of truth (POST §7) | Docs taxonomy | No | Complete in Wave 4 |
+| Return-package archive cadence (POST §7) | Docs taxonomy | No | Documented in Wave 4; archive sweep deferred |
+| When to use return packages vs short summaries (POST §7) | Docs taxonomy | No | Complete in Wave 4 |
+| README product-first refresh (POST §8) | Positioning | No | Complete in Wave 5 |
+| Lightweight homepage/product-promise pass (POST §12) | UX polish | No | Complete in Wave 6 |
+| Public answer context duplication audit (POST §4) | UI polish | No | Complete in Wave 6 |
 | Branding/name change (POST §10) | Identity | No | Later / deferred (non-goal for this plan) |
 | Required category selector before search (POST §12, PARSER §8) | UX feature | No | Later / deferred (explicit non-goal) |
 | Parser rewrite in one pass (PARSER §6, §11) | Refactor | No | Later / deferred (explicit non-goal) |
@@ -73,15 +120,19 @@
 
 ### Must do before public launch
 
-None. Inspection found no new launch blocker. The Raw Product remains
+None. Closure inspection found no new launch blocker. The Raw Product remains
 launch-ready with notes per the release candidate handoff and release package.
 
 ### Should do before next feature expansion
+
+Completed:
 
 - Wave 1 — Parser/Routing Growth Guardrails + Feature Promotion Rules
 - Wave 2 — Data/R2 Promotion Checklist Hardening
 
 ### Immediate post-launch polish
+
+Completed:
 
 - Wave 3 — Feedback Review Cadence
 - Wave 4 — Docs/Return Package Taxonomy
@@ -91,16 +142,18 @@ launch-ready with notes per the release candidate handoff and release package.
 
 ### Later / deferred
 
-- Gradual `natural_query.py` extraction execution (plan only in Wave 1)
+- Gradual `natural_query.py` extraction execution (documented in Wave 1,
+  deferred)
 - Bucket-first intent classification preflight
 - Optional guided UI mode experiments
 - Branding/name change
 - Admin dashboard / mutable triage overlay
 - Automatic corpus mutation from feedback
+- Return-package archive sweep
 
 ## 5. Ordered roadmap
 
-### Wave 1 — Parser/Routing Growth Guardrails + Feature Promotion Rules
+### Wave 1 — Parser/Routing Growth Guardrails + Feature Promotion Rules — Complete
 
 - Goal: create durable policy docs that constrain how new natural-language
   query support is added, so parser/routing growth cannot quietly become a
@@ -138,7 +191,7 @@ launch-ready with notes per the release candidate handoff and release package.
   - Any temptation to introduce a category selector or to start the
     `natural_query.py` extraction → stop; deferred.
 
-### Wave 2 — Data/R2 Promotion Checklist Hardening
+### Wave 2 — Data/R2 Promotion Checklist Hardening — Complete
 
 - Goal: turn the post-review §6 rule into a permanent, checkable promotion
   checklist that prevents a data-backed feature from passing locally while
@@ -167,7 +220,7 @@ launch-ready with notes per the release candidate handoff and release package.
   - Any change to deployment scripts, R2 sync code, or smoke harness → stop;
     this wave is docs only.
 
-### Wave 3 — Feedback Review Cadence
+### Wave 3 — Feedback Review Cadence — Complete
 
 - Goal: refine the existing `docs/operations/query_feedback_review.md` into a
   weekly beta runbook that names the command, the artifact, the triage
@@ -194,7 +247,7 @@ launch-ready with notes per the release candidate handoff and release package.
   - Any change to `tools/export_query_feedback.py`, the Makefile target, or
     the feedback endpoint → stop; this wave is docs only.
 
-### Wave 4 — Docs/Return Package Taxonomy
+### Wave 4 — Docs/Return Package Taxonomy — Complete
 
 - Goal: encode the durable rules from POST §7 so return packages stop
   competing with active planning docs.
@@ -221,7 +274,7 @@ launch-ready with notes per the release candidate handoff and release package.
   - Any move/delete of files in `return_packages/` → stop; archive execution
     is a separate later pass.
 
-### Wave 5 — README/Product Positioning Refresh
+### Wave 5 — README/Product Positioning Refresh — Complete
 
 - Goal: refresh `README.md` so the top of the repo describes the current
   product (public answer-first NBA stats product) rather than the historical
@@ -247,7 +300,7 @@ launch-ready with notes per the release candidate handoff and release package.
   - Any temptation to rebrand / rename the product → stop; explicit non-goal
     (POST §10).
 
-### Wave 6 — Lightweight Product Promise/Homepage Pass
+### Wave 6 — Lightweight Product Promise/Homepage Pass — Complete
 
 - Goal: a small UX pass that makes the homepage feel search-first and
   answer-first without adding a required tutorial or category selector, and
@@ -280,83 +333,33 @@ launch-ready with notes per the release candidate handoff and release package.
     explicit non-goal.
   - Any change to backend or parser behavior → stop; this wave is UI polish.
 
-## 6. Recommended first execution prompt
+## 6. Closure status
 
-Use this as the next prompt after planning:
+This plan no longer has a next hardening-wave prompt. Waves 1–6 have all been
+executed and recorded in `return_packages/raw-product/`, and the follow-up
+AppTheming test drift fix resolved the only frontend-suite drift surfaced during
+Wave 6 validation.
 
-```text
-Mode: EXECUTION — RAW PRODUCT HARDENING WAVE 1: PARSER/ROUTING GROWTH GUARDRAILS + FEATURE PROMOTION RULES
+Closure evidence:
 
-You are working in the Bet-Zero/nbatools repo.
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_2_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_3_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_4_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_5_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`
+- `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`
 
-Goal:
-Execute Wave 1 of docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md.
-This is docs/policy only.
-
-Do NOT:
-- Change production code.
-- Change parser, routing, backend, or frontend behavior.
-- Change result contracts or QA corpus expectations.
-- Move/archive files.
-- Begin the natural_query.py extraction.
-- Add a category selector or any new feature.
-
-Read first:
-- docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md
-- docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md
-- docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md
-- docs/reference/query_catalog.md
-- docs/reference/query_guide.md
-
-Create:
-1. docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md
-   - Working principles ("Forgive phrasing. Do not invent meaning.";
-     "No broad fallback answers for unsupported or low-confidence queries.")
-   - Accepted phrase requirements
-   - Rejected/guarded phrase requirements
-   - Route collision check rule (with the example collision groups from
-     PARSER_ROUTING_GROWTH_REVIEW_NOTES §10C)
-   - Unsupported-boundary regression requirement
-   - QA/corpus requirement
-   - Deferred items: gradual natural_query.py extraction, bucket-first intent
-     classification preflight
-2. docs/planning/raw-product/FEATURE_PROMOTION_RULES.md
-   - Promotion path: unsupported boundary -> preflight -> data contract ->
-     route/result contract -> parser support -> raw QA cases ->
-     frontend-copy/visual QA if rendering changes -> preview/deployment smoke
-     -> release docs
-   - Per-feature contract (accepted phrases, rejected phrases, expected route,
-     expected unsupported behavior, required data contract, result contract,
-     frontend rendering expectations, raw QA cases, frontend-copy/visual QA
-     when applicable, deployment/R2 checks when applicable, release-doc
-     updates)
-   - Worked example: opponent-conference support
-   - Cross-link to the (Wave 2) data/R2 promotion checklist section in
-     docs/operations/deployment.md (note that the Wave 2 section will be added
-     next; the link target is permitted to be the runbook itself for now)
-3. Update docs/index.md planning section to list both new docs.
-
-Create return package:
-return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md
-- what changed
-- files changed
-- acceptance-criteria check
-- validation result
-
-Validation:
-- git diff --check
-- markdown lint if available
-
-Acceptance criteria:
-- Both new policy docs exist.
-- docs/index.md links both.
-- No code/test/corpus changes.
-- Return package created.
-- git diff --check passes.
-```
+The closure refresh does not change release classification. The remaining
+release notes are deferred/post-launch items, not blockers.
 
 ## 7. Deferred / non-goals
 
+- Existing Vite large-chunk warning.
+- Existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` lint
+  warning.
+- Screenshot automation.
+- Visual QA corpus expansion.
 - Parser rewrite in one pass.
 - Required query category selector before search.
 - Admin dashboard or mutable triage overlay for feedback.
@@ -372,3 +375,6 @@ Acceptance criteria:
 - `git diff --check`
 - markdown lint if available (no repo-standard linter is currently wired into
   the Makefile; `git diff --check` is the minimum bar)
+- Latest full frontend-suite evidence is recorded in
+  `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`:
+  25/25 files and 352/352 tests passing after the AppTheming test drift fix.

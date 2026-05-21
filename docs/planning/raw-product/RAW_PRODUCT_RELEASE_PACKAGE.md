@@ -9,6 +9,7 @@
 - Release date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
 - Latest front-facing UI refresh: 2026-05-19.
+- Latest post-review hardening closure refresh: 2026-05-21.
 - Scope: current supported and explicitly unsupported Raw Product boundary.
 - Production code changed for this package: yes, frontend only.
 - Frontend rendering changed for this package: yes, public/default result mode
@@ -21,6 +22,8 @@
 - Query Feedback + Diagnostic Logging V1 included in release candidate: yes.
 - Query feedback review/export workflow implemented: yes, with notes.
 - Final Public UI Release Review passed: yes, with notes.
+- Raw Product Post-Review Hardening Waves 1–6 complete: yes, with notes.
+- AppTheming test drift fixed: yes; full frontend suite now clean at 352/352.
 - Final handoff:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
   handoff complete with notes.
@@ -60,6 +63,12 @@ Final Public UI Release Review has now passed with
 390px family checks passed; debug/details preservation passed; feedback UI
 preservation passed; blocking issues were none. Broad public launch is no
 longer blocked by debug-heavy default UI.
+Post-review hardening is now complete through Wave 6, and the follow-up
+AppTheming test drift fix resolved the pre-existing full-suite drift surfaced
+during Wave 6 validation. The latest full frontend suite evidence is clean:
+25/25 files and 352/352 tests passing. This closure refresh is docs-only and
+does not change backend behavior, parser/routing behavior, result contracts,
+frontend rendering, QA corpus expectations, or release status.
 
 Human sign-off still needed:
 
@@ -77,6 +86,12 @@ Human sign-off still needed:
   broader no-result/unsupported copy refinement, visual QA corpus expansion,
   screenshot automation, and wide-table internal scrolling remain post-launch
   polish notes.
+- Product owner acceptance that post-review hardening Waves 1–6 are complete
+  with notes, and remaining items are post-launch/deferred: existing Vite
+  large-chunk warning, existing `ReviewPage` lint warning, no screenshot
+  automation, visual QA corpus expansion, admin dashboard / mutable triage
+  overlay, `natural_query.py` extraction, return-package archive sweep, and
+  branding/name change.
 
 ## 2. Validation Summary
 
@@ -94,6 +109,8 @@ Human sign-off still needed:
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | Public mode hides route/query-class/status/reason/JSON/dev chrome by default while preserving diagnostics in Details and feedback payloads. `/review` remains debug-rich; `/visual-qa` renders public results with internal case metadata. |
 | Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public successful results are answer-first, context/caveats sit near the hero, actions are secondary, dense mobile tables use tighter padding and column-priority flags, no-result public diagnostics use a single Details disclosure, and debug/review/visual QA/feedback diagnostics are preserved. |
 | Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
+| Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; waves completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public context de-duplication. |
+| AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only drift fixed and full frontend suite passed 25/25 files and 352/352 tests. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -258,6 +275,10 @@ Latest release artifacts:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
 - Release-readiness checklist:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
+- Post-review hardening closure refresh:
+  `return_packages/raw-product/POST_REVIEW_HARDENING_CLOSURE_REFRESH_RETURN_PACKAGE.md`
+- AppTheming test drift fix evidence:
+  `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`
 - Release-candidate handoff:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
 - Release-readiness checkpoint:
@@ -328,6 +349,12 @@ Supporting return packages:
   follow-ups are post-launch polish: broader no-result/unsupported copy
   coverage, visual QA corpus expansion, screenshot automation, and accepted
   internal horizontal scrolling for wide tables.
+- Raw Product Post-Review Hardening Waves 1–6 are complete, and the AppTheming
+  test drift fix restored a clean 352/352 full frontend-suite baseline.
+  Remaining hardening-cycle notes are post-launch/deferred:
+  `natural_query.py` extraction, return-package archive sweep, branding/name
+  change, admin dashboard / mutable triage overlay, visual QA corpus expansion,
+  and screenshot automation.
 
 ## 7. Future Deployment Checklist
 

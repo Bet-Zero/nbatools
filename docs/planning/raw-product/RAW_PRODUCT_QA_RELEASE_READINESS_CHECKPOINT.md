@@ -44,6 +44,11 @@
   `/?debug=1`, `/review`, and `/visual-qa`, 14 desktop public query checks, 13
   mobile 390px family checks, debug/details preservation, feedback preservation,
   and no blocking issues.
+- Post-review hardening closure status: Raw Product Post-Review Hardening Waves
+  1–6 are complete with notes. The follow-up AppTheming test drift fix resolved
+  the pre-existing full-suite drift surfaced during Wave 6 validation.
+- Full frontend test suite status: clean after the AppTheming test drift fix;
+  25/25 files and 352/352 tests passing.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
@@ -56,8 +61,10 @@
   support, guarded unsupported boundaries, existing frontend build/lint
   warnings, feedback operational follow-ups, and public UI post-launch polish:
   screenshot automation, visual QA corpus expansion, unsupported/no-result copy
-  taxonomy refinement, and continued internal horizontal scrolling for wide
-  tables.
+  taxonomy refinement, existing Vite large-chunk warning, existing `ReviewPage`
+  lint warning, admin dashboard / mutable triage overlay, `natural_query.py`
+  extraction, return-package archive sweep, branding/name change, and continued
+  internal horizontal scrolling for wide tables.
 
 ## 2. Backend Raw Query Answer QA
 
@@ -419,6 +426,14 @@ Latest release-readiness checklist validation:
   `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family
   checks passed; debug/details and feedback preservation passed; blocking
   issues none.
+- Post-review hardening Waves 1–6:
+  `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md`
+  through
+  `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`;
+  complete with notes.
+- AppTheming test drift fix:
+  `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`;
+  test-only drift fix; full frontend suite passed 25/25 files and 352/352 tests.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Static check: `git diff --check` passed.
@@ -448,15 +463,22 @@ Completed:
 - Query feedback readiness refresh after R2 record inspection.
 - Option H - Query feedback export/review script.
 - Final Public UI Release Review - `PUBLIC_UI_READY_WITH_NOTES`.
+- Raw Product Post-Review Hardening Waves 1–6.
+- AppTheming test drift fix; full frontend suite clean at 352/352.
 
 Recommended order:
 
-1. First launch feedback review using `make query-feedback-export`.
-2. Option E - Visual QA automation.
-3. Option B - Promote one unsupported family into real support.
-4. Option F - Broader release/CI artifact packaging.
-5. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
-6. Option D - Harness tag/category filters.
+1. Proceed with launch/handoff using the current `*_WITH_NOTES` statuses.
+2. First launch feedback review using `make query-feedback-export`.
+3. Option E - Visual QA automation, after launch or when screenshot automation
+   becomes the highest-risk gap.
+4. Option B - Promote one unsupported family into real support, but only
+   through the Wave 1 feature-promotion and Wave 2 Data/R2 guardrails.
+5. Option F - Broader release/CI artifact packaging if reproducible release
+   bundles become more valuable than the current manual evidence set.
+6. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
+7. Option D - Harness tag/category filters if iteration cost returns as a
+   workflow bottleneck.
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
@@ -524,10 +546,15 @@ Recommended order:
 - Why: the previous R2 preview blocker is resolved, deployment smoke includes
   the R2-sensitive opponent-conference membership-data check, the latest
   preview `/visual-qa` request-health check is clean, and query feedback R2
-  record inspection passed with notes.
+  record inspection passed with notes. Post-review hardening Waves 1–6 are
+  complete, and the AppTheming test drift fix restored a clean full frontend
+  suite.
 - Remaining handoff notes: selected frontend-copy coverage, manual visual QA,
   opponent-conference support limited to trusted seasons `2024-25` and
-  `2025-26`, unsupported divisions/geography/historical coverage, and remaining
+  `2025-26`, unsupported divisions/geography/historical coverage, existing
+  Vite/ReviewPage warnings, no screenshot automation, visual QA corpus
+  expansion, admin dashboard / mutable triage overlay, `natural_query.py`
+  extraction, return-package archive sweep, branding/name change, and remaining
   feedback operational notes.
 
 ### Option H - Query feedback export/review script

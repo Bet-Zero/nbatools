@@ -21,6 +21,21 @@ Public UI status: PUBLIC_UI_READY_WITH_NOTES
 The point of this review is to catch structural issues now rather than relying
 on future memory to revisit them.
 
+Closure refresh — 2026-05-21:
+
+- Raw Product Post-Review Hardening Waves 1–6 are complete.
+- Follow-up AppTheming test drift is fixed; the full frontend suite is clean at
+  25/25 files and 352/352 tests passing.
+- No new launch blockers were identified.
+- The release, preview, feedback, and public UI statuses remain unchanged:
+  `RELEASE_CANDIDATE_WITH_NOTES`, `PREVIEW_READY_WITH_NOTES`,
+  `FEEDBACK_READY_WITH_NOTES`, and `PUBLIC_UI_READY_WITH_NOTES`.
+- Remaining notes are post-launch/deferred items: existing Vite large-chunk
+  warning, existing `ReviewPage` lint warning, no screenshot automation,
+  visual QA corpus expansion, admin dashboard / mutable triage overlay,
+  `natural_query.py` extraction, return-package archive sweep, and
+  branding/name change.
+
 ## 2. Working principle
 
 When a potential future issue is identified, the project should not treat it as
@@ -414,26 +429,27 @@ Working rule:
 Teach through examples and recovery states, not through a required tutorial.
 ```
 
-## 13. Open questions to continue reviewing
+## 13. Open questions closure
 
-1. Should the parser/routing growth guardrails be the next execution work after
-   this review?
-2. Should we create a permanent feature-promotion policy doc?
-3. Should return packages be archived automatically or by a recurring cleanup
-   prompt?
-4. Should README refresh happen before public launch or as immediate post-launch
-   polish?
-5. Should every new data-backed feature be required to add R2 smoke coverage?
-6. Should the public UI answer hero be audited for duplicate context/chips after
-   Wave 2?
-7. What is the exact weekly beta feedback-review routine and output handoff?
-8. Should the homepage get a lightweight product-promise/onboarding pass before
-   public launch, or should that be immediate post-launch polish?
+The open questions from the review have been closed for the current release
+cycle:
 
-## 14. Current working recommendation
+1. Parser/routing growth guardrails were executed in Wave 1.
+2. A permanent Feature Promotion Rules doc was created in Wave 1.
+3. Return-package taxonomy and archive cadence were documented in Wave 4; the
+   archive sweep itself remains deferred.
+4. README product positioning was refreshed in Wave 5.
+5. Data-backed feature promotion now requires R2 key and deployment-smoke
+   discipline through the Wave 2 checklist.
+6. The public answer-context duplication audit was completed in Wave 6.
+7. The weekly beta feedback-review routine and handoff were documented in
+   Wave 3.
+8. The lightweight homepage/product-promise pass was completed in Wave 6 without
+   adding required onboarding or a required category selector.
 
-After this review discussion is complete, the likely first hardening work should
-be:
+## 14. Closure result
+
+The working recommendation was executed as a six-wave hardening cycle:
 
 ```text
 1. Parser/routing growth guardrails preflight
@@ -442,6 +458,18 @@ be:
 4. Feedback review cadence/runbook refinement
 5. Docs/return-package taxonomy cleanup
 6. README/product-positioning refresh
+7. Lightweight product promise/homepage pass
 ```
 
-The exact order should be decided after the remaining review points are discussed.
+Closure evidence:
+
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_2_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_3_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_4_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_5_RETURN_PACKAGE.md`
+- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`
+- `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`
+
+The remaining recommendation is to proceed with launch/handoff using the
+existing `*_WITH_NOTES` statuses, then handle deferred notes as post-launch work.

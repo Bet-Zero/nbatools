@@ -23,7 +23,9 @@
   reduce duplicate public no-result Details. The final Public UI Release
   Review passed on the live main preview with 14 desktop query checks, 13
   mobile 390px family checks, preserved debug/review/visual-QA paths, preserved
-  feedback UI, and no blocking issues.
+  feedback UI, and no blocking issues. Raw Product Post-Review Hardening Waves
+  1–6 are now complete, and the follow-up AppTheming test drift fix established
+  a clean full frontend suite: 25/25 files and 352/352 tests passing.
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
   is manual rather than screenshot-diff automation, opponent-conference support
   is limited to trusted seasons `2024-25` and `2025-26`, existing frontend
@@ -32,8 +34,10 @@
   suggestions are heuristic, corpus conversion remains manual, and explicitly
   unsupported boundaries must continue to return guarded no-result or
   unsupported behavior. Public UI is ready with notes; broader unsupported-copy
-  refinement, visual QA corpus expansion, and automated visual regression are
-  post-launch polish rather than launch blockers.
+  refinement, visual QA corpus expansion, screenshot automation, admin dashboard
+  / mutable triage overlay, `natural_query.py` extraction, return-package
+  archive sweep, and branding/name change are post-launch/deferred notes rather
+  than launch blockers.
 - Recommended handoff decision: ship or hand off the current release candidate
   with notes. Query feedback and the previous debug-heavy default UI are no
   longer preview/public-launch blockers. Missing required R2 data remains a
@@ -54,7 +58,9 @@
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | `/` now defaults to public result rendering; `?debug=1` restores debug chrome; `/review` remains debug-rich; `/visual-qa` keeps internal case metadata while rendering public results; feedback payload diagnostics remain preserved. |
 | Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public `/` is answer-first, public context/caveats render near the hero, successful-result actions are secondary, dense mobile tables use tighter shared padding and column priorities, public no-result has one diagnostics disclosure, `?debug=1`, `/review`, `/visual-qa`, and feedback diagnostics remain preserved. |
 | Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; live main preview checked `/`, `/?debug=1`, `/review`, and `/visual-qa`; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
-| Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
+| Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; Waves 1–6 completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public answer context de-duplication. |
+| AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only wait-gate drift fixed in `frontend/src/test/AppTheming.test.tsx`; full frontend suite now passes 25/25 files and 352/352 tests. |
+| Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, full frontend tests passing 352/352 after the AppTheming test drift fix, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
 
 ## 3. Feedback and diagnostics V1
 
@@ -206,6 +212,13 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   Remaining UI notes are post-launch polish: broader unsupported-copy
   refinement, visual QA corpus expansion, screenshot automation, and continued
   internal horizontal scrolling for wide tables.
+- Raw Product Post-Review Hardening Waves 1–6 are complete. Remaining
+  hardening-cycle notes are post-launch/deferred: no screenshot automation,
+  visual QA corpus expansion, admin dashboard / mutable triage overlay,
+  `natural_query.py` extraction, return-package archive sweep, and branding/name
+  change.
+- The pre-existing AppTheming test drift surfaced during Wave 6 validation is
+  fixed; the full frontend suite is now clean at 352/352 tests passing.
 - Frontend lint still has the existing
   `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning in the
   latest readiness evidence.
@@ -241,10 +254,13 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 
 ## 9. Recommended next roadmap
 
-1. First launch feedback review using `make query-feedback-export`.
-2. Broader no-result/unsupported public-copy refinement.
-3. Visual QA automation preflight.
-4. Next unsupported-family promotion preflight.
-5. CI/release artifact packaging.
-6. Frontend-copy Wave 3 only after fresh gap analysis.
-7. Harness tag/category filters if workflow pain returns.
+1. Proceed with launch/handoff using the current `*_WITH_NOTES` statuses.
+2. Run the first launch feedback review using `make query-feedback-export`.
+3. Treat the remaining notes as post-launch/deferred work: visual QA
+   automation, visual QA corpus expansion, admin dashboard / mutable triage
+   overlay, `natural_query.py` extraction, return-package archive sweep,
+   branding/name change, and existing build/lint warnings.
+4. Run the next unsupported-family promotion preflight only through the Wave 1
+   and Wave 2 guardrails.
+5. Add CI/release artifact packaging or harness tag/category filters only if
+   workflow pain returns.

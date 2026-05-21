@@ -6,6 +6,7 @@
 - Checklist date: 2026-05-17.
 - Latest feedback readiness refresh: 2026-05-18.
 - Latest front-facing UI refresh: 2026-05-19.
+- Latest post-review hardening closure refresh: 2026-05-21.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
@@ -42,7 +43,10 @@
   changes. The final Public UI Release Review passed on the live main preview,
   covering `/`, `/?debug=1`, `/review`, `/visual-qa`, 14 desktop public query
   checks, 13 mobile 390px family checks, debug preservation, and feedback
-  preservation with no blocking issues.
+  preservation with no blocking issues. Raw Product Post-Review Hardening Waves
+  1–6 are now complete. The follow-up AppTheming test drift fix resolved the
+  pre-existing full-suite drift surfaced during Wave 6 validation, and the full
+  frontend suite now passes 25/25 files and 352/352 tests.
 - Latest refresh type: frontend rendering plus docs; no backend query behavior,
   parser behavior, result contract, or corpus expectation changes.
 
@@ -72,6 +76,12 @@ Known limitations:
   broader no-result/unsupported copy refinement, visual QA corpus expansion,
   screenshot automation, the existing `ReviewPage` lint hook warning, and
   accepted internal horizontal scrolling for wide tables.
+- Raw Product Post-Review Hardening Waves 1–6 are complete with notes. Remaining
+  hardening-cycle notes are post-launch/deferred: existing Vite large-chunk
+  warning, existing `ReviewPage` lint warning, no screenshot automation, visual
+  QA corpus expansion, admin dashboard / mutable triage overlay,
+  `natural_query.py` extraction, return-package archive sweep, and
+  branding/name change.
 
 ## 2. Backend Raw QA
 
@@ -330,6 +340,28 @@ frontend/src/ReviewPage.tsx react-hooks/exhaustive-deps warning at 159:27
 
 The warning is pre-existing and was also recorded in the deploy-parity wave.
 
+### Full frontend test suite after AppTheming drift fix
+
+Evidence:
+`return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`.
+
+Command:
+
+```bash
+cd frontend && npx vitest run --no-file-parallelism
+```
+
+Result:
+
+```text
+Test Files  25 passed (25)
+Tests  352 passed (352)
+```
+
+The AppTheming drift fix was test-only and changed no production source,
+frontend rendering, backend behavior, parser/routing behavior, result
+contracts, or corpus expectations.
+
 ### Preview mobile `/visual-qa` overflow fix and rerun
 
 Preview blocker:
@@ -553,7 +585,9 @@ Evidence:
 - Blocking issues: none
 - Remaining notes: screenshot automation, visual QA corpus expansion,
   unsupported/no-result copy taxonomy, existing `ReviewPage` lint hook warning,
-  and internal horizontal scrolling for wide tables
+  existing Vite large-chunk warning, admin dashboard / mutable triage overlay,
+  `natural_query.py` extraction, return-package archive sweep, branding/name
+  change, and internal horizontal scrolling for wide tables
 
 For future previews, validate these routes:
 
@@ -594,12 +628,16 @@ and the later opponent-conference preview R2 blocker is resolved. The latest
 preview and deployment-smoke evidence passed with notes. Query Feedback +
 Diagnostic Logging V1 is `FEEDBACK_READY_WITH_NOTES` and included in the
 release candidate. The final public UI release review passed with no blocking
-issues; broad public launch is no longer blocked by debug-heavy default UI. The
-remaining release notes are selected frontend-copy coverage, manual visual QA,
-trusted-season limits for opponent-conference support, guarded unsupported
-families, existing frontend build/lint warnings, feedback operational follow-ups
-with no admin dashboard or mutable triage overlay, and public UI post-launch
-polish around screenshot automation, visual QA corpus expansion, unsupported
-copy taxonomy, and wide-table internal scrolling. The final release-candidate
-handoff is complete in
+issues; broad public launch is no longer blocked by debug-heavy default UI. Raw
+Product Post-Review Hardening Waves 1–6 are complete, and the AppTheming test
+drift fix established a clean full frontend suite at 352/352 tests passing. No
+new launch blockers were identified. The remaining release notes are selected
+frontend-copy coverage, manual visual QA, trusted-season limits for
+opponent-conference support, guarded unsupported families, existing frontend
+build/lint warnings, feedback operational follow-ups with no admin dashboard or
+mutable triage overlay, and post-launch/deferred work around screenshot
+automation, visual QA corpus expansion, unsupported copy taxonomy,
+`natural_query.py` extraction, return-package archive sweep, branding/name
+change, and wide-table internal scrolling. The final release-candidate handoff
+is complete in
 `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.
