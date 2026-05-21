@@ -68,7 +68,7 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Type an NBA query…"
+          placeholder="Ask a stat-shaped question — e.g. Jokic recent form, top scorers this season"
           autoComplete="off"
           autoFocus
           disabled={disabled}

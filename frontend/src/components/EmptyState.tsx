@@ -29,7 +29,8 @@ export default function EmptyState() {
         <p className={styles.description}>
           nbatools turns natural-language NBA searches into answer-first cards,
           rankings, and detail tables for players, teams, records, streaks,
-          matchups, and playoff history.
+          matchups, and playoff history. Type a question above, or pick one
+          from the starter queries to see how it answers.
         </p>
       </div>
 

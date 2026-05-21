@@ -480,25 +480,44 @@ describe("migrated result envelope", () => {
 
     render(<ResultContextSummary data={data} />);
 
-    expect(screen.getByLabelText("Result context")).toHaveTextContent("LAL");
-    expect(screen.getByLabelText("Result context")).toHaveTextContent(
-      "2024-25",
-    );
-    expect(screen.getByLabelText("Result context")).toHaveTextContent(
-      "Home/Away",
-    );
-    expect(screen.getByLabelText("Result context")).toHaveTextContent(
-      "Last 10 games",
-    );
-    expect(screen.getByLabelText("Result context")).toHaveTextContent(
-      "Apr 1\u201312, 2026",
-    );
+    const contextStrip = screen.getByLabelText("Result context");
+    // Public context should carry only non-obvious trust/scope info.
+    // The answer hero already names team, season, and split type, so
+    // those base-scope chips are filtered out (see POST \u00a74).
+    expect(contextStrip).not.toHaveTextContent("LAL");
+    expect(contextStrip).not.toHaveTextContent("2024-25");
+    expect(contextStrip).not.toHaveTextContent("Home/Away");
+    expect(contextStrip).toHaveTextContent("Last 10 games");
+    expect(contextStrip).toHaveTextContent("Apr 1\u201312, 2026");
     expect(screen.getByText("Caveats")).toBeInTheDocument();
     expect(
       screen.getByText(
         "Round-level data is unavailable before 2001-02, so those seasons are included in totals but not round breakdowns.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("hides the public context strip when only base scope chips would remain", () => {
+    // When the answer hero already names everything that would otherwise
+    // appear in the public context strip (team + season here), the strip
+    // collapses entirely \u2014 no empty chip bar near the hero.
+    const data = makeResponse({
+      result: {
+        query_class: "team_record",
+        result_status: "ok",
+        metadata: {
+          team: "BOS",
+          season: "2025-26",
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    const { container } = render(<ResultContextSummary data={data} />);
+
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("formats opponent-quality filters as opponent-group chips", () => {

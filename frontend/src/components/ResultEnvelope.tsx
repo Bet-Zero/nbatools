@@ -81,6 +81,16 @@ type ContextItem = {
   value: string;
 };
 
+const BASE_SCOPE_CHIP_KEYS: ReadonlySet<string> = new Set([
+  "player",
+  "players",
+  "team",
+  "teams",
+  "season",
+  "opponent",
+  "split",
+]);
+
 type ContextChip = {
   key: string;
   label: string;
@@ -118,11 +128,19 @@ export function ResultContextSummary({
     ...classifiedNotes.context,
     ...classifiedCaveats.context,
   ]);
-  const contextChips = buildContextChips(
+  const allContextChips = buildContextChips(
     metadata,
     appliedFilters,
     contextItems,
     true,
+  );
+  // The public answer hero already names player, team, season, opponent,
+  // and split type. Drop those scope chips here so the public context
+  // strip carries only non-obvious trust/scope information (applied
+  // filters, date ranges, included opponents, "without X", etc.).
+  // See docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md §4.
+  const contextChips = allContextChips.filter(
+    (chip) => !BASE_SCOPE_CHIP_KEYS.has(chip.key),
   );
   const caveatItems = classifiedCaveats.remaining.map(displayNoticeText);
 
