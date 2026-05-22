@@ -133,6 +133,12 @@ If a feature is not reflected here, it should not be assumed shipped.
   (resolved through trusted `team_conference_membership` coverage for `2024-25`
   and `2025-26`; missing or untrusted coverage returns `no_result` /
   `filter_not_supported`, not a broad full-season record)
+- opponent-division context for team records: `vs Atlantic Division`,
+  `against Pacific Division`, `against Northwest Division teams`
+  (explicitly unsupported; returns `no_result` / `filter_not_supported` with
+  `metadata.unsupported_filters=["opponent_division"]`, preserving
+  `team_record` for named-team record phrases and `team_record_leaderboard` for
+  no-subject record phrases; this is not division-filter support)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language
@@ -851,6 +857,9 @@ Current behavior:
 - explicit NBA division requests such as `Celtics record vs Atlantic Division`
   use `metadata.unsupported_filters=["opponent_division"]`; mixed conference
   plus division text does not return a broader conference-only answer
+- no-subject division record phrasing, such as
+  `record against Northwest Division teams`, preserves the closest
+  `team_record_leaderboard` route but still returns unsupported/no-result
 - unsupported routes append an explicit note or return a clean unsupported
   response instead of silently broadening
 

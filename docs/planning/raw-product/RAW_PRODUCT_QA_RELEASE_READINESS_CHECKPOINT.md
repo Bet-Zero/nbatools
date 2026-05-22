@@ -2,9 +2,11 @@
 
 ## 1. Executive summary
 
-- Backend raw QA status: clean for the current 246-case corpus.
+- Backend raw QA status: latest full run is clean for the 246-case release
+  corpus; the current corpus includes 7 added division-boundary guard cases
+  with targeted raw QA slice evidence.
 - Frontend-copy QA status: clean for the selected 125-case rendered-copy corpus
-  sourced from the latest clean 246-case backend run.
+  sourced from the latest clean full backend run.
 - Visual QA status: 15-case manual baseline completed; targeted mobile/table and
   filtered-leaderboard hero fixes were verified locally and in the latest
   preview rerun.
@@ -23,7 +25,10 @@
 - Supported boundary update: current-era opponent-conference `team_record`
   filters are supported for trusted seasons `2024-25` and `2025-26`; missing
   coverage, geography, divisions, and single-team playoff-round phrasing remain
-  guarded unsupported boundaries.
+  guarded unsupported boundaries. Explicit NBA division opponent phrases now
+  return `opponent_division` no-results instead of broad team-record,
+  record-leaderboard, or conference-only answers; division support was not
+  added.
 - R2 preview blocker status: resolved. R2 now contains
   `raw/teams/team_conference_membership.csv`; dry-run, sync, and `head_object`
   evidence passed; the latest preview opponent-conference smoke passed on
@@ -68,12 +73,14 @@
 
 ## 2. Backend Raw Query Answer QA
 
-- Corpus size: 246 cases.
+- Corpus size: 253 cases after the division-boundary guard additions.
 - Latest run:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.md`.
 - Latest release-package run:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.md`.
-- Pass/fail: expectation cases `pass: 246`; failed case IDs: none.
+- Pass/fail: latest full run expectation cases `pass: 246`; failed case IDs:
+  none. Latest division-boundary targeted slices passed 35/35
+  `natural_query_route_priority` cases and 18/18 `product_boundaries` cases.
 - Result statuses: `ok: 206`, `no_result: 31`, `error: 9`.
 - Expectation checks: `pass: 1421`.
 - Suspicious flags: 0.
@@ -204,8 +211,11 @@ They are not current product failures.
   - Current behavior: `team_record` queries support East/West opponent
     conference filters for trusted seasons `2024-25` and `2025-26`.
     Missing/untrusted seasons return `conference_coverage` no-result, and
-    geography phrases such as `east coast teams` and division requests remain
-    unsupported.
+    geography phrases such as `east coast teams` remain unsupported as
+    `opponent_conference`. Explicit NBA division requests such as
+    `Celtics record vs Atlantic Division` remain unsupported as
+    `opponent_division`, preserving the closest record route and returning
+    empty sections instead of broad fallback rows.
   - Why limited: historical conference membership, divisions, and geography
     semantics are not part of the approved current-era data contract.
   - Future support path: add trusted historical conference membership or a
@@ -436,6 +446,14 @@ Latest release-readiness checklist validation:
   test-only drift fix; full frontend suite passed 25/25 files and 352/352 tests.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
+- Division boundary cleanup:
+  `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`;
+  targeted snapshot tests passed 65 tests, `make PYTEST=.venv/bin/pytest
+  test-parser` passed 776 tests, `make PYTEST=.venv/bin/pytest test-query`
+  passed 776 tests, raw QA `natural_query_route_priority` passed 35/35, raw QA
+  `product_boundaries` passed 18/18, `make PYTEST=.venv/bin/pytest
+  test-preflight` passed 2978 tests with 1 xpassed, and `git diff --check`
+  passed.
 - Static check: `git diff --check` passed.
 - Preview validation:
   `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
@@ -482,8 +500,9 @@ Recommended order:
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
-- Why: backend QA now has a clean 246-case corpus, while frontend-copy QA still
-  covers a selected 125-case rendered subset.
+- Why: backend QA has a clean latest full release run and targeted
+  division-boundary slice evidence, while frontend-copy QA still covers a
+  selected 125-case rendered subset.
 - Scope: expand only if a follow-up gap analysis identifies remaining
   high-risk route/shape families not represented in the 125-case set.
 - When to choose: choose this when the next risk is user-facing interpretation

@@ -7,8 +7,9 @@
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - What is ready: the current Raw Product supported and explicitly unsupported
-  boundary is ready for handoff. Backend Raw QA is clean at 246/246 cases,
-  selected frontend-copy QA rendered 125/125 cases with soft checks `480/0/0`,
+  boundary is ready for handoff. The latest full Backend Raw QA run is clean at
+  246/246 cases, selected frontend-copy QA rendered 125/125 cases with soft
+  checks `480/0/0`,
   required R2 data is available, deployment smoke passed, and the latest
   preview `/visual-qa` request-health check loaded 15/15 cases with request
   errors 0. Query Feedback + Diagnostic Logging V1 is included in the current
@@ -38,6 +39,13 @@
   / mutable triage overlay, `natural_query.py` extraction, return-package
   archive sweep, and branding/name change are post-launch/deferred notes rather
   than launch blockers.
+- Division Phrase Boundary Cleanup is complete for this handoff boundary:
+  explicit NBA division opponent phrases return `no_result` /
+  `filter_not_supported` with empty sections and
+  `metadata.unsupported_filters=["opponent_division"]` instead of broad
+  `team_record`, `team_record_leaderboard`, or conference-only answers. This
+  did not add division support, and Conference Finals record phrasing remains
+  on the `single_team_playoff_round_record` unsupported boundary.
 - Recommended handoff decision: ship or hand off the current release candidate
   with notes. Query feedback and the previous debug-heavy default UI are no
   longer preview/public-launch blockers. Missing required R2 data remains a
@@ -47,7 +55,7 @@
 
 | Area | Status | Evidence |
 |---|---|---|
-| Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. |
+| Raw QA | `PASS` | Latest full run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. Current corpus has 253 cases after division-boundary additions; targeted division slices passed in the cleanup evidence below. |
 | Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`; 125 selected cases rendered; render failures 0; missing backend records 0; soft checks `480/0/0`. |
 | Preview smoke | `PASS_WITH_NOTES` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference preview checks passed, two guardrails passed, and `/visual-qa` request errors were 0. |
 | R2 data availability | `PASS` | `raw/teams/team_conference_membership.csv` exists in R2; dry-run, sync, and `head_object` evidence passed with `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
@@ -60,6 +68,7 @@
 | Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; live main preview checked `/`, `/?debug=1`, `/review`, and `/visual-qa`; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
 | Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; Waves 1–6 completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public answer context de-duplication. |
 | AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only wait-gate drift fixed in `frontend/src/test/AppTheming.test.tsx`; full frontend suite now passes 25/25 files and 352/352 tests. |
+| Division boundary cleanup | `PASS` | `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; targeted snapshots passed 65 tests, `test-parser` passed 776, `test-query` passed 776, raw QA route-priority slice passed 35/35, raw QA product-boundaries slice passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
 | Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, full frontend tests passing 352/352 after the AppTheming test drift fix, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
 
 ## 3. Feedback and diagnostics V1
@@ -177,7 +186,9 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 - Team rolling-stretch leaderboards.
 - Minutes leaderboards.
 - Team single-game threes.
-- Divisions.
+- Explicit NBA division opponent phrases: `team_record` for named-team record
+  phrases and `team_record_leaderboard` for no-subject record phrases, with
+  `unsupported_filters=["opponent_division"]`; no division filtering support.
 - Geography phrases such as `east coast teams` and `west coast teams`.
 - Historical opponent-conference coverage outside trusted seasons `2024-25` and
   `2025-26`.
@@ -199,7 +210,7 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 
 ## 7. Known limitations
 
-- Frontend-copy QA is selected coverage, not all 246 raw cases.
+- Frontend-copy QA is selected coverage, not every raw QA case.
 - Visual QA is manual, not screenshot-diff automation.
 - Opponent-conference support is limited to trusted seasons `2024-25` and
   `2025-26`.
@@ -249,6 +260,10 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   feedback controls on `/`, and no feedback controls on `/review` or
   `/visual-qa`.
 - [ ] Run supported and unsupported smoke queries.
+- [ ] Include division boundary smoke queries such as
+  `Celtics record vs Atlantic Division`,
+  `record against Northwest Division teams`, and
+  `Lakers record against Western Conference Pacific Division teams`.
 - [ ] Mobile spot-check primary result readability.
 - [ ] Confirm there is no broad fallback for unsupported boundaries.
 

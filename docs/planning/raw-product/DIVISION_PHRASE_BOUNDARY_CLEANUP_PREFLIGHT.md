@@ -8,6 +8,11 @@ preflight does not change production code, parser/routing behavior, backend
 behavior, frontend behavior, result contracts, tests, QA corpus expectations, or
 division support.
 
+Post-cleanup status: the behavior wave is complete. Division opponent phrasing
+now returns a guarded unsupported response with
+`metadata.unsupported_filters == ["opponent_division"]`; the broad-fallback
+issue documented by this preflight is resolved. Division support was not added.
+
 ## Executive Summary
 
 Division-opponent phrasing remains unsupported by product policy. The current
@@ -35,6 +40,12 @@ support. Division requests should return `no_result` /
 to opponent-conference routing because the phrasing is opponent-filter-like, but
 it should use a separate unsupported filter id so division requests are not
 misreported as conference geography or conference coverage failures.
+
+Completed cleanup evidence is recorded in
+`return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`.
+The validation set passed targeted snapshot tests, parser/query slices, raw QA
+route-priority and product-boundary slices, `test-preflight`, and
+`git diff --check`.
 
 ## Inputs Inspected
 

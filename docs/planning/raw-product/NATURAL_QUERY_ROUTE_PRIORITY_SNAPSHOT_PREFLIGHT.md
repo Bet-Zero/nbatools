@@ -32,13 +32,12 @@ the dedicated query unsupported snapshot file, and a harness slice using
 existing raw QA case IDs. Do not change `natural_query.py` in that wave. Do not
 change existing corpus expectations.
 
-Important gap found: division-opponent phrasing is policy-documented as a
-guarded unsupported boundary, but current behavior still broad-falls back. A
-manual check of `Celtics record vs Atlantic Division` returned `team_record`,
-`ok`, no unsupported filter, and normal `summary` / `by_season` sections. Do
-not add this as a passing unsupported snapshot in the first safety-net wave.
-Treat it as a separate product-boundary cleanup candidate or a stop condition
-before extraction work adjacent to opponent-conference routing.
+Historical gap found: division-opponent phrasing was policy-documented as a
+guarded unsupported boundary, but behavior broad-fell back when this preflight
+was written. Division Phrase Boundary Cleanup has since resolved that gap:
+explicit NBA division opponent phrases now return `no_result` /
+`filter_not_supported` with `unsupported_filters=["opponent_division"]`, while
+preserving the closest record route and adding no division support.
 
 ## Inputs Inspected
 
@@ -142,8 +141,9 @@ Add new raw QA cases only in a follow-up wave for true coverage gaps:
 
 - `Celtics record against the East in 2023-24` for the `conference_coverage`
   no-broad-fallback boundary
-- division phrasing only after a product-boundary cleanup decision, because
-  current behavior broad-falls back to `team_record` `ok`
+- division phrasing now has cleanup-wave coverage; see the raw guard cases in
+  `qa/harness_slices/natural_query_route_priority.yaml` and
+  `qa/harness_slices/product_boundaries.yaml`
 
 ## First Executable Test Wave
 
@@ -272,7 +272,7 @@ Add or consider these only after the first snapshot wave:
 | Gap | Recommended action |
 |---|---|
 | `conference_coverage` lacks raw QA corpus coverage | Add `Celtics record against the East in 2023-24` with `team_record`, `no_result`, `filter_not_supported`, empty sections, and `metadata.unsupported_filters.0 == conference_coverage`. Existing query-service coverage already pins this. |
-| Division phrasing is policy-guarded but currently broad-falls back | Do not add an expected-unsupported raw QA case until a behavior-change preflight approves the boundary cleanup. Current behavior for `Celtics record vs Atlantic Division` is `team_record`, `ok`, no unsupported filter. |
+| Division phrasing cleanup is complete | Keep the new expected-unsupported raw QA cases in the route-priority and product-boundary slices. Expected behavior is `no_result` / `filter_not_supported`, empty sections, and `metadata.unsupported_filters.0 == opponent_division`, except conference-finals record phrasing which remains `single_team_playoff_round_record`. |
 | Existing note-tagged fallback fragments are not separately sliced | If extraction touches boundary-fragment notes, add a narrow parser snapshot for `in clutch time` and `against winning teams`, but do not expand the fallback family. |
 
 ## Validation Commands

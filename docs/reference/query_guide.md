@@ -259,6 +259,13 @@ conference opponent list keeps all 15 conference members, including the subject
 team when applicable; this has no effect because teams do not play themselves.
 Explicit NBA division requests such as `Celtics record vs Atlantic Division`
 return `metadata.unsupported_filters=["opponent_division"]`.
+Named-team division record phrases preserve the `team_record` route; no-subject
+division record phrases such as `record against Northwest Division teams`
+preserve `team_record_leaderboard`. These are guarded unsupported responses,
+not division-filter support. Mixed conference-plus-division phrasing such as
+`Lakers record against Western Conference Pacific Division teams` does not
+return a broader conference-only answer. `conference finals` record phrasing
+remains a playoff-round unsupported boundary.
 
 ## Playoff history and rounds
 

@@ -10,6 +10,7 @@
 - Latest feedback readiness refresh: 2026-05-18.
 - Latest front-facing UI refresh: 2026-05-19.
 - Latest post-review hardening closure refresh: 2026-05-21.
+- Latest division boundary cleanup refresh: 2026-05-22.
 - Scope: current supported and explicitly unsupported Raw Product boundary.
 - Production code changed for this package: yes, frontend only.
 - Frontend rendering changed for this package: yes, public/default result mode
@@ -69,11 +70,19 @@ during Wave 6 validation. The latest full frontend suite evidence is clean:
 25/25 files and 352/352 tests passing. This closure refresh is docs-only and
 does not change backend behavior, parser/routing behavior, result contracts,
 frontend rendering, QA corpus expectations, or release status.
+Division Phrase Boundary Cleanup is also complete: explicit NBA division
+opponent phrases no longer broad-fallback to ordinary team-record or
+record-leaderboard answers. They return `no_result` /
+`filter_not_supported`, empty sections, and
+`metadata.unsupported_filters=["opponent_division"]`. Named-team division
+record phrases preserve `team_record`; no-subject division record phrases
+preserve `team_record_leaderboard`; mixed conference-plus-division text does
+not return a broader conference-only answer. Division support was not added.
 
 Human sign-off still needed:
 
 - Product owner acceptance that selected frontend-copy coverage is sufficient
-  for this release and does not need all 246 backend cases rendered.
+  for this release and does not need every backend raw QA case rendered.
 - Product owner acceptance that visual QA remains manual, not screenshot-diff
   automation.
 - Product owner acceptance that the explicitly guarded unsupported families
@@ -97,7 +106,7 @@ Human sign-off still needed:
 
 | Area | Status | Evidence |
 |---|---|---|
-| Backend Raw QA | `PASS` | `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. |
+| Backend Raw QA | `PASS` | Latest full run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. Current corpus has 253 cases after division-boundary additions; targeted division slices passed in the cleanup evidence below. |
 | Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
 | Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`; 15-case desktop/mobile manual baseline accepted; latest preview `/visual-qa` loaded 15/15 with request errors 0; no screenshot diff automation. |
 | Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
@@ -111,6 +120,7 @@ Human sign-off still needed:
 | Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
 | Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; waves completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public context de-duplication. |
 | AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only drift fixed and full frontend suite passed 25/25 files and 352/352 tests. |
+| Division phrase boundary cleanup | `PASS` | `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; targeted snapshots passed 65 tests, parser/query slices passed 776 tests each, raw QA `natural_query_route_priority` passed 35/35, raw QA `product_boundaries` passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
 | Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
 | Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
@@ -249,7 +259,7 @@ return explicit no-result, unsupported, unsupported-data, or
 | Rookie leaderboards | Returns explicit unsupported-filter no-result. | Rookie status is not part of the trusted current leaderboard filter contract. | Add trusted rookie metadata, parser slots, execution filtering, docs, and tests. |
 | League-wide starter/bench leaderboards | Returns explicit unsupported-filter no-result for starter/bench leaderboard phrasing. | League-wide role filters need trusted role classification, minimums, and route contracts. | Define role coverage and minimums, then add execution-backed filters and rendered-copy coverage. |
 | Team bench scoring | Returns explicit unsupported-filter no-result for team bench scoring/points. | Team bench scoring needs role-scoped team aggregation outside the current team summary contract. | Define a team bench/unit scoring dataset or derived aggregation with stable summary sections. |
-| Opponent-conference coverage gaps / geography / divisions | Current-era `team_record` opponent-conference filters are supported for trusted seasons `2024-25` and `2025-26`; seasons outside trusted coverage, geography phrases such as `east coast teams`, and division requests return explicit no-result instead of broad full-season records. | Historical conference coverage, divisions, and geography semantics are not part of the approved data contract. | Add trusted historical conference membership or division/geography contracts before expanding beyond the current-era East/West team-record filter. |
+| Opponent-conference coverage gaps / geography / divisions | Current-era `team_record` opponent-conference filters are supported for trusted seasons `2024-25` and `2025-26`; seasons outside trusted coverage return `conference_coverage`; geography phrases such as `east coast teams` return `opponent_conference`; explicit NBA division requests return `opponent_division`. Division phrases preserve the closest record route but return no-result with empty sections instead of broad full-season, record-leaderboard, or conference-only answers. | Historical conference coverage, divisions, and geography semantics are not part of the approved data contract. Division filtering itself is not supported. | Add trusted historical conference membership or division/geography contracts before expanding beyond the current-era East/West team-record filter. |
 | Single-team playoff round records | Single-team Finals/conference-finals record phrasing returns unsupported-filter no-result; `conference finals` is playoff-round phrasing, not opponent-conference filtering. | Current contracts support round leaderboards and matchup history, not single-team round records; some historical round labels are unreliable. | Approve single-team playoff round semantics and fallback behavior for unreliable labels, then add route/output coverage. |
 | Subjective/trend queries | Clutch, cooled off, best defender, MVP candidate, best player lately, and similar opinion/trend requests return unsupported/no-result instead of invented definitions. | Product-approved metric definitions and source coverage are required. | Define metric-backed semantics one family at a time, then add parser, execution, copy, and QA coverage. |
 | Multi-player availability | Multi-player availability record phrasing returns explicit unsupported/no-result instead of an unfiltered team record. | Multi-player availability semantics are outside the current whole-game single-player absence contract. | Add a dedicated availability model, trusted coverage fields, filter semantics, and result contract. |
@@ -319,7 +329,7 @@ Supporting return packages:
 ## 6. Known Limitations
 
 - Frontend-copy QA is selected coverage: 125 rendered cases from the latest
-  clean 246-case backend run, not all 246 backend cases.
+  clean 246-case backend run, not every backend raw QA case.
 - Frontend-copy QA checks DOM text and rendered component output; it is not
   visual layout or screenshot diff automation.
 - Visual QA remains a manual 15-case baseline with accepted desktop/mobile
@@ -332,8 +342,10 @@ Supporting return packages:
 - Unsupported features are guarded and documented; opponent-conference
   `team_record` filters are execution-backed only for trusted seasons
   `2024-25` and `2025-26`.
-- Opponent-conference expansion outside trusted current-era coverage, divisions,
-  and geography phrases remains unsupported/no-result.
+- Opponent-conference expansion outside trusted current-era coverage, explicit
+  division phrases, and geography phrases remain unsupported/no-result.
+  Division phrases use `unsupported_filters=["opponent_division"]`; no
+  division support was added.
 - Conference Finals phrasing remains a playoff-round surface, not an
   opponent-conference filter.
 - Frontend lint remains clean with 0 errors and the existing
@@ -402,6 +414,9 @@ Before deploying this boundary again:
   - `Lakers road record against West last season`
   - `Knicks record against Eastern Conference teams since January 1`
   - `Celtics record against east coast teams`
+  - `Celtics record vs Atlantic Division`
+  - `record against Northwest Division teams`
+  - `Lakers record against Western Conference Pacific Division teams`
   - `Celtics conference finals record`
 - Run a mobile visual QA five-case spot check:
   - `biggest_scoring_games`

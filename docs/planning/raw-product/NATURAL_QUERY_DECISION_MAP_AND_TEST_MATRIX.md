@@ -82,36 +82,37 @@ and expanded collision coverage.
 | 11 | Distinct player count with occurrence or threshold. | `player_occurrence_leaders`. |
 | 12 | Single-team streak request. | `team_streak_finder`. |
 | 13 | Playoff / record / decade helper. | `try_playoff_record_route(parsed)`. |
-| 14 | Player split request. | `player_split_summary`. |
-| 15 | Team split request. | `team_split_summary`. |
-| 16 | Two-player comparison. | `player_compare`. |
-| 17 | Two-team record / matchup intent. | `team_matchup_record`. |
-| 18 | Two-team comparison without record intent. | `team_compare`. |
-| 19 | Single-player streak request. | `player_streak_finder`. |
-| 20 | Literal top player games branch. | `top_player_games`. |
-| 21 | Top team games branch. | `top_team_games`. |
-| 22 | Compound occurrence helper. | `try_compound_occurrence_route(parsed)`. |
-| 23 | Record-leaderboard helper. | `try_record_leaderboard_route(parsed)`. |
-| 24 | Personal-foul leaderboard boundary. | `season_leaders`, `stat="pf"`, `unsupported_filters=["personal_foul_leaderboard"]`. |
-| 25 | Rookie leaderboard boundary. | `season_leaders`, `unsupported_filters=["rookie_leaderboard"]`. |
-| 26 | League-wide starter/bench leaderboard boundary. | `season_leaders`, `unsupported_filters=["role_leaderboard"]`. |
-| 27 | Team bench-scoring boundary. | `game_finder`, `unsupported_filters=["team_bench_scoring"]`. |
-| 28 | Opponent-conference geography boundary. | `team_record`, `unsupported_filters=["opponent_conference"]`. |
-| 29 | Supported opponent-conference team record. | `team_record` with `opponent_conference`. |
-| 30 | Single-team advanced-stat scalar boundary. | `game_summary`, `unsupported_filters=["single_team_advanced_stat_summary"]`. |
-| 31 | Explicit-date top-scorer branch. | `top_player_games`, `stat="pts"`. |
-| 32 | Context-only boundary fragment. | `season_leaders`, `stat="pts"`, note-tagged broad fallback. |
-| 33 | Metric-only leaderboard default. | `season_team_leaders` or `season_leaders`; includes local stat-availability fallback constants. |
-| 34 | Single-player special-event occurrence count helper. | `try_occurrence_count_route(parsed)`. |
-| 35 | Explicit player finder/count. | `player_game_finder`. |
-| 36 | Explicit team finder/count. | `game_finder`. |
-| 37 | Multi-player availability boundary for team records. | `team_record`, `unsupported_filters=["multi_player_availability"]`. |
-| 38 | Player summary. | `player_game_summary`. |
-| 39 | Single-team record. | `team_record`. |
-| 40 | Team summary. | `game_summary`. |
-| 41 | Player fallback finder. | `player_game_finder`. |
-| 42 | Team fallback finder. | `game_finder`. |
-| 43 | No route selected. | Raise `ValueError`. |
+| 14 | Opponent-division record boundary. | `team_record` or `team_record_leaderboard`, `unsupported_filters=["opponent_division"]`; no division support. |
+| 15 | Player split request. | `player_split_summary`. |
+| 16 | Team split request. | `team_split_summary`. |
+| 17 | Two-player comparison. | `player_compare`. |
+| 18 | Two-team record / matchup intent. | `team_matchup_record`. |
+| 19 | Two-team comparison without record intent. | `team_compare`. |
+| 20 | Single-player streak request. | `player_streak_finder`. |
+| 21 | Literal top player games branch. | `top_player_games`. |
+| 22 | Top team games branch. | `top_team_games`. |
+| 23 | Compound occurrence helper. | `try_compound_occurrence_route(parsed)`. |
+| 24 | Record-leaderboard helper. | `try_record_leaderboard_route(parsed)`. |
+| 25 | Personal-foul leaderboard boundary. | `season_leaders`, `stat="pf"`, `unsupported_filters=["personal_foul_leaderboard"]`. |
+| 26 | Rookie leaderboard boundary. | `season_leaders`, `unsupported_filters=["rookie_leaderboard"]`. |
+| 27 | League-wide starter/bench leaderboard boundary. | `season_leaders`, `unsupported_filters=["role_leaderboard"]`. |
+| 28 | Team bench-scoring boundary. | `game_finder`, `unsupported_filters=["team_bench_scoring"]`. |
+| 29 | Opponent-conference geography boundary. | `team_record`, `unsupported_filters=["opponent_conference"]`. |
+| 30 | Supported opponent-conference team record. | `team_record` with `opponent_conference`. |
+| 31 | Single-team advanced-stat scalar boundary. | `game_summary`, `unsupported_filters=["single_team_advanced_stat_summary"]`. |
+| 32 | Explicit-date top-scorer branch. | `top_player_games`, `stat="pts"`. |
+| 33 | Context-only boundary fragment. | `season_leaders`, `stat="pts"`, note-tagged broad fallback. |
+| 34 | Metric-only leaderboard default. | `season_team_leaders` or `season_leaders`; includes local stat-availability fallback constants. |
+| 35 | Single-player special-event occurrence count helper. | `try_occurrence_count_route(parsed)`. |
+| 36 | Explicit player finder/count. | `player_game_finder`. |
+| 37 | Explicit team finder/count. | `game_finder`. |
+| 38 | Multi-player availability boundary for team records. | `team_record`, `unsupported_filters=["multi_player_availability"]`. |
+| 39 | Player summary. | `player_game_summary`. |
+| 40 | Single-team record. | `team_record`. |
+| 41 | Team summary. | `game_summary`. |
+| 42 | Player fallback finder. | `player_game_finder`. |
+| 43 | Team fallback finder. | `game_finder`. |
+| 44 | No route selected. | Raise `ValueError`. |
 
 Shared post-processing then attaches shared context kwargs, applies compound
 route conditions, derives intent, appends parser notes, computes confidence,
@@ -140,7 +141,7 @@ not broaden unsupported queries into successful answers during extraction.
 | Team bench scoring / points | `game_finder` | `no_result` / `filter_not_supported`; `unsupported_filters=["team_bench_scoring"]`. | Parser and execution P2 boundary tests; raw cases `celtics_bench_scoring_boundary_wave4`, `celtics_bench_points_wave5`. |
 | Opponent-conference geography | `team_record` | `no_result` / `filter_not_supported`; `unsupported_filters=["opponent_conference"]`; `opponent_conference` remains empty. | Parser: `test_east_coast_teams_does_not_parse_as_opponent_conference`; execution: `test_east_coast_teams_remains_unsupported_without_broad_record`; raw case `celtics_against_east_coast_teams_guard`. |
 | Opponent-conference missing/untrusted coverage | `team_record` | `no_result` / `filter_not_supported`; `unsupported_filters=["conference_coverage"]`; no broad full-season record. | `tests/test_query_service.py::TestOpponentConferenceTeamRecords` missing coverage tests; docs in `query_catalog.md` and `query_guide.md`. |
-| Division filters near opponent-conference phrasing | Not promoted as supported. | Expected unsupported by policy; no broad team-record fallback. | Documented in `FEATURE_PROMOTION_RULES.md`, `PARSER_ROUTING_GROWTH_GUARDRAILS.md`, `query_catalog.md`, and `query_guide.md`; needs explicit route/corpus cases before any adjacent extraction changes. |
+| Division filters near opponent-conference phrasing | `team_record` for named-team record phrases; `team_record_leaderboard` for no-subject record phrases. | `no_result` / `filter_not_supported`; `unsupported_filters=["opponent_division"]`; no broad team-record, record-leaderboard, or conference-only fallback. No division support. | Parser snapshots in `tests/test_natural_query_route_priority_snapshots.py`; execution snapshots in `tests/test_natural_query_unsupported_boundary_snapshots.py`; raw cases `celtics_atlantic_division_guard`, `lakers_pacific_division_guard`, `knicks_central_division_guard`, `record_against_northwest_division_teams_guard`, `lakers_western_conference_pacific_division_guard`, `celtics_playoff_atlantic_division_guard`, `celtics_conference_finals_atlantic_division_guard`. |
 | Single-team advanced-stat scalar summaries | `game_summary` | `no_result` / `filter_not_supported`; `unsupported_filters=["single_team_advanced_stat_summary"]`. League-wide team advanced leaderboards remain supported. | Parser: `test_single_team_advanced_stat_scalar_queries_are_unsupported_boundaries`, `test_league_wide_team_advanced_leaderboards_still_route`; execution: `test_single_team_advanced_stat_summaries_return_unsupported_boundary`; raw case `warriors_net_rating_single_team_wave5`. |
 | Single-team playoff round records | `playoff_history` | `no_result` / `filter_not_supported`; `unsupported_filters=["single_team_playoff_round_record"]`; no regular-season `team_record` fallback. | Parser: `test_single_team_playoff_round_records_are_unsupported_boundary`; execution: `test_single_team_round_records_return_unsupported_not_team_record`; raw cases `bulls_finals_record_wave4`, `warriors_finals_record_since_2015_wave4`, question-form variants. |
 | Multi-player availability records | `team_record` | `no_result` / `filter_not_supported`; `unsupported_filters=["multi_player_availability"]`; no unfiltered record. | Parser/execution: `TestWithoutPlayer` multi-player availability tests; raw case `lakers_lebron_ad_both_play`. |
@@ -164,7 +165,7 @@ the contract.
 | Season high / top games vs season leaderboard | Single-game wording routes to `top_player_games`; ordinary leader wording routes to `season_leaders`. | `test_non_scoring_single_game_top_performance_routes_to_top_player_games`, `test_ordinary_assist_leaderboards_stay_season_leaders`, UI failure top-performance tests, raw top-performance cases. |
 | Player occurrence count vs finder/count vs occurrence leaderboard | Distinct-player count, special-event count, and player finder/count have separate routes. | `test_parser_equivalence_groups.py`, `test_occurrence_queries.py`, `test_compound_occurrence_queries.py`, raw occurrence cases. |
 | Playoff opponent-quality vs actual playoff games | `against playoff teams` is regular-season opponent quality; `playoff record/history` is playoff competition. | `test_team_record_against_playoff_teams_stays_regular_season`, `test_actual_playoff_record_phrases_still_use_playoffs`, UI failure opponent-quality tests. |
-| Opponent conference vs conference finals vs geography/division | `against the East/West` can be supported team-record filtering; `conference finals` is playoff round; `east coast teams` and divisions are unsupported. | Opponent-conference parser/query-service tests; playoff round tests; raw `celtics_against_east_coast_teams_guard`; division coverage is documented but needs explicit extraction-era cases before nearby changes. |
+| Opponent conference vs conference finals vs geography/division | `against the East/West` can be supported team-record filtering; `conference finals` is playoff round; `east coast teams` is unsupported as `opponent_conference`; explicit NBA division phrases are unsupported as `opponent_division`. | Opponent-conference parser/query-service tests; playoff round tests; raw `celtics_against_east_coast_teams_guard`; division parser/execution snapshots and raw division guard cases. |
 | Player comparison vs player-as-opponent context | `LeBron James vs Kevin Durant comparison` is `player_compare`; `LeBron stats vs Kevin Durant` is opponent-player context. | `test_player_game_log_vs_player_stays_finder`, `test_full_name_lebron_durant_comparison_executes_as_comparison`, raw wave 5 comparison/finder cases. |
 | Team record vs team comparison vs team matchup record | Two teams plus record intent routes to `team_matchup_record`; two teams without record intent routes to `team_compare`; single-team record stays `team_record`. | `test_natural_matchup_queries.py`, `test_parser_equivalence_groups.py`, raw matchup/comparison cases. |
 | Unsupported role/rookie/team-bench boundaries vs supported player role filters | League/team role leaderboards are unsupported; player summary/finder role filters are supported when data coverage exists. | P2 boundary parser/execution tests; `test_phase_g_role_execution.py`; raw role boundary and player-role cases. |
@@ -199,7 +200,7 @@ moves behavior-sensitive code.
 | Unsupported-boundary matrix tied to every boundary in section 5. | Raw corpus has many cases, but not every boundary is represented in a dedicated extraction slice. Unsupported behavior should assert route, result status/reason, empty sections, and metadata. |
 | Collision-group fixtures for every group in section 6. | Existing tests cover many collisions, but extraction review needs one named fixture per adjacent family so branch movement is obvious. |
 | Explicit no-broad-fallback assertions for all unsupported-filter branches. | Future refactors must prove unsupported filters do not silently return broad rows. |
-| Division and historical opponent-conference coverage cases near the supported conference path. | Docs and policy name these boundaries, but extraction near opponent-conference parsing should add explicit route/corpus checks before code movement. |
+| Historical opponent-conference coverage cases near the supported conference path. | Division boundary coverage now has explicit parser, execution, and raw QA cases; future extraction near opponent-conference parsing still needs care around historical coverage limits and trusted-season behavior. |
 | Post-processing note/caveat order snapshots. | Shared notes are appended after route selection; helper extraction could change note presence or order without changing route. |
 | Import / `__all__` compatibility checks. | `natural_query.py` re-exports many helpers. Extraction should check callers before moving or removing exports. |
 | Before/after parser snapshots for candidate queries. | A future extraction should compare `parse_query()` output for selected route/collision/boundary queries before and after code movement. |

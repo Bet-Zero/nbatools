@@ -7,6 +7,7 @@
 - Latest feedback readiness refresh: 2026-05-18.
 - Latest front-facing UI refresh: 2026-05-19.
 - Latest post-review hardening closure refresh: 2026-05-21.
+- Latest division boundary cleanup refresh: 2026-05-22.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
@@ -16,7 +17,10 @@
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`;
   handoff complete with notes.
 - Production query behavior changed: yes; current-era opponent-conference
-  `team_record` filters now execute for trusted seasons `2024-25` and `2025-26`.
+  `team_record` filters now execute for trusted seasons `2024-25` and
+  `2025-26`, and explicit NBA division opponent phrasing now returns a guarded
+  `opponent_division` unsupported boundary instead of broad team-record,
+  record-leaderboard, or conference-only answers.
 - Frontend rendering changed: yes. Front-facing Result UI Productization Wave 1
   adds public/default result mode on `/`, and Wave 2 makes public results
   answer-first, moves context/caveats near the answer, makes actions secondary,
@@ -47,13 +51,17 @@
   1–6 are now complete. The follow-up AppTheming test drift fix resolved the
   pre-existing full-suite drift surfaced during Wave 6 validation, and the full
   frontend suite now passes 25/25 files and 352/352 tests.
-- Latest refresh type: frontend rendering plus docs; no backend query behavior,
-  parser behavior, result contract, or corpus expectation changes.
+- Latest refresh type: docs-only release/readiness refresh after the completed
+  division boundary cleanup; this docs pass does not change backend query
+  behavior, parser behavior, result contracts, frontend rendering, tests, or
+  corpus expectations.
 
 Known limitations:
 
 - Frontend-copy QA covers a selected 125-case corpus from the latest clean
-  246-case backend run, not all 246 backend cases.
+  246-case backend run. The current backend corpus has 253 cases after the
+  division-boundary additions; those new division cases have targeted raw QA
+  slice evidence but have not been folded into a full frontend-copy pass.
 - Frontend-copy QA is DOM-copy QA, not visual layout or screenshot QA.
 - Visual QA is a manual 15-case baseline, not Playwright or screenshot diffing.
 - Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
@@ -64,7 +72,8 @@ Known limitations:
   future missing required R2 files remain deploy blockers.
 - Unsupported product families are guarded and documented; opponent-conference
   team-record filters are now supported only inside the trusted current-era
-  conference coverage boundary.
+  conference coverage boundary. Explicit division opponent phrases are
+  unsupported as `opponent_division`; division filtering was not added.
 - Query feedback is `FEEDBACK_READY_WITH_NOTES`; R2 inspection passed, the
   read-only review/export workflow is implemented, and launch review can use
   `make query-feedback-export`. Remaining feedback limitations are operational
@@ -88,11 +97,11 @@ Known limitations:
 | Item | Status |
 |---|---|
 | Corpus | `qa/raw_query_answer_corpus.yaml` |
-| Case count | 246 |
+| Case count | 253 current cases; latest full run covered 246 before division-boundary additions |
 | Latest checkpoint run | `outputs/raw_query_answer_qa/20260517T070422Z/report.md` |
 | Latest release-package run | `outputs/raw_query_answer_qa/20260517T070422Z/report.md` |
 | Result statuses | `ok: 206`, `no_result: 31`, `error: 9` |
-| Expectation cases | `pass: 246` |
+| Expectation cases | latest full run `pass: 246`; latest division slices `35/35` and `18/18` |
 | Expectation checks | `pass: 1421` |
 | Failed case IDs | none |
 | Suspicious flags | 0 |
@@ -101,9 +110,11 @@ Known limitations:
 
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.
 
-Rationale: the full current corpus passed with no failed IDs and no suspicious
-flags. The nine `error` statuses are expected corpus outcomes, not failed
-expectations.
+Rationale: the latest full release corpus passed with no failed IDs and no
+suspicious flags. The nine `error` statuses are expected corpus outcomes, not
+failed expectations. The current corpus now includes seven division-boundary
+guard cases; their route-priority and product-boundary slices passed after the
+cleanup.
 
 ## 3. Frontend-Copy QA
 
@@ -123,13 +134,13 @@ expectations.
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.
 
 Rationale: the selected rendered-copy corpus is clean and now sources the
-latest clean 246-case backend run. Wave 2 added streak tables, rolling
+latest clean full backend run. Wave 2 added streak tables, rolling
 stretches, finder/count outputs, game-summary logs, team splits,
 record-by-decade shapes, top-performance variants, and on/off plus lineup
 unsupported no-result boundaries. The refreshed source run also covers the
 promoted opponent-conference record cases as supported rendered-copy examples.
 The remaining limitation is coverage breadth: this is selected DOM-copy
-coverage, not full 246-case rendered-copy or visual layout coverage.
+coverage, not every raw QA case rendered or visual layout coverage.
 
 ## 4. Visual QA
 
@@ -171,6 +182,7 @@ limitation is that visual QA is manual, not screenshot-diff automation.
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
 | Public/default result mode | `PASS_WITH_NOTES`; `/` is public and answer-first by default, context/caveats render near the answer, successful-result actions are secondary, Details preserves diagnostics, `?debug=1` restores debug chrome, `/review` remains debug-rich, and `/visual-qa` renders public results with case metadata |
 | Final public UI release review | `PUBLIC_UI_READY_WITH_NOTES`; `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none |
+| Division phrase boundary cleanup | `PASS`; `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; broad fallback for explicit NBA division opponent phrases is resolved; targeted snapshots 65 passed, `test-parser` 776 passed, `test-query` 776 passed, raw QA `natural_query_route_priority` 35/35 passed, raw QA `product_boundaries` 18/18 passed, `test-preflight` 2978 passed with 1 xpassed, and `git diff --check` passed |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
@@ -198,7 +210,9 @@ instead of broad plausible answers.
 - League-wide starter/bench role leaderboards.
 - Team bench scoring summaries.
 - Opponent-conference seasons outside trusted coverage, geography phrases such
-  as `east coast teams`, and division requests.
+  as `east coast teams`, and explicit division requests. Division requests use
+  `unsupported_filters=["opponent_division"]`, preserve the closest record
+  route, and do not return broad fallback rows.
 - Single-team playoff round records, including Conference Finals phrasing as
   playoff-round phrasing rather than opponent-conference filtering.
 - Subjective/trend queries such as clutch, cooled off, best defender, MVP
@@ -450,6 +464,28 @@ Result:
 ```text
 752 passed
 ```
+
+### Division boundary cleanup validation
+
+Evidence:
+
+- Return package:
+  `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`
+- Targeted snapshot tests: 65 passed.
+- `make PYTEST=.venv/bin/pytest test-parser`: 776 passed.
+- `make PYTEST=.venv/bin/pytest test-query`: 776 passed.
+- Raw QA `natural_query_route_priority` slice: 35/35 passed.
+- Raw QA `product_boundaries` slice: 18/18 passed.
+- `make PYTEST=.venv/bin/pytest test-preflight`: 2978 passed, 1 xpassed.
+- `git diff --check`: passed.
+
+Behavior verified: explicit NBA division opponent phrases return
+`no_result` / `filter_not_supported`, empty sections, and
+`metadata.unsupported_filters=["opponent_division"]`. Named-team division
+record phrases preserve `team_record`; no-subject division record phrases
+preserve `team_record_leaderboard`; mixed conference-plus-division phrasing
+does not return a broader conference-only answer. No division support was
+added.
 
 ### Opponent-conference R2 sync and preview smoke
 
