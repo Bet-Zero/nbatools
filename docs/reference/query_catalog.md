@@ -848,6 +848,9 @@ Current behavior:
 - east/west geography phrases such as `east coast teams`, division requests,
   and seasons outside trusted conference coverage remain unsupported and return
   `no_result` / `filter_not_supported` instead of broad full-season records
+- explicit NBA division requests such as `Celtics record vs Atlantic Division`
+  use `metadata.unsupported_filters=["opponent_division"]`; mixed conference
+  plus division text does not return a broader conference-only answer
 - unsupported routes append an explicit note or return a clean unsupported
   response instead of silently broadening
 

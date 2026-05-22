@@ -55,6 +55,103 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "note_contains": "unsupported_boundary",
         },
         {
+            "query": "Celtics record vs Atlantic Division",
+            "route": "team_record",
+            "fields": {
+                "team": "BOS",
+                "opponent_conference": None,
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "team": "BOS",
+                "unsupported_filters": ["opponent_division"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
+            "query": "Lakers record against Pacific Division",
+            "route": "team_record",
+            "fields": {
+                "team": "LAL",
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "team": "LAL",
+                "unsupported_filters": ["opponent_division"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
+            "query": "Knicks record vs Central Division",
+            "route": "team_record",
+            "fields": {
+                "team": "NYK",
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "team": "NYK",
+                "unsupported_filters": ["opponent_division"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
+            "query": "record against Northwest Division teams",
+            "route": "team_record_leaderboard",
+            "fields": {
+                "team": None,
+                "opponent_conference": None,
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "unsupported_filters": ["opponent_division"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
+            "query": "Lakers record against Western Conference Pacific Division teams",
+            "route": "team_record",
+            "fields": {
+                "team": "LAL",
+                "opponent_conference": None,
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "team": "LAL",
+                "unsupported_filters": ["opponent_division"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
+            "query": "Celtics conference finals record vs Atlantic Division",
+            "route": "playoff_history",
+            "fields": {
+                "team": "BOS",
+                "season_type": "Playoffs",
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "team": "BOS",
+                "playoff_round": "03",
+                "unsupported_filters": ["single_team_playoff_round_record"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
+            "query": "Celtics playoff record vs Atlantic Division",
+            "route": "team_record",
+            "fields": {
+                "team": "BOS",
+                "season_type": "Playoffs",
+                "opponent_division_boundary": True,
+            },
+            "route_kwargs": {
+                "team": "BOS",
+                "season_type": "Playoffs",
+                "unsupported_filters": ["opponent_division"],
+            },
+            "note_contains": "unsupported_boundary",
+        },
+        {
             "query": "most conference finals appearances",
             "route": "playoff_appearances",
             "fields": {"season_type": "Playoffs"},

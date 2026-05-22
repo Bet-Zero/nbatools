@@ -12,3 +12,10 @@ case_ids:
   - def_rating_team_leaders_wave4
   - pace_team_leaders_wave4
   - fastest_pace_teams_wave5
+  - celtics_atlantic_division_guard
+  - lakers_pacific_division_guard
+  - knicks_central_division_guard
+  - record_against_northwest_division_teams_guard
+  - lakers_western_conference_pacific_division_guard
+  - celtics_playoff_atlantic_division_guard
+  - celtics_conference_finals_atlantic_division_guard

@@ -257,6 +257,8 @@ Missing/untrusted seasons, division requests, and geography phrases such as
 `filter_not_supported` instead of broad full-season records. The resolved
 conference opponent list keeps all 15 conference members, including the subject
 team when applicable; this has no effect because teams do not play themselves.
+Explicit NBA division requests such as `Celtics record vs Atlantic Division`
+return `metadata.unsupported_filters=["opponent_division"]`.
 
 ## Playoff history and rounds
 

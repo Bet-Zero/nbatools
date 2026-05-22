@@ -230,6 +230,20 @@ def detect_opponent_conference_geography_boundary(text: str) -> bool:
     )
 
 
+def detect_opponent_division_boundary(text: str) -> bool:
+    """Detect explicit unsupported NBA opponent-division record filters."""
+    division_names = r"atlantic|central|southeast|northwest|pacific|southwest"
+    return bool(
+        re.search(
+            rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+            rf"(?:(?:east|west|eastern|western)\s+(?:conference\s+)?)?"
+            rf"(?P<division>{division_names})\s+division"
+            rf"(?:\s+(?:teams?|opponents?))?\b",
+            text,
+        )
+    )
+
+
 def wants_team_leaderboard(text: str) -> bool:
     if detect_team_leaderboard_stat(text) is not None:
         return True

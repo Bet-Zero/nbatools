@@ -561,6 +561,12 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "executed as conference filters "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "opponent_division":
+        return (
+            "opponent-division record filters are not supported yet; no broad team "
+            "record or conference-only fallback was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "conference_coverage":
         return (
             "opponent-conference record filters require trusted team-conference "

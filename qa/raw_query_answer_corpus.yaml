@@ -4968,6 +4968,181 @@ cases:
         - no_broad_fallback
       notes: "Expected unsupported because geography phrases are outside the conference contract."
 
+  - id: celtics_atlantic_division_guard
+    query: "Celtics record vs Atlantic Division"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.opponent_conference
+        equals:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_division
+    review_notes: "NBA division opponent filters are explicitly unsupported and must not fall back to broad team records."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+
+  - id: lakers_pacific_division_guard
+    query: "Lakers record against Pacific Division"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.team
+        equals: LAL
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_division
+    review_notes: "Pacific Division wording should be guarded instead of ignored."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+
+  - id: knicks_central_division_guard
+    query: "Knicks record vs Central Division"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.team
+        equals: NYK
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_division
+    review_notes: "Central Division wording should be guarded despite common-word overlap."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+
+  - id: record_against_northwest_division_teams_guard
+    query: "record against Northwest Division teams"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record_leaderboard
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_division
+    review_notes: "No-subject division record phrasing should not broaden to a league record leaderboard."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+
+  - id: lakers_western_conference_pacific_division_guard
+    query: "Lakers record against Western Conference Pacific Division teams"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.team
+        equals: LAL
+      - path: result.metadata.opponent_conference
+        equals:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_division
+    review_notes: "Mixed conference-plus-division phrasing should not execute as a broader conference-only filter."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - opponent_conference
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+
+  - id: celtics_playoff_atlantic_division_guard
+    query: "Celtics playoff record vs Atlantic Division"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_division
+    review_notes: "Playoff division record phrasing should keep playoff context but return an unsupported division boundary."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - playoff_record
+        - no_broad_fallback
+      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+
+  - id: celtics_conference_finals_atlantic_division_guard
+    query: "Celtics conference finals record vs Atlantic Division"
+    category: playoff_history
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_history
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.metadata.unsupported_filters.0
+        equals: single_team_playoff_round_record
+    review_notes: "Conference-finals record phrasing should keep the existing playoff-round unsupported boundary even when a division phrase is also present."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - playoff
+        - unsupported_boundary
+        - division_guard
+        - product_decision
+      notes: "Single-team conference-finals records remain deferred; division cleanup must not preempt this boundary."
+
   - id: most_clutch_player_wave5
     query: "Who is the most clutch player this season?"
     category: unsupported_boundary

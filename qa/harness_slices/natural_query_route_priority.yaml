@@ -3,6 +3,13 @@ description: Route-priority, collision, unsupported-boundary, and no-broad-fallb
 case_ids:
   - lakers_record_against_west_wave5
   - celtics_against_east_coast_teams_guard
+  - celtics_atlantic_division_guard
+  - lakers_pacific_division_guard
+  - knicks_central_division_guard
+  - record_against_northwest_division_teams_guard
+  - lakers_western_conference_pacific_division_guard
+  - celtics_playoff_atlantic_division_guard
+  - celtics_conference_finals_atlantic_division_guard
   - celtics_conference_finals_record_wave4
   - most_conference_finals_appearances_wave4
   - lakers_record_since_2010_wave4

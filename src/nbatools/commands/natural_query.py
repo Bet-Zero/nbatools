@@ -128,6 +128,9 @@ from nbatools.commands._parse_helpers import (
     detect_opponent_conference_geography_boundary as detect_opponent_conference_geography_boundary,
 )
 from nbatools.commands._parse_helpers import (
+    detect_opponent_division_boundary as detect_opponent_division_boundary,
+)
+from nbatools.commands._parse_helpers import (
     detect_opponent_quality as detect_opponent_quality,
 )
 from nbatools.commands._parse_helpers import (
@@ -474,6 +477,7 @@ __all__ = [
     "detect_opponent_conference",
     "detect_opponent_conference_boundary",
     "detect_opponent_conference_geography_boundary",
+    "detect_opponent_division_boundary",
     "detect_opponent_quality",
     "detect_quarter",
     "detect_half",
@@ -572,6 +576,10 @@ def _build_parse_state(query: str) -> dict:
     opponent_conference = detect_opponent_conference(q)
     opponent_conference_boundary = opponent_conference is not None
     opponent_conference_geography_boundary = detect_opponent_conference_geography_boundary(q)
+    opponent_division_boundary = detect_opponent_division_boundary(q)
+    if opponent_division_boundary:
+        opponent_conference = None
+        opponent_conference_boundary = False
     if personal_foul_leaderboard_boundary:
         leaderboard_intent = True
 
@@ -854,6 +862,7 @@ def _build_parse_state(query: str) -> dict:
         "opponent_conference": opponent_conference,
         "opponent_conference_boundary": opponent_conference_boundary,
         "opponent_conference_geography_boundary": opponent_conference_geography_boundary,
+        "opponent_division_boundary": opponent_division_boundary,
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
@@ -1042,6 +1051,7 @@ def _finalize_route(parsed: dict) -> dict:
     opponent_conference_geography_boundary = parsed.get(
         "opponent_conference_geography_boundary", False
     )
+    opponent_division_boundary = parsed.get("opponent_division_boundary", False)
 
     notes: list[str] = []
     route = None
@@ -1361,6 +1371,53 @@ def _finalize_route(parsed: dict) -> dict:
                 "unsupported_boundary: single-team playoff round records are not supported "
                 "until the route and round-data contract is approved"
             )
+    elif (
+        opponent_division_boundary
+        and record_intent
+        and not any([player, player_a, player_b, team_a, team_b])
+    ):
+        notes.append("unsupported_boundary: opponent-division filters are not supported yet")
+        if team:
+            route = "team_record"
+            route_kwargs = {
+                "team": team,
+                "season": season,
+                "start_season": start_season,
+                "end_season": end_season,
+                "season_type": season_type,
+                "opponent": opponent,
+                "without_player": without_player,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "stat": stat,
+                "min_value": min_value,
+                "max_value": max_value,
+                "start_date": start_date,
+                "end_date": end_date,
+                "unsupported_filters": ["opponent_division"],
+            }
+        else:
+            route = "team_record_leaderboard"
+            route_kwargs = {
+                "season": season,
+                "start_season": start_season,
+                "end_season": end_season,
+                "season_type": season_type,
+                "stat": "win_pct",
+                "opponent": opponent,
+                "without_player": without_player,
+                "home_only": home_only,
+                "away_only": away_only,
+                "wins_only": wins_only,
+                "losses_only": losses_only,
+                "limit": top_n or 10,
+                "ascending": False,
+                "start_date": start_date,
+                "end_date": end_date,
+                "unsupported_filters": ["opponent_division"],
+            }
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
         route_kwargs = {
