@@ -128,6 +128,7 @@ export default function ReviewPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const abortControllers = abortControllersRef.current;
     mountedRef.current = true;
 
     async function loadFixtures() {
@@ -155,8 +156,8 @@ export default function ReviewPage() {
       mountedRef.current = false;
       runTokenRef.current += 1;
       runningRef.current = false;
-      abortControllersRef.current.forEach((controller) => controller.abort());
-      abortControllersRef.current.clear();
+      abortControllers.forEach((controller) => controller.abort());
+      abortControllers.clear();
     };
   }, []);
 
