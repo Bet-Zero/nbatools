@@ -63,7 +63,9 @@ Known limitations:
   division-boundary additions; those new division cases have targeted raw QA
   slice evidence but have not been folded into a full frontend-copy pass.
 - Frontend-copy QA is DOM-copy QA, not visual layout or screenshot QA.
-- Visual QA is a manual 15-case baseline, not Playwright or screenshot diffing.
+- Visual QA is a manual 20-case corpus baseline, not Playwright or screenshot
+  diffing. The accepted preview evidence cited below predates the five-case
+  expansion and covers the original 15-case set.
 - Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
   horizontal-overflow blocker. The local wrapper fix was validated and the
   latest preview manual rerun is `PREVIEW_READY_WITH_NOTES`.
@@ -147,11 +149,11 @@ coverage, not every raw QA case rendered or visual layout coverage.
 | Item | Status |
 |---|---|
 | Corpus | `qa/frontend_visual_qa_corpus.yaml` |
-| Baseline size | 15 cases |
+| Baseline size | 20 cases / 40 required desktop-mobile viewport reviews |
 | Manual checklist | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` |
 | Preview rerun | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md` |
-| Desktop baseline | completed for the approved 15-case set |
-| Mobile baseline | completed for the approved 15-case set |
+| Desktop baseline | original 15-case set completed; five expansion cases pending the next manual capture pass |
+| Mobile baseline | original 15-case set completed; five expansion cases pending the next manual capture pass |
 | Fixed finding | mobile dense table clipping for top performance, comparison, and playoff matchup tables |
 | Fixed finding | filtered leaderboard hero context for guard and center examples |
 | Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport and the latest preview rerun passed the five mobile blocker cases |
@@ -619,7 +621,7 @@ Evidence:
 - Debug/details preservation: passed
 - Feedback preservation: passed
 - Blocking issues: none
-- Remaining notes: screenshot automation, visual QA corpus expansion,
+- Remaining notes: screenshot automation, expanded visual QA corpus review,
   unsupported/no-result copy taxonomy, existing `ReviewPage` lint hook warning,
   existing Vite large-chunk warning, admin dashboard / mutable triage overlay,
   `natural_query.py` extraction, return-package archive sweep, branding/name
@@ -635,7 +637,7 @@ For `/visual-qa`, confirm:
 
 - route does not return 404
 - page loads
-- 15 cases begin running
+- 20 cases begin running
 - page is not blank gray
 - no YAML or JSON parse error appears
 

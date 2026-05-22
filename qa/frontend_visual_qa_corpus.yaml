@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "source_raw_run": "outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl",
-  "source_frontend_copy_run": "outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.jsonl",
+  "source_raw_run": "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
+  "source_frontend_copy_run": "outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl",
   "cases":
     [
       {
@@ -407,6 +407,141 @@
           [
             "Wide top-performance tables can clip or crowd columns",
             "The verified outlier row may dominate the card if spacing is weak",
+          ],
+      },
+      {
+        "id": "jokic_season_summary",
+        "category": "player_summary",
+        "query": "Jokic this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Player-summary hero reads as the primary answer before supporting detail",
+            "Nikola Jokic identity and season context stay clear without relying on a wide table",
+            "Secondary actions and details stay visually downstream from the summary answer",
+          ],
+        "desktop_focus":
+          [
+            "Hero stats and player identity align cleanly in the summary surface",
+            "Supporting summary/detail content does not compete with the answer sentence",
+          ],
+        "mobile_focus":
+          [
+            "Summary hero remains readable before lower-priority detail on a 390px viewport",
+            "Identity, key stats, and available context wrap without clipping or crowding",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Short summary answers can feel visually thin if the hero and detail hierarchy drift",
+            "Mobile summary stats or identity treatment can wrap into an unclear answer block",
+          ],
+      },
+      {
+        "id": "jokic_triple_double_finder",
+        "category": "count_with_finder",
+        "query": "How often has Nikola Jokic recorded a triple-double this season?",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Count answer appears before the finder game log",
+            "Triple-double filter context stays tied to the count and the first finder rows",
+            "Wide game-log detail remains visibly contained after the answer",
+          ],
+        "desktop_focus":
+          [
+            "Count hero, special-event context, and first finder rows read in one scan",
+            "Date, opponent, and core stat columns remain easy to inspect in the game log",
+          ],
+        "mobile_focus":
+          [
+            "Count hero and Triple Double context remain visible before horizontal table detail",
+            "Finder/game-log scrolling stays internal and the first row does not clip the page",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "A dense finder table can visually overtake the count answer",
+            "Mobile game-log width can hide context or widen the page if containment regresses",
+          ],
+      },
+      {
+        "id": "jokic_home_away_split",
+        "category": "player_split",
+        "query": "Jokic home vs away this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Split answer and Home/Away context read before the detailed comparison rows",
+            "Split labels, key columns, and details toggle stay understandable together",
+            "Wide split metrics remain contained without flattening the answer hierarchy",
+          ],
+        "desktop_focus":
+          [
+            "Hero, split context, and comparison table align as one public answer",
+            "Home and Away rows stay easy to compare across primary metrics",
+          ],
+        "mobile_focus":
+          [
+            "Split context wraps cleanly above the table on a 390px viewport",
+            "Primary split columns stay readable before lower-priority metrics and detail",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Split context can become detached from the table when chips wrap",
+            "Metric-heavy split tables can become dense or rely too heavily on hidden detail",
+          ],
+      },
+      {
+        "id": "curry_3_threes_streak",
+        "category": "player_streak",
+        "query": "Curry longest streak with at least 3 threes",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Streak condition and length read as the answer before support rows",
+            "Three-point threshold context remains obvious beside span and status detail",
+            "Streak table density stays readable in public mode",
+          ],
+        "desktop_focus":
+          [
+            "Condition, length, status/span, and first detail row scan cleanly together",
+            "Threshold metric labels remain semantically aligned with the streak hero",
+          ],
+        "mobile_focus":
+          [
+            "Condition and streak length stay readable when threshold text wraps",
+            "Start/end/status detail remains usable without forcing document-level overflow",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Threshold text and span detail can compete with the primary streak answer",
+            "Compact streak tables can become cramped on mobile",
+          ],
+      },
+      {
+        "id": "jokic_best_5_rebounding_stretch",
+        "category": "rolling_stretch",
+        "query": "Jokic best 5-game rebounding stretch this season",
+        "viewports": ["desktop_1280", "mobile_390"],
+        "visual_focus":
+          [
+            "Window size, rebound metric, and best stretch result read as one answer",
+            "Rolling-stretch date span remains clear before detailed rows",
+            "Named-player stretch table density stays usable in public mode",
+          ],
+        "desktop_focus":
+          [
+            "Best-window hero and first ranked stretch row align without ambiguity",
+            "Window, RPG, Start, and End detail remains easy to scan",
+          ],
+        "mobile_focus":
+          [
+            "Five-game window and rebound metric stay visible before table detail",
+            "Rolling-stretch table scroll/priority behavior keeps date span readable at 390px",
+          ],
+        "expected_primary_visual_concerns":
+          [
+            "Window, metric, and date span can fragment into separate-looking facts",
+            "Rolling-stretch rows can become hard to compare when mobile density regresses",
           ],
       },
     ],

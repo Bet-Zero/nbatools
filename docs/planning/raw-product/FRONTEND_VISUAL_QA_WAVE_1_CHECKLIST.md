@@ -5,6 +5,8 @@
 - Visual corpus: `qa/frontend_visual_qa_corpus.yaml`
 - Internal route: `/visual-qa`
 - Target viewports: desktop around `1280px`, mobile around `390px`
+- Current corpus baseline: 20 cases, or 40 required desktop/mobile viewport
+  reviews. The original 15 review cases remain in the checklist below.
 - Render path: live `POST /query` requests through `ResultEnvelope` + `ResultRenderer`
 - Stable selector pattern: `data-visual-case-id="<case_id>"`
 - Recommended screenshot storage after manual capture:
@@ -19,7 +21,7 @@
 2. Open `/visual-qa` through either the local production API shell
    (`http://127.0.0.1:8000/visual-qa`) or the frontend dev server
    (`http://127.0.0.1:5173/visual-qa`, or the current Vite-selected port).
-3. Let all 15 cases finish loading through the live query path.
+3. Let all 20 cases finish loading through the live query path.
 4. Capture the desktop pass at about `1280px` wide.
 5. Capture the mobile pass at about `390px` wide.
 6. Record pass/fail notes and any visual findings in this checklist or the follow-up review package.
@@ -54,3 +56,8 @@
 | `heat_knicks_playoff_series_record_wave4` | Heat Knicks playoff series record                              | required        | required       | Dense playoff table readability; `Series Result` visibility; summary/comparison separation              | Preview overflow fixed locally: card stays inside 390px viewport; `Series Result` text present; preview rerun required. |
 | `lebron_durant_comparison_wave4`          | LeBron James vs Kevin Durant comparison                        | required        | required       | Two-player identity clarity; `Edge / Difference` visibility; mobile stacking/readability                | Preview overflow fixed locally: card stays inside 390px viewport; `Edge / Difference` text present; desktop 1280px spot-check remained inside viewport. |
 | `biggest_scoring_games`                   | What were the biggest scoring games this season?               | required        | required       | 83-point outlier row visibility; `PTS` visibility; top-row wrapping at mobile width                     | Preview overflow fixed locally: card stays inside 390px viewport; `83` and `PTS` text present; desktop 1280px spot-check remained inside viewport. |
+| `jokic_season_summary`                    | Jokic this season                                              | required        | required       | Player-summary hero hierarchy; Nikola Jokic season context; compact summary wrapping                    | Pending expansion review |
+| `jokic_triple_double_finder`              | How often has Nikola Jokic recorded a triple-double this season? | required      | required       | Count-before-finder hierarchy; triple-double context; game-log table containment                        | Pending expansion review |
+| `jokic_home_away_split`                   | Jokic home vs away this season                                 | required        | required       | Home/Away split context; comparison row readability; detailed metric containment                        | Pending expansion review |
+| `curry_3_threes_streak`                   | Curry longest streak with at least 3 threes                    | required        | required       | Streak threshold/length hierarchy; span/status readability; compact streak table density                | Pending expansion review |
+| `jokic_best_5_rebounding_stretch`         | Jokic best 5-game rebounding stretch this season               | required        | required       | Window/metric/date-span cohesion; best-window hero; rolling-stretch table readability                   | Pending expansion review |

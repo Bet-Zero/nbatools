@@ -1627,7 +1627,7 @@ Review process:
 ## Frontend Screenshot / Visual QA Wave 1 Status
 
 Frontend screenshot / visual QA Wave 1 now has a case-targeted manual baseline
-surface for the 15 approved review cases. This is an internal QA layer only: it
+surface for the 20 approved review cases. This is an internal QA layer only: it
 does not change backend query behavior, production result rendering, or add any
 Playwright/screenshot diff automation.
 
@@ -1646,9 +1646,9 @@ Artifacts and entry points:
 - Manual checklist:
   `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
 - Source raw QA run:
-  `outputs/raw_query_answer_qa/20260515T021820Z/report.jsonl`
+  `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Source frontend-copy run:
-  `outputs/frontend_copy_qa/20260515T024718Z/frontend_copy_report.jsonl`
+  `outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl`
 
 Deployment/local route parity:
 
@@ -1664,7 +1664,7 @@ Deployment/local route parity:
 
 Page behavior:
 
-- Reads the 15-case visual corpus and issues live `POST /query` calls through
+- Reads the 20-case visual corpus and issues live `POST /query` calls through
   the existing frontend API client.
 - Renders each case through the real product result composition:
   `ResultEnvelope` plus `ResultRenderer`.
@@ -1679,7 +1679,7 @@ Manual capture workflow:
 
 1. Start the local backend that serves `/query`.
 2. Start the frontend dev server and open `/visual-qa`.
-3. Let all 15 cases load through live `/query` calls.
+3. Let all 20 cases load through live `/query` calls.
 4. Capture a desktop pass at about `1280px` wide.
 5. Capture a mobile pass at about `390px` wide.
 6. Record pass/fail notes in the checklist doc and any follow-up review

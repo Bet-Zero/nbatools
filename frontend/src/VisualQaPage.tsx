@@ -241,7 +241,7 @@ export default function VisualQaPage() {
             <p className={styles.eyebrow}>Internal / Dev QA Surface</p>
             <h1 className={styles.title}>Frontend Visual QA Wave 1</h1>
             <p className={styles.lede}>
-              This route renders the 15 approved visual QA cases through live
+              This route renders the 20 approved visual QA cases through live
               <span> </span>
               <strong>/query</strong>
               <span> </span>

@@ -7,9 +7,10 @@
   with targeted raw QA slice evidence.
 - Frontend-copy QA status: clean for the selected 125-case rendered-copy corpus
   sourced from the latest clean full backend run.
-- Visual QA status: 15-case manual baseline completed; targeted mobile/table and
-  filtered-leaderboard hero fixes were verified locally and in the latest
-  preview rerun.
+- Visual QA status: the manual corpus baseline is now 20 cases and 40
+  desktop/mobile viewport reviews; the original 15-case baseline completed
+  targeted mobile/table and filtered-leaderboard hero checks locally and in the
+  latest preview rerun.
 - Deploy parity status: `/visual-qa` now follows the same local and deployed SPA
   shell routing path as `/review`; the latest preview manual rerun is
   `PREVIEW_READY_WITH_NOTES`.
@@ -65,7 +66,7 @@
   coverage, manual visual QA, trusted-season limits for opponent-conference
   support, guarded unsupported boundaries, existing frontend build/lint
   warnings, feedback operational follow-ups, and public UI post-launch polish:
-  screenshot automation, visual QA corpus expansion, unsupported/no-result copy
+  screenshot automation, expanded visual QA corpus review, unsupported/no-result copy
   taxonomy refinement, existing Vite large-chunk warning, existing `ReviewPage`
   lint warning, admin dashboard / mutable triage overlay, `natural_query.py`
   extraction, return-package archive sweep, branding/name change, and continued
@@ -318,8 +319,9 @@ Remaining limitations:
 
 ## 7. Visual QA status
 
-- A 15-case manual visual baseline exists for `/visual-qa`.
-- Desktop and mobile review completed for the approved baseline set.
+- A 20-case manual visual corpus baseline exists for `/visual-qa`.
+- Desktop and mobile review completed for the original 15-case set; the five
+  expansion cases are pending the next manual capture pass.
 - Mobile dense table clipping was fixed for top performances, comparisons, and
   playoff matchup tables.
 - Filtered leaderboard hero wording was fixed for guard/center examples.
@@ -338,7 +340,7 @@ Remaining limitations:
 - There is no Playwright screenshot automation or screenshot diffing yet.
 - Preview manual QA is accepted with notes, but it remains manual and
   measurement/spot-check based.
-- Manual screenshots should be refreshed if the 15-case baseline is used as a
+- Manual screenshots should be refreshed if the 20-case baseline is used as a
   release artifact.
 
 ## 8. Query Feedback + Diagnostic Logging V1
@@ -543,10 +545,10 @@ Recommended order:
 
 ### Option E - Visual QA automation
 
-- Add Playwright/screenshot baselines or layout assertions for the accepted
-  15-case visual QA corpus.
+- Add Playwright/screenshot baselines or layout assertions for the 20-case
+  visual QA corpus.
 - Start with the five mobile blocker cases and no-result boundary cards before
-  expanding visual scope.
+  broadening automated visual scope.
 
 ### Option F - Broader release/CI artifact packaging
 

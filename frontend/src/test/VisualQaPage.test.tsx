@@ -41,6 +41,11 @@ const APPROVED_VISUAL_QA_CASE_IDS = [
   "heat_knicks_playoff_series_record_wave4",
   "lebron_durant_comparison_wave4",
   "biggest_scoring_games",
+  "jokic_season_summary",
+  "jokic_triple_double_finder",
+  "jokic_home_away_split",
+  "curry_3_threes_streak",
+  "jokic_best_5_rebounding_stretch",
 ] as const;
 
 function deferred<T>() {
@@ -94,13 +99,13 @@ describe("VisualQaPage", () => {
     render(<VisualQaPage />);
 
     expect(
-      await screen.findByText("15 / 15 cases completed"),
+      await screen.findByText("20 / 20 cases completed"),
     ).toBeInTheDocument();
     expect(document.querySelectorAll("[data-visual-case-id]").length).toBe(
       VISUAL_QA_CASES.length,
     );
-    expect(VISUAL_QA_CASES).toHaveLength(15);
-    expect(APPROVED_VISUAL_QA_CASE_IDS).toHaveLength(15);
+    expect(VISUAL_QA_CASES).toHaveLength(20);
+    expect(APPROVED_VISUAL_QA_CASE_IDS).toHaveLength(20);
     expect(VISUAL_QA_CASES.map((caseItem) => caseItem.id).sort()).toEqual(
       [...APPROVED_VISUAL_QA_CASE_IDS].sort(),
     );
@@ -164,7 +169,7 @@ describe("VisualQaPage", () => {
     ).toBeGreaterThan(0);
 
     pending.resolve(makeNoResult(VISUAL_QA_CASES[0].query));
-    await screen.findByText("15 / 15 cases completed");
+    await screen.findByText("20 / 20 cases completed");
   });
 
   it("renders the capture button and passes every loaded case card to the screenshot helper", async () => {
@@ -174,7 +179,7 @@ describe("VisualQaPage", () => {
 
     render(<VisualQaPage />);
 
-    await screen.findByText("15 / 15 cases completed");
+    await screen.findByText("20 / 20 cases completed");
 
     const button = screen.getByRole("button", {
       name: "Download current viewport screenshots ZIP",
@@ -197,7 +202,7 @@ describe("VisualQaPage", () => {
 
     render(<VisualQaPage />);
 
-    await screen.findByText("15 / 15 cases completed");
+    await screen.findByText("20 / 20 cases completed");
 
     const page = document.querySelector("main");
     const shell = document.querySelector(`.${styles.shell}`);
