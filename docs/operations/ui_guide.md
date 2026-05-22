@@ -56,6 +56,38 @@ The Vite dev server proxies `/health`, `/routes`, `/query`, and `/structured-que
 to the API at `http://127.0.0.1:8000`. Open **http://localhost:5173** for hot
 module replacement during frontend development.
 
+### Visual QA screenshot artifacts
+
+`/visual-qa` has a Playwright-backed artifact capture command for the 20-case
+desktop/mobile corpus. Use the production-like shell so the built frontend and
+the API share one base URL:
+
+```bash
+npm --prefix frontend run build
+nbatools-api
+
+npm --prefix frontend run qa:visual-screenshots -- \
+  --base-url http://127.0.0.1:8000 \
+  --run-id <run_id>
+```
+
+The top-level Makefile delegates to the same command:
+
+```bash
+make visual-qa-screenshots \
+  VISUAL_QA_BASE_URL=http://127.0.0.1:8000 \
+  VISUAL_QA_RUN_ID=<run_id>
+```
+
+If the Playwright Chromium binary is not present locally, install it once with
+`npx playwright install chromium` from `frontend/`. The canonical command
+writes ignored artifacts under
+`outputs/visual_qa_screenshots/<run_id>/`: `manifest.json`, one full-page PNG
+and metrics JSON per viewport, and one card PNG for every Visual QA case at
+`desktop_1280` and `mobile_390`. Repeated `--case <case_id>` filters are for
+targeted local reruns only. This command checks capture health and overflow; it
+does not compare screenshot diffs or create committed image baselines.
+
 ## What the UI does
 
 - **Query bar** — type a natural-language NBA query and press Enter or click Query. Includes a clear (✕) button and shows "Running…" state during queries.

@@ -9,9 +9,10 @@
   reviews. The original 15 review cases remain in the checklist below.
 - Render path: live `POST /query` requests through `ResultEnvelope` + `ResultRenderer`
 - Stable selector pattern: `data-visual-case-id="<case_id>"`
-- Recommended screenshot storage after manual capture:
-  `outputs/frontend_visual_qa/<run_id>/screenshots/desktop/<case_id>.png`
-  `outputs/frontend_visual_qa/<run_id>/screenshots/mobile/<case_id>.png`
+- Repeatable screenshot artifact root:
+  `outputs/visual_qa_screenshots/<run_id>/`
+- Artifact capture command:
+  `make visual-qa-screenshots VISUAL_QA_BASE_URL=http://127.0.0.1:8000 VISUAL_QA_RUN_ID=<run_id>`
 - Recommended summary/report storage after manual review:
   `outputs/frontend_visual_qa/<run_id>/`
 
@@ -25,9 +26,33 @@
 4. Capture the desktop pass at about `1280px` wide.
 5. Capture the mobile pass at about `390px` wide.
 6. Record pass/fail notes and any visual findings in this checklist or the follow-up review package.
-7. Defer Playwright, screenshot diffing, and visual fixes until the manual baseline is reviewed.
+7. Use the artifact capture command below when the pass needs repeatable
+   desktop/mobile screenshots and metrics.
 8. After the preview mobile overflow fix, rerun the deployed preview at about
    `390px` wide before marking the preview boundary ready.
+
+## Screenshot Artifact Capture
+
+The manual baseline is reviewed. The first screenshot automation wave now adds
+non-diffing artifact capture against the existing production-like `/visual-qa`
+shell.
+
+```bash
+npm --prefix frontend run build
+nbatools-api
+
+npm --prefix frontend run qa:visual-screenshots -- \
+  --base-url http://127.0.0.1:8000 \
+  --run-id <run_id>
+```
+
+The canonical run writes `manifest.json`, `desktop_1280/metrics.json`,
+`mobile_390/metrics.json`, one full-page PNG per viewport, and all 40 card PNGs
+under `outputs/visual_qa_screenshots/<run_id>/`. It fails for incomplete case
+loading, request errors, duplicate or missing selected case IDs, canonical case
+count drift from 20, measured document-level horizontal overflow, or screenshot
+capture failure. Repeated `--case <case_id>` filters are for local reruns, not
+the canonical 20-case evidence set. Screenshot diffing remains deferred.
 
 ## Expanded 20-Case Baseline Review
 

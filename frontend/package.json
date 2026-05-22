@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "qa:frontend-copy": "FRONTEND_COPY_QA_WRITE=1 vitest run src/test/frontendCopyQaReport.test.tsx --no-file-parallelism",
+    "qa:visual-screenshots": "node tools/captureVisualQaScreenshots.mjs",
     "test": "vitest run --no-file-parallelism",
     "test:watch": "vitest"
   },
@@ -32,6 +33,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "jsdom": "^29.0.2",
+    "playwright": "^1.60.0",
     "prettier": "^3.8.2",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",

@@ -399,3 +399,19 @@ After the first repeatable artifact run exists:
 4. Consider adding result-only captures or selected targeted rerun presets only
    if card-level evidence is too noisy or slow.
 
+## 13. Execution Status
+
+The first executable automation wave is implemented:
+
+- Playwright-backed Node capture tool:
+  `frontend/tools/captureVisualQaScreenshots.mjs`
+- Frontend command:
+  `npm --prefix frontend run qa:visual-screenshots -- --base-url http://127.0.0.1:8000 --run-id <run_id>`
+- Top-level command:
+  `make visual-qa-screenshots VISUAL_QA_BASE_URL=http://127.0.0.1:8000 VISUAL_QA_RUN_ID=<run_id>`
+- Artifact root:
+  `outputs/visual_qa_screenshots/<run_id>/`
+
+The implemented wave keeps the preflight boundary: generated screenshots are
+ignored artifacts, not committed baselines; screenshot diffing and CI gating
+remain deferred.

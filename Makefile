@@ -8,9 +8,12 @@
 .PHONY: test-parser test-query test-engine test-api test-output
 .PHONY: test-smoke-queries test-phase-smoke test-smoke-all
 .PHONY: parser-examples-sweep raw-query-answer-qa query-feedback-export
+.PHONY: visual-qa-screenshots
 
 PYTHON ?= python
 PYTEST ?= pytest
+VISUAL_QA_BASE_URL ?= http://127.0.0.1:8000
+VISUAL_QA_RUN_ID ?=
 
 ## Full regression suite (parallel via xdist).
 ## Use before merging, in CI, or when you want complete confidence.
@@ -99,3 +102,8 @@ raw-query-answer-qa:
 ## Read-only query feedback review export; writes ignored artifacts under outputs/.
 query-feedback-export:
 	$(PYTHON) tools/export_query_feedback.py
+
+## Browser screenshot artifact capture for the 20-case /visual-qa corpus.
+## Build the frontend and start the local API shell before running this target.
+visual-qa-screenshots:
+	npm --prefix frontend run qa:visual-screenshots -- --base-url "$(VISUAL_QA_BASE_URL)" $(if $(VISUAL_QA_RUN_ID),--run-id "$(VISUAL_QA_RUN_ID)")
