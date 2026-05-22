@@ -52,7 +52,27 @@ under `outputs/visual_qa_screenshots/<run_id>/`. It fails for incomplete case
 loading, request errors, duplicate or missing selected case IDs, canonical case
 count drift from 20, measured document-level horizontal overflow, or screenshot
 capture failure. Repeated `--case <case_id>` filters are for local reruns, not
-the canonical 20-case evidence set. Screenshot diffing remains deferred.
+the canonical 20-case evidence set.
+
+### Canonical Artifact Validation
+
+- Validation date: 2026-05-22.
+- Run ID: `visual_qa_20_case_baseline`.
+- Command:
+  `make visual-qa-screenshots VISUAL_QA_BASE_URL=http://127.0.0.1:8000 VISUAL_QA_RUN_ID=visual_qa_20_case_baseline`.
+- Artifact root:
+  `outputs/visual_qa_screenshots/visual_qa_20_case_baseline/`.
+- Desktop artifact pass: `desktop_1280` captured 20/20 cases, request errors 0,
+  statuses `ok: 15`, `no_result: 5`, `error: 0`, and document/body overflow
+  `false`.
+- Mobile artifact pass: `mobile_390` captured 20/20 cases, request errors 0,
+  statuses `ok: 15`, `no_result: 5`, `error: 0`, and document/body overflow
+  `false`.
+- Manifest evidence: 20 desktop card screenshots and 20 mobile card
+  screenshots are listed.
+- PNG total: 42 expected captures, counting all card PNGs plus one page PNG per
+  viewport.
+- Deferred: screenshot diffing, committed PNG baselines, and CI gating.
 
 ## Expanded 20-Case Baseline Review
 

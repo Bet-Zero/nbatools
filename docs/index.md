@@ -92,8 +92,8 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — documentation-only decision map and test matrix for preserving current `natural_query.py` route order, unsupported boundaries, collision groups, validation commands, and first code-extraction candidate before any parser extraction work
 - `planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` — documentation-only preflight for route-priority, collision, unsupported-boundary, and no-broad-fallback snapshot coverage before further `natural_query.py` extraction
 - `planning/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_PREFLIGHT.md` — documentation-only preflight for the completed cleanup of division-opponent phrasing; broad fallback is resolved as guarded `opponent_division` unsupported behavior, with no division support added
-- `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist for the 20-case visual QA corpus baseline
-- `planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md` — documentation-only preflight for Playwright-backed, non-diffing screenshot artifact capture of the expanded 20-case Visual QA baseline
+- `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist plus validated non-diffing artifact-capture evidence for the 20-case visual QA corpus baseline
+- `planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md` — preflight and execution-status record for Playwright-backed, non-diffing screenshot artifact capture of the expanded 20-case Visual QA baseline
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
 - `planning/result-display-lock-in/result_display_wave_4_findings.md` — Wave 4 lock-in findings for records, comparisons, and playoff history

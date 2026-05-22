@@ -24,8 +24,8 @@ starting major new feature expansion.
 | Rank | Item | Priority | Suggested timing |
 |---|---|---|---|
 | 1 | `natural_query.py` extraction / parser maintainability | Highest | Before major new query-family expansion |
-| 2 | Visual QA corpus expansion | High | Soon after launch, or before wider audience |
-| 3 | Screenshot automation | Medium-high | After visual QA corpus expansion |
+| 2 | Visual QA corpus coverage follow-up | High | After fresh gap analysis when public UI risk shifts |
+| 3 | Screenshot diffing / baseline / CI decision | Medium-high | After validated local artifact capture |
 | 4 | `ReviewPage.tsx` exhaustive-deps lint warning | Medium | Small cleanup pass soon |
 | 5 | Vite large-chunk warning / bundle analysis | Medium-low | After launch or when performance becomes a real concern |
 | 6 | Return-package archive sweep | Low-medium | After launch/handoff, as repo hygiene |
@@ -69,57 +69,78 @@ Likely first extraction candidates:
 Do not do a one-pass parser rewrite. The correct approach is incremental,
 well-tested extraction.
 
-### 3.2 Visual QA corpus expansion
+### 3.2 Visual QA corpus coverage follow-up
 
-This is high priority because the product has recently moved from a debug-heavy
-UI toward a public answer-first UI. The visual QA baseline exists, but the
-corpus should expand to cover the newer and more important public-mode result
-families.
+The first post-review corpus expansion is complete. The runtime corpus now has
+20 cases, the expanded local manual baseline passed, and the canonical
+non-diffing artifact run passed for that 20-case set.
+
+Future coverage follow-up remains high priority when fresh gap analysis shows
+that public-mode UI risk has shifted beyond the current corpus.
 
 Why it matters:
 
 - Public UI regressions are easy to miss without representative visual cases.
 - Mobile layout is especially important after the answer-first and context-chip
   changes.
-- Manual visual QA is only useful if the selected cases represent the real UI
-  risk surface.
+- Manual review and artifact capture are only useful if selected cases still
+  represent the real UI risk surface.
 
-Recommended additions to consider:
+The completed expansion added these coverage points:
 
 - `jokic_season_summary`
 - `jokic_triple_double_finder`
 - `jokic_home_away_split`
 - `curry_3_threes_streak`
 - `jokic_best_5_rebounding_stretch`
-- optional `lakers_playoff_history`
+- optional follow-up candidate: `lakers_playoff_history`
 
-Recommended timing:
+Recommended next step:
 
 ```text
-Soon after launch, or before a wider public audience.
+Run fresh visual QA gap analysis before adding another corpus expansion wave.
 ```
 
-### 3.3 Screenshot automation
+### 3.3 Screenshot artifact follow-up
 
-Screenshot automation is medium-high priority, but it should come after visual
-QA corpus expansion. Automated screenshots are only valuable if the cases being
-captured are the right cases.
+The first screenshot automation step is complete. Playwright-backed
+non-diffing artifact capture is implemented and locally validated for the
+expanded 20-case Visual QA corpus.
+
+Canonical validation evidence:
+
+- Run ID: `visual_qa_20_case_baseline`.
+- Command:
+  `make visual-qa-screenshots VISUAL_QA_BASE_URL=http://127.0.0.1:8000 VISUAL_QA_RUN_ID=visual_qa_20_case_baseline`.
+- `desktop_1280` and `mobile_390` each captured 20/20 cases with request
+  errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, and document/body
+  overflow `false`.
+- The manifest lists 20 desktop card screenshots and 20 mobile card
+  screenshots; expected PNG total is 42 including the two page captures.
+
+The deferred question is whether artifact capture should grow into screenshot
+diffing, committed PNG baselines, or a CI gate.
 
 Why it matters:
 
 - Manual visual QA does not scale well.
+- The current artifact command makes desktop/mobile evidence repeatable without
+  turning live data into a pixel-diff gate.
 - Screenshot diffs can catch layout regressions, mobile overflow, clipping, and
-  hierarchy changes more consistently.
+  hierarchy changes more consistently if baseline ownership and noise policy
+  are defined first.
 - This is especially useful for wide tables and mobile result surfaces.
 
-Recommended sequence:
+Deferred follow-up sequence:
 
 ```text
-1. Expand visual QA corpus.
-2. Then evaluate screenshot automation.
+1. Use the validated non-diffing artifact command for repeatable evidence.
+2. Decide whether screenshot diffing or layout assertions are worth the noise.
+3. Decide whether committed PNG baselines or a CI gate are justified.
 ```
 
-Do not start by building automation around an under-sized or incomplete corpus.
+Do not add screenshot diffing, committed PNG baselines, or a CI gate without a
+baseline update and failure-triage policy.
 
 ### 3.4 `ReviewPage.tsx` exhaustive-deps lint warning
 
@@ -233,8 +254,8 @@ Recommended order:
 
 ```text
 1. natural_query.py extraction preflight
-2. visual QA corpus expansion
-3. screenshot automation preflight
+2. visual QA corpus coverage gap analysis
+3. screenshot diffing / baseline / CI decision
 4. ReviewPage lint warning fix
 5. Vite bundle/chunk analysis
 6. return-package archive sweep

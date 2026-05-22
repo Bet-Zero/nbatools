@@ -2,10 +2,12 @@
 
 ## 1. Purpose
 
-This preflight plans screenshot automation for the expanded 20-case Visual QA
-corpus. It is documentation-only. It does not change production code, frontend
-rendering, backend behavior, parser/routing behavior, result contracts, QA
-corpus files, or screenshot automation code.
+This preflight records the first screenshot automation decision for the expanded
+20-case Visual QA corpus. The preflight itself was documentation-only: it did
+not change production code, frontend rendering, backend behavior,
+parser/routing behavior, result contracts, QA corpus files, or screenshot
+automation code. The first executable non-diffing artifact wave described below
+is now implemented and locally validated.
 
 The automation decision point is now valid:
 
@@ -19,7 +21,7 @@ The automation decision point is now valid:
   - document-level horizontal overflow: none measured
   - status: `PASS_WITH_MANUAL_LIMITATION`
 
-The next investment should make screenshot evidence repeatable without
+The selected investment makes screenshot evidence repeatable without
 prematurely turning live visual output into a brittle pixel-diff gate.
 
 ## 2. Evidence Reviewed
@@ -109,7 +111,8 @@ request errors are present, and then capture cards from the DOM in page order.
 
 ### 4.2 Not present in the repo
 
-The inspected frontend package and repo harnesses do not currently provide:
+At preflight time, the inspected frontend package and repo harnesses did not
+provide:
 
 - a direct Playwright or Cypress dependency
 - a Playwright test config or screenshot snapshot suite
@@ -401,7 +404,7 @@ After the first repeatable artifact run exists:
 
 ## 13. Execution Status
 
-The first executable automation wave is implemented:
+The first executable automation wave is implemented and locally validated:
 
 - Playwright-backed Node capture tool:
   `frontend/tools/captureVisualQaScreenshots.mjs`
@@ -415,3 +418,20 @@ The first executable automation wave is implemented:
 The implemented wave keeps the preflight boundary: generated screenshots are
 ignored artifacts, not committed baselines; screenshot diffing and CI gating
 remain deferred.
+
+Canonical local validation passed on 2026-05-22:
+
+- Run ID: `visual_qa_20_case_baseline`.
+- Command:
+  `make visual-qa-screenshots VISUAL_QA_BASE_URL=http://127.0.0.1:8000 VISUAL_QA_RUN_ID=visual_qa_20_case_baseline`.
+- Artifact root:
+  `outputs/visual_qa_screenshots/visual_qa_20_case_baseline/`.
+- `desktop_1280`: 20/20 cases, request errors 0, statuses `ok: 15`,
+  `no_result: 5`, `error: 0`, document/body overflow `false`.
+- `mobile_390`: 20/20 cases, request errors 0, statuses `ok: 15`,
+  `no_result: 5`, `error: 0`, document/body overflow `false`.
+- Manifest evidence: 20 desktop card screenshots and 20 mobile card
+  screenshots listed.
+- PNG total: 42 expected captures, including the two full-page screenshots.
+
+Committed PNG baselines remain deferred with screenshot diffing and CI gating.

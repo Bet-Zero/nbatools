@@ -10,7 +10,9 @@
 - Visual QA status: the expanded local manual corpus baseline completed 20 cases
   and 40 desktop/mobile viewport reviews on 2026-05-22 with request errors 0
   and no blocking visual issue; the earlier deployed preview request-health
-  evidence still covers the original 15-case set.
+  evidence still covers the original 15-case set. Canonical local non-diffing
+  screenshot artifact run `visual_qa_20_case_baseline` also passed for the
+  expanded 20-case corpus.
 - Deploy parity status: `/visual-qa` now follows the same local and deployed SPA
   shell routing path as `/review`; the latest preview manual rerun is
   `PREVIEW_READY_WITH_NOTES`.
@@ -63,14 +65,16 @@
   feedback R2 inspection, the implemented feedback review/export workflow, and
   final public UI release review. Broad public launch is no longer blocked by a
   debug-heavy default UI. The remaining notes are selected frontend-copy
-  coverage, manual visual QA, trusted-season limits for opponent-conference
-  support, guarded unsupported boundaries, existing frontend build/lint
-  warnings, feedback operational follow-ups, and public UI post-launch polish:
-  screenshot automation, unsupported/no-result copy taxonomy refinement,
-  existing Vite large-chunk warning, existing `ReviewPage` lint warning, admin
-  dashboard / mutable triage overlay, `natural_query.py` extraction,
-  return-package archive sweep, branding/name change, and continued internal
-  horizontal scrolling for wide tables.
+  coverage, manually reviewed visual QA with local non-diffing artifacts,
+  trusted-season limits for opponent-conference support, guarded unsupported
+  boundaries, existing frontend build/lint warnings, feedback operational
+  follow-ups, and public UI post-launch polish:
+  screenshot diffing/baseline/CI decisions after local artifact capture,
+  unsupported/no-result copy taxonomy refinement, existing Vite large-chunk
+  warning, existing `ReviewPage` lint warning, admin dashboard / mutable triage
+  overlay, `natural_query.py` extraction, return-package archive sweep,
+  branding/name change, and continued internal horizontal scrolling for wide
+  tables.
 
 ## 2. Backend Raw Query Answer QA
 
@@ -326,6 +330,14 @@ Remaining limitations:
   document-level horizontal overflow, and no blocking visual issue.
 - Expanded baseline package:
   `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`.
+- Canonical local screenshot artifact run `visual_qa_20_case_baseline` passed:
+  `desktop_1280` and `mobile_390` each captured 20/20 cases with request
+  errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, and document/body
+  overflow `false`.
+- Artifact manifest evidence lists 20 desktop card screenshots and 20 mobile
+  card screenshots; expected PNG total is 42 including two full-page captures.
+- Artifact validation docs refresh package:
+  `return_packages/raw-product/VISUAL_QA_SCREENSHOT_ARTIFACT_VALIDATION_DOCS_REFRESH_RETURN_PACKAGE.md`.
 - Mobile dense table clipping was fixed for top performances, comparisons, and
   playoff matchup tables.
 - Filtered leaderboard hero wording was fixed for guard/center examples.
@@ -341,7 +353,9 @@ Remaining limitations:
 
 Remaining limitations:
 
-- There is no Playwright screenshot automation or screenshot diffing yet.
+- Playwright-backed non-diffing screenshot artifact capture is implemented and
+  locally validated. Screenshot diffing, committed PNG baselines, and CI gating
+  remain deferred.
 - Preview manual QA is accepted with notes, but it remains manual and
   measurement/spot-check based.
 - The expanded 20-case evidence is local baseline capture; the older deployed
@@ -428,6 +442,11 @@ Latest release-readiness checklist validation:
   Conference Finals guardrails passed.
 - Visual-QA request health:
   latest preview `/visual-qa` loaded 15/15 cases with request errors 0.
+- Visual-QA screenshot artifacts:
+  canonical local run `visual_qa_20_case_baseline` captured the expanded
+  20-case corpus at `desktop_1280` and `mobile_390` with request errors 0,
+  overflow false, 20 card screenshots per viewport in the manifest, and 42
+  expected PNGs total.
 - Query feedback R2 inspection:
   `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`;
   `FEEDBACK_READY_WITH_NOTES`; R2 list/get passed, user-submitted records found,
@@ -494,8 +513,8 @@ Recommended order:
 
 1. Proceed with launch/handoff using the current `*_WITH_NOTES` statuses.
 2. First launch feedback review using `make query-feedback-export`.
-3. Option E - Visual QA automation, after launch or when screenshot automation
-   becomes the highest-risk gap.
+3. Option E - Visual QA screenshot diffing/baseline/CI decision, after launch
+   or when non-diffing artifact capture is not enough for the highest-risk gap.
 4. Option B - Promote one unsupported family into real support, but only
    through the Wave 1 feature-promotion and Wave 2 Data/R2 guardrails.
 5. Option F - Broader release/CI artifact packaging if reproducible release
@@ -547,12 +566,15 @@ Recommended order:
 - When to choose: choose this when iteration cost starts slowing future corpus
   or fix waves.
 
-### Option E - Visual QA automation
+### Option E - Visual QA screenshot follow-up
 
-- Add Playwright/screenshot baselines or layout assertions for the 20-case
-  visual QA corpus.
-- Start with the five mobile blocker cases and no-result boundary cards before
-  broadening automated visual scope.
+- Current status: Playwright-backed non-diffing artifact capture is implemented
+  and locally validated for the 20-case corpus.
+- Decide whether to add screenshot diffing, committed PNG baselines, or a CI
+  gate.
+- If diffing or layout assertions become justified, start with the five mobile
+  blocker cases and no-result boundary cards before broadening automated visual
+  scope.
 
 ### Option F - Broader release/CI artifact packaging
 
@@ -574,13 +596,14 @@ Recommended order:
   record inspection passed with notes. Post-review hardening Waves 1–6 are
   complete, and the AppTheming test drift fix restored a clean full frontend
   suite.
-- Remaining handoff notes: selected frontend-copy coverage, manual visual QA,
+- Remaining handoff notes: selected frontend-copy coverage, manually reviewed
+  visual QA with local non-diffing artifacts,
   opponent-conference support limited to trusted seasons `2024-25` and
   `2025-26`, unsupported divisions/geography/historical coverage, existing
-  Vite/ReviewPage warnings, no screenshot automation, visual QA corpus
-  expansion, admin dashboard / mutable triage overlay, `natural_query.py`
-  extraction, return-package archive sweep, branding/name change, and remaining
-  feedback operational notes.
+  Vite/ReviewPage warnings, screenshot diffing/baseline/CI decisions after
+  local artifact capture, visual QA corpus coverage follow-up, admin dashboard /
+  mutable triage overlay, `natural_query.py` extraction, return-package archive
+  sweep, branding/name change, and remaining feedback operational notes.
 
 ### Option H - Query feedback export/review script
 

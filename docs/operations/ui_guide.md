@@ -85,8 +85,16 @@ writes ignored artifacts under
 `outputs/visual_qa_screenshots/<run_id>/`: `manifest.json`, one full-page PNG
 and metrics JSON per viewport, and one card PNG for every Visual QA case at
 `desktop_1280` and `mobile_390`. Repeated `--case <case_id>` filters are for
-targeted local reruns only. This command checks capture health and overflow; it
-does not compare screenshot diffs or create committed image baselines.
+targeted local reruns only.
+
+The canonical local artifact run passed on 2026-05-22 with run ID
+`visual_qa_20_case_baseline`. Both viewports captured 20/20 cases with request
+errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, and document/body
+overflow `false`. The manifest lists 20 desktop card screenshots and 20 mobile
+card screenshots, for 42 PNGs total including the two full-page captures.
+
+This command checks capture health and overflow; it does not compare screenshot
+diffs, create committed image baselines, or add a CI gate.
 
 ## What the UI does
 
