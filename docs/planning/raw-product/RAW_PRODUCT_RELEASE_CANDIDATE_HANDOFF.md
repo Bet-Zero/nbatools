@@ -26,20 +26,22 @@
   mobile 390px family checks, preserved debug/review/visual-QA paths, preserved
   feedback UI, and no blocking issues. Raw Product Post-Review Hardening Waves
   1–6 are now complete, and the follow-up AppTheming test drift fix established
-  a clean full frontend suite: 25/25 files and 352/352 tests passing.
+  a clean full frontend suite: 25/25 files and 352/352 tests passing. The
+  expanded local Visual QA baseline also passed 20/20 cases at desktop and
+  mobile, 40 viewport reviews total, with request errors 0 and no blocking
+  visual issue.
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
-  is manual rather than screenshot-diff automation, the expanded visual QA
-  corpus needs its next manual capture pass, opponent-conference support
+  is manual rather than screenshot-diff automation, opponent-conference support
   is limited to trusted seasons `2024-25` and `2025-26`, existing frontend
   build/lint warnings remain non-blocking, feedback review remains operational
   tooling rather than an admin dashboard or mutable triage overlay, triage
   suggestions are heuristic, corpus conversion remains manual, and explicitly
   unsupported boundaries must continue to return guarded no-result or
   unsupported behavior. Public UI is ready with notes; broader unsupported-copy
-  refinement, expanded visual QA corpus review, screenshot automation, admin dashboard
-  / mutable triage overlay, `natural_query.py` extraction, return-package
-  archive sweep, and branding/name change are post-launch/deferred notes rather
-  than launch blockers.
+  refinement, screenshot automation, admin dashboard / mutable triage overlay,
+  `natural_query.py` extraction, return-package archive sweep, and
+  branding/name change are post-launch/deferred notes rather than launch
+  blockers.
 - Division Phrase Boundary Cleanup is complete for this handoff boundary:
   explicit NBA division opponent phrases return `no_result` /
   `filter_not_supported` with empty sections and
@@ -61,7 +63,7 @@
 | Preview smoke | `PASS_WITH_NOTES` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference preview checks passed, two guardrails passed, and `/visual-qa` request errors were 0. |
 | R2 data availability | `PASS` | `raw/teams/team_conference_membership.csv` exists in R2; dry-run, sync, and `head_object` evidence passed with `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
 | Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and the R2-sensitive opponent-conference team-record check returned 15 East opponents. |
-| Visual QA | `PASS_WITH_MANUAL_LIMITATION` | Manual corpus baseline is now 20 cases / 40 desktop-mobile viewport reviews; the original 15-case baseline remains the latest accepted preview evidence and `/visual-qa` loaded 15/15 with request errors 0 before expansion; no screenshot-diff automation exists yet. |
+| Visual QA | `PASS_WITH_MANUAL_LIMITATION` | `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`; expanded local manual baseline passed 20 cases / 40 desktop-mobile viewport reviews with request errors 0 and blockers none; the original 15-case baseline remains the latest deployed preview request-health evidence before expansion; no screenshot-diff automation exists yet. |
 | Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed under `nbatools-data` prefix `query_feedback/preview`, user-submitted feedback records were found, automatic diagnostics were found, sanitizer/privacy checks passed, and `/review` plus `/visual-qa` suppression passed. |
 | Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can run `make query-feedback-export`, which wraps `tools/export_query_feedback.py` and writes `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | `/` now defaults to public result rendering; `?debug=1` restores debug chrome; `/review` remains debug-rich; `/visual-qa` keeps internal case metadata while rendering public results; feedback payload diagnostics remain preserved. |
@@ -222,13 +224,12 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 - Public result mode is now answer-first on `/` after Wave 2, and the final
   Public UI Release Review classified it as `PUBLIC_UI_READY_WITH_NOTES`.
   Remaining UI notes are post-launch polish: broader unsupported-copy
-  refinement, visual QA corpus expansion, screenshot automation, and continued
-  internal horizontal scrolling for wide tables.
+  refinement, screenshot automation, and continued internal horizontal
+  scrolling for wide tables.
 - Raw Product Post-Review Hardening Waves 1–6 are complete. Remaining
   hardening-cycle notes are post-launch/deferred: no screenshot automation,
-  visual QA corpus expansion, admin dashboard / mutable triage overlay,
-  `natural_query.py` extraction, return-package archive sweep, and branding/name
-  change.
+  admin dashboard / mutable triage overlay, `natural_query.py` extraction,
+  return-package archive sweep, and branding/name change.
 - The pre-existing AppTheming test drift surfaced during Wave 6 validation is
   fixed; the full frontend suite is now clean at 352/352 tests passing.
 - Frontend lint still has the existing
@@ -273,9 +274,9 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 1. Proceed with launch/handoff using the current `*_WITH_NOTES` statuses.
 2. Run the first launch feedback review using `make query-feedback-export`.
 3. Treat the remaining notes as post-launch/deferred work: visual QA
-   automation, visual QA corpus expansion, admin dashboard / mutable triage
-   overlay, `natural_query.py` extraction, return-package archive sweep,
-   branding/name change, and existing build/lint warnings.
+   automation, admin dashboard / mutable triage overlay, `natural_query.py`
+   extraction, return-package archive sweep, branding/name change, and existing
+   build/lint warnings.
 4. Run the next unsupported-family promotion preflight only through the Wave 1
    and Wave 2 guardrails.
 5. Add CI/release artifact packaging or harness tag/category filters only if

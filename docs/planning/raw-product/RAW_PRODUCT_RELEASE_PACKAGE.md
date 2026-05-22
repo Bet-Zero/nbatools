@@ -11,6 +11,7 @@
 - Latest front-facing UI refresh: 2026-05-19.
 - Latest post-review hardening closure refresh: 2026-05-21.
 - Latest division boundary cleanup refresh: 2026-05-22.
+- Latest expanded visual QA baseline refresh: 2026-05-22.
 - Scope: current supported and explicitly unsupported Raw Product boundary.
 - Production code changed for this package: yes, frontend only.
 - Frontend rendering changed for this package: yes, public/default result mode
@@ -31,9 +32,10 @@
 
 This boundary is release-candidate ready for the current product surface. The
 backend raw QA corpus is clean, selected frontend-copy QA is clean, the accepted
-original 15-case visual baseline has a clean preview rerun, the visual corpus
-baseline is now 20 cases / 40 desktop-mobile viewport reviews, and the manual
-preview smoke set passed with notes. The later opponent-conference preview blocker is now
+original 15-case visual baseline has a clean preview rerun, the expanded local
+visual corpus baseline now passes 20 cases / 40 desktop-mobile viewport
+reviews, and the manual preview smoke set passed with notes. The later
+opponent-conference preview blocker is now
 resolved: R2 contains `raw/teams/team_conference_membership.csv`, the latest
 opponent-conference preview smoke passed on
 `https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app`, deployment
@@ -93,15 +95,13 @@ Human sign-off still needed:
   suggestions only, and manual corpus conversion.
 - Product owner acceptance that public result UI productization has completed
   the Wave 2 hierarchy/mobile pass and final public UI release review, while
-  broader no-result/unsupported copy refinement, expanded visual QA corpus review,
-  screenshot automation, and wide-table internal scrolling remain post-launch
-  polish notes.
+  broader no-result/unsupported copy refinement, screenshot automation, and
+  wide-table internal scrolling remain post-launch polish notes.
 - Product owner acceptance that post-review hardening Waves 1–6 are complete
   with notes, and remaining items are post-launch/deferred: existing Vite
   large-chunk warning, existing `ReviewPage` lint warning, no screenshot
-  automation, expanded visual QA corpus review, admin dashboard / mutable triage
-  overlay, `natural_query.py` extraction, return-package archive sweep, and
-  branding/name change.
+  automation, admin dashboard / mutable triage overlay, `natural_query.py`
+  extraction, return-package archive sweep, and branding/name change.
 
 ## 2. Validation Summary
 
@@ -109,7 +109,7 @@ Human sign-off still needed:
 |---|---|---|
 | Backend Raw QA | `PASS` | Latest full run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. Current corpus has 253 cases after division-boundary additions; targeted division slices passed in the cleanup evidence below. |
 | Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
-| Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`; corpus baseline is now 20 cases / 40 desktop-mobile viewport reviews; the original 15-case desktop/mobile baseline remains the latest accepted preview evidence and `/visual-qa` loaded 15/15 with request errors 0 before expansion; no screenshot diff automation. |
+| Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`; expanded local baseline passed 20 cases / 40 desktop-mobile viewport reviews with request errors 0 and blockers none; the original 15-case desktop/mobile baseline remains the latest deployed preview request-health evidence before expansion; no screenshot diff automation. |
 | Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
 | Opponent-conference preview smoke | `PASS` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference queries passed, geography/playoff-round guardrails passed, and `/visual-qa` request errors were 0. |
 | R2 data availability | `PASS` | R2 dry-run included `raw/teams/team_conference_membership.csv`; sync uploaded it; `head_object` returned `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
@@ -334,8 +334,9 @@ Supporting return packages:
 - Frontend-copy QA checks DOM text and rendered component output; it is not
   visual layout or screenshot diff automation.
 - Visual QA remains a manual 20-case corpus baseline, not automated Playwright
-  screenshot diffing. The original 15-case desktop/mobile pass remains the
-  accepted preview evidence until the five expansion cases are captured.
+  screenshot diffing. The expanded local 20-case desktop/mobile pass is
+  complete; the original 15-case desktop/mobile pass remains the deployed
+  preview request-health evidence from before the five-case expansion.
 - Preview manual QA is `PREVIEW_READY_WITH_NOTES`; notes include the manual
   nature of visual QA and selected frontend-copy coverage.
 - The previous opponent-conference preview `BLOCKED` status is resolved by the
@@ -361,14 +362,13 @@ Supporting return packages:
 - Public result UI productization Wave 2 is implemented and the final public UI
   release review passed with `PUBLIC_UI_READY_WITH_NOTES`. Remaining public UI
   follow-ups are post-launch polish: broader no-result/unsupported copy
-  coverage, expanded visual QA corpus review, screenshot automation, and accepted
-  internal horizontal scrolling for wide tables.
+  coverage, screenshot automation, and accepted internal horizontal scrolling
+  for wide tables.
 - Raw Product Post-Review Hardening Waves 1–6 are complete, and the AppTheming
   test drift fix restored a clean 352/352 full frontend-suite baseline.
   Remaining hardening-cycle notes are post-launch/deferred:
   `natural_query.py` extraction, return-package archive sweep, branding/name
-  change, admin dashboard / mutable triage overlay, expanded visual QA corpus review,
-  and screenshot automation.
+  change, admin dashboard / mutable triage overlay, and screenshot automation.
 
 ## 7. Future Deployment Checklist
 

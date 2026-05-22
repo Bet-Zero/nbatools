@@ -8,6 +8,7 @@
 - Latest front-facing UI refresh: 2026-05-19.
 - Latest post-review hardening closure refresh: 2026-05-21.
 - Latest division boundary cleanup refresh: 2026-05-22.
+- Latest expanded visual QA baseline refresh: 2026-05-22.
 - Query feedback status: `FEEDBACK_READY_WITH_NOTES`.
 - Public UI status: `PUBLIC_UI_READY_WITH_NOTES`.
 - Scope: current supported and explicitly unsupported Raw Product QA boundary.
@@ -50,11 +51,13 @@
   preservation with no blocking issues. Raw Product Post-Review Hardening Waves
   1–6 are now complete. The follow-up AppTheming test drift fix resolved the
   pre-existing full-suite drift surfaced during Wave 6 validation, and the full
-  frontend suite now passes 25/25 files and 352/352 tests.
+  frontend suite now passes 25/25 files and 352/352 tests. The expanded local
+  `/visual-qa` baseline now completes 20/20 cases on desktop and mobile, 40
+  viewport reviews total, with request errors 0 and no blocking visual issue.
 - Latest refresh type: docs-only release/readiness refresh after the completed
-  division boundary cleanup; this docs pass does not change backend query
-  behavior, parser behavior, result contracts, frontend rendering, tests, or
-  corpus expectations.
+  expanded local visual QA baseline and division boundary cleanup; this docs
+  pass does not change backend query behavior, parser behavior, result
+  contracts, frontend rendering, tests, or corpus expectations.
 
 Known limitations:
 
@@ -64,7 +67,8 @@ Known limitations:
   slice evidence but have not been folded into a full frontend-copy pass.
 - Frontend-copy QA is DOM-copy QA, not visual layout or screenshot QA.
 - Visual QA is a manual 20-case corpus baseline, not Playwright or screenshot
-  diffing. The accepted preview evidence cited below predates the five-case
+  diffing. The expanded local 20-case baseline passed on 2026-05-22; the
+  accepted deployed preview evidence cited below predates the five-case
   expansion and covers the original 15-case set.
 - Deployed preview validation on 2026-05-16 found a mobile `/visual-qa`
   horizontal-overflow blocker. The local wrapper fix was validated and the
@@ -84,15 +88,14 @@ Known limitations:
 - Public result mode is now answer-first on `/` after Wave 2, and the final
   Public UI Release Review classified the public UI as
   `PUBLIC_UI_READY_WITH_NOTES`. Remaining UI notes are post-launch polish:
-  broader no-result/unsupported copy refinement, visual QA corpus expansion,
-  screenshot automation, the existing `ReviewPage` lint hook warning, and
-  accepted internal horizontal scrolling for wide tables.
+  broader no-result/unsupported copy refinement, screenshot automation, the
+  existing `ReviewPage` lint hook warning, and accepted internal horizontal
+  scrolling for wide tables.
 - Raw Product Post-Review Hardening Waves 1–6 are complete with notes. Remaining
   hardening-cycle notes are post-launch/deferred: existing Vite large-chunk
   warning, existing `ReviewPage` lint warning, no screenshot automation, visual
-  QA corpus expansion, admin dashboard / mutable triage overlay,
-  `natural_query.py` extraction, return-package archive sweep, and
-  branding/name change.
+  QA automation, admin dashboard / mutable triage overlay, `natural_query.py`
+  extraction, return-package archive sweep, and branding/name change.
 
 ## 2. Backend Raw QA
 
@@ -151,9 +154,10 @@ coverage, not every raw QA case rendered or visual layout coverage.
 | Corpus | `qa/frontend_visual_qa_corpus.yaml` |
 | Baseline size | 20 cases / 40 required desktop-mobile viewport reviews |
 | Manual checklist | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` |
+| Expanded local baseline | `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`; 20/20 cases reviewed at desktop and mobile, request errors 0, blockers none |
 | Preview rerun | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md` |
-| Desktop baseline | original 15-case set completed; five expansion cases pending the next manual capture pass |
-| Mobile baseline | original 15-case set completed; five expansion cases pending the next manual capture pass |
+| Desktop baseline | expanded local 20-case pass completed at `1280px`; document/body widths `1280px`; statuses `ok: 15`, `no_result: 5`, `error: 0` |
+| Mobile baseline | expanded local 20-case pass completed at `390px`; document/body widths `390px`; statuses `ok: 15`, `no_result: 5`, `error: 0` |
 | Fixed finding | mobile dense table clipping for top performance, comparison, and playoff matchup tables |
 | Fixed finding | filtered leaderboard hero context for guard and center examples |
 | Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport and the latest preview rerun passed the five mobile blocker cases |
@@ -164,9 +168,12 @@ coverage, not every raw QA case rendered or visual layout coverage.
 Release verdict: `READY_WITH_MANUAL_LIMITATION`.
 
 Rationale: the deployed preview found a mobile wrapper overflow defect after the
-manual baseline. The local production route was fixed and the latest preview
-manual rerun rechecked the five mobile blocker cases successfully. The remaining
-limitation is that visual QA is manual, not screenshot-diff automation.
+original manual baseline. The local production route was fixed and the latest
+preview manual rerun rechecked the five mobile blocker cases successfully. The
+expanded local 20-case desktop/mobile pass now rechecks the full corpus without
+request errors, document-level horizontal overflow, or blocking visual issues.
+The remaining limitation is that visual QA is manual, not screenshot-diff
+automation.
 
 ## 5. Deploy / Preview Readiness
 
@@ -197,8 +204,8 @@ ready with notes, the review/export workflow is implemented, and feedback is not
 a preview blocker. Wave 2 completes the main public result answer hierarchy and
 mobile-density polish. The final public UI release review removes the
 debug-heavy default UI as a broad-public-launch blocker; remaining UI follow-ups
-are post-launch unsupported-copy refinement, visual QA corpus expansion, and
-visual automation rather than readiness issues.
+are post-launch unsupported-copy refinement and visual automation rather than
+readiness issues.
 
 ## 6. Unsupported Boundaries
 
@@ -621,11 +628,11 @@ Evidence:
 - Debug/details preservation: passed
 - Feedback preservation: passed
 - Blocking issues: none
-- Remaining notes: screenshot automation, expanded visual QA corpus review,
-  unsupported/no-result copy taxonomy, existing `ReviewPage` lint hook warning,
-  existing Vite large-chunk warning, admin dashboard / mutable triage overlay,
-  `natural_query.py` extraction, return-package archive sweep, branding/name
-  change, and internal horizontal scrolling for wide tables
+- Remaining notes: screenshot automation, unsupported/no-result copy taxonomy,
+  existing `ReviewPage` lint hook warning, existing Vite large-chunk warning,
+  admin dashboard / mutable triage overlay, `natural_query.py` extraction,
+  return-package archive sweep, branding/name change, and internal horizontal
+  scrolling for wide tables
 
 For future previews, validate these routes:
 
@@ -674,8 +681,7 @@ frontend-copy coverage, manual visual QA, trusted-season limits for
 opponent-conference support, guarded unsupported families, existing frontend
 build/lint warnings, feedback operational follow-ups with no admin dashboard or
 mutable triage overlay, and post-launch/deferred work around screenshot
-automation, visual QA corpus expansion, unsupported copy taxonomy,
-`natural_query.py` extraction, return-package archive sweep, branding/name
-change, and wide-table internal scrolling. The final release-candidate handoff
-is complete in
+automation, unsupported copy taxonomy, `natural_query.py` extraction,
+return-package archive sweep, branding/name change, and wide-table internal
+scrolling. The final release-candidate handoff is complete in
 `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`.
