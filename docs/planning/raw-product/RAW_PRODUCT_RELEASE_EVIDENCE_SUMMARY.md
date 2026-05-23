@@ -119,11 +119,12 @@ the release boundary.
 | Sanitization/privacy | passed; no disallowed PII fields found |
 | Payload minimization | passed; no raw result rows/tables found in inspected records |
 | Review/QA suppression | `/review` and `/visual-qa` feedback suppression passed |
+| Review API foundation | Backend grouping helpers, mutable triage overlay storage, and gated `/api/admin/feedback` endpoints implemented; frontend console still deferred |
 | Runbook | `docs/operations/query_feedback_review.md` |
 
 Query feedback is a launch-ready operational workflow with notes. Remaining
-limitations are operational follow-ups: no admin dashboard, no mutable triage
-overlay, heuristic suggestions only, and manual corpus conversion after review.
+limitations are operational follow-ups: no frontend admin dashboard, heuristic
+suggestions only, and manual corpus conversion after review.
 
 ## 8. Query Feedback Export Workflow Evidence
 
@@ -255,7 +256,7 @@ These are accepted notes or deferred follow-ups, not launch blockers:
 
 - screenshot diffing, committed screenshot baselines, and CI visual gating
 - broader unsupported/no-result copy refinement
-- admin dashboard or mutable triage overlay for feedback
+- frontend admin dashboard for feedback review
 - manual corpus conversion after feedback review
 - dedicated feedback bucket/token as preferred future state
 - `natural_query.py` extraction

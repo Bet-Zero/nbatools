@@ -211,6 +211,71 @@ If `QUERY_FEEDBACK_STORE` is unset or empty, feedback storage is disabled. The
 endpoint returns JSON with `ok: true`, `stored: false`, and `disabled: true` so
 the product UI can fail softly without changing query behavior.
 
+## Mutable Triage Overlay
+
+Backend foundation for the Feedback Review Console stores reviewer decisions in
+separate mutable overlay objects. Source feedback records remain immutable.
+
+Overlay object key shape:
+
+```text
+<feedback_prefix>/_triage_overlay/groups/<group_id>.json
+```
+
+For the current preview prefix, this is:
+
+```text
+query_feedback/preview/_triage_overlay/groups/qfg_<digest>.json
+```
+
+Overlay records use `schema_version: 1` and include:
+
+- `group_id`
+- `updated_at`
+- `review_status`
+- `triage_decision`
+- `review_notes`
+- `linked_case_or_issue`
+- `reviewer_source`
+- `source_record_ids`
+
+Allowed `review_status` values are `new`, `reviewed`, `deferred`, and
+`closed`. Allowed `triage_decision` values are `bug`, `support_candidate`,
+`expected_unsupported`, `duplicate`, `no_action`, `needs_more_data`,
+`parser_routing_risk`, and `ui_copy_issue`.
+
+The overlay is joined to grouped feedback at review-read time. It is not
+written into the original feedback record.
+
+## Admin Feedback API
+
+Backend-only admin endpoints are available under `/api/admin/feedback` when
+explicitly enabled. There is no frontend console route in the backend
+foundation wave; `make query-feedback-export` remains the fallback review
+workflow.
+
+Endpoints:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/admin/feedback/groups` | List grouped feedback with triage overlays joined. |
+| `GET` | `/api/admin/feedback/groups/{group_id}` | Read one group with normalized source records and a handoff summary. |
+| `GET` | `/api/admin/feedback/groups/{group_id}/triage` | Read the mutable triage overlay for a group. |
+| `PUT` | `/api/admin/feedback/groups/{group_id}/triage` | Save or update the mutable triage overlay for a group. |
+
+Enable and token gate:
+
+```text
+NBATOOLS_ADMIN_FEEDBACK_ENABLED=true
+NBATOOLS_ADMIN_TOKEN=<secret>
+```
+
+If `NBATOOLS_ADMIN_FEEDBACK_ENABLED` is unset or false, the admin endpoints
+return a disabled `404` response. If `NBATOOLS_ADMIN_TOKEN` is set, callers
+must send it in `X-NBATools-Admin-Token`. Deployed preview/production
+environments require `NBATOOLS_ADMIN_TOKEN` when the admin endpoints are
+enabled. The browser never receives R2 credentials.
+
 ## Record Schema
 
 V1 records use `schema_version: 1` and include:
@@ -240,8 +305,8 @@ and full raw result payloads.
 
 ## Export Workflow
 
-V1 does not include an admin dashboard. Use the read-only exporter to turn
-immutable feedback records into review artifacts:
+The frontend admin console is not implemented yet. Use the read-only exporter
+to turn immutable feedback records into review artifacts:
 
 ```bash
 .venv/bin/python tools/export_query_feedback.py \

@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+from nbatools import query_feedback_review
 from nbatools.data_source import R2Config
 from tools import export_query_feedback
 
@@ -336,9 +337,9 @@ def test_mocked_r2_mode_uses_only_read_operations(tmp_path: Path, monkeypatch: p
             bucket_name=(env or {})["R2_BUCKET_NAME"],
         )
 
-    monkeypatch.setattr(export_query_feedback.data_source, "load_r2_config", fake_load_r2_config)
+    monkeypatch.setattr(query_feedback_review.data_source, "load_r2_config", fake_load_r2_config)
     monkeypatch.setattr(
-        export_query_feedback.data_source, "create_r2_client", lambda config: client
+        query_feedback_review.data_source, "create_r2_client", lambda config: client
     )
 
     run_dir = tmp_path / "exports" / "r2"

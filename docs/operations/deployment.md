@@ -30,6 +30,8 @@ Optional query feedback variables:
 - `QUERY_FEEDBACK_STORE`
 - `QUERY_FEEDBACK_BUCKET_NAME`
 - `QUERY_FEEDBACK_PREFIX`
+- `NBATOOLS_ADMIN_FEEDBACK_ENABLED`
+- `NBATOOLS_ADMIN_TOKEN`
 
 Set `QUERY_FEEDBACK_STORE=r2` to enable query feedback and diagnostic logging.
 Leave it unset or empty to keep `/query-feedback` in disabled mode. Disabled
@@ -48,6 +50,14 @@ that preview, so records were verified in the existing `nbatools-data` bucket
 under isolated prefix `query_feedback/preview`. That fallback is acceptable for
 the current release candidate with notes; provision a dedicated feedback bucket
 and token later if this prefix is not kept.
+
+Set `NBATOOLS_ADMIN_FEEDBACK_ENABLED=true` only when the backend admin feedback
+review endpoints should be available. In deployed preview or production
+environments, also set `NBATOOLS_ADMIN_TOKEN`; requests to
+`/api/admin/feedback/*` must include that value in
+`X-NBATools-Admin-Token`. If the endpoints are disabled, they return a disabled
+`404` response. The token gates API access only; the frontend never receives R2
+credentials.
 
 ## Cloudflare R2 Setup
 
@@ -70,9 +80,11 @@ read, write, and list objects in the one deployment bucket.
 
 For query feedback, create a separate bucket such as `nbatools-feedback` and a
 separate R2 token scoped to that bucket when possible. Feedback writes need
-object write permission; review/export workflows need list/read permission.
-Do not expose these credentials to the frontend. The browser submits feedback
-only through the backend-owned `POST /query-feedback` endpoint.
+object write permission; review/export workflows need list/read permission;
+mutable triage overlay review needs list/read/write permission under the
+feedback prefix. Do not expose these credentials to the frontend. The browser
+submits feedback only through the backend-owned `POST /query-feedback`
+endpoint.
 
 Feedback records are compact JSON diagnostics and user reports. They do not
 intentionally collect names, emails, IP addresses, user accounts, phone

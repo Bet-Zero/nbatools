@@ -4,14 +4,10 @@ from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
 import json
-import os
-import re
 import sys
 from collections import Counter
-from dataclasses import dataclass
-from datetime import UTC, datetime, time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -21,11 +17,15 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from nbatools import data_source  # noqa: E402
-from nbatools.query_feedback import (  # noqa: E402
-    DISALLOWED_FIELD_NAMES,
-    METADATA_ALLOWLIST,
-    SLOW_QUERY_WARNING_MS,
+from nbatools.query_feedback_review import (  # noqa: E402
+    FeedbackReviewFilters,
+    group_records,
+    load_local_records,
+    load_r2_records,
+    normalize_record,
+    parse_datetime_filter,
+    parse_multi_filter,
+    record_matches_filters,
 )
 
 
@@ -88,46 +88,6 @@ OUTPUT_KEYS = {
     "summary_json": "summary.json",
     "triage_decisions_template_csv": "triage_decisions_template.csv",
 }
-
-TRIAGE_PRIORITY = [
-    "parser_issue",
-    "raw_qa_case",
-    "data_issue",
-    "unsupported_family",
-    "visual_qa_case",
-    "frontend_copy_case",
-    "performance_review",
-    "no_action",
-]
-
-RAW_OR_PII_KEYS = DISALLOWED_FIELD_NAMES | {
-    "raw_rows",
-    "row",
-    "rows",
-    "section_rows",
-    "sections",
-    "table",
-    "tables",
-}
-
-
-@dataclass(frozen=True)
-class LoadedFeedbackRecord:
-    record: dict[str, Any]
-    object_key: str
-    last_modified: datetime | None = None
-
-
-@dataclass(frozen=True)
-class ExportFilters:
-    since: datetime | None
-    until: datetime | None
-    sources: set[str]
-    feedback_types: set[str]
-    statuses: set[str]
-    routes: set[str]
-    include_smoke: bool
-    limit: int | None
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -217,11 +177,11 @@ def run_export(args: argparse.Namespace) -> dict[str, Any]:
     return summary
 
 
-def build_filters(args: argparse.Namespace) -> ExportFilters:
+def build_filters(args: argparse.Namespace) -> FeedbackReviewFilters:
     limit = args.limit
     if limit is not None and limit < 0:
         raise ValueError("--limit must be non-negative")
-    return ExportFilters(
+    return FeedbackReviewFilters(
         since=parse_datetime_filter(args.since, is_until=False),
         until=parse_datetime_filter(args.until, is_until=True),
         sources=parse_multi_filter(args.source),
@@ -233,456 +193,17 @@ def build_filters(args: argparse.Namespace) -> ExportFilters:
     )
 
 
-def parse_multi_filter(values: list[str]) -> set[str]:
-    result: set[str] = set()
-    for value in values:
-        for part in str(value).split(","):
-            text = part.strip()
-            if text:
-                result.add(text)
-    return result
-
-
-def parse_datetime_filter(value: str | None, *, is_until: bool) -> datetime | None:
-    if not value:
-        return None
-    text = value.strip()
-    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
-        date_value = datetime.strptime(text, "%Y-%m-%d").date()
-        boundary_time = time.max if is_until else time.min
-        return datetime.combine(date_value, boundary_time, tzinfo=UTC)
-    try:
-        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
-    except ValueError as exc:
-        raise ValueError(f"Invalid datetime filter: {value}") from exc
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=UTC)
-    return parsed.astimezone(UTC)
-
-
-def load_records(args: argparse.Namespace) -> list[LoadedFeedbackRecord]:
+def load_records(args: argparse.Namespace):
     if args.local_dir:
         return load_local_records(resolve_path(args.local_dir))
     return load_r2_records(bucket=args.bucket, prefix=args.prefix)
-
-
-def load_local_records(local_dir: Path) -> list[LoadedFeedbackRecord]:
-    if not local_dir.exists():
-        raise FileNotFoundError(f"Local feedback directory does not exist: {local_dir}")
-    records: list[LoadedFeedbackRecord] = []
-    for path in sorted(local_dir.rglob("*.json")):
-        raw = path.read_text(encoding="utf-8")
-        data = json.loads(raw)
-        if not isinstance(data, dict):
-            raise ValueError(f"Feedback JSON must be an object: {path}")
-        records.append(
-            LoadedFeedbackRecord(
-                record=data,
-                object_key=path.relative_to(local_dir).as_posix(),
-                last_modified=datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
-            )
-        )
-    return records
-
-
-def load_r2_records(*, bucket: str, prefix: str) -> list[LoadedFeedbackRecord]:
-    env = dict(os.environ)
-    env["R2_BUCKET_NAME"] = bucket
-    config = data_source.load_r2_config(env=env)
-    client = data_source.create_r2_client(config)
-    records: list[LoadedFeedbackRecord] = []
-    continuation_token: str | None = None
-    prefix_value = prefix.strip("/")
-
-    while True:
-        kwargs: dict[str, Any] = {"Bucket": bucket, "Prefix": prefix_value}
-        if continuation_token:
-            kwargs["ContinuationToken"] = continuation_token
-        response = client.list_objects_v2(**kwargs)
-        for item in response.get("Contents", []):
-            key = str(item.get("Key") or "")
-            if not key or key.endswith("/") or not key.endswith(".json"):
-                continue
-            object_response = client.get_object(Bucket=bucket, Key=key)
-            data = json.loads(read_body_text(object_response.get("Body")))
-            if not isinstance(data, dict):
-                raise ValueError(f"Feedback JSON must be an object: {key}")
-            last_modified = item.get("LastModified")
-            records.append(
-                LoadedFeedbackRecord(
-                    record=data,
-                    object_key=key,
-                    last_modified=last_modified if isinstance(last_modified, datetime) else None,
-                )
-            )
-
-        if not response.get("IsTruncated"):
-            break
-        continuation_token = response.get("NextContinuationToken")
-        if not continuation_token:
-            break
-
-    return records
-
-
-def read_body_text(body: Any) -> str:
-    payload = body.read() if hasattr(body, "read") else body
-    if isinstance(payload, bytes):
-        return payload.decode("utf-8")
-    return str(payload)
-
-
-def normalize_record(loaded: LoadedFeedbackRecord) -> dict[str, Any]:
-    record = loaded.record
-    metadata = safe_metadata(record.get("metadata"))
-    result_shape = (
-        record.get("result_shape") if isinstance(record.get("result_shape"), dict) else {}
-    )
-    deployment = record.get("deployment") if isinstance(record.get("deployment"), dict) else {}
-    query = clean_text(record.get("query"))
-    unsupported_filters = normalize_string_list(
-        metadata.get("unsupported_filters") or record.get("unsupported_filters")
-    )
-    section_row_counts = safe_section_counts(result_shape.get("section_row_counts"))
-    section_keys = normalize_string_list(result_shape.get("section_keys")) or sorted(
-        section_row_counts
-    )
-
-    normalized: dict[str, Any] = {
-        "id": clean_text(record.get("id")),
-        "created_at": clean_text(record.get("created_at")),
-        "schema_version": record.get("schema_version"),
-        "feedback_source": clean_text(record.get("feedback_source")),
-        "feedback_type": clean_text(record.get("feedback_type")),
-        "query": query,
-        "query_normalized": normalize_query(query),
-        "query_normalized_hash": clean_text(record.get("query_normalized_hash")),
-        "source_page": clean_text(record.get("source_page")),
-        "environment": clean_text(record.get("environment")),
-        "deployment_vercel_url": clean_text(deployment.get("vercel_url")),
-        "deployment_vercel_git_commit_sha": clean_text(deployment.get("vercel_git_commit_sha")),
-        "route": clean_text(record.get("route")),
-        "status": clean_text(record.get("status")),
-        "reason": clean_text(record.get("reason")),
-        "unsupported_filters": unsupported_filters,
-        "metadata_summary": metadata,
-        "result_query_class": clean_text(result_shape.get("query_class")),
-        "result_section_keys": section_keys,
-        "result_section_row_counts": section_row_counts,
-        "notes": normalize_string_list(record.get("notes")),
-        "caveats": normalize_string_list(record.get("caveats")),
-        "user_note": clean_text(record.get("user_note")),
-        "answer_text_preview": clean_text(record.get("answer_text_preview")),
-        "error_message": clean_text(record.get("error_message")),
-        "elapsed_ms": number_or_none(record.get("elapsed_ms")),
-        "review_status": clean_text(record.get("review_status")),
-        "triage_decision": clean_text(record.get("triage_decision")),
-        "is_smoke": False,
-        "group_id": "",
-        "suggested_triage": "",
-        "triage_modifiers": [],
-        "object_key": loaded.object_key,
-    }
-    normalized["is_smoke"] = is_smoke_record(normalized)
-    normalized["suggested_triage"] = suggest_triage(normalized)
-    return normalized
-
-
-def clean_text(value: Any) -> str:
-    if value is None:
-        return ""
-    text = re.sub(r"\s+", " ", str(value)).strip()
-    return text
-
-
-def normalize_query(query: str) -> str:
-    return " ".join(query.lower().split())
-
-
-def normalize_string_list(value: Any) -> list[str]:
-    if value is None:
-        return []
-    if isinstance(value, list):
-        values = value
-    else:
-        values = [value]
-    result: list[str] = []
-    for item in values:
-        text = clean_text(item)
-        if text and text not in result:
-            result.append(text)
-    return result
-
-
-def number_or_none(value: Any) -> int | float | None:
-    if value is None or isinstance(value, bool):
-        return None
-    if isinstance(value, int | float):
-        return value
-    try:
-        return float(str(value))
-    except ValueError:
-        return None
-
-
-def safe_metadata(value: Any) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        return {}
-    result: dict[str, Any] = {}
-    for key, raw_value in value.items():
-        key_text = clean_text(key)
-        if not key_text or key_text in RAW_OR_PII_KEYS or key_text not in METADATA_ALLOWLIST:
-            continue
-        clean_value = strip_disallowed_value(raw_value)
-        if clean_value is not None:
-            result[key_text] = clean_value
-    return result
-
-
-def strip_disallowed_value(value: Any) -> Any:
-    if value is None or isinstance(value, bool | int | float):
-        return value
-    if isinstance(value, str):
-        return clean_text(value)
-    if isinstance(value, list):
-        return [clean for item in value if (clean := strip_disallowed_value(item)) is not None]
-    if isinstance(value, dict):
-        result: dict[str, Any] = {}
-        for key, raw_item in value.items():
-            key_text = clean_text(key)
-            if not key_text or key_text in RAW_OR_PII_KEYS:
-                continue
-            clean_item = strip_disallowed_value(raw_item)
-            if clean_item is not None:
-                result[key_text] = clean_item
-        return result
-    return clean_text(value)
-
-
-def safe_section_counts(value: Any) -> dict[str, int]:
-    if not isinstance(value, dict):
-        return {}
-    counts: dict[str, int] = {}
-    for key, raw_count in value.items():
-        key_text = clean_text(key)
-        count = number_or_none(raw_count)
-        if key_text and count is not None and count >= 0:
-            counts[key_text] = int(count)
-    return counts
-
-
-def is_smoke_record(record: dict[str, Any]) -> bool:
-    query = str(record.get("query", "")).lower()
-    user_note = str(record.get("user_note", "")).lower()
-    route = str(record.get("route", "")).lower()
-    reason = str(record.get("reason", "")).lower()
-    feedback_type = str(record.get("feedback_type", "")).lower()
-    source_page = str(record.get("source_page", "")).lower()
-    environment = str(record.get("environment", "")).lower()
-    deployment_url = str(record.get("deployment_vercel_url", "")).lower()
-
-    if "smoke" in query:
-        return True
-    if "smoke test" in user_note:
-        return True
-    if route == "smoke" or reason == "smoke":
-        return True
-    if feedback_type == "other" and "direct endpoint smoke" in query:
-        return True
-    return any(
-        label in {"smoke", "smoke-test", "test", "testing"}
-        or "smoke" in label
-        or label.endswith("/smoke")
-        or label.endswith("/test")
-        for label in (source_page, environment, deployment_url)
-        if label
-    )
-
-
-def suggest_triage(record: dict[str, Any]) -> str:
-    if record.get("is_smoke"):
-        return "no_action"
-    status = record.get("status")
-    reason = record.get("reason")
-    feedback_type = record.get("feedback_type")
-    feedback_source = record.get("feedback_source")
-    elapsed_ms = record.get("elapsed_ms")
-
-    if status == "error" and reason == "unrouted":
-        return "parser_issue"
-    if status == "no_result" and reason == "filter_not_supported":
-        return "unsupported_family"
-    if status == "no_result" and reason == "no_data":
-        return "data_issue"
-    if feedback_type == "wrong_answer":
-        return "raw_qa_case"
-    if feedback_type == "confusing_answer":
-        return "frontend_copy_case"
-    if feedback_type == "ui_issue":
-        return "visual_qa_case"
-    if (
-        feedback_source == "automatic"
-        and status == "ok"
-        and isinstance(elapsed_ms, int | float)
-        and elapsed_ms >= SLOW_QUERY_WARNING_MS
-    ):
-        return "performance_review"
-    return "no_action"
-
-
-def record_matches_filters(record: dict[str, Any], filters: ExportFilters) -> bool:
-    created_at = parse_record_datetime(record.get("created_at"))
-    if filters.since is not None and (created_at is None or created_at < filters.since):
-        return False
-    if filters.until is not None and (created_at is None or created_at > filters.until):
-        return False
-    if filters.sources and record.get("feedback_source") not in filters.sources:
-        return False
-    if filters.feedback_types and record.get("feedback_type") not in filters.feedback_types:
-        return False
-    if filters.statuses and record.get("status") not in filters.statuses:
-        return False
-    return not (filters.routes and record.get("route") not in filters.routes)
-
-
-def parse_record_datetime(value: Any) -> datetime | None:
-    text = clean_text(value)
-    if not text:
-        return None
-    try:
-        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=UTC)
-    return parsed.astimezone(UTC)
-
-
-def group_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    buckets: dict[str, list[dict[str, Any]]] = {}
-    for record in records:
-        key = grouping_key(record)
-        buckets.setdefault(key, []).append(record)
-
-    groups: list[dict[str, Any]] = []
-    for key, group_records_value in buckets.items():
-        group_id = deterministic_group_id(key)
-        group = build_group(group_id, group_records_value)
-        groups.append(group)
-        for record in group_records_value:
-            record["group_id"] = group_id
-            record["triage_modifiers"] = list(group["triage_modifiers"])
-
-    groups.sort(key=lambda group: (group["first_seen"], group["group_id"]))
-    return groups
-
-
-def grouping_key(record: dict[str, Any]) -> str:
-    query_hash = record.get("query_normalized_hash")
-    if query_hash:
-        return f"hash|{query_hash}"
-    fallback_parts = [
-        str(record.get("query_normalized") or ""),
-        str(record.get("route") or ""),
-        str(record.get("status") or ""),
-        str(record.get("reason") or ""),
-        json.dumps(sorted(record.get("unsupported_filters") or []), sort_keys=True),
-        str(record.get("feedback_type") or ""),
-    ]
-    return "fallback|" + "|".join(fallback_parts)
-
-
-def deterministic_group_id(key: str) -> str:
-    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:12]
-    return f"qfg_{digest}"
-
-
-def build_group(group_id: str, records: list[dict[str, Any]]) -> dict[str, Any]:
-    sorted_records = sorted(records, key=record_sort_key)
-    user_submitted_count = sum(
-        1 for record in sorted_records if record.get("feedback_source") == "user_submitted"
-    )
-    modifiers: list[str] = []
-    if len(sorted_records) >= 3 or user_submitted_count >= 2:
-        modifiers.append("prioritize_review")
-
-    return {
-        "group_id": group_id,
-        "count": len(sorted_records),
-        "first_seen": first_non_empty(record.get("created_at") for record in sorted_records),
-        "last_seen": last_non_empty(record.get("created_at") for record in sorted_records),
-        "representative_query": first_non_empty(record.get("query") for record in sorted_records),
-        "feedback_sources": sorted(
-            unique_values(record.get("feedback_source") for record in records)
-        ),
-        "feedback_types": sorted(unique_values(record.get("feedback_type") for record in records)),
-        "routes": sorted(unique_values(record.get("route") for record in records)),
-        "statuses": sorted(unique_values(record.get("status") for record in records)),
-        "reasons": sorted(unique_values(record.get("reason") for record in records)),
-        "unsupported_filters": sorted(
-            {
-                unsupported_filter
-                for record in records
-                for unsupported_filter in record.get("unsupported_filters", [])
-                if unsupported_filter
-            }
-        ),
-        "user_notes": unique_ordered(record.get("user_note") for record in sorted_records),
-        "record_ids": unique_ordered(record.get("id") for record in sorted_records),
-        "object_keys": unique_ordered(record.get("object_key") for record in sorted_records),
-        "suggested_triage": group_suggested_triage(records),
-        "triage_modifiers": modifiers,
-    }
-
-
-def record_sort_key(record: dict[str, Any]) -> tuple[str, str]:
-    created_at = record.get("created_at") or ""
-    return (str(created_at), str(record.get("id") or ""))
-
-
-def first_non_empty(values: Any) -> str:
-    for value in values:
-        text = clean_text(value)
-        if text:
-            return text
-    return ""
-
-
-def last_non_empty(values: Any) -> str:
-    result = ""
-    for value in values:
-        text = clean_text(value)
-        if text:
-            result = text
-    return result
-
-
-def unique_values(values: Any) -> set[str]:
-    return {text for value in values if (text := clean_text(value))}
-
-
-def unique_ordered(values: Any) -> list[str]:
-    result: list[str] = []
-    for value in values:
-        text = clean_text(value)
-        if text and text not in result:
-            result.append(text)
-    return result
-
-
-def group_suggested_triage(records: list[dict[str, Any]]) -> str:
-    suggestions = {record.get("suggested_triage") or "no_action" for record in records}
-    for triage in TRIAGE_PRIORITY:
-        if triage in suggestions:
-            return triage
-    return "no_action"
 
 
 def build_summary(
     *,
     args: argparse.Namespace,
     run_id: str,
-    filters: ExportFilters,
+    filters: FeedbackReviewFilters,
     total_found: int,
     total_filtered: int,
     total_exported: int,
@@ -738,7 +259,7 @@ def build_summary(
     return summary
 
 
-def filters_to_summary(args: argparse.Namespace, filters: ExportFilters) -> dict[str, Any]:
+def filters_to_summary(args: argparse.Namespace, filters: FeedbackReviewFilters) -> dict[str, Any]:
     return {
         "since": args.since,
         "until": args.until,

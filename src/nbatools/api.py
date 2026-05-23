@@ -11,6 +11,7 @@ Run locally with::
 
 from __future__ import annotations
 
+import os
 import time
 from typing import Any
 
@@ -28,6 +29,17 @@ from nbatools.query_feedback import (
     handle_feedback_submission,
     maybe_log_query_diagnostic,
 )
+from nbatools.query_feedback_review import (
+    FeedbackReviewError,
+    FeedbackReviewFilters,
+    TriageOverlayValidationError,
+    get_feedback_group_detail,
+    list_feedback_groups,
+    parse_datetime_filter,
+    parse_multi_filter,
+    read_triage_overlay,
+    write_triage_overlay,
+)
 from nbatools.query_service import (
     VALID_ROUTES,
     QueryResult,
@@ -39,6 +51,9 @@ _UI_DIR = api_ui.UI_DIR
 _UI_INDEX = api_ui.UI_INDEX
 _UI_FALLBACK_ASSET = api_ui.UI_FALLBACK_ASSET
 _UI_FALLBACK_SCRIPT = api_ui.UI_FALLBACK_SCRIPT
+
+ADMIN_FEEDBACK_ENABLED_ENV = "NBATOOLS_ADMIN_FEEDBACK_ENABLED"
+ADMIN_TOKEN_ENV = "NBATOOLS_ADMIN_TOKEN"
 
 # ---------------------------------------------------------------------------
 # App
@@ -156,6 +171,72 @@ def _load_ui_html() -> str:
     return api_ui.load_ui_html(_UI_INDEX)
 
 
+def _truthy_env(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _is_deployed_env(env: dict[str, str] | None = None) -> bool:
+    values = os.environ if env is None else env
+    if values.get("VERCEL") or values.get("VERCEL_ENV"):
+        return True
+    return values.get("ENVIRONMENT", "").strip().lower() in {"preview", "production", "prod"}
+
+
+def _require_admin_feedback(request: Request) -> JSONResponse | None:
+    if not _truthy_env(os.environ.get(ADMIN_FEEDBACK_ENABLED_ENV)):
+        return JSONResponse(
+            status_code=404,
+            content={"ok": False, "error": "admin_feedback_disabled", "detail": None},
+        )
+
+    configured_token = os.environ.get(ADMIN_TOKEN_ENV, "").strip()
+    if not configured_token:
+        if _is_deployed_env():
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "ok": False,
+                    "error": "admin_token_not_configured",
+                    "detail": "NBATOOLS_ADMIN_TOKEN is required for deployed admin feedback.",
+                },
+            )
+        return None
+
+    supplied_token = request.headers.get("X-NBATools-Admin-Token", "")
+    if supplied_token != configured_token:
+        return JSONResponse(
+            status_code=401,
+            content={"ok": False, "error": "admin_token_required", "detail": None},
+        )
+    return None
+
+
+def _feedback_filters_from_request(request: Request) -> FeedbackReviewFilters:
+    params = request.query_params
+    limit_text = params.get("limit")
+    limit = int(limit_text) if limit_text and limit_text.isdigit() else None
+    return FeedbackReviewFilters(
+        since=parse_datetime_filter(params.get("since"), is_until=False),
+        until=parse_datetime_filter(params.get("until"), is_until=True),
+        sources=parse_multi_filter(params.getlist("feedback_source") + params.getlist("source")),
+        feedback_types=parse_multi_filter(params.getlist("feedback_type")),
+        statuses=parse_multi_filter(params.getlist("status")),
+        routes=parse_multi_filter(params.getlist("route")),
+        reasons=parse_multi_filter(params.getlist("reason")),
+        review_statuses=parse_multi_filter(params.getlist("review_status")),
+        triage_decisions=parse_multi_filter(params.getlist("triage_decision")),
+        include_smoke=_truthy_env(params.get("include_smoke")),
+        limit=limit,
+    )
+
+
+def _feedback_review_error_response(exc: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=500,
+        content={"ok": False, "error": "feedback_review_error", "detail": str(exc)},
+    )
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -244,6 +325,95 @@ def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
         source_page=request.headers.get("X-NBATools-Source-Page"),
     )
     return JSONResponse(status_code=status, content=payload)
+
+
+@app.get("/api/admin/feedback/groups")
+def admin_feedback_groups(request: Request) -> JSONResponse:
+    """List grouped immutable feedback with mutable triage overlays joined."""
+    if response := _require_admin_feedback(request):
+        return response
+    try:
+        payload = list_feedback_groups(filters=_feedback_filters_from_request(request))
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=422,
+            content={"ok": False, "error": "validation_error", "detail": str(exc)},
+        )
+    except FeedbackReviewError as exc:
+        return _feedback_review_error_response(exc)
+    return JSONResponse(content=payload)
+
+
+@app.get("/api/admin/feedback/groups/{group_id}")
+def admin_feedback_group_detail(group_id: str, request: Request) -> JSONResponse:
+    """Return one feedback group with normalized source records."""
+    if response := _require_admin_feedback(request):
+        return response
+    try:
+        payload = get_feedback_group_detail(
+            group_id,
+            filters=_feedback_filters_from_request(request),
+        )
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=422,
+            content={"ok": False, "error": "validation_error", "detail": str(exc)},
+        )
+    except FeedbackReviewError as exc:
+        return _feedback_review_error_response(exc)
+    if payload is None:
+        return JSONResponse(
+            status_code=404,
+            content={"ok": False, "error": "feedback_group_not_found", "detail": group_id},
+        )
+    return JSONResponse(content=payload)
+
+
+@app.get("/api/admin/feedback/groups/{group_id}/triage")
+def admin_feedback_group_triage(group_id: str, request: Request) -> JSONResponse:
+    """Return the mutable triage overlay for one feedback group."""
+    if response := _require_admin_feedback(request):
+        return response
+    try:
+        overlay = read_triage_overlay(group_id)
+    except FeedbackReviewError as exc:
+        return _feedback_review_error_response(exc)
+    return JSONResponse(content={"ok": True, "triage_overlay": overlay})
+
+
+@app.put("/api/admin/feedback/groups/{group_id}/triage")
+def admin_feedback_group_triage_update(
+    group_id: str,
+    body: dict[str, Any],
+    request: Request,
+) -> JSONResponse:
+    """Save the mutable triage overlay for one feedback group."""
+    if response := _require_admin_feedback(request):
+        return response
+    try:
+        detail = get_feedback_group_detail(
+            group_id,
+            filters=_feedback_filters_from_request(request),
+        )
+        if detail is None:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "error": "feedback_group_not_found", "detail": group_id},
+            )
+        overlay = write_triage_overlay(group_id, body, existing_group=detail["group"])
+    except TriageOverlayValidationError as exc:
+        return JSONResponse(
+            status_code=422,
+            content={"ok": False, "error": "validation_error", "detail": str(exc)},
+        )
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=422,
+            content={"ok": False, "error": "validation_error", "detail": str(exc)},
+        )
+    except FeedbackReviewError as exc:
+        return _feedback_review_error_response(exc)
+    return JSONResponse(content={"ok": True, "triage_overlay": overlay})
 
 
 @app.post("/structured-query", response_model=QueryResponse)

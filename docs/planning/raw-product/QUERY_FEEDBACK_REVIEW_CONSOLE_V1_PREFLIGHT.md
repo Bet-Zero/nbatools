@@ -14,6 +14,11 @@ Core product decision: original sanitized feedback records remain immutable.
 Reviewer state is written to separate mutable overlay records and joined at
 read time.
 
+Backend Wave 1 status as of this implementation wave: complete with notes.
+Shared feedback normalization/grouping helpers, mutable triage overlay storage,
+and gated `/api/admin/feedback` endpoints are implemented. The frontend
+`/admin/feedback` route and console UI remain Wave 2 work.
+
 ## 2. Current System Summary
 
 Current feedback collection is backend-owned through `POST /query-feedback`.
@@ -391,8 +396,9 @@ Safe if scoped to V1 and no stop condition appears:
    preserving artifact names, fields, grouping ids, smoke behavior, and
    read-only R2 behavior.
 3. Add overlay schema validation and R2/local test seams in the shared module.
-4. Add FastAPI admin endpoints under `/api/admin/feedback` and a shell route
-   for `/admin/feedback`, gated by explicit admin env config.
+4. Add FastAPI admin endpoints under `/api/admin/feedback`, gated by explicit
+   admin env config. Defer the `/admin/feedback` shell route until frontend
+   Wave 2.
 5. Add frontend API types/client methods.
 6. Add a lazy `AdminFeedbackPage` route with grouped list, filters, detail,
    triage editor, and copy/export handoff panel.
