@@ -22,6 +22,40 @@ Current recommendation:
 
 Launch blocker found: no. The production build still succeeds.
 
+### 1.1 Wave 1 Execution Status
+
+The first execution wave completed on 2026-05-22.
+
+- `frontend/src/main.tsx` still keeps public `App` eager/default.
+- The internal route components under `/review` and `/visual-qa` now enter
+  through a small lazy route boundary in `frontend/src/InternalRoutes.tsx`.
+- The build now emits internal page chunks plus shared result-renderer and
+  screenshot chunks instead of the previous single JS chunk.
+- A production-like FastAPI browser smoke loaded `/`, `/?debug=1`, `/review`,
+  and `/visual-qa`; the emitted internal page chunks loaded from `/assets` with
+  `200` responses.
+- The previous Vite large-chunk warning no longer appears in the measured build.
+
+After-wave build output:
+
+| Asset | Build output size | Gzip size |
+| --- | --- | --- |
+| `index.html` | 0.94 kB | 0.45 kB |
+| `assets/index-0fDmR5Fb.css` | 34.01 kB | 6.18 kB |
+| `assets/ResultRenderer-Coq2NU9r.css` | 36.72 kB | 6.15 kB |
+| `assets/ReviewPage-Z-pFk4ZL.css` | 3.62 kB | 1.18 kB |
+| `assets/VisualQaPage-DGMi8LNc.css` | 5.60 kB | 1.65 kB |
+| `assets/index-DxycShP5.js` | 231.04 kB | 71.94 kB |
+| `assets/ResultRenderer-BGbnXNLL.js` | 183.98 kB | 49.45 kB |
+| `assets/reviewScreenshots-5kCdWxlh.js` | 109.84 kB | 34.00 kB |
+| `assets/ReviewPage-BR9gxWuv.js` | 15.22 kB | 4.88 kB |
+| `assets/VisualQaPage-C0jwqxgA.js` | 27.23 kB | 7.90 kB |
+
+Decision after Wave 1: stop bundle splitting here unless real startup
+performance evidence justifies more complexity. Screenshot-helper splitting,
+public debug-surface splitting, and result-pattern splitting remain measured
+follow-up candidates, not scheduled work.
+
 ## 2. Evidence Reviewed
 
 Required inputs inspected:
@@ -335,9 +369,8 @@ The current warning is real but not a correctness blocker. The current graph
 also has a straightforward boundary error for public startup: internal review
 and Visual QA pages are static entry imports.
 
-The first execution wave should fix only that boundary and measure it. If the
-warning clears and public JS bytes fall materially, stop there unless runtime
-performance evidence asks for more. If it does not clear, use the new emitted
-chunks to decide between helper-level screenshot splitting, public debug-surface
-splitting, result-pattern splitting, or accepting the remaining public bundle
-cost for now.
+Wave 1 fixed only that boundary and measured it. The warning cleared and the
+public entry JS chunk dropped materially, so further bundle work should stop
+unless runtime performance evidence asks for more. The after-wave chunks remain
+the evidence base if later work evaluates helper-level screenshot splitting,
+public debug-surface splitting, or result-pattern splitting.

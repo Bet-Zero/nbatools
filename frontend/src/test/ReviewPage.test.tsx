@@ -14,6 +14,7 @@ vi.mock("../lib/reviewScreenshots", () => ({
 import ReviewPage from "../ReviewPage";
 import { fetchDevFixtures, postQuery } from "../api/client";
 import { downloadReviewScreenshots } from "../lib/reviewScreenshots";
+import { resolveRootView } from "../main";
 
 function deferred<T>() {
   let resolve: (value: T) => void = () => {};
@@ -57,6 +58,20 @@ beforeEach(() => {
 });
 
 describe("ReviewPage", () => {
+  it("routes the internal review path to the review page", async () => {
+    vi.mocked(fetchDevFixtures).mockResolvedValue({
+      source_path: "docs/architecture/parser/examples.md",
+      fixtures: [],
+    });
+
+    render(resolveRootView("/review"));
+
+    expect(
+      await screen.findByRole("heading", { name: "Parser Review" }),
+    ).toBeInTheDocument();
+    expect(fetchDevFixtures).toHaveBeenCalledTimes(1);
+  });
+
   it("fetches fixtures on mount without running queries", async () => {
     vi.mocked(fetchDevFixtures).mockResolvedValue({
       source_path: "docs/architecture/parser/examples.md",

@@ -42,6 +42,11 @@ or function fallback path. If the bundle is missing locally, `/` falls back to
 the lightweight "UI bundle not built" shell so API-only checkouts still
 respond.
 
+The public `/` app remains in the eager entry path. Internal `/review` and
+`/visual-qa` pages are lazy-loaded as generated route chunks under
+`/assets/...`; they still use the same HTML shell and FastAPI/Vercel asset
+serving boundary as the public app.
+
 ### Development (two terminals, hot reload)
 
 ```bash

@@ -34,15 +34,15 @@
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
   remains manually reviewed even with local non-diffing screenshot artifact
   capture, opponent-conference support is limited to trusted seasons `2024-25`
-  and `2025-26`, existing frontend build/lint warnings remain non-blocking,
-  feedback review remains operational tooling rather than an admin dashboard or
-  mutable triage overlay, triage suggestions are heuristic, corpus conversion
-  remains manual, and explicitly unsupported boundaries must continue to return
-  guarded no-result or unsupported behavior. Public UI is ready with notes;
-  broader unsupported-copy refinement, screenshot diffing/baseline/CI
-  decisions, admin dashboard / mutable triage overlay, `natural_query.py`
-  extraction, return-package archive sweep, and branding/name change are
-  post-launch/deferred notes rather than launch blockers.
+  and `2025-26`, feedback review remains operational tooling rather than an
+  admin dashboard or mutable triage overlay, triage suggestions are heuristic,
+  corpus conversion remains manual, and explicitly unsupported boundaries must
+  continue to return guarded no-result or unsupported behavior. Public UI is
+  ready with notes; broader unsupported-copy refinement, screenshot
+  diffing/baseline/CI decisions, admin dashboard / mutable triage overlay,
+  `natural_query.py` extraction, return-package archive sweep, and
+  branding/name change are post-launch/deferred notes rather than launch
+  blockers.
 - Division Phrase Boundary Cleanup is complete for this handoff boundary:
   explicit NBA division opponent phrases return `no_result` /
   `filter_not_supported` with empty sections and
@@ -73,7 +73,7 @@
 | Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; Waves 1–6 completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public answer context de-duplication. |
 | AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only wait-gate drift fixed in `frontend/src/test/AppTheming.test.tsx`; full frontend suite now passes 25/25 files and 352/352 tests. |
 | Division boundary cleanup | `PASS` | `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; targeted snapshots passed 65 tests, `test-parser` passed 776, `test-query` passed 776, raw QA route-priority slice passed 35/35, raw QA product-boundaries slice passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
-| Build/lint/test evidence | `PASS_WITH_EXISTING_WARNINGS` | Latest readiness docs record frontend build passing with the existing Vite large-chunk warning, frontend lint passing with 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning, full frontend tests passing 352/352 after the AppTheming test drift fix, team conference data tests passing 15 tests, parser smoke passing 751 tests, and query smoke passing 752 tests. |
+| Build/lint/test evidence | `PASS` | `return_packages/raw-product/VITE_INTERNAL_ROUTE_LAZY_SPLIT_RETURN_PACKAGE.md` records frontend build passing with the previous Vite large-chunk warning cleared by lazy internal route chunks. `return_packages/raw-product/REVIEWPAGE_EXHAUSTIVE_DEPS_WARNING_CLEANUP_RETURN_PACKAGE.md` records lint passing with the previous review-page warning cleared. Full frontend tests passed 352/352 after the AppTheming test drift fix, team conference data tests passed 15 tests, parser smoke passed 751 tests, and query smoke passed 752 tests. |
 
 ## 3. Feedback and diagnostics V1
 
@@ -236,11 +236,11 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   sweep, and branding/name change.
 - The pre-existing AppTheming test drift surfaced during Wave 6 validation is
   fixed; the full frontend suite is now clean at 352/352 tests passing.
-- Frontend lint still has the existing
-  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning in the
-  latest readiness evidence.
-- Frontend build still has the existing Vite large-chunk warning in the latest
-  readiness evidence.
+- Frontend lint no longer has the previous
+  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning after
+  the internal review-page cleanup.
+- Frontend build no longer has the previous Vite large-chunk warning after the
+  internal-route lazy split.
 - External NBA CDN image/logo request failures may occur. They are non-query
   blockers unless they affect the primary user experience.
 
@@ -279,8 +279,8 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 2. Run the first launch feedback review using `make query-feedback-export`.
 3. Treat the remaining notes as post-launch/deferred work: visual QA screenshot
    diffing/baseline/CI decisions, admin dashboard / mutable triage overlay,
-   `natural_query.py` extraction, return-package archive sweep, branding/name
-   change, and existing build/lint warnings.
+   `natural_query.py` extraction, return-package archive sweep, and
+   branding/name change.
 4. Run the next unsupported-family promotion preflight only through the Wave 1
    and Wave 2 guardrails.
 5. Add CI/release artifact packaging or harness tag/category filters only if

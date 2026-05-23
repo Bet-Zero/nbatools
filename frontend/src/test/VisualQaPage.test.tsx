@@ -5,7 +5,6 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { isValidElement, type ReactElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { QueryResponse } from "../api/types";
 import visualQaCorpusRawText from "../../../qa/frontend_visual_qa_corpus.yaml?raw";
@@ -218,10 +217,17 @@ describe("VisualQaPage", () => {
     expect(card?.querySelector(`.${styles.captureTarget}`)).toBeInTheDocument();
   });
 
-  it("routes the internal visual QA path to the visual QA page", () => {
-    const view = resolveRootView(VISUAL_QA_INTERNAL_ROUTE);
+  it("routes the internal visual QA path to the visual QA page", async () => {
+    vi.mocked(postQuery).mockImplementation((query) =>
+      Promise.resolve(makeNoResult(query)),
+    );
 
-    expect(isValidElement(view)).toBe(true);
-    expect((view as ReactElement).type).toBe(VisualQaPage);
+    render(resolveRootView(VISUAL_QA_INTERNAL_ROUTE));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Frontend Visual QA Wave 1",
+      }),
+    ).toBeInTheDocument();
   });
 });

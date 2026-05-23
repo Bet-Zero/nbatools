@@ -102,8 +102,7 @@ Human sign-off still needed:
   broader no-result/unsupported copy refinement, screenshot diffing/baseline/CI
   decisions, and wide-table internal scrolling remain post-launch polish notes.
 - Product owner acceptance that post-review hardening Waves 1–6 are complete
-  with notes, and remaining items are post-launch/deferred: existing Vite
-  large-chunk warning, existing `ReviewPage` lint warning, screenshot
+  with notes, and remaining items are post-launch/deferred: screenshot
   diffing/baseline/CI decisions after the validated local artifact capture,
   admin dashboard / mutable triage overlay, `natural_query.py` extraction,
   return-package archive sweep, and branding/name change.
@@ -127,8 +126,8 @@ Human sign-off still needed:
 | Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; waves completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public context de-duplication. |
 | AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only drift fixed and full frontend suite passed 25/25 files and 352/352 tests. |
 | Division phrase boundary cleanup | `PASS` | `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; targeted snapshots passed 65 tests, parser/query slices passed 776 tests each, raw QA `natural_query_route_priority` passed 35/35, raw QA `product_boundaries` passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
-| Frontend build | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record `cd frontend && npm run build` passing with the existing Vite large-chunk warning. |
-| Frontend lint | `PASS_WITH_EXISTING_WARNING` | Latest readiness docs record 0 errors and the existing `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning. |
+| Frontend build | `PASS` | `return_packages/raw-product/VITE_INTERNAL_ROUTE_LAZY_SPLIT_RETURN_PACKAGE.md`; internal `/review` and `/visual-qa` route chunks split from the public entry, `npm --prefix frontend run build` passed, and the previous Vite large-chunk warning cleared. |
+| Frontend lint | `PASS` | `return_packages/raw-product/REVIEWPAGE_EXHAUSTIVE_DEPS_WARNING_CLEANUP_RETURN_PACKAGE.md`; the internal review-page cleanup passed `npm --prefix frontend run lint` with no lint warnings. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
 | Parser smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-parser` passing 751 tests. |
 | Query smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-query` passing 752 tests. |
@@ -358,9 +357,10 @@ Supporting return packages:
   division support was added.
 - Conference Finals phrasing remains a playoff-round surface, not an
   opponent-conference filter.
-- Frontend lint remains clean with 0 errors and the existing
-  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
-- Frontend build remains clean with the existing Vite large-chunk warning.
+- Frontend lint is clean; the internal review-page cleanup cleared the previous
+  `react-hooks/exhaustive-deps` warning.
+- Frontend build is clean; the internal-route lazy split cleared the previous
+  Vite large-chunk warning.
 - Query feedback is `FEEDBACK_READY_WITH_NOTES`, not blocked: preview records
   are verified under `nbatools-data` prefix `query_feedback/preview`, and the
   read-only review/export workflow is implemented. Remaining feedback notes are
