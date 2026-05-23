@@ -817,7 +817,7 @@ Goal: inspect current code and map exact files/functions to this spec. No code c
 Deliverable:
 
 ```txt
-return_packages/result_display/RESULT_DISPLAY_PREFLIGHT_RETURN_PACKAGE.md
+docs/planning/result-display-lock-in/result_display_preflight_findings.md
 ```
 
 Questions to answer:

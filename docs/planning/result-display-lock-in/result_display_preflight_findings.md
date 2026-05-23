@@ -1,6 +1,8 @@
 # Result Display Lock-In Preflight Findings
 
-This planning note mirrors the paste-back return package in `return_packages/result_display/RESULT_DISPLAY_PREFLIGHT_RETURN_PACKAGE.md`.
+This planning note is the durable preflight findings record. The result-display
+return package remains a handoff receipt under `return_packages/result_display/`,
+not the source of truth for these findings.
 
 ## 1. Executive summary
 

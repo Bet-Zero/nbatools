@@ -202,7 +202,7 @@ query_feedback/preview/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json
 ```
 
 Evidence is recorded in
-`return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`.
+`docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
 
 The endpoint is backend-owned. The frontend never receives R2 credentials and
 does not write directly to storage.

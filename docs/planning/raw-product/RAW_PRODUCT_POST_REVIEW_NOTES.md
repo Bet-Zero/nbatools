@@ -463,13 +463,13 @@ The working recommendation was executed as a six-wave hardening cycle:
 
 Closure evidence:
 
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_2_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_3_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_4_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_5_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`
-- `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`
+- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
+- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/deployment.md`
+- `docs/operations/query_feedback_review.md`
+- `docs/index.md`
+- `README.md`
+- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 
 The remaining recommendation is to proceed with launch/handoff using the
 existing `*_WITH_NOTES` statuses, then handle deferred notes as post-launch work.

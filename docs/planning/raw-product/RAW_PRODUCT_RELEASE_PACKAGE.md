@@ -113,21 +113,21 @@ Human sign-off still needed:
 |---|---|---|
 | Backend Raw QA | `PASS` | Latest full run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. Current corpus has 253 cases after division-boundary additions; targeted division slices passed in the cleanup evidence below. |
 | Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`; 125 selected cases; rendered 125; render failures 0; missing backend records 0; soft checks `480/0/0`. |
-| Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md` and `return_packages/raw-product/VISUAL_QA_SCREENSHOT_ARTIFACT_VALIDATION_DOCS_REFRESH_RETURN_PACKAGE.md`; expanded local manual baseline passed 20 cases / 40 desktop-mobile viewport reviews, and canonical local artifact run `visual_qa_20_case_baseline` captured 20 desktop plus 20 mobile card screenshots with request errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, overflow false, and 42 expected PNGs total; the original 15-case desktop/mobile baseline remains the latest deployed preview request-health evidence before expansion; no screenshot diffing, committed PNG baselines, or CI gate. |
-| Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
-| Opponent-conference preview smoke | `PASS` | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported opponent-conference queries passed, geography/playoff-round guardrails passed, and `/visual-qa` request errors were 0. |
+| Visual QA | `ACCEPTED_WITH_MANUAL_LIMITATION` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; expanded local manual baseline passed 20 cases / 40 desktop-mobile viewport reviews, and canonical local artifact run `visual_qa_20_case_baseline` captured 20 desktop plus 20 mobile card screenshots with request errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, overflow false, and 42 expected PNGs total; the original 15-case desktop/mobile baseline remains the latest deployed preview request-health evidence before expansion; no screenshot diffing, committed PNG baselines, or CI gate. |
+| Preview manual QA | `PREVIEW_READY_WITH_NOTES` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker cases passed. |
+| Opponent-conference preview smoke | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; four supported opponent-conference queries passed, geography/playoff-round guardrails passed, and `/visual-qa` request errors were 0. |
 | R2 data availability | `PASS` | R2 dry-run included `raw/teams/team_conference_membership.csv`; sync uploaded it; `head_object` returned `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
 | Deployment smoke | `PASS` | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and `query_celtics_record_against_east_current` returned `team_record` / `ok` with 15 East opponents. |
-| Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; R2 list/get passed, user-submitted feedback writes were verified, automatic diagnostics were verified, sanitization/privacy checks passed, no raw result rows/tables were found, and `/review` plus `/visual-qa` suppression passed. |
-| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
+| Query Feedback + Diagnostic Logging V1 | `FEEDBACK_READY_WITH_NOTES` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; R2 list/get passed, user-submitted feedback writes were verified, automatic diagnostics were verified, sanitization/privacy checks passed, no raw result rows/tables were found, and `/review` plus `/visual-qa` suppression passed. |
+| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES` | `docs/operations/query_feedback_review.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv`. |
 | Front-facing result UI productization Wave 1 | `PASS_WITH_NOTES` | Public mode hides route/query-class/status/reason/JSON/dev chrome by default while preserving diagnostics in Details and feedback payloads. `/review` remains debug-rich; `/visual-qa` renders public results with internal case metadata. |
 | Front-facing result UI productization Wave 2 | `PASS_WITH_NOTES` | Public successful results are answer-first, context/caveats sit near the hero, actions are secondary, dense mobile tables use tighter padding and column-priority flags, no-result public diagnostics use a single Details disclosure, and debug/review/visual QA/feedback diagnostics are preserved. |
-| Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
-| Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` through `RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`; waves completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public context de-duplication. |
-| AppTheming test drift fix / full frontend suite | `PASS` | `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`; test-only drift fixed and full frontend suite passed 25/25 files and 352/352 tests. |
-| Division phrase boundary cleanup | `PASS` | `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; targeted snapshots passed 65 tests, parser/query slices passed 776 tests each, raw QA `natural_query_route_priority` passed 35/35, raw QA `product_boundaries` passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
-| Frontend build | `PASS` | `return_packages/raw-product/VITE_INTERNAL_ROUTE_LAZY_SPLIT_RETURN_PACKAGE.md`; internal `/review` and `/visual-qa` route chunks split from the public entry, `npm --prefix frontend run build` passed, and the previous Vite large-chunk warning cleared. |
-| Frontend lint | `PASS` | `return_packages/raw-product/REVIEWPAGE_EXHAUSTIVE_DEPS_WARNING_CLEANUP_RETURN_PACKAGE.md`; the internal review-page cleanup passed `npm --prefix frontend run lint` with no lint warnings. |
+| Final Public UI Release Review | `PUBLIC_UI_READY_WITH_NOTES` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none. |
+| Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; waves completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public context de-duplication. |
+| AppTheming test drift fix / full frontend suite | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; test-only drift fixed and full frontend suite passed 25/25 files and 352/352 tests. |
+| Division phrase boundary cleanup | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; targeted snapshots passed 65 tests, parser/query slices passed 776 tests each, raw QA `natural_query_route_priority` passed 35/35, raw QA `product_boundaries` passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
+| Frontend build | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; internal `/review` and `/visual-qa` route chunks split from the public entry, `npm --prefix frontend run build` passed, and the previous Vite large-chunk warning cleared. |
+| Frontend lint | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; the internal review-page cleanup passed `npm --prefix frontend run lint` with no lint warnings. |
 | Team conference data | `PASS` | `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed 15 tests. |
 | Parser smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-parser` passing 751 tests. |
 | Query smoke | `PASS` | Latest readiness docs record `make PYTEST=.venv/bin/pytest test-query` passing 752 tests. |
@@ -286,24 +286,24 @@ Latest release artifacts:
   `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`
 - Visual QA checklist:
   `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
-- Preview manual QA rerun:
-  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
+- Preview manual QA evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Release-readiness checklist:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
-- Post-review hardening closure refresh:
-  `return_packages/raw-product/POST_REVIEW_HARDENING_CLOSURE_REFRESH_RETURN_PACKAGE.md`
+- Post-review hardening closure evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - AppTheming test drift fix evidence:
-  `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Release-candidate handoff:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
 - Release-readiness checkpoint:
   `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
 - Query feedback R2 inspection:
-  `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Query feedback review workflow V1:
-  `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`
-- Query feedback implementation package:
-  `return_packages/raw-product/QUERY_FEEDBACK_DIAGNOSTIC_LOGGING_V1_RETURN_PACKAGE.md`
+  `docs/operations/query_feedback_review.md`
+- Query feedback implementation evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Backend harness plan:
   `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
 - Latest deployment smoke:
@@ -315,21 +315,14 @@ Latest release artifacts:
   - `qa/harness_slices/player_entity_stat_context.yaml`
   - `qa/harness_slices/product_boundaries.yaml`
 
-Supporting return packages:
+Durable supporting evidence:
 
-- `return_packages/raw-product/RAW_QA_HARNESS_EFFICIENCY_WAVE_1_RETURN_PACKAGE.md`
-- `return_packages/raw-product/FRONTEND_COPY_QA_EXPANSION_WAVE_1_RETURN_PACKAGE.md`
-- `return_packages/raw-product/FRONTEND_COPY_QA_EXPANSION_WAVE_2_RETURN_PACKAGE.md`
-- `return_packages/raw-product/OPPONENT_CONFERENCE_PROMOTION_RETURN_PACKAGE.md`
-- `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_SMOKE_RERUN_RETURN_PACKAGE.md`
-- `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_RELEASE_PACKAGE_REFRESH_AFTER_R2_SYNC_FIX_RETURN_PACKAGE.md`
-- `return_packages/raw-product/QUERY_FEEDBACK_DIAGNOSTIC_LOGGING_V1_RETURN_PACKAGE.md`
-- `return_packages/raw-product/QUERY_FEEDBACK_PREVIEW_R2_ENABLE_RETURN_PACKAGE.md`
-- `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`
-- `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`
+- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
+- `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
+- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
+- `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
+- `docs/operations/query_feedback_review.md`
+- `docs/operations/deployment.md`
 
 ## 6. Known Limitations
 

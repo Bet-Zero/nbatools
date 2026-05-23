@@ -160,15 +160,15 @@ coverage, not every raw QA case rendered or visual layout coverage.
 | Corpus | `qa/frontend_visual_qa_corpus.yaml` |
 | Baseline size | 20 cases / 40 required desktop-mobile viewport reviews |
 | Manual checklist | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` |
-| Expanded local baseline | `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`; 20/20 cases reviewed at desktop and mobile, request errors 0, blockers none |
-| Screenshot artifact validation | `return_packages/raw-product/VISUAL_QA_SCREENSHOT_ARTIFACT_VALIDATION_DOCS_REFRESH_RETURN_PACKAGE.md`; canonical local run `visual_qa_20_case_baseline` captured 20 desktop and 20 mobile cards with request errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, overflow false, and 42 expected PNGs total |
-| Preview rerun | `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md` |
+| Expanded local baseline | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; 20/20 cases reviewed at desktop and mobile, request errors 0, blockers none |
+| Screenshot artifact validation | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; canonical local run `visual_qa_20_case_baseline` captured 20 desktop and 20 mobile cards with request errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, overflow false, and 42 expected PNGs total |
+| Preview rerun | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` |
 | Desktop baseline | expanded local 20-case pass completed at `1280px`; document/body widths `1280px`; statuses `ok: 15`, `no_result: 5`, `error: 0` |
 | Mobile baseline | expanded local 20-case pass completed at `390px`; document/body widths `390px`; statuses `ok: 15`, `no_result: 5`, `error: 0` |
 | Fixed finding | mobile dense table clipping for top performance, comparison, and playoff matchup tables |
 | Fixed finding | filtered leaderboard hero context for guard and center examples |
 | Fixed finding | preview mobile `/visual-qa` wrapper/card overflow clipped result content at ~390px; local production shell now measures `pageWidth 390` at a 390px viewport and the latest preview rerun passed the five mobile blocker cases |
-| Latest preview `/visual-qa` request health | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; loaded 15/15 cases with request errors 0 |
+| Latest preview `/visual-qa` request health | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; loaded 15/15 cases with request errors 0 |
 | Accepted baseline | no-result card baseline |
 | Artifact limitation | no screenshot diffing, committed PNG baselines, or CI gate in this wave |
 
@@ -195,12 +195,12 @@ remain deferred.
 | Preview validation | `PREVIEW_READY_WITH_NOTES`; `/`, `/review`, `/visual-qa`, six smoke queries, and five mobile blocker rechecks passed |
 | R2 opponent-conference data | `raw/teams/team_conference_membership.csv` exists in R2; `head_object` passed with `ContentLength=4999` and `LastModified=2026-05-17T09:03:29+00:00` |
 | Latest deployment smoke | `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`; `ok: true`, `case_count: 7`, `failure_count: 0`, and opponent-conference membership-data case passed |
-| Latest opponent-conference preview smoke | `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`; four supported checks passed, two guardrails passed, `/visual-qa` request errors 0 |
-| Query feedback and diagnostic logging | `FEEDBACK_READY_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`; user-submitted R2 records, automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa` suppression verified under `query_feedback/preview` |
-| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
+| Latest opponent-conference preview smoke | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; four supported checks passed, two guardrails passed, `/visual-qa` request errors 0 |
+| Query feedback and diagnostic logging | `FEEDBACK_READY_WITH_NOTES`; `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; user-submitted R2 records, automatic diagnostics, sanitization/privacy, and `/review` plus `/visual-qa` suppression verified under `query_feedback/preview` |
+| Query feedback review/export workflow | `IMPLEMENTED_WITH_NOTES`; `docs/operations/query_feedback_review.md`; launch review can use `make query-feedback-export`, backed by `tools/export_query_feedback.py`, to generate `feedback_review.md`, `feedback_records.csv`, `feedback_records.jsonl`, `summary.json`, and `triage_decisions_template.csv` |
 | Public/default result mode | `PASS_WITH_NOTES`; `/` is public and answer-first by default, context/caveats render near the answer, successful-result actions are secondary, Details preserves diagnostics, `?debug=1` restores debug chrome, `/review` remains debug-rich, and `/visual-qa` renders public results with case metadata |
-| Final public UI release review | `PUBLIC_UI_READY_WITH_NOTES`; `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none |
-| Division phrase boundary cleanup | `PASS`; `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`; broad fallback for explicit NBA division opponent phrases is resolved; targeted snapshots 65 passed, `test-parser` 776 passed, `test-query` 776 passed, raw QA `natural_query_route_priority` 35/35 passed, raw QA `product_boundaries` 18/18 passed, `test-preflight` 2978 passed with 1 xpassed, and `git diff --check` passed |
+| Final public UI release review | `PUBLIC_UI_READY_WITH_NOTES`; `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; routes `/`, `/?debug=1`, `/review`, and `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family checks passed; debug/details and feedback preservation passed; blocking issues none |
+| Division phrase boundary cleanup | `PASS`; `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; broad fallback for explicit NBA division opponent phrases is resolved; targeted snapshots 65 passed, `test-parser` 776 passed, `test-query` 776 passed, raw QA `natural_query_route_priority` 35/35 passed, raw QA `product_boundaries` 18/18 passed, `test-preflight` 2978 passed with 1 xpassed, and `git diff --check` passed |
 
 Release verdict: `PREVIEW_READY_WITH_NOTES`.
 
@@ -375,7 +375,7 @@ The warning is pre-existing and was also recorded in the deploy-parity wave.
 ### Full frontend test suite after AppTheming drift fix
 
 Evidence:
-`return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`.
+`docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
 
 Command:
 
@@ -434,7 +434,7 @@ Preview status:
 
 ```text
 PREVIEW_READY_WITH_NOTES.
-Latest rerun: return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md.
+Latest rerun: docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md.
 Routes checked: /, /review, /visual-qa.
 Smoke queries checked: 6.
 Mobile blocker cases rechecked: 5.
@@ -487,8 +487,8 @@ Result:
 
 Evidence:
 
-- Return package:
-  `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`
+- Durable evidence summary:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Targeted snapshot tests: 65 passed.
 - `make PYTEST=.venv/bin/pytest test-parser`: 776 passed.
 - `make PYTEST=.venv/bin/pytest test-query`: 776 passed.
@@ -552,7 +552,7 @@ opponent_team_abbrs_count: 15
 Evidence:
 
 ```text
-return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md
+docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md
 Feedback readiness status: FEEDBACK_READY_WITH_NOTES
 R2 bucket/prefix: nbatools-data / query_feedback/preview/2026/05/18/
 R2 list/get: PASS
@@ -568,7 +568,7 @@ Blocking issues: none
 Evidence:
 
 ```text
-return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md
+docs/operations/query_feedback_review.md
 Workflow status: implemented with notes
 Export script: tools/export_query_feedback.py
 Make target: make query-feedback-export
@@ -598,8 +598,8 @@ Baseline preview rerun status: `PREVIEW_READY_WITH_NOTES`.
 
 Evidence:
 
-- Preview rerun return package:
-  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`
+- Preview rerun evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Preview URL checked:
   `https://nbatools-fuq06rg4y-brents-projects-686e97fc.vercel.app`
 - Routes checked: `/`, `/review`, `/visual-qa`
@@ -611,8 +611,8 @@ Latest opponent-conference/R2 preview smoke status: `PASS`.
 
 Evidence:
 
-- R2 sync fix return package:
-  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`
+- R2 sync fix evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Preview URL checked:
   `https://nbatools-4vme9ylii-brents-projects-686e97fc.vercel.app`
 - Supported opponent-conference checks: 4 passed
@@ -627,8 +627,8 @@ Latest final public UI release review status: `PUBLIC_UI_READY_WITH_NOTES`.
 
 Evidence:
 
-- Final public UI return package:
-  `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`
+- Final public UI evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Preview URL checked:
   `https://nbatools-git-main-brents-projects-686e97fc.vercel.app`
 - Routes checked: `/`, `/?debug=1`, `/review`, `/visual-qa`

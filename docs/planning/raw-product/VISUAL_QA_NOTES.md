@@ -39,8 +39,7 @@ Recent related work before this visual QA pass:
 
 ## Fix Wave 1 Status
 
-Implementation return package:
-`return_packages/raw-product/VISUAL_QA_TARGETED_FIX_WAVE_1_RETURN_PACKAGE.md`
+Implementation evidence is recorded in this notes section.
 
 | Target | Status | Notes |
 |---|---|---|
@@ -54,8 +53,7 @@ Implementation return package:
 
 ### Entity Summary Record-When Filter Follow-Up
 
-Follow-up return package:
-`return_packages/raw-product/ENTITY_SUMMARY_RECORD_WHEN_FILTER_FOLLOWUP_RETURN_PACKAGE.md`
+Follow-up evidence is recorded in this notes section.
 
 - Wave 1 fixed the Entity Summary hero wording for record-when player-condition summaries.
 - Visual recheck still showed `43-22` for `What is Denver's record when Nikola Jokić has a triple-double?`, which matched the unfiltered Denver/Jokić season sample.

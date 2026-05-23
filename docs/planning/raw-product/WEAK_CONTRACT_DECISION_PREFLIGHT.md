@@ -52,9 +52,7 @@ display failure.
 | File | Why inspected | Key finding |
 |---|---|---|
 | `docs/planning/raw-product/RAW_QUERY_PRODUCT_MAP.md` | Current product map and route inventory | Lists all three targets as shipped and documents `player_on_off` as a split, `lineup_summary` as entity summary, and `playoff_appearances` as leaderboard. |
-| `docs/reference/result_contracts/core_result_table_contracts.md` | Locked Wave 1/Wave 2 display contracts | Identifies the same three weak contracts and locks current `player_on_off`, `lineup_summary`, and ranked `playoff_appearances` behavior. |
-| `return_packages/raw-product/CORE_RESULT_TABLE_CONTRACT_LOCK_WAVE_1_RETURN_PACKAGE.md` | Prior lock-in context | Confirms Wave 1 did not change production code and deferred general leaderboard/detail/row-cap decisions. |
-| `return_packages/raw-product/CORE_RESULT_TABLE_CONTRACT_LOCK_WAVE_2_RETURN_PACKAGE.md` | Source of weak-contract targets | Names `lineup_summary`, `player_on_off`, and single-team `playoff_appearances` as deferred decisions. |
+| `docs/reference/result_contracts/core_result_table_contracts.md` | Locked Wave 1/Wave 2 display contracts | Identifies the same three weak contracts, locks current `player_on_off`, `lineup_summary`, and ranked `playoff_appearances` behavior, and records that general leaderboard/detail/row-cap decisions were deferred. |
 | `src/nbatools/commands/natural_query.py` | Natural route selection | Routes lineup summary before lineup leaderboard; routes on/off through `player_on_off`; delegates playoff routing to `try_playoff_record_route`. |
 | `src/nbatools/commands/_natural_query_execution.py` | Route-to-builder map | Maps all three targets to production builders. |
 | `src/nbatools/commands/_playoff_record_route_utils.py` | Playoff route selection | `playoff_appearance_intent` routes to `playoff_appearances` even when `team` is set. |

@@ -42,7 +42,7 @@ it should use a separate unsupported filter id so division requests are not
 misreported as conference geography or conference coverage failures.
 
 Completed cleanup evidence is recorded in
-`return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`.
+`docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
 The validation set passed targeted snapshot tests, parser/query slices, raw QA
 route-priority and product-boundary slices, `test-preflight`, and
 `git diff --check`.
@@ -52,7 +52,6 @@ route-priority and product-boundary slices, `test-preflight`, and
 Required inputs:
 
 - `docs/planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md`
-- `return_packages/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_COVERAGE_RETURN_PACKAGE.md`
 - `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
 - `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
 - `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`

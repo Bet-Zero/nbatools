@@ -335,6 +335,26 @@ In particular:
 - do not silently broaden claims without code and tests backing them up
 - when a meaningful shipped query capability changes, update `docs/reference/query_catalog.md` in the same pass so the repo keeps a living inventory of supported question types and phrasing patterns
 
+### Return-package dependency rule
+
+Return packages are handoff/evidence receipts, not durable source-of-truth docs.
+Durable product, release, runbook, reference, architecture, and policy facts
+must be promoted into `docs/`.
+
+- Do not use exact return-package paths in durable docs as primary evidence for
+  current behavior, release readiness, parser/routing policy, runbook behavior,
+  data contracts, result contracts, or UI behavior.
+- Exact return-package links in durable docs are allowed only as temporary
+  active-workstream handoff references. Mark them as temporary and name the
+  cleanup trigger.
+- At workstream closure, replace exact return-package dependencies with durable
+  doc or generated-output references before treating the workstream as closed.
+- Archive sweeps are separate explicit passes. Do not move, rename, archive, or
+  delete return packages as a side effect of an unrelated docs or feature wave.
+- Before moving or archiving return packages, scan `docs`, `README.md`, and
+  `AGENTS.md` for exact package references and either preserve linked packages
+  or update the links in the same archive wave.
+
 ### Phase-based work queues
 
 Some active plans in `docs/planning/` organize their work into phases with companion **work queue** files — sequenced, PR-sized task lists that live alongside the plan. The parser/surface expansion plan uses this pattern; other large, multi-phase efforts may adopt it.

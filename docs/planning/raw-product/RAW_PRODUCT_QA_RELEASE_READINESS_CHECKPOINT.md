@@ -328,16 +328,16 @@ Remaining limitations:
 - Desktop `1280px` and mobile `390px` local passes loaded 20/20 cases with
   request errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, no
   document-level horizontal overflow, and no blocking visual issue.
-- Expanded baseline package:
-  `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`.
+- Expanded baseline evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
 - Canonical local screenshot artifact run `visual_qa_20_case_baseline` passed:
   `desktop_1280` and `mobile_390` each captured 20/20 cases with request
   errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, and document/body
   overflow `false`.
 - Artifact manifest evidence lists 20 desktop card screenshots and 20 mobile
   card screenshots; expected PNG total is 42 including two full-page captures.
-- Artifact validation docs refresh package:
-  `return_packages/raw-product/VISUAL_QA_SCREENSHOT_ARTIFACT_VALIDATION_DOCS_REFRESH_RETURN_PACKAGE.md`.
+- Artifact validation evidence:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
 - Mobile dense table clipping was fixed for top performances, comparisons, and
   playoff matchup tables.
 - Filtered leaderboard hero wording was fixed for guard/center examples.
@@ -345,10 +345,10 @@ Remaining limitations:
 - `/visual-qa` route status: implemented locally and in Vercel rewrite config
   with parity to `/review`.
 - Latest preview manual rerun:
-  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   status `PREVIEW_READY_WITH_NOTES`.
 - Latest preview request-health rerun:
-  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   `/visual-qa` loaded 15/15 cases with request errors 0.
 
 Remaining limitations:
@@ -368,7 +368,7 @@ Status: `FEEDBACK_READY_WITH_NOTES`.
 Evidence:
 
 - Latest inspection:
-  `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`.
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
 - R2 list/get passed for bucket `nbatools-data` under isolated prefix
   `query_feedback/preview/2026/05/18/`.
 - Known user-submitted records were found and inspected, including direct
@@ -383,8 +383,8 @@ Evidence:
 
 Query Feedback Review Workflow V1 is now implemented as the launch review path:
 
-- Return package:
-  `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`.
+- Durable workflow runbook:
+  `docs/operations/query_feedback_review.md`.
 - Export script: `tools/export_query_feedback.py`.
 - Make target: `make query-feedback-export`.
 - Output artifacts: `feedback_review.md`, `feedback_records.csv`,
@@ -436,7 +436,7 @@ Latest release-readiness checklist validation:
   `query_celtics_record_against_east_current` returned `team_record` / `ok`
   with `opponent_conference=East` and 15 resolved opponents.
 - Opponent-conference preview smoke:
-  `return_packages/raw-product/OPPONENT_CONFERENCE_PREVIEW_R2_SYNC_FIX_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   Celtics vs East, Lakers vs West, Lakers road vs West last season, and Knicks
   vs Eastern Conference teams since January 1 passed; east-coast geography and
   Conference Finals guardrails passed.
@@ -448,31 +448,31 @@ Latest release-readiness checklist validation:
   overflow false, 20 card screenshots per viewport in the manifest, and 42
   expected PNGs total.
 - Query feedback R2 inspection:
-  `return_packages/raw-product/QUERY_FEEDBACK_R2_RECORD_INSPECTION_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   `FEEDBACK_READY_WITH_NOTES`; R2 list/get passed, user-submitted records found,
   automatic diagnostics found, sanitizer/privacy checks passed, and `/review`
   plus `/visual-qa` suppression passed.
 - Query feedback review/export workflow:
-  `return_packages/raw-product/QUERY_FEEDBACK_REVIEW_WORKFLOW_V1_RETURN_PACKAGE.md`;
+  `docs/operations/query_feedback_review.md`;
   implemented with notes; launch review can run `make query-feedback-export`.
 - Final public UI release review:
-  `return_packages/raw-product/FINAL_PUBLIC_UI_RELEASE_REVIEW_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   `PUBLIC_UI_READY_WITH_NOTES`; routes `/`, `/?debug=1`, `/review`, and
   `/visual-qa` passed; 14 desktop public queries and 13 mobile 390px family
   checks passed; debug/details and feedback preservation passed; blocking
   issues none.
 - Post-review hardening Waves 1–6:
-  `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md`
+  `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
   through
-  `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   complete with notes.
 - AppTheming test drift fix:
-  `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   test-only drift fix; full frontend suite passed 25/25 files and 352/352 tests.
 - Parser smoke: `make PYTEST=.venv/bin/pytest test-parser` passed, 751 tests.
 - Query smoke: `make PYTEST=.venv/bin/pytest test-query` passed, 752 tests.
 - Division boundary cleanup:
-  `return_packages/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   targeted snapshot tests passed 65 tests, `make PYTEST=.venv/bin/pytest
   test-parser` passed 776 tests, `make PYTEST=.venv/bin/pytest test-query`
   passed 776 tests, raw QA `natural_query_route_priority` passed 35/35, raw QA
@@ -481,7 +481,7 @@ Latest release-readiness checklist validation:
   passed.
 - Static check: `git diff --check` passed.
 - Preview validation:
-  `return_packages/raw-product/RAW_PRODUCT_PREVIEW_MANUAL_QA_RERUN_RETURN_PACKAGE.md`;
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   `PREVIEW_READY_WITH_NOTES`; `/`, `/review`, `/visual-qa`, six smoke queries,
   and five mobile blocker cases passed.
 

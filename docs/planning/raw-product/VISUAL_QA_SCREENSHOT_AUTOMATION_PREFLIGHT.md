@@ -38,8 +38,8 @@ Primary requested sources:
 - `Makefile`
 - `docs/operations/ui_guide.md`
 - `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
-- `return_packages/raw-product/VISUAL_QA_CORPUS_EXPANSION_RETURN_PACKAGE.md`
-- `return_packages/raw-product/EXPANDED_VISUAL_QA_MANUAL_BASELINE_RETURN_PACKAGE.md`
+- `docs/planning/raw-product/VISUAL_QA_CORPUS_EXPANSION_PREFLIGHT.md`
+- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 
 Supporting implementation and tooling sources:
 
@@ -52,7 +52,7 @@ Supporting implementation and tooling sources:
 - `.gitignore`
 - `.github/workflows/ci.yml`
 - `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
-- `return_packages/raw-product/FRONTEND_SCREENSHOT_VISUAL_QA_PREFLIGHT_RETURN_PACKAGE.md`
+- `docs/planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md`
 
 ## 3. Current Visual QA Target
 

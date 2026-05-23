@@ -49,11 +49,9 @@ frontend result rendering and tests. This preflight changes docs only.
 | File | Why inspected | Key finding |
 |---|---|---|
 | `docs/planning/raw-product/RAW_QUERY_PRODUCT_MAP.md` | Current route/product map | Identifies the leaderboard routes, renderer families, and shipped examples. |
-| `docs/reference/result_contracts/core_result_table_contracts.md` | Locked Wave 1/Wave 2 contracts | Documents generic leaderboard supporting columns as inferred and needing product decision. |
-| `return_packages/raw-product/CORE_RESULT_TABLE_CONTRACT_LOCK_WAVE_1_RETURN_PACKAGE.md` | Prior Wave 1 context | Confirms generic leaderboard only locked rank, entity, and primary metric. |
-| `return_packages/raw-product/CORE_RESULT_TABLE_CONTRACT_LOCK_WAVE_2_RETURN_PACKAGE.md` | Prior Wave 2 context | Confirms lineup and record leaderboards remain partially inferred or specialized. |
-| `return_packages/raw-product/WEAK_CONTRACT_DECISION_PREFLIGHT_RETURN_PACKAGE.md` | Weak-contract decision context | Established that single-team playoff appearances are no longer part of this leaderboard decision. |
-| `return_packages/raw-product/WEAK_CONTRACT_CLEANUP_WAVE_1_RETURN_PACKAGE.md` | Latest cleanup context | Confirms lineup summary and single-team playoff appearances were cleaned up, while leaderboard supporting columns remain next. |
+| `docs/reference/result_contracts/core_result_table_contracts.md` | Locked Wave 1/Wave 2 contracts | Documents generic leaderboard supporting columns as inferred and needing product decision; generic leaderboard only locked rank, entity, and primary metric, while lineup and record leaderboards remain partially inferred or specialized. |
+| `docs/planning/raw-product/WEAK_CONTRACT_DECISION_PREFLIGHT.md` | Weak-contract decision context | Established that single-team playoff appearances are no longer part of this leaderboard decision. |
+| This preflight | Latest cleanup context | Confirms lineup summary and single-team playoff appearances were cleaned up, while leaderboard supporting columns remain next. |
 | `frontend/src/components/results/patterns/LeaderboardResult.tsx` | Generic leaderboard renderer | Columns are `#`, entity, primary metric, then dynamically inferred row keys. No detail drawer or row cap. |
 | `frontend/src/components/results/patterns/TopPerformancesResult.tsx` | Single-game leaderboard renderer | Uses a curated table: rank, identity, date, opponent, result, optional score, primary metric, and metric-specific support stats. |
 | `frontend/src/components/results/patterns/RollingStretchResult.tsx` | Stretch leaderboard renderer | Already specialized: rank, player, window, stretch metric, start, end, season, plus at most two supported window fields when present. |

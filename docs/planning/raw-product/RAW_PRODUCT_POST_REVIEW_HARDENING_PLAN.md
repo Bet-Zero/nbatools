@@ -44,13 +44,13 @@
 | `src/nbatools/commands/natural_query.py` | Identified as the parser maintainability risk in PARSER_ROUTING_GROWTH_REVIEW_NOTES §6. |
 | `src/nbatools/query_service.py` | Query service surface; informs Wave 1 collision/route ordering rules. |
 | `Makefile` | Hosts `make query-feedback-export` — Wave 3 cadence anchors here. |
-| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md` | Confirms Wave 1 completed: parser/routing guardrails and feature promotion rules. |
-| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_2_RETURN_PACKAGE.md` | Confirms Wave 2 completed: Data/R2 promotion checklist hardening. |
-| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_3_RETURN_PACKAGE.md` | Confirms Wave 3 completed: weekly feedback review cadence. |
-| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_4_RETURN_PACKAGE.md` | Confirms Wave 4 completed: docs/return-package taxonomy. |
-| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_5_RETURN_PACKAGE.md` | Confirms Wave 5 completed: README/product positioning refresh. |
-| `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md` | Confirms Wave 6 completed: lightweight homepage/product-promise pass and public context duplication audit. |
-| `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md` | Confirms follow-up AppTheming test drift fix and clean full frontend suite: 352/352 tests passing. |
+| `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md` | Confirms Wave 1 completed: parser/routing guardrails and feature promotion rules. |
+| `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md` | Confirms Wave 1 completed: feature promotion rules and promotion-path contract. |
+| `docs/operations/deployment.md` | Confirms Wave 2 completed: Data/R2 promotion checklist hardening. |
+| `docs/operations/query_feedback_review.md` | Confirms Wave 3 completed: weekly feedback review cadence. |
+| `docs/index.md` | Confirms Wave 4 completed: docs/return-package taxonomy. |
+| `README.md` | Confirms Wave 5 completed: README/product positioning refresh. |
+| `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` | Confirms Wave 6 completed and records follow-up AppTheming test drift fix with clean full frontend suite: 352/352 tests passing. |
 
 ## 2.1 Closure refresh — 2026-05-21
 
@@ -342,13 +342,13 @@ Wave 6 validation.
 
 Closure evidence:
 
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_1_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_2_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_3_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_4_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_5_RETURN_PACKAGE.md`
-- `return_packages/raw-product/RAW_PRODUCT_HARDENING_WAVE_6_RETURN_PACKAGE.md`
-- `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`
+- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
+- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/deployment.md`
+- `docs/operations/query_feedback_review.md`
+- `docs/index.md`
+- `README.md`
+- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 
 The closure refresh does not change release classification. The remaining
 release notes are deferred/post-launch items, not blockers.
@@ -376,5 +376,5 @@ release notes are deferred/post-launch items, not blockers.
 - markdown lint if available (no repo-standard linter is currently wired into
   the Makefile; `git diff --check` is the minimum bar)
 - Latest full frontend-suite evidence is recorded in
-  `return_packages/raw-product/APP_THEMING_TEST_DRIFT_FIX_RETURN_PACKAGE.md`:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`:
   25/25 files and 352/352 tests passing after the AppTheming test drift fix.
