@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 
 const ReviewPage = lazy(() => import("./ReviewPage.tsx"));
 const VisualQaPage = lazy(() => import("./VisualQaPage.tsx"));
+const AdminFeedbackPage = lazy(() => import("./AdminFeedbackPage.tsx"));
 
 function InternalRouteFallback() {
   return (
@@ -23,6 +24,14 @@ export function VisualQaRoute() {
   return (
     <Suspense fallback={<InternalRouteFallback />}>
       <VisualQaPage />
+    </Suspense>
+  );
+}
+
+export function AdminFeedbackRoute() {
+  return (
+    <Suspense fallback={<InternalRouteFallback />}>
+      <AdminFeedbackPage />
     </Suspense>
   );
 }

@@ -13,6 +13,10 @@ const {
   postQueryFeedback,
   postStructuredQuery,
   fetchFreshness,
+  fetchAdminFeedbackGroups,
+  fetchAdminFeedbackGroupDetail,
+  fetchAdminFeedbackTriage,
+  saveAdminFeedbackTriage,
 } = await import("../api/client");
 
 beforeEach(() => {
@@ -319,5 +323,129 @@ describe("fetchDevFixtures", () => {
       { case_id: "S2_2_1_01", query: "First query" },
     ]);
     expect(mockFetch).toHaveBeenCalledWith("/api/dev/fixtures", undefined);
+  });
+});
+
+describe("admin feedback client", () => {
+  it("lists feedback groups with filters and admin token header", async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        ok: true,
+        source_mode: "r2",
+        bucket: "nbatools-data",
+        prefix: "query_feedback/preview",
+        total_found: 1,
+        total_exported: 1,
+        excluded_smoke_count: 0,
+        group_count: 1,
+        groups: [],
+      }),
+    );
+
+    const result = await fetchAdminFeedbackGroups(
+      {
+        review_status: "deferred",
+        triage_decision: "needs_more_data",
+        feedback_source: "user_submitted",
+        route: "season_leaders",
+        status: "no_result",
+        reason: "filter_not_supported",
+      },
+      { adminToken: "secret" },
+    );
+
+    expect(result.group_count).toBe(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/admin/feedback/groups?review_status=deferred&triage_decision=needs_more_data&feedback_source=user_submitted&route=season_leaders&status=no_result&reason=filter_not_supported",
+      {
+        headers: {
+          "X-NBATools-Admin-Token": "secret",
+        },
+      },
+    );
+  });
+
+  it("reads group detail and triage overlay", async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        jsonResponse({
+          ok: true,
+          group: { group_id: "qfg_123" },
+          records: [],
+          triage_overlay: { group_id: "qfg_123", review_status: "new" },
+          handoff_summary: "Group: qfg_123",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          ok: true,
+          triage_overlay: { group_id: "qfg_123", review_status: "new" },
+        }),
+      );
+
+    await fetchAdminFeedbackGroupDetail("qfg_123", { adminToken: "secret" });
+    await fetchAdminFeedbackTriage("qfg_123", { adminToken: "secret" });
+
+    expect(mockFetch).toHaveBeenNthCalledWith(
+      1,
+      "/api/admin/feedback/groups/qfg_123",
+      {
+        headers: {
+          "X-NBATools-Admin-Token": "secret",
+        },
+      },
+    );
+    expect(mockFetch).toHaveBeenNthCalledWith(
+      2,
+      "/api/admin/feedback/groups/qfg_123/triage",
+      {
+        headers: {
+          "X-NBATools-Admin-Token": "secret",
+        },
+      },
+    );
+  });
+
+  it("saves triage overlay without source-page headers", async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        ok: true,
+        triage_overlay: {
+          group_id: "qfg_123",
+          review_status: "reviewed",
+          triage_decision: "bug",
+        },
+      }),
+    );
+
+    await saveAdminFeedbackTriage(
+      "qfg_123",
+      {
+        review_status: "reviewed",
+        triage_decision: "bug",
+        review_notes: "Needs regression coverage.",
+        linked_case_or_issue: "RAW-123",
+        reviewer_source: "admin_feedback_console",
+      },
+      { adminToken: "secret" },
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/admin/feedback/groups/qfg_123/triage",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-NBATools-Admin-Token": "secret",
+        },
+        body: JSON.stringify({
+          review_status: "reviewed",
+          triage_decision: "bug",
+          review_notes: "Needs regression coverage.",
+          linked_case_or_issue: "RAW-123",
+          reviewer_source: "admin_feedback_console",
+        }),
+      },
+    );
   });
 });

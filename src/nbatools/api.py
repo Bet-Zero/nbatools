@@ -250,8 +250,9 @@ def ui() -> HTMLResponse:
 
 @app.get("/review", response_class=HTMLResponse, include_in_schema=False)
 @app.get("/visual-qa", response_class=HTMLResponse, include_in_schema=False)
+@app.get("/admin/feedback", response_class=HTMLResponse, include_in_schema=False)
 def internal_ui() -> HTMLResponse:
-    """Serve the internal review and visual QA UI shell."""
+    """Serve internal UI shells."""
     return HTMLResponse(content=_load_ui_html())
 
 

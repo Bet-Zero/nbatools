@@ -475,8 +475,8 @@ class TestUI:
         assert "text/html" in resp.headers["content-type"]
         assert "<title>nbatools</title>" in resp.text
 
-    @pytest.mark.parametrize("path", ["/review", "/visual-qa"])
-    def test_review_and_visual_qa_ui_serves_html(self, path):
+    @pytest.mark.parametrize("path", ["/review", "/visual-qa", "/admin/feedback"])
+    def test_internal_ui_serves_html(self, path):
         resp = client.get(path)
         assert resp.status_code == 200
         assert "text/html" in resp.headers["content-type"]

@@ -226,6 +226,117 @@ export interface QueryFeedbackResponse {
   detail?: string | null;
 }
 
+// --- Admin query feedback review ---
+
+export type AdminFeedbackReviewStatus = "new" | "reviewed" | "deferred" | "closed";
+
+export type AdminFeedbackTriageDecision =
+  | "bug"
+  | "support_candidate"
+  | "expected_unsupported"
+  | "duplicate"
+  | "no_action"
+  | "needs_more_data"
+  | "parser_routing_risk"
+  | "ui_copy_issue";
+
+export interface AdminFeedbackTriageOverlay {
+  schema_version: number;
+  group_id: string;
+  review_status: AdminFeedbackReviewStatus;
+  triage_decision: AdminFeedbackTriageDecision | null;
+  review_notes: string;
+  linked_case_or_issue: string;
+  reviewer_source?: string | null;
+  updated_at?: string | null;
+  source_record_ids?: string[];
+}
+
+export interface AdminFeedbackGroup {
+  group_id: string;
+  count: number;
+  first_seen: string;
+  last_seen: string;
+  representative_query: string;
+  feedback_sources: string[];
+  feedback_types: string[];
+  routes: string[];
+  statuses: string[];
+  reasons: string[];
+  unsupported_filters: string[];
+  user_notes: string[];
+  record_ids: string[];
+  object_keys: string[];
+  suggested_triage: string;
+  triage_modifiers: string[];
+  triage_overlay?: AdminFeedbackTriageOverlay;
+  review_status?: AdminFeedbackReviewStatus;
+  triage_decision?: AdminFeedbackTriageDecision | null;
+}
+
+export interface AdminFeedbackRecord {
+  id: string;
+  created_at: string;
+  feedback_source: string;
+  feedback_type: string;
+  query: string;
+  route: string;
+  status: string;
+  reason: string;
+  unsupported_filters: string[];
+  user_note: string;
+  notes: string[];
+  caveats: string[];
+  answer_text_preview: string;
+  error_message: string;
+  elapsed_ms: number | null;
+  object_key: string;
+  [key: string]: unknown;
+}
+
+export interface AdminFeedbackFilters {
+  review_status?: string;
+  triage_decision?: string;
+  feedback_source?: string;
+  feedback_type?: string;
+  route?: string;
+  status?: string;
+  reason?: string;
+}
+
+export interface AdminFeedbackGroupsResponse {
+  ok: true;
+  source_mode: string;
+  bucket: string;
+  prefix: string;
+  total_found: number;
+  total_exported: number;
+  excluded_smoke_count: number;
+  group_count: number;
+  groups: AdminFeedbackGroup[];
+}
+
+export interface AdminFeedbackGroupDetailResponse {
+  ok: true;
+  group: AdminFeedbackGroup;
+  records: AdminFeedbackRecord[];
+  triage_overlay: AdminFeedbackTriageOverlay;
+  handoff_summary: string;
+}
+
+export interface AdminFeedbackTriageResponse {
+  ok: true;
+  triage_overlay: AdminFeedbackTriageOverlay;
+}
+
+export interface AdminFeedbackTriagePayload {
+  review_status: AdminFeedbackReviewStatus;
+  triage_decision: AdminFeedbackTriageDecision | null;
+  review_notes: string;
+  linked_case_or_issue: string;
+  reviewer_source?: string | null;
+}
+
 // --- Request bodies ---
 
 export interface NaturalQueryRequest {

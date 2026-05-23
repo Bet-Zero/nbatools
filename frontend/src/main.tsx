@@ -2,7 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import App from "./App.tsx";
-import { ReviewRoute, VisualQaRoute } from "./InternalRoutes.tsx";
+import {
+  AdminFeedbackRoute,
+  ReviewRoute,
+  VisualQaRoute,
+} from "./InternalRoutes.tsx";
 
 export function resolveRootView(pathname = window.location.pathname) {
   const normalizedPath = pathname.replace(/\/+$/, "") || "/";
@@ -13,6 +17,10 @@ export function resolveRootView(pathname = window.location.pathname) {
 
   if (normalizedPath === "/visual-qa") {
     return <VisualQaRoute />;
+  }
+
+  if (normalizedPath === "/admin/feedback") {
+    return <AdminFeedbackRoute />;
   }
 
   return <App />;

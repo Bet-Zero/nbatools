@@ -119,12 +119,13 @@ the release boundary.
 | Sanitization/privacy | passed; no disallowed PII fields found |
 | Payload minimization | passed; no raw result rows/tables found in inspected records |
 | Review/QA suppression | `/review` and `/visual-qa` feedback suppression passed |
-| Review API foundation | Backend grouping helpers, mutable triage overlay storage, and gated `/api/admin/feedback` endpoints implemented; frontend console still deferred |
+| Review console | Backend grouping helpers, mutable triage overlay storage, gated `/api/admin/feedback` endpoints, and lazy `/admin/feedback` frontend console implemented |
 | Runbook | `docs/operations/query_feedback_review.md` |
 
 Query feedback is a launch-ready operational workflow with notes. Remaining
-limitations are operational follow-ups: no frontend admin dashboard, heuristic
-suggestions only, and manual corpus conversion after review.
+limitations are operational follow-ups: heuristic suggestions only, manual
+corpus conversion after review, and no automatic parser/QA/GitHub issue
+mutation from review decisions.
 
 ## 8. Query Feedback Export Workflow Evidence
 

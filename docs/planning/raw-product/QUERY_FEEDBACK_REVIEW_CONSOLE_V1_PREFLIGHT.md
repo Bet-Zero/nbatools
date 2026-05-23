@@ -14,10 +14,14 @@ Core product decision: original sanitized feedback records remain immutable.
 Reviewer state is written to separate mutable overlay records and joined at
 read time.
 
-Backend Wave 1 status as of this implementation wave: complete with notes.
-Shared feedback normalization/grouping helpers, mutable triage overlay storage,
-and gated `/api/admin/feedback` endpoints are implemented. The frontend
-`/admin/feedback` route and console UI remain Wave 2 work.
+Backend Wave 1 status: complete with notes. Shared feedback
+normalization/grouping helpers, mutable triage overlay storage, and gated
+`/api/admin/feedback` endpoints are implemented.
+
+Frontend Wave 2 status: complete with notes. `/admin/feedback` is implemented
+as a lazy internal route with grouped feedback listing, filter request state,
+detail loading, triage overlay reads/saves, component-state admin token entry,
+and a copyable handoff summary.
 
 ## 2. Current System Summary
 
@@ -243,6 +247,10 @@ Lazy loading should be used. The console is internal, data-heavy, and not part
 of the public answer path. This matches the existing route-level split that
 keeps `/review` and `/visual-qa` outside the public entry chunk.
 
+Implementation status: complete with notes. The shipped route uses a lazy
+`AdminFeedbackRoute`, keeps the public `/` app eager/default, and is served by
+the FastAPI UI shell at `/admin/feedback`.
+
 Recommended UI layout:
 
 - top toolbar: source status, refresh, filter chips, copy/export action
@@ -430,8 +438,12 @@ Wave 3: Frontend console.
 - Add page, client types, filters, detail, save, and copy/export UI.
 - Run frontend lint/tests/build.
 
+Status: complete with notes.
+
 Wave 4: Docs and release evidence.
 
 - Update `docs/operations/query_feedback_review.md` and
   `docs/operations/deployment.md` for verified shipped behavior.
 - Create the implementation return package.
+
+Status: complete with notes for frontend-console docs and return package.

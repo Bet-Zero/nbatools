@@ -7,6 +7,11 @@
  */
 
 import type {
+  AdminFeedbackFilters,
+  AdminFeedbackGroupDetailResponse,
+  AdminFeedbackGroupsResponse,
+  AdminFeedbackTriagePayload,
+  AdminFeedbackTriageResponse,
   DevFixturesResponse,
   ErrorResponse,
   FreshnessResponse,
@@ -60,6 +65,31 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   }
 
   return data as T;
+}
+
+function adminHeaders(adminToken?: string): HeadersInit {
+  const headers: Record<string, string> = {};
+  if (adminToken?.trim()) {
+    headers["X-NBATools-Admin-Token"] = adminToken.trim();
+  }
+  return headers;
+}
+
+function adminJsonHeaders(adminToken?: string): HeadersInit {
+  return {
+    "Content-Type": "application/json",
+    ...adminHeaders(adminToken),
+  };
+}
+
+function adminFeedbackQuery(filters?: AdminFeedbackFilters): string {
+  const params = new URLSearchParams();
+  Object.entries(filters ?? {}).forEach(([key, value]) => {
+    const text = String(value ?? "").trim();
+    if (text) params.set(key, text);
+  });
+  const query = params.toString();
+  return query ? `?${query}` : "";
 }
 
 function currentSourcePage(): string {
@@ -126,4 +156,49 @@ export async function fetchFreshness(): Promise<FreshnessResponse> {
 
 export async function fetchDevFixtures(): Promise<DevFixturesResponse> {
   return request<DevFixturesResponse>("/api/dev/fixtures");
+}
+
+export async function fetchAdminFeedbackGroups(
+  filters?: AdminFeedbackFilters,
+  options?: { adminToken?: string },
+): Promise<AdminFeedbackGroupsResponse> {
+  return request<AdminFeedbackGroupsResponse>(
+    `/api/admin/feedback/groups${adminFeedbackQuery(filters)}`,
+    { headers: adminHeaders(options?.adminToken) },
+  );
+}
+
+export async function fetchAdminFeedbackGroupDetail(
+  groupId: string,
+  options?: { adminToken?: string },
+): Promise<AdminFeedbackGroupDetailResponse> {
+  return request<AdminFeedbackGroupDetailResponse>(
+    `/api/admin/feedback/groups/${encodeURIComponent(groupId)}`,
+    { headers: adminHeaders(options?.adminToken) },
+  );
+}
+
+export async function fetchAdminFeedbackTriage(
+  groupId: string,
+  options?: { adminToken?: string },
+): Promise<AdminFeedbackTriageResponse> {
+  return request<AdminFeedbackTriageResponse>(
+    `/api/admin/feedback/groups/${encodeURIComponent(groupId)}/triage`,
+    { headers: adminHeaders(options?.adminToken) },
+  );
+}
+
+export async function saveAdminFeedbackTriage(
+  groupId: string,
+  payload: AdminFeedbackTriagePayload,
+  options?: { adminToken?: string },
+): Promise<AdminFeedbackTriageResponse> {
+  return request<AdminFeedbackTriageResponse>(
+    `/api/admin/feedback/groups/${encodeURIComponent(groupId)}/triage`,
+    {
+      method: "PUT",
+      headers: adminJsonHeaders(options?.adminToken),
+      body: JSON.stringify(payload),
+    },
+  );
 }

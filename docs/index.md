@@ -96,6 +96,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/VITE_BUNDLE_ANALYSIS_PREFLIGHT.md` — documentation-only Vite large-chunk preflight with current build evidence, eager bundle contributors, split-candidate risks, and the measured internal-route lazy-loading recommendation
 - `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist plus validated non-diffing artifact-capture evidence for the 20-case visual QA corpus baseline
 - `planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md` — preflight and execution-status record for Playwright-backed, non-diffing screenshot artifact capture of the expanded 20-case Visual QA baseline
+- `planning/raw-product/QUERY_FEEDBACK_REVIEW_CONSOLE_V1_PREFLIGHT.md` — query feedback review console preflight and execution-status record for immutable feedback grouping, mutable triage overlays, gated admin API endpoints, and the lazy `/admin/feedback` internal console
 - `planning/raw-product/RETURN_PACKAGE_DEPENDENCY_CLEANUP_PREFLIGHT.md` — documentation-only preflight for promoting return-package-only evidence into durable docs and clearing exact return-package path dependencies
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs

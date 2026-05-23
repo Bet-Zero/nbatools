@@ -42,10 +42,10 @@ or function fallback path. If the bundle is missing locally, `/` falls back to
 the lightweight "UI bundle not built" shell so API-only checkouts still
 respond.
 
-The public `/` app remains in the eager entry path. Internal `/review` and
-`/visual-qa` pages are lazy-loaded as generated route chunks under
-`/assets/...`; they still use the same HTML shell and FastAPI/Vercel asset
-serving boundary as the public app.
+The public `/` app remains in the eager entry path. Internal `/review`,
+`/visual-qa`, and `/admin/feedback` pages are lazy-loaded as generated route
+chunks under `/assets/...`; they still use the same HTML shell and
+FastAPI/Vercel asset serving boundary as the public app.
 
 ### Development (two terminals, hot reload)
 
@@ -57,9 +57,10 @@ uvicorn nbatools.api:app --reload
 cd frontend && npm run dev
 ```
 
-The Vite dev server proxies `/health`, `/routes`, `/query`, and `/structured-query`
-to the API at `http://127.0.0.1:8000`. Open **http://localhost:5173** for hot
-module replacement during frontend development.
+The Vite dev server proxies `/health`, `/routes`, `/api/dev/fixtures`,
+`/api/admin/feedback`, `/query`, and `/structured-query` to the API at
+`http://127.0.0.1:8000`. Open **http://localhost:5173** for hot module
+replacement during frontend development.
 
 ### Visual QA screenshot artifacts
 
@@ -153,6 +154,14 @@ diffs, create committed image baselines, or add a CI gate.
   many expensive `/query` requests. Review rendering is intentionally
   debug-rich: route, status, query class, no-result diagnostics, and result
   Details remain available for QA.
+- **Query feedback review console** — `/admin/feedback` is a lazy internal
+  admin route for grouped feedback review. It lists grouped query feedback,
+  applies server-side filter request state, loads selected group detail, reads
+  and saves mutable triage overlays, and provides a copyable handoff summary.
+  If the admin API returns unauthorized, the console accepts an admin token for
+  the current page session and sends it as `X-NBATools-Admin-Token`. It does
+  not add public navigation, expose R2 credentials, edit immutable feedback
+  records, update QA corpora, or alter query/parser/result behavior.
 - **Query history** — in-session history with:
   - Status dots (green/yellow/red)
   - Query class and route labels in debug mode

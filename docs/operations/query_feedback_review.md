@@ -249,10 +249,10 @@ written into the original feedback record.
 
 ## Admin Feedback API
 
-Backend-only admin endpoints are available under `/api/admin/feedback` when
-explicitly enabled. There is no frontend console route in the backend
-foundation wave; `make query-feedback-export` remains the fallback review
-workflow.
+Admin review is available through a private frontend console at
+`/admin/feedback` and backend endpoints under `/api/admin/feedback` when
+explicitly enabled. `make query-feedback-export` remains the fallback review
+workflow for terminal/offline review.
 
 Endpoints:
 
@@ -275,6 +275,36 @@ return a disabled `404` response. If `NBATOOLS_ADMIN_TOKEN` is set, callers
 must send it in `X-NBATools-Admin-Token`. Deployed preview/production
 environments require `NBATOOLS_ADMIN_TOKEN` when the admin endpoints are
 enabled. The browser never receives R2 credentials.
+
+The `/admin/feedback` console supports entering or pasting the admin token
+after an unauthorized API response. The token is kept in React component state
+for the current page session and sent only as `X-NBATools-Admin-Token` on admin
+feedback API requests. The console does not store R2 credentials and does not
+add public-facing navigation.
+
+## Admin Feedback Console
+
+Open `/admin/feedback` after building the frontend and starting the API. The
+route is lazy-loaded like `/review` and `/visual-qa`; `/` remains the eager
+public app.
+
+The console can:
+
+- list grouped feedback records from `/api/admin/feedback/groups`
+- filter by review status, triage decision, feedback source, feedback type,
+  route, status, and reason
+- load selected group detail and the current triage overlay
+- show representative query, count, first/last seen, route/status/reason,
+  unsupported filters, user notes, sources/types, suggested triage, and saved
+  overlay values
+- save group-level triage overlays through
+  `/api/admin/feedback/groups/{group_id}/triage`
+- render and copy a handoff summary for ChatGPT or agent review
+
+Overlay saves are mutable review decisions. They are written beside the
+immutable feedback stream under `_triage_overlay` and do not update original
+feedback records. The console does not edit QA corpora, create parser rules,
+create GitHub issues, or change query/parser/result behavior.
 
 ## Record Schema
 
@@ -305,8 +335,8 @@ and full raw result payloads.
 
 ## Export Workflow
 
-The frontend admin console is not implemented yet. Use the read-only exporter
-to turn immutable feedback records into review artifacts:
+Use the read-only exporter as a fallback or batch-review workflow to turn
+immutable feedback records into review artifacts:
 
 ```bash
 .venv/bin/python tools/export_query_feedback.py \
