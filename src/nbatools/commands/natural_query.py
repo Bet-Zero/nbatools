@@ -37,6 +37,8 @@ from nbatools.commands._matchup_utils import (
     detect_player,
     detect_player_resolved,
     detect_team_resolved,
+    detect_unresolved_availability_player,
+    detect_with_player,
     detect_without_player,
     extract_adjacent_playoff_team_comparison,
     extract_player_comparison,
@@ -342,6 +344,11 @@ def _single_team_advanced_stat_summary_boundary(parsed: dict) -> bool:
 
 def _multi_player_availability_boundary(q: str) -> bool:
     """Detect unsupported multi-player availability phrasing."""
+    with_player, _ = detect_with_player(q)
+    without_player, _ = detect_without_player(q)
+    if with_player and without_player and with_player != without_player:
+        return True
+
     if re.search(
         r"\b(?:both\s+play(?:ing)?|play(?:ing)?\s+together|"
         r"(?:(?:are|were|is|was)\s+)?both\s+out)\b",
@@ -719,7 +726,10 @@ def _build_parse_state(query: str) -> dict:
     unit_size = lineup_request["unit_size"] if lineup_request else None
     minute_minimum = lineup_request["minute_minimum"] if lineup_request else None
     lineup_query_mode = lineup_request["route"] if lineup_request else None
+    with_player = None
     without_player = None
+    unresolved_with_player = None
+    unresolved_without_player = None
 
     team_resolution_confidence = "none"
 
@@ -746,7 +756,20 @@ def _build_parse_state(query: str) -> dict:
 
     # Detect game-absence only when the query is not an on/off-court request.
     if on_off_request is None:
+        with_player, q_without_presence = detect_with_player(q)
         without_player, q_without_absence = detect_without_player(q)
+        unresolved_with_player = (
+            detect_unresolved_availability_player(q, mode="with") if with_player is None else None
+        )
+        unresolved_without_player = (
+            detect_unresolved_availability_player(q, mode="without")
+            if without_player is None
+            else None
+        )
+        if with_player and (not player or player.upper() == with_player.upper()):
+            player_without_presence = detect_player_resolved(q_without_presence)
+            if player_without_presence.is_confident:
+                player = player_without_presence.resolved
         if without_player and (not player or player.upper() == without_player.upper()):
             player_without_absence = detect_player_resolved(q_without_absence)
             if player_without_absence.is_confident:
@@ -755,6 +778,9 @@ def _build_parse_state(query: str) -> dict:
     # If without_player is the same as the detected player, clear player so the
     # query routes to the team path (e.g., "Lakers record without LeBron")
     if without_player and player and without_player.upper() == player.upper():
+        player = None
+
+    if team and record_intent and with_player and player and with_player.upper() == player.upper():
         player = None
 
     if team == "MIN" and re.search(r"\bmin(?:imum)?\s+\d+", q):
@@ -901,7 +927,10 @@ def _build_parse_state(query: str) -> dict:
         "distinct_player_count": distinct_player_count,
         "distinct_team_count": distinct_team_count,
         "opponent_player": opponent_player,
+        "with_player": with_player,
         "without_player": without_player,
+        "unresolved_with_player": unresolved_with_player,
+        "unresolved_without_player": unresolved_without_player,
         "entity_ambiguity": entity_ambiguity,
         "team_resolution_confidence": team_resolution_confidence,
         "stat_resolution_confidence": stat_resolution_confidence,
@@ -1032,7 +1061,10 @@ def _finalize_route(parsed: dict) -> dict:
     season_high_intent = parsed.get("season_high_intent", False)
     distinct_player_count = parsed.get("distinct_player_count", False)
     opponent_player = parsed.get("opponent_player")
+    with_player = parsed.get("with_player")
     without_player = parsed.get("without_player")
+    unresolved_with_player = parsed.get("unresolved_with_player")
+    unresolved_without_player = parsed.get("unresolved_without_player")
     lineup_members = parsed.get("lineup_members") or []
     presence_state = parsed.get("presence_state")
     unit_size = parsed.get("unit_size")
@@ -1710,6 +1742,7 @@ def _finalize_route(parsed: dict) -> dict:
             "season_type": season_type,
             "team": team,
             "opponent": opponent,
+            "with_player": with_player,
             "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
@@ -1742,6 +1775,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_season": end_season,
             "season_type": season_type,
             "opponent": opponent,
+            "with_player": with_player,
             "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
@@ -2068,6 +2102,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_season": end_season,
             "season_type": season_type,
             "opponent": opponent,
+            "with_player": with_player,
             "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,
@@ -2079,6 +2114,55 @@ def _finalize_route(parsed: dict) -> dict:
             "start_date": start_date,
             "end_date": end_date,
             "unsupported_filters": ["multi_player_availability"],
+        }
+    elif team and record_intent and (unresolved_with_player or unresolved_without_player):
+        route = "team_record"
+        raw_fragment = unresolved_with_player or unresolved_without_player
+        notes.append(
+            "unsupported_boundary: requested availability player could not be resolved; "
+            "no broad team record was returned"
+        )
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "with_player": with_player,
+            "without_player": without_player,
+            "unresolved_availability_player": raw_fragment,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
+            "unsupported_filters": ["unresolved_player_availability"],
+        }
+    elif team and record_intent and with_player and not without_player:
+        route = "team_record"
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "with_player": with_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
         }
     elif player and (
         summary_intent
@@ -2167,6 +2251,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_season": end_season,
             "season_type": season_type,
             "opponent": opponent,
+            "with_player": with_player,
             "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,

@@ -1886,6 +1886,32 @@ def filter_without_player(
     return df[~df["game_id"].isin(team_games)].copy()
 
 
+def filter_with_player(
+    df: pd.DataFrame,
+    with_player: str,
+    seasons: list[str],
+    season_type: str,
+    team: str | None = None,
+    strict_team_match: bool = False,
+) -> pd.DataFrame:
+    """Filter df to games where with_player DID play for the same team."""
+    player_df = load_player_games_for_seasons(seasons, season_type)
+    p_mask = player_df["player_name"].astype(str).str.upper() == with_player.upper()
+    p_rows = player_df.loc[p_mask, ["game_id", "team_abbr"]].drop_duplicates()
+
+    if p_rows.empty:
+        return df.iloc[0:0].copy() if strict_team_match else df.copy()
+
+    if team:
+        team_games = set(p_rows.loc[p_rows["team_abbr"].str.upper() == team.upper(), "game_id"])
+        if strict_team_match and not team_games:
+            return df.iloc[0:0].copy()
+    else:
+        team_games = set(p_rows["game_id"])
+
+    return df[df["game_id"].isin(team_games)].copy()
+
+
 def add_usage_ast_reb_rate_columns(
     df: pd.DataFrame, seasons: list[str] | tuple[str, ...], season_type: str, data_root: str = ""
 ) -> pd.DataFrame:

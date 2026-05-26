@@ -397,6 +397,8 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
         m = re.search(pattern, cleaned_text)
         if m:
             phrase = m.group(1).strip()
+            if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
+                continue
             player = detect_player(phrase)
             if player:
                 cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
@@ -405,3 +407,61 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
                 return player, cleaned
 
     return None, cleaned_text
+
+
+def detect_with_player(text: str) -> tuple[str | None, str]:
+    """Detect whole-game presence patterns like ``with PLAYER``.
+
+    This is intentionally separate from on/off-court parsing. Callers should
+    skip this detector for phrases like ``with Jokic on the floor``.
+    """
+    cleaned_text = text
+    presence_patterns = [
+        rf"\bwith\s+([\w .&'\-]+?)(?=\s+(?:without|w/o|{STOP_WORDS})\b|$)",
+        r"\bwhen\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
+    ]
+
+    for pattern in presence_patterns:
+        m = re.search(pattern, cleaned_text)
+        if m:
+            phrase = m.group(1).strip()
+            if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
+                continue
+            player = detect_player(phrase)
+            if player:
+                cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
+                cleaned = normalize_text(cleaned)
+                return player, cleaned
+
+    return None, cleaned_text
+
+
+def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None:
+    """Return a raw availability name fragment that was requested but unresolved."""
+    if mode == "without":
+        patterns = [
+            rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+            r"\bwhen\s+([\w .&'\-]+?)\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
+            r"\bwhen\s+([\w .&'\-]+?)\s+(?:is|was)\s+out\b",
+            r"\bwhen\s+([\w .&'\-]+?)\s+out\b",
+            r"\brecord\s+([\w .&'\-]+?)\s+out\b",
+            rf"\b(?:no|sans|minus)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
+        ]
+    elif mode == "with":
+        patterns = [
+            rf"\bwith\s+([\w .&'\-]+?)(?=\s+(?:without|w/o|{STOP_WORDS})\b|$)",
+            r"\bwhen\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
+        ]
+    else:
+        raise ValueError(f"Unsupported availability mode: {mode}")
+
+    for pattern in patterns:
+        m = re.search(pattern, text)
+        if not m:
+            continue
+        phrase = m.group(1).strip()
+        if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
+            continue
+        if phrase and not detect_player(phrase):
+            return phrase
+    return None

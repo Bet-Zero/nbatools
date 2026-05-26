@@ -115,6 +115,18 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["multi_player_availability"],
         },
         {
+            "query": "Lakers record with Reaves without Luka",
+            "route": "team_record",
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["multi_player_availability"],
+        },
+        {
+            "query": "Lakers record without Luk",
+            "route": "team_record",
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["unresolved_player_availability"],
+        },
+        {
             "query": "Nuggets net rating with Nikola Jokic on the floor versus off the floor",
             "route": "player_on_off",
             "reason": "unsupported",

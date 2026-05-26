@@ -230,11 +230,18 @@ Natural examples:
 - `Jokic averages against Stephen Curry`
 - `LeBron James vs Kevin Durant comparison` (player comparison)
 
-## Without-player queries
+## Player availability team records
 
 - `Lakers record without LeBron`
 - `Warriors wins without Stephen Curry`
 - `Celtics summary without Jaylen Brown`
+- `Lakers record with Luka`
+- `Lakers record with Austin Reaves`
+
+Single-player whole-game presence and absence filters return the team record
+for games where that player did or did not play for the team. Compound
+multi-player availability remains unsupported and returns a clean no-result
+instead of a broad fallback.
 
 ## Team records
 

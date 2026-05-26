@@ -88,10 +88,12 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (team): `vs Lakers`, `against Celtics`
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
+- whole-game player presence for team records: `Lakers record with Luka`, `Lakers record with Reaves`
 - on/off presence: `on/off`, `on off`, `on-off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
   (routes to `player_on_off`; executes against trusted `team_player_on_off_summary`
   rows when coverage exists, otherwise returns an explicit unsupported-data
-  response. Whole-game `without_player` absence remains separate.)
+  response. Whole-game `with_player` / `without_player` availability remains
+  separate.)
 - lineup membership: `lineups with LeBron and AD`, `with Tatum and Brown together`, `best 3-man units`
   (routes to `lineup_summary` / `lineup_leaderboard`; executes against trusted
   `league_lineup_viz` rows when coverage exists, otherwise returns an explicit
@@ -318,6 +320,7 @@ Common combinations:
 - opponent team filters
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
 - without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
+- with player filters for team records (`with Luka`, `with Austin Reaves`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - home / away
 - wins / losses
 - season ranges
@@ -341,8 +344,8 @@ Current behavior:
 - parser routes to `player_on_off` and preserves `lineup_members` and `presence_state`
 - execution uses trusted `team_player_on_off_summary` rows when both `on` and `off` coverage exists for the requested single-player slice
 - missing or untrusted coverage, unsupported multi-player on/off, and slices outside the source contract return explicit unsupported/no-result responses
-- whole-game `without_player` absence is not an on/off substitute
-- multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` is outside the current lineup/availability boundary and returns an explicit unsupported/no-result response rather than an unfiltered team record
+- whole-game `with_player` / `without_player` availability is not an on/off substitute
+- compound or multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` or `Lakers record with Reaves without Luka` is outside the current lineup/availability boundary and returns an explicit unsupported/no-result response rather than an unfiltered team record or player summary
 
 ### Specific lineup summaries
 
@@ -591,6 +594,8 @@ Examples:
 - `worst away record since 2020`
 - `Celtics record when scoring 120+ since 2022`
 - `What was Jokic's record in games with a triple-double?`
+- `Lakers record with Luka`
+- `Lakers record with Austin Reaves`
 - `Lakers record without LeBron James`
 - `Warriors wins without Stephen Curry`
 

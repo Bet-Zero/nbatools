@@ -276,6 +276,10 @@ def _build_applied_filters(
         applied_filters.append(
             {"label": "Without player", "value": source["without_player"], "kind": "player"}
         )
+    if source.get("with_player"):
+        applied_filters.append(
+            {"label": "With player", "value": source["with_player"], "kind": "player"}
+        )
     if source.get("home_only"):
         applied_filters.append({"label": "Location", "value": "Home", "kind": "location"})
     if source.get("away_only"):
@@ -480,7 +484,9 @@ def _build_query_metadata(
         "opponent_conference": parsed.get("opponent_conference")
         or route_kwargs.get("opponent_conference"),
         "opponent_team_abbrs": route_kwargs.get("opponent_team_abbrs"),
+        "with_player": parsed.get("with_player") or route_kwargs.get("with_player"),
         "without_player": parsed.get("without_player"),
+        "unresolved_availability_player": route_kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": parsed.get("opponent_quality"),
         "lineup_members": parsed.get("lineup_members"),
@@ -1392,7 +1398,9 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "opponent": kwargs.get("opponent"),
         "opponent_conference": kwargs.get("opponent_conference"),
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
+        "with_player": kwargs.get("with_player"),
         "without_player": kwargs.get("without_player"),
+        "unresolved_availability_player": kwargs.get("unresolved_availability_player"),
         "unsupported_filters": unsupported_filters,
         "opponent_quality": kwargs.get("opponent_quality"),
         "lineup_members": kwargs.get("lineup_members"),

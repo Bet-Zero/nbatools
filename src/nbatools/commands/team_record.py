@@ -27,6 +27,7 @@ from nbatools.commands.data_utils import (
     build_schedule_context_filter_coverage_notes,
     describe_opponent_filter,
     filter_period_rows,
+    filter_with_player,
     filter_without_player,
     load_team_game_period_stats_for_seasons,
     load_team_games_for_seasons,
@@ -206,6 +207,7 @@ def build_team_record_result(
     end_season: str | None = None,
     season_type: str = "Regular Season",
     opponent: str | list[str] | tuple[str, ...] | None = None,
+    with_player: str | None = None,
     without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
@@ -292,6 +294,25 @@ def build_team_record_result(
         else:
             clutch_executed = True
 
+    if with_player and without_player:
+        return NoResult(
+            query_class="summary",
+            reason="filter_not_supported",
+            notes=[
+                "multi-player availability filters are not supported with current team record data"
+            ],
+        )
+
+    if with_player and not df.empty:
+        df = filter_with_player(
+            df,
+            with_player,
+            seasons,
+            season_type,
+            team=team,
+            strict_team_match=True,
+        )
+
     if without_player and not df.empty:
         df = filter_without_player(
             df,
@@ -369,7 +390,7 @@ def build_team_record_result(
         by_season["win_pct"] = (by_season["wins"] / by_season["games"]).round(3)
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
-    game_log = _build_game_log_section(df) if without_player else None
+    game_log = _build_game_log_section(df) if without_player or with_player else None
 
     caveats: list[str] = []
     if len(seasons) > 1:
@@ -378,6 +399,8 @@ def build_team_record_result(
         )
     if opponent:
         caveats.append(f"record filtered to games vs {describe_opponent_filter(opponent)}")
+    if with_player:
+        caveats.append(f"record filtered to games with {with_player}")
     if without_player:
         caveats.append(f"record filtered to games without {without_player}")
     if home_only:

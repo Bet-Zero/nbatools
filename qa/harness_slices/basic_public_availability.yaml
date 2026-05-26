@@ -1,0 +1,10 @@
+name: basic_public_availability
+description: Basic public query sweep for team-record player availability variants and preserved adjacent working cases.
+case_ids:
+  - luka_stats_this_season_public_sweep
+  - lakers_record_without_luka_public_sweep
+  - lakers_record_with_luka_public_sweep
+  - lakers_record_with_reaves_public_sweep
+  - lakers_record_with_reaves_without_luka_public_sweep
+  - lakers_record_without_luk_public_sweep
+  - most_rebounds_single_game_this_year_public_sweep

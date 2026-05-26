@@ -613,6 +613,22 @@ class TestWithoutPlayer:
         assert parsed["team"] == "LAL"
         assert parsed.get("without_player") == "LeBron James"
 
+    def test_route_team_record_with_player_presence(self):
+        parsed = parse_query("Lakers record with Luka")
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "LAL"
+        assert parsed["player"] is None
+        assert parsed.get("with_player") == "Luka Dončić"
+        assert parsed["route_kwargs"]["with_player"] == "Luka Dončić"
+
+    def test_route_team_record_with_player_presence_full_name(self):
+        parsed = parse_query("Lakers record with Austin Reaves")
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "LAL"
+        assert parsed["player"] is None
+        assert parsed.get("with_player") == "Austin Reaves"
+        assert parsed["route_kwargs"]["with_player"] == "Austin Reaves"
+
     def test_route_team_record_when_player_does_not_play(self):
         parsed = parse_query("What is the Knicks' record when Jalen Brunson doesn't play?")
         assert parsed["route"] == "team_record"
@@ -648,6 +664,7 @@ class TestWithoutPlayer:
             "Lakers record when LeBron and AD are both out",
             "Lakers record with LeBron and AD",
             "Lakers record without LeBron and AD",
+            "Lakers record with Reaves without Luka",
         ],
     )
     def test_multi_player_availability_record_sets_unsupported_filter(self, query):
@@ -656,6 +673,13 @@ class TestWithoutPlayer:
         assert parsed["team"] == "LAL"
         assert parsed["route_kwargs"]["unsupported_filters"] == ["multi_player_availability"]
         assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+    def test_unresolved_availability_player_sets_unsupported_filter(self):
+        parsed = parse_query("Lakers record without Luk")
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "LAL"
+        assert parsed["route_kwargs"]["unresolved_availability_player"] == "luk"
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["unresolved_player_availability"]
 
     @pytest.mark.needs_data
     def test_multi_player_availability_record_returns_unsupported_not_unfiltered(self):
@@ -691,6 +715,65 @@ class TestWithoutPlayer:
         assert summary["games"] < 82
         assert summary["wins"] + summary["losses"] == summary["games"]
         assert len(sections["game_log"]) == summary["games"]
+
+    @pytest.mark.needs_data
+    def test_single_player_presence_record_executes_with_team_subject(self):
+        qr = execute_natural_query("Lakers record with Luka")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["with_player"] == "Luka Dončić"
+        assert qr.metadata["player"] is None
+        assert {
+            "label": "With player",
+            "value": "Luka Dončić",
+            "kind": "player",
+        } in qr.metadata["applied_filters"]
+
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["team_name"] == "Los Angeles Lakers"
+        assert summary["games"] == 64
+        assert summary["wins"] == 43
+        assert summary["losses"] == 21
+        assert len(sections["game_log"]) == summary["games"]
+
+    @pytest.mark.needs_data
+    def test_single_player_presence_record_for_reaves_executes_with_team_subject(self):
+        qr = execute_natural_query("Lakers record with Reaves")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["with_player"] == "Austin Reaves"
+        assert qr.metadata["player"] is None
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["team_name"] == "Los Angeles Lakers"
+        assert summary["games"] == 51
+        assert summary["wins"] == 36
+        assert summary["losses"] == 15
+        assert len(sections["game_log"]) == summary["games"]
+
+    @pytest.mark.needs_data
+    def test_mixed_presence_absence_record_returns_unsupported_not_player_summary(self):
+        qr = execute_natural_query("Lakers record with Reaves without Luka")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["multi_player_availability"]
+        assert qr.to_dict()["sections"] == {}
+
+    @pytest.mark.needs_data
+    def test_unresolved_availability_player_does_not_return_broad_team_record(self):
+        qr = execute_natural_query("Lakers record without Luk")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["unresolved_player_availability"]
+        assert qr.metadata["unresolved_availability_player"] == "luk"
+        assert qr.to_dict()["sections"] == {}
 
     @pytest.mark.needs_data
     def test_record_without_player_wrong_team_returns_no_match(self):

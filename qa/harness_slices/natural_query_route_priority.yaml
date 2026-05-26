@@ -19,9 +19,15 @@ case_ids:
   - lebron_stats_vs_durant_wave5
   - jokic_game_log_vs_embiid_wave5
   - most_assists_single_game
+  - most_rebounds_single_game_this_year_public_sweep
   - assist_leaders_this_season
   - nuggets_jokic_on_off_unsupported
   - lakers_without_lebron
+  - lakers_record_without_luka_public_sweep
+  - lakers_record_with_luka_public_sweep
+  - lakers_record_with_reaves_public_sweep
+  - lakers_record_with_reaves_without_luka_public_sweep
+  - lakers_record_without_luk_public_sweep
   - team_5_game_scoring_stretch
   - jokic_5_game_rebound_stretch
   - warriors_net_rating_single_team_wave5

@@ -508,6 +508,12 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "try a single-player absence query such as 'Lakers record without LeBron' "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "unresolved_player_availability":
+        return (
+            "the requested availability player could not be resolved confidently; "
+            "no broad team record was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "team_rolling_stretch":
         return (
             "team rolling-stretch leaderboards are not supported with current routes; "
