@@ -1085,6 +1085,7 @@ def test_team_bench_scoring_does_not_set_role():
         ("bench players scoring leaders this season", "role_leaderboard"),
         ("starter assist leaders this season", "role_leaderboard"),
         ("Celtics bench scoring this season", "team_bench_scoring"),
+        ("Celtics bench scoring home vs away", "team_bench_scoring"),
         ("personal fouls leaders this season", "personal_foul_leaderboard"),
     ],
 )
@@ -1570,6 +1571,44 @@ def test_public_query_bad_fragments_do_not_broad_fallback(
     assert parsed["route_kwargs"]["unsupported_filters"] == [unsupported_filter]
     assert parsed["route_kwargs"][fragment_field] == fragment_value
     assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+
+@pytest.mark.parametrize(
+    ("query", "route", "player", "extra_checks"),
+    [
+        (
+            "count LeBron triple doubles since 2020",
+            "player_game_finder",
+            "LeBron James",
+            {"count_intent": True, "special_event": "triple_double"},
+        ),
+        (
+            "Celtics bench scoring home vs away",
+            "game_finder",
+            None,
+            {"unsupported_filters": ["team_bench_scoring"], "team": "BOS"},
+        ),
+        (
+            "What is Curry's longest streak with at least 3 threes?",
+            "player_streak_finder",
+            "Stephen Curry",
+            {"stat": "fg3m", "min_value": 3.0, "longest": True},
+        ),
+    ],
+)
+def test_public_query_wave_2c_route_priority(query, route, player, extra_checks):
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert parsed["player"] == player
+    for key, value in extra_checks.items():
+        if key == "unsupported_filters":
+            assert parsed["route_kwargs"]["unsupported_filters"] == value
+        elif key in {"count_intent", "team"}:
+            assert parsed.get(key) == value
+        elif key == "special_event":
+            assert parsed["route_kwargs"].get("special_event") == value
+        else:
+            assert parsed["route_kwargs"].get(key) == value
 
 
 # ---------------------------------------------------------------------------

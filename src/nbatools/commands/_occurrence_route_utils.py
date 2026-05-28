@@ -522,56 +522,10 @@ def try_compound_occurrence_route(parsed: dict) -> tuple[str, dict] | None:
 
 
 def try_occurrence_count_route(parsed: dict) -> tuple[str, dict] | None:
-    """Try to resolve a single-player special-event occurrence count route.
+    """Defer single-player special-event counts to ``player_game_finder``.
 
-    Covers queries like: "count Jokic triple doubles since 2021"
-
-    Returns ``(route, route_kwargs)`` or ``None``.
+    Count phrasing like ``count Jokic triple doubles since 2021`` should stay
+    on the player finder/count contract instead of broadening into occurrence
+    leaderboard rows.
     """
-    count_intent = parsed.get("count_intent", False)
-    occurrence_event = parsed.get("occurrence_event")
-    player = parsed["player"]
-    player_a = parsed["player_a"]
-    player_b = parsed["player_b"]
-    normalized_query = parsed.get("normalized_query", "")
-
-    if not (
-        count_intent
-        and occurrence_event
-        and "special_event" in occurrence_event
-        and player
-        and not player_a
-        and not player_b
-    ):
-        return None
-
-    if re.search(r"\bhow\s+often\b", normalized_query):
-        return None
-
-    season = parsed["season"]
-    start_season = parsed["start_season"]
-    end_season = parsed["end_season"]
-    season_type = parsed["season_type"]
-
-    occ_season = season
-    occ_start = start_season
-    occ_end = end_season
-    if not occ_season and not occ_start and not occ_end:
-        occ_season = default_end_season(season_type)
-
-    return "player_occurrence_leaders", {
-        "special_event": occurrence_event["special_event"],
-        "season": occ_season,
-        "start_season": occ_start,
-        "end_season": occ_end,
-        "season_type": season_type,
-        "opponent": parsed["opponent"],
-        "home_only": parsed["home_only"],
-        "away_only": parsed["away_only"],
-        "wins_only": parsed["wins_only"],
-        "losses_only": parsed["losses_only"],
-        "start_date": parsed.get("start_date"),
-        "end_date": parsed.get("end_date"),
-        "limit": 500,  # large limit to ensure player is included
-        "player": player,  # Filter to this player
-    }
+    return None

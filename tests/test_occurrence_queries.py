@@ -271,9 +271,11 @@ class TestOccurrenceCountRouting:
         # count_intent should be set
         assert parsed.get("count_intent") is True
 
-    def test_count_triple_doubles_routes_to_occurrence(self):
+    def test_count_triple_doubles_routes_to_player_finder(self):
         parsed = parse_query("count jokic triple doubles since 2021")
-        assert parsed["route"] == "player_occurrence_leaders"
+        assert parsed["route"] == "player_game_finder"
+        assert parsed.get("count_intent") is True
+        assert parsed["route_kwargs"].get("special_event") == "triple_double"
 
     def test_how_many_celtics_120pt(self):
         parsed = parse_query("how many celtics games with 120+ points since 2022")

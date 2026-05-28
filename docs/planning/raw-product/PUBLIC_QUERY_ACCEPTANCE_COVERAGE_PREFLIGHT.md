@@ -2,7 +2,7 @@
 
 Date: 2026-05-28
 
-Status: preflight complete; Wave 1 probe/seed complete; Wave 2A and 2B fixes complete.
+Status: preflight complete; Wave 1 probe/seed complete; Wave 2A, 2B, and 2C fixes complete.
 
 This document designs a public-query acceptance coverage system for obvious
 real-user phrasings across the advertised Raw Product query surface. The
@@ -898,14 +898,108 @@ Result: no whitespace diagnostics.
 
 ### 14.4 Remaining Later Waves
 
-Wave 2B intentionally left these Wave 1 failures for later work:
+Wave 2B intentionally left these Wave 1 failures for Wave 2C:
 
 - player-specific count shorthand: `pqa_count_short_lebron_triple_doubles`
 - bench split boundary: `pqa_split_unsupported_celtics_bench_home_away`
 - streak sentence route priority: `pqa_streak_sentence_curry_3_threes`
 
-The product-decision items for typo-tolerant player resolution also remain
-open:
+Wave 2C fixed all three. The product-decision items for typo-tolerant player
+resolution remain open:
+
+- `pqa_comparison_typo_kevn_durant`
+- `pqa_typo_synonym_stephn_averages`
+
+## 15. Wave 2C Route Priority Results
+
+Wave 2C fixed the last three Wave 1 public-query acceptance route-priority
+behavior failures. The implementation stayed inside existing supported/unsupported
+contracts:
+
+- single-player special-event count shorthand now defers to `player_game_finder`
+  count semantics instead of `player_occurrence_leaders`
+- team bench-scoring phrasing now hits the unsupported boundary before team split
+  routing
+- sentence-form longest-streak questions now resolve to `player_streak_finder`
+  when trailing punctuation is present
+
+### 15.1 Cases Fixed And Seeded
+
+| Case ID | Query | Before | After | Scope proof |
+|---|---|---|---|---|
+| `pqa_count_short_lebron_triple_doubles` | `count LeBron triple doubles since 2020` | `player_occurrence_leaders` / `ok` | `player_game_finder` / `ok` | LeBron James subject; count 31; triple-double filter |
+| `pqa_split_unsupported_celtics_bench_home_away` | `Celtics bench scoring home vs away` | `team_split_summary` / `ok` | `game_finder` / `no_result` / `filter_not_supported` | `unsupported_filters=["team_bench_scoring"]`; empty sections |
+| `pqa_streak_sentence_curry_3_threes` | `What is Curry's longest streak with at least 3 threes?` | `player_game_finder` / `ok` | `player_streak_finder` / `ok` | Stephen Curry subject; longest 14-game `fg3m>=3` streak |
+
+Wave 2C added these three cases to `qa/raw_query_answer_corpus.yaml` with
+`acceptance.family`, `acceptance.variant`, and
+`acceptance.no_broad_fallback=true`, then added the case IDs to
+`qa/harness_slices/public_query_acceptance.yaml`.
+
+Current public acceptance slice totals after Wave 2C:
+
+| Metric | Count |
+|---|---:|
+| Total `public_query_acceptance` slice cases | 65 |
+| Cases added in Wave 2C | 3 |
+| Wave 1 deferred behavior failures fixed in Wave 2C | 3 |
+| Remaining Wave 1 behavior failures intentionally left for later waves | 0 |
+| Product-decision cases still open | 2 |
+
+### 15.2 Root Cause
+
+Three narrow route-priority gaps remained after Waves 2A and 2B:
+
+- `try_occurrence_count_route()` still intercepted single-player special-event
+  count shorthand onto occurrence-leaderboard semantics
+- team split routing ran before the existing team bench-scoring unsupported
+  boundary when home/away split wording was also present
+- `extract_streak_request()` failed on sentence-form questions because trailing
+  `?` blocked the longest-streak stat lookahead
+
+### 15.3 Behavior Preserved
+
+Adjacent supported and unsupported siblings stayed green:
+
+| Query | Preserved route/status |
+|---|---|
+| `How often has Nikola Jokic recorded a triple-double this season?` | `player_game_finder` / `ok` |
+| `Celtics bench scoring this season` | `game_finder` / `no_result`; `team_bench_scoring` |
+| `Curry longest streak with at least 3 threes` | `player_streak_finder` / `ok` |
+| `Lakers record w/ Luka` | `team_record` / `ok`; Wave 2B availability shorthand |
+| `Celtcs record this season` | `team_record_leaderboard` / `no_result`; Wave 2A typo guard |
+
+### 15.4 Validation
+
+Passed:
+
+```bash
+.venv/bin/pytest tests/test_natural_query_parser.py::test_public_query_wave_2c_route_priority tests/test_natural_streak_queries.py::test_parse_player_longest_threes_streak_sentence_form tests/test_occurrence_queries.py::TestOccurrenceCountRouting::test_count_triple_doubles_routes_to_player_finder -n0
+.venv/bin/pytest tests/test_ui_failure_coverage.py::TestWithoutPlayer::test_public_query_wave_2c_count_short_lebron_triple_doubles tests/test_ui_failure_coverage.py::TestWithoutPlayer::test_public_query_wave_2c_bench_split_boundary tests/test_ui_failure_coverage.py::TestWithoutPlayer::test_public_query_wave_2c_streak_sentence_curry_threes -n0
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice basic_public_availability --fail-on-expectation-failure
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice natural_query_route_priority --slice product_boundaries --fail-on-expectation-failure
+make PYTEST=.venv/bin/pytest test-parser
+make PYTEST=.venv/bin/pytest test-query
+git diff --check
+```
+
+Full parser/query slice and raw QA output paths:
+
+- `public_query_acceptance`: `outputs/raw_query_answer_qa/20260528T120746Z`, 65
+  cases, expectation cases `pass: 65`, failed case IDs none.
+- `basic_public_availability`: `outputs/raw_query_answer_qa/20260528T120750Z`, 7
+  cases, expectation cases `pass: 7`, failed case IDs none.
+- `natural_query_route_priority` + `product_boundaries`:
+  `outputs/raw_query_answer_qa/20260528T120753Z`, 49 cases, expectation cases
+  `pass: 49`, failed case IDs none.
+- `make test-parser`: 786 passed in 1578.55s.
+- `make test-query`: 803 passed in 2006.10s.
+
+### 15.5 Remaining Product Decisions
+
+Wave 2C intentionally left typo-tolerant player resolution as open product
+decisions:
 
 - `pqa_comparison_typo_kevn_durant`
 - `pqa_typo_synonym_stephn_averages`

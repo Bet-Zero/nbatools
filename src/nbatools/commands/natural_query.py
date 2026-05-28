@@ -1778,6 +1778,40 @@ def _finalize_route(parsed: dict) -> dict:
                 "end_date": end_date,
                 "unsupported_filters": ["opponent_division"],
             }
+    elif (
+        team_bench_scoring_boundary
+        and team
+        and not any([player, player_a, player_b, team_a, team_b])
+    ):
+        route = "game_finder"
+        notes.append(
+            "unsupported_boundary: team bench scoring is not supported by the "
+            "current team game finder contract"
+        )
+        route_kwargs = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "with_player": with_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat or "pts",
+            "min_value": min_value,
+            "max_value": max_value,
+            "limit": 25,
+            "sort_by": "stat",
+            "ascending": False,
+            "last_n": last_n,
+            "unsupported_filters": ["team_bench_scoring"],
+        }
     elif split_type and player and not player_a and not player_b:
         route = "player_split_summary"
         route_kwargs = {
@@ -2050,40 +2084,6 @@ def _finalize_route(parsed: dict) -> dict:
             "losses_only": losses_only,
             "last_n": last_n,
             "unsupported_filters": ["role_leaderboard"],
-        }
-    elif (
-        team_bench_scoring_boundary
-        and team
-        and not any([player, player_a, player_b, team_a, team_b])
-    ):
-        route = "game_finder"
-        notes.append(
-            "unsupported_boundary: team bench scoring is not supported by the "
-            "current team game finder contract"
-        )
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "start_date": start_date,
-            "end_date": end_date,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "with_player": with_player,
-            "without_player": without_player,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "stat": stat or "pts",
-            "min_value": min_value,
-            "max_value": max_value,
-            "limit": 25,
-            "sort_by": "stat",
-            "ascending": False,
-            "last_n": last_n,
-            "unsupported_filters": ["team_bench_scoring"],
         }
     elif (
         opponent_conference_geography_boundary

@@ -26,6 +26,15 @@ def test_parse_player_straight_points_streak():
     assert parsed["route_kwargs"]["longest"] is False
 
 
+def test_parse_player_longest_threes_streak_sentence_form():
+    parsed = parse_query("What is Curry's longest streak with at least 3 threes?")
+    assert parsed["route"] == "player_streak_finder"
+    assert parsed["route_kwargs"]["player"] == "Stephen Curry"
+    assert parsed["route_kwargs"]["stat"] == "fg3m"
+    assert parsed["route_kwargs"]["min_value"] == 3.0
+    assert parsed["route_kwargs"]["longest"] is True
+
+
 def test_parse_player_longest_points_streak():
     parsed = parse_query("Jokic longest streak of 30 point games")
     assert parsed["route"] == "player_streak_finder"

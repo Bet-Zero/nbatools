@@ -259,6 +259,7 @@ class TestP2BoundaryRoutingCleanup:
             ),
             ("starter assist leaders this season", "season_leaders", "role_leaderboard"),
             ("Celtics bench scoring this season", "game_finder", "team_bench_scoring"),
+            ("Celtics bench scoring home vs away", "game_finder", "team_bench_scoring"),
             (
                 "personal fouls leaders this season",
                 "season_leaders",
@@ -696,6 +697,37 @@ class TestWithoutPlayer:
         assert parsed.get("with_player") == "Austin Reaves"
         assert parsed["route_kwargs"]["with_player"] == "Austin Reaves"
         assert parsed["route_kwargs"]["wins_only"] is True
+
+    @pytest.mark.needs_data
+    def test_public_query_wave_2c_count_short_lebron_triple_doubles(self):
+        qr = execute_natural_query("count LeBron triple doubles since 2020")
+        assert qr.route == "player_game_finder"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["player"] == "LeBron James"
+        sections = qr.to_dict()["sections"]
+        assert set(sections) == {"count", "finder"}
+        assert sections["count"][0]["count"] == 31
+        assert len(sections["finder"]) == 31
+
+    @pytest.mark.needs_data
+    def test_public_query_wave_2c_bench_split_boundary(self):
+        qr = execute_natural_query("Celtics bench scoring home vs away")
+        assert qr.route == "game_finder"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["team_bench_scoring"]
+        assert qr.metadata["team"] == "BOS"
+        assert qr.to_dict()["sections"] == {}
+
+    @pytest.mark.needs_data
+    def test_public_query_wave_2c_streak_sentence_curry_threes(self):
+        qr = execute_natural_query("What is Curry's longest streak with at least 3 threes?")
+        assert qr.route == "player_streak_finder"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["player"] == "Stephen Curry"
+        streak_rows = qr.to_dict()["sections"]["streak"]
+        assert len(streak_rows) == 1
+        assert streak_rows[0]["streak_length"] == 14
 
     def test_route_team_record_when_player_does_not_play(self):
         parsed = parse_query("What is the Knicks' record when Jalen Brunson doesn't play?")

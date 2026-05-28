@@ -364,7 +364,7 @@ STREAK_SPECIAL_PATTERNS = {
 def extract_streak_request(text: str) -> dict | None:
     # Receives pre-normalized text from _build_parse_state; no per-detector
     # normalization needed.
-    normalized = text
+    normalized = re.sub(r"[?.!,]+$", "", text)
 
     if not re.search(r"\b(streak|straight|consecutive)\b", normalized):
         return None
