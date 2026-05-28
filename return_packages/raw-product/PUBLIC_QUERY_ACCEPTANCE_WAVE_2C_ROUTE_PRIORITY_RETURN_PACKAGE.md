@@ -192,9 +192,20 @@ Supported sibling probes also stayed supported:
 | `Lakers record w/ Luka` | `team_record` / `ok`; Wave 2B availability shorthand preserved |
 | `Celtcs record this season` | `team_record_leaderboard` / `no_result`; Wave 2A typo guard preserved |
 
-## Remaining Product Decisions
+## Remaining Public Query Acceptance Items
 
-Wave 2C did not address typo-tolerant player resolution product decisions:
+Wave 2C closed the last three Wave 1 deferred route-priority behavior
+failures. These cases are fixed, not remaining:
+
+- `pqa_count_short_lebron_triple_doubles`
+- `pqa_split_unsupported_celtics_bench_home_away`
+- `pqa_streak_sentence_curry_3_threes`
+
+No other Wave 1 public-query acceptance behavior failures remain open after
+Waves 2A, 2B, and 2C.
+
+The only remaining public-query acceptance items are product-decision cases
+still open for typo-tolerant player resolution:
 
 - `pqa_comparison_typo_kevn_durant`
 - `pqa_typo_synonym_stephn_averages`
