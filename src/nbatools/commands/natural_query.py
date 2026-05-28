@@ -7,6 +7,7 @@ from nbatools.commands._confidence import compute_parse_confidence, generate_alt
 from nbatools.commands._constants import (
     LOWER_IS_BETTER_STATS,
     PLAYER_SEASON_ONLY_STATS,
+    STAT_ALIASES,
     TEAM_SEASON_ADVANCED_STATS,
     TEAM_SEASON_ONLY_STATS,
     normalize_text,
@@ -14,6 +15,7 @@ from nbatools.commands._constants import (
 )
 from nbatools.commands._date_utils import (
     CURRENT_QUERY_DATE,
+    MONTH_NAME_TO_NUM,
     extract_date_range,
     has_explicit_calendar_date,
 )
@@ -365,6 +367,198 @@ def _multi_player_availability_boundary(q: str) -> bool:
 
     left, right = [part.strip(" .") for part in with_without.group(1).split(" and ", 1)]
     return bool(detect_player(left) and detect_player(right))
+
+
+_RECORD_LEADERBOARD_PREFIXES = (
+    "best",
+    "worst",
+    "top",
+    "highest",
+    "lowest",
+    "most",
+    "fewest",
+    "team",
+    "teams",
+    "nba",
+    "league",
+    "home",
+    "away",
+    "road",
+    "playoff",
+    "postseason",
+)
+
+
+def _levenshtein_distance_at_most(value: str, target: str, max_distance: int) -> bool:
+    if abs(len(value) - len(target)) > max_distance:
+        return False
+
+    previous = list(range(len(target) + 1))
+    for i, value_char in enumerate(value, start=1):
+        current = [i]
+        row_min = i
+        for j, target_char in enumerate(target, start=1):
+            insert_cost = current[j - 1] + 1
+            delete_cost = previous[j] + 1
+            replace_cost = previous[j - 1] + (value_char != target_char)
+            cost = min(insert_cost, delete_cost, replace_cost)
+            current.append(cost)
+            row_min = min(row_min, cost)
+        if row_min > max_distance:
+            return False
+        previous = current
+
+    return previous[-1] <= max_distance
+
+
+def _looks_like_known_stat_typo(token: str) -> bool:
+    if len(token) < 4 or token in STAT_ALIASES:
+        return False
+
+    stat_words = {
+        alias for alias in STAT_ALIASES if alias.isalpha() and len(alias) >= 4 and " " not in alias
+    }
+    return any(
+        sorted(token) == sorted(alias) or _levenshtein_distance_at_most(token, alias, 1)
+        for alias in stat_words
+    )
+
+
+def _looks_like_month_typo(token: str) -> bool:
+    if len(token) < 3 or token in MONTH_NAME_TO_NUM:
+        return False
+
+    month_words = {
+        month
+        for month in MONTH_NAME_TO_NUM
+        if len(month) >= 3 and abs(len(month) - len(token)) <= 1
+    }
+    return any(
+        sorted(token) == sorted(month) or _levenshtein_distance_at_most(token, month, 1)
+        for month in month_words
+    )
+
+
+def _unresolved_team_record_boundary(parsed: dict) -> str | None:
+    q = parsed["normalized_query"]
+    if not parsed.get("record_intent"):
+        return None
+    if any(
+        parsed.get(key) for key in ("team", "team_a", "team_b", "player", "player_a", "player_b")
+    ):
+        return None
+    if parsed.get("occurrence_event"):
+        return None
+
+    match = re.match(
+        r"^(?:the\s+)?(?P<fragment>[a-z][a-z'.-]*(?:\s+[a-z][a-z'.-]*){0,2})"
+        r"\s+(?:home\s+|road\s+|away\s+)?record\b",
+        q,
+    )
+    if not match:
+        return None
+
+    fragment = match.group("fragment")
+    if fragment.split()[0] in _RECORD_LEADERBOARD_PREFIXES:
+        return None
+    return fragment
+
+
+def _unresolved_leaderboard_stat_boundary(parsed: dict) -> str | None:
+    q = parsed["normalized_query"]
+    if parsed.get("stat") is not None:
+        return None
+    if not (parsed.get("leaderboard_intent") or parsed.get("team_leaderboard_intent")):
+        return None
+
+    for match in re.finditer(r"\b(?:in|for|by)?\s*([a-z][a-z-]{3,})\s+per\s+game\b", q):
+        token = match.group(1).replace("-", "")
+        if _looks_like_known_stat_typo(token):
+            return token
+    return None
+
+
+def _unsupported_date_anchor_boundary(parsed: dict) -> str | None:
+    if not (parsed.get("leaderboard_intent") or parsed.get("team_leaderboard_intent")):
+        return None
+
+    q = parsed["normalized_query"]
+    if re.search(r"\b(?:since|after|post)\s+(?:the\s+)?trade\s+deadline\b", q):
+        return "trade_deadline"
+    return None
+
+
+def _unresolved_date_boundary(parsed: dict) -> str | None:
+    if parsed.get("start_date") or parsed.get("end_date"):
+        return None
+    if not (parsed.get("leaderboard_intent") or parsed.get("team_leaderboard_intent")):
+        return None
+
+    q = parsed["normalized_query"]
+    for match in re.finditer(
+        r"\b(?:in|during|since|after|post)\s+(?:the\s+)?([a-z]{3,9})\b",
+        q,
+    ):
+        token = match.group(1)
+        if _looks_like_month_typo(token):
+            return token
+    return None
+
+
+def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
+    q = parsed["normalized_query"]
+    if parsed.get("window_size") is None or parsed.get("stretch_metric") is None:
+        return None
+    if any(
+        parsed.get(key) for key in ("player", "player_a", "player_b", "team", "team_a", "team_b")
+    ):
+        return None
+
+    if re.match(r"^(?:who|which|what|best|top|hottest|most|longest)\b", q):
+        return None
+
+    match = re.match(
+        r"^(?P<fragment>[a-z][a-z'.-]{2,})"
+        r"\s+(?:hottest|best|top|longest|most\s+efficient|\d+\s*(?:-\s*|\s+)games?)\b",
+        q,
+    )
+    if match:
+        return match.group("fragment")
+    return None
+
+
+def _unsupported_route_kwargs(
+    filter_id: str,
+    *,
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+    start_date: str | None,
+    end_date: str | None,
+    season_type: str,
+    stat: str | None = None,
+    limit: int | None = None,
+    window_size: int | None = None,
+    stretch_metric: str | None = None,
+) -> dict:
+    route_kwargs = {
+        "season": season,
+        "start_season": start_season,
+        "end_season": end_season,
+        "start_date": start_date,
+        "end_date": end_date,
+        "season_type": season_type,
+        "unsupported_filters": [filter_id],
+    }
+    if stat is not None:
+        route_kwargs["stat"] = stat
+    if limit is not None:
+        route_kwargs["limit"] = limit
+    if window_size is not None:
+        route_kwargs["window_size"] = window_size
+    if stretch_metric is not None:
+        route_kwargs["stretch_metric"] = stretch_metric
+    return route_kwargs
 
 
 _AMBIGUOUS_FRAGMENT_PATTERNS = (
@@ -1162,7 +1356,98 @@ def _finalize_route(parsed: dict) -> dict:
         out["alternates"] = generate_alternates(out)
         return out
 
-    if lineup_members and presence_state is not None:
+    if unresolved_team_fragment := _unresolved_team_record_boundary(parsed):
+        route = "team_record_leaderboard"
+        notes.append(
+            "unsupported_boundary: unresolved team record fragment was not "
+            "broadened to a team record leaderboard"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unresolved_team",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            stat="win_pct",
+            limit=top_n or 10,
+        )
+        route_kwargs["unresolved_team_fragment"] = unresolved_team_fragment
+    elif unresolved_stat_fragment := _unresolved_leaderboard_stat_boundary(parsed):
+        route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+        notes.append(
+            "unsupported_boundary: unresolved leaderboard stat fragment was not "
+            "broadened to the default points leaderboard"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unresolved_stat",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            limit=top_n or 10,
+        )
+        route_kwargs["unresolved_stat_fragment"] = unresolved_stat_fragment
+    elif unsupported_date_anchor := _unsupported_date_anchor_boundary(parsed):
+        route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+        notes.append(
+            "unsupported_boundary: unsupported date anchor was not broadened to "
+            "a full-scope leaderboard"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unsupported_date_anchor",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            stat=stat,
+            limit=top_n or 10,
+        )
+        route_kwargs["unsupported_date_anchor"] = unsupported_date_anchor
+    elif unresolved_date_fragment := _unresolved_date_boundary(parsed):
+        route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+        notes.append(
+            "unsupported_boundary: unresolved date fragment was not broadened to "
+            "a full-scope leaderboard"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unresolved_date",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            stat=stat,
+            limit=top_n or 10,
+        )
+        route_kwargs["unresolved_date_fragment"] = unresolved_date_fragment
+    elif unresolved_player_fragment := _unresolved_player_stretch_boundary(parsed):
+        route = "player_stretch_leaderboard"
+        notes.append(
+            "unsupported_boundary: unresolved player rolling-stretch fragment was "
+            "not broadened to a league-wide stretch leaderboard"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unresolved_player",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            stat=stat,
+            limit=top_n or 10,
+            window_size=window_size,
+            stretch_metric=stretch_metric,
+        )
+        route_kwargs["unresolved_player_fragment"] = unresolved_player_fragment
+    elif lineup_members and presence_state is not None:
         route = "player_on_off"
         route_kwargs = {
             "season": season,

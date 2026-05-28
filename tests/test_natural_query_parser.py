@@ -1511,6 +1511,67 @@ def test_ordinary_assist_leaderboards_stay_season_leaders(query):
     assert parsed["route_kwargs"]["stat"] == "ast"
 
 
+@pytest.mark.parametrize(
+    ("query", "route", "unsupported_filter", "fragment_field", "fragment_value"),
+    [
+        (
+            "Celtcs record this season",
+            "team_record_leaderboard",
+            "unresolved_team",
+            "unresolved_team_fragment",
+            "celtcs",
+        ),
+        (
+            "Lakeers record this season",
+            "team_record_leaderboard",
+            "unresolved_team",
+            "unresolved_team_fragment",
+            "lakeers",
+        ),
+        (
+            "Who leads the NBA in pionts per game this season?",
+            "season_leaders",
+            "unresolved_stat",
+            "unresolved_stat_fragment",
+            "pionts",
+        ),
+        (
+            "top scorers in Marhc",
+            "season_leaders",
+            "unresolved_date",
+            "unresolved_date_fragment",
+            "marhc",
+        ),
+        (
+            "best offensive teams since the trade deadline",
+            "season_team_leaders",
+            "unsupported_date_anchor",
+            "unsupported_date_anchor",
+            "trade_deadline",
+        ),
+        (
+            "Bookr hottest 4-game scoring stretch",
+            "player_stretch_leaderboard",
+            "unresolved_player",
+            "unresolved_player_fragment",
+            "bookr",
+        ),
+    ],
+)
+def test_public_query_bad_fragments_do_not_broad_fallback(
+    query,
+    route,
+    unsupported_filter,
+    fragment_field,
+    fragment_value,
+):
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert parsed["route_kwargs"]["unsupported_filters"] == [unsupported_filter]
+    assert parsed["route_kwargs"][fragment_field] == fragment_value
+    assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+
 # ---------------------------------------------------------------------------
 # Stretch / rolling-window query intent and routing
 # ---------------------------------------------------------------------------

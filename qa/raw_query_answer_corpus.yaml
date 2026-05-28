@@ -5955,3 +5955,117 @@ cases:
     expected_reason: unrouted
     expected_shape: error
     review_notes: "Public acceptance Wave 1: cross-family typo guard for unresolved player shorthand."
+
+  - id: pqa_team_record_typo_celtcs
+    query: "Celtcs record this season"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record_leaderboard
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_team
+    review_notes: "Public acceptance Wave 2A: unresolved team record typo must not broaden to a team record leaderboard."
+
+  - id: pqa_typo_team_lakeers_record
+    query: "Lakeers record this season"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: typo_partial_entity_behavior
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record_leaderboard
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_team
+    review_notes: "Public acceptance Wave 2A: unresolved team typo must not broaden to a team record leaderboard."
+
+  - id: pqa_leaderboard_stat_typo_pionts
+    query: "Who leads the NBA in pionts per game this season?"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: leaderboards
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_stat
+    review_notes: "Public acceptance Wave 2A: unresolved stat typo must not broaden to the default points leaderboard."
+
+  - id: pqa_date_typo_marhc
+    query: "top scorers in Marhc"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: date_window_filters
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_date
+    review_notes: "Public acceptance Wave 2A: unresolved month typo must not broaden to a full-scope leaderboard."
+
+  - id: pqa_date_unsupported_since_trade_deadline
+    query: "best offensive teams since the trade deadline"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: date_window_filters
+      variant: nearby_unsupported
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_date_anchor
+    review_notes: "Public acceptance Wave 2A: unsupported trade-deadline anchor must not broaden to a full-season team leaderboard."
+
+  - id: pqa_stretch_typo_bookr
+    query: "Bookr hottest 4-game scoring stretch"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_stretch_leaderboard
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_player
+    review_notes: "Public acceptance Wave 2A: unresolved player typo must not broaden to a league-wide rolling-stretch leaderboard."

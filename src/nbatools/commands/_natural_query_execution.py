@@ -514,6 +514,36 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "no broad team record was returned "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "unresolved_team":
+        return (
+            "the requested team could not be resolved confidently; no broad team "
+            "leaderboard was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "unresolved_stat":
+        return (
+            "the requested stat could not be resolved confidently; no default "
+            "points leaderboard was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "unresolved_date":
+        return (
+            "the requested date filter could not be resolved confidently; no "
+            "full-scope leaderboard was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "unsupported_date_anchor":
+        return (
+            "the requested date anchor is not supported by current date-window "
+            "routing; no full-scope leaderboard was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "unresolved_player":
+        return (
+            "the requested player could not be resolved confidently; no broad "
+            "player leaderboard was returned "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "team_rolling_stretch":
         return (
             "team rolling-stretch leaderboards are not supported with current routes; "

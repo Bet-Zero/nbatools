@@ -682,3 +682,105 @@ production parser, routing, or execution behavior.
    streak wording.
 5. Product decision on whether typo-tolerant player resolution is intentionally
    supported for cases such as `Kevn Durant` and `Stephn Curry`.
+
+## 13. Wave 2A No-Broad-Fallback Guard Results
+
+Wave 2A fixed the highest-priority unresolved/bad-fragment fallback failures
+from section 12.3. The implementation added narrow parser guards only; it did
+not add typo correction, new feature support, frontend changes, release-status
+changes, or broad fallback expectations.
+
+### 13.1 Cases Fixed And Seeded
+
+| Case ID | Query | Before | After | Unsupported filter |
+|---|---|---|---|---|
+| `pqa_team_record_typo_celtcs` | `Celtcs record this season` | `team_record_leaderboard` / `ok` | `team_record_leaderboard` / `no_result` / `filter_not_supported` | `unresolved_team` |
+| `pqa_typo_team_lakeers_record` | `Lakeers record this season` | `team_record_leaderboard` / `ok` | `team_record_leaderboard` / `no_result` / `filter_not_supported` | `unresolved_team` |
+| `pqa_leaderboard_stat_typo_pionts` | `Who leads the NBA in pionts per game this season?` | `season_leaders` / `ok` | `season_leaders` / `no_result` / `filter_not_supported` | `unresolved_stat` |
+| `pqa_date_typo_marhc` | `top scorers in Marhc` | `season_leaders` / `ok` | `season_leaders` / `no_result` / `filter_not_supported` | `unresolved_date` |
+| `pqa_date_unsupported_since_trade_deadline` | `best offensive teams since the trade deadline` | `season_team_leaders` / `ok` | `season_team_leaders` / `no_result` / `filter_not_supported` | `unsupported_date_anchor` |
+| `pqa_stretch_typo_bookr` | `Bookr hottest 4-game scoring stretch` | `player_stretch_leaderboard` / `ok` | `player_stretch_leaderboard` / `no_result` / `filter_not_supported` | `unresolved_player` |
+
+Wave 2A added these six cases to `qa/raw_query_answer_corpus.yaml` with
+`acceptance.family`, `acceptance.variant`, and
+`acceptance.no_broad_fallback=true`, then added the case IDs to
+`qa/harness_slices/public_query_acceptance.yaml`.
+
+Current public acceptance slice totals after Wave 2A:
+
+| Metric | Count |
+|---|---:|
+| Total `public_query_acceptance` slice cases | 60 |
+| Cases added in Wave 2A | 6 |
+| Wave 1 deferred behavior failures fixed in Wave 2A | 6 |
+| Remaining Wave 1 behavior failures intentionally left for later waves | 5 |
+| Product-decision cases still open | 2 |
+
+### 13.2 Root Cause
+
+The parser already had an unsupported-filter execution path, but several route
+families only checked for positive supported matches. If a user supplied an
+unresolved fragment that looked like a public filter or subject, the remaining
+tokens still satisfied a broad leaderboard route:
+
+- unresolved team-like prefixes before `record`
+- stat-like misspellings before `per game`
+- month-like misspellings in date-window phrasing
+- unsupported named date anchors such as `trade deadline`
+- unresolved player-like prefixes before rolling-stretch phrasing
+
+Wave 2A added guard detection before the broad record, metric-leaderboard, and
+rolling-stretch defaults.
+
+### 13.3 Behavior Preserved
+
+The guards are intentionally narrow. Supported sibling examples still route as
+supported behavior:
+
+| Query | Preserved route/status |
+|---|---|
+| `Booker hottest 4-game scoring stretch` | `player_stretch_leaderboard` / `ok` |
+| `hottest 3-game scoring stretch this year` | `player_stretch_leaderboard` / `ok` |
+| `best record this season` | `team_record_leaderboard` / `ok` |
+| `top scorers in March` | `season_leaders` / `ok` with March date window |
+
+### 13.4 Validation
+
+Passed:
+
+```bash
+.venv/bin/pytest tests/test_natural_query_parser.py::test_public_query_bad_fragments_do_not_broad_fallback -n0
+.venv/bin/pytest tests/test_ui_failure_coverage.py::TestP2BoundaryRoutingCleanup::test_public_query_bad_fragment_guards_return_no_result -n0
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice basic_public_availability --fail-on-expectation-failure
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice natural_query_route_priority --slice product_boundaries --fail-on-expectation-failure
+```
+
+Raw QA results:
+
+- `public_query_acceptance`: `outputs/raw_query_answer_qa/20260528T101541Z`,
+  60 cases, expectation cases `pass: 60`, failed case IDs none.
+- `basic_public_availability`: `outputs/raw_query_answer_qa/20260528T101716Z`,
+  7 cases, expectation cases `pass: 7`, failed case IDs none.
+- `natural_query_route_priority` + `product_boundaries`:
+  `outputs/raw_query_answer_qa/20260528T101716Z`, 49 cases, expectation cases
+  `pass: 49`, failed case IDs none.
+
+Full parser/query slice and whitespace validation results are recorded in the
+Wave 2A return package.
+
+### 13.5 Remaining Later Waves
+
+Wave 2A intentionally left these Wave 1 failures for later work:
+
+- availability shorthand: `pqa_availability_short_lakers_w_luka`
+- availability synonym: `pqa_availability_synonym_reaves_available`
+- player-specific count shorthand: `pqa_count_short_lebron_triple_doubles`
+- bench split boundary: `pqa_split_unsupported_celtics_bench_home_away`
+- streak sentence route priority: `pqa_streak_sentence_curry_3_threes`
+
+The product-decision items for typo-tolerant player resolution also remain
+open:
+
+- `pqa_comparison_typo_kevn_durant`
+- `pqa_typo_synonym_stephn_averages`

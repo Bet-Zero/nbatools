@@ -279,6 +279,43 @@ class TestP2BoundaryRoutingCleanup:
         assert qr.metadata["unsupported_filters"] == [unsupported_filter]
         assert qr.to_dict()["sections"] == {}
 
+    @pytest.mark.parametrize(
+        ("query", "route", "unsupported_filter"),
+        [
+            ("Celtcs record this season", "team_record_leaderboard", "unresolved_team"),
+            ("Lakeers record this season", "team_record_leaderboard", "unresolved_team"),
+            (
+                "Who leads the NBA in pionts per game this season?",
+                "season_leaders",
+                "unresolved_stat",
+            ),
+            ("top scorers in Marhc", "season_leaders", "unresolved_date"),
+            (
+                "best offensive teams since the trade deadline",
+                "season_team_leaders",
+                "unsupported_date_anchor",
+            ),
+            (
+                "Bookr hottest 4-game scoring stretch",
+                "player_stretch_leaderboard",
+                "unresolved_player",
+            ),
+        ],
+    )
+    def test_public_query_bad_fragment_guards_return_no_result(
+        self,
+        query,
+        route,
+        unsupported_filter,
+    ):
+        qr = execute_natural_query(query)
+
+        assert qr.route == route
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == [unsupported_filter]
+        assert qr.to_dict()["sections"] == {}
+
     @pytest.mark.needs_data
     def test_opponent_conference_team_record_filter_returns_supported_result(self):
         qr = execute_natural_query("Celtics record against the East this season")
