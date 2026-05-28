@@ -953,6 +953,40 @@ cases:
         equals: 21
     review_notes: "Public sweep fix: single-player presence routes to team_record, not player_game_summary."
 
+  - id: pqa_availability_short_lakers_w_luka
+    query: "Lakers record w/ Luka"
+    category: player_availability_record
+    priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: short
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        label: With player
+        value: Luka Dončić
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.with_player
+        equals: Luka Dončić
+      - path: result.metadata.player
+        equals:
+      - path: result.sections.summary.0.team_name
+        equals: Los Angeles Lakers
+      - path: result.sections.summary.0.games
+        equals: 64
+      - path: result.sections.summary.0.wins
+        equals: 43
+      - path: result.sections.summary.0.losses
+        equals: 21
+    review_notes: "Public acceptance Wave 2B: w/ shorthand routes to team_record availability."
+
   - id: lakers_record_with_reaves_public_sweep
     query: "Lakers record with Reaves"
     category: player_availability_record
@@ -986,6 +1020,43 @@ cases:
       - path: result.sections.summary.0.losses
         equals: 15
     review_notes: "Public sweep fix: Reaves presence routes to team_record, not player_game_summary."
+
+  - id: pqa_availability_synonym_reaves_available
+    query: "How many games did the Lakers win with Reaves available?"
+    category: player_availability_record
+    priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: synonym
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        label: With player
+        value: Austin Reaves
+      - kind: outcome
+        label: Outcome
+        value: Wins
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.with_player
+        equals: Austin Reaves
+      - path: result.metadata.player
+        equals:
+      - path: result.sections.summary.0.team_name
+        equals: Los Angeles Lakers
+      - path: result.sections.summary.0.games
+        equals: 36
+      - path: result.sections.summary.0.wins
+        equals: 36
+      - path: result.sections.summary.0.losses
+        equals: 0
+    review_notes: "Public acceptance Wave 2B: available/wins wording stays on team_record availability."
 
   - id: lakers_record_with_reaves_without_luka_public_sweep
     query: "Lakers record with Reaves without Luka"

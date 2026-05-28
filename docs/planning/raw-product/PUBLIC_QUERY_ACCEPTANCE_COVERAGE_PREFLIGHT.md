@@ -2,7 +2,7 @@
 
 Date: 2026-05-28
 
-Status: preflight complete; Wave 1 probe/seed complete.
+Status: preflight complete; Wave 1 probe/seed complete; Wave 2A and 2B fixes complete.
 
 This document designs a public-query acceptance coverage system for obvious
 real-user phrasings across the advertised Raw Product query surface. The
@@ -775,6 +775,131 @@ Wave 2A intentionally left these Wave 1 failures for later work:
 
 - availability shorthand: `pqa_availability_short_lakers_w_luka`
 - availability synonym: `pqa_availability_synonym_reaves_available`
+- player-specific count shorthand: `pqa_count_short_lebron_triple_doubles`
+- bench split boundary: `pqa_split_unsupported_celtics_bench_home_away`
+- streak sentence route priority: `pqa_streak_sentence_curry_3_threes`
+
+The product-decision items for typo-tolerant player resolution also remain
+open:
+
+- `pqa_comparison_typo_kevn_durant`
+- `pqa_typo_synonym_stephn_averages`
+
+## 14. Wave 2B Availability Shorthand And Synonym Results
+
+Wave 2B fixed the two remaining team-record player-availability public-query
+acceptance failures. The implementation stayed inside the existing
+single-player whole-game availability contract:
+
+- `w/ PLAYER` is now a with-player presence marker for team-record availability.
+- `with PLAYER available` plus team win intent now routes to team-record
+  availability before player finder/count routes.
+- Compound availability, unresolved availability names, fuzzy typo correction,
+  frontend rendering, and result contracts were not changed.
+
+### 14.1 Cases Fixed And Seeded
+
+| Case ID | Query | Before | After | Scope proof |
+|---|---|---|---|---|
+| `pqa_availability_short_lakers_w_luka` | `Lakers record w/ Luka` | `player_game_summary` / `ok`; Luka player subject | `team_record` / `ok`; `with_player=Luka Dončić` | Lakers team summary, 64 games, 43-21, game log |
+| `pqa_availability_synonym_reaves_available` | `How many games did the Lakers win with Reaves available?` | `player_game_finder` / `ok`; Reaves player rows | `team_record` / `ok`; `with_player=Austin Reaves`, `wins_only=true` | Lakers team summary, 36 games, 36-0, game log |
+
+Wave 2B added both cases to `qa/raw_query_answer_corpus.yaml` with
+`acceptance.family`, `acceptance.variant`, and
+`acceptance.no_broad_fallback=true`, then added the case IDs to
+`qa/harness_slices/public_query_acceptance.yaml`.
+
+Current public acceptance slice totals after Wave 2B:
+
+| Metric | Count |
+|---|---:|
+| Total `public_query_acceptance` slice cases | 62 |
+| Cases added in Wave 2B | 2 |
+| Wave 1 deferred behavior failures fixed in Wave 2B | 2 |
+| Remaining Wave 1 behavior failures intentionally left for later waves | 3 |
+| Product-decision cases still open | 2 |
+
+### 14.2 Behavior Preserved
+
+Existing availability behavior stayed covered and green:
+
+| Query | Preserved route/status |
+|---|---|
+| `Lakers record with Luka` | `team_record` / `ok`; `with_player=Luka Dončić` |
+| `Lakers record with Reaves` | `team_record` / `ok`; `with_player=Austin Reaves` |
+| `Lakers record without Luka` | `team_record` / `ok`; `without_player=Luka Dončić` |
+| `Lakers record with Reaves without Luka` | `team_record` / `no_result` / `filter_not_supported`; `multi_player_availability` |
+| `Lakers record without Luk` | `team_record` / `no_result` / `filter_not_supported`; `unresolved_player_availability` |
+
+Wave 2A no-broad-fallback guards also stayed green through the
+`public_query_acceptance`, `natural_query_route_priority`, and
+`product_boundaries` raw QA slices.
+
+### 14.3 Validation
+
+Passed:
+
+```bash
+.venv/bin/pytest tests/test_ui_failure_coverage.py::TestWithoutPlayer -n0
+```
+
+Result: 51 passed.
+
+Passed:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure
+```
+
+Result: `outputs/raw_query_answer_qa/20260528T111333Z`; 62 cases,
+expectation cases `pass: 62`, failed case IDs none.
+
+Passed:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice basic_public_availability --fail-on-expectation-failure
+```
+
+Result: `outputs/raw_query_answer_qa/20260528T111713Z`; 7 cases,
+expectation cases `pass: 7`, failed case IDs none.
+
+Passed:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice natural_query_route_priority --slice product_boundaries --fail-on-expectation-failure
+```
+
+Result: `outputs/raw_query_answer_qa/20260528T111713Z`; 49 cases,
+expectation cases `pass: 49`, failed case IDs none.
+
+Passed:
+
+```bash
+make PYTEST=.venv/bin/pytest test-parser
+```
+
+Result: 782 passed in 205.01s.
+
+Passed:
+
+```bash
+make PYTEST=.venv/bin/pytest test-query
+```
+
+Result: 798 passed in 342.73s.
+
+Passed:
+
+```bash
+git diff --check
+```
+
+Result: no whitespace diagnostics.
+
+### 14.4 Remaining Later Waves
+
+Wave 2B intentionally left these Wave 1 failures for later work:
+
 - player-specific count shorthand: `pqa_count_short_lebron_triple_doubles`
 - bench split boundary: `pqa_split_unsupported_celtics_bench_home_away`
 - streak sentence route priority: `pqa_streak_sentence_curry_3_threes`

@@ -18,6 +18,7 @@ from nbatools.commands._leaderboard_utils import (
 )
 from nbatools.commands._matchup_utils import (
     detect_opponent_player,
+    detect_with_player,
     detect_without_player,
     extract_player_vs_player_as_opponent,
 )
@@ -630,6 +631,18 @@ class TestWithoutPlayer:
         player, cleaned = detect_without_player("lakers record")
         assert player is None
 
+    def test_detect_with_player_shorthand(self):
+        player, cleaned = detect_with_player("lakers record w/ luka")
+        assert player == "Luka Dončić"
+        assert "luka" not in cleaned.lower()
+
+    def test_detect_with_player_available_form(self):
+        player, cleaned = detect_with_player(
+            "how many games did the lakers win with reaves available?"
+        )
+        assert player == "Austin Reaves"
+        assert "reaves" not in cleaned.lower()
+
     def test_detect_without_player_strips_from_text(self):
         player, cleaned = detect_without_player("lakers record without steph curry")
         # "Steph Curry" may be resolved to "Stephen Curry"
@@ -665,6 +678,24 @@ class TestWithoutPlayer:
         assert parsed["player"] is None
         assert parsed.get("with_player") == "Austin Reaves"
         assert parsed["route_kwargs"]["with_player"] == "Austin Reaves"
+
+    def test_route_team_record_with_player_presence_shorthand(self):
+        parsed = parse_query("Lakers record w/ Luka")
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "LAL"
+        assert parsed["player"] is None
+        assert parsed.get("with_player") == "Luka Dončić"
+        assert parsed["route_kwargs"]["with_player"] == "Luka Dončić"
+
+    def test_route_team_record_with_player_available_win_count(self):
+        parsed = parse_query("How many games did the Lakers win with Reaves available?")
+        assert parsed["route"] == "team_record"
+        assert parsed["team"] == "LAL"
+        assert parsed["player"] is None
+        assert parsed["wins_only"] is True
+        assert parsed.get("with_player") == "Austin Reaves"
+        assert parsed["route_kwargs"]["with_player"] == "Austin Reaves"
+        assert parsed["route_kwargs"]["wins_only"] is True
 
     def test_route_team_record_when_player_does_not_play(self):
         parsed = parse_query("What is the Knicks' record when Jalen Brunson doesn't play?")
@@ -789,6 +820,43 @@ class TestWithoutPlayer:
         assert summary["games"] == 51
         assert summary["wins"] == 36
         assert summary["losses"] == 15
+        assert len(sections["game_log"]) == summary["games"]
+
+    @pytest.mark.needs_data
+    def test_single_player_presence_shorthand_executes_with_team_subject(self):
+        qr = execute_natural_query("Lakers record w/ Luka")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["with_player"] == "Luka Dončić"
+        assert qr.metadata["player"] is None
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["team_name"] == "Los Angeles Lakers"
+        assert summary["games"] == 64
+        assert summary["wins"] == 43
+        assert summary["losses"] == 21
+        assert len(sections["game_log"]) == summary["games"]
+
+    @pytest.mark.needs_data
+    def test_single_player_available_win_count_executes_with_team_subject(self):
+        qr = execute_natural_query("How many games did the Lakers win with Reaves available?")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["with_player"] == "Austin Reaves"
+        assert qr.metadata["player"] is None
+        assert {
+            "label": "Outcome",
+            "value": "Wins",
+            "kind": "outcome",
+        } in qr.metadata["applied_filters"]
+        sections = qr.to_dict()["sections"]
+        summary = sections["summary"][0]
+        assert summary["team_name"] == "Los Angeles Lakers"
+        assert summary["games"] == 36
+        assert summary["wins"] == 36
+        assert summary["losses"] == 0
         assert len(sections["game_log"]) == summary["games"]
 
     @pytest.mark.needs_data

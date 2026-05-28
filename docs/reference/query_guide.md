@@ -236,7 +236,9 @@ Natural examples:
 - `Warriors wins without Stephen Curry`
 - `Celtics summary without Jaylen Brown`
 - `Lakers record with Luka`
+- `Lakers record w/ Luka`
 - `Lakers record with Austin Reaves`
+- `How many games did the Lakers win with Reaves available?`
 
 Single-player whole-game presence and absence filters return the team record
 for games where that player did or did not play for the team. Compound

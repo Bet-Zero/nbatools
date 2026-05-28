@@ -88,7 +88,7 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent (team): `vs Lakers`, `against Celtics`
 - opponent (player): `vs Kevin Durant`, `against Stephen Curry` (when used with context words like "stats", "averages", "record")
 - without player: `without LeBron`, `w/o LeBron`, `when LeBron out`, `when LeBron was out`, `when LeBron didn't play`, `no LeBron`, `sans LeBron`, `minus LeBron`
-- whole-game player presence for team records: `Lakers record with Luka`, `Lakers record with Reaves`
+- whole-game player presence for team records: `Lakers record with Luka`, `Lakers record w/ Luka`, `How many games did the Lakers win with Reaves available?`
 - on/off presence: `on/off`, `on off`, `on-off`, `with Jokic on the floor`, `without Jokic on the floor`, `Jokic sitting`
   (routes to `player_on_off`; executes against trusted `team_player_on_off_summary`
   rows when coverage exists, otherwise returns an explicit unsupported-data
@@ -320,7 +320,7 @@ Common combinations:
 - opponent team filters
 - opponent player filters (`vs Kevin Durant`, `against Stephen Curry`) — filters to games where the specified opponent player appeared on the opposing team
 - without player filters (`without LeBron`, `without Steph Curry`) — excludes games where the specified player played; clears the player from entity detection so the query routes to the team path
-- with player filters for team records (`with Luka`, `with Austin Reaves`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
+- with player filters for team records (`with Luka`, `w/ Luka`, `with Austin Reaves available`) — filters to team games where the specified player played for that team and keeps the answer subject as the team record
 - home / away
 - wins / losses
 - season ranges

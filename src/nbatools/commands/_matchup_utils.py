@@ -410,14 +410,18 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
 
 
 def detect_with_player(text: str) -> tuple[str | None, str]:
-    """Detect whole-game presence patterns like ``with PLAYER``.
+    """Detect whole-game presence patterns like ``with PLAYER`` / ``w/ PLAYER``.
 
     This is intentionally separate from on/off-court parsing. Callers should
     skip this detector for phrases like ``with Jokic on the floor``.
     """
     cleaned_text = text
+    with_player_pattern = (
+        rf"\b(?:with|w/)\s+([\w .&'\-]+?)"
+        rf"(?=\s+(?:available|without|w/o|{STOP_WORDS})\b|[?.!,;:]|$)"
+    )
     presence_patterns = [
-        rf"\bwith\s+([\w .&'\-]+?)(?=\s+(?:without|w/o|{STOP_WORDS})\b|$)",
+        with_player_pattern,
         r"\bwhen\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
     ]
 
@@ -448,8 +452,12 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             rf"\b(?:no|sans|minus)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
         ]
     elif mode == "with":
+        with_player_pattern = (
+            rf"\b(?:with|w/)\s+([\w .&'\-]+?)"
+            rf"(?=\s+(?:available|without|w/o|{STOP_WORDS})\b|[?.!,;:]|$)"
+        )
         patterns = [
-            rf"\bwith\s+([\w .&'\-]+?)(?=\s+(?:without|w/o|{STOP_WORDS})\b|$)",
+            with_player_pattern,
             r"\bwhen\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
         ]
     else:

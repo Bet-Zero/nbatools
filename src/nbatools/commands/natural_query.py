@@ -369,6 +369,27 @@ def _multi_player_availability_boundary(q: str) -> bool:
     return bool(detect_player(left) and detect_player(right))
 
 
+def _team_record_availability_intent(
+    *,
+    record_intent: bool,
+    wins_only: bool,
+    stat: str | None,
+    min_value: int | float | None,
+    max_value: int | float | None,
+    occurrence_event: dict | None,
+) -> bool:
+    """Return whether a team availability phrase is asking for a W/L record."""
+    if record_intent:
+        return True
+    return (
+        wins_only
+        and stat is None
+        and min_value is None
+        and max_value is None
+        and occurrence_event is None
+    )
+
+
 _RECORD_LEADERBOARD_PREFIXES = (
     "best",
     "worst",
@@ -969,12 +990,27 @@ def _build_parse_state(query: str) -> dict:
             if player_without_absence.is_confident:
                 player = player_without_absence.resolved
 
+    wins_only, losses_only = detect_wins_losses(q)
+
     # If without_player is the same as the detected player, clear player so the
     # query routes to the team path (e.g., "Lakers record without LeBron")
     if without_player and player and without_player.upper() == player.upper():
         player = None
 
-    if team and record_intent and with_player and player and with_player.upper() == player.upper():
+    if (
+        team
+        and _team_record_availability_intent(
+            record_intent=record_intent,
+            wins_only=wins_only,
+            stat=stat,
+            min_value=min_value,
+            max_value=max_value,
+            occurrence_event=occurrence_event,
+        )
+        and with_player
+        and player
+        and with_player.upper() == player.upper()
+    ):
         player = None
 
     if team == "MIN" and re.search(r"\bmin(?:imum)?\s+\d+", q):
@@ -987,7 +1023,6 @@ def _build_parse_state(query: str) -> dict:
     role = detect_role(q) if any([player, player_a, player_b]) else None
 
     home_only, away_only = detect_home_away(q)
-    wins_only, losses_only = detect_wins_losses(q)
     clutch = detect_clutch(q)
     back_to_back = detect_back_to_back(q)
     rest_days = detect_rest_days(q)
@@ -1298,6 +1333,14 @@ def _finalize_route(parsed: dict) -> dict:
         occurrence_event.get("special_event")
         if isinstance(occurrence_event, dict) and occurrence_event.get("special_event") is not None
         else None
+    )
+    team_record_availability_intent = _team_record_availability_intent(
+        record_intent=record_intent,
+        wins_only=wins_only,
+        stat=stat,
+        min_value=min_value,
+        max_value=max_value,
+        occurrence_event=occurrence_event,
     )
 
     # -- Entity ambiguity: short-circuit if we can't resolve a required entity --
@@ -2312,6 +2355,91 @@ def _finalize_route(parsed: dict) -> dict:
                 "last_n": last_n,
             }
     # ---------------------------------------------------------------------------
+    # Team-record player availability routing
+    # ---------------------------------------------------------------------------
+    elif team and team_record_availability_intent and _multi_player_availability_boundary(q):
+        # Multi-player availability is requested but not execution-backed.
+        # Preserve the team-record route context, then let execution return an
+        # honest unsupported-filter result instead of an unfiltered record.
+        route = "team_record"
+        notes.append(
+            "unsupported_boundary: multi-player availability filters are outside "
+            "the current record execution boundary"
+        )
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "with_player": with_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
+            "unsupported_filters": ["multi_player_availability"],
+        }
+    elif (
+        team
+        and team_record_availability_intent
+        and (unresolved_with_player or unresolved_without_player)
+    ):
+        route = "team_record"
+        raw_fragment = unresolved_with_player or unresolved_without_player
+        notes.append(
+            "unsupported_boundary: requested availability player could not be resolved; "
+            "no broad team record was returned"
+        )
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "with_player": with_player,
+            "without_player": without_player,
+            "unresolved_availability_player": raw_fragment,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
+            "unsupported_filters": ["unresolved_player_availability"],
+        }
+    elif team and team_record_availability_intent and with_player and not without_player:
+        route = "team_record"
+        route_kwargs = {
+            "team": team,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "season_type": season_type,
+            "opponent": opponent,
+            "with_player": with_player,
+            "without_player": without_player,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "stat": stat,
+            "min_value": min_value,
+            "max_value": max_value,
+            "start_date": start_date,
+            "end_date": end_date,
+        }
+    # ---------------------------------------------------------------------------
     # Single-player special-event occurrence count
     # ---------------------------------------------------------------------------
     elif (oco := try_occurrence_count_route(parsed)) is not None:
@@ -2370,84 +2498,6 @@ def _finalize_route(parsed: dict) -> dict:
             "sort_by": "stat" if stat else "game_date",
             "ascending": False,
             "last_n": last_n,
-        }
-    elif team and record_intent and _multi_player_availability_boundary(q):
-        # Multi-player availability is requested but not execution-backed.
-        # Preserve the team-record route context, then let execution return an
-        # honest unsupported-filter result instead of an unfiltered record.
-        route = "team_record"
-        notes.append(
-            "unsupported_boundary: multi-player availability filters are outside "
-            "the current record execution boundary"
-        )
-        route_kwargs = {
-            "team": team,
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "opponent": opponent,
-            "with_player": with_player,
-            "without_player": without_player,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "stat": stat,
-            "min_value": min_value,
-            "max_value": max_value,
-            "start_date": start_date,
-            "end_date": end_date,
-            "unsupported_filters": ["multi_player_availability"],
-        }
-    elif team and record_intent and (unresolved_with_player or unresolved_without_player):
-        route = "team_record"
-        raw_fragment = unresolved_with_player or unresolved_without_player
-        notes.append(
-            "unsupported_boundary: requested availability player could not be resolved; "
-            "no broad team record was returned"
-        )
-        route_kwargs = {
-            "team": team,
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "opponent": opponent,
-            "with_player": with_player,
-            "without_player": without_player,
-            "unresolved_availability_player": raw_fragment,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "stat": stat,
-            "min_value": min_value,
-            "max_value": max_value,
-            "start_date": start_date,
-            "end_date": end_date,
-            "unsupported_filters": ["unresolved_player_availability"],
-        }
-    elif team and record_intent and with_player and not without_player:
-        route = "team_record"
-        route_kwargs = {
-            "team": team,
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "season_type": season_type,
-            "opponent": opponent,
-            "with_player": with_player,
-            "without_player": without_player,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "stat": stat,
-            "min_value": min_value,
-            "max_value": max_value,
-            "start_date": start_date,
-            "end_date": end_date,
         }
     elif player and (
         summary_intent
