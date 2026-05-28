@@ -105,7 +105,7 @@ Passed:
 .venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure
 ```
 
-Result: `outputs/raw_query_answer_qa/20260528T111333Z`; 62 cases,
+Result: `outputs/raw_query_answer_qa/20260528T113652Z`; 62 cases,
 expectation cases `pass: 62`, failed case IDs none.
 
 Passed:
@@ -150,14 +150,24 @@ git diff --check
 
 Result: no whitespace diagnostics.
 
-The new untracked return-package file was also checked directly:
+The return-package file was also checked directly:
 
 ```bash
 git diff --check --no-index -- /dev/null return_packages/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_AVAILABILITY_SHORTHAND_RETURN_PACKAGE.md
 ```
 
 Result: no whitespace diagnostics; exit code 1 is expected for a `/dev/null`
-comparison against a new file.
+comparison against an existing file.
+
+## Proof Wave 2B Behavior
+
+Verification probes through `execute_natural_query()` and `parse_query()`
+confirmed the target behavior:
+
+| Query | Route | Status / reason | Availability proof | Subject/result proof |
+|---|---|---|---|---|
+| `Lakers record w/ Luka` | `team_record` | `ok` / `-` | `with_player=Luka Dončić` | Lakers team summary; 64 games, 43-21; sections: `summary`, `by_season`, `game_log` |
+| `How many games did the Lakers win with Reaves available?` | `team_record` | `ok` / `-` | `with_player=Austin Reaves`; parser `wins_only=True`; route kwargs `wins_only=True`; applied filter `Outcome=Wins` | Lakers team summary; 36 games, 36-0; sections: `summary`, `by_season`, `game_log` |
 
 ## Proof Existing Availability Behavior Was Preserved
 
