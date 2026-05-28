@@ -52,6 +52,9 @@ cases:
     query: "How often has Nikola Jokic recorded a triple-double this season?"
     category: player_game_log_count
     priority: p0
+    acceptance:
+      family: count_queries
+      variant: canonical
     answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_game_finder
@@ -75,6 +78,9 @@ cases:
     query: "Who leads the NBA in points per game this season?"
     category: leaderboard
     priority: p1
+    acceptance:
+      family: leaderboards
+      variant: canonical
     expected_status: ok
     expected_route: season_leaders
     expected_shape: leaderboard_table
@@ -88,6 +94,9 @@ cases:
     query: "What were the biggest scoring games this season?"
     category: top_performances
     priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: canonical
     expected_status: ok
     expected_route: top_player_games
     expected_shape: top_performances
@@ -107,6 +116,10 @@ cases:
     query: "What is the Celtics' record against playoff teams?"
     category: team_record
     priority: p1
+    acceptance:
+      family: playoff_history
+      variant: inverse_sibling
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -214,6 +227,9 @@ cases:
     query: "Which players have the hottest 3-game scoring stretch this year?"
     category: rolling_stretch
     priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: canonical
     expected_status: ok
     expected_route: player_stretch_leaderboard
     expected_shape: rolling_stretch
@@ -230,6 +246,9 @@ cases:
     query: "Jokic 5 straight games with 20+ points"
     category: streak
     priority: p1
+    acceptance:
+      family: streaks
+      variant: canonical
     expected_status: ok
     expected_route: player_streak_finder
     expected_shape: streak_table
@@ -246,6 +265,9 @@ cases:
     query: "Lakers playoff history"
     category: playoff_history
     priority: p1
+    acceptance:
+      family: playoff_history
+      variant: canonical
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_history
@@ -277,6 +299,10 @@ cases:
     query: "Who scored the most points last night?"
     category: no_result_date
     priority: p1
+    acceptance:
+      family: date_window_filters
+      variant: inverse_sibling
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: season_leaders
@@ -476,6 +502,10 @@ cases:
     query: "Who had the most rebounds in a game this year?"
     category: top_performances
     priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: sentence
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: top_player_games
@@ -526,6 +556,9 @@ cases:
     query: "Jokic this season"
     category: player_summary
     priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: short
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -539,6 +572,9 @@ cases:
     query: "Luka stats this season"
     category: player_summary
     priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: canonical
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -557,6 +593,9 @@ cases:
     query: "Jayson Tatum recent form"
     category: player_summary
     priority: p1
+    acceptance:
+      family: player_summaries_recent_form
+      variant: canonical
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -618,6 +657,9 @@ cases:
     query: "What is the Celtics record this season?"
     category: team_record
     priority: p1
+    acceptance:
+      family: team_records
+      variant: canonical
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -851,6 +893,10 @@ cases:
     query: "Lakers record without Luka"
     category: without_player_condition
     priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: inverse_sibling
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -877,6 +923,10 @@ cases:
     query: "Lakers record with Luka"
     category: player_availability_record
     priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: canonical
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -907,6 +957,10 @@ cases:
     query: "Lakers record with Reaves"
     category: player_availability_record
     priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: synonym
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -937,6 +991,10 @@ cases:
     query: "Lakers record with Reaves without Luka"
     category: availability_boundary
     priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: team_record
@@ -952,6 +1010,10 @@ cases:
     query: "Lakers record without Luk"
     category: availability_boundary
     priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: typo_partial
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: team_record
@@ -1164,6 +1226,10 @@ cases:
     query: "best 5-game team scoring stretch this season"
     category: rolling_stretch
     priority: p2
+    acceptance:
+      family: rolling_stretches
+      variant: inverse_sibling
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_stretch_leaderboard
@@ -1283,6 +1349,9 @@ cases:
     query: "top scorers in March"
     category: date_range
     priority: p1
+    acceptance:
+      family: date_window_filters
+      variant: canonical
     expected_status: ok
     expected_route: season_leaders
     expected_shape: leaderboard_table
@@ -1309,6 +1378,9 @@ cases:
     query: "Jokic home vs away this season"
     category: split
     priority: p1
+    acceptance:
+      family: splits
+      variant: canonical
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_split_summary
@@ -1390,6 +1462,10 @@ cases:
     query: "Who is the best defender in the NBA?"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: canonical
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -1407,6 +1483,10 @@ cases:
     query: "Who are the MVP candidates?"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: player_stats_this_season
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -2426,6 +2506,9 @@ cases:
     query: "Jokic games with 30 points and 10 assists"
     category: finder_count
     priority: p1
+    acceptance:
+      family: game_finders
+      variant: canonical
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_finder
@@ -2804,6 +2887,10 @@ cases:
     query: "Who is the best duo this season?"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -2962,6 +3049,10 @@ cases:
     query: "rookie scoring leaders this season"
     category: leaderboard
     priority: p2
+    acceptance:
+      family: leaderboards
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: season_leaders
@@ -3294,6 +3385,10 @@ cases:
     query: "LeBron James vs Kevin Durant comparison"
     category: split
     priority: p2
+    acceptance:
+      family: player_summaries_recent_form
+      variant: inverse_sibling
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_compare
@@ -3318,6 +3413,10 @@ cases:
     query: "Bulls Finals record"
     category: playoff_history
     priority: p2
+    acceptance:
+      family: playoff_history
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: playoff_history
@@ -4042,6 +4141,9 @@ cases:
     query: "How did the Lakers do on the road last season?"
     category: team_record
     priority: p1
+    acceptance:
+      family: team_records
+      variant: sentence
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -4825,6 +4927,10 @@ cases:
     query: "Warriors vs Lakers record this season"
     category: split
     priority: p2
+    acceptance:
+      family: team_records
+      variant: inverse_sibling
+      no_broad_fallback: true
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_matchup_record
@@ -5127,6 +5233,10 @@ cases:
     query: "Celtics record vs Atlantic Division"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: team_records
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: team_record
@@ -5302,6 +5412,10 @@ cases:
     query: "Who is the most clutch player this season?"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: synonym
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: season_leaders
@@ -5324,6 +5438,10 @@ cases:
     query: "who has cooled off lately"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: streaks
+      variant: nearby_unsupported
+      no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -5471,3 +5589,369 @@ cases:
         - defensive_stat
         - phrasing_variant
       notes: "Fix Wave 8A: allowing-the-fewest defensive phrasing maps to opponent points per game ascending; top row is Boston in the current dataset."
+
+  - id: pqa_player_stats_sentence_luka_played
+    query: "How has Luka Doncic played this season?"
+    category: player_summary
+    priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: sentence
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: Luka Dončić
+      - path: result.sections.summary.0.games
+        equals: 64
+    review_notes: "Public acceptance Wave 1: natural sentence player-season summary."
+
+  - id: pqa_player_stats_synonym_luka_averages
+    query: "Luka averages this year"
+    category: player_summary
+    priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: synonym
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.sections.summary.0.player_name
+        equals: Luka Dončić
+      - path: result.sections.summary.0.games
+        equals: 64
+    review_notes: "Public acceptance Wave 1: averages synonym routes to player-season summary."
+
+  - id: pqa_player_stats_typo_jokc
+    query: "Jokc stats this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: player_stats_this_season
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved player typo must not return a broad player summary."
+
+  - id: pqa_team_record_short_celtics_record
+    query: "Celtics record"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: short
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_sections:
+      - summary
+    hard_assertions:
+      - path: result.sections.summary.0.team_name
+        equals: Boston Celtics
+      - path: result.sections.summary.0.games
+        equals: 82
+    review_notes: "Public acceptance Wave 1: bare team-record search fragment."
+
+  - id: pqa_availability_sentence_luka_plays
+    query: "What is the Lakers record when Luka Doncic plays?"
+    category: player_availability_record
+    priority: p1
+    acceptance:
+      family: team_record_availability
+      variant: sentence
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: player
+        label: With player
+        value: Luka Dončić
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.with_player
+        equals: Luka Dončić
+      - path: result.sections.summary.0.team_name
+        equals: Los Angeles Lakers
+      - path: result.sections.summary.0.games
+        equals: 64
+    review_notes: "Public acceptance Wave 1: when-player-plays wording stays on team_record availability."
+
+  - id: pqa_player_recent_typo_tatm
+    query: "Tatm recent form"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: player_summaries_recent_form
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved recent-form player typo must not return a broad summary."
+
+  - id: pqa_top_games_synonym_single_game_rebounds
+    query: "single-game rebound leaders this season"
+    category: top_performances
+    priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: synonym
+      no_broad_fallback: true
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: reb
+    review_notes: "Public acceptance Wave 1: single-game rebound-leader synonym stays on top-player-games."
+
+  - id: pqa_top_games_stat_typo_rebunds
+    query: "most rebunds in a game this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: top_single_game_performances
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: misspelled top-game stat must not fall back to scoring games."
+
+  - id: pqa_count_unsupported_players_played
+    query: "how many players played this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: count_queries
+      variant: nearby_unsupported
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: count queries without a threshold remain unsupported and must not return a broad leaderboard."
+
+  - id: pqa_count_typo_jokc_triple_doubles
+    query: "how many Jokc triple doubles this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: count_queries
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved player typo in count phrasing must not return a broad count."
+
+  - id: pqa_finder_sentence_tatum_35_5_threes
+    query: "What games did Tatum have over 35 points and 5+ threes?"
+    category: finder_count
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: sentence
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_filters:
+      - kind: threshold
+        label: pts min
+      - kind: threshold
+        label: fg3m min
+    expected_sections: []
+    review_notes: "Public acceptance Wave 1: sentence-form player finder routes correctly and returns no_match without broad fallback for the empty sample."
+
+  - id: pqa_finder_synonym_show_lakers_home_losses
+    query: "show me Lakers home losses"
+    category: finder_count
+    priority: p1
+    acceptance:
+      family: game_finders
+      variant: synonym
+    expected_status: ok
+    expected_route: game_finder
+    expected_shape: game_log_team_table
+    expected_filters:
+      - kind: location
+        value: Home
+      - kind: outcome
+        value: Losses
+    expected_sections:
+      - finder
+    expected_row_counts:
+      finder: 13
+    review_notes: "Public acceptance Wave 1: show-me team finder synonym with home/loss filters."
+
+  - id: pqa_finder_typo_curr_5_threes
+    query: "Curr 5+ threes this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: game_finders
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved player typo in finder fragment must not return a broad finder."
+
+  - id: pqa_split_typo_jokc_home_away
+    query: "Jokc home vs away this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: splits
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved player typo in split phrasing must not return a broad split."
+
+  - id: pqa_streak_typo_jok_longest
+    query: "Jok longest 30 point streak"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: streaks
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved player typo in streak phrasing must not return a broad streak or finder."
+
+  - id: pqa_stretch_sentence_game_score
+    query: "Who has the best 5-game stretch by Game Score?"
+    category: rolling_stretch
+    priority: p1
+    acceptance:
+      family: rolling_stretches
+      variant: sentence
+    expected_status: ok
+    expected_route: player_stretch_leaderboard
+    expected_shape: rolling_stretch
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.window_size
+        equals: 5
+      - path: result.sections.leaderboard.0.stretch_metric
+        equals: game_score
+    review_notes: "Public acceptance Wave 1: Game Score sentence-form rolling stretch."
+
+  - id: pqa_comparison_subjective_better_jokic_embiid
+    query: "Who is better, Jokic or Embiid?"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: comparisons
+      variant: nearby_unsupported
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_summary
+    expected_reason: unsupported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Public acceptance Wave 1: subjective better-than comparison remains unsupported and returns no broad comparison winner."
+
+  - id: pqa_playoff_typo_lakeers_history
+    query: "Lakeers playoff history"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: playoff_history
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: unresolved team typo in playoff history must not return a broad playoff-history answer."
+
+  - id: pqa_subjective_short_mvp_candidates
+    query: "MVP candidates"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: short MVP-candidate fragment remains unsupported."
+
+  - id: pqa_subjective_typo_defnder
+    query: "best defnder in NBA"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: misspelled subjective defender query remains unsupported."
+
+  - id: pqa_typo_short_jokc_stats
+    query: "Jokc stats"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: typo_partial_entity_behavior
+      variant: short
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: error
+    expected_route:
+    expected_reason: unrouted
+    expected_shape: error
+    review_notes: "Public acceptance Wave 1: cross-family typo guard for unresolved player shorthand."

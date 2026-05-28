@@ -2,12 +2,15 @@
 
 Date: 2026-05-28
 
-Status: preflight only.
+Status: preflight complete; Wave 1 probe/seed complete.
 
 This document designs a public-query acceptance coverage system for obvious
-real-user phrasings across the advertised Raw Product query surface. It does
-not change production code, parser/routing behavior, frontend rendering, QA
-corpus expectations, saved harness slices, or release status.
+real-user phrasings across the advertised Raw Product query surface. The
+initial preflight did not change production code, parser/routing behavior,
+frontend rendering, QA corpus expectations, saved harness slices, or release
+status. Wave 1 added only safe passing raw QA cases, acceptance metadata, and a
+saved harness slice; it did not change production code, parser/routing behavior,
+frontend rendering, or release status.
 
 ## 1. Goal
 
@@ -50,6 +53,10 @@ Current saved harness slices observed:
 - `playoff_phrasing`
 - `product_boundaries`
 - `team_date_context`
+
+Wave 1 added:
+
+- `public_query_acceptance`
 
 ## 3. Advertised Public Feature Families
 
@@ -535,3 +542,143 @@ Required validation for this preflight:
 ```bash
 git diff --check
 ```
+
+## 12. Wave 1 Probe And Seed Results
+
+Wave 1 probed all 36 proposed new `pqa_*` cases from section 8 through
+`execute_natural_query()` and `query_result_to_payload()`.
+
+Wave 1 corpus/slice result:
+
+| Metric | Count |
+|---|---:|
+| Proposed new `pqa_*` cases probed | 36 |
+| New safe `pqa_*` cases added | 21 |
+| Existing cases reused and retagged | 33 |
+| Total `public_query_acceptance` slice cases | 54 |
+| Slice cases with `acceptance` metadata | 54 |
+| Slice cases with `acceptance.no_broad_fallback=true` | 35 |
+| Proposed new cases deferred as behavior failures | 11 |
+| Proposed new cases requiring product decision | 2 |
+| Proposed new cases not added as duplicates | 2 |
+
+Wave 1 added `qa/harness_slices/public_query_acceptance.yaml` and tagged
+included raw QA cases with:
+
+- `acceptance.family`
+- `acceptance.variant`
+- `acceptance.no_broad_fallback` where the case is a sibling, unsupported, or
+  typo/partial guard
+
+Wave 1 did not add any expected-ok case that currently fails. It also did not
+encode broad fallback behavior as acceptable.
+
+### 12.1 Family Coverage In Seed Slice
+
+| Family | Slice cases | Notes |
+|---|---:|---|
+| `player_stats_this_season` | 6 | Includes canonical, short, sentence, synonym, nearby unsupported, and typo guard. |
+| `team_records` | 5 | Includes canonical, short, sentence, matchup sibling, and division unsupported guard. |
+| `team_record_availability` | 6 | Includes the full recent `basic_public_availability` supported/unsupported set plus sentence-form presence. |
+| `player_summaries_recent_form` | 3 | Includes recent-form canonical, comparison sibling, and typo guard. |
+| `leaderboards` | 2 | Includes canonical leaderboard and unsupported rookie-boundary guard. |
+| `top_single_game_performances` | 4 | Includes canonical, sentence, synonym, and stat-typo guard. |
+| `count_queries` | 3 | Includes canonical count, no-threshold unsupported guard, and typo guard. |
+| `game_finders` | 4 | Includes canonical finder, sentence-form route/no-match, synonym, and typo guard. |
+| `splits` | 2 | Includes canonical split and typo guard. |
+| `streaks` | 3 | Includes canonical streak, trend-adjacent unsupported guard, and typo guard. |
+| `rolling_stretches` | 3 | Includes canonical, sentence Game Score, and team-stretch unsupported sibling. |
+| `comparisons` | 1 | Includes subjective better-than unsupported guard. |
+| `playoff_history` | 4 | Includes canonical history, opponent-quality sibling, round-record unsupported guard, and typo guard. |
+| `date_window_filters` | 2 | Includes month filter and last-night no-match guard. |
+| `unsupported_subjective_narrative` | 5 | Includes subjective, awards, clutch, duo, and typo/narrative guards. |
+| `typo_partial_entity_behavior` | 1 | Includes cross-family unresolved player shorthand guard. |
+
+### 12.2 New Cases Added In Wave 1
+
+| Case ID | Classification |
+|---|---|
+| `pqa_player_stats_sentence_luka_played` | Safe supported expectation. |
+| `pqa_player_stats_synonym_luka_averages` | Safe supported expectation. |
+| `pqa_player_stats_typo_jokc` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_team_record_short_celtics_record` | Safe supported expectation. |
+| `pqa_availability_sentence_luka_plays` | Safe supported expectation. |
+| `pqa_player_recent_typo_tatm` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_top_games_synonym_single_game_rebounds` | Safe supported expectation. |
+| `pqa_top_games_stat_typo_rebunds` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_count_unsupported_players_played` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_count_typo_jokc_triple_doubles` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_finder_sentence_tatum_35_5_threes` | Safe supported route with `no_match`; no broad fallback. |
+| `pqa_finder_synonym_show_lakers_home_losses` | Safe supported expectation. |
+| `pqa_finder_typo_curr_5_threes` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_split_typo_jokc_home_away` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_streak_typo_jok_longest` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_stretch_sentence_game_score` | Safe supported expectation. |
+| `pqa_comparison_subjective_better_jokic_embiid` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_playoff_typo_lakeers_history` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_subjective_short_mvp_candidates` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_subjective_typo_defnder` | Safe unsupported/no-broad-fallback expectation. |
+| `pqa_typo_short_jokc_stats` | Safe unsupported/no-broad-fallback expectation. |
+
+### 12.3 Proposed Cases Not Added
+
+| Case ID | Probe result | Classification | Next action |
+|---|---|---|---|
+| `pqa_team_record_typo_celtcs` | `team_record_leaderboard` / `ok` | Behavior failure | Add team/entity typo guard so unresolved team-like record fragments do not become broad record leaderboards. |
+| `pqa_availability_short_lakers_w_luka` | `player_game_summary` / `ok` | Behavior failure | Extend whole-game presence parsing to `w/ PLAYER` team-record phrasing. |
+| `pqa_availability_synonym_reaves_available` | `player_game_summary` / `ok` | Behavior failure | Extend team availability routing for `TEAM wins with PLAYER` without crossing into player summaries. |
+| `pqa_leaderboard_stat_typo_pionts` | `season_leaders` / `ok` | Behavior failure | Guard misspelled stat words so they do not default to broad points leaderboards. |
+| `pqa_count_short_lebron_triple_doubles` | `player_occurrence_leaders` / `ok` | Behavior failure | Route player-specific `count PLAYER triple doubles` to player count/finder semantics, not occurrence leaderboard semantics. |
+| `pqa_split_unsupported_celtics_bench_home_away` | `team_split_summary` / `ok` | Behavior failure | Preserve team bench-scoring unsupported boundary before split routing. |
+| `pqa_streak_sentence_curry_3_threes` | `player_game_finder` / `ok` | Behavior failure | Preserve sentence-form `longest streak` wording on streak route. |
+| `pqa_stretch_typo_bookr` | `player_stretch_leaderboard` / `ok` | Behavior failure | Do not drop unresolved named-player fragments and return broad stretch leaderboards. |
+| `pqa_comparison_typo_kevn_durant` | `player_compare` / `ok` | Product decision required | Decide whether typo-tolerant player resolution is an intentional supported behavior and document/test it. |
+| `pqa_date_unsupported_since_trade_deadline` | `season_team_leaders` / `ok` | Behavior failure | Unsupported date anchors must not be ignored into full-scope leaderboards. |
+| `pqa_date_typo_marhc` | `season_leaders` / `ok` | Behavior failure | Misspelled date/month filters must not be ignored into broad leaderboards. |
+| `pqa_typo_sentence_tatm_recent` | `None` / `error` / `unrouted` | Duplicate of existing sufficient case | Covered by `pqa_player_recent_typo_tatm`. |
+| `pqa_typo_synonym_stephn_averages` | `player_game_summary` / `ok` | Product decision required | Decide whether typo-tolerant player resolution is supported; if yes, add explicit contract coverage. |
+| `pqa_typo_team_lakeers_record` | `team_record_leaderboard` / `ok` | Behavior failure | Add unresolved team typo guard for record phrasing. |
+| `pqa_typo_partial_kevn_comparison` | `player_compare` / `ok` | Duplicate of product-decision case | Covered by `pqa_comparison_typo_kevn_durant` decision path. |
+
+### 12.4 Wave 1 Validation
+
+Passed:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure
+```
+
+Result: `outputs/raw_query_answer_qa/20260528T073054Z`; 54 cases,
+expectation cases `pass: 54`, failed case IDs none, suspicious flag cases 0.
+
+Passed:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice basic_public_availability --fail-on-expectation-failure
+```
+
+Result: `outputs/raw_query_answer_qa/20260528T073305Z`; 7 cases, expectation
+cases `pass: 7`, failed case IDs none, suspicious flag cases 0.
+
+Passed:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice natural_query_route_priority --slice product_boundaries --fail-on-expectation-failure
+```
+
+Result: `outputs/raw_query_answer_qa/20260528T073305Z`; 49 cases, expectation
+cases `pass: 49`, failed case IDs none, suspicious flag cases 0.
+
+Parser/query/preflight test slices were not run because Wave 1 did not change
+production parser, routing, or execution behavior.
+
+### 12.5 Recommended Fix Waves
+
+1. Typo/partial no-broad-fallback guards for unresolved team/stat/date/named
+   player fragments.
+2. Availability phrase expansion for `w/ PLAYER` and `TEAM wins with PLAYER`.
+3. Count route fix for player-specific shorthand special-event counts.
+4. Route-priority fixes for bench-scoring split phrasing and sentence-form
+   streak wording.
+5. Product decision on whether typo-tolerant player resolution is intentionally
+   supported for cases such as `Kevn Durant` and `Stephn Curry`.
