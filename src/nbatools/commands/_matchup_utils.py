@@ -151,6 +151,10 @@ def extract_player_comparison(text: str) -> tuple[str | None, str | None]:
     if explicit != (None, None):
         return explicit
 
+    question_form = _extract_question_form_player_comparison(cleaned_text)
+    if question_form != (None, None):
+        return question_form
+
     return None, None
 
 
@@ -203,6 +207,25 @@ def _extract_full_name_comparison(cleaned_text: str) -> tuple[str | None, str | 
 
     player_a = _resolve_comparison_player_phrase(left_phrase)
     player_b = _resolve_comparison_player_phrase(vs_match.group(2))
+    if player_a and player_b and player_a != player_b:
+        return player_a, player_b
+
+    return None, None
+
+
+def _extract_question_form_player_comparison(
+    cleaned_text: str,
+) -> tuple[str | None, str | None]:
+    compare_question = re.search(
+        r"\bhow\s+(?:do|did)\s+([a-z0-9 .&'\-]+?)\s+and\s+"
+        r"([a-z0-9 .&'\-]+?)\s+compare\b",
+        cleaned_text,
+    )
+    if not compare_question:
+        return None, None
+
+    player_a = _resolve_comparison_player_phrase(compare_question.group(1))
+    player_b = _resolve_comparison_player_phrase(compare_question.group(2))
     if player_a and player_b and player_a != player_b:
         return player_a, player_b
 

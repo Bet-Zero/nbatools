@@ -383,6 +383,7 @@ Examples:
 - `Jokic vs Embiid since 2021`
 - `LeBron James vs Kevin Durant comparison`
 - `Compare LeBron James and Kevin Durant`
+- `How do LeBron James and Kevin Durant compare this season?`
 - `Jokic head-to-head vs Embiid since 2021`
 - `Kobe vs LeBron playoffs in 2008-09`
 

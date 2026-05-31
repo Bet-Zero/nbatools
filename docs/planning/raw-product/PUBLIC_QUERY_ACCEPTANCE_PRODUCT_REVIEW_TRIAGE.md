@@ -3,7 +3,9 @@
 Date: 2026-05-31
 
 Status: Wave 2A comparison-taxonomy migration and safe metadata retags
-complete; Wave 2B probes and human rendered-output review remain pending.
+complete; Wave 2B probes are documented and the question-form player
+comparison routing bug is fixed. Bare `LeBron vs KD` policy and human
+rendered-output review remain pending.
 
 ## 1. Scope
 
@@ -317,6 +319,20 @@ For each probe:
 2. check for broadened scope
 3. classify as safe corpus addition, behavior bug, or product decision
 4. add expectations only for reviewed correct behavior
+
+#### Wave 2B Probe And Fix Notes
+
+Wave 2B probe results are recorded in
+`docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_PROBE_RESULTS.md`.
+
+The probe classified `How do LeBron James and Kevin Durant compare this
+season?` as a behavior bug because it dropped Kevin Durant and routed to a
+LeBron-only `player_game_summary`. A follow-up routing fix now routes that
+question-form comparison to `player_compare`, preserves both players, and adds
+the Raw QA corpus case `question_form_lebron_durant_comparison_wave2b`.
+
+The bare `LeBron vs KD` product decision remains open. No family is public
+accepted by this fix.
 
 ### Wave 2C: Human Rendered-Output Review
 

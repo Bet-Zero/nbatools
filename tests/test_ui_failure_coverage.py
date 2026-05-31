@@ -248,6 +248,25 @@ class TestP2BoundaryRoutingCleanup:
         }
 
     @pytest.mark.needs_data
+    def test_question_form_lebron_durant_comparison_preserves_both_players(self):
+        qr = execute_natural_query("How do LeBron James and Kevin Durant compare this season?")
+
+        assert qr.route == "player_compare"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["players_context"] == [
+            {"player_id": 2544, "player_name": "LeBron James"},
+            {"player_id": 201142, "player_name": "Kevin Durant"},
+        ]
+        sections = qr.to_dict()["sections"]
+        assert set(sections) == {"summary", "comparison"}
+        assert {row["player_name"] for row in sections["summary"]} == {
+            "LeBron James",
+            "Kevin Durant",
+        }
+        assert "LeBron James" in sections["comparison"][0]
+        assert "Kevin Durant" in sections["comparison"][0]
+
+    @pytest.mark.needs_data
     @pytest.mark.parametrize(
         ("query", "route", "unsupported_filter"),
         [

@@ -192,6 +192,24 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "no_unsupported_filters": True,
         },
         {
+            "query": "How do LeBron James and Kevin Durant compare this season?",
+            "route": "player_compare",
+            "fields": {
+                "player": None,
+                "player_a": "LeBron James",
+                "player_b": "Kevin Durant",
+                "season": "2025-26",
+            },
+            "route_kwargs": {
+                "player_a": "LeBron James",
+                "player_b": "Kevin Durant",
+                "season": "2025-26",
+                "head_to_head": False,
+            },
+            "absent_fields": ["opponent_player"],
+            "no_unsupported_filters": True,
+        },
+        {
             "query": "LeBron stats vs Kevin Durant",
             "route": "player_game_finder",
             "fields": {"player": "LeBron James", "opponent_player": "Kevin Durant"},

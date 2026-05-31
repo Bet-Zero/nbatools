@@ -124,6 +124,23 @@ def test_compare_full_names_and_route():
     assert parsed["player_b"] == "Kevin Durant"
 
 
+def test_question_form_player_comparison_route():
+    parsed = parse_query("How do LeBron James and Kevin Durant compare this season?")
+    assert parsed["route"] == "player_compare"
+    assert parsed["player_a"] == "LeBron James"
+    assert parsed["player_b"] == "Kevin Durant"
+    assert parsed["player"] is None
+    assert parsed["season"] == "2025-26"
+
+
+def test_question_form_player_summary_still_routes_to_summary():
+    parsed = parse_query("How has Luka Doncic played this season?")
+    assert parsed["route"] == "player_game_summary"
+    assert parsed["player"] == "Luka Dončić"
+    assert parsed["player_a"] is None
+    assert parsed["player_b"] is None
+
+
 def test_alias_player_comparison_still_routes():
     parsed = parse_query("LeBron vs Durant")
     assert parsed["route"] == "player_compare"

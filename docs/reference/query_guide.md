@@ -122,6 +122,7 @@ Natural examples:
 - `Jokic vs Embiid recent form`
 - `LeBron James vs Kevin Durant comparison`
 - `Compare LeBron James and Kevin Durant`
+- `How do LeBron James and Kevin Durant compare this season?`
 - `Kobe vs LeBron playoffs in 2008-09`
 - `Celtics vs Bucks from 2021-22 to 2023-24`
 

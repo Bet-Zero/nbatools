@@ -2,9 +2,10 @@
 
 Date: 2026-05-31
 
-Status: probe documentation only. No production code, parser behavior,
-frontend rendering, release status, corpus expectations, or public-acceptance
-claims were changed.
+Status: probe documentation plus follow-up fix note. The Wave 2B probe pass
+itself changed no behavior. A later narrow routing fix corrected the
+question-form player comparison bug documented here. Bare `PLAYER vs PLAYER`
+policy and public-acceptance status remain open.
 
 ## Scope
 
@@ -51,16 +52,27 @@ Important context from those files:
 | Query | Route | Status | Reason | Sections | Preserves intended scope | Broad fallback | Classification |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `LeBron vs KD` | `player_compare` | `ok` |  | `summary: 2`, `comparison: 20` | Preserves one plausible comparison scope, but the query is ambiguous. | No. | Product decision required. |
-| `How do LeBron James and Kevin Durant compare this season?` | `player_game_summary` | `ok` |  | `summary: 1`, `by_season: 1`, `game_log: 60` | No. Kevin Durant is dropped. | Not league-wide, but it falls to the wrong single-player scope. | Behavior bug. |
+| `How do LeBron James and Kevin Durant compare this season?` | `player_game_summary` | `ok` |  | `summary: 1`, `by_season: 1`, `game_log: 60` | No. Kevin Durant is dropped. | Not league-wide, but it falls to the wrong single-player scope. | Behavior bug; fixed in follow-up routing wave. |
 | `Who are the MVP candidates?` |  | `error` | `unrouted` | none | Yes, because it declines an unsupported awards/narrative request. | No. | Semantic cleanup candidate; acceptable unsupported behavior for now. |
 | `who has cooled off lately` |  | `error` | `unrouted` | none | Yes, because trend/drop-off semantics are not defined. | No. | Semantic cleanup candidate; acceptable unsupported behavior for now. |
 | `how many players played this season` |  | `error` | `unrouted` | none | Yes, because threshold-less player population counts are not supported. | No. | Acceptable unsupported behavior; semantic cleanup candidate. |
 | `most rebunds in a game this season` |  | `error` | `unrouted` | none | Yes, because it does not silently answer a different stat. | No. | Semantic cleanup candidate. |
 | `Lakeers playoff history` |  | `error` | `unrouted` | none | Yes, because it does not silently correct the team typo or return broad playoff history. | No. | Semantic cleanup candidate. |
 
-No required probe is a safe expected-ok corpus addition in its current form.
-The safe-addition bucket is empty for this batch until either the bare `vs`
-policy is decided or the explicit question-form comparison bug is fixed.
+At initial probe time, no required probe was a safe expected-ok corpus addition.
+After the follow-up routing fix, the question-form comparison query is safe to
+encode. Bare `vs` remains excluded until its product policy is decided.
+
+Follow-up fix note:
+
+- `How do LeBron James and Kevin Durant compare this season?` now routes to
+  `player_compare` with status `ok`.
+- The fixed payload preserves both LeBron James and Kevin Durant in
+  `metadata.players_context`, `summary`, and `comparison`.
+- Bare `LeBron vs KD` behavior was not changed and remains a product-decision
+  item.
+- The fixed question-form query was added to the Raw QA corpus as
+  `question_form_lebron_durant_comparison_wave2b`.
 
 ## Probe Details
 
@@ -141,12 +153,11 @@ Scope review:
 
 Classification:
 
-- Behavior bug.
-- Do not encode this current result as expected.
-- After routing is fixed, this exact query should become a safe corpus
-  candidate for the `comparisons` family, likely `sentence` or synonym-style
-  wording, with expected route `player_compare`, status `ok`, and sections
-  `summary` plus `comparison`.
+- Behavior bug, now fixed.
+- The pre-fix LeBron-only result must not be encoded as expected.
+- The fixed query is now a Raw QA corpus case in the `comparisons` family with
+  expected route `player_compare`, status `ok`, and sections `summary` plus
+  `comparison`.
 
 Supporting comparison probes:
 
@@ -356,8 +367,9 @@ Implementation note:
 
 Behavior bugs:
 
-- `How do LeBron James and Kevin Durant compare this season?` drops Kevin Durant
-  and returns a LeBron-only `player_game_summary`.
+- `How do LeBron James and Kevin Durant compare this season?` dropped Kevin
+  Durant and returned a LeBron-only `player_game_summary`; fixed in the
+  question-form player comparison routing wave.
 
 Product decisions:
 
@@ -379,23 +391,18 @@ Semantic cleanup candidates:
 
 Safe corpus additions:
 
-- None from the required probes in current behavior.
-- After fixing the comparison question-form bug, add that exact query as a
-  comparison regression.
+- `How do LeBron James and Kevin Durant compare this season?` after the
+  follow-up fix, as `question_form_lebron_durant_comparison_wave2b`.
 - After accepting a bare-`vs` product decision, add the corresponding bare-`vs`
   corpus row with expectations matching the selected policy.
 
 ## Concrete Next Action
 
-1. Fix the question-form comparison parser/routing bug for
-   `How do LeBron James and Kevin Durant compare this season?`.
-2. Add a regression after the fix that asserts route `player_compare`, status
-   `ok`, and both LeBron James and Kevin Durant in comparison metadata/sections.
-3. Make the bare `PLAYER vs PLAYER` product decision. Recommended decision:
+1. Make the bare `PLAYER vs PLAYER` product decision. Recommended decision:
    clarification / intent options.
-4. Open a separate semantic-cleanup wave for recognizable unsupported concepts
+2. Open a separate semantic-cleanup wave for recognizable unsupported concepts
    that currently return `error` / `unrouted`, prioritizing route-preserving
    `no_result` / `filter_not_supported` where the main intent is clear.
-5. Do not mark any family public accepted until the variant matrix is resolved,
+3. Do not mark any family public accepted until the variant matrix is resolved,
    representative outputs are human-reviewed, and the behavior/product decisions
    above are closed.

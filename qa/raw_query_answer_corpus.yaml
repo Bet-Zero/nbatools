@@ -5454,6 +5454,54 @@ cases:
         - phrasing_variant
       notes: "Review comparison rows for full-name player compare wording."
 
+  - id: question_form_lebron_durant_comparison_wave2b
+    query: "How do LeBron James and Kevin Durant compare this season?"
+    category: split
+    priority: p2
+    acceptance:
+      family: comparisons
+      variant: sentence
+      concept: player_stat_comparison
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - player_entities
+        - season
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_compare
+    expected_shape: comparison
+    expected_sections:
+      - summary
+      - comparison
+    expected_row_counts:
+      summary: 2
+    hard_assertions:
+      - path: result.metadata.players_context.0.player_name
+        equals: LeBron James
+      - path: result.metadata.players_context.1.player_name
+        equals: Kevin Durant
+      - path: result.sections.summary.0.player_name
+        equals: LeBron James
+      - path: result.sections.summary.1.player_name
+        equals: Kevin Durant
+      - path: result.sections.comparison.0.metric
+        equals: games
+      - path: result.sections.comparison.0.LeBron James
+        equals: 60.0
+      - path: result.sections.comparison.0.Kevin Durant
+        equals: 78.0
+    review_notes: "Question-form full-name player comparison should preserve both players and route to player_compare."
+    manual_review:
+      status: unreviewed
+      tags:
+        - comparison
+        - phrasing_variant
+        - wave2b_bugfix
+      notes: "Added after Wave 2B bug fix; review public comparison rendering."
+
   - id: lebron_durant_last10_wave5
     query: "LeBron James vs Kevin Durant last 10 games"
     category: split
