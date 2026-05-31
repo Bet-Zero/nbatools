@@ -79,7 +79,7 @@ These durable docs link directly to exact Raw Product return-package paths.
 | `working/frontend-visual-qa-followups/VISUAL_QA_NOTES.md` | Visual follow-up notes cite older visual fix packages. | Promote findings into the notes or current visual checklist, then remove package paths. |
 | `docs/operations/frontend_visual_qa.md` and `docs/operations/ui_guide.md` | Durable Visual QA workflow, current baseline, and UI route guidance. | Keep as the source of truth for current Visual QA operations and UI behavior. |
 | `docs/operations/frontend_visual_qa.md` | Durable screenshot workflow, visual QA baseline, and artifact-run rules. | Keep current as the operations runbook. |
-| `docs/planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` | Route-priority context cites a constants-extraction package. | Replace with durable route-priority snapshot and decision-map docs. |
+| `docs/operations/query_validation_map.md` and `working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` | Durable route-priority validation scoreboard and active decision-map context. | Keep as the operational and tracked-maintenance sources of truth for natural-query extraction. |
 | `working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` | Active decision-map context for natural-query extraction maintenance. | Keep with the tracked natural-query maintenance task material. |
 
 Adjacent finding outside this Raw Product cleanup set:

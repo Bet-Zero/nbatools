@@ -35,7 +35,7 @@ item before major new query-family expansion, not a current release blocker.
 Required inputs inspected:
 
 - `working/raw-product-post-launch/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md`
+- `working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
 - `docs/operations/parser_routing_growth_guardrails.md`
 - `docs/operations/feature_promotion_rules.md`
 - `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md`

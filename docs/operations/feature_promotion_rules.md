@@ -16,7 +16,6 @@ supported area must clear before it is treated as shipped.
 Source review notes:
 
 - `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md`
 
 Companion policy:
 

@@ -55,10 +55,10 @@ large problems later.
 
 ## 3. Parser/routing growth risk
 
-Detailed parser/routing notes live in:
+Detailed parser/routing guardrails live in:
 
 ```text
-docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md
+docs/operations/parser_routing_growth_guardrails.md
 ```
 
 Summary:

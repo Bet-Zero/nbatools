@@ -30,7 +30,7 @@
 | Input | Role |
 |---|---|
 | `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` | Primary product-level post-review notes (sections 3–14). |
-| `docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md` | Primary parser/routing growth review notes (sections 5–13). |
+| `docs/operations/parser_routing_growth_guardrails.md` | Durable parser/routing growth policy promoted from the primary review notes. |
 | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md` | Confirms current release-candidate-with-notes status and evidence table. |
 | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` | Confirms current public UI ready-with-notes status and scope statement. |
 | `docs/operations/deployment.md` | Existing R2/Vercel deployment runbook — Wave 2 target for promotion-checklist hardening. |
