@@ -95,6 +95,54 @@ describe("ResultRenderer (substrate)", () => {
     expect(screen.getByText("By Season")).toBeInTheDocument();
   });
 
+  it("renders public ambiguity copy without leaking internal reason labels", () => {
+    const data = makeResponse({
+      ok: false,
+      query: "LeBron vs KD",
+      route: "player_compare",
+      result_status: "no_result",
+      result_reason: "ambiguous_query",
+      result: {
+        query_class: "comparison",
+        result_status: "no_result",
+        result_reason: "ambiguous_query",
+        metadata: {
+          ambiguous_intent: "bare_player_vs_player",
+          clarification_options: [
+            {
+              intent: "player_stat_comparison",
+              query: "Compare LeBron James and Kevin Durant this season",
+            },
+            {
+              intent: "player_opponent_games",
+              query: "LeBron James stats vs Kevin Durant",
+            },
+          ],
+        },
+        notes: [
+          "bare player-vs-player queries are ambiguous; add comparison, head-to-head, or stats wording",
+        ],
+        caveats: [],
+        sections: {},
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByText("Ambiguous Query")).toBeInTheDocument();
+    expect(
+      screen.getByText(/This could mean a few different things/),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "Compare LeBron James and Kevin Durant this season",
+    );
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "LeBron James stats vs Kevin Durant",
+    );
+    expect(screen.queryByText("ambiguous_query")).not.toBeInTheDocument();
+  });
+
   it("composes player last-N summaries with a game-log answer table", () => {
     const data = makeResponse({
       query: "Jokic last 10 games",
@@ -228,7 +276,7 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("keeps broad player summaries to the entity summary pattern only", () => {
+  it("renders broad player summaries with compact key stat cards", () => {
     const data = makeResponse({
       query: "Curry this season",
       route: "player_game_summary",
@@ -252,6 +300,11 @@ describe("ResultRenderer (substrate)", () => {
             {
               player_name: "Stephen Curry",
               games: 43,
+              wins: 24,
+              losses: 19,
+              season: "2025-26",
+              season_type: "Regular Season",
+              team_abbr: "GSW",
               pts_avg: 26.558,
               reb_avg: 3.581,
               ast_avg: 4.721,
@@ -276,7 +329,16 @@ describe("ResultRenderer (substrate)", () => {
         "Stephen Curry has averaged 26.6 points, 3.6 rebounds and 4.7 assists this season.",
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByLabelText("Summary averages")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("Games");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("43");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("Record");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("24-19");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("PPG");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("26.6");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("RPG");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("3.6");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("APG");
+    expect(screen.getByLabelText("Season summary")).toHaveTextContent("4.7");
     expect(
       screen.queryByRole("table", { name: "Game log" }),
     ).not.toBeInTheDocument();
@@ -1258,7 +1320,7 @@ describe("ResultRenderer (substrate)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders team records without a player as team-first results with game logs", () => {
+  it("renders team records with game logs as team-first results with collapsed game detail", () => {
     const data = makeResponse({
       query: "What is the Knicks' record when Jalen Brunson doesn't play?",
       route: "team_record",
@@ -1297,23 +1359,21 @@ describe("ResultRenderer (substrate)", () => {
               plus_minus_avg: -0.25,
             },
           ],
-          game_log: [
-            {
-              game_id: 1,
-              game_date: "2026-01-01",
-              team_abbr: "NYK",
-              team_name: "Knicks",
-              opponent_team_abbr: "BOS",
-              opponent_team_name: "Celtics",
-              wl: "L",
-              pts: 112,
-              opponent_pts: 118,
-              reb: 44,
-              ast: 24,
-              fg3m: 13,
-              plus_minus: -6,
-            },
-          ],
+          game_log: Array.from({ length: 64 }, (_value, index) => ({
+            game_id: index + 1,
+            game_date: `2026-01-${String((index % 28) + 1).padStart(2, "0")}`,
+            team_abbr: "NYK",
+            team_name: "Knicks",
+            opponent_team_abbr: "BOS",
+            opponent_team_name: "Celtics",
+            wl: index % 2 === 0 ? "W" : "L",
+            pts: 112,
+            opponent_pts: 118,
+            reb: 44,
+            ast: 24,
+            fg3m: 13,
+            plus_minus: -6,
+          })),
         },
         current_through: "2026-04-12",
       },
@@ -1329,8 +1389,14 @@ describe("ResultRenderer (substrate)", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/Jalen Brunson has averaged/)).not.toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Team record" })).toBeInTheDocument();
-    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Opp PTS" })).toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "Game log" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Game Detail")).toHaveTextContent("64 rows");
+    expect(
+      screen.getByRole("button", { name: "Show game detail" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "Opp PTS" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders multi-season team record by-season tables in the body", () => {
@@ -2151,6 +2217,47 @@ describe("ResultRenderer (substrate)", () => {
       screen.getByText(
         "Nikola Jokic has had 2 games with at least 30 points this season.",
       ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
+  });
+
+  it("adds a plain-English count headline for player finder rows without backend copy", () => {
+    const finderRows = Array.from({ length: 17 }, (_value, index) => ({
+      rank: index + 1,
+      game_id: index + 1,
+      game_date: `2026-01-${String(index + 1).padStart(2, "0")}`,
+      season: "2025-26",
+      season_type: "Regular Season",
+      player_id: 201939,
+      player_name: "Stephen Curry",
+      team_abbr: "GSW",
+      team_name: "Golden State Warriors",
+      opponent_team_abbr: "HOU",
+      opponent_team_name: "Houston Rockets",
+      is_home: 1,
+      wl: index % 2 === 0 ? "W" : "L",
+      minutes: 31,
+      pts: 29,
+      fg3m: 5,
+    }));
+    const data = makeResponse({
+      query: "Curry 5+ threes this season",
+      route: "player_game_finder",
+      result: {
+        query_class: "finder",
+        result_status: "ok",
+        metadata: {},
+        notes: [],
+        caveats: [],
+        sections: { finder: finderRows },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText("Stephen Curry had 17 games with 5+ threes this season."),
     ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
   });

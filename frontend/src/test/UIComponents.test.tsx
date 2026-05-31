@@ -244,15 +244,24 @@ describe("NoResultDisplay", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText("filter_not_supported")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Submit for review" })).toBeInTheDocument();
-    expect(screen.getAllByText("Details")).toHaveLength(1);
-    expect(
-      screen
-        .getByRole("button", { name: "Submit for review" })
-        .compareDocumentPosition(screen.getByText("Details")) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    expect(screen.queryByText("Details")).not.toBeInTheDocument();
+  });
 
-    openDetails();
+  it("keeps raw unsupported diagnostics available in debug no-result details", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        route="season_leaders"
+        queryClass="leaderboard"
+        metadata={{
+          route: "season_leaders",
+          stat: "pf",
+          unsupported_filters: ["personal_foul_leaderboard"],
+        }}
+        displayMode="debug"
+      />,
+    );
 
     expect(screen.getByText("filter_not_supported")).toBeInTheDocument();
     expect(screen.getByText("personal_foul_leaderboard")).toBeInTheDocument();
@@ -390,6 +399,59 @@ describe("NoResultDisplay", () => {
     expect(screen.getByText("Ambiguous Query")).toBeInTheDocument();
     expect(
       screen.getByText(/matched multiple possible entities/),
+    ).toBeInTheDocument();
+  });
+
+  it("shows public copy and scoped suggestions for bare player comparison ambiguity", () => {
+    render(
+      <NoResultDisplay
+        reason="ambiguous_query"
+        status="no_result"
+        metadata={{
+          ambiguous_intent: "bare_player_vs_player",
+          clarification_options: [
+            {
+              intent: "player_stat_comparison",
+              query: "Compare LeBron James and Kevin Durant this season",
+            },
+            {
+              intent: "player_opponent_games",
+              query: "LeBron James stats vs Kevin Durant",
+            },
+          ],
+        }}
+        query="LeBron vs KD"
+      />,
+    );
+
+    expect(screen.getByText("Ambiguous Query")).toBeInTheDocument();
+    expect(
+      screen.getByText(/This could mean a few different things/),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "Compare LeBron James and Kevin Durant this season",
+    );
+    expect(screen.getByLabelText("Suggested queries")).toHaveTextContent(
+      "LeBron James stats vs Kevin Durant",
+    );
+    expect(screen.queryByText("ambiguous_query")).not.toBeInTheDocument();
+  });
+
+  it("uses specific copy for combined player availability filters", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        notes={[
+          "multi-player availability filters are not supported with current data; try a single-player absence query such as 'Lakers record without LeBron' (blocked: multi_player_availability)",
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "This version does not support combining with-player and without-player filters yet. Try one availability filter at a time.",
+      ),
     ).toBeInTheDocument();
   });
 

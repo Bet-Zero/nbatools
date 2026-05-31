@@ -39,6 +39,7 @@ interface Props {
   showSummaryStrip?: boolean;
   rawDetailTitle?: string;
   detailSectionKeys?: string[];
+  collapseToDetail?: boolean;
   displayMode?: DisplayMode;
   afterHero?: ReactNode;
 }
@@ -134,6 +135,7 @@ export default function GameLogResult({
   showSummaryStrip = true,
   rawDetailTitle,
   detailSectionKeys = [],
+  collapseToDetail = false,
   displayMode = "public",
   afterHero,
 }: Props) {
@@ -168,9 +170,14 @@ export default function GameLogResult({
     : contextItems(data, rows);
   const countSentence = countHeadline(data.result?.metadata);
   const answerSentence = answerHeadline(data.result?.metadata);
-  const heroSentence = proseHeadline(countSentence ?? answerSentence);
+  const finderSentence = finderCountHeadline(data, rows, resolvedMode);
+  const heroSentence = proseHeadline(
+    countSentence ?? answerSentence ?? finderSentence,
+  );
   const showStrip = showSummaryStrip && !countSentence && items.length > 0;
   const showDetails = rows.length > 0;
+  const collapseRowsToDetail =
+    collapseToDetail && displayMode === "public" && rows.length > 0;
 
   return (
     <section className={styles.pattern} aria-label="Game log result">
@@ -188,7 +195,7 @@ export default function GameLogResult({
           ))}
         </div>
       )}
-      {rows.length > 0 && (
+      {rows.length > 0 && !collapseRowsToDetail && (
         <ResultTable
           rows={rows}
           columns={columns}
@@ -200,7 +207,18 @@ export default function GameLogResult({
           rowNoun="games"
         />
       )}
-      {showDetails && rawDetailTitle && hasAdditionalGameLogFields && (
+      {showDetails && collapseRowsToDetail && (
+        <RawDetailToggle
+          title={rawDetailTitle ?? "Game Detail"}
+          rows={rows}
+          collapsedLabel="Show game detail"
+          expandedLabel="Hide game detail"
+        />
+      )}
+      {showDetails &&
+        !collapseRowsToDetail &&
+        rawDetailTitle &&
+        hasAdditionalGameLogFields && (
         <RawDetailToggle
           title={rawDetailTitle}
           rows={rows}
@@ -236,6 +254,63 @@ function countHeadline(metadata: ResultMetadata | undefined): string | null {
 function answerHeadline(metadata: ResultMetadata | undefined): string | null {
   const phrase = metadata?.answer_phrase;
   return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
+}
+
+function finderCountHeadline(
+  data: QueryResponse,
+  rows: SectionRow[],
+  mode: Exclude<GameLogMode, "auto">,
+): string | null {
+  if (mode !== "player") return null;
+  if (data.result?.query_class !== "finder") return null;
+  if (rows.length === 0) return null;
+
+  const player = playerNameForRows(data.result?.metadata, rows[0]);
+  const condition = thresholdPhraseFromQuery(data.query);
+  const timeframe = finderTimeframe(data.query, rows[0], data.result?.metadata);
+  const gameNoun = rows.length === 1 ? "game" : "games";
+  const conditionPhrase = condition ? ` with ${condition}` : " matching";
+  return `${player} had ${rows.length} ${gameNoun}${conditionPhrase}${timeframe}.`;
+}
+
+function playerNameForRows(
+  metadata: ResultMetadata | undefined,
+  row: SectionRow | undefined,
+): string {
+  return (
+    metadata?.player_context?.player_name ??
+    textValue(row, "player_name") ??
+    textValue(row, "player") ??
+    "This player"
+  );
+}
+
+function thresholdPhraseFromQuery(query: string): string | null {
+  const match = query.match(
+    /\b(\d+)\s*\+\s*(threes?|3s|three[- ]pointers?|points?|pts|rebounds?|rebs?|assists?|asts?|steals?|blocks?|turnovers?)\b/i,
+  );
+  if (!match) return null;
+
+  return `${match[1]}+ ${thresholdNoun(match[2])}`;
+}
+
+function thresholdNoun(value: string): string {
+  const normalized = value.toLowerCase();
+  if (normalized === "3s" || normalized.startsWith("three")) return "threes";
+  if (normalized === "pts") return "points";
+  if (normalized === "reb" || normalized === "rebs") return "rebounds";
+  if (normalized === "ast" || normalized === "asts") return "assists";
+  return normalized.endsWith("s") ? normalized : `${normalized}s`;
+}
+
+function finderTimeframe(
+  query: string,
+  row: SectionRow | undefined,
+  metadata: ResultMetadata | undefined,
+): string {
+  if (/\bthis\s+(?:season|year)\b/i.test(query)) return " this season";
+  const season = textValue(row, "season") ?? metadata?.season;
+  return typeof season === "string" && season.trim() ? ` in ${season}` : "";
 }
 
 function proseHeadline(value: string | null): string | null {
@@ -827,8 +902,8 @@ function rowKey(row: SectionRow, index: number): string {
     .join("-");
 }
 
-function textValue(row: SectionRow, key: string): string | null {
-  const value = row[key];
+function textValue(row: SectionRow | undefined, key: string): string | null {
+  const value = row?.[key];
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;

@@ -81,6 +81,14 @@ export function productFacingNotice(text: string): string | null {
     return "Showing league-wide single-game scoring performances.";
   }
 
+  if (/^multi-player availability filters are not supported/i.test(trimmed)) {
+    return "Combining with-player and without-player filters is not supported yet.";
+  }
+
+  if (/^bare player-vs-player queries are ambiguous/i.test(trimmed)) {
+    return "Bare player-vs-player queries need a comparison, head-to-head, or stats-vs scope.";
+  }
+
   if (
     /^default:\s*player streak uses three-season window when no season specified$/i.test(
       trimmed,
@@ -107,9 +115,19 @@ export function buildNoResultGuidance(
   metadata?: ResultMetadata | null,
   detailTexts: string[] = [],
 ): NoResultGuidance {
-  const backendQueries = suggestedQueryLines(metadata?.suggested_queries);
+  const backendQueries = suggestedQueryLines(metadata);
   if (backendQueries.length > 0) {
     return { querySuggestions: backendQueries, nextSteps: [] };
+  }
+
+  if (isBarePlayerVsPlayerAmbiguity(reason, metadata)) {
+    return {
+      querySuggestions: [
+        "Compare LeBron and KD this season",
+        "LeBron stats vs KD",
+      ],
+      nextSteps: [],
+    };
   }
 
   if (status === "error" || reason === "error" || reason === "unrouted") {
@@ -165,6 +183,14 @@ export function readableNoResultMessage(
 
   const unsupportedBoundary = unsupportedBoundaryMessage(metadata);
   if (unsupportedBoundary) return unsupportedBoundary;
+
+  if (isMultiPlayerAvailabilityUnsupported(metadata, detailTexts)) {
+    return "This version does not support combining with-player and without-player filters yet. Try one availability filter at a time.";
+  }
+
+  if (isBarePlayerVsPlayerAmbiguity(reason, metadata)) {
+    return "This could mean a few different things. Try a more specific query, such as a season comparison or stats-vs phrasing.";
+  }
 
   if (isDateNoMatch(reason, metadata)) {
     const dateRange = noResultDateRange(metadata);
@@ -255,6 +281,30 @@ function unsupportedPhraseMessage(
     return 'I couldn\'t interpret "cooled off" as a supported stat query yet.';
   }
   return null;
+}
+
+function isBarePlayerVsPlayerAmbiguity(
+  reason: string | null | undefined,
+  metadata: ResultMetadata | null | undefined,
+): boolean {
+  return (
+    reason === "ambiguous_query" &&
+    metadata?.ambiguous_intent === "bare_player_vs_player"
+  );
+}
+
+function isMultiPlayerAvailabilityUnsupported(
+  metadata: ResultMetadata | null | undefined,
+  detailTexts: string[],
+): boolean {
+  const filters = unsupportedFilters(metadata);
+  if (filters.includes("multi_player_availability")) return true;
+
+  return detailTexts.some((text) =>
+    /multi-player availability filters are not supported|combining with-player and without-player filters/i.test(
+      text,
+    ),
+  );
 }
 
 export function isColumnUnavailableReason(
@@ -443,10 +493,29 @@ function metricLabel(metric: string): string {
   return labels[normalized] ?? formatColHeader(metric);
 }
 
-function suggestedQueryLines(queries: string[] | undefined): string[] {
-  if (!Array.isArray(queries)) return [];
+function suggestedQueryLines(
+  metadata: ResultMetadata | null | undefined,
+): string[] {
+  const direct = Array.isArray(metadata?.suggested_queries)
+    ? metadata.suggested_queries
+    : [];
+  const clarificationOptions = Array.isArray(metadata?.clarification_options)
+    ? metadata.clarification_options
+        .map((option) =>
+          option &&
+          typeof option === "object" &&
+          "query" in option &&
+          typeof option.query === "string"
+            ? option.query
+            : null,
+        )
+        .filter((query): query is string => Boolean(query))
+    : [];
+
   return uniqueStrings(
-    queries.map(stringValue).filter((query): query is string => Boolean(query)),
+    [...direct, ...clarificationOptions]
+      .map(stringValue)
+      .filter((query): query is string => Boolean(query)),
   );
 }
 

@@ -174,6 +174,7 @@ function PatternBlock({
           showSummaryStrip={pattern.showSummaryStrip}
           rawDetailTitle={pattern.rawDetailTitle}
           detailSectionKeys={pattern.detailSectionKeys}
+          collapseToDetail={pattern.collapseToDetail}
           displayMode={displayMode}
           afterHero={afterHero}
         />

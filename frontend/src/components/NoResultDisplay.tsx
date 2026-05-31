@@ -106,6 +106,7 @@ function stateProfile(
         badgeVariant: "neutral",
       };
     case "ambiguous":
+    case "ambiguous_query":
       return {
         variant: "ambiguous",
         title: "Ambiguous Query",
@@ -187,15 +188,17 @@ export default function NoResultDisplay({
     detailTexts,
   );
   const guidance = buildNoResultGuidance(reason, status, metadata, detailTexts);
-  const diagnosticDetails = buildDiagnosticDetails({
-    reason,
-    status,
-    metadata,
-    route,
-    queryClass,
-    currentThrough,
-    query,
-  });
+  const diagnosticDetails = isDebugMode
+    ? buildDiagnosticDetails({
+        reason,
+        status,
+        metadata,
+        route,
+        queryClass,
+        currentThrough,
+        query,
+      })
+    : [];
   const showDetails = details.length > 0 || diagnosticDetails.length > 0;
 
   return (

@@ -25,6 +25,7 @@ export type PatternConfig =
       showSummaryStrip?: boolean;
       rawDetailTitle?: string;
       detailSectionKeys?: string[];
+      collapseToDetail?: boolean;
     }
   | {
       type: "leaderboard";
@@ -181,6 +182,7 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
               mode: "team",
               showSummaryStrip: false,
               rawDetailTitle: "Game Detail",
+              collapseToDetail: true,
             },
           ]
         : [{ type: "record", mode: "team_record" }];

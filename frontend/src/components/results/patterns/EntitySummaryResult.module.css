@@ -10,3 +10,10 @@
 .mutedCell {
   color: var(--text-tertiary);
 }
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-2);
+  min-width: 0;
+}

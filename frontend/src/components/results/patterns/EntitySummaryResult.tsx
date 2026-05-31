@@ -5,6 +5,7 @@ import type {
   ResultMetadata,
   SectionRow,
 } from "../../../api/types";
+import { Stat } from "../../../design-system";
 import {
   formatLongDateRange,
   formatProseValue,
@@ -38,6 +39,7 @@ export default function EntitySummaryResult({
     data.result?.sections?.by_season ?? [],
   );
   const showBySeason = shouldShowBySeason(metadata, bySeasonRows);
+  const summaryStats = recordWhenSummary ? [] : summaryStatItems(row, metadata);
 
   return (
     <section className={styles.pattern} aria-label="Player summary result">
@@ -54,6 +56,19 @@ export default function EntitySummaryResult({
         teamAccentAbbr={recordWhenSummary?.teamAbbr ?? null}
       />
       {afterHero}
+      {summaryStats.length > 0 && (
+        <div className={styles.summaryGrid} aria-label="Season summary">
+          {summaryStats.map((item) => (
+            <Stat
+              key={item.key}
+              label={item.label}
+              value={item.value}
+              context={item.context}
+              semantic={item.semantic}
+            />
+          ))}
+        </div>
+      )}
       {showBySeason && (
         <ResultTable
           rows={bySeasonRows}
@@ -64,6 +79,14 @@ export default function EntitySummaryResult({
       )}
     </section>
   );
+}
+
+interface SummaryStatItem {
+  key: string;
+  label: string;
+  value: string;
+  context?: string;
+  semantic?: "neutral" | "success" | "warning" | "danger" | "win" | "loss";
 }
 
 const MULTI_PERIOD_SCOPES = new Set([
@@ -193,6 +216,70 @@ function averageCell(row: SectionRow, key: string): ReactNode {
     return <span className={styles.mutedCell}>—</span>;
   }
   return mutedCell(row, signedValue(row[key], key));
+}
+
+function summaryStatItems(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+): SummaryStatItem[] {
+  const items: SummaryStatItem[] = [];
+  const games = numericValue(row, "games") ?? numericValue(row, "games_played");
+  const context = seasonTeamContext(row, metadata);
+
+  if (games !== null) {
+    items.push({
+      key: "games",
+      label: "Games",
+      value: formatValue(games, "games"),
+      context: context ?? undefined,
+    });
+  }
+
+  if (hasValue(row.wins) || hasValue(row.losses)) {
+    items.push({
+      key: "record",
+      label: "Record",
+      value: recordValue(row),
+      semantic: "success",
+    });
+  }
+
+  for (const [key, label] of [
+    ["pts_avg", "PPG"],
+    ["reb_avg", "RPG"],
+    ["ast_avg", "APG"],
+  ] as const) {
+    if (!hasValue(row[key])) continue;
+    items.push({
+      key,
+      label,
+      value: formatValue(row[key], key),
+    });
+  }
+
+  return items;
+}
+
+function seasonTeamContext(
+  row: SectionRow,
+  metadata: ResultMetadata | undefined,
+): string | null {
+  const season = textValue(row, "season") ?? metadataText(metadata, "season");
+  const seasonType =
+    textValue(row, "season_type") ?? metadataText(metadata, "season_type");
+  const team =
+    textValue(row, "team_abbr") ??
+    metadata?.team_context?.team_abbr ??
+    textValue(row, "team") ??
+    null;
+
+  const parts = [
+    team,
+    season,
+    seasonType ? seasonType.replace(/\s+season$/i, "") : null,
+  ].filter((part): part is string => Boolean(part));
+
+  return parts.length > 0 ? parts.join(" / ") : null;
 }
 
 function mutedCell(row: SectionRow, value: ReactNode): ReactNode {
