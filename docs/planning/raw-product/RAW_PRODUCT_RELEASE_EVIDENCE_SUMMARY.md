@@ -24,6 +24,7 @@ deployment state.
 | Public UI status | `PUBLIC_UI_READY_WITH_NOTES` |
 | Post-review hardening | `COMPLETE_WITH_NOTES` |
 | Division boundary cleanup | `PASS` |
+| Public-query acceptance coverage | `PASS` |
 | Production-ready posture | Ready after human acceptance of the notes in the release package and handoff |
 
 Durable release docs:
@@ -38,7 +39,7 @@ Durable release docs:
 | Item | Evidence |
 | --- | --- |
 | Corpus | `qa/raw_query_answer_corpus.yaml` |
-| Current corpus size | 253 cases after division-boundary guard additions |
+| Current corpus size | 294 cases observed at the public-query acceptance closure docs refresh |
 | Latest full release run | `outputs/raw_query_answer_qa/20260517T070422Z/report.md` |
 | JSONL source run | `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl` |
 | Full-run covered cases | 246 |
@@ -51,9 +52,10 @@ Durable release docs:
 | Division-boundary targeted slices | `natural_query_route_priority` passed 35/35; `product_boundaries` passed 18/18 |
 
 The nine `error` statuses in the latest full release run are expected corpus
-outcomes, not failed expectations. The current corpus contains seven added
-division-boundary guard cases; those were validated through targeted route
-priority and product-boundary slices after the full 246-case run.
+outcomes, not failed expectations. The current corpus has grown since that
+246-case full release run. Later division-boundary and public-query acceptance
+work was validated through the targeted evidence recorded below. A raw corpus
+case count alone is not sufficient evidence of public readiness.
 
 ## 4. Frontend-Copy QA Evidence
 
@@ -180,7 +182,32 @@ notes are deferred/post-launch work, not blockers.
 Conference Finals record phrasing remains a playoff-round surface, not an
 opponent-conference filter. Division filtering itself remains unsupported.
 
-## 11. Data/R2 Deployment Evidence
+## 11. Public Query Acceptance Coverage Evidence
+
+| Item | Evidence |
+| --- | --- |
+| Gate status | `PASS` |
+| Public phrasing gate | `qa/harness_slices/public_query_acceptance.yaml` |
+| Covered waves | Wave 1 seed; Wave 2A no-broad-fallback guards; Wave 2B availability shorthand/synonyms; Wave 2C route priority; Wave 2D typo-player decision |
+| Latest public acceptance run | `outputs/raw_query_answer_qa/20260528T225801Z/report.md`; 67/67 passed |
+| Basic availability regression run | `outputs/raw_query_answer_qa/20260528T224636Z/report.md`; 7/7 passed |
+| Route-priority and product-boundary regression run | `outputs/raw_query_answer_qa/20260528T225437Z/report.md`; 49/49 passed |
+| Parser slice | `make PYTEST=.venv/bin/pytest test-parser` passed 788 tests |
+| Query slice follow-up | prior false positives were fixed; the final targeted prior failures passed |
+| Static check | `git diff --check` passed |
+
+`public_query_acceptance` is the public phrasing acceptance gate. Every
+advertised feature family needs acceptance-family coverage; broad raw QA
+coverage without that family-level phrasing matrix is not enough to claim
+public readiness.
+
+The closure confirms that team-record availability basic failures are fixed,
+no-broad-fallback guards are strengthened, and fuzzy player typo correction is
+intentionally deferred to V2. In V1, unsupported or misspelled player
+fragments return clean no-result behavior instead of silently correcting
+through last-name or nickname aliases.
+
+## 12. Data/R2 Deployment Evidence
 
 | Item | Evidence |
 | --- | --- |
@@ -199,7 +226,7 @@ Missing required R2 data remains a deploy blocker for future previews or
 production. Data-backed feature promotion must follow the checklist in
 `docs/operations/deployment.md`.
 
-## 12. Public UI Readiness Evidence
+## 13. Public UI Readiness Evidence
 
 | Item | Evidence |
 | --- | --- |
@@ -217,7 +244,7 @@ hero before actions, context/caveats sit near the answer, actions are
 secondary, dense mobile tables use tighter shared padding and column priorities,
 and public no-result diagnostics use one Details disclosure.
 
-## 13. Build, Lint, And Frontend Test Evidence
+## 14. Build, Lint, And Frontend Test Evidence
 
 | Item | Evidence |
 | --- | --- |
@@ -230,7 +257,7 @@ and public no-result diagnostics use one Details disclosure.
 | Parser smoke | latest readiness docs record `make PYTEST=.venv/bin/pytest test-parser` passing 751 tests before division cleanup and 776 tests after division cleanup |
 | Query smoke | latest readiness docs record `make PYTEST=.venv/bin/pytest test-query` passing 752 tests before division cleanup and 776 tests after division cleanup |
 
-## 14. Docs And Return-Package Taxonomy Evidence
+## 15. Docs And Return-Package Taxonomy Evidence
 
 Durable docs own current product, operations, architecture, reference,
 planning, and release-readiness facts. Return packages are wave receipts, not
@@ -251,13 +278,14 @@ Policy:
 - return-package files may remain as historical receipts and handoff
   provenance
 
-## 15. Remaining Deferred Items
+## 16. Remaining Deferred Items
 
 These are accepted notes or deferred follow-ups, not launch blockers:
 
 - screenshot diffing, committed screenshot baselines, and CI visual gating
 - broader unsupported/no-result copy refinement
-- frontend admin dashboard for feedback review
+- automatic parser/QA/GitHub issue mutation from feedback-review decisions
+- fuzzy player typo correction and an explicit intentional-correction policy
 - manual corpus conversion after feedback review
 - dedicated feedback bucket/token as preferred future state
 - `natural_query.py` extraction
@@ -269,7 +297,7 @@ These are accepted notes or deferred follow-ups, not launch blockers:
   release-readiness boundary
 - continued internal horizontal scrolling for very wide result tables
 
-## 16. Validation Boundary
+## 17. Validation Boundary
 
 This summary promotes existing evidence into durable docs. It does not rerun QA,
 tests, frontend build, deployment smoke, or visual review. The validation

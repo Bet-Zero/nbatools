@@ -2,7 +2,7 @@
 
 Date: 2026-05-28
 
-Status: preflight complete; Wave 1 probe/seed complete; Wave 2A, 2B, and 2C fixes complete.
+Status: closure complete; Wave 1 probe/seed and Waves 2A, 2B, 2C, and 2D are complete.
 
 This document designs a public-query acceptance coverage system for obvious
 real-user phrasings across the advertised Raw Product query surface. The
@@ -11,6 +11,10 @@ frontend rendering, QA corpus expectations, saved harness slices, or release
 status. Wave 1 added only safe passing raw QA cases, acceptance metadata, and a
 saved harness slice; it did not change production code, parser/routing behavior,
 frontend rendering, or release status.
+
+The completed `public_query_acceptance` slice is now the public phrasing
+acceptance gate. Raw QA corpus size alone is not sufficient evidence of public
+readiness; every advertised feature family needs acceptance-family coverage.
 
 ## 1. Goal
 
@@ -1064,8 +1068,18 @@ make PYTEST=.venv/bin/pytest test-query
 git diff --check
 ```
 
-Record output paths and pass counts in
-`return_packages/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2D_TYPO_PLAYER_DECISION_RETURN_PACKAGE.md`.
+Recorded final evidence:
+
+- `public_query_acceptance`: `outputs/raw_query_answer_qa/20260528T225801Z`;
+  67/67 passed.
+- `basic_public_availability`: `outputs/raw_query_answer_qa/20260528T224636Z`;
+  7/7 passed.
+- `natural_query_route_priority` + `product_boundaries`:
+  `outputs/raw_query_answer_qa/20260528T225437Z`; 49/49 passed.
+- `make PYTEST=.venv/bin/pytest test-parser`: 788 passed.
+- `make PYTEST=.venv/bin/pytest test-query`: prior false positives fixed;
+  final targeted prior failures passed.
+- `git diff --check`: clean.
 
 ### 16.6 Waves 2A/2B/2C Regression Proof
 
@@ -1073,3 +1087,21 @@ Re-run the Wave 2D validation commands above; all three prior-wave slices must
 stay green (`public_query_acceptance` now includes Waves 2A–2D cases,
 `basic_public_availability`, `natural_query_route_priority` +
 `product_boundaries`).
+
+### 16.7 Closure Decision
+
+Public Query Acceptance Coverage is closed for the current Raw Product
+boundary:
+
+- Wave 1 seeded the public phrasing acceptance matrix.
+- Wave 2A strengthened no-broad-fallback guards.
+- Wave 2B fixed team-record availability shorthand and synonyms.
+- Wave 2C fixed route-priority collisions.
+- Wave 2D intentionally deferred fuzzy player typo correction to V2 and kept
+  unsupported or misspelled player fragments on a clean no-result path.
+
+The durable acceptance rule is now:
+
+- `public_query_acceptance` is the public phrasing acceptance gate.
+- Raw QA count alone is not enough public-readiness evidence.
+- Every advertised feature family needs acceptance-family coverage.

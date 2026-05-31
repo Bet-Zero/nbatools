@@ -3,8 +3,8 @@
 ## 1. Executive summary
 
 - Backend raw QA status: latest full run is clean for the 246-case release
-  corpus; the current corpus includes 7 added division-boundary guard cases
-  with targeted raw QA slice evidence.
+  corpus; the current corpus has 294 cases observed at the public-query
+  acceptance closure docs refresh, with later targeted raw QA slice evidence.
 - Frontend-copy QA status: clean for the selected 125-case rendered-copy corpus
   sourced from the latest clean full backend run.
 - Visual QA status: the expanded local manual corpus baseline completed 20 cases
@@ -57,6 +57,12 @@
   the pre-existing full-suite drift surfaced during Wave 6 validation.
 - Full frontend test suite status: clean after the AppTheming test drift fix;
   25/25 files and 352/352 tests passing.
+- Public-query acceptance coverage status: `PASS`. Waves 1, 2A, 2B, 2C, and
+  2D are complete. `public_query_acceptance` is now the public phrasing
+  acceptance gate and passed 67/67 cases; `basic_public_availability` passed
+  7/7; `natural_query_route_priority` plus `product_boundaries` passed 49/49.
+  Raw QA corpus size alone is not sufficient public-readiness evidence; every
+  advertised feature family needs acceptance-family coverage.
 - Release-readiness verdict: backend product QA is release-ready for the
   currently supported and intentionally unsupported corpus boundaries. The
   release checklist completed with current raw QA, frontend-copy QA, frontend
@@ -67,18 +73,17 @@
   debug-heavy default UI. The remaining notes are selected frontend-copy
   coverage, manually reviewed visual QA with local non-diffing artifacts,
   trusted-season limits for opponent-conference support, guarded unsupported
-  boundaries, existing frontend build/lint warnings, feedback operational
-  follow-ups, and public UI post-launch polish:
+  boundaries, feedback operational follow-ups, and public UI post-launch
+  polish:
   screenshot diffing/baseline/CI decisions after local artifact capture,
-  unsupported/no-result copy taxonomy refinement, existing Vite large-chunk
-  warning, existing `ReviewPage` lint warning, admin dashboard / mutable triage
-  overlay, `natural_query.py` extraction, return-package archive sweep,
-  branding/name change, and continued internal horizontal scrolling for wide
-  tables.
+  unsupported/no-result copy taxonomy refinement, `natural_query.py`
+  extraction, return-package archive sweep, branding/name change, and
+  continued internal horizontal scrolling for wide tables.
 
 ## 2. Backend Raw Query Answer QA
 
-- Corpus size: 253 cases after the division-boundary guard additions.
+- Corpus size: 294 cases observed at the public-query acceptance closure docs
+  refresh.
 - Latest run:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.md`.
 - Latest release-package run:
@@ -122,6 +127,36 @@ Recent fix waves:
 - Fix Wave 8D: product-boundary finalization.
 - Opponent-Conference Promotion: current-era East/West `team_record` filters
   promoted to supported behavior; corpus grew from 243 to 246 cases.
+
+## 2.1 Public Query Acceptance Coverage
+
+- Status: `PASS`.
+- Gate: `qa/harness_slices/public_query_acceptance.yaml`.
+- Gate role: public phrasing acceptance gate. Raw QA count alone does not
+  establish public readiness.
+- Coverage rule: every advertised feature family needs acceptance-family
+  coverage.
+- Completed waves: Wave 1 seed; Wave 2A no-broad-fallback guards; Wave 2B
+  availability shorthand/synonyms; Wave 2C route priority; Wave 2D typo-player
+  decision.
+- Latest public gate report:
+  `outputs/raw_query_answer_qa/20260528T225801Z/report.md`; 67/67 passed.
+- Basic availability report:
+  `outputs/raw_query_answer_qa/20260528T224636Z/report.md`; 7/7 passed.
+- Route-priority and product-boundary report:
+  `outputs/raw_query_answer_qa/20260528T225437Z/report.md`; 49/49 passed.
+- Parser slice: `make PYTEST=.venv/bin/pytest test-parser`; 788 passed.
+- Query slice follow-up: prior false positives fixed; final targeted prior
+  failures passed.
+- Static diff check: `git diff --check`; clean.
+
+Closure notes:
+
+- Team-record availability basic failures are fixed.
+- No-broad-fallback guards are strengthened.
+- Fuzzy player typo correction is intentionally deferred to V2.
+- Unsupported or misspelled player fragments return clean no-result behavior
+  instead of silently correcting.
 
 ## 3. Coverage map
 
@@ -249,6 +284,15 @@ They are not current product failures.
     semantics are outside the current product contract.
   - Future support path: add a dedicated lineup/stint dataset with documented
     grain, join keys, trust fields, and fallback behavior.
+- Fuzzy player typo correction:
+  - Current behavior: unsupported or misspelled player fragments return clean
+    no-result behavior instead of silently correcting through last-name or
+    nickname aliases.
+  - Why unsupported: V1 does not ship edit-distance or phonetic player
+    matching.
+  - Future support path: define an explicit V2 intentional-correction policy,
+    confidence thresholds, user-visible correction notes, and acceptance
+    corpus assertions before enabling fuzzy resolution.
 - Team rolling-stretch leaderboards:
   - Current behavior: team-scoped rolling-stretch wording returns explicit
     unsupported-filter no-results.
@@ -393,10 +437,10 @@ Query Feedback Review Workflow V1 is now implemented as the launch review path:
 
 Remaining feedback limitations are operational notes, not release blockers:
 
-- No admin dashboard.
-- No mutable triage overlay.
 - Triage suggestions are heuristic and reviewer-owned decisions remain manual.
 - Corpus conversion remains manual after review.
+- Review decisions do not automatically mutate parser behavior, QA corpus
+  files, or GitHub issues.
 
 ## 9. Validation strategy going forward
 
@@ -419,9 +463,11 @@ Latest release-readiness checklist validation:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`; rendered
   successfully 125; render failures 0; missing backend records 0; soft checks
   `480/0/0`.
-- Frontend build: passed; existing Vite large-chunk warning remains.
-- Frontend lint: passed with 0 errors and the existing
-  `frontend/src/ReviewPage.tsx` `react-hooks/exhaustive-deps` warning.
+- Frontend build: passed; the internal-route lazy split cleared the previous
+  Vite large-chunk warning.
+- Frontend lint: passed with 0 errors; the internal review-page cleanup cleared
+  the previous `frontend/src/ReviewPage.tsx`
+  `react-hooks/exhaustive-deps` warning.
 - Team conference data validation:
   `.venv/bin/pytest tests/test_team_conference_membership_data.py -q` passed,
   15 tests.
@@ -479,6 +525,13 @@ Latest release-readiness checklist validation:
   `product_boundaries` passed 18/18, `make PYTEST=.venv/bin/pytest
   test-preflight` passed 2978 tests with 1 xpassed, and `git diff --check`
   passed.
+- Public-query acceptance coverage closure:
+  `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
+  `public_query_acceptance` passed 67/67, `basic_public_availability` passed
+  7/7, `natural_query_route_priority` plus `product_boundaries` passed 49/49,
+  `make PYTEST=.venv/bin/pytest test-parser` passed 788, final targeted prior
+  `test-query` failures passed after false-positive fixes, and
+  `git diff --check` passed.
 - Static check: `git diff --check` passed.
 - Preview validation:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
@@ -508,6 +561,8 @@ Completed:
 - Final Public UI Release Review - `PUBLIC_UI_READY_WITH_NOTES`.
 - Raw Product Post-Review Hardening Waves 1–6.
 - AppTheming test drift fix; full frontend suite clean at 352/352.
+- Public Query Acceptance Coverage Waves 1 and 2A–2D; public phrasing gate
+  clean at 67/67.
 
 Recommended order:
 
@@ -522,6 +577,9 @@ Recommended order:
 6. Option A - Frontend-copy Wave 3 only after fresh gap analysis.
 7. Option D - Harness tag/category filters if iteration cost returns as a
    workflow bottleneck.
+8. Keep acceptance-family coverage mandatory for every newly advertised
+   feature family; reopen fuzzy player typo correction only through an explicit
+   V2 product policy.
 
 ### Option A - Frontend-copy Wave 3 gap analysis
 
@@ -599,10 +657,9 @@ Recommended order:
 - Remaining handoff notes: selected frontend-copy coverage, manually reviewed
   visual QA with local non-diffing artifacts,
   opponent-conference support limited to trusted seasons `2024-25` and
-  `2025-26`, unsupported divisions/geography/historical coverage, existing
-  Vite/ReviewPage warnings, screenshot diffing/baseline/CI decisions after
-  local artifact capture, visual QA corpus coverage follow-up, admin dashboard /
-  mutable triage overlay, `natural_query.py` extraction, return-package archive
+  `2025-26`, unsupported divisions/geography/historical coverage, screenshot
+  diffing/baseline/CI decisions after local artifact capture, visual QA corpus
+  coverage follow-up, `natural_query.py` extraction, return-package archive
   sweep, branding/name change, and remaining feedback operational notes.
 
 ### Option H - Query feedback export/review script
@@ -613,5 +670,5 @@ Recommended order:
 - Outputs: `feedback_review.md`, `feedback_records.csv`,
   `feedback_records.jsonl`, `summary.json`, and
   `triage_decisions_template.csv`.
-- Remaining notes: no admin dashboard, no mutable triage overlay, heuristic
-  suggestions only, and manual corpus conversion.
+- Remaining notes: heuristic suggestions only, manual corpus conversion, and no
+  automatic parser/QA/GitHub issue mutation from review decisions.

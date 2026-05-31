@@ -13,6 +13,9 @@
 >
 > **Maintenance rule:** when a meaningful shipped query capability is added,
 > expanded, renamed, or intentionally restricted, update this file in the same pass.
+> Every advertised feature family also needs coverage in the
+> `public_query_acceptance` phrasing gate; raw QA case count alone is not enough
+> public-readiness evidence.
 
 When this catalog marks a family as parser-recognized but still unfiltered,
 placeholder-backed, or explicitly deferred, that note reflects current shipped

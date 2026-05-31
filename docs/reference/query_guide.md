@@ -230,6 +230,16 @@ Natural examples:
 - `Jokic averages against Stephen Curry`
 - `LeBron James vs Kevin Durant comparison` (player comparison)
 
+## Player name typo boundary
+
+V1 does not ship fuzzy player typo correction. Exact aliases and intentional
+shorthand such as `durant`, `steph`, and `LeBron` remain supported. Misspelled
+fragments such as `Kevn Durant` or `Stephn Curry` return `no_result` /
+`filter_not_supported` with
+`metadata.unsupported_filters=["unresolved_player"]` instead of silently
+correcting through a last-name or nickname alias. Intentional fuzzy correction
+is deferred to V2.
+
 ## Player availability team records
 
 - `Lakers record without LeBron`

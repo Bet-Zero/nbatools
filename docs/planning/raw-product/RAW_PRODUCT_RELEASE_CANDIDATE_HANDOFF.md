@@ -34,12 +34,11 @@
 - What remains as known notes: frontend-copy QA is selected coverage, visual QA
   remains manually reviewed even with local non-diffing screenshot artifact
   capture, opponent-conference support is limited to trusted seasons `2024-25`
-  and `2025-26`, feedback review remains operational tooling rather than an
-  admin dashboard or mutable triage overlay, triage suggestions are heuristic,
-  corpus conversion remains manual, and explicitly unsupported boundaries must
-  continue to return guarded no-result or unsupported behavior. Public UI is
-  ready with notes; broader unsupported-copy refinement, screenshot
-  diffing/baseline/CI decisions, admin dashboard / mutable triage overlay,
+  and `2025-26`, feedback triage suggestions are heuristic, corpus conversion
+  remains manual, automatic parser/QA/GitHub issue mutation is not implemented,
+  and explicitly unsupported boundaries must continue to return guarded
+  no-result or unsupported behavior. Public UI is ready with notes; broader
+  unsupported-copy refinement, screenshot diffing/baseline/CI decisions,
   `natural_query.py` extraction, return-package archive sweep, and
   branding/name change are post-launch/deferred notes rather than launch
   blockers.
@@ -50,6 +49,14 @@
   `team_record`, `team_record_leaderboard`, or conference-only answers. This
   did not add division support, and Conference Finals record phrasing remains
   on the `single_team_playoff_round_record` unsupported boundary.
+- Public Query Acceptance Coverage Waves 1, 2A, 2B, 2C, and 2D are complete.
+  `public_query_acceptance` is now the public phrasing acceptance gate and
+  passed 67/67 cases. `basic_public_availability` passed 7/7, and
+  `natural_query_route_priority` plus `product_boundaries` passed 49/49. Raw
+  QA corpus size alone is not enough public-readiness evidence; every
+  advertised family needs acceptance-family coverage. Fuzzy player typo
+  correction is intentionally deferred to V2, so unsupported or misspelled
+  player fragments no-result cleanly instead of silently correcting.
 - Recommended handoff decision: ship or hand off the current release candidate
   with notes. Query feedback and the previous debug-heavy default UI are no
   longer preview/public-launch blockers. Missing required R2 data remains a
@@ -59,7 +66,7 @@
 
 | Area | Status | Evidence |
 |---|---|---|
-| Raw QA | `PASS` | Latest full run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. Current corpus has 253 cases after division-boundary additions; targeted division slices passed in the cleanup evidence below. |
+| Raw QA | `PASS` | Latest full release run: `outputs/raw_query_answer_qa/20260517T070422Z/report.md`; 246 cases; expectation cases `pass: 246`; expectation checks `pass: 1421`; failed IDs none; suspicious flags 0. Current corpus has 294 cases observed at the public-query acceptance closure docs refresh; later targeted evidence is recorded below. |
 | Frontend-copy QA | `PASS` | `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`; 125 selected cases rendered; render failures 0; missing backend records 0; soft checks `480/0/0`. |
 | Preview smoke | `PASS_WITH_NOTES` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; four supported opponent-conference preview checks passed, two guardrails passed, and `/visual-qa` request errors were 0. |
 | R2 data availability | `PASS` | `raw/teams/team_conference_membership.csv` exists in R2; dry-run, sync, and `head_object` evidence passed with `ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and `nbatools-md5=f9cc9a60c8f659651723a55640966d73`. |
@@ -73,6 +80,7 @@
 | Post-review hardening Waves 1–6 | `COMPLETE_WITH_NOTES` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; Waves 1–6 completed parser/routing guardrails, feature promotion rules, Data/R2 checklist hardening, feedback review cadence, docs/return-package taxonomy, README positioning, homepage product-promise polish, and public answer context de-duplication. |
 | AppTheming test drift fix / full frontend suite | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; test-only wait-gate drift fixed in `frontend/src/test/AppTheming.test.tsx`; full frontend suite now passes 25/25 files and 352/352 tests. |
 | Division boundary cleanup | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; targeted snapshots passed 65 tests, `test-parser` passed 776, `test-query` passed 776, raw QA route-priority slice passed 35/35, raw QA product-boundaries slice passed 18/18, `test-preflight` passed 2978 with 1 xpassed, and `git diff --check` passed. |
+| Public-query acceptance coverage | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; Waves 1 and 2A–2D complete; `public_query_acceptance` passed 67/67, `basic_public_availability` passed 7/7, `natural_query_route_priority` + `product_boundaries` passed 49/49, `test-parser` passed 788, final targeted prior `test-query` failures passed, and `git diff --check` passed. |
 | Build/lint/test evidence | `PASS` | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; frontend build passed with the previous Vite large-chunk warning cleared, lint passed with the previous review-page warning cleared, full frontend tests passed 352/352 after the AppTheming test drift fix, team conference data tests passed 15 tests, parser smoke passed 751 tests, and query smoke passed 752 tests. |
 
 ## 3. Feedback and diagnostics V1
@@ -105,10 +113,10 @@ The feedback review/export workflow is also implemented:
 
 Remaining feedback notes are operational follow-ups, not preview blockers:
 
-- No admin dashboard.
-- No mutable triage overlay.
 - Triage suggestions are heuristic and reviewer-owned decisions remain manual.
 - Corpus conversion remains manual after review.
+- Review decisions do not automatically mutate parser behavior, QA corpus
+  files, or GitHub issues.
 
 ## 4. Supported product boundary
 
@@ -221,9 +229,10 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 - Opponent-conference support is limited to trusted seasons `2024-25` and
   `2025-26`.
 - Query feedback is ready with notes: R2 inspection passed, the read-only
-  review/export workflow is implemented, there is no admin dashboard or mutable
-  triage overlay, triage suggestions are heuristic, and corpus conversion
-  remains manual.
+  review/export workflow and feedback console are implemented, triage
+  suggestions are heuristic, corpus conversion remains manual, and review
+  decisions do not automatically mutate parser behavior, QA corpus files, or
+  GitHub issues.
 - Public result mode is now answer-first on `/` after Wave 2, and the final
   Public UI Release Review classified it as `PUBLIC_UI_READY_WITH_NOTES`.
   Remaining UI notes are post-launch polish: broader unsupported-copy
@@ -231,9 +240,9 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   horizontal scrolling for wide tables.
 - Raw Product Post-Review Hardening Waves 1–6 are complete. Remaining
   hardening-cycle notes are post-launch/deferred: screenshot
-  diffing/baseline/CI decisions after local artifact capture, admin dashboard /
-  mutable triage overlay, `natural_query.py` extraction, return-package archive
-  sweep, and branding/name change.
+  diffing/baseline/CI decisions after local artifact capture,
+  `natural_query.py` extraction, return-package archive sweep, and
+  branding/name change.
 - The pre-existing AppTheming test drift surfaced during Wave 6 validation is
   fixed; the full frontend suite is now clean at 352/352 tests passing.
 - Frontend lint no longer has the previous
@@ -243,11 +252,19 @@ or `filter_not_supported` behavior rather than broad fallback answers:
   internal-route lazy split.
 - External NBA CDN image/logo request failures may occur. They are non-query
   blockers unless they affect the primary user experience.
+- `public_query_acceptance` is the public phrasing acceptance gate. Raw corpus
+  count alone is not enough evidence of public readiness; every advertised
+  family needs acceptance-family coverage.
+- Fuzzy player typo correction is deferred to V2. Unsupported or misspelled
+  player fragments return clean no-result behavior instead of silent
+  correction.
 
 ## 8. Final release checklist
 
 - [ ] Run the full Raw QA corpus:
   `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml`
+- [ ] Run the public phrasing acceptance gate:
+  `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure`
 - [ ] Run frontend-copy QA: `cd frontend && npm run qa:frontend-copy`
 - [ ] Run deployment smoke against the target preview or production URL.
 - [ ] Confirm R2 `head_object` availability for required new data files,
@@ -278,10 +295,12 @@ or `filter_not_supported` behavior rather than broad fallback answers:
 1. Proceed with launch/handoff using the current `*_WITH_NOTES` statuses.
 2. Run the first launch feedback review using `make query-feedback-export`.
 3. Treat the remaining notes as post-launch/deferred work: visual QA screenshot
-   diffing/baseline/CI decisions, admin dashboard / mutable triage overlay,
-   `natural_query.py` extraction, return-package archive sweep, and
-   branding/name change.
+   diffing/baseline/CI decisions, `natural_query.py` extraction, return-package
+   archive sweep, and branding/name change.
 4. Run the next unsupported-family promotion preflight only through the Wave 1
    and Wave 2 guardrails.
 5. Add CI/release artifact packaging or harness tag/category filters only if
    workflow pain returns.
+6. Keep acceptance-family coverage mandatory for newly advertised feature
+   families, and reopen fuzzy player typo correction only through an explicit
+   V2 product policy.
