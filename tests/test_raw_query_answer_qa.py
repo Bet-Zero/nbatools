@@ -307,7 +307,8 @@ def test_acceptance_family_registry_loads_current_public_families() -> None:
     registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
 
     assert registry["surface"] == "public_query_acceptance"
-    assert len(registry["families"]) == 17
+    assert len(registry["families"]) == 16
+    assert "player_comparisons" not in registry["families_by_id"]
     availability = registry["families_by_id"]["team_record_availability"]
     assert availability["required_variants"] == [
         "canonical",
@@ -317,6 +318,14 @@ def test_acceptance_family_registry_loads_current_public_families() -> None:
         "inverse_sibling",
         "nearby_unsupported",
         "typo_partial",
+    ]
+    typo_guards = registry["families_by_id"]["typo_partial_entity_behavior"]
+    assert [entry["variant"] for entry in typo_guards["not_applicable_variants"]] == [
+        "canonical",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
     ]
 
 
@@ -332,7 +341,7 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 67
+    assert len(selected) == 109
     assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
 
 

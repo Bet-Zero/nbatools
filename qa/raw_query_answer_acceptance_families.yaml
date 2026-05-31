@@ -47,7 +47,7 @@ families:
       - Do recent-form and last-N phrases preserve player summary scope?
       - Do comparison siblings and unresolved player names avoid broad fallback?
     sibling_families:
-      - player_comparisons
+      - comparisons
 
   - id: leaderboards
     label: Leaderboards
@@ -117,26 +117,23 @@ families:
     label: Comparisons
     public_surface: true
     required_variants: *public_variant_grid
+    concepts:
+      - player_stat_comparison
+      - team_stat_comparison
+      - player_head_to_head_boundary
+      - team_head_to_head_boundary
+      - subjective_comparison_boundary
+      - comparison_entity_resolution
+      - ambiguous_vs_clarification_candidate
     coverage_questions:
       - Do objective comparison phrases remain separate from subjective winner questions?
       - Do team, player, and matchup comparison siblings route intentionally?
-    sibling_families:
-      - player_comparisons
-
-  - id: player_comparisons
-    label: Player comparison typo and partial-name guards
-    public_surface: true
-    required_variants: *public_variant_grid
-    coverage_questions:
-      - Should player comparison typo guards remain separate from the general comparisons family?
-      - Do unresolved comparison entities fail without silently choosing a nickname match?
-    sibling_families:
-      - comparisons
     product_decisions:
-      - question: Should player comparison typo guards be consolidated under comparisons in Wave 2?
-        current_behavior: Existing acceptance tags split comparison rows across two family IDs.
+      - question: What should bare player-vs-player phrasing such as LeBron vs KD do?
+        variant: short
+        current_behavior: Wave 2A deliberately does not encode an expectation before the Wave 2B probe.
         decision_owner: Product review
-        next_action: Decide the stable family taxonomy before broad metadata rollout.
+        next_action: Run the Wave 2B probe and choose clarification, default comparison, or clean unsupported behavior.
 
   - id: playoff_history
     label: Playoff history
@@ -166,6 +163,17 @@ families:
     label: Typo and partial-entity guardrails
     public_surface: false
     required_variants: *public_variant_grid
+    not_applicable_variants:
+      - variant: canonical
+        reason: Domain-specific typo guards belong to their owning feature families.
+      - variant: sentence
+        reason: Domain-specific typo guards belong to their owning feature families.
+      - variant: synonym
+        reason: Domain-specific typo guards belong to their owning feature families.
+      - variant: inverse_sibling
+        reason: Domain-specific typo guards belong to their owning feature families.
+      - variant: nearby_unsupported
+        reason: Domain-specific typo guards belong to their owning feature families.
     coverage_questions:
       - Do unresolved entities fail clearly instead of widening query scope?
       - Which typo and partial-name forms should remain unsupported by product decision?

@@ -68,3 +68,45 @@ case_ids:
   - pqa_count_short_lebron_triple_doubles
   - pqa_split_unsupported_celtics_bench_home_away
   - pqa_streak_sentence_curry_3_threes
+  - luka_40_point_count
+  - lakers_road_record_last_season
+  - luka_last_10_summary_wave5
+  - tatum_good_teams
+  - kd_ts_top_defenses_missing_filters
+  - best_player_lately_ambiguous
+  - tatum_brown_last10_comparison_wave4
+  - leaders_in_steals_wave5
+  - centers_rebound_leaders_wave4
+  - true_shooting_leaders_phrase_wave5
+  - most_assists_single_game
+  - most_rebounds_single_game
+  - rebound_leaders_this_season
+  - biggest_team_three_point_games_boundary
+  - celtics_120_15_threes_count_missing_filter
+  - players_10_assist_count
+  - jokic_30_10_10_finder
+  - curry_5_threes_finder
+  - anthony_edwards_last_10_summary_no_match
+  - celtics_bench_scoring_boundary_wave4
+  - celtics_wins_losses_split
+  - anthony_edwards_wins_losses_split_no_match
+  - curry_home_away_last_20_split_wave4
+  - knicks_road_record
+  - lakers_win_streak
+  - thunder_110_point_streak
+  - curry_5_threes_count
+  - booker_4_game_scoring_stretch
+  - efficient_10_game_stretch
+  - team_net_rating_stretch_unsupported
+  - jokic_embiid_recent_comparison
+  - compare_lebron_durant_wave5
+  - celtics_bucks_comparison_this_season_wave5
+  - lebron_stats_vs_durant_wave5
+  - lakers_finals_appearances
+  - lakers_celtics_playoff_matchup_history_wave5
+  - heat_knicks_playoff_series_record_wave4
+  - luka_last_5_summary
+  - specific_date_jan_1
+  - jokic_since_all_star_break
+  - cooled_off_last_10
+  - tatum_clutch_stats

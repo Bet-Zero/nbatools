@@ -58,6 +58,15 @@ cases:
     acceptance:
       family: count_queries
       variant: canonical
+      concept: player_event_count
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - triple_double
+        - current_season
     answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_game_finder
@@ -240,6 +249,15 @@ cases:
     acceptance:
       family: rolling_stretches
       variant: canonical
+      concept: player_rolling_stretch
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_stretch_leaderboard
+      qualifier_model:
+        - points
+        - window_size
     expected_status: ok
     expected_route: player_stretch_leaderboard
     expected_shape: rolling_stretch
@@ -259,6 +277,14 @@ cases:
     acceptance:
       family: streaks
       variant: canonical
+      concept: player_threshold_streak
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_streak_finder
+      qualifier_model:
+        - points_threshold
     expected_status: ok
     expected_route: player_streak_finder
     expected_shape: streak_table
@@ -278,6 +304,14 @@ cases:
     acceptance:
       family: playoff_history
       variant: canonical
+      concept: single_team_playoff_history
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: playoff_history
+      qualifier_model:
+        - playoffs
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_history
@@ -326,6 +360,17 @@ cases:
     query: "Which scorers have cooled off over their last 10 games?"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: sentence
+      concept: subjective_trend_boundary
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - subjective_trend
+        - last_n_games
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -356,6 +401,18 @@ cases:
     query: "Who leads the NBA in rebounds this season?"
     category: leaderboard
     priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: inverse_sibling
+      concept: season_per_game_leaderboard_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: most_rebounds_single_game_this_year_public_sweep
+      intent_model: season_leaders
+      qualifier_model:
+        - rebounds
+        - current_season
     expected_status: ok
     expected_route: season_leaders
     expected_shape: leaderboard_table
@@ -464,6 +521,18 @@ cases:
     query: "What were the most assists in a game this season?"
     category: top_performances
     priority: p2
+    acceptance:
+      family: leaderboards
+      variant: inverse_sibling
+      concept: single_game_performance_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: points_per_game_leader
+      intent_model: top_player_games
+      qualifier_model:
+        - assists
+        - single_game
     expected_status: ok
     expected_route: top_player_games
     expected_shape: top_performances
@@ -488,6 +557,17 @@ cases:
     query: "What were the most rebounds in a game this season?"
     category: top_performances
     priority: p2
+    acceptance:
+      family: top_single_game_performances
+      variant: short
+      concept: player_single_game_stat_high
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: top_player_games
+      qualifier_model:
+        - rebounds
+        - current_season
     expected_status: ok
     expected_route: top_player_games
     expected_shape: top_performances
@@ -515,7 +595,15 @@ cases:
     acceptance:
       family: top_single_game_performances
       variant: sentence
+      concept: player_single_game_stat_high
+      public_surface: true
+      review_required: true
+      review_role: representative
       no_broad_fallback: true
+      intent_model: top_player_games
+      qualifier_model:
+        - rebounds
+        - current_season
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: top_player_games
@@ -606,6 +694,14 @@ cases:
     acceptance:
       family: player_summaries_recent_form
       variant: canonical
+      concept: player_recent_form_summary
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_game_summary
+      qualifier_model:
+        - recent_form
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -636,6 +732,16 @@ cases:
     query: "How has Jayson Tatum played against good teams this season?"
     category: player_summary
     priority: p1
+    acceptance:
+      family: player_summaries_recent_form
+      variant: sentence
+      concept: opponent_quality_recent_summary
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_game_summary
+      qualifier_model:
+        - opponent_quality
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -670,6 +776,14 @@ cases:
     acceptance:
       family: team_records
       variant: canonical
+      concept: single_team_record
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - current_season
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -1159,6 +1273,17 @@ cases:
     query: "number of players with 10 assists this season"
     category: finder_count
     priority: p2
+    acceptance:
+      family: count_queries
+      variant: synonym
+      concept: distinct_player_threshold_count
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_occurrence_leaders
+      qualifier_model:
+        - assists_threshold
+        - distinct_players
     answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_occurrence_leaders
@@ -1189,6 +1314,17 @@ cases:
     query: "Jokic over 30 points and over 10 rebounds and over 10 assists"
     category: finder_count
     priority: p1
+    acceptance:
+      family: count_queries
+      variant: inverse_sibling
+      concept: game_finder_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: jokic_triple_double_count
+      intent_model: player_game_finder
+      qualifier_model:
+        - multi_threshold
     expected_status: ok
     expected_route: player_game_finder
     expected_filters:
@@ -1202,6 +1338,17 @@ cases:
     query: "Curry 5+ threes this season"
     category: finder_count
     priority: p2
+    acceptance:
+      family: game_finders
+      variant: short
+      concept: player_threshold_game_finder
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - three_pointers_threshold
     expected_status: ok
     expected_route: player_game_finder
     expected_filters:
@@ -1256,6 +1403,16 @@ cases:
     query: "longest Lakers winning streak"
     category: streak
     priority: p2
+    acceptance:
+      family: streaks
+      variant: short
+      concept: team_outcome_streak
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_streak_finder
+      qualifier_model:
+        - wins
     expected_status: ok
     expected_route: team_streak_finder
     expected_shape: streak_table
@@ -1309,6 +1466,17 @@ cases:
     query: "Booker hottest 4-game scoring stretch"
     category: rolling_stretch
     priority: p2
+    acceptance:
+      family: rolling_stretches
+      variant: short
+      concept: player_scoring_stretch
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_stretch_leaderboard
+      qualifier_model:
+        - points
+        - window_size
     expected_status: ok
     expected_route: player_stretch_leaderboard
     expected_shape: rolling_stretch
@@ -1348,6 +1516,16 @@ cases:
     query: "Lakers Finals appearances"
     category: playoff_history
     priority: p1
+    acceptance:
+      family: playoff_history
+      variant: short
+      concept: team_round_appearances
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: playoff_appearances
+      qualifier_model:
+        - finals
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_appearances
@@ -1410,6 +1588,16 @@ cases:
     query: "Who scored the most points on January 1 2026?"
     category: date_range
     priority: p2
+    acceptance:
+      family: date_window_filters
+      variant: sentence
+      concept: exact_date_top_performance
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: top_player_games
+      qualifier_model:
+        - exact_date
     expected_status: ok
     expected_route: top_player_games
     expected_shape: top_performances
@@ -1434,6 +1622,16 @@ cases:
     query: "Jokic since All-Star break"
     category: date_range
     priority: p1
+    acceptance:
+      family: date_window_filters
+      variant: synonym
+      concept: anchored_date_window
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - all_star_break
     expected_status: ok
     expected_route: player_game_finder
     expected_filters:
@@ -1449,6 +1647,14 @@ cases:
     acceptance:
       family: date_window_filters
       variant: canonical
+      concept: month_window_leaderboard
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - month_window
     expected_status: ok
     expected_route: season_leaders
     expected_shape: leaderboard_table
@@ -1478,6 +1684,15 @@ cases:
     acceptance:
       family: splits
       variant: canonical
+      concept: player_home_away_split
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_split_summary
+      qualifier_model:
+        - home_away
+        - current_season
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_split_summary
@@ -1495,6 +1710,16 @@ cases:
     query: "Celtics wins vs losses"
     category: split
     priority: p2
+    acceptance:
+      family: splits
+      variant: short
+      concept: team_wins_losses_split
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_split_summary
+      qualifier_model:
+        - wins_losses
     expected_status: ok
     expected_route: team_split_summary
     expected_filters:
@@ -1540,6 +1765,17 @@ cases:
     query: "Tatum clutch stats"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: inverse_sibling
+      concept: measurable_unsupported_sibling
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: best_defender_subjective
+      intent_model: player_game_summary
+      qualifier_model:
+        - clutch
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_game_summary
@@ -1601,6 +1837,18 @@ cases:
     query: "Who is the best player lately?"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: player_summaries_recent_form
+      variant: nearby_unsupported
+      concept: subjective_recent_form_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: tatum_recent_form
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - subjective_metric
+        - recent_form
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -2026,6 +2274,18 @@ cases:
     query: "biggest team three-point games this season"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: top_single_game_performances
+      variant: nearby_unsupported
+      concept: team_single_game_stat_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: most_rebounds_single_game_this_year_public_sweep
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - team_scope
+        - three_pointers
     answer_text_policy: no_answer_text_expected
     expected_status: error
     expected_route:
@@ -2060,6 +2320,16 @@ cases:
     query: "Luka last 5"
     category: player_summary
     priority: p1
+    acceptance:
+      family: date_window_filters
+      variant: short
+      concept: relative_last_n_window
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_game_summary
+      qualifier_model:
+        - last_n_games
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -2082,6 +2352,17 @@ cases:
     query: "Anthony Edwards last 10 games summary"
     category: player_summary
     priority: p1
+    acceptance:
+      family: game_finders
+      variant: inverse_sibling
+      concept: player_summary_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: jokic_30_points_10_assists_finder_misparsed
+      intent_model: player_game_summary
+      qualifier_model:
+        - last_n_games
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -2134,6 +2415,17 @@ cases:
     query: "KD TS% vs top defenses"
     category: player_summary
     priority: p1
+    acceptance:
+      family: player_summaries_recent_form
+      variant: synonym
+      concept: opponent_quality_stat_summary
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_game_summary
+      qualifier_model:
+        - true_shooting
+        - opponent_quality
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -2230,6 +2522,17 @@ cases:
     query: "What is the Knicks road record this season?"
     category: team_record
     priority: p1
+    acceptance:
+      family: splits
+      variant: inverse_sibling
+      concept: location_record_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: jokic_home_away_split
+      intent_model: team_record
+      qualifier_model:
+        - road
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -2359,6 +2662,17 @@ cases:
     query: "Lakers road record last season"
     category: team_record
     priority: p2
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: road_record_relative_season
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - road
+        - last_season
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_record
@@ -2487,6 +2801,18 @@ cases:
     query: "How often has Stephen Curry made 5 or more threes this year?"
     category: player_game_log_count
     priority: p1
+    acceptance:
+      family: streaks
+      variant: inverse_sibling
+      concept: threshold_count_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: jokic_5_straight_20_points
+      intent_model: player_game_finder
+      qualifier_model:
+        - three_pointers_threshold
+        - count
     answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_game_finder
@@ -2509,6 +2835,18 @@ cases:
     query: "How often has Luka Doncic scored 40 or more this season?"
     category: player_game_log_count
     priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: inverse_sibling
+      concept: threshold_count_sibling
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: luka_stats_this_season_public_sweep
+      intent_model: player_game_finder
+      qualifier_model:
+        - points_threshold
+        - count
     answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: player_game_finder
@@ -2552,6 +2890,18 @@ cases:
     query: "how many Celtics games with 120+ points and 15+ threes since 2022"
     category: finder_count
     priority: p1
+    acceptance:
+      family: count_queries
+      variant: sentence
+      concept: team_multi_threshold_count
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_occurrence_leaders
+      qualifier_model:
+        - points_threshold
+        - three_pointers_threshold
+        - since_season
     answer_text_policy: requires_backend_answer_text
     expected_status: ok
     expected_route: team_occurrence_leaders
@@ -2679,6 +3029,16 @@ cases:
     query: "Thunder consecutive games with 110+ points"
     category: streak
     priority: p2
+    acceptance:
+      family: streaks
+      variant: synonym
+      concept: team_threshold_streak
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_streak_finder
+      qualifier_model:
+        - points_threshold
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_streak_finder
@@ -2720,6 +3080,17 @@ cases:
     query: "most efficient 10-game rolling stretch"
     category: rolling_stretch
     priority: p2
+    acceptance:
+      family: rolling_stretches
+      variant: synonym
+      concept: player_efficiency_stretch
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_stretch_leaderboard
+      qualifier_model:
+        - efficiency
+        - window_size
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_stretch_leaderboard
@@ -2741,6 +3112,18 @@ cases:
     query: "best 5-game team net rating stretch"
     category: rolling_stretch
     priority: p2
+    acceptance:
+      family: rolling_stretches
+      variant: nearby_unsupported
+      concept: team_advanced_metric_stretch_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: hottest_3_game_scoring_stretch
+      intent_model: player_stretch_leaderboard
+      qualifier_model:
+        - team_scope
+        - net_rating
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_stretch_leaderboard
@@ -2872,6 +3255,17 @@ cases:
     query: "Jokic vs Embiid recent form"
     category: split
     priority: p1
+    acceptance:
+      family: comparisons
+      variant: short
+      concept: player_stat_comparison
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - recent_form
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_compare
@@ -2915,6 +3309,16 @@ cases:
     query: "How does Anthony Edwards shoot in wins versus losses?"
     category: split
     priority: p1
+    acceptance:
+      family: splits
+      variant: sentence
+      concept: player_wins_losses_split
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_split_summary
+      qualifier_model:
+        - wins_losses
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_split_summary
@@ -3005,6 +3409,17 @@ cases:
     query: "Which centers have the most rebounds this season?"
     category: leaderboard
     priority: p2
+    acceptance:
+      family: leaderboards
+      variant: sentence
+      concept: position_filtered_leaderboard
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - centers
+        - rebounds
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: season_leaders
@@ -3260,6 +3675,17 @@ cases:
     query: "Celtics bench scoring this season"
     category: unsupported_boundary
     priority: p2
+    acceptance:
+      family: game_finders
+      variant: nearby_unsupported
+      concept: team_role_scoring_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: jokic_30_points_10_assists_finder_misparsed
+      intent_model: game_finder
+      qualifier_model:
+        - bench_role
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: game_finder
@@ -3282,6 +3708,17 @@ cases:
     query: "Stephen Curry home away split last 20 games"
     category: split
     priority: p2
+    acceptance:
+      family: splits
+      variant: synonym
+      concept: recent_home_away_split
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_split_summary
+      qualifier_model:
+        - home_away
+        - last_n_games
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_split_summary
@@ -3376,6 +3813,17 @@ cases:
     query: "Jayson Tatum vs Jaylen Brown last 10 games"
     category: split
     priority: p2
+    acceptance:
+      family: player_summaries_recent_form
+      variant: inverse_sibling
+      concept: comparison_sibling_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: tatum_recent_form
+      intent_model: player_compare
+      qualifier_model:
+        - last_n_games
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_compare
@@ -3483,9 +3931,15 @@ cases:
     category: split
     priority: p2
     acceptance:
-      family: player_summaries_recent_form
-      variant: inverse_sibling
+      family: comparisons
+      variant: canonical
+      concept: player_stat_comparison
+      public_surface: true
+      review_role: supporting
       no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - player_entities
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_compare
@@ -3623,6 +4077,16 @@ cases:
     query: "Heat Knicks playoff series record"
     category: playoff_matchup_history
     priority: p2
+    acceptance:
+      family: playoff_history
+      variant: synonym
+      concept: playoff_matchup_series_history
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: playoff_matchup_history
+      qualifier_model:
+        - playoff_series
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_matchup_history
@@ -4340,6 +4804,16 @@ cases:
     query: "leaders in steals this season"
     category: leaderboard
     priority: p2
+    acceptance:
+      family: leaderboards
+      variant: short
+      concept: defensive_stat_leaderboard
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - steals
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: season_leaders
@@ -4494,6 +4968,16 @@ cases:
     query: "Luka last 10 games summary"
     category: player_summary
     priority: p2
+    acceptance:
+      family: player_summaries_recent_form
+      variant: short
+      concept: player_last_n_summary
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_game_summary
+      qualifier_model:
+        - last_n_games
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_summary
@@ -4899,6 +5383,16 @@ cases:
     query: "Lakers Celtics playoff matchup history"
     category: playoff_matchup_history
     priority: p1
+    acceptance:
+      family: playoff_history
+      variant: sentence
+      concept: playoff_matchup_history
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: playoff_matchup_history
+      qualifier_model:
+        - playoff_matchup
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: playoff_matchup_history
@@ -4933,6 +5427,16 @@ cases:
     query: "Compare LeBron James and Kevin Durant"
     category: split
     priority: p2
+    acceptance:
+      family: comparisons
+      variant: sentence
+      concept: player_stat_comparison
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - player_entities
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_compare
@@ -5003,6 +5507,17 @@ cases:
     query: "Celtics vs Bucks comparison this season"
     category: split
     priority: p2
+    acceptance:
+      family: comparisons
+      variant: synonym
+      concept: team_stat_comparison
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_compare
+      qualifier_model:
+        - team_entities
+        - current_season
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_compare
@@ -5067,6 +5582,17 @@ cases:
     query: "LeBron stats vs Kevin Durant"
     category: player_summary
     priority: p2
+    acceptance:
+      family: comparisons
+      variant: inverse_sibling
+      concept: player_head_to_head_boundary
+      public_surface: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: lebron_durant_comparison_wave4
+      intent_model: player_game_finder
+      qualifier_model:
+        - opponent_player
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: player_game_finder
@@ -5560,6 +6086,16 @@ cases:
     query: "true shooting leaders this season"
     category: leaderboard
     priority: p2
+    acceptance:
+      family: leaderboards
+      variant: synonym
+      concept: advanced_stat_alias_leaderboard
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - true_shooting
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: season_leaders
@@ -5991,7 +6527,14 @@ cases:
     acceptance:
       family: comparisons
       variant: nearby_unsupported
+      concept: subjective_comparison_boundary
+      public_surface: true
+      review_role: boundary
       no_broad_fallback: true
+      sibling_of: jokic_embiid_recent_comparison
+      intent_model: player_game_summary
+      qualifier_model:
+        - subjective_metric
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_game_summary
@@ -6179,9 +6722,16 @@ cases:
     category: unsupported_boundary
     priority: p1
     acceptance:
-      family: player_comparisons
+      family: comparisons
       variant: typo_partial
+      concept: comparison_entity_resolution
+      public_surface: true
+      review_role: boundary
       no_broad_fallback: true
+      sibling_of: lebron_durant_comparison_wave4
+      intent_model: player_compare
+      qualifier_model:
+        - unresolved_player
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: player_compare

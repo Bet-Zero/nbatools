@@ -2,7 +2,8 @@
 
 Date: 2026-05-31
 
-Status: Wave 1 metadata foundation and generated product-review artifact implemented; Wave 2 broad metadata rollout and human product review remain pending.
+Status: Wave 1 metadata foundation and Wave 2A taxonomy-safe metadata rollout
+implemented; Wave 2B probes and human product review remain pending.
 
 ## 1. Purpose
 
@@ -842,3 +843,30 @@ outputs/raw_query_answer_qa/20260531T064312Z_wave1_full/report.md
 ```
 
 The full corpus passed 294/294 machine expectations with zero suspicious rows.
+
+## 16. Wave 2A Implementation Status
+
+Wave 2A is implemented as behavior-neutral metadata and corpus-organization
+work.
+
+Completed:
+
+- collapsed the overlapping `player_comparisons` registry entry into
+  `comparisons`
+- reused and retagged `45` existing passing corpus rows
+- expanded `public_query_acceptance` by `42` rows, from `67` to `109`
+- filled the seven-variant matrix for all `14` public feature families
+- marked only the five approved domain-specific typo-guard variants as not
+  applicable for `typo_partial_entity_behavior`
+- added pending representative-output review cards for every public feature
+  family
+
+Validation artifact:
+
+```text
+outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md
+```
+
+Wave 2A does not mark families public accepted. Layer B remains
+`human_review_pending`; Wave 2B probes and Wave 2C rendered-output review remain
+separate follow-up work.

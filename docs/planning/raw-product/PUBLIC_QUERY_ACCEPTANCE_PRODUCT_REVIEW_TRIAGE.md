@@ -2,8 +2,8 @@
 
 Date: 2026-05-31
 
-Status: Wave 1 product-review triage complete; Wave 2 metadata rollout and
-human rendered-output review remain pending.
+Status: Wave 2A comparison-taxonomy migration and safe metadata retags
+complete; Wave 2B probes and human rendered-output review remain pending.
 
 ## 1. Scope
 
@@ -259,6 +259,41 @@ Do not:
 - change production behavior
 - mark any family public accepted
 
+#### Wave 2A Completion Notes
+
+Wave 2A completed on 2026-05-31 as behavior-neutral metadata and corpus
+organization work.
+
+Completed:
+
+- collapsed `player_comparisons` into the single public `comparisons` family
+- applied the exact comparison concepts and safe existing-case retags from
+  sections 3.2 and 4
+- replaced `lebron_durant_comparison_wave4` as the
+  `player_summaries_recent_form.inverse_sibling` row with
+  `tatum_brown_last10_comparison_wave4`
+- expanded `public_query_acceptance` from `67` to `109` existing corpus rows
+- reduced the registry from `17` to `16` families: `14` public feature
+  families and `2` guardrail families
+- filled every required matrix variant without adding a new query or changing
+  an expectation
+- marked only the five triage-approved `typo_partial_entity_behavior` variants
+  as not applicable
+- added at least one pending `review_required` representative card for every
+  public feature family
+
+Generated review artifact:
+
+```text
+outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md
+```
+
+The matrix has no missing variants, but public acceptance remains intentionally
+open. No family is public accepted, the human-review declaration remains
+`human_review_pending`, the bare `LeBron vs KD` policy remains a Wave 2B
+product decision, and rendered frontend review remains a separate Wave 2C
+task.
+
 ### Wave 2B: Probe Batch
 
 Goal: investigate product questions and any genuinely new user-obvious
@@ -352,6 +387,6 @@ Stop Wave 2 and split out a fix or decision wave when:
 human_review_pending
 ```
 
-The generated artifact has been triaged into a concrete Wave 2 plan. Public
-frontend rendering has not yet been human-reviewed, missing variants have not
-yet been retagged, and no family is public accepted.
+Wave 2A filled the metadata matrix with existing passing rows. Public frontend
+rendering has not yet been human-reviewed, Wave 2B probes have not run, and no
+family is public accepted.
