@@ -42,7 +42,7 @@ The acceptance system should prove this for every advertised family:
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
 - `qa/raw_query_answer_corpus.yaml`
 - `qa/harness_slices/*.yaml`
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
 - `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
 - `docs/planning/raw-product/BASIC_PUBLIC_QUERY_FAILURE_SWEEP_TEAM_RECORD_AVAILABILITY_PREFLIGHT.md`
 

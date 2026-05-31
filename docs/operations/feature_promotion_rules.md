@@ -20,7 +20,7 @@ Source review notes:
 
 Companion policy:
 
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
 
 ## 2. Working principles
 

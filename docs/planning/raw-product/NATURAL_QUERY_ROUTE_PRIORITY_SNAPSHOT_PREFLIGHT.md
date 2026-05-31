@@ -45,8 +45,8 @@ Required inputs:
 
 - `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
 - `docs/planning/raw-product/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md`
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
-- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
+- `docs/operations/feature_promotion_rules.md`
 - `src/nbatools/commands/natural_query.py`
 - parser/query tests under `tests/`
 - `qa/raw_query_answer_corpus.yaml`

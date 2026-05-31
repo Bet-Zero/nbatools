@@ -44,8 +44,8 @@
 | `src/nbatools/commands/natural_query.py` | Identified as the parser maintainability risk in PARSER_ROUTING_GROWTH_REVIEW_NOTES §6. |
 | `src/nbatools/query_service.py` | Query service surface; informs Wave 1 collision/route ordering rules. |
 | `Makefile` | Hosts `make query-feedback-export` — Wave 3 cadence anchors here. |
-| `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md` | Confirms Wave 1 completed: parser/routing guardrails and feature promotion rules. |
-| `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md` | Confirms Wave 1 completed: feature promotion rules and promotion-path contract. |
+| `docs/operations/parser_routing_growth_guardrails.md` | Confirms Wave 1 completed: parser/routing guardrails and feature promotion rules. |
+| `docs/operations/feature_promotion_rules.md` | Confirms Wave 1 completed: feature promotion rules and promotion-path contract. |
 | `docs/operations/deployment.md` | Confirms Wave 2 completed: Data/R2 promotion checklist hardening. |
 | `docs/operations/query_feedback_review.md` | Confirms Wave 3 completed: weekly feedback review cadence. |
 | `docs/index.md` | Confirms Wave 4 completed: docs/return-package taxonomy. |
@@ -162,12 +162,12 @@ Completed:
   answers look credible while answering a different question
   (PARSER §5). Both review docs name this as the first hardening work.
 - Files likely to change (new or updated docs only):
-  - new `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md` —
+  - new `docs/operations/parser_routing_growth_guardrails.md` —
     accepted phrase requirements, rejected/guarded phrase requirements, route
     collision rule, unsupported-boundary regression rule, no-broad-fallback
     rule, QA/corpus requirements, deferred `natural_query.py` extraction note,
     deferred bucket-first preflight note.
-  - new `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md` — promotion
+  - new `docs/operations/feature_promotion_rules.md` — promotion
     path (unsupported boundary → preflight → data contract → route/result
     contract → parser support → raw QA cases → frontend-copy/visual QA when
     rendering changes → preview/deployment smoke → release docs), with each
@@ -205,7 +205,7 @@ Completed:
     sync verification rule (`head_object` evidence), deployment smoke rule
     pointed at the feature, missing-data clean `no_data`/`unsupported`
     behavior rule (no broad fallback).
-  - cross-link from `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md` to
+  - cross-link from `docs/operations/feature_promotion_rules.md` to
     the deployment-runbook section.
 - Acceptance criteria:
   - `docs/operations/deployment.md` contains a clearly labeled promotion
@@ -342,8 +342,8 @@ Wave 6 validation.
 
 Closure evidence:
 
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
-- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
+- `docs/operations/feature_promotion_rules.md`
 - `docs/operations/deployment.md`
 - `docs/operations/query_feedback_review.md`
 - `docs/index.md`

@@ -508,7 +508,7 @@ Latest release-readiness checklist validation:
   checks passed; debug/details and feedback preservation passed; blocking
   issues none.
 - Post-review hardening Waves 1–6:
-  `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
+  `docs/operations/parser_routing_growth_guardrails.md`
   through
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`;
   complete with notes.

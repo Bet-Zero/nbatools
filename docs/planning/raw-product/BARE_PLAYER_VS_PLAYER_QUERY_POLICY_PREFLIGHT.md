@@ -46,7 +46,7 @@ recorded the implementation evidence and validation receipt.
 
 Read and applied:
 
-- `docs/planning/raw-product/NATURAL_SEARCH_AND_DEEP_TOOLS_BOUNDARY.md`
+- `docs/reference/natural_search_and_deep_tools_boundary.md`
 - `docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_PROBE_RESULTS.md`
 - prior local question-form player-comparison routing-fix return package
 - `docs/reference/query_catalog.md`

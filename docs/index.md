@@ -39,6 +39,7 @@ Current-state documentation and verified behavior specs.
 - `reference/quick_query_guide.md` — quick-start examples
 - `reference/query_catalog.md` — living catalog of supported question/query types and phrasing patterns
 - `reference/query_guide.md` — comprehensive reference (structured + natural)
+- `reference/natural_search_and_deep_tools_boundary.md` — durable boundary between natural search and deeper guided tools
 - `reference/data_catalog.md` — dataset inventory
 - `reference/data_contracts.md` — dataset-level contracts
 - `reference/result_contracts.md` — **design target** for engine result shapes
@@ -66,6 +67,8 @@ Runbooks and operational guides.
 - `operations/raw_query_answer_qa.md` — two-layer Raw QA runbook for machine regression, family-level product-review artifacts, no-broad-fallback proof, and human + ChatGPT handoff
 - `operations/query_validation_map.md` — plain-English map and current scoreboard for Raw QA corpus, slices, product review, rendered UI review, and pytest query tests
 - `operations/working_and_archive_policy.md` — tracked active-task working folders, ignored completed-task archives, and task-scoped return-package rules
+- `operations/feature_promotion_rules.md` — durable promotion path for new product capabilities
+- `operations/parser_routing_growth_guardrails.md` — durable parser/routing growth and no-broad-fallback policy
 - `operations/ui_guide.md` — web UI setup, dev workflow, component reference
 
 ## Planning — `planning/`
@@ -94,8 +97,6 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` — broader Raw Product post-review notes; closure refresh records Waves 1–6 complete and remaining notes deferred
 - `planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md` — parser/routing growth review notes feeding Wave 1 of the hardening plan
 - `planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md` — completed hardening roadmap (Waves 1–6) that turned the Raw Product post-review notes and parser/routing growth notes into bounded execution waves; statuses remain `*_WITH_NOTES`
-- `planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md` — durable parser/routing policy doc (Wave 1) covering accepted/rejected phrase contracts, route collision rules, unsupported-boundary regression rule, no-broad-fallback rule, QA/corpus requirements, and deferred `natural_query.py` extraction / bucket-first preflight notes
-- `planning/raw-product/FEATURE_PROMOTION_RULES.md` — durable feature promotion policy doc (Wave 1) covering the unsupported-boundary → preflight → data → route/result → parser → raw QA → frontend-copy/visual QA → deployment smoke → release docs promotion path, the per-feature contract format, and the opponent-conference worked example
 - `planning/raw-product/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md` — documentation-only preflight for safe incremental `natural_query.py` extraction, current route decision flow, extraction candidate ranking, validation needs, stop conditions, and first-wave recommendation
 - `planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — documentation-only decision map and test matrix for preserving current `natural_query.py` route order, unsupported boundaries, collision groups, validation commands, and first code-extraction candidate before any parser extraction work
 - `planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` — documentation-only preflight for route-priority, collision, unsupported-boundary, and no-broad-fallback snapshot coverage before further `natural_query.py` extraction
@@ -105,7 +106,6 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist plus validated non-diffing artifact-capture evidence for the 20-case visual QA corpus baseline
 - `planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md` — preflight and execution-status record for Playwright-backed, non-diffing screenshot artifact capture of the expanded 20-case Visual QA baseline
 - `planning/raw-product/QUERY_FEEDBACK_REVIEW_CONSOLE_V1_PREFLIGHT.md` — query feedback review console preflight and execution-status record for immutable feedback grouping, mutable triage overlays, gated admin API endpoints, and the lazy `/admin/feedback` internal console
-- `planning/raw-product/RETURN_PACKAGE_DEPENDENCY_CLEANUP_PREFLIGHT.md` — documentation-only preflight for promoting return-package-only evidence into durable docs and clearing exact return-package path dependencies
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
 - `planning/result-display-lock-in/result_display_wave_4_findings.md` — Wave 4 lock-in findings for records, comparisons, and playoff history

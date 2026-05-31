@@ -36,8 +36,8 @@ Required inputs inspected:
 
 - `docs/planning/raw-product/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
 - `docs/planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md`
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
-- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
+- `docs/operations/feature_promotion_rules.md`
 - `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md`
 - `docs/audits/architecture_hygiene_audit.md`
 - `src/nbatools/commands/natural_query.py`

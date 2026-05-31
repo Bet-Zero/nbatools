@@ -463,8 +463,8 @@ The working recommendation was executed as a six-wave hardening cycle:
 
 Closure evidence:
 
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
-- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
+- `docs/operations/feature_promotion_rules.md`
 - `docs/operations/deployment.md`
 - `docs/operations/query_feedback_review.md`
 - `docs/index.md`

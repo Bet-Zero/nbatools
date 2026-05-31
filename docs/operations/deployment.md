@@ -213,7 +213,7 @@ deploy and verify the R2 object above before treating the preview as ready.
 ## Data-backed Feature Promotion Checklist
 
 This is the deployment-side gate referenced by
-[`docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+[`docs/operations/feature_promotion_rules.md`](feature_promotion_rules.md)
 §3.8. Any data-backed feature promotion must satisfy every rule below before
 it is treated as shipped. The rules exist because the project is
 data-dependent and the deployed runtime reads from R2: a feature can pass
@@ -221,9 +221,9 @@ locally while failing in preview or production if a required R2 object is
 missing.
 
 The companion product-level policy lives in
-[`docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md);
+[`docs/operations/feature_promotion_rules.md`](feature_promotion_rules.md);
 the parser/routing half lives in
-[`docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`](../planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md).
+[`docs/operations/parser_routing_growth_guardrails.md`](parser_routing_growth_guardrails.md).
 This section is the deployment half of the same contract.
 
 Working principle:
@@ -243,7 +243,7 @@ Every data-backed feature promotion must list every R2 object key the
 deployed runtime needs for the feature to answer correctly.
 
 - The list lives in the promotion's per-feature contract (see
-  [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+  [`feature_promotion_rules.md`](feature_promotion_rules.md)
   §4) and is reproduced in the promotion's return package.
 - Keys are written as full bucket-relative paths
   (`raw/teams/team_conference_membership.csv`), not as glob patterns or
@@ -297,7 +297,7 @@ answer.
   `conference_coverage`, or a route-specific guided unsupported response.
 - The exact expected shape for the feature is fixed by the promotion's
   per-feature contract (see
-  [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+  [`feature_promotion_rules.md`](feature_promotion_rules.md)
   §4 "expected unsupported behavior").
 - A smoke case must explicitly pin the missing-data behavior whenever the
   feature has a realistic missing-data path. For
@@ -335,7 +335,7 @@ Concrete deployment-side applications:
 The opponent-conference team-record promotion is the canonical worked
 example for this checklist. It is also the worked example for the parser
 and product-level halves of the contract (see
-[`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md)
+[`feature_promotion_rules.md`](feature_promotion_rules.md)
 §5).
 
 #### 6.1 Required runtime data key list

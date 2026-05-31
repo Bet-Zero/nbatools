@@ -42,7 +42,7 @@ Required inputs inspected:
 
 - `docs/index.md`
 - `AGENTS.md`
-- `docs/planning/raw-product/RETURN_PACKAGE_ARCHIVE_SWEEP_PREFLIGHT.md`
+- `archive/raw-product-planning-cleanup/legacy-return-package-plans/RETURN_PACKAGE_ARCHIVE_SWEEP_PREFLIGHT.md`
 - Archive Sweep Wave 1 return package in `return_packages/raw-product/`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`

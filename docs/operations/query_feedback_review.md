@@ -113,12 +113,12 @@ named in
 | Category | When to use | Typical follow-up |
 | --- | --- | --- |
 | `bug` | The system gave a wrong answer, crashed, or otherwise misbehaved against its own contract. | `raw_qa_case` plus the fix work it implies (backend, parser, data, or frontend depending on the bug). |
-| `support_candidate` | Repeated valid demand for a stat-shaped query the product does not yet answer. | Treat as a future feature promotion candidate; record under planning, do not promote casually. The promotion path is governed by [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md). |
+| `support_candidate` | Repeated valid demand for a stat-shaped query the product does not yet answer. | Treat as a future feature promotion candidate; record under planning, do not promote casually. The promotion path is governed by [`feature_promotion_rules.md`](feature_promotion_rules.md). |
 | `expected_unsupported` | The product correctly declined to answer (out of scope, low confidence, geography phrase, subjective phrase, etc.). | `no_action`; optionally add an unsupported-boundary raw QA case if the boundary is at risk of drifting. |
 | `duplicate` | The group restates a finding already captured under another group, an existing QA case, or an open planning item. | `no_action`; cross-reference the original in `reviewer_notes`. |
 | `no_action` | Smoke/test evidence, non-actionable report, or already-resolved behavior. | `no_action`; record why. |
 | `needs_more_data` | The group cannot be triaged from the export alone; the reviewer needs a repro, a wider query window, additional records, or a closer look at the result payload. | Re-run the export with broader filters, request a repro, or escalate; do not promote to QA without resolution. |
-| `parser_routing_risk` | The phrasing suggests a wrong-route, collision, or unsupported-boundary erosion risk, even when the specific record's behavior was acceptable. | Cross-reference against [`PARSER_ROUTING_GROWTH_GUARDRAILS.md`](../planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md) (route collision rule §5, unsupported-boundary regression rule §6); convert to a guardrail-shaped raw QA case if applicable. |
+| `parser_routing_risk` | The phrasing suggests a wrong-route, collision, or unsupported-boundary erosion risk, even when the specific record's behavior was acceptable. | Cross-reference against [`parser_routing_growth_guardrails.md`](parser_routing_growth_guardrails.md) (route collision rule §5, unsupported-boundary regression rule §6); convert to a guardrail-shaped raw QA case if applicable. |
 | `ui_copy_issue` | Backend behavior is acceptable but rendered wording, copy, chips, or layout is confusing, duplicative, or misleading. | `frontend_copy_case` or `visual_qa_case` depending on whether the issue is copy or layout. |
 
 The eight categories are the primary triage labels for the routine. The
@@ -180,7 +180,7 @@ runs after the worksheet is complete.
   files, or the feedback collection endpoint.
 - It does not automatically promote a `support_candidate` into shipped
   support. Promotion follows
-  [`FEATURE_PROMOTION_RULES.md`](../planning/raw-product/FEATURE_PROMOTION_RULES.md).
+  [`feature_promotion_rules.md`](feature_promotion_rules.md).
 - It does not delegate product judgment to an agent.
 
 ## Storage

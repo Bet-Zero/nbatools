@@ -83,10 +83,10 @@ The product has explicit boundaries. When a question falls outside them, the eng
 
 - Subjective, opinion, or narrative questions (best defender, MVP candidate, clutch, cooled off, best player lately).
 - Inference beyond available data, including invented metric definitions for terms the product has not approved.
-- Query families that are still being evaluated against the promotion path (see [docs/planning/raw-product/FEATURE_PROMOTION_RULES.md](docs/planning/raw-product/FEATURE_PROMOTION_RULES.md)).
+- Query families that are still being evaluated against the promotion path (see [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md)).
 - Specific guarded families that are out of scope for the current release — for example personal-foul leaderboards, single-team advanced-stat scalar summaries, rookie leaderboards, league-wide starter/bench leaderboards, team bench scoring, opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, minutes leaderboards, and team single-game threes. The full list with current behavior and future support path lives in [docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md) §4.
 
-The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md](docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md).
+The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 
 ---
 
@@ -200,8 +200,8 @@ Pointers:
 - Release-candidate handoff: [docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md).
 - Release-readiness checklist: [docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md).
 - Post-review hardening plan (Waves 1–6): [docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md](docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md).
-- Parser/routing growth guardrails: [docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md](docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md).
-- Feature promotion rules: [docs/planning/raw-product/FEATURE_PROMOTION_RULES.md](docs/planning/raw-product/FEATURE_PROMOTION_RULES.md).
+- Parser/routing growth guardrails: [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
+- Feature promotion rules: [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md).
 - Query feedback review runbook (weekly beta cadence): [docs/operations/query_feedback_review.md](docs/operations/query_feedback_review.md).
 - Docs index and category rules: [docs/index.md](docs/index.md).
 

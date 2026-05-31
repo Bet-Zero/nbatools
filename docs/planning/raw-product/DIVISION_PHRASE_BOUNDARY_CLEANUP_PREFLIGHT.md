@@ -53,8 +53,8 @@ Required inputs:
 
 - `docs/planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md`
 - `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
-- `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md`
-- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/parser_routing_growth_guardrails.md`
+- `docs/operations/feature_promotion_rules.md`
 - `src/nbatools/commands/natural_query.py`
 - `tests/test_natural_query_route_priority_snapshots.py`
 - `tests/test_natural_query_unsupported_boundary_snapshots.py`

@@ -151,7 +151,7 @@ Post-review hardening completed Waves 1-6 with notes.
 
 | Wave | Durable outcome |
 | --- | --- |
-| Wave 1 | Parser/routing growth guardrails and feature promotion rules were documented in `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md` and `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`. |
+| Wave 1 | Parser/routing growth guardrails and feature promotion rules were documented in `docs/operations/parser_routing_growth_guardrails.md` and `docs/operations/feature_promotion_rules.md`. |
 | Wave 2 | Data-backed feature promotion discipline was added to `docs/operations/deployment.md` and linked from feature promotion rules. |
 | Wave 3 | Weekly beta feedback review cadence and ownership were added to `docs/operations/query_feedback_review.md`. |
 | Wave 4 | Return-package taxonomy rules were added to `docs/index.md`. |
@@ -279,7 +279,7 @@ Current durable taxonomy sources:
 
 - `docs/index.md`
 - `AGENTS.md`
-- `docs/planning/raw-product/RETURN_PACKAGE_DEPENDENCY_CLEANUP_PREFLIGHT.md`
+- `working/raw-product-planning-cleanup/RETURN_PACKAGE_DEPENDENCY_CLEANUP_PREFLIGHT.md`
 
 Policy:
 

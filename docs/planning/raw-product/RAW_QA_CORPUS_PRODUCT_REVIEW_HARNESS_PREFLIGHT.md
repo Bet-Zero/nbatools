@@ -678,7 +678,7 @@ Wave 1 should update durable workflow rules after the artifact exists.
 | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` | Point the historical/manual-first harness plan to the new operational workflow |
 | `docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_COVERAGE_PREFLIGHT.md` | Separate the green Layer A gate from pending or completed Layer B product review |
 | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` | Record machine regression and human product review as separate evidence rows without changing release status automatically |
-| `docs/planning/raw-product/PARSER_ROUTING_GROWTH_GUARDRAILS.md` | Add the family-registry and representative-human-review requirement for public feature promotion |
+| `docs/operations/parser_routing_growth_guardrails.md` | Add the family-registry and representative-human-review requirement for public feature promotion |
 | `docs/reference/query_catalog.md` | Tighten the maintenance note so advertised families require both generated family coverage and reviewed representative outputs |
 
 There is no existing `docs/operations/qa.md`. Prefer the workflow-specific

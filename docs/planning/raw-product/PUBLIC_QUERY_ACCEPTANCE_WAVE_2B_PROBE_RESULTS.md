@@ -29,7 +29,7 @@ Read and applied:
 
 - `outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md`
 - `docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_PRODUCT_REVIEW_TRIAGE.md`
-- `docs/planning/raw-product/NATURAL_SEARCH_AND_DEEP_TOOLS_BOUNDARY.md`
+- `docs/reference/natural_search_and_deep_tools_boundary.md`
 - `qa/raw_query_answer_corpus.yaml`
 - `qa/harness_slices/public_query_acceptance.yaml`
 - `docs/reference/query_catalog.md`

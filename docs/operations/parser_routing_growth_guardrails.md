@@ -18,7 +18,7 @@ Source review notes:
 
 Companion policy:
 
-- `docs/planning/raw-product/FEATURE_PROMOTION_RULES.md`
+- `docs/operations/feature_promotion_rules.md`
 
 ## 2. Working principles
 
