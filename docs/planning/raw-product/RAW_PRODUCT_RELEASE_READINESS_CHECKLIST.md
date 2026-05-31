@@ -303,7 +303,7 @@ path.
 | Release-candidate handoff | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`; handoff complete with notes |
 | Release checkpoint | `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` |
 | Findings inventory | `working/raw-query-answer-qa-review/RAW_QUERY_ANSWER_QA_FINDINGS.md` |
-| Harness plan | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` |
+| Harness operations | `docs/operations/raw_query_answer_qa.md`; current scoreboard and reporting terminology in `docs/operations/query_validation_map.md` |
 | Query feedback review runbook | `docs/operations/query_feedback_review.md`; updated for verified preview prefix/status and export/review workflow usage |
 
 Release verdict: `READY_FOR_PREVIEW_REVIEW`.

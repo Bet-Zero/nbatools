@@ -319,8 +319,8 @@ Latest release artifacts:
   `docs/operations/query_feedback_review.md`
 - Query feedback implementation evidence:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
-- Backend harness plan:
-  `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
+- Backend harness operations:
+  `docs/operations/raw_query_answer_qa.md`
 - Latest deployment smoke:
   `outputs/deployment_smoke/opponent_conference_r2_sync_fix_preview.json`
 - Harness slices:
@@ -333,7 +333,8 @@ Latest release artifacts:
 Durable supporting evidence:
 
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
-- `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md`
+- `docs/operations/raw_query_answer_qa.md`
+- `docs/operations/query_validation_map.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
 - `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
 - `docs/operations/query_feedback_review.md`

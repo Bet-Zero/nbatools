@@ -27,6 +27,82 @@ The existing full-corpus command remains:
 make raw-query-answer-qa
 ```
 
+## Run Variants
+
+Use the direct harness command when selecting a specific scope or when a
+non-zero exit is required for expectation failures.
+
+Full corpus:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --fail-on-expectation-failure
+```
+
+Named slice:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --slice product_boundaries \
+  --fail-on-expectation-failure
+```
+
+Single case or a small case set:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --case record_when_jokic_triple_double \
+  --fail-on-expectation-failure
+```
+
+Prior failed cases:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --failed-from outputs/raw_query_answer_qa/<prior_run_id>/summary.json \
+  --fail-on-expectation-failure
+```
+
+`--failed-from` also accepts a prior `report.jsonl`. It selects failed
+expectation cases from the prior artifact.
+
+Non-gating comparison against a prior run:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --case record_when_jokic_triple_double \
+  --compare-to outputs/raw_query_answer_qa/<prior_run_id>/report.jsonl \
+  --fail-on-expectation-failure
+```
+
+`--compare-to` also accepts a prior `summary.json`. It adds comparison metadata
+to `summary.json` and a concise comparison section to `report.md`. Comparison
+metadata does not change the harness exit status.
+
+### Selection And Failure Behavior
+
+- `--case`, `--slice`, and `--failed-from` may be repeated and compose as a
+  union.
+- Slice names resolve from `qa/harness_slices/<name>.yaml`; direct slice YAML
+  paths are also accepted.
+- Selected case IDs are deduplicated and run in corpus order.
+- Unknown case IDs fail loudly.
+- `--limit` applies after selection.
+- With no selection option, the full corpus runs.
+- If `--failed-from` selects zero failed cases and no other selection is
+  supplied, the harness writes a zero-case report instead of broadening to the
+  full corpus.
+- Every run writes its artifacts before exit. With
+  `--fail-on-expectation-failure`, failed expectations produce a non-zero exit.
+  Without that flag, failed IDs remain visible in the artifacts but do not make
+  the command exit non-zero.
+- Use `--run-id <label>` when a stable human-facing artifact path is useful.
+
 ## Generated Artifacts
 
 Each run writes:
@@ -41,6 +117,21 @@ outputs/raw_query_answer_qa/<run_id>/product_review.json
 
 Use `report.md` and `report.jsonl` for case-level regression drill-down. Use
 `product_review.md` for feature-family product review.
+
+`product_review.md` is a human-readable review artifact generated from the
+scope of that specific harness run. It helps inspect family coverage,
+representative answers, suspicious rows, and product decisions. It is not a
+separate corpus or a broader validation result.
+
+Each `report.jsonl` row records `duration_seconds`. `summary.json` includes
+`slowest_cases`, and `report.md` includes a slowest-case table.
+
+For the current corpus and slice scoreboard, latest known artifact paths, and
+precise reporting terminology, use:
+
+```text
+docs/operations/query_validation_map.md
+```
 
 ## Product-Review Inputs
 

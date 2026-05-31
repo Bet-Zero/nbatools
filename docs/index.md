@@ -82,7 +82,6 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/result_display_map.md` — route-by-route display intent and reconciliation map for result rendering
 - `planning/result_display_implementation_plan.md` — completed first-pass result display implementation queue
 - `planning/result_display_followup_queue.md` — active follow-up queue for remaining route-level result display gaps
-- `planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` — plan for a manual-first raw query answer QA harness over a curated natural-language corpus
 - `planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` — release-readiness checkpoint for backend raw QA, public-query acceptance coverage, frontend-copy QA, visual QA, public UI readiness, deploy parity, division-boundary cleanup evidence, post-review hardening closure, and next options
 - `planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` — current Raw Product release-readiness checklist, public-query acceptance gate, preview manual validation steps, final public UI readiness evidence, division-boundary cleanup evidence, and post-review hardening closure notes
 - `planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` — final release package for the current supported and explicitly unsupported Raw Product boundary; current public UI status is ready with notes, the public-query acceptance gate is clean at 67/67, division-opponent phrasing is guarded as unsupported, and post-review hardening Waves 1–6 are complete
