@@ -40,7 +40,7 @@ metadata.ambiguous_intent: bare_player_vs_player
 
 Metadata also preserves recognized player context and provides
 `clarification_options` for future UI work. See
-`return_packages/raw-product/BARE_PLAYER_VS_PLAYER_AMBIGUOUS_BOUNDARY_V1_RETURN_PACKAGE.md`
+`return_packages/archive/raw-product/2026-05-open-return-package-sweep/BARE_PLAYER_VS_PLAYER_AMBIGUOUS_BOUNDARY_V1_RETURN_PACKAGE.md`
 for the temporary implementation evidence and validation receipt. Cleanup
 trigger: replace this exact return-package path with durable generated-output
 or reference-doc evidence when the bare player-vs-player clarification UI
@@ -52,7 +52,7 @@ Read and applied:
 
 - `docs/planning/raw-product/NATURAL_SEARCH_AND_DEEP_TOOLS_BOUNDARY.md`
 - `docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_PROBE_RESULTS.md`
-- `return_packages/raw-product/QUESTION_FORM_PLAYER_COMPARISON_ROUTING_FIX_RETURN_PACKAGE.md`
+- `return_packages/archive/raw-product/2026-05-open-return-package-sweep/QUESTION_FORM_PLAYER_COMPARISON_ROUTING_FIX_RETURN_PACKAGE.md`
 - `docs/reference/query_catalog.md`
 - `docs/reference/query_guide.md`
 - `qa/raw_query_answer_corpus.yaml`
@@ -310,5 +310,5 @@ Original docs-only validation:
 | --- | --- |
 | `git diff --check` | Passed for tracked diff. |
 | `git diff --check --no-index /dev/null docs/planning/raw-product/BARE_PLAYER_VS_PLAYER_QUERY_POLICY_PREFLIGHT.md` | No whitespace warnings; exit code `1` is expected for `/dev/null` comparisons with file content. |
-| `git diff --check --no-index /dev/null return_packages/raw-product/BARE_PLAYER_VS_PLAYER_QUERY_POLICY_PREFLIGHT_RETURN_PACKAGE.md` | No whitespace warnings; exit code `1` is expected for `/dev/null` comparisons with file content. |
+| `git diff --check --no-index /dev/null return_packages/archive/raw-product/2026-05-open-return-package-sweep/BARE_PLAYER_VS_PLAYER_QUERY_POLICY_PREFLIGHT_RETURN_PACKAGE.md` | No whitespace warnings; exit code `1` is expected for `/dev/null` comparisons with file content. |
 | Markdown lint availability | Not run; no `markdownlint`, `markdownlint-cli2`, `mdl`, or `mdformat` command was found on PATH, and no repo-local markdown lint target was found in `Makefile`, `pyproject.toml`, or `frontend/package.json`. |
