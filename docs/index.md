@@ -90,7 +90,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` — broader Raw Product post-review notes; closure refresh records Waves 1–6 complete and remaining notes deferred
 - `planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md` — parser/routing growth review notes feeding Wave 1 of the hardening plan
 - `planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md` — completed hardening roadmap (Waves 1–6) that turned the Raw Product post-review notes and parser/routing growth notes into bounded execution waves; statuses remain `*_WITH_NOTES`
-- `planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — documentation-only decision map and test matrix for preserving current `natural_query.py` route order, unsupported boundaries, collision groups, validation commands, and first code-extraction candidate before any parser extraction work
+- `../working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — active natural-query maintenance decision map and test matrix for preserving route order, unsupported boundaries, collision groups, and extraction validation
 - `planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` — documentation-only preflight for route-priority, collision, unsupported-boundary, and no-broad-fallback snapshot coverage before further `natural_query.py` extraction
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs

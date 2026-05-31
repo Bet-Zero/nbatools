@@ -43,7 +43,7 @@ preserving the closest record route and adding no division support.
 
 Required inputs:
 
-- `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
+- `working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
 - `working/natural-query-maintenance/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md`
 - `docs/operations/parser_routing_growth_guardrails.md`
 - `docs/operations/feature_promotion_rules.md`

@@ -80,7 +80,7 @@ These durable docs link directly to exact Raw Product return-package paths.
 | `docs/operations/frontend_visual_qa.md` and `docs/operations/ui_guide.md` | Durable Visual QA workflow, current baseline, and UI route guidance. | Keep as the source of truth for current Visual QA operations and UI behavior. |
 | `docs/operations/frontend_visual_qa.md` | Durable screenshot workflow, visual QA baseline, and artifact-run rules. | Keep current as the operations runbook. |
 | `docs/planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` | Route-priority context cites a constants-extraction package. | Replace with durable route-priority snapshot and decision-map docs. |
-| `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` | Decision-map context cites extraction preflight package. | Replace with the durable extraction preflight doc. |
+| `working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` | Active decision-map context for natural-query extraction maintenance. | Keep with the tracked natural-query maintenance task material. |
 
 Adjacent finding outside this Raw Product cleanup set:
 
