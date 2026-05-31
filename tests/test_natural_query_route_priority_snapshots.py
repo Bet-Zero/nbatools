@@ -192,6 +192,57 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "no_unsupported_filters": True,
         },
         {
+            "query": "LeBron vs KD",
+            "route": "player_compare",
+            "fields": {
+                "player_a": "LeBron James",
+                "player_b": "Kevin Durant",
+                "bare_player_vs_player": True,
+            },
+            "route_kwargs": {
+                "player_a": "LeBron James",
+                "player_b": "Kevin Durant",
+                "head_to_head": False,
+                "ambiguous_intent": "bare_player_vs_player",
+            },
+            "absent_fields": ["opponent_player"],
+            "no_unsupported_filters": True,
+        },
+        {
+            "query": "LeBron James vs Kevin Durant",
+            "route": "player_compare",
+            "fields": {
+                "player_a": "LeBron James",
+                "player_b": "Kevin Durant",
+                "bare_player_vs_player": True,
+            },
+            "route_kwargs": {
+                "player_a": "LeBron James",
+                "player_b": "Kevin Durant",
+                "head_to_head": False,
+                "ambiguous_intent": "bare_player_vs_player",
+            },
+            "absent_fields": ["opponent_player"],
+            "no_unsupported_filters": True,
+        },
+        {
+            "query": "Jokic vs Embiid",
+            "route": "player_compare",
+            "fields": {
+                "player_a": "Nikola Jokić",
+                "player_b": "Joel Embiid",
+                "bare_player_vs_player": True,
+            },
+            "route_kwargs": {
+                "player_a": "Nikola Jokić",
+                "player_b": "Joel Embiid",
+                "head_to_head": False,
+                "ambiguous_intent": "bare_player_vs_player",
+            },
+            "absent_fields": ["opponent_player"],
+            "no_unsupported_filters": True,
+        },
+        {
             "query": "How do LeBron James and Kevin Durant compare this season?",
             "route": "player_compare",
             "fields": {

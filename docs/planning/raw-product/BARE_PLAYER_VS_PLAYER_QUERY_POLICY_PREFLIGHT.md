@@ -2,24 +2,49 @@
 
 Date: 2026-05-31
 
-Mode: preflight only.
+Mode: preflight completed; V1 implementation complete.
 
 ## 1. Scope
 
-This document decides the product policy for bare player-vs-player natural
+This document decided the product policy for bare player-vs-player natural
 queries such as:
 
 ```text
 LeBron vs KD
 ```
 
-It does not change production code, parser/routing behavior, frontend
-rendering, corpus expectations, release status, or Raw QA cases.
+The original preflight did not change production code, parser/routing behavior,
+frontend rendering, corpus expectations, release status, or Raw QA cases.
+The follow-up V1 implementation changed only the narrow bare player-vs-player
+behavior boundary, parser/query tests, Raw QA boundary cases, and current-state
+docs named in this document.
 
 The policy is intentionally narrow: "bare PLAYER vs PLAYER" means two resolved
 player entities separated by `vs` / `versus` with no explicit comparison noun or
 verb, no `stats` / `averages` / `game log` / `record` intent, no
 `head-to-head` / `h2h` marker, and no playoff-history wording.
+
+## 1.1 Implementation Status
+
+V1 implementation is complete.
+
+Bare player-vs-player queries now preserve the closest route
+(`player_compare`) but return:
+
+```text
+result_status: no_result
+result_reason: ambiguous_query
+sections: {}
+metadata.ambiguous_intent: bare_player_vs_player
+```
+
+Metadata also preserves recognized player context and provides
+`clarification_options` for future UI work. See
+`return_packages/raw-product/BARE_PLAYER_VS_PLAYER_AMBIGUOUS_BOUNDARY_V1_RETURN_PACKAGE.md`
+for the temporary implementation evidence and validation receipt. Cleanup
+trigger: replace this exact return-package path with durable generated-output
+or reference-doc evidence when the bare player-vs-player clarification UI
+workstream closes.
 
 ## 2. Read-First Sources
 
@@ -44,7 +69,7 @@ Important source constraints:
 - The public corpus already distinguishes explicit player stat comparisons from
   player-opponent/head-to-head boundaries.
 
-## 3. Current Behavior Probes
+## 3. Pre-Implementation Behavior Probes
 
 Probe path:
 
@@ -56,7 +81,7 @@ nbatools.api_handlers.query_result_to_payload(result)
 This is the same backend envelope path used by Raw QA, API responses, and the
 React UI.
 
-| Query | Current route | Current status | Current interpretation |
+| Query | Pre-implementation route | Pre-implementation status | Pre-implementation interpretation |
 | --- | --- | --- | --- |
 | `LeBron vs KD` | `player_compare` | `ok` | Simple current-season player stat comparison; `head_to_head_used=false`; `summary: 2`, `comparison: 20`. |
 | `LeBron James vs Kevin Durant` | `player_compare` | `ok` | Simple current-season player stat comparison; `head_to_head_used=false`; `summary: 2`, `comparison: 20`. |
@@ -75,7 +100,7 @@ Supporting contrast probes:
 | `Lakers vs Celtics head to head record` | `team_matchup_record` | `ok` | Explicit team matchup-record semantics; `head_to_head_used=true`. |
 | `Lakers Celtics playoff matchup history` | `playoff_matchup_history` | `ok` | Explicit playoff matchup-history semantics; playoff sections returned. |
 
-The current parser therefore uses the same short `vs` token for several
+Before the V1 implementation, the parser used the same short `vs` token for several
 distinct product intents. It can answer a plausible default, but it does not
 know which of the valid meanings the user intended when the query is bare.
 
@@ -124,9 +149,9 @@ Playoff matchup history:
 
 ## 5. User Expectation Evaluation
 
-Sports users often use `vs` to mean "compare these two players." The current
-silent default is therefore understandable, and it returns a coherent answer
-for many search-bar style queries.
+Sports users often use `vs` to mean "compare these two players." The
+pre-implementation silent default was therefore understandable, and it returned
+a coherent answer for many search-bar style queries.
 
 Sports users also use `vs` to mean "games against," "head-to-head," "team
 matchup," or "playoff matchup." The query `LeBron vs KD` has no words that
@@ -140,8 +165,8 @@ underspecified.
 
 ## 6. Policy Decision
 
-V1 policy recommendation: choose option C for implementation, and do not
-public-accept the current silent default.
+V1 policy: option C is implemented, and the product does not public-accept the
+old silent comparison default.
 
 ```text
 Bare PLAYER vs PLAYER should return a clean ambiguous/unsupported response until
@@ -153,11 +178,9 @@ that can mean multiple sports intents. It also preserves room for the future
 Player Comparison Tool and Head-to-Head Tool without turning today's heuristic
 into a long-term public promise.
 
-Important nuance: this preflight does not implement option C. Current shipped
-behavior still routes bare `PLAYER vs PLAYER` to `player_compare / ok`. The
-policy decision is that this current behavior should remain unadvertised and
-unaccepted until a later implementation wave changes it or explicitly reopens
-the decision.
+Implementation note: V1 preserves `player_compare` as the closest route, but
+returns `no_result` / `ambiguous_query` with empty sections instead of executing
+the comparison table.
 
 ## 7. Future Ideal Policy
 
@@ -183,7 +206,8 @@ handling is rejected or deferred with a durable rationale.
 ## 8. Corpus Implications
 
 Do not add a public-acceptance expected-ok case for bare `LeBron vs KD`,
-`LeBron James vs Kevin Durant`, or `Jokic vs Embiid` as `player_compare`.
+`LeBron James vs Kevin Durant`, or `Jokic vs Embiid` as an executing
+comparison table.
 
 Keep accepted comparison coverage on disambiguated comparison phrasing:
 
@@ -198,20 +222,15 @@ Keep boundary coverage for opponent/head-to-head semantics:
 - `Jokic game log vs Embiid`
 - explicit `head-to-head` / `h2h` forms
 
-If an implementation wave lands option C before clarification UI exists, add a
-Raw QA boundary case for bare `PLAYER vs PLAYER` that expects a clean ambiguous
-or unsupported result. Preferred future machine contract:
+The V1 implementation adds Raw QA boundary cases for bare `PLAYER vs PLAYER`
+that expect a clean ambiguous result:
 
 ```text
 expected_status: no_result
-expected_reason: ambiguous_intent
+expected_reason: ambiguous_query
 expected_shape: no_result
-expected_route: player_compare or ambiguous_intent
+expected_route: player_compare
 ```
-
-The exact route/reason should be set only after the API ambiguity contract is
-approved. Until then, no public acceptance expectation should be added for bare
-`PLAYER vs PLAYER`.
 
 If option B lands later, update Raw QA to assert the typed ambiguity payload and
 the presence of supported intent options. Do not assert a comparison table for
@@ -229,33 +248,27 @@ Docs should advertise disambiguated comparison wording instead:
 - `Jokic vs Embiid recent form`
 
 Docs can mention bare `PLAYER vs PLAYER` only as an ambiguity/clarification
-candidate until implementation changes the product behavior. Existing reference
-examples that imply bare player-vs-player support should be reviewed in the
-future implementation wave and either given explicit comparison wording or
-annotated as ambiguous.
+candidate. `docs/reference/query_catalog.md` and `docs/reference/query_guide.md`
+now document the V1 `no_result` / `ambiguous_query` boundary and use
+disambiguated comparison wording for supported examples.
 
-Do not change `docs/reference/query_catalog.md` or `docs/reference/query_guide.md`
-as part of this preflight-only pass. Those current-state docs should change
-only when behavior or public acceptance policy is implemented.
+## 10. Future Clarification Stop Conditions
 
-## 10. Implementation Stop Conditions
-
-Stop before implementation if any of these are unresolved:
+Stop before implementing typed clarification UI if any of these are unresolved:
 
 - no approved typed ambiguity/clarification response shape for API consumers
 - no agreed CLI rendering for ambiguity options
 - no agreed React UI rendering for clarification options
-- no route/reason contract for an option-C clean unsupported response
-- corpus expectations would encode current silent `player_compare` behavior for
-  bare `PLAYER vs PLAYER`
-- docs would advertise bare `LeBron vs KD` before the ambiguity policy is
-  implemented
+- no route/reason contract for replacing the V1 `ambiguous_query` response
+- corpus expectations would encode an executing comparison table for bare
+  `PLAYER vs PLAYER`
+- docs would advertise bare `LeBron vs KD` as supported comparison shorthand
 - implementation would weaken explicit routes such as
   `LeBron stats vs Kevin Durant`, `Lakers record vs Celtics`,
   `Lakers vs Celtics head to head record`, or
   `Lakers Celtics playoff matchup history`
 
-Minimum implementation acceptance for a later wave:
+Minimum acceptance for a later clarification wave:
 
 - parser/routing tests for bare player-vs-player ambiguity
 - regression tests proving explicit comparison, player-opponent, team matchup,
@@ -281,12 +294,17 @@ Future ideal:
 
 Current behavior:
 
-- Still `player_compare / ok` for bare player-vs-player.
-- This preflight records the policy decision only; it does not change behavior.
+- `player_compare / no_result / ambiguous_query` for bare player-vs-player.
+- Disambiguated comparison, player-opponent finder, team comparison, team
+  matchup record, and playoff matchup history behavior are preserved.
 
 ## 12. Validation
 
-Docs-only validation:
+Preflight docs validation was superseded by the V1 implementation wave. See
+the temporary return-package handoff named in Section 1.1 for implementation
+validation results.
+
+Original docs-only validation:
 
 | Check | Result |
 | --- | --- |

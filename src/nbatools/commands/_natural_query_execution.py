@@ -660,6 +660,24 @@ def _execute_build_result(
         extra_conditions = []
 
     build_fn = _get_build_result_map()[route]
+    ambiguous_intent = kwargs.get("ambiguous_intent")
+    if ambiguous_intent:
+        clarification_options = kwargs.get("clarification_options") or []
+        return NoResult(
+            query_class=route_to_query_class(route),
+            reason="ambiguous_query",
+            result_status="no_result",
+            result_reason="ambiguous_query",
+            metadata={
+                "ambiguous_intent": ambiguous_intent,
+                "clarification_options": clarification_options,
+            },
+            notes=[
+                "bare player-vs-player queries are ambiguous; add comparison, "
+                "head-to-head, or stats wording"
+            ],
+        )
+
     sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
     sanitized_kwargs, conference_notes, conference_blocked_filters = (
         _resolve_opponent_conference_kwargs(route, sanitized_kwargs, original_kwargs=kwargs)

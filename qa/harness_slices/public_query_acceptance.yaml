@@ -21,6 +21,9 @@ case_ids:
   - lakers_record_with_reaves_without_luka_public_sweep
   - lakers_record_without_luk_public_sweep
   - tatum_recent_form
+  - bare_lebron_kd_ambiguous_boundary_v1
+  - bare_lebron_durant_ambiguous_boundary_v1
+  - bare_jokic_embiid_ambiguous_boundary_v1
   - lebron_durant_comparison_wave4
   - pqa_player_recent_typo_tatm
   - points_per_game_leader

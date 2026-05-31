@@ -20,6 +20,7 @@ def test_parse_compare_queries_set_head_to_head_flag():
     parsed = parse_query("Jokic vs Embiid")
     assert parsed["route"] == "player_compare"
     assert parsed["route_kwargs"]["head_to_head"] is False
+    assert parsed["route_kwargs"]["ambiguous_intent"] == "bare_player_vs_player"
 
 
 def test_team_head_to_head_frames_only_keep_shared_matchups_and_primary_home_filter():

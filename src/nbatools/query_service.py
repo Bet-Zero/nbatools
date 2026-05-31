@@ -540,6 +540,11 @@ def _build_query_metadata(
     if current_through is not None:
         meta["current_through"] = current_through
 
+    if route_kwargs.get("ambiguous_intent"):
+        meta["ambiguous_intent"] = route_kwargs["ambiguous_intent"]
+    if route_kwargs.get("clarification_options"):
+        meta["clarification_options"] = route_kwargs["clarification_options"]
+
     if notes:
         meta["notes"] = notes
 
@@ -879,7 +884,14 @@ def _build_suggested_queries_for_fragment(parsed: dict) -> list[str]:
 # Reasons that represent expected/anticipated failures → no_result status.
 # All other reasons represent system-level failures → error status.
 _EXPECTED_REASONS: frozenset[str] = frozenset(
-    {"unsupported", "no_data", "no_match", "ambiguous", "filter_not_supported"}
+    {
+        "unsupported",
+        "no_data",
+        "no_match",
+        "ambiguous",
+        "ambiguous_query",
+        "filter_not_supported",
+    }
 )
 
 

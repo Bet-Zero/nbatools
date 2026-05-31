@@ -88,6 +88,65 @@ class TestPlayerVsPlayerAsOpponent:
         assert parsed.get("opponent_player") == "Stephen Curry"
 
 
+class TestBarePlayerVsPlayerAmbiguousBoundary:
+    """Bare player-vs-player should not silently execute a comparison table."""
+
+    @pytest.mark.parametrize(
+        ("query", "player_a", "player_b"),
+        [
+            ("LeBron vs KD", "LeBron James", "Kevin Durant"),
+            ("LeBron James vs Kevin Durant", "LeBron James", "Kevin Durant"),
+            ("Jokic vs Embiid", "Nikola Jokić", "Joel Embiid"),
+        ],
+    )
+    def test_bare_player_vs_player_returns_ambiguous_no_result(
+        self,
+        query,
+        player_a,
+        player_b,
+    ):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "player_compare"
+        assert qr.result_status == "no_result"
+        assert qr.result_reason == "ambiguous_query"
+        assert qr.result.to_dict()["sections"] == {}
+        assert qr.metadata["ambiguous_intent"] == "bare_player_vs_player"
+        assert [p["player_name"] for p in qr.metadata["players_context"]] == [
+            player_a,
+            player_b,
+        ]
+        assert qr.metadata["clarification_options"][0]["intent"] == "player_stat_comparison"
+
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "LeBron James vs Kevin Durant comparison",
+            "Compare LeBron James and Kevin Durant",
+            "How do LeBron James and Kevin Durant compare this season?",
+            "Jokic vs Embiid recent form",
+        ],
+    )
+    def test_disambiguated_player_comparison_still_executes(self, query):
+        qr = execute_natural_query(query)
+
+        assert qr.route == "player_compare"
+        assert qr.result_status == "ok"
+        sections = qr.result.to_dict()["sections"]
+        assert len(sections["summary"]) == 2
+        assert sections["comparison"]
+        assert qr.metadata.get("ambiguous_intent") is None
+
+    def test_player_opponent_finder_still_executes(self):
+        qr = execute_natural_query("LeBron stats vs KD")
+
+        assert qr.route == "player_game_finder"
+        assert qr.result_status == "ok"
+        sections = qr.result.to_dict()["sections"]
+        assert "finder" in sections
+        assert qr.metadata.get("ambiguous_intent") is None
+
+
 # ---------------------------------------------------------------------------
 # 2. Season-high / single-game queries
 # ---------------------------------------------------------------------------

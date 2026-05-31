@@ -131,9 +131,9 @@ families:
     product_decisions:
       - question: What should bare player-vs-player phrasing such as LeBron vs KD do?
         variant: short
-        current_behavior: Wave 2A deliberately does not encode an expectation before the Wave 2B probe.
+        current_behavior: V1 returns a clean ambiguous/no-result boundary for bare player-vs-player phrasing instead of a silent comparison table.
         decision_owner: Product review
-        next_action: Run the Wave 2B probe and choose clarification, default comparison, or clean unsupported behavior.
+        next_action: Keep the boundary until a typed clarification response and UI are approved.
 
   - id: playoff_history
     label: Playoff history

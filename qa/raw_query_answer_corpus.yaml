@@ -3960,6 +3960,128 @@ cases:
         - matchup
       notes: "Review whether comparison wording is misread as a player-vs-player opponent finder."
 
+  - id: bare_lebron_kd_ambiguous_boundary_v1
+    query: "LeBron vs KD"
+    category: split
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: nearby_unsupported
+      concept: ambiguous_vs_clarification_candidate
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - bare_vs
+        - player_entities
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_reason: ambiguous_query
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.ambiguous_intent
+        equals: bare_player_vs_player
+      - path: result.metadata.players_context.0.player_name
+        equals: LeBron James
+      - path: result.metadata.players_context.1.player_name
+        equals: Kevin Durant
+      - path: result.metadata.clarification_options.0.intent
+        equals: player_stat_comparison
+    review_notes: "Bare player-vs-player shorthand should return an ambiguity boundary, not a silent comparison table."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - comparison
+        - ambiguous_vs
+        - no_broad_fallback
+      notes: "V1 policy returns clean ambiguous/no-result behavior until typed clarification UI exists."
+
+  - id: bare_lebron_durant_ambiguous_boundary_v1
+    query: "LeBron James vs Kevin Durant"
+    category: split
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: nearby_unsupported
+      concept: ambiguous_vs_clarification_candidate
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - bare_vs
+        - player_entities
+      sibling_of: lebron_durant_comparison_wave4
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_reason: ambiguous_query
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.ambiguous_intent
+        equals: bare_player_vs_player
+      - path: result.metadata.players_context.0.player_name
+        equals: LeBron James
+      - path: result.metadata.players_context.1.player_name
+        equals: Kevin Durant
+      - path: result.metadata.clarification_options.0.intent
+        equals: player_stat_comparison
+    review_notes: "Full-name bare player-vs-player should not inherit the explicit comparison contract without a comparison word."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - comparison
+        - ambiguous_vs
+        - no_broad_fallback
+      notes: "Sibling of the explicit LeBron/Durant comparison case; V1 declines the bare variant."
+
+  - id: bare_jokic_embiid_ambiguous_boundary_v1
+    query: "Jokic vs Embiid"
+    category: split
+    priority: p1
+    acceptance:
+      family: comparisons
+      variant: nearby_unsupported
+      concept: ambiguous_vs_clarification_candidate
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: player_compare
+      qualifier_model:
+        - bare_vs
+        - player_entities
+      sibling_of: jokic_embiid_recent_comparison
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_reason: ambiguous_query
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.ambiguous_intent
+        equals: bare_player_vs_player
+      - path: result.metadata.players_context.0.player_name
+        equals: Nikola Jokić
+      - path: result.metadata.players_context.1.player_name
+        equals: Joel Embiid
+      - path: result.metadata.clarification_options.0.intent
+        equals: player_stat_comparison
+    review_notes: "Bare player-vs-player shorthand should remain distinct from recent-form or explicit comparison wording."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - comparison
+        - ambiguous_vs
+        - no_broad_fallback
+      notes: "Sibling of the supported Jokic/Embiid recent-form comparison case."
+
   - id: bulls_finals_record_wave4
     query: "Bulls Finals record"
     category: playoff_history

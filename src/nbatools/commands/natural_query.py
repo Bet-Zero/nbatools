@@ -33,6 +33,7 @@ from nbatools.commands._leaderboard_utils import (
     wants_ascending_leaderboard,
 )
 from nbatools.commands._matchup_utils import (
+    detect_bare_player_vs_player_query,
     detect_head_to_head,
     detect_opponent,
     detect_opponent_player,
@@ -919,6 +920,10 @@ def _build_parse_state(query: str) -> dict:
             season = default_season_for_context(season_type)
 
     player_a, player_b = extract_player_comparison(q)
+    bare_player_vs_player = False
+    if player_a and player_b:
+        bare_a, bare_b = detect_bare_player_vs_player_query(q)
+        bare_player_vs_player = bool(bare_a == player_a and bare_b == player_b)
     team_a, team_b = (None, None)
 
     if not (player_a and player_b):
@@ -1109,6 +1114,7 @@ def _build_parse_state(query: str) -> dict:
         "player": player,
         "player_a": player_a,
         "player_b": player_b,
+        "bare_player_vs_player": bare_player_vs_player,
         "team": team,
         "team_a": team_a,
         "team_b": team_b,
@@ -1265,6 +1271,7 @@ def _finalize_route(parsed: dict) -> dict:
     player = parsed["player"]
     player_a = parsed["player_a"]
     player_b = parsed["player_b"]
+    bare_player_vs_player = parsed.get("bare_player_vs_player", False)
     team = parsed["team"]
     team_a = parsed["team_a"]
     team_b = parsed["team_b"]
@@ -1877,6 +1884,46 @@ def _finalize_route(parsed: dict) -> dict:
             "max_value": max_value,
             "last_n": last_n,
         }
+    elif player_a and player_b and bare_player_vs_player:
+        route = "player_compare"
+        route_kwargs = {
+            "player_a": player_a,
+            "player_b": player_b,
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "team": team,
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "head_to_head": head_to_head,
+            "ambiguous_intent": "bare_player_vs_player",
+            "clarification_options": [
+                {
+                    "intent": "player_stat_comparison",
+                    "query": f"Compare {player_a} and {player_b} this season",
+                },
+                {
+                    "intent": "player_head_to_head",
+                    "query": f"{player_a} head-to-head vs {player_b}",
+                },
+                {
+                    "intent": "player_opponent_games",
+                    "query": f"{player_a} stats vs {player_b}",
+                },
+            ],
+        }
+        notes.append(
+            "ambiguous_query: bare player-vs-player phrasing can mean stat "
+            "comparison, head-to-head games, or player-opponent stats; add "
+            "comparison, head-to-head, or stats wording"
+        )
     elif player_a and player_b:
         route = "player_compare"
         route_kwargs = {

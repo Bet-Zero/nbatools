@@ -4,8 +4,8 @@ Date: 2026-05-31
 
 Status: Wave 2A comparison-taxonomy migration and safe metadata retags
 complete; Wave 2B probes are documented and the question-form player
-comparison routing bug is fixed. Bare `LeBron vs KD` policy and human
-rendered-output review remain pending.
+comparison routing bug is fixed. Bare `LeBron vs KD` now has a V1
+ambiguous/no-result boundary. Human rendered-output review remains pending.
 
 ## 1. Scope
 
@@ -83,7 +83,7 @@ family.
 | `team_head_to_head_boundary` | Keep team comparison and matchup-record wording intentional. | `lakers_celtics_h2h_record_wave4`, `heat_knicks_h2h_since_2020_wave4` |
 | `subjective_comparison_boundary` | Decline winner/value judgments without inventing an answer. | `pqa_comparison_subjective_better_jokic_embiid` |
 | `comparison_entity_resolution` | Reject unresolved comparison entities without silently choosing aliases. | `pqa_comparison_typo_kevn_durant` |
-| `ambiguous_vs_clarification_candidate` | Track bare `PLAYER vs PLAYER` phrasing that may need clarification rather than a default answer. | Probe `LeBron vs KD` before adding an expectation. |
+| `ambiguous_vs_clarification_candidate` | Track bare `PLAYER vs PLAYER` phrasing that needs clarification rather than a default answer. | `bare_lebron_kd_ambiguous_boundary_v1`, `bare_lebron_durant_ambiguous_boundary_v1`, `bare_jokic_embiid_ambiguous_boundary_v1` |
 
 ### 3.2 Exact Registry Migration
 
@@ -116,14 +116,23 @@ comparison row.
 ### 3.3 Bare `vs` Product Decision
 
 The natural-search boundary document says a bare query such as `LeBron vs KD`
-is inherently ambiguous. Wave 2 should probe it, record the actual result, and
-make one explicit product decision:
+is inherently ambiguous. V1 implements the clean ambiguous/no-result choice:
+
+```text
+route: player_compare
+result_status: no_result
+result_reason: ambiguous_query
+metadata.ambiguous_intent: bare_player_vs_player
+```
+
+Future clarification UI can replace this with typed intent options. The other
+product options considered during preflight were:
 
 - return clarification or intent options
 - choose and document a default simple comparison
 - return a clean unsupported/ambiguous result until clarification exists
 
-Do not encode the current behavior as expected before that decision.
+Do not encode the old silent comparison-table behavior as expected.
 
 ## 4. Missing Variant Triage
 
@@ -145,7 +154,7 @@ corpus row. It does not mean weaken or invent an expectation.
 | `splits` | `short`, `sentence`, `synonym`, `inverse_sibling` | Retag `celtics_wins_losses_split`, `anthony_edwards_wins_losses_split_no_match`, `curry_home_away_last_20_split_wave4`, and `knicks_road_record`. | None. | None proven. | None. | None. |
 | `streaks` | `short`, `synonym`, `inverse_sibling` | Retag `lakers_win_streak`, `thunder_110_point_streak`, and `curry_5_threes_count`. | None. | None proven. | None. | None. |
 | `rolling_stretches` | `short`, `synonym`, `nearby_unsupported` | Retag `booker_4_game_scoring_stretch`, `efficient_10_game_stretch`, and `team_net_rating_stretch_unsupported`. | None. | None proven. | None. | None. |
-| `comparisons` | `canonical`, `short`, `sentence`, `synonym`, `inverse_sibling`, `typo_partial` | Apply the exact retags in section 3.2. | Probe bare `LeBron vs KD` as `ambiguous_vs_clarification_candidate`. | Only if the probe reveals wrong scope or broad fallback. | Decide the bare `vs` policy after the probe. | None. |
+| `comparisons` | `canonical`, `short`, `sentence`, `synonym`, `inverse_sibling`, `typo_partial` | Apply the exact retags in section 3.2 and include the V1 bare-`vs` ambiguity boundary cases. | None. | None proven after the V1 boundary. | Future typed clarification UI remains deferred. | None. |
 | `player_comparisons` | `canonical`, `short`, `sentence`, `synonym`, `inverse_sibling`, `nearby_unsupported` | None. | None. | None. | Collapse the family into `comparisons`. | Remove the overlapping family after migrating its typo guard into `comparisons`. |
 | `playoff_history` | `short`, `sentence`, `synonym` | Retag `lakers_finals_appearances`, `lakers_celtics_playoff_matchup_history_wave5`, and `heat_knicks_playoff_series_record_wave4`. | None. | None proven. | None. | None. |
 | `date_window_filters` | `short`, `sentence`, `synonym` | Retag `luka_last_5_summary`, `specific_date_jan_1`, and `jokic_since_all_star_break`. | None. | None proven. | None. | None. |
@@ -292,9 +301,9 @@ outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product
 
 The matrix has no missing variants, but public acceptance remains intentionally
 open. No family is public accepted, the human-review declaration remains
-`human_review_pending`, the bare `LeBron vs KD` policy remains a Wave 2B
-product decision, and rendered frontend review remains a separate Wave 2C
-task.
+`human_review_pending`, the bare `LeBron vs KD` V1 policy is now a clean
+ambiguous/no-result boundary, and rendered frontend review remains a separate
+Wave 2C task.
 
 ### Wave 2B: Probe Batch
 
@@ -331,8 +340,10 @@ LeBron-only `player_game_summary`. A follow-up routing fix now routes that
 question-form comparison to `player_compare`, preserves both players, and adds
 the Raw QA corpus case `question_form_lebron_durant_comparison_wave2b`.
 
-The bare `LeBron vs KD` product decision remains open. No family is public
-accepted by this fix.
+The later V1 bare player-vs-player boundary changed `LeBron vs KD`,
+`LeBron James vs Kevin Durant`, and `Jokic vs Embiid` to
+`player_compare / no_result / ambiguous_query`. No family is public accepted by
+this fix.
 
 ### Wave 2C: Human Rendered-Output Review
 

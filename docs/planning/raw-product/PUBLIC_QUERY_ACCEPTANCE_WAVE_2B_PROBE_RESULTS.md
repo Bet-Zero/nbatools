@@ -5,7 +5,8 @@ Date: 2026-05-31
 Status: probe documentation plus follow-up fix note. The Wave 2B probe pass
 itself changed no behavior. A later narrow routing fix corrected the
 question-form player comparison bug documented here. Bare `PLAYER vs PLAYER`
-policy and public-acceptance status remain open.
+now has a V1 ambiguous/no-result boundary. Public-acceptance status remains
+open.
 
 ## Scope
 
@@ -63,14 +64,14 @@ At initial probe time, no required probe was a safe expected-ok corpus addition.
 After the follow-up routing fix, the question-form comparison query is safe to
 encode. Bare `vs` remains excluded until its product policy is decided.
 
-Follow-up fix note:
+Follow-up fix notes:
 
 - `How do LeBron James and Kevin Durant compare this season?` now routes to
   `player_compare` with status `ok`.
 - The fixed payload preserves both LeBron James and Kevin Durant in
   `metadata.players_context`, `summary`, and `comparison`.
-- Bare `LeBron vs KD` behavior was not changed and remains a product-decision
-  item.
+- Bare `LeBron vs KD` was later changed in a separate narrow V1 boundary wave
+  to `player_compare / no_result / ambiguous_query`.
 - The fixed question-form query was added to the Raw QA corpus as
   `question_form_lebron_durant_comparison_wave2b`.
 
@@ -340,9 +341,10 @@ Classification:
 
 ## Product Decision: Bare `LeBron vs KD`
 
-Decision recommended: option 1, clarification / intent options.
+Decision implemented for V1: clean ambiguous/no-result boundary until typed
+clarification UI exists.
 
-Recommended public behavior:
+Future ideal public behavior:
 
 ```text
 Ambiguous comparison. Did you mean:
@@ -354,14 +356,12 @@ Ambiguous comparison. Did you mean:
 
 Implementation note:
 
-- This should be treated as a product and UX decision before adding a corpus
-  expectation.
-- The current `player_compare` result is useful evidence for option 2, but it
-  should not be accepted by default while the documented boundary calls the bare
-  phrasing ambiguous.
-- If clarification UI/API affordances are not ready, a clean
-  unsupported/ambiguous response is preferable to marking the silent default as
-  public accepted.
+- V1 preserves `player_compare` as the closest route and returns
+  `no_result` / `ambiguous_query` with empty sections.
+- Metadata preserves the recognized players and a `bare_player_vs_player`
+  ambiguity marker for future typed clarification UI.
+- The old `player_compare / ok` table is not a public-accepted expectation for
+  bare player-vs-player phrasing.
 
 ## Behavior Bugs Versus Product Decisions
 
@@ -373,8 +373,9 @@ Behavior bugs:
 
 Product decisions:
 
-- Bare `LeBron vs KD` needs an explicit product policy. This report recommends
-  clarification / intent options.
+- Bare `LeBron vs KD` now has an explicit V1 product policy:
+  `player_compare / no_result / ambiguous_query`, with future typed
+  clarification options deferred.
 
 Acceptable unsupported behavior:
 
@@ -393,13 +394,15 @@ Safe corpus additions:
 
 - `How do LeBron James and Kevin Durant compare this season?` after the
   follow-up fix, as `question_form_lebron_durant_comparison_wave2b`.
-- After accepting a bare-`vs` product decision, add the corresponding bare-`vs`
-  corpus row with expectations matching the selected policy.
+- Bare player-vs-player boundary rows after the V1 boundary wave:
+  `bare_lebron_kd_ambiguous_boundary_v1`,
+  `bare_lebron_durant_ambiguous_boundary_v1`, and
+  `bare_jokic_embiid_ambiguous_boundary_v1`.
 
 ## Concrete Next Action
 
-1. Make the bare `PLAYER vs PLAYER` product decision. Recommended decision:
-   clarification / intent options.
+1. Keep the V1 bare `PLAYER vs PLAYER` ambiguity boundary until typed
+   clarification UI and API response contracts are approved.
 2. Open a separate semantic-cleanup wave for recognizable unsupported concepts
    that currently return `error` / `unrouted`, prioritizing route-preserving
    `no_result` / `filter_not_supported` where the main intent is clear.

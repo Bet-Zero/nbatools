@@ -110,11 +110,34 @@ def test_player_comparison_multiseason_route():
     assert parsed["route"] == "player_compare"
 
 
+@pytest.mark.parametrize(
+    ("query", "player_a", "player_b"),
+    [
+        ("LeBron vs KD", "LeBron James", "Kevin Durant"),
+        ("LeBron James vs Kevin Durant", "LeBron James", "Kevin Durant"),
+        ("Jokic vs Embiid", "Nikola Jokić", "Joel Embiid"),
+    ],
+)
+def test_bare_player_vs_player_routes_to_ambiguous_boundary(query, player_a, player_b):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "player_compare"
+    assert parsed["player_a"] == player_a
+    assert parsed["player_b"] == player_b
+    assert parsed["bare_player_vs_player"] is True
+    assert parsed["route_kwargs"]["ambiguous_intent"] == "bare_player_vs_player"
+    assert parsed["route_kwargs"]["clarification_options"][0]["intent"] == (
+        "player_stat_comparison"
+    )
+
+
 def test_full_name_player_comparison_route():
     parsed = parse_query("LeBron James vs Kevin Durant comparison")
     assert parsed["route"] == "player_compare"
     assert parsed["player_a"] == "LeBron James"
     assert parsed["player_b"] == "Kevin Durant"
+    assert parsed["bare_player_vs_player"] is False
+    assert "ambiguous_intent" not in parsed["route_kwargs"]
 
 
 def test_compare_full_names_and_route():
@@ -141,11 +164,12 @@ def test_question_form_player_summary_still_routes_to_summary():
     assert parsed["player_b"] is None
 
 
-def test_alias_player_comparison_still_routes():
+def test_alias_bare_player_vs_player_routes_to_ambiguous_boundary():
     parsed = parse_query("LeBron vs Durant")
     assert parsed["route"] == "player_compare"
     assert parsed["player_a"] == "LeBron James"
     assert parsed["player_b"] == "Kevin Durant"
+    assert parsed["route_kwargs"]["ambiguous_intent"] == "bare_player_vs_player"
 
 
 def test_player_game_log_vs_player_stays_finder():

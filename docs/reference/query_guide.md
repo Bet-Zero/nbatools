@@ -126,6 +126,10 @@ Natural examples:
 - `Kobe vs LeBron playoffs in 2008-09`
 - `Celtics vs Bucks from 2021-22 to 2023-24`
 
+Bare player-vs-player phrasing such as `LeBron vs KD` is ambiguous in V1 and
+returns `no_result` / `ambiguous_query`. Add comparison wording, recent-form
+wording, `head-to-head`, `stats`, or `game log` to choose a supported intent.
+
 ## Splits
 
 Use these for home/away or wins/losses breakdowns.

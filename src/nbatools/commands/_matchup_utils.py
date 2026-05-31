@@ -183,6 +183,57 @@ def _resolve_comparison_player_phrase(phrase: str) -> str | None:
     return detect_player(cleaned)
 
 
+def _is_exact_player_reference_phrase(phrase: str, player: str) -> bool:
+    cleaned = normalize_text(phrase).strip(" .?!,;:")
+    if not cleaned:
+        return False
+    if PLAYER_ALIASES.get(cleaned) == player:
+        return True
+    return cleaned == normalize_text(player).strip(" .?!,;:")
+
+
+def detect_bare_player_vs_player_query(text: str) -> tuple[str | None, str | None]:
+    """Detect exact ``PLAYER vs PLAYER`` fragments that need clarification.
+
+    This intentionally requires each side of ``vs`` to be only a player
+    reference. Qualified comparison phrasing such as ``Jokic vs Embiid recent
+    form`` or explicit opponent-player phrasing such as ``LeBron stats vs KD``
+    remains outside this boundary.
+    """
+    cleaned_text = normalize_text(text).strip(" .?!,;:")
+    if detect_head_to_head(cleaned_text):
+        return None, None
+
+    vs_match = re.match(
+        r"^([a-z0-9 .&'\-]+?)\s+(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)$",
+        cleaned_text,
+    )
+    if not vs_match:
+        return None, None
+
+    left_phrase = vs_match.group(1).strip()
+    right_phrase = vs_match.group(2).strip()
+    if _PLAYER_AS_OPPONENT_CONTEXT_RE.search(left_phrase) or _PLAYER_AS_OPPONENT_CONTEXT_RE.search(
+        right_phrase
+    ):
+        return None, None
+    if detect_team_in_text(left_phrase) or detect_team_in_text(right_phrase):
+        return None, None
+
+    player_a = _resolve_comparison_player_phrase(left_phrase)
+    player_b = _resolve_comparison_player_phrase(right_phrase)
+    if (
+        player_a
+        and player_b
+        and player_a != player_b
+        and _is_exact_player_reference_phrase(left_phrase, player_a)
+        and _is_exact_player_reference_phrase(right_phrase, player_b)
+    ):
+        return player_a, player_b
+
+    return None, None
+
+
 def _extract_full_name_comparison(cleaned_text: str) -> tuple[str | None, str | None]:
     compare_and = re.search(
         r"\bcompare\s+([a-z0-9 .&'\-]+?)\s+(?:and|with)\s+([a-z0-9 .&'\-]+)$",

@@ -314,6 +314,24 @@ class TestFilterNotSupportedReason:
         assert blocked == []
 
 
+class TestAmbiguousQueryReason:
+    """Verify AMBIGUOUS_QUERY is a clean no-result reason."""
+
+    def test_result_reason_enum_has_ambiguous_query(self):
+        assert hasattr(ResultReason, "AMBIGUOUS_QUERY")
+        assert ResultReason.AMBIGUOUS_QUERY == "ambiguous_query"
+
+    def test_expected_reasons_contains_ambiguous_query(self):
+        from nbatools.query_service import _EXPECTED_REASONS
+
+        assert "ambiguous_query" in _EXPECTED_REASONS
+
+    def test_reason_to_status_maps_ambiguous_query_to_no_result(self):
+        from nbatools.query_service import reason_to_status
+
+        assert reason_to_status("ambiguous_query") == "no_result"
+
+
 # ---------------------------------------------------------------------------
 # Pattern 8 — ambiguous query recovery
 # ---------------------------------------------------------------------------

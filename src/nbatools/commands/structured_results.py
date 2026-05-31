@@ -38,6 +38,7 @@ import pandas as pd
 #   no_data     → no_result   (data files missing — expected for unloaded seasons)
 #   unsupported → no_result   (invalid filter combo or unsupported stat)
 #   ambiguous   → no_result   (entity resolution found multiple matches)
+#   ambiguous_query → no_result (recognised query has multiple valid intents)
 #   unrouted    → error       (query could not be parsed/routed)
 #   error       → error       (unexpected internal exception)
 #
@@ -63,6 +64,7 @@ class ResultReason(StrEnum):
     - ``no_data``     → ``no_result`` — underlying data file is unavailable
     - ``unsupported`` → ``no_result`` — invalid filter combination or stat
     - ``ambiguous``   → ``no_result`` — multiple entity matches
+    - ``ambiguous_query`` → ``no_result`` — multiple valid query intents
     - ``unrouted``    → ``error``     — query could not be parsed/routed
     - ``error``       → ``error``     — unexpected internal failure
     """
@@ -71,6 +73,7 @@ class ResultReason(StrEnum):
     NO_DATA = "no_data"
     UNROUTED = "unrouted"
     AMBIGUOUS = "ambiguous"
+    AMBIGUOUS_QUERY = "ambiguous_query"
     UNSUPPORTED = "unsupported"
     # A filter was parsed and recognised but cannot be applied with current data.
     # Distinct from ``unsupported`` (query type not built) and ``no_data``

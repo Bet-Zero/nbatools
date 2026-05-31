@@ -74,7 +74,9 @@ If a feature is not reflected here, it should not be assumed shipped.
   correcting via last-name/nickname aliases; exact aliases like `durant`, `steph`,
   and `curry` still resolve normally
 - team name/alias: `Lakers`, `LAL`, `Celtics`, `Sixers`, `Wolves`
-- player vs player: `Jokic vs Embiid`
+- player comparison wording: `Compare Jokic and Embiid`, `Jokic vs Embiid recent form`
+  (bare `PLAYER vs PLAYER` phrasing such as `Jokic vs Embiid` returns an
+  ambiguous/no-result boundary until clarification UI exists)
 - team vs team: `Celtics vs Bucks`
 
 ### 2.2 Time/context filters
@@ -380,7 +382,7 @@ Current behavior:
 Examples:
 
 - `Jokic vs Embiid recent form`
-- `Jokic vs Embiid since 2021`
+- `Compare Jokic and Embiid since 2021`
 - `LeBron James vs Kevin Durant comparison`
 - `Compare LeBron James and Kevin Durant`
 - `How do LeBron James and Kevin Durant compare this season?`
@@ -398,6 +400,10 @@ Examples:
 
 ### Comparison support notes
 
+- bare player-vs-player phrasing such as `LeBron vs KD` is treated as
+  ambiguous in V1 and returns `no_result` / `ambiguous_query`; add words such as
+  `compare`, `comparison`, `recent form`, `head-to-head`, `stats`, or
+  `game log` to choose an intent
 - head-to-head / h2h phrasing is supported where the sample can be resolved
 - if there are no shared head-to-head games in the resolved sample, the result can be `no_match`
 
