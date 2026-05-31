@@ -6141,6 +6141,44 @@ cases:
         equals: unresolved_player
     review_notes: "Public acceptance Wave 2A: unresolved player typo must not broaden to a league-wide rolling-stretch leaderboard."
 
+  - id: pqa_comparison_typo_kevn_durant
+    query: "LeBron vs Kevn Durant comparison"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: player_comparisons
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_compare
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_player
+    review_notes: "Public acceptance Wave 2D: partial first-name typo must not silently compare via last-name nickname."
+
+  - id: pqa_typo_synonym_stephn_averages
+    query: "Stephn Curry averages this season"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: player_stats_this_season
+      variant: typo_partial
+      no_broad_fallback: true
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_summary
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_player
+    review_notes: "Public acceptance Wave 2D: typo player summary must not silently resolve Stephen Curry via curry nickname."
+
   - id: pqa_count_short_lebron_triple_doubles
     query: "count LeBron triple doubles since 2020"
     category: player_game_log_count

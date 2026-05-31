@@ -40,6 +40,7 @@ from nbatools.commands._matchup_utils import (
     detect_player_resolved,
     detect_team_resolved,
     detect_unresolved_availability_player,
+    detect_unresolved_player_typo,
     detect_with_player,
     detect_without_player,
     extract_adjacent_playoff_team_comparison,
@@ -523,6 +524,18 @@ def _unresolved_date_boundary(parsed: dict) -> str | None:
         token = match.group(1)
         if _looks_like_month_typo(token):
             return token
+    return None
+
+
+def _unresolved_player_typo_boundary(parsed: dict) -> str | None:
+    if parsed.get("split_type"):
+        return None
+
+    q = parsed["normalized_query"]
+    if parsed.get("player_a") and parsed.get("player_b"):
+        return detect_unresolved_player_typo(q, comparison=True)
+    if parsed.get("player") and not parsed.get("player_a") and not parsed.get("player_b"):
+        return detect_unresolved_player_typo(q, summary=True)
     return None
 
 
@@ -1488,6 +1501,27 @@ def _finalize_route(parsed: dict) -> dict:
             limit=top_n or 10,
             window_size=window_size,
             stretch_metric=stretch_metric,
+        )
+        route_kwargs["unresolved_player_fragment"] = unresolved_player_fragment
+    elif unresolved_player_fragment := _unresolved_player_typo_boundary(parsed):
+        if player_a and player_b:
+            route = "player_compare"
+        else:
+            route = "player_game_summary"
+        notes.append(
+            "unsupported_boundary: unresolved player typo was not corrected to a "
+            "confident player identity"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unresolved_player",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            stat=stat,
+            limit=top_n or 10,
         )
         route_kwargs["unresolved_player_fragment"] = unresolved_player_fragment
     elif lineup_members and presence_state is not None:

@@ -360,7 +360,7 @@ Missing user-obvious variants: Game Score sentence form and typo/partial names.
 | Synonym | `celtics_bucks_comparison_this_season_wave5` | `Celtics vs Bucks comparison this season` | `team_compare` / `ok` / `-` | Supported | Team comparison route. |
 | Inverse/sibling | `lebron_stats_vs_durant_wave5` | `LeBron stats vs Kevin Durant` | `player_game_finder` / `ok` / `-` | Supported sibling | Stats-vs-player context does not route to player comparison. |
 | Nearby unsupported | `pqa_comparison_subjective_better_jokic_embiid` | `Who is better, Jokic or Embiid?` | `None` / `error` / `unrouted` | Unsupported | No invented comparison winner or broad comparison table. |
-| Typo/partial | `pqa_comparison_typo_kevn_durant` | `LeBron vs Kevn Durant comparison` | `None` / `error` / `unrouted` | Unsupported until resolved | No player comparison unless partial-name support is explicit. |
+| Typo/partial | `pqa_comparison_typo_kevn_durant` | `LeBron vs Kevn Durant comparison` | `player_compare` / `no_result` / `filter_not_supported` | Unsupported (V2 fuzzy deferred) | `unsupported_filters=["unresolved_player"]`; no silent Kevin Durant comparison. |
 
 Missing user-obvious variants: subjective comparison boundary and typo/partial
 opponent names.
@@ -421,7 +421,7 @@ route-preserving filter typos.
 | Canonical typo guard | `lakers_record_without_luk_public_sweep` | `Lakers record without Luk` | `team_record` / `no_result` / `filter_not_supported` | Unsupported | Unresolved availability filter preserved; no full Lakers record. |
 | Short | `pqa_typo_short_jokc_stats` | `Jokc stats` | `None` / `error` / `unrouted` | Unsupported until resolved | No Nikola Jokic summary unless resolver support is explicit. |
 | Sentence | `pqa_typo_sentence_tatm_recent` | `How has Tatm played recently?` | `None` / `error` / `unrouted` | Unsupported until resolved | No Tatum recent-form fallback. |
-| Synonym | `pqa_typo_synonym_stephn_averages` | `Stephn Curry averages this season` | `None` / `error` / `unrouted` | Unsupported until resolved | No Stephen Curry summary unless typo support is explicit. |
+| Synonym | `pqa_typo_synonym_stephn_averages` | `Stephn Curry averages this season` | `player_game_summary` / `no_result` / `filter_not_supported` | Unsupported (V2 fuzzy deferred) | `unsupported_filters=["unresolved_player"]`; no silent Stephen Curry summary. |
 | Inverse/sibling | `luka_stats_this_season_public_sweep` | `Luka stats this season` | `player_game_summary` / `ok` / `-` | Supported sibling | Confirms correctly spelled short name still resolves. |
 | Nearby unsupported | `pqa_typo_team_lakeers_record` | `Lakeers record this season` | `None` / `error` / `unrouted` | Unsupported until resolved | No Lakers record unless typo support is explicit. |
 | Typo/partial | `pqa_typo_partial_kevn_comparison` | `LeBron vs Kevn Durant comparison` | `None` / `error` / `unrouted` | Unsupported until resolved | No comparison table with one unresolved entity. |
@@ -999,7 +999,77 @@ Full parser/query slice and raw QA output paths:
 ### 15.5 Remaining Product Decisions
 
 Wave 2C intentionally left typo-tolerant player resolution as open product
-decisions:
+decisions. Wave 2D closed them by deferring fuzzy typo correction to V2 and
+seeding explicit `unresolved_player` guards for the two cases below.
 
-- `pqa_comparison_typo_kevn_durant`
-- `pqa_typo_synonym_stephn_averages`
+## 16. Wave 2D Typo-Tolerant Player Decision Results
+
+### 16.1 Product Decision
+
+V1 does **not** ship fuzzy typo-tolerant player resolution. Misspelled
+first-name fragments such as `Kevn` or `Stephn` must not silently correct to
+Kevin Durant or Stephen Curry when resolution would otherwise happen only through
+last-name/nickname aliases (`durant`, `curry`). Exact aliases and full names
+remain unchanged.
+
+Deferred to V2: edit-distance / fuzzy player matching and intentional
+typo-correction policy.
+
+### 16.2 Cases Fixed And Seeded
+
+| Case ID | Query | Before | After | Unsupported filter |
+|---|---|---|---|---|
+| `pqa_comparison_typo_kevn_durant` | `LeBron vs Kevn Durant comparison` | `player_compare` / `ok` | `player_compare` / `no_result` / `filter_not_supported` | `unresolved_player` |
+| `pqa_typo_synonym_stephn_averages` | `Stephn Curry averages this season` | `player_game_summary` / `ok` | `player_game_summary` / `no_result` / `filter_not_supported` | `unresolved_player` |
+
+Wave 2D added these two cases to `qa/raw_query_answer_corpus.yaml` with
+`acceptance.family`, `acceptance.variant`, and
+`acceptance.no_broad_fallback=true`, then added the case IDs to
+`qa/harness_slices/public_query_acceptance.yaml`.
+
+Current public acceptance slice totals after Wave 2D:
+
+| Metric | Count |
+|---|---:|
+| Total `public_query_acceptance` slice cases | 67 |
+| Cases added in Wave 2D | 2 |
+| Product-decision cases closed in Wave 2D | 2 |
+| Remaining open product-decision typo cases | 0 |
+
+### 16.3 Root Cause
+
+`resolve_player()` and `resolve_player_in_query()` match dominant
+last-name/nickname aliases inside multi-word phrases. That is correct for exact
+alias usage (`durant`, `steph curry`) but incorrect for typoed first names where
+only the last-name token matches.
+
+### 16.4 Implementation
+
+- `phrase_has_partial_nickname_player_typo()` and
+  `allowed_player_reference_tokens()` in `entity_resolution.py`
+- `detect_unresolved_player_typo()` in `_matchup_utils.py`
+- `_unresolved_player_typo_boundary()` routing guard in `natural_query.py`
+
+### 16.5 Wave 2D Validation
+
+Run after implementation:
+
+```bash
+.venv/bin/pytest tests/test_natural_query_parser.py::test_public_query_bad_fragments_do_not_broad_fallback -n0 -q
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --fail-on-expectation-failure
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice basic_public_availability --fail-on-expectation-failure
+.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice natural_query_route_priority --slice product_boundaries --fail-on-expectation-failure
+make PYTEST=.venv/bin/pytest test-parser
+make PYTEST=.venv/bin/pytest test-query
+git diff --check
+```
+
+Record output paths and pass counts in
+`return_packages/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2D_TYPO_PLAYER_DECISION_RETURN_PACKAGE.md`.
+
+### 16.6 Waves 2A/2B/2C Regression Proof
+
+Re-run the Wave 2D validation commands above; all three prior-wave slices must
+stay green (`public_query_acceptance` now includes Waves 2A–2D cases,
+`basic_public_availability`, `natural_query_route_priority` +
+`product_boundaries`).

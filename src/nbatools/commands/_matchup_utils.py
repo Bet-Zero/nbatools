@@ -16,6 +16,7 @@ from nbatools.commands.entity_resolution import (
     PLAYER_ALIASES,
     TEAM_ALIASES,
     ResolutionResult,
+    phrase_has_partial_nickname_player_typo,
     resolve_player_in_query,
     resolve_team_in_query,
 )
@@ -472,4 +473,102 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
             continue
         if phrase and not detect_player(phrase):
             return phrase
+    return None
+
+
+_COMPARISON_TRAILING_CONTEXT = (
+    rf"(?:{STOP_WORDS}|since|before|after|when|where|who|what|which|how|why)"
+)
+_VS_COMPARISON_PHRASE_RE = re.compile(
+    r"(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"
+    rf"(?=\s+{_COMPARISON_TRAILING_CONTEXT}\b|$)"
+)
+_SPLIT_VS_CONTEXT_RE = re.compile(
+    r"\b(?:home|away|road|wins?|losses?)\s+(?:vs\.?|versus)\s+"
+    r"(?:home|away|road|wins?|losses?)\b"
+)
+_ON_OFF_VS_CONTEXT_RE = re.compile(
+    r"\b(?:on\s+(?:the\s+)?floor|on\s+court|off\s+(?:the\s+)?floor|off\s+court)\b"
+)
+_SUMMARY_TYPO_PREFIX_RE = re.compile(r"^([a-z][a-z .&'\-]+?)\s+(?:averages?|average|stats?|stat)\b")
+_SUMMARY_TYPO_BLOCKED_NAME_WORDS = frozenset(
+    {
+        "clutch",
+        "game",
+        "log",
+        "logs",
+        "recent",
+        "form",
+        "playoff",
+        "playoffs",
+        "postseason",
+        "career",
+        "season",
+        "home",
+        "away",
+        "road",
+        "last",
+        "past",
+        "on",
+        "off",
+        "court",
+        "floor",
+    }
+)
+
+
+def detect_unresolved_player_typo_comparison(text: str) -> str | None:
+    """Return typoed opponent phrase from player-vs-player comparison wording."""
+    cleaned = strip_matchup_noise(text)
+    if _SPLIT_VS_CONTEXT_RE.search(cleaned) or _ON_OFF_VS_CONTEXT_RE.search(cleaned):
+        return None
+    if _PLAYER_AS_OPPONENT_CONTEXT_RE.search(cleaned):
+        return None
+
+    m = _VS_COMPARISON_PHRASE_RE.search(cleaned)
+    if not m:
+        return None
+
+    phrase = _clean_comparison_player_phrase(m.group(1))
+    phrase = re.sub(
+        rf"\s+{_COMPARISON_TRAILING_CONTEXT}\b.*$",
+        "",
+        phrase,
+    )
+    phrase = normalize_text(phrase.strip(" ."))
+    if phrase and phrase_has_partial_nickname_player_typo(phrase):
+        return phrase
+    return None
+
+
+def detect_unresolved_player_summary_typo(text: str) -> str | None:
+    """Return typoed leading player phrase from summary/averages shorthand."""
+    cleaned = strip_matchup_noise(text)
+    m = _SUMMARY_TYPO_PREFIX_RE.match(cleaned)
+    if not m:
+        return None
+
+    phrase = m.group(1).strip()
+    if len(phrase.split()) > 3:
+        return None
+    if any(word in _SUMMARY_TYPO_BLOCKED_NAME_WORDS for word in phrase.split()):
+        return None
+    if phrase_has_partial_nickname_player_typo(phrase):
+        return phrase
+    return None
+
+
+def detect_unresolved_player_typo(
+    text: str,
+    *,
+    comparison: bool = False,
+    summary: bool = False,
+) -> str | None:
+    """Return a player fragment that must not silently resolve via nickname-only match."""
+    if comparison:
+        if fragment := detect_unresolved_player_typo_comparison(text):
+            return fragment
+    if summary:
+        if fragment := detect_unresolved_player_summary_typo(text):
+            return fragment
     return None

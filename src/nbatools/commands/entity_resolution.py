@@ -799,6 +799,48 @@ def resolve_player(text: str) -> ResolutionResult:
     return _no_match()
 
 
+def allowed_player_reference_tokens(resolved_name: str) -> set[str]:
+    """Tokens and alias keys that legitimately identify ``resolved_name``."""
+    allowed: set[str] = set()
+    for part in resolved_name.split():
+        allowed.add(_normalize_for_matching(part))
+    for alias_map in (
+        CURATED_PLAYER_ALIASES,
+        PLAYER_NICKNAME_ALIASES,
+        PLAYER_FULL_NAME_ALIASES,
+    ):
+        for key, name in alias_map.items():
+            if name == resolved_name:
+                allowed.add(key)
+                allowed.update(key.split())
+    return allowed
+
+
+def phrase_has_partial_nickname_player_typo(phrase: str) -> bool:
+    """True when a multi-word phrase resolves only via a partial nickname match.
+
+    V1 does not fuzzy-correct first-name typos such as ``kevn durant`` or
+    ``stephn curry``; those must not silently resolve through last-name/nickname
+    aliases alone.
+    """
+    q = _normalize_for_matching(phrase)
+    if not q:
+        return False
+
+    result = resolve_player(q)
+    if not result.is_confident:
+        return False
+    if result.source in {"full_name", "full_name_alias", "last_name"}:
+        return False
+
+    tokens = q.split()
+    if len(tokens) <= 1:
+        return False
+
+    allowed = allowed_player_reference_tokens(result.resolved)
+    return any(token not in allowed for token in tokens)
+
+
 def resolve_player_in_query(text: str) -> ResolutionResult:
     """Try to resolve a player from a full query string.
 

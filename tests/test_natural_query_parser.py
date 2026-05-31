@@ -1557,6 +1557,20 @@ def test_ordinary_assist_leaderboards_stay_season_leaders(query):
             "unresolved_player_fragment",
             "bookr",
         ),
+        (
+            "LeBron vs Kevn Durant comparison",
+            "player_compare",
+            "unresolved_player",
+            "unresolved_player_fragment",
+            "kevn durant",
+        ),
+        (
+            "Stephn Curry averages this season",
+            "player_game_summary",
+            "unresolved_player",
+            "unresolved_player_fragment",
+            "stephn curry",
+        ),
     ],
 )
 def test_public_query_bad_fragments_do_not_broad_fallback(

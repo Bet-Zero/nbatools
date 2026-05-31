@@ -64,6 +64,11 @@ If a feature is not reflected here, it should not be assumed shipped.
 ### 2.1 Entities
 
 - player name: `Jokic`, `Nikola Jokić`, `LeBron`, `SGA`, `Bronny`
+- player typo correction is not supported in V1: misspelled multi-word names such as
+  `Kevn Durant` or `Stephn Curry` return `no_result` / `filter_not_supported`
+  with `metadata.unsupported_filters=["unresolved_player"]` instead of silently
+  correcting via last-name/nickname aliases; exact aliases like `durant`, `steph`,
+  and `curry` still resolve normally
 - team name/alias: `Lakers`, `LAL`, `Celtics`, `Sixers`, `Wolves`
 - player vs player: `Jokic vs Embiid`
 - team vs team: `Celtics vs Bucks`
