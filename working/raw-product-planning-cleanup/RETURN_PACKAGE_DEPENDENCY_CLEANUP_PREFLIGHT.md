@@ -77,7 +77,7 @@ These durable docs link directly to exact Raw Product return-package paths.
 | `docs/reference/result_contracts/core_result_table_contracts.md` | Durable weak-contract and leaderboard-column contract. | Keep as the source of truth for current renderer behavior. |
 | `docs/reference/query_catalog.md` and `docs/reference/query_guide.md` | Durable division-boundary references. | Keep as the source of truth for guarded `opponent_division` unsupported behavior. |
 | `working/frontend-visual-qa-followups/VISUAL_QA_NOTES.md` | Visual follow-up notes cite older visual fix packages. | Promote findings into the notes or current visual checklist, then remove package paths. |
-| `docs/planning/raw-product/VISUAL_QA_CORPUS_EXPANSION_PREFLIGHT.md` | Corpus-expansion context cites public UI and hardening packages. | Replace with durable visual QA checklist and release evidence summary. |
+| `docs/operations/frontend_visual_qa.md` and `docs/operations/ui_guide.md` | Durable Visual QA workflow, current baseline, and UI route guidance. | Keep as the source of truth for current Visual QA operations and UI behavior. |
 | `docs/operations/frontend_visual_qa.md` | Durable screenshot workflow, visual QA baseline, and artifact-run rules. | Keep current as the operations runbook. |
 | `docs/planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` | Route-priority context cites a constants-extraction package. | Replace with durable route-priority snapshot and decision-map docs. |
 | `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` | Decision-map context cites extraction preflight package. | Replace with the durable extraction preflight doc. |
