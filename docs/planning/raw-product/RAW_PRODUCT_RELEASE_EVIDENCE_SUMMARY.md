@@ -190,6 +190,12 @@ opponent-conference filter. Division filtering itself remains unsupported.
 | Public phrasing gate | `qa/harness_slices/public_query_acceptance.yaml` |
 | Covered waves | Wave 1 seed; Wave 2A no-broad-fallback guards; Wave 2B availability shorthand/synonyms; Wave 2C route priority; Wave 2D typo-player decision |
 | Latest public acceptance run | `outputs/raw_query_answer_qa/20260528T225801Z/report.md`; 67/67 passed |
+| Layer A machine regression | `PASS`; Wave 1 harness validation passed 67/67 expectations |
+| Layer A full-corpus harness safety run | `outputs/raw_query_answer_qa/20260531T064312Z_wave1_full/report.md`; 294/294 expectations passed |
+| Layer B product-review registry | `qa/raw_query_answer_acceptance_families.yaml` |
+| Layer B generated artifact | `outputs/raw_query_answer_qa/20260531T064312Z_wave1_public_acceptance/product_review.md` |
+| Layer B human review | `PENDING`; Wave 1 adds the review harness, not a completed family review |
+| Layer B public acceptance | `NOT AUTO-PROMOTED`; machine pass does not imply family public acceptance |
 | Basic availability regression run | `outputs/raw_query_answer_qa/20260528T224636Z/report.md`; 7/7 passed |
 | Route-priority and product-boundary regression run | `outputs/raw_query_answer_qa/20260528T225437Z/report.md`; 49/49 passed |
 | Parser slice | `make PYTEST=.venv/bin/pytest test-parser` passed 788 tests |
@@ -200,6 +206,12 @@ opponent-conference filter. Division filtering itself remains unsupported.
 advertised feature family needs acceptance-family coverage; broad raw QA
 coverage without that family-level phrasing matrix is not enough to claim
 public readiness.
+
+The Layer B workflow is documented in
+`docs/operations/raw_query_answer_qa.md`. It keeps machine regression,
+coverage-matrix review, representative-output human review, and family public
+acceptance as separate statuses. This documentation update does not change the
+release status above.
 
 The closure confirms that team-record availability basic failures are fixed,
 no-broad-fallback guards are strengthened, and fuzzy player typo correction is

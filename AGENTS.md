@@ -335,6 +335,25 @@ In particular:
 - do not silently broaden claims without code and tests backing them up
 - when a meaningful shipped query capability changes, update `docs/reference/query_catalog.md` in the same pass so the repo keeps a living inventory of supported question types and phrasing patterns
 
+### Raw QA product-review rule
+
+For public Raw QA corpus waves, run the `public_query_acceptance` slice and
+inspect its generated `product_review.md` artifact. Raw case counts and green
+machine expectations do not prove family-level public acceptance.
+
+- Use `qa/raw_query_answer_acceptance_families.yaml` as the feature-family
+  registry.
+- Keep `acceptance.no_broad_fallback: true` backed by explicit route/status and
+  scoped or unsupported-boundary assertions.
+- Include the generated `outputs/raw_query_answer_qa/<run_id>/product_review.md`
+  path in the return package.
+- Declare one review state: `machine_only`, `human_review_pending`,
+  `human_review_complete`, or `human_review_complete_with_followup`.
+- Do not mark a family public accepted unless the variant matrix is resolved
+  and representative outputs were actually human-reviewed.
+
+See `docs/operations/raw_query_answer_qa.md`.
+
 ### Return-package dependency rule
 
 Return packages are handoff/evidence receipts, not durable source-of-truth docs.

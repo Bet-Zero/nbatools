@@ -1105,3 +1105,21 @@ The durable acceptance rule is now:
 - `public_query_acceptance` is the public phrasing acceptance gate.
 - Raw QA count alone is not enough public-readiness evidence.
 - Every advertised feature family needs acceptance-family coverage.
+
+## 17. Product-Review Harness Layer
+
+The green 67-case gate above is Layer A machine-regression evidence. It does
+not by itself prove that the live corpus represents every public feature
+family or that representative outputs were human-reviewed.
+
+The behavior-neutral Raw QA product-review harness adds:
+
+- `qa/raw_query_answer_acceptance_families.yaml`
+- validated `acceptance` metadata
+- enforced proof for `acceptance.no_broad_fallback: true`
+- generated `outputs/raw_query_answer_qa/<run_id>/product_review.md`
+- generated `outputs/raw_query_answer_qa/<run_id>/product_review.json`
+
+Use `docs/operations/raw_query_answer_qa.md` for the operator workflow. The
+first broad metadata rollout and human + ChatGPT family review remain Wave 2
+work. No release status changes follow automatically from adding the artifact.

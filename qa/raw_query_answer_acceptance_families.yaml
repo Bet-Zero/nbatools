@@ -1,0 +1,171 @@
+version: 1
+surface: public_query_acceptance
+
+variant_grid: &public_variant_grid
+  - canonical
+  - short
+  - sentence
+  - synonym
+  - inverse_sibling
+  - nearby_unsupported
+  - typo_partial
+
+families:
+  - id: player_stats_this_season
+    label: Player stats this season
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do player-season fragments, sentences, and aliases stay on the player summary route?
+      - Do unresolved player names fail cleanly without a broad summary?
+
+  - id: team_records
+    label: Team records
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do single-team record phrasings preserve location, season, and opponent qualifiers?
+      - Do matchup and unsupported division siblings avoid broad single-team fallback?
+    sibling_families:
+      - team_record_availability
+
+  - id: team_record_availability
+    label: Team record with or without player
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do presence and absence wording stay on the team-record route?
+      - Does compound or unresolved availability fail cleanly without a broad record?
+    sibling_families:
+      - team_records
+
+  - id: player_summaries_recent_form
+    label: Player summaries and recent form
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do recent-form and last-N phrases preserve player summary scope?
+      - Do comparison siblings and unresolved player names avoid broad fallback?
+    sibling_families:
+      - player_comparisons
+
+  - id: leaderboards
+    label: Leaderboards
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do stat aliases and filters remain attached to the requested leaderboard?
+      - Do top-single-game and unsupported-stat siblings avoid default-points fallback?
+    sibling_families:
+      - top_single_game_performances
+
+  - id: top_single_game_performances
+    label: Top single-game performances
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do single-game phrases remain distinct from per-game season leaderboards?
+      - Do stat typos fail cleanly without falling back to scoring games?
+    sibling_families:
+      - leaderboards
+
+  - id: count_queries
+    label: Count queries
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do count fragments retain the requested player, event, and window?
+      - Do unsupported broad-count and typo forms avoid unrelated answers?
+    sibling_families:
+      - game_finders
+
+  - id: game_finders
+    label: Game finders
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do finder fragments and sentences retain all threshold and context filters?
+      - Do empty samples and unresolved players avoid broad finder results?
+    sibling_families:
+      - count_queries
+
+  - id: splits
+    label: Splits
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do player and team split qualifiers route to the intended split result?
+      - Do unsupported role combinations and unresolved players fail cleanly?
+
+  - id: streaks
+    label: Streaks
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do longest/current streak phrases preserve thresholds and player scope?
+      - Do subjective trend and typo forms avoid broad streak or finder fallback?
+
+  - id: rolling_stretches
+    label: Rolling stretches
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do rolling-window phrases preserve player, metric, and window size?
+      - Do unsupported team and unresolved-player forms fail cleanly?
+
+  - id: comparisons
+    label: Comparisons
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do objective comparison phrases remain separate from subjective winner questions?
+      - Do team, player, and matchup comparison siblings route intentionally?
+    sibling_families:
+      - player_comparisons
+
+  - id: player_comparisons
+    label: Player comparison typo and partial-name guards
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Should player comparison typo guards remain separate from the general comparisons family?
+      - Do unresolved comparison entities fail without silently choosing a nickname match?
+    sibling_families:
+      - comparisons
+    product_decisions:
+      - question: Should player comparison typo guards be consolidated under comparisons in Wave 2?
+        current_behavior: Existing acceptance tags split comparison rows across two family IDs.
+        decision_owner: Product review
+        next_action: Decide the stable family taxonomy before broad metadata rollout.
+
+  - id: playoff_history
+    label: Playoff history
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do history, matchup, appearance, and round phrases preserve playoff scope?
+      - Do opponent-quality siblings and unresolved teams avoid broad playoff fallback?
+
+  - id: date_window_filters
+    label: Date and window filters
+    public_surface: true
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do exact dates, month windows, relative windows, and date anchors stay attached?
+      - Do malformed or unsupported anchors avoid full-scope fallback?
+
+  - id: unsupported_subjective_narrative
+    label: Unsupported subjective and narrative questions
+    public_surface: false
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do subjective and narrative questions decline cleanly?
+      - Does wording variation avoid accidental leaderboard or summary fallback?
+
+  - id: typo_partial_entity_behavior
+    label: Typo and partial-entity guardrails
+    public_surface: false
+    required_variants: *public_variant_grid
+    coverage_questions:
+      - Do unresolved entities fail clearly instead of widening query scope?
+      - Which typo and partial-name forms should remain unsupported by product decision?

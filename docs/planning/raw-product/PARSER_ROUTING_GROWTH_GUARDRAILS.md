@@ -195,12 +195,18 @@ Required coverage:
 Corpus discipline:
 
 - Raw QA cases are the source of truth for parser/routing behavior.
+- Public families must be registered in
+  `qa/raw_query_answer_acceptance_families.yaml` and reviewed through the
+  generated `product_review.md` family matrix.
 - Frontend-copy QA and visual QA are required only when rendering changes
   result from the promotion. See `FEATURE_PROMOTION_RULES.md` for those
   gates.
 - A new family cannot ship if its raw QA cases pass only because a broad
   fallback answered them. Each case must assert the specific expected
   shape.
+- Green machine expectations do not establish public acceptance. Applicable
+  variant gaps must be resolved and representative outputs must be
+  human-reviewed. See `docs/operations/raw_query_answer_qa.md`.
 
 ## 8. No broad fallback rule
 

@@ -63,6 +63,7 @@ Runbooks and operational guides.
 - `operations/deployment.md` — Cloudflare R2 and Vercel deployment storage setup
 - `operations/query_feedback_review.md` — query feedback storage and triage workflow
 - `operations/query_smoke_workflow.md` — terminal-driven natural-query smoke workflow
+- `operations/raw_query_answer_qa.md` — two-layer Raw QA runbook for machine regression, family-level product-review artifacts, no-broad-fallback proof, and human + ChatGPT handoff
 - `operations/ui_guide.md` — web UI setup, dev workflow, component reference
 
 ## Planning — `planning/`

@@ -418,6 +418,26 @@ Current limitations:
 - The corpus is a curated manual-review set, not a replacement for focused hard
   regression tests.
 
+## Current Product-Review Workflow
+
+The harness now also writes:
+
+```text
+outputs/raw_query_answer_qa/<run_id>/product_review.md
+outputs/raw_query_answer_qa/<run_id>/product_review.json
+```
+
+The feature-family registry is:
+
+```text
+qa/raw_query_answer_acceptance_families.yaml
+```
+
+Use `docs/operations/raw_query_answer_qa.md` for the current two-layer
+workflow. The existing report artifacts remain the machine-regression layer.
+`product_review.md` is the human + ChatGPT review layer. A clean machine run
+does not establish coverage completeness, human review, or public acceptance.
+
 ## Promotion To Hard Tests
 
 Use the report to decide which failures are objective.

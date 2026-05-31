@@ -59,6 +59,42 @@ MANUAL_REVIEW_STATUSES = {
     "expected_unsupported",
     "needs_product_decision",
 }
+ACCEPTANCE_VARIANTS = {
+    "canonical",
+    "short",
+    "sentence",
+    "synonym",
+    "inverse_sibling",
+    "nearby_unsupported",
+    "typo_partial",
+}
+ACCEPTANCE_REVIEW_ROLES = {
+    "representative",
+    "supporting",
+    "boundary",
+    "decision",
+}
+ACCEPTANCE_FIELD_NAMES = {
+    "family",
+    "variant",
+    "concept",
+    "review_required",
+    "review_role",
+    "public_surface",
+    "no_broad_fallback",
+    "sibling_of",
+    "intent_model",
+    "qualifier_model",
+}
+HUMAN_REVIEW_PASS_STATUSES = {
+    "pass",
+    "verified_outlier",
+    "expected_unsupported",
+}
+HUMAN_REVIEW_FOLLOWUP_STATUSES = MANUAL_REVIEW_STATUSES - {
+    "unreviewed",
+    *HUMAN_REVIEW_PASS_STATUSES,
+}
 SUMMARY_ROUTES = {
     "game_summary",
     "lineup_summary",
@@ -146,6 +182,7 @@ PREFERRED_MARKDOWN_COLUMNS = [
 ]
 DEFAULT_VERIFIED_OUTLIERS_PATH = ROOT / "qa" / "verified_outliers.yaml"
 DEFAULT_SLICE_DIR = ROOT / "qa" / "harness_slices"
+DEFAULT_ACCEPTANCE_FAMILIES_PATH = ROOT / "qa" / "raw_query_answer_acceptance_families.yaml"
 
 
 def parse_args() -> argparse.Namespace:
@@ -162,6 +199,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compare-to", default=None)
     parser.add_argument("--top-rows", type=int, default=3)
     parser.add_argument("--verified-outliers", default=str(DEFAULT_VERIFIED_OUTLIERS_PATH))
+    parser.add_argument("--acceptance-families", default=str(DEFAULT_ACCEPTANCE_FAMILIES_PATH))
     parser.add_argument("--fail-on-expectation-failure", action="store_true")
     return parser.parse_args()
 
@@ -198,6 +236,9 @@ def load_corpus(path: Path) -> tuple[int | None, list[dict[str, Any]]]:
             raise ValueError(f"Case {case.get('id', index)} missing fields: {sorted(missing)}")
         normalize_answer_text_policy(case)
         normalize_manual_review(case)
+        acceptance = normalize_acceptance(case)
+        if acceptance:
+            case["acceptance"] = acceptance
 
     version = data.get("version")
     if isinstance(version, int | str) and str(version).isdigit():
@@ -229,6 +270,201 @@ def read_yaml_or_json(path: Path) -> Any:
     if yaml is not None:
         return yaml.safe_load(raw)
     return json.loads(raw)
+
+
+def normalize_registry_variant_entries(
+    value: Any,
+    *,
+    label: str,
+) -> list[dict[str, str]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a list")
+
+    entries: list[dict[str, str]] = []
+    for index, raw_entry in enumerate(value, start=1):
+        if not isinstance(raw_entry, dict):
+            raise ValueError(f"{label} entry {index} must be a mapping")
+        variant = require_nonempty_string(
+            raw_entry.get("variant"),
+            label=f"{label} entry {index} variant",
+        )
+        if variant not in ACCEPTANCE_VARIANTS:
+            allowed = ", ".join(sorted(ACCEPTANCE_VARIANTS))
+            raise ValueError(f"{label} entry {index} variant must be one of: {allowed}")
+        entries.append(
+            {
+                "variant": variant,
+                "reason": require_nonempty_string(
+                    raw_entry.get("reason"),
+                    label=f"{label} entry {index} reason",
+                ),
+            }
+        )
+    return entries
+
+
+def normalize_product_decisions(value: Any, *, label: str) -> list[dict[str, str]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a list")
+
+    decisions: list[dict[str, str]] = []
+    for index, raw_decision in enumerate(value, start=1):
+        if isinstance(raw_decision, str):
+            decisions.append(
+                {
+                    "question": require_nonempty_string(
+                        raw_decision,
+                        label=f"{label} entry {index}",
+                    )
+                }
+            )
+            continue
+        if not isinstance(raw_decision, dict):
+            raise ValueError(f"{label} entry {index} must be a string or mapping")
+        decision = {
+            "question": require_nonempty_string(
+                raw_decision.get("question"),
+                label=f"{label} entry {index} question",
+            )
+        }
+        for key in ("variant", "current_behavior", "decision_owner", "next_action"):
+            if key in raw_decision:
+                decision[key] = require_nonempty_string(
+                    raw_decision[key],
+                    label=f"{label} entry {index} {key}",
+                )
+        if "variant" in decision and decision["variant"] not in ACCEPTANCE_VARIANTS:
+            allowed = ", ".join(sorted(ACCEPTANCE_VARIANTS))
+            raise ValueError(f"{label} entry {index} variant must be one of: {allowed}")
+        decisions.append(decision)
+    return decisions
+
+
+def load_acceptance_family_registry(path: Path) -> dict[str, Any]:
+    data = read_yaml_or_json(path)
+    if not isinstance(data, dict):
+        raise ValueError(f"Acceptance family registry must be a mapping: {path}")
+    if data.get("version") != 1:
+        raise ValueError(f"Acceptance family registry version must be 1: {path}")
+    raw_families = data.get("families")
+    if not isinstance(raw_families, list):
+        raise ValueError(f"Acceptance family registry must contain a families list: {path}")
+
+    families: list[dict[str, Any]] = []
+    family_ids: set[str] = set()
+    for index, raw_family in enumerate(raw_families, start=1):
+        if not isinstance(raw_family, dict):
+            raise ValueError(f"Acceptance family registry entry {index} must be a mapping")
+        family_id = require_nonempty_string(
+            raw_family.get("id"),
+            label=f"Acceptance family registry entry {index} id",
+        )
+        if family_id in family_ids:
+            raise ValueError(f"Duplicate acceptance family id: {family_id}")
+        family_ids.add(family_id)
+
+        public_surface = raw_family.get("public_surface")
+        if not isinstance(public_surface, bool):
+            raise ValueError(f"Acceptance family {family_id} public_surface must be a boolean")
+        required_variants = normalize_string_list(
+            raw_family.get("required_variants"),
+            label=f"Acceptance family {family_id} required_variants",
+        )
+        invalid_variants = sorted(set(required_variants) - ACCEPTANCE_VARIANTS)
+        if invalid_variants:
+            raise ValueError(
+                f"Acceptance family {family_id} has invalid required_variants: {invalid_variants}"
+            )
+        if len(required_variants) != len(set(required_variants)):
+            raise ValueError(f"Acceptance family {family_id} has duplicate required_variants")
+
+        not_applicable = normalize_registry_variant_entries(
+            raw_family.get("not_applicable_variants"),
+            label=f"Acceptance family {family_id} not_applicable_variants",
+        )
+        intentionally_unsupported = normalize_registry_variant_entries(
+            raw_family.get("intentionally_unsupported_variants"),
+            label=f"Acceptance family {family_id} intentionally_unsupported_variants",
+        )
+        resolved_variants = {
+            entry["variant"] for entry in [*not_applicable, *intentionally_unsupported]
+        }
+        if len(resolved_variants) != len(not_applicable) + len(intentionally_unsupported):
+            raise ValueError(
+                f"Acceptance family {family_id} variants cannot appear in multiple resolution lists"
+            )
+
+        families.append(
+            {
+                "id": family_id,
+                "label": require_nonempty_string(
+                    raw_family.get("label"),
+                    label=f"Acceptance family {family_id} label",
+                ),
+                "public_surface": public_surface,
+                "required_variants": required_variants,
+                "not_applicable_variants": not_applicable,
+                "intentionally_unsupported_variants": intentionally_unsupported,
+                "coverage_questions": normalize_string_list(
+                    raw_family.get("coverage_questions") or [],
+                    label=f"Acceptance family {family_id} coverage_questions",
+                ),
+                "sibling_families": normalize_string_list(
+                    raw_family.get("sibling_families") or [],
+                    label=f"Acceptance family {family_id} sibling_families",
+                ),
+                "product_decisions": normalize_product_decisions(
+                    raw_family.get("product_decisions"),
+                    label=f"Acceptance family {family_id} product_decisions",
+                ),
+            }
+        )
+
+    for family in families:
+        unknown_siblings = sorted(set(family["sibling_families"]) - family_ids)
+        if unknown_siblings:
+            raise ValueError(
+                f"Acceptance family {family['id']} has unknown sibling_families: {unknown_siblings}"
+            )
+
+    return {
+        "version": data.get("version"),
+        "surface": require_nonempty_string(
+            data.get("surface"),
+            label="Acceptance family registry surface",
+        ),
+        "families": families,
+        "families_by_id": {family["id"]: family for family in families},
+    }
+
+
+def validate_corpus_acceptance(
+    cases: list[dict[str, Any]],
+    family_registry: dict[str, Any],
+) -> None:
+    families_by_id = family_registry.get("families_by_id") or {}
+    known_case_ids = {str(case["id"]) for case in cases}
+    for case in cases:
+        acceptance = case.get("acceptance") or {}
+        if not acceptance:
+            continue
+        family = acceptance["family"]
+        if family not in families_by_id:
+            raise ValueError(
+                f"Case {case.get('id')} acceptance.family {family!r} is not in the registry"
+            )
+        raw_siblings = acceptance.get("sibling_of") or []
+        siblings = [raw_siblings] if isinstance(raw_siblings, str) else raw_siblings
+        unknown_siblings = sorted(set(siblings) - known_case_ids)
+        if unknown_siblings:
+            raise ValueError(
+                f"Case {case.get('id')} acceptance.sibling_of has unknown case ids: "
+                f"{unknown_siblings}"
+            )
 
 
 def selected_case_ids(values: list[str]) -> set[str]:
@@ -422,6 +658,158 @@ def normalize_manual_review(case: dict[str, Any]) -> dict[str, Any]:
         "tags": [str(tag) for tag in raw_tags],
         "notes": str(notes),
     }
+
+
+def require_nonempty_string(value: Any, *, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{label} must be a non-empty string")
+    return value.strip()
+
+
+def normalize_string_list(value: Any, *, label: str) -> list[str]:
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a list")
+    return [require_nonempty_string(item, label=f"{label} entry") for item in value]
+
+
+def has_hard_assertion(case: dict[str, Any], path_fragment: str | None = None) -> bool:
+    for assertion in case.get("hard_assertions") or []:
+        if not isinstance(assertion, dict) or "path" not in assertion:
+            continue
+        if path_fragment is None or path_fragment in str(assertion["path"]):
+            return True
+    return False
+
+
+def validate_no_broad_fallback_proof(case: dict[str, Any]) -> None:
+    acceptance = case.get("acceptance") or {}
+    if not acceptance.get("no_broad_fallback"):
+        return
+
+    case_id = case.get("id")
+    expected_status = case.get("expected_status")
+    if not isinstance(expected_status, str):
+        raise ValueError(
+            f"Case {case_id} acceptance.no_broad_fallback requires one exact expected_status"
+        )
+    if expected_status not in {"ok", "no_result", "error"}:
+        raise ValueError(
+            f"Case {case_id} acceptance.no_broad_fallback expected_status must be "
+            "ok, no_result, or error"
+        )
+    if "expected_route" not in case:
+        raise ValueError(
+            f"Case {case_id} acceptance.no_broad_fallback requires expected_route, "
+            "including explicit null for unrouted cases"
+        )
+
+    has_scoped_contract = any(
+        (
+            bool(case.get("expected_filters")),
+            "expected_sections" in case,
+            bool(case.get("expected_row_counts")),
+            has_hard_assertion(case),
+        )
+    )
+    if expected_status == "ok":
+        if case.get("expected_route") is None:
+            raise ValueError(
+                f"Case {case_id} acceptance.no_broad_fallback supported proof requires "
+                "a non-null expected_route"
+            )
+        if not has_scoped_contract:
+            raise ValueError(
+                f"Case {case_id} acceptance.no_broad_fallback supported proof requires "
+                "expected_filters, expected_sections, expected_row_counts, or hard_assertions"
+            )
+        return
+
+    has_boundary_contract = any(
+        (
+            "expected_reason" in case,
+            case.get("expected_sections") == [],
+            bool(case.get("expected_filters")),
+            has_hard_assertion(case),
+        )
+    )
+    if not has_boundary_contract:
+        raise ValueError(
+            f"Case {case_id} acceptance.no_broad_fallback unsupported proof requires "
+            "expected_reason, empty expected_sections, expected_filters, or hard_assertions"
+        )
+
+
+def normalize_acceptance(case: dict[str, Any]) -> dict[str, Any]:
+    raw = case.get("acceptance")
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError(f"Case {case.get('id')} acceptance must be a mapping")
+
+    unknown = sorted(set(raw) - ACCEPTANCE_FIELD_NAMES)
+    if unknown:
+        raise ValueError(f"Case {case.get('id')} acceptance has unknown fields: {unknown}")
+
+    acceptance: dict[str, Any] = {
+        "family": require_nonempty_string(
+            raw.get("family"),
+            label=f"Case {case.get('id')} acceptance.family",
+        ),
+        "variant": require_nonempty_string(
+            raw.get("variant"),
+            label=f"Case {case.get('id')} acceptance.variant",
+        ),
+    }
+    if acceptance["variant"] not in ACCEPTANCE_VARIANTS:
+        allowed = ", ".join(sorted(ACCEPTANCE_VARIANTS))
+        raise ValueError(
+            f"Case {case.get('id')} has invalid acceptance.variant "
+            f"{acceptance['variant']!r}; expected one of: {allowed}"
+        )
+
+    for key in ("concept", "intent_model"):
+        if key in raw:
+            acceptance[key] = require_nonempty_string(
+                raw[key],
+                label=f"Case {case.get('id')} acceptance.{key}",
+            )
+    for key in ("review_required", "public_surface", "no_broad_fallback"):
+        if key in raw:
+            if not isinstance(raw[key], bool):
+                raise ValueError(f"Case {case.get('id')} acceptance.{key} must be a boolean")
+            acceptance[key] = raw[key]
+    if "review_role" in raw:
+        review_role = require_nonempty_string(
+            raw["review_role"],
+            label=f"Case {case.get('id')} acceptance.review_role",
+        )
+        if review_role not in ACCEPTANCE_REVIEW_ROLES:
+            allowed = ", ".join(sorted(ACCEPTANCE_REVIEW_ROLES))
+            raise ValueError(
+                f"Case {case.get('id')} has invalid acceptance.review_role "
+                f"{review_role!r}; expected one of: {allowed}"
+            )
+        acceptance["review_role"] = review_role
+    if "sibling_of" in raw:
+        sibling_of = raw["sibling_of"]
+        if isinstance(sibling_of, str):
+            acceptance["sibling_of"] = require_nonempty_string(
+                sibling_of,
+                label=f"Case {case.get('id')} acceptance.sibling_of",
+            )
+        else:
+            acceptance["sibling_of"] = normalize_string_list(
+                sibling_of,
+                label=f"Case {case.get('id')} acceptance.sibling_of",
+            )
+    if "qualifier_model" in raw:
+        acceptance["qualifier_model"] = normalize_string_list(
+            raw["qualifier_model"],
+            label=f"Case {case.get('id')} acceptance.qualifier_model",
+        )
+
+    validate_no_broad_fallback_proof({**case, "acceptance": acceptance})
+    return acceptance
 
 
 def answer_text_from_metadata(metadata: dict[str, Any]) -> tuple[str | None, str | None]:
@@ -1244,6 +1632,7 @@ def run_case(
     query = str(case["query"])
     manual_review = normalize_manual_review(case)
     answer_text_policy = normalize_answer_text_policy(case)
+    acceptance = normalize_acceptance(case)
     base = {
         "id": case_id,
         "query": query,
@@ -1252,6 +1641,7 @@ def run_case(
         "expected": case_expectations(case),
         "manual_review": manual_review,
         "answer_text_policy": answer_text_policy,
+        "acceptance": acceptance,
     }
 
     try:
@@ -1760,6 +2150,477 @@ def failed_checks(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return failures
 
 
+def human_review_status(rows: list[dict[str, Any]]) -> str:
+    required_rows = [row for row in rows if (row.get("acceptance") or {}).get("review_required")]
+    if not required_rows:
+        return "pending"
+
+    statuses = {
+        str((row.get("manual_review") or {}).get("status", "unreviewed")) for row in required_rows
+    }
+    if statuses & HUMAN_REVIEW_FOLLOWUP_STATUSES:
+        return "reviewed_followup"
+    if statuses and statuses <= HUMAN_REVIEW_PASS_STATUSES:
+        return "reviewed_pass"
+    return "pending"
+
+
+def variant_resolution_map(
+    family: dict[str, Any],
+    family_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    rows_by_variant: dict[str, list[str]] = {}
+    for row in family_rows:
+        variant = (row.get("acceptance") or {}).get("variant")
+        if variant:
+            rows_by_variant.setdefault(str(variant), []).append(str(row.get("id")))
+
+    not_applicable = {
+        entry["variant"]: entry["reason"] for entry in family["not_applicable_variants"]
+    }
+    intentionally_unsupported = {
+        entry["variant"]: entry["reason"] for entry in family["intentionally_unsupported_variants"]
+    }
+    decision_variants = {
+        decision.get("variant")
+        for decision in family["product_decisions"]
+        if decision.get("variant")
+    }
+
+    checklist: list[dict[str, Any]] = []
+    for variant in family["required_variants"]:
+        case_ids = rows_by_variant.get(variant) or []
+        reason = ""
+        if case_ids:
+            state = "covered"
+        elif variant in decision_variants:
+            state = "needs_product_decision"
+        elif variant in intentionally_unsupported:
+            state = "intentionally_unsupported"
+            reason = intentionally_unsupported[variant]
+        elif variant in not_applicable:
+            state = "not_applicable"
+            reason = not_applicable[variant]
+        else:
+            state = "missing"
+        checklist.append(
+            {
+                "family": family["id"],
+                "variant": variant,
+                "state": state,
+                "case_ids": case_ids,
+                "reason": reason,
+            }
+        )
+    return checklist
+
+
+def product_decision_rows(
+    families: list[dict[str, Any]],
+    rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    decisions: list[dict[str, Any]] = []
+    for family in families:
+        for decision in family["product_decisions"]:
+            decisions.append({"family": family["id"], **decision})
+    for row in rows:
+        acceptance = row.get("acceptance") or {}
+        manual_review = row.get("manual_review") or {}
+        if (
+            acceptance.get("review_role") != "decision"
+            and manual_review.get("status") != "needs_product_decision"
+        ):
+            continue
+        decisions.append(
+            {
+                "family": acceptance.get("family"),
+                "case_id": row.get("id"),
+                "question": manual_review.get("notes")
+                or row.get("expected", {}).get("review_notes")
+                or "Product decision required for tagged case.",
+            }
+        )
+    return decisions
+
+
+def compact_product_review_row(row: dict[str, Any]) -> dict[str, Any]:
+    acceptance = row.get("acceptance") or {}
+    return {
+        "id": row.get("id"),
+        "query": row.get("query"),
+        "family": acceptance.get("family"),
+        "concept": acceptance.get("concept"),
+        "variant": acceptance.get("variant"),
+        "review_role": acceptance.get("review_role"),
+        "sibling_of": acceptance.get("sibling_of"),
+        "expected_route": (row.get("expected") or {}).get("expected_route"),
+        "expected_status": (row.get("expected") or {}).get("expected_status"),
+        "expected_shape": (row.get("expected") or {}).get("expected_shape"),
+        "route": row.get("route"),
+        "result_status": row.get("result_status"),
+        "shape_hint": row.get("shape_hint"),
+        "answer_text": row.get("answer_text"),
+        "answer_summary": row.get("answer_summary"),
+        "applied_filters": row.get("applied_filters") or [],
+        "section_summaries": row.get("section_summaries") or {},
+        "expectation_status": (row.get("expectation_results") or {}).get("status"),
+        "manual_review": row.get("manual_review") or {},
+        "suspicious_flags": row.get("suspicious_flags") or [],
+    }
+
+
+def build_product_review(
+    rows: list[dict[str, Any]],
+    *,
+    family_registry: dict[str, Any],
+    summary: dict[str, Any],
+) -> dict[str, Any]:
+    families = family_registry["families"]
+    rows_by_family: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        family = (row.get("acceptance") or {}).get("family")
+        if family:
+            rows_by_family.setdefault(str(family), []).append(row)
+
+    decisions = product_decision_rows(families, rows)
+    decisions_by_family = Counter(str(row.get("family")) for row in decisions)
+    checklist: list[dict[str, Any]] = []
+    family_summary: list[dict[str, Any]] = []
+    for family in families:
+        family_rows = rows_by_family.get(family["id"], [])
+        family_checklist = variant_resolution_map(family, family_rows)
+        checklist.extend(family_checklist)
+        machine_pass_count = sum(
+            (row.get("expectation_results") or {}).get("status") == "pass" for row in family_rows
+        )
+        machine_fail_count = len(family_rows) - machine_pass_count
+        missing_variants = [row["variant"] for row in family_checklist if row["state"] == "missing"]
+        decision_variants = [
+            row["variant"] for row in family_checklist if row["state"] == "needs_product_decision"
+        ]
+        family_human_review = human_review_status(family_rows)
+        if decisions_by_family[family["id"]] or decision_variants:
+            coverage_review = "needs_product_decision"
+        elif missing_variants:
+            coverage_review = "missing_variants"
+        else:
+            coverage_review = "complete"
+        representative_count = sum(
+            bool((row.get("acceptance") or {}).get("review_required")) for row in family_rows
+        )
+        public_accepted = bool(
+            family["public_surface"]
+            and family_rows
+            and not machine_fail_count
+            and coverage_review == "complete"
+            and representative_count
+            and family_human_review == "reviewed_pass"
+            and not any(row.get("suspicious_flags") for row in family_rows)
+        )
+        family_summary.append(
+            {
+                "id": family["id"],
+                "label": family["label"],
+                "public_surface": family["public_surface"],
+                "case_count": len(family_rows),
+                "machine_pass_count": machine_pass_count,
+                "machine_fail_count": machine_fail_count,
+                "machine_status": "fail"
+                if machine_fail_count
+                else ("pass" if family_rows else "not_run"),
+                "required_variants": family["required_variants"],
+                "covered_variants": sorted(
+                    {
+                        str((row.get("acceptance") or {}).get("variant"))
+                        for row in family_rows
+                        if (row.get("acceptance") or {}).get("variant")
+                    }
+                ),
+                "missing_variants": missing_variants,
+                "coverage_review": coverage_review,
+                "human_review": family_human_review,
+                "representative_count": representative_count,
+                "public_accepted": public_accepted,
+                "coverage_questions": family["coverage_questions"],
+            }
+        )
+
+    representative_rows = [
+        compact_product_review_row(row)
+        for row in rows
+        if (row.get("acceptance") or {}).get("review_required")
+    ]
+    unsupported_rows = [
+        compact_product_review_row(row)
+        for row in rows
+        if (row.get("acceptance") or {}).get("no_broad_fallback")
+        or row.get("result_status") in {"no_result", "error"}
+    ]
+    suspicious_rows = [
+        compact_product_review_row(row) for row in rows if row.get("suspicious_flags")
+    ]
+
+    family_human_statuses = {family["human_review"] for family in family_summary}
+    if "pending" in family_human_statuses:
+        review_declaration = "human_review_pending"
+    elif "reviewed_followup" in family_human_statuses:
+        review_declaration = "human_review_complete_with_followup"
+    else:
+        review_declaration = "human_review_complete"
+
+    return {
+        "run_id": summary["run_id"],
+        "corpus_path": summary["corpus_path"],
+        "case_count": summary["case_count"],
+        "machine_regression": "fail" if summary["failed_case_ids"] else "pass",
+        "review_declaration": review_declaration,
+        "family_registry_surface": family_registry["surface"],
+        "family_summary": family_summary,
+        "variant_checklist": checklist,
+        "representative_rows": representative_rows,
+        "unsupported_no_broad_fallback_rows": unsupported_rows,
+        "product_decisions": decisions,
+        "suspicious_rows": suspicious_rows,
+    }
+
+
+def format_case_ids(case_ids: list[str]) -> str:
+    if not case_ids:
+        return ""
+    return ", ".join(md_code(case_id) for case_id in case_ids)
+
+
+def write_product_review_markdown(path: Path, product_review: dict[str, Any]) -> None:
+    lines: list[str] = [
+        "# Raw Query Answer QA Product Review",
+        "",
+        "## Run Metadata And Review Status",
+        "",
+        f"- Run ID: {md_code(product_review['run_id'])}",
+        f"- Corpus: {md_code(product_review['corpus_path'])}",
+        f"- Cases run: {md_code(product_review['case_count'])}",
+        f"- Family registry surface: {md_code(product_review['family_registry_surface'])}",
+        f"- Machine regression: {md_code(product_review['machine_regression'])}",
+        f"- Human review declaration: {md_code(product_review['review_declaration'])}",
+        "",
+        "Machine regression passing does not mean coverage review, human review, or "
+        "public acceptance is complete.",
+        "",
+        "## Feature-Family Summary",
+        "",
+        "| Family | Public | Cases | Machine pass/fail | Required variants | Covered variants | "
+        "Missing variants | Coverage review | Human review | Public accepted |",
+        "|---|---|---:|---|---|---|---|---|---|---|",
+    ]
+    for family in product_review["family_summary"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    md_escape(family["label"]),
+                    "yes" if family["public_surface"] else "no",
+                    md_escape(family["case_count"]),
+                    md_escape(
+                        f"{family['machine_pass_count']} pass / {family['machine_fail_count']} fail"
+                    ),
+                    md_escape(", ".join(family["required_variants"])),
+                    md_escape(", ".join(family["covered_variants"])),
+                    md_escape(", ".join(family["missing_variants"]) or "none"),
+                    md_escape(family["coverage_review"]),
+                    md_escape(family["human_review"]),
+                    "yes" if family["public_accepted"] else "no",
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Missing / Unchecked Variant Checklist",
+            "",
+            "| Family | Variant | State | Cases | Reason |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for row in product_review["variant_checklist"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    md_escape(row["family"]),
+                    md_escape(row["variant"]),
+                    md_escape(row["state"]),
+                    format_case_ids(row["case_ids"]),
+                    md_escape(row["reason"]),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(["", "## Representative Outputs Requiring Human Review", ""])
+    if not product_review["representative_rows"]:
+        lines.append("_None tagged yet._")
+    for row in product_review["representative_rows"]:
+        lines.extend(
+            [
+                f"### {row['id']}",
+                "",
+                f"- Query: {md_code(row['query'])}",
+                (
+                    f"- Family / concept / variant: {md_code(row['family'])} / "
+                    f"{md_code(row['concept'])} / {md_code(row['variant'])}"
+                ),
+                f"- Review role: {md_code(row['review_role'])}",
+                f"- Sibling of: {md_code(row['sibling_of'])}",
+                (
+                    f"- Expected route / status / shape: {md_code(row['expected_route'])} / "
+                    f"{md_code(row['expected_status'])} / {md_code(row['expected_shape'])}"
+                ),
+                (
+                    f"- Actual route / status / shape: {md_code(row['route'])} / "
+                    f"{md_code(row['result_status'])} / {md_code(row['shape_hint'])}"
+                ),
+                f"- Machine expectation status: {md_code(row['expectation_status'])}",
+                (
+                    f"- Backend answer text: {md_escape(row['answer_text'])}"
+                    if row["answer_text"]
+                    else "- Backend answer text: _not backend-provided_"
+                ),
+                (
+                    f"- Answer summary: {md_escape(row['answer_summary'])}"
+                    if row["answer_summary"]
+                    else "- Answer summary: _not available_"
+                ),
+                f"- Filters: {format_filters(row['applied_filters'])}",
+                f"- Sections: {format_sections(row['section_summaries'])}",
+                f"- Manual review status: {md_code(row['manual_review'].get('status'))}",
+                "- Reviewer checkbox: [ ] output scope and answer look correct",
+                "- Reviewer notes:",
+            ]
+        )
+        for section_name, section_summary in row["section_summaries"].items():
+            top_rows = section_summary.get("top_rows") or []
+            if top_rows:
+                lines.extend(
+                    [
+                        "",
+                        f"Section {md_code(section_name)} top rows:",
+                        "",
+                        markdown_table(top_rows),
+                    ]
+                )
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Unsupported / No-Broad-Fallback Rows",
+            "",
+            "| Case | Family | Variant | Expected status | Actual route/status/shape | "
+            "Machine expectation |",
+            "|---|---|---|---|---|---|",
+        ]
+    )
+    for row in product_review["unsupported_no_broad_fallback_rows"]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    md_escape(row["id"]),
+                    md_escape(row["family"]),
+                    md_escape(row["variant"]),
+                    md_escape(row["expected_status"]),
+                    md_escape(f"{row['route']} / {row['result_status']} / {row['shape_hint']}"),
+                    md_escape(row["expectation_status"]),
+                ]
+            )
+            + " |"
+        )
+    if not product_review["unsupported_no_broad_fallback_rows"]:
+        lines.append("| _none_ |  |  |  |  |  |")
+
+    lines.extend(["", "## Product Decisions Needed", ""])
+    if product_review["product_decisions"]:
+        lines.extend(
+            [
+                "| Family | Case | Variant | Question | Current behavior | Owner | Next action |",
+                "|---|---|---|---|---|---|---|",
+            ]
+        )
+        for row in product_review["product_decisions"]:
+            lines.append(
+                "| "
+                + " | ".join(
+                    md_escape(row.get(key))
+                    for key in (
+                        "family",
+                        "case_id",
+                        "variant",
+                        "question",
+                        "current_behavior",
+                        "decision_owner",
+                        "next_action",
+                    )
+                )
+                + " |"
+            )
+    else:
+        lines.append("_None._")
+
+    lines.extend(["", "## Suspicious Rows", ""])
+    if product_review["suspicious_rows"]:
+        lines.extend(["| Case | Family | Flags |", "|---|---|---|"])
+        for row in product_review["suspicious_rows"]:
+            flag_ids = ", ".join(str(flag.get("id")) for flag in row["suspicious_flags"])
+            lines.append(
+                f"| {md_escape(row['id'])} | {md_escape(row['family'])} | {md_escape(flag_ids)} |"
+            )
+    else:
+        lines.append("_None._")
+
+    lines.extend(["", "## Human Review Worksheet", ""])
+    for family in product_review["family_summary"]:
+        lines.extend(
+            [
+                f"### {family['label']}",
+                "",
+                f"- Coverage questions: {md_code(family['coverage_questions'])}",
+                "- [ ] Examples represent real public usage.",
+                "- [ ] Representative outputs have correct scope and answer shape.",
+                "- [ ] Missing variants are resolved or recorded as follow-up.",
+                "- Reviewer notes:",
+                "",
+            ]
+        )
+
+    lines.extend(
+        [
+            "## What To Send ChatGPT",
+            "",
+            "Send ChatGPT this file:",
+            "",
+            f"`{display_path(path)}`",
+            "",
+            "Use this exact instruction block:",
+            "",
+            "```text",
+            "Review this NBA Tools Raw QA product-review artifact as a product coverage",
+            "audit. Do not treat machine pass counts as sufficient. For each feature",
+            "family:",
+            "1. Decide whether the examples represent real public usage.",
+            "2. Flag missing canonical, short, sentence, synonym, sibling/inverse,",
+            "   nearby-unsupported, or typo/partial variants.",
+            "3. Review the representative answer outputs for wrong scope, misleading",
+            "   answers, and broad fallback.",
+            "4. Separate behavior bugs from corpus gaps and product decisions.",
+            "5. Return a family-by-family table with verdict, missing cases, suspicious",
+            "   outputs, and recommended next action.",
+            "```",
+        ]
+    )
+    path.write_text("\n".join(lines).rstrip() + "\n")
+
+
 def append_slowest_cases_section(lines: list[str], summary: dict[str, Any]) -> None:
     lines.extend(["", "## Slowest Cases", ""])
     slowest_cases = summary.get("slowest_cases") or []
@@ -2127,9 +2988,13 @@ def main() -> int:
     report_jsonl_path = run_dir / "report.jsonl"
     report_md_path = run_dir / "report.md"
     summary_path = run_dir / "summary.json"
+    product_review_md_path = run_dir / "product_review.md"
+    product_review_json_path = run_dir / "product_review.json"
 
+    family_registry = load_acceptance_family_registry(resolve_path(args.acceptance_families))
     version, cases = load_corpus(corpus_path)
     del version
+    validate_corpus_acceptance(cases, family_registry)
     verified_outliers = load_verified_outliers(resolve_path(args.verified_outliers))
     selected_ids, explicit_selection = collect_selected_case_ids(
         case_values=args.case,
@@ -2155,6 +3020,8 @@ def main() -> int:
         "report_jsonl": report_jsonl_path,
         "report_md": report_md_path,
         "summary_json": summary_path,
+        "product_review_md": product_review_md_path,
+        "product_review_json": product_review_json_path,
     }
     summary = summarize_rows(
         rows,
@@ -2166,10 +3033,17 @@ def main() -> int:
     )
     if args.compare_to:
         summary["comparison"] = build_run_comparison(rows, resolve_path(args.compare_to))
+    product_review = build_product_review(
+        rows,
+        family_registry=family_registry,
+        summary=summary,
+    )
 
     write_jsonl(report_jsonl_path, rows)
     dump_json(summary_path, summary)
     write_markdown(report_md_path, rows, summary)
+    dump_json(product_review_json_path, product_review)
+    write_product_review_markdown(product_review_md_path, product_review)
 
     failed_case_ids = summary["failed_case_ids"]
     print(f"Wrote raw query answer QA report: {run_dir.relative_to(ROOT)}")

@@ -2,7 +2,7 @@
 
 Date: 2026-05-31
 
-Status: documentation-only preflight; execution not started.
+Status: Wave 1 metadata foundation and generated product-review artifact implemented; Wave 2 broad metadata rollout and human product review remain pending.
 
 ## 1. Purpose
 
@@ -799,3 +799,46 @@ git diff --check
 - [x] Public-accepted criteria are explicit.
 - [x] Waves 1-3 are bounded.
 - [x] No production code, parser/routing behavior, corpus expectations, frontend rendering, or release status changed.
+
+## 15. Wave 1 Implementation Status
+
+Wave 1 is implemented as behavior-neutral QA tooling and documentation work.
+
+Added:
+
+- `qa/raw_query_answer_acceptance_families.yaml`
+- validated optional `acceptance` metadata in `tools/raw_query_answer_qa.py`
+- enforced proof for `acceptance.no_broad_fallback: true`
+- generated `product_review.md` and `product_review.json`
+- four representative case retags to prove the metadata and report shape
+- focused harness tests
+- `docs/operations/raw_query_answer_qa.md`
+
+The Layer A machine-regression artifacts remain available unchanged:
+
+```text
+report.jsonl
+report.md
+summary.json
+```
+
+Wave 1 does not mark families public accepted. The generated artifact exposes
+missing variants, pending representative-output review, and product-decision
+rows for Wave 2.
+
+Validation artifact:
+
+```text
+outputs/raw_query_answer_qa/20260531T064312Z_wave1_public_acceptance/product_review.md
+```
+
+The targeted Layer A run passed 67/67 machine expectations. Layer B remains
+`human_review_pending`.
+
+Broader harness safety artifact:
+
+```text
+outputs/raw_query_answer_qa/20260531T064312Z_wave1_full/report.md
+```
+
+The full corpus passed 294/294 machine expectations with zero suspicious rows.

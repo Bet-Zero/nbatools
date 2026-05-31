@@ -230,6 +230,172 @@ def test_slice_loading_by_name_uses_saved_slice_file() -> None:
     ]
 
 
+def test_acceptance_metadata_normalization_validates_extended_fields() -> None:
+    case = {
+        "id": "case_a",
+        "acceptance": {
+            "family": "team_record_availability",
+            "variant": "nearby_unsupported",
+            "concept": "multi_player_availability_boundary",
+            "public_surface": True,
+            "review_required": True,
+            "review_role": "boundary",
+            "no_broad_fallback": True,
+            "sibling_of": ["case_b"],
+            "intent_model": "team_record",
+            "qualifier_model": ["with_player", "without_player"],
+        },
+        "expected_status": "no_result",
+        "expected_route": "team_record",
+        "expected_reason": "filter_not_supported",
+        "expected_sections": [],
+    }
+
+    acceptance = qa.normalize_acceptance(case)
+
+    assert acceptance["concept"] == "multi_player_availability_boundary"
+    assert acceptance["review_role"] == "boundary"
+    assert acceptance["sibling_of"] == ["case_b"]
+    assert acceptance["qualifier_model"] == ["with_player", "without_player"]
+
+
+def test_acceptance_metadata_rejects_unknown_field() -> None:
+    with pytest.raises(ValueError, match="unknown fields"):
+        qa.normalize_acceptance(
+            {
+                "id": "case_a",
+                "acceptance": {
+                    "family": "team_records",
+                    "variant": "canonical",
+                    "typoed_field": True,
+                },
+            }
+        )
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        {
+            "id": "supported_descriptive_only",
+            "acceptance": {
+                "family": "team_records",
+                "variant": "canonical",
+                "no_broad_fallback": True,
+            },
+            "expected_status": "ok",
+            "expected_route": "team_record",
+        },
+        {
+            "id": "unsupported_descriptive_only",
+            "acceptance": {
+                "family": "team_records",
+                "variant": "nearby_unsupported",
+                "no_broad_fallback": True,
+            },
+            "expected_status": "no_result",
+            "expected_route": "team_record",
+        },
+    ],
+)
+def test_no_broad_fallback_metadata_requires_explicit_proof(case) -> None:
+    with pytest.raises(ValueError, match="no_broad_fallback"):
+        qa.normalize_acceptance(case)
+
+
+def test_acceptance_family_registry_loads_current_public_families() -> None:
+    registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
+
+    assert registry["surface"] == "public_query_acceptance"
+    assert len(registry["families"]) == 17
+    availability = registry["families_by_id"]["team_record_availability"]
+    assert availability["required_variants"] == [
+        "canonical",
+        "short",
+        "sentence",
+        "synonym",
+        "inverse_sibling",
+        "nearby_unsupported",
+        "typo_partial",
+    ]
+
+
+def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
+    registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
+    _version, cases = qa.load_corpus(qa.ROOT / "qa/raw_query_answer_corpus.yaml")
+    qa.validate_corpus_acceptance(cases, registry)
+    case_ids = set(qa.load_slice_case_ids("public_query_acceptance"))
+    selected = qa.filter_cases(
+        cases,
+        case_ids=case_ids,
+        limit=None,
+        explicit_selection=True,
+    )
+
+    assert len(selected) == 67
+    assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
+
+
+def test_product_review_markdown_includes_family_matrix_and_handoff(tmp_path) -> None:
+    registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
+    rows = [
+        {
+            "id": "availability_supported",
+            "query": "Lakers record with Luka",
+            "acceptance": {
+                "family": "team_record_availability",
+                "variant": "canonical",
+                "concept": "whole_game_player_presence",
+                "review_required": True,
+                "review_role": "representative",
+                "no_broad_fallback": True,
+            },
+            "expected": {
+                "expected_route": "team_record",
+                "expected_status": "ok",
+                "expected_shape": "team_record",
+            },
+            "route": "team_record",
+            "result_status": "ok",
+            "shape_hint": "team_record",
+            "answer_text": None,
+            "answer_summary": "Los Angeles Lakers -- 43-21 over 64 games",
+            "applied_filters": [{"kind": "player", "label": "With player", "value": "Luka"}],
+            "section_summaries": {"summary": {"row_count": 1, "top_rows": [{"wins": 43}]}},
+            "expectation_results": {"status": "pass"},
+            "manual_review": {"status": "unreviewed", "tags": [], "notes": ""},
+            "suspicious_flags": [],
+        }
+    ]
+    summary = {
+        "run_id": "test",
+        "corpus_path": "qa/raw_query_answer_corpus.yaml",
+        "case_count": 1,
+        "failed_case_ids": [],
+    }
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+    path = tmp_path / "product_review.md"
+
+    qa.write_product_review_markdown(path, review)
+    markdown = path.read_text()
+
+    assert "## Feature-Family Summary" in markdown
+    assert "## Missing / Unchecked Variant Checklist" in markdown
+    assert "### availability_supported" in markdown
+    assert "## Unsupported / No-Broad-Fallback Rows" in markdown
+    assert "## Product Decisions Needed" in markdown
+    assert "## Suspicious Rows" in markdown
+    assert "## What To Send ChatGPT" in markdown
+    assert "Do not treat machine pass counts as sufficient." in markdown
+    availability = next(
+        family for family in review["family_summary"] if family["id"] == "team_record_availability"
+    )
+    assert availability["machine_status"] == "pass"
+    assert availability["human_review"] == "pending"
+    assert "short" in availability["missing_variants"]
+    assert not availability["public_accepted"]
+
+
 def test_slice_loading_by_direct_path(tmp_path) -> None:
     slice_path = tmp_path / "custom_slice.yaml"
     slice_path.write_text(
