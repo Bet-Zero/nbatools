@@ -65,6 +65,7 @@ Runbooks and operational guides.
 - `operations/query_smoke_workflow.md` — terminal-driven natural-query smoke workflow
 - `operations/raw_query_answer_qa.md` — two-layer Raw QA runbook for machine regression, family-level product-review artifacts, no-broad-fallback proof, and human + ChatGPT handoff
 - `operations/query_validation_map.md` — plain-English map and current scoreboard for Raw QA corpus, slices, product review, rendered UI review, and pytest query tests
+- `operations/working_and_archive_policy.md` — tracked active-task working folders, ignored completed-task archives, and task-scoped return-package rules
 - `operations/ui_guide.md` — web UI setup, dev workflow, component reference
 
 ## Planning — `planning/`
@@ -201,20 +202,26 @@ Point-in-time assessments that can remain in `audits/` (and repo-level verdict d
 
 ### Working / Temporary Inventories
 
-May live near active plans while a phase is open; once phase closes, move them under `archive/.../inventories/`.
+New working artifacts belong in tracked top-level `../working/<task-slug>/`
+folders, not under `docs/`. When a task closes, promote durable facts into
+`docs/` as needed, then move its working folder to ignored top-level
+`../archive/<task-slug>/`. The top-level `archive/` folder is separate from
+`working/` and is distinct from the durable documentation history under
+`docs/archive/`.
 
 ### Return Packages
 
-Return packages are agent-to-reviewer handoff artifacts that record what an execution wave changed, what was validated, and what the next wave should pick up. They are evidence, not source of truth. Durable rules:
+Return packages are task-scoped working documents, not durable docs and not
+their own top-level folder. Put a new return package inside the relevant tracked
+`../working/<task-slug>/` folder while the task is active. Promote durable facts
+into `docs/` before moving the completed task folder to ignored top-level
+`../archive/<task-slug>/`.
 
-- **Evidence, not source of truth.** A return package is a point-in-time receipt for one execution wave. Do not treat a return package as the authoritative description of how the product, parser, routing, deployment, or any other surface currently behaves. The authoritative description lives in `docs/`.
-- **Durable behavior changes belong under `docs/`.** When a wave changes long-term behavior, a policy, a runbook, a contract, an interface, or a release-readiness fact, the durable record of that change must land under `docs/` (in `reference/`, `architecture/`, `operations/`, `planning/`, `audits/`, or `archive/` as appropriate) — not only in the return package. The return package may quote or summarize the durable change, but the durable doc is what readers consult later.
-- **Durable docs must not depend on exact package paths.** Current-state, release, handoff, checklist, policy, runbook, reference, and contract docs should not use exact return-package paths as source-of-truth evidence. Promote the facts into durable docs and link to those docs or generated `outputs/` artifacts instead. Exact return-package links in durable docs are temporary active-workstream handoffs only, must be labeled temporary, and must name the cleanup trigger.
-- **Return packages are local temporary artifacts under `return_packages/`.** Topic-scoped subdirectories such as `return_packages/raw-product/`, `return_packages/result_display/`, and `return_packages/review/` are the ignored local home for wave handoff artifacts. Do not commit return packages. Do not place return packages under `docs/`; do not place durable product/operations/architecture/reference content under `return_packages/`.
-- **Generated reports and machine/test artifacts live under `outputs/`.** Items such as exported feedback runs, screenshot bundles, machine-generated QA reports, and similar regeneratable artifacts belong under `outputs/<workflow>/<run_id>/`, not under `return_packages/` or `docs/`. A return package may reference an `outputs/` run id; it should not copy the entire generated artifact into the return package.
-- **Clean up completed wave packages on a regular cadence.** Once a workstream, release cycle, or wave series is closed, completed local return packages may be archived locally or removed so they stop competing visually with active planning docs. Cleanup is an explicitly scoped pass, not a side effect of an unrelated execution wave.
-- **Prompts must tell agents where return packages belong.** Execution prompts that produce a return package should state the local target path (for example, `return_packages/raw-product/<WAVE_NAME>_RETURN_PACKAGE.md`), call out that the file is ignored and temporary, require durable behavior changes to update `docs/`, and — when appropriate — say whether a short copied summary is sufficient.
-- **Short copied summaries are appropriate for trivial changes.** For meaningful execution waves, release evidence, QA checkpoints, and any wave that changes a contract, runbook, policy, or release-readiness fact, write a local temporary return package under `return_packages/`. For trivial changes (a typo fix, a single-link addition, a cosmetic doc tweak, a one-line README clarification) it is acceptable — and often preferred — to paste a short copied summary into the handoff prompt or PR description instead. When in doubt, write the local return package.
+The existing top-level `../return_packages/` ignore rule remains only as legacy
+migration protection. Do not create new standalone return-package folders.
+
+The policy for `../outputs/` is pending a separate audit because it may contain
+generated reports, screenshots, JSONL reports, review artifacts, and manifests.
 
 ## Audits — `audits/`
 

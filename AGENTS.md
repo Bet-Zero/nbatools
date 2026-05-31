@@ -360,8 +360,14 @@ Return packages are handoff/evidence receipts, not durable source-of-truth docs.
 Durable product, release, runbook, reference, architecture, and policy facts
 must be promoted into `docs/`.
 
-- Return packages are ignored local temporary artifacts under
-  `return_packages/`. Do not commit them.
+- Return packages are task-scoped working documents under the relevant tracked
+  `working/<task-slug>/` folder while a task is active. They are not durable
+  docs and not their own top-level folder.
+- Before completing a task, promote durable facts into `docs/` as needed, then
+  move the task folder to ignored top-level `archive/<task-slug>/`. Archived
+  working files are historical/local only and not source of truth.
+- Keep the existing top-level `return_packages/` ignore rule only as legacy
+  migration protection. Do not create new standalone return-package folders.
 - Do not use exact return-package paths in durable docs as primary evidence for
   current behavior, release readiness, parser/routing policy, runbook behavior,
   data contracts, result contracts, or UI behavior.

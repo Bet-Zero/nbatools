@@ -31,6 +31,7 @@ data/raw/teams/*
 !data/raw/teams/team_conference_membership.csv
 outputs/
 return_packages/
+archive/
 
 # Legacy standalone scripts (retired — see docs/audits/scripts_retirement.md)
 scripts/
