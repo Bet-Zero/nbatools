@@ -84,11 +84,7 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/WEAK_CONTRACT_DECISION_PREFLIGHT.md` — product-decision preflight for `lineup_summary`, `player_on_off`, and single-team `playoff_appearances` weak contracts
 - `planning/raw-product/LEADERBOARD_SUPPORTING_COLUMNS_PREFLIGHT.md` — product-decision preflight for route-specific leaderboard supporting columns
 - `planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` — plan for a manual-first raw query answer QA harness over a curated natural-language corpus
-- `planning/raw-product/RAW_QA_CORPUS_PRODUCT_REVIEW_HARNESS_PREFLIGHT.md` — documentation-only preflight for extending Raw QA into a two-layer machine-regression and human-product-review harness with feature-family matrices, representative outputs, no-broad-fallback proof, and corpus-wave return-package rules
-- `planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_PRODUCT_REVIEW_TRIAGE.md` — documentation-only triage of the first generated Raw QA product-review artifact with the Wave 2 comparison-taxonomy decision, family-by-family missing-variant plan, representative-output review, error/no-result classification, and bounded execution steps
-- `planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_PROBE_RESULTS.md` — documentation-only Wave 2B probe results for bare `vs`, comparison question-form routing, unsupported subjective/count/typo boundaries, no-broad-fallback classification, and next actions before adding expectations
 - `planning/raw-product/BARE_PLAYER_VS_PLAYER_QUERY_POLICY_PREFLIGHT.md` — policy and V1 implementation note for bare player-vs-player queries such as `LeBron vs KD`, now a clean ambiguous/no-result boundary with future clarification flow deferred
-- `planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md` — living manual-review findings inventory from raw query answer QA harness runs
 - `planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` — release-readiness checkpoint for backend raw QA, public-query acceptance coverage, frontend-copy QA, visual QA, public UI readiness, deploy parity, division-boundary cleanup evidence, post-review hardening closure, and next options
 - `planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` — current Raw Product release-readiness checklist, public-query acceptance gate, preview manual validation steps, final public UI readiness evidence, division-boundary cleanup evidence, and post-review hardening closure notes
 - `planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` — final release package for the current supported and explicitly unsupported Raw Product boundary; current public UI status is ready with notes, the public-query acceptance gate is clean at 67/67, division-opponent phrasing is guarded as unsupported, and post-review hardening Waves 1–6 are complete
@@ -97,7 +93,6 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` — broader Raw Product post-review notes; closure refresh records Waves 1–6 complete and remaining notes deferred
 - `planning/raw-product/PARSER_ROUTING_GROWTH_REVIEW_NOTES.md` — parser/routing growth review notes feeding Wave 1 of the hardening plan
 - `planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md` — completed hardening roadmap (Waves 1–6) that turned the Raw Product post-review notes and parser/routing growth notes into bounded execution waves; statuses remain `*_WITH_NOTES`
-- `planning/raw-product/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md` — documentation-only preflight for safe incremental `natural_query.py` extraction, current route decision flow, extraction candidate ranking, validation needs, stop conditions, and first-wave recommendation
 - `planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — documentation-only decision map and test matrix for preserving current `natural_query.py` route order, unsupported boundaries, collision groups, validation commands, and first code-extraction candidate before any parser extraction work
 - `planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` — documentation-only preflight for route-priority, collision, unsupported-boundary, and no-broad-fallback snapshot coverage before further `natural_query.py` extraction
 - `planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_COVERAGE_PREFLIGHT.md` — completed preflight and execution-status record for the 67-case public phrasing acceptance gate, Waves 1 and 2A–2D, required acceptance-family coverage, no-broad-fallback guards, availability shorthand, route priority, and the V2 fuzzy-player-typo deferral
@@ -163,6 +158,17 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
 - `planning/query_bugs.md` — recurring query bug patterns and resolution log
 - `planning/roadmap.md` — planned and future capabilities
+
+## Active Working Artifacts — `../working/`
+
+Tracked task-scoped working artifacts. These are active work files, not durable
+source-of-truth documentation.
+
+- `../working/public-query-acceptance-review/` — public-query acceptance product-review triage, Wave 2B probes, and harness preflight
+- `../working/raw-query-answer-qa-review/` — Raw Query Answer QA findings inventory
+- `../working/frontend-visual-qa-followups/` — frontend Visual QA follow-up notes
+- `../working/raw-product-post-launch/` — Raw Product post-launch deferred-work priorities
+- `../working/natural-query-maintenance/` — natural-query extraction preflight
 
 ## Archive — `archive/`
 

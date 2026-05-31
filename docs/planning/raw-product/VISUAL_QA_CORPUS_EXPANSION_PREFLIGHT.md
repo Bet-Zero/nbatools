@@ -17,7 +17,7 @@ supported and already represented in raw and frontend-copy QA.
 
 ## 2. Sources Reviewed
 
-- `docs/planning/raw-product/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
+- `working/raw-product-post-launch/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
 - `docs/operations/ui_guide.md`
 - `qa/frontend_visual_qa_corpus.json`
 - `qa/frontend_visual_qa_corpus.yaml`

@@ -332,7 +332,7 @@ For each probe:
 #### Wave 2B Probe And Fix Notes
 
 Wave 2B probe results are recorded in
-`docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_PROBE_RESULTS.md`.
+`working/public-query-acceptance-review/PUBLIC_QUERY_ACCEPTANCE_WAVE_2B_PROBE_RESULTS.md`.
 
 The probe classified `How do LeBron James and Kevin Durant compare this
 season?` as a behavior bug because it dropped Kevin Durant and routed to a

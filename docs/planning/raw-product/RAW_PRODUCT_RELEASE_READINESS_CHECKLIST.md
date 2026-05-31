@@ -302,7 +302,7 @@ path.
 | Public-query acceptance gate | `qa/harness_slices/public_query_acceptance.yaml`; Waves 1 and 2A–2D complete; latest run 67/67 passed |
 | Release-candidate handoff | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`; handoff complete with notes |
 | Release checkpoint | `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` |
-| Findings inventory | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md` |
+| Findings inventory | `working/raw-query-answer-qa-review/RAW_QUERY_ANSWER_QA_FINDINGS.md` |
 | Harness plan | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` |
 | Query feedback review runbook | `docs/operations/query_feedback_review.md`; updated for verified preview prefix/status and export/review workflow usage |
 

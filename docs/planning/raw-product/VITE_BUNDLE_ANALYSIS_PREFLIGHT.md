@@ -60,7 +60,7 @@ follow-up candidates, not scheduled work.
 
 Required inputs inspected:
 
-- `docs/planning/raw-product/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
+- `working/raw-product-post-launch/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
 - `docs/operations/ui_guide.md`

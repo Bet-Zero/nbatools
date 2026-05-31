@@ -26,7 +26,7 @@ Core rules for future extraction:
 
 ## 2. Inputs inspected
 
-- `docs/planning/raw-product/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md`
+- `working/natural-query-maintenance/NATURAL_QUERY_EXTRACTION_PREFLIGHT.md`
 - `docs/operations/parser_routing_growth_guardrails.md`
 - `docs/operations/feature_promotion_rules.md`
 - `src/nbatools/commands/natural_query.py`

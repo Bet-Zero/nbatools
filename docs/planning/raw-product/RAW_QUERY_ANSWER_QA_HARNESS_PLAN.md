@@ -484,7 +484,7 @@ Status:
     unsupported/error-like cases returning ok, and expected-ok cases returning
     no-result/error.
 - Findings inventory created:
-  - `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_FINDINGS.md`
+  - `working/raw-query-answer-qa-review/RAW_QUERY_ANSWER_QA_FINDINGS.md`
 - Latest output path:
   - `outputs/raw_query_answer_qa/20260512T085014Z/report.md`
 

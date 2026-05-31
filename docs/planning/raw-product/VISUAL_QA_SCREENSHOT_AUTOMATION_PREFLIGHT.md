@@ -11,7 +11,7 @@ is now implemented and locally validated.
 
 The automation decision point is now valid:
 
-- `docs/planning/raw-product/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
+- `working/raw-product-post-launch/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
   ranks screenshot automation after Visual QA corpus expansion.
 - The runtime corpus is now 20 cases.
 - The expanded manual baseline passed on 2026-05-22:
@@ -28,7 +28,7 @@ prematurely turning live visual output into a brittle pixel-diff gate.
 
 Primary requested sources:
 
-- `docs/planning/raw-product/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
+- `working/raw-product-post-launch/RAW_PRODUCT_POST_LAUNCH_DEFERRED_WORK_PRIORITY.md`
 - `docs/planning/raw-product/VISUAL_QA_CORPUS_EXPANSION_PREFLIGHT.md`
 - `qa/frontend_visual_qa_corpus.json`
 - `qa/frontend_visual_qa_corpus.yaml`
