@@ -360,6 +360,8 @@ Return packages are handoff/evidence receipts, not durable source-of-truth docs.
 Durable product, release, runbook, reference, architecture, and policy facts
 must be promoted into `docs/`.
 
+- Return packages are ignored local temporary artifacts under
+  `return_packages/`. Do not commit them.
 - Do not use exact return-package paths in durable docs as primary evidence for
   current behavior, release readiness, parser/routing policy, runbook behavior,
   data contracts, result contracts, or UI behavior.
@@ -368,11 +370,12 @@ must be promoted into `docs/`.
   cleanup trigger.
 - At workstream closure, replace exact return-package dependencies with durable
   doc or generated-output references before treating the workstream as closed.
-- Archive sweeps are separate explicit passes. Do not move, rename, archive, or
-  delete return packages as a side effect of an unrelated docs or feature wave.
-- Before moving or archiving return packages, scan `docs`, `README.md`, and
-  `AGENTS.md` for exact package references and either preserve linked packages
-  or update the links in the same archive wave.
+- Return-package cleanup is a separate explicit pass. Do not move, rename,
+  archive, or delete return packages as a side effect of an unrelated docs or
+  feature wave.
+- Before cleaning up return packages, scan `docs`, `README.md`, and `AGENTS.md`
+  for exact package references and remove or replace those dependencies in the
+  same cleanup wave.
 
 ### Phase-based work queues
 

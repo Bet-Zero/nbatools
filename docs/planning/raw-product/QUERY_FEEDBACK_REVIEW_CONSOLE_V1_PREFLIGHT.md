@@ -358,7 +358,7 @@ Preflight validation:
 
 ```text
 git diff --check
-markdownlint docs/planning/raw-product/QUERY_FEEDBACK_REVIEW_CONSOLE_V1_PREFLIGHT.md return_packages/archive/raw-product/2026-05-open-return-package-sweep/QUERY_FEEDBACK_REVIEW_CONSOLE_V1_PREFLIGHT_RETURN_PACKAGE.md
+markdownlint docs/planning/raw-product/QUERY_FEEDBACK_REVIEW_CONSOLE_V1_PREFLIGHT.md
 ```
 
 If `markdownlint` is not available, record that explicitly.

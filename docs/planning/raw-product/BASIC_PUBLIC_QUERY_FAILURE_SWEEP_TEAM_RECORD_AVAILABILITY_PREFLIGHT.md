@@ -2,8 +2,7 @@
 
 Date: 2026-05-23
 
-Scope: originally preflight only. Execution is now complete in
-`return_packages/archive/raw-product/2026-05-open-return-package-sweep/BASIC_PUBLIC_QUERY_FAILURE_SWEEP_TEAM_RECORD_AVAILABILITY_RETURN_PACKAGE.md`.
+Scope: originally preflight only. Execution is now complete.
 The execution wave added narrow parser/query support for single-player
 team-record presence, preserved the supported absence baseline, and guarded
 compound or unresolved availability without broad fallback.
