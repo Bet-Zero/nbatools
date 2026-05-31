@@ -237,9 +237,11 @@ It then records public-query acceptance as `PASS` with a `67/67 passed`
 artifact. That artifact proves machine expectations. It does not prove that
 representative answers and coverage shape were reviewed by a human.
 
-`docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_COVERAGE_PREFLIGHT.md`
-documents the intended matrix in detail, but the matrix is not generated from
-the live corpus and cannot expose later drift automatically.
+`docs/operations/raw_query_answer_qa.md` and
+`docs/operations/query_validation_map.md` now document the generated
+product-review workflow and current validation scoreboard. The pre-existing
+matrix was not generated from the live corpus and could not expose later drift
+automatically.
 
 Future return packages should not treat raw count, slice count, or green checks
 as sufficient product-review evidence.
@@ -676,7 +678,7 @@ Wave 1 should update durable workflow rules after the artifact exists.
 | `docs/index.md` | Link the new operations runbook |
 | `AGENTS.md` | Require product-review artifacts and corpus-review declarations for public corpus waves; prohibit readiness claims from counts alone |
 | `docs/planning/raw-product/RAW_QUERY_ANSWER_QA_HARNESS_PLAN.md` | Point the historical/manual-first harness plan to the new operational workflow |
-| `docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_COVERAGE_PREFLIGHT.md` | Separate the green Layer A gate from pending or completed Layer B product review |
+| `docs/operations/raw_query_answer_qa.md` and `docs/operations/query_validation_map.md` | Separate the green Layer A gate from pending or completed Layer B product review and keep the current validation scoreboard durable |
 | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` | Record machine regression and human product review as separate evidence rows without changing release status automatically |
 | `docs/operations/parser_routing_growth_guardrails.md` | Add the family-registry and representative-human-review requirement for public feature promotion |
 | `docs/reference/query_catalog.md` | Tighten the maintenance note so advertised families require both generated family coverage and reviewed representative outputs |
