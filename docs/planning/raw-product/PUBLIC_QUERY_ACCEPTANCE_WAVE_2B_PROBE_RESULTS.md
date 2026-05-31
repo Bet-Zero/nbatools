@@ -1,0 +1,401 @@
+# Public Query Acceptance Wave 2B Probe Results
+
+Date: 2026-05-31
+
+Status: probe documentation only. No production code, parser behavior,
+frontend rendering, release status, corpus expectations, or public-acceptance
+claims were changed.
+
+## Scope
+
+Wave 2B probed product-decision and semantics-risk queries named by
+`PUBLIC_QUERY_ACCEPTANCE_PRODUCT_REVIEW_TRIAGE.md`.
+
+Probe execution used the backend payload path:
+
+```text
+nbatools.query_service.execute_natural_query(query)
+nbatools.api_handlers.query_result_to_payload(result)
+```
+
+This is the same response envelope consumed by the API and React UI. The probe
+run did not add expected-ok cases and did not encode current bad behavior.
+
+## Read-First Context
+
+Read and applied:
+
+- `outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md`
+- `docs/planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_PRODUCT_REVIEW_TRIAGE.md`
+- `docs/planning/raw-product/NATURAL_SEARCH_AND_DEEP_TOOLS_BOUNDARY.md`
+- `qa/raw_query_answer_corpus.yaml`
+- `qa/harness_slices/public_query_acceptance.yaml`
+- `docs/reference/query_catalog.md`
+- `docs/reference/query_guide.md`
+
+Important context from those files:
+
+- Wave 2A completed taxonomy and metadata work only; all public families remain
+  not accepted and human review remains pending.
+- The natural-search boundary says clear simple comparisons are in scope, but
+  bare `PLAYER vs PLAYER` queries are inherently ambiguous.
+- Threshold-less count phrasing such as `how many players played this season`
+  is documented as unsupported.
+- Several current unsupported rows are allowed to remain `error` / `unrouted`
+  during metadata rollout, but future cleanup should consider route-preserving
+  `no_result` / `filter_not_supported` semantics for recognizable unsupported
+  concepts.
+
+## Classification Summary
+
+| Query | Route | Status | Reason | Sections | Preserves intended scope | Broad fallback | Classification |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `LeBron vs KD` | `player_compare` | `ok` |  | `summary: 2`, `comparison: 20` | Preserves one plausible comparison scope, but the query is ambiguous. | No. | Product decision required. |
+| `How do LeBron James and Kevin Durant compare this season?` | `player_game_summary` | `ok` |  | `summary: 1`, `by_season: 1`, `game_log: 60` | No. Kevin Durant is dropped. | Not league-wide, but it falls to the wrong single-player scope. | Behavior bug. |
+| `Who are the MVP candidates?` |  | `error` | `unrouted` | none | Yes, because it declines an unsupported awards/narrative request. | No. | Semantic cleanup candidate; acceptable unsupported behavior for now. |
+| `who has cooled off lately` |  | `error` | `unrouted` | none | Yes, because trend/drop-off semantics are not defined. | No. | Semantic cleanup candidate; acceptable unsupported behavior for now. |
+| `how many players played this season` |  | `error` | `unrouted` | none | Yes, because threshold-less player population counts are not supported. | No. | Acceptable unsupported behavior; semantic cleanup candidate. |
+| `most rebunds in a game this season` |  | `error` | `unrouted` | none | Yes, because it does not silently answer a different stat. | No. | Semantic cleanup candidate. |
+| `Lakeers playoff history` |  | `error` | `unrouted` | none | Yes, because it does not silently correct the team typo or return broad playoff history. | No. | Semantic cleanup candidate. |
+
+No required probe is a safe expected-ok corpus addition in its current form.
+The safe-addition bucket is empty for this batch until either the bare `vs`
+policy is decided or the explicit question-form comparison bug is fixed.
+
+## Probe Details
+
+### 1. `LeBron vs KD`
+
+| Field | Value |
+| --- | --- |
+| Route | `player_compare` |
+| Status | `ok` |
+| Reason |  |
+| Result shape | comparison payload |
+| Sections | `summary: 2`, `comparison: 20` |
+| Applied filters | Default `season: 2025-26`; `season_type: Regular Season`; `scope_kind: single_season` |
+| Unsupported filters | none |
+| Current through | `2026-04-12` |
+
+Answer summary / top rows:
+
+- `summary` includes LeBron James and Kevin Durant.
+- LeBron James: `60` games, `20.933` PPG, `6.067` RPG, `7.2` APG.
+- Kevin Durant: `78` games, `25.974` PPG, `5.462` RPG, `4.769` APG.
+- `comparison` starts with metrics `games`, `wins`, and `losses`.
+
+Scope review:
+
+- The result preserves a valid simple player-comparison interpretation.
+- It does not broad-fall back to a league-wide table or unrelated route.
+- It still answers one of several plausible meanings for a bare `vs` query:
+  player stat comparison, player head-to-head games, team head-to-head games, or
+  playoff matchup history.
+
+Classification:
+
+- Current behavior is not safe to encode as accepted until product policy is
+  explicit.
+- Primary classification: product decision required.
+
+Bare `vs` recommendation:
+
+- Recommend option 1: clarification / intent options.
+- Rationale: the boundary document already identifies bare `LeBron vs KD` as
+  ambiguous, and current behavior silently chooses one interpretation. A
+  clarification response can offer simple comparison, player head-to-head games,
+  or team/playoff matchup intent without implying that one is always intended.
+- Do not add an expected-ok corpus row for bare `LeBron vs KD` before this
+  product decision is accepted. If the product later chooses option 2, the
+  current result is a plausible default simple comparison candidate. If
+  clarification cannot be implemented yet, a clean unsupported/ambiguous result
+  is safer than public-accepting the silent default.
+
+### 2. `How do LeBron James and Kevin Durant compare this season?`
+
+| Field | Value |
+| --- | --- |
+| Route | `player_game_summary` |
+| Status | `ok` |
+| Reason |  |
+| Result shape | single-player summary payload |
+| Sections | `summary: 1`, `by_season: 1`, `game_log: 60` |
+| Applied filters | Default `season: 2025-26`; `season_type: Regular Season`; `player: LeBron James`; note `default: <player> + <timeframe> -> summary` |
+| Unsupported filters | none |
+| Current through | `2026-04-12` |
+
+Answer summary / top rows:
+
+- The payload summarizes only LeBron James.
+- LeBron James: `60` games, `20.933` PPG, `6.067` RPG, `7.2` APG.
+- `game_log` includes `60` LeBron rows.
+- Kevin Durant is absent from metadata and sections.
+
+Scope review:
+
+- Intended scope is explicit player comparison between LeBron James and Kevin
+  Durant this season.
+- The result does not preserve intended scope because it drops Kevin Durant.
+- It is not a league-wide broad fallback, but it is a wrong-scope fallback to a
+  single-player summary.
+
+Classification:
+
+- Behavior bug.
+- Do not encode this current result as expected.
+- After routing is fixed, this exact query should become a safe corpus
+  candidate for the `comparisons` family, likely `sentence` or synonym-style
+  wording, with expected route `player_compare`, status `ok`, and sections
+  `summary` plus `comparison`.
+
+Supporting comparison probes:
+
+| Query | Route | Status | Sections | Note |
+| --- | --- | --- | --- | --- |
+| `Compare LeBron James and Kevin Durant this season` | `player_compare` | `ok` | `summary: 2`, `comparison: 20` | Explicit compare verb works. |
+| `LeBron James vs Kevin Durant comparison` | `player_compare` | `ok` | `summary: 2`, `comparison: 20` | Existing documented style works. |
+| `LeBron James vs Kevin Durant this season` | `player_compare` | `no_result` | none | Returns `filter_not_supported` with `unsupported_filters=["unresolved_player"]`; separate semantics-risk candidate. |
+| `LeBron James vs Kevin Durant last 10 games` | `player_compare` | `ok` | `summary: 2`, `comparison: 20` | Last-N comparison works. |
+
+The bug is therefore specific to the question-form `How do A and B compare...`
+parse, not to all LeBron/Durant comparison execution.
+
+### 3. `Who are the MVP candidates?`
+
+| Field | Value |
+| --- | --- |
+| Route |  |
+| Status | `error` |
+| Reason | `unrouted` |
+| Result shape | error payload |
+| Sections | none |
+| Applied filters | none |
+| Unsupported filters | none |
+
+Answer summary / top rows:
+
+- No answer text.
+- No result sections.
+
+Scope review:
+
+- The request is awards/narrative/forecasting oriented.
+- Current behavior does not invent a leaderboard or silently map MVP candidates
+  to points-per-game leaders.
+- It does not broad-fall back.
+
+Classification:
+
+- Semantic cleanup candidate; acceptable unsupported behavior for now.
+- Existing corpus already contains this query as `mvp_candidates_subjective`.
+- Future cleanup can consider a route-preserving unsupported result, but this is
+  not a behavior fix prerequisite for Wave 2B.
+
+### 4. `who has cooled off lately`
+
+| Field | Value |
+| --- | --- |
+| Route |  |
+| Status | `error` |
+| Reason | `unrouted` |
+| Result shape | error payload |
+| Sections | none |
+| Applied filters | `Last N games=10`; default `season: 2025-26`; `season_type: Regular Season` |
+| Unsupported filters | none |
+| Current through | `2026-04-12` |
+
+Answer summary / top rows:
+
+- No answer text.
+- No result sections.
+
+Scope review:
+
+- The query includes a recognized recency signal, but "cooled off" does not have
+  a defined metric-backed interpretation.
+- Current behavior does not return a broad "recent form" leaderboard or an
+  unrelated streak table.
+- It does not broad-fall back.
+
+Classification:
+
+- Semantic cleanup candidate; acceptable unsupported behavior for now.
+- Existing corpus already contains this query as `cooled_off_lately_wave5`.
+- Future cleanup should decide whether this remains unsupported with a cleaner
+  unsupported reason, or whether a measurable drop-off metric is product-owned.
+
+### 5. `how many players played this season`
+
+| Field | Value |
+| --- | --- |
+| Route |  |
+| Status | `error` |
+| Reason | `unrouted` |
+| Result shape | error payload |
+| Sections | none |
+| Applied filters | none |
+| Unsupported filters | none |
+
+Answer summary / top rows:
+
+- No answer text.
+- No result sections.
+
+Scope review:
+
+- The query asks for a population count without a stat threshold.
+- The query catalog explicitly states that count support requires a stat plus
+  threshold and that this phrasing is not supported.
+- Current behavior does not return a broad leaderboard or unrelated count.
+- It does not broad-fall back.
+
+Classification:
+
+- Acceptable unsupported behavior; semantic cleanup candidate.
+- Existing corpus already contains this query as
+  `pqa_count_unsupported_players_played`.
+- Keep current expectation during Wave 2B. A later cleanup may return
+  `no_result` / `filter_not_supported` with a clearer unsupported-count reason.
+
+### 6. `most rebunds in a game this season`
+
+| Field | Value |
+| --- | --- |
+| Route |  |
+| Status | `error` |
+| Reason | `unrouted` |
+| Result shape | error payload |
+| Sections | none |
+| Applied filters | none |
+| Unsupported filters | none |
+
+Answer summary / top rows:
+
+- No answer text.
+- No result sections.
+
+Scope review:
+
+- The intended feature is likely top single-game rebounds, but the stat token is
+  misspelled.
+- Current behavior correctly avoids answering "most points in a game" or another
+  broad top-game default.
+- It does not broad-fall back.
+
+Classification:
+
+- Semantic cleanup candidate.
+- Existing corpus already contains this query as `pqa_top_games_stat_typo_rebunds`.
+- This matches the triage note that the row needs investigation before any
+  status change. A later cleanup could preserve the likely `top_player_games`
+  intent and return `no_result` / `filter_not_supported` with an unresolved-stat
+  unsupported filter, but current no-broad-fallback behavior is safer than a bad
+  answered result.
+
+### 7. `Lakeers playoff history`
+
+| Field | Value |
+| --- | --- |
+| Route |  |
+| Status | `error` |
+| Reason | `unrouted` |
+| Result shape | error payload |
+| Sections | none |
+| Applied filters | `season_type: Playoffs` |
+| Unsupported filters | none |
+
+Answer summary / top rows:
+
+- No answer text.
+- No result sections.
+
+Scope review:
+
+- The intended feature is likely single-team playoff history, but the team token
+  is misspelled.
+- Current behavior correctly avoids silently correcting `Lakeers` to Lakers or
+  returning a broad playoff-history result.
+- It does not broad-fall back.
+
+Classification:
+
+- Semantic cleanup candidate.
+- Existing corpus already contains this query as
+  `pqa_playoff_typo_lakeers_history`.
+- This matches the triage note that the row needs investigation before any
+  status change. A future cleanup could preserve the likely `playoff_history`
+  intent and return `no_result` / `filter_not_supported` with an unresolved-team
+  unsupported filter.
+
+## Product Decision: Bare `LeBron vs KD`
+
+Decision recommended: option 1, clarification / intent options.
+
+Recommended public behavior:
+
+```text
+Ambiguous comparison. Did you mean:
+- compare LeBron James and Kevin Durant stats this season
+- show LeBron games against Kevin Durant
+- show Kevin Durant games against LeBron
+- show team or playoff head-to-head history
+```
+
+Implementation note:
+
+- This should be treated as a product and UX decision before adding a corpus
+  expectation.
+- The current `player_compare` result is useful evidence for option 2, but it
+  should not be accepted by default while the documented boundary calls the bare
+  phrasing ambiguous.
+- If clarification UI/API affordances are not ready, a clean
+  unsupported/ambiguous response is preferable to marking the silent default as
+  public accepted.
+
+## Behavior Bugs Versus Product Decisions
+
+Behavior bugs:
+
+- `How do LeBron James and Kevin Durant compare this season?` drops Kevin Durant
+  and returns a LeBron-only `player_game_summary`.
+
+Product decisions:
+
+- Bare `LeBron vs KD` needs an explicit product policy. This report recommends
+  clarification / intent options.
+
+Acceptable unsupported behavior:
+
+- `how many players played this season` is documented unsupported because count
+  queries require a stat plus threshold.
+
+Semantic cleanup candidates:
+
+- `Who are the MVP candidates?`
+- `who has cooled off lately`
+- `how many players played this season`
+- `most rebunds in a game this season`
+- `Lakeers playoff history`
+
+Safe corpus additions:
+
+- None from the required probes in current behavior.
+- After fixing the comparison question-form bug, add that exact query as a
+  comparison regression.
+- After accepting a bare-`vs` product decision, add the corresponding bare-`vs`
+  corpus row with expectations matching the selected policy.
+
+## Concrete Next Action
+
+1. Fix the question-form comparison parser/routing bug for
+   `How do LeBron James and Kevin Durant compare this season?`.
+2. Add a regression after the fix that asserts route `player_compare`, status
+   `ok`, and both LeBron James and Kevin Durant in comparison metadata/sections.
+3. Make the bare `PLAYER vs PLAYER` product decision. Recommended decision:
+   clarification / intent options.
+4. Open a separate semantic-cleanup wave for recognizable unsupported concepts
+   that currently return `error` / `unrouted`, prioritizing route-preserving
+   `no_result` / `filter_not_supported` where the main intent is clear.
+5. Do not mark any family public accepted until the variant matrix is resolved,
+   representative outputs are human-reviewed, and the behavior/product decisions
+   above are closed.
