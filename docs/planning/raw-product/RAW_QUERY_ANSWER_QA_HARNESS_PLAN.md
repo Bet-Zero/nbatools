@@ -1664,7 +1664,7 @@ Artifacts and entry points:
 - Screenshot helper reuse:
   `frontend/src/lib/reviewScreenshots.ts`
 - Manual checklist:
-  `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
+  `docs/operations/frontend_visual_qa.md`
 - Source raw QA run:
   `outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl`
 - Source frontend-copy run:
@@ -1708,7 +1708,7 @@ Manual capture workflow:
 Output artifact plan:
 
 - Checklist source of truth:
-  `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
+  `docs/operations/frontend_visual_qa.md`
 - Recommended screenshot storage after manual capture:
   `outputs/frontend_visual_qa/<run_id>/screenshots/desktop/<case_id>.png`
   and `outputs/frontend_visual_qa/<run_id>/screenshots/mobile/<case_id>.png`

@@ -24,7 +24,7 @@ supported and already represented in raw and frontend-copy QA.
 - `frontend/src/VisualQaPage.tsx`
 - `frontend/src/test/VisualQaPage.test.tsx`
 - `frontend/src/visualQaCases.ts`
-- `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
+- `docs/operations/frontend_visual_qa.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`

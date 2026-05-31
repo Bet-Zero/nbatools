@@ -78,7 +78,7 @@ render of every backend raw QA case, and it is not screenshot/layout QA.
 | Item | Evidence |
 | --- | --- |
 | Corpus | `qa/frontend_visual_qa_corpus.yaml` |
-| Manual checklist | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` |
+| Manual checklist | `docs/operations/frontend_visual_qa.md` |
 | Expanded local baseline | 20/20 cases reviewed at desktop and mobile; 40 viewport reviews total |
 | Desktop viewport | `1280px`; document/body widths `1280px`; statuses `ok: 15`, `no_result: 5`, `error: 0` |
 | Mobile viewport | `390px`; document/body widths `390px`; statuses `ok: 15`, `no_result: 5`, `error: 0` |

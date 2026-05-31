@@ -66,6 +66,7 @@ Runbooks and operational guides.
 - `operations/query_smoke_workflow.md` — terminal-driven natural-query smoke workflow
 - `operations/raw_query_answer_qa.md` — two-layer Raw QA runbook for machine regression, family-level product-review artifacts, no-broad-fallback proof, and human + ChatGPT handoff
 - `operations/query_validation_map.md` — plain-English map and current scoreboard for Raw QA corpus, slices, product review, rendered UI review, and pytest query tests
+- `operations/frontend_visual_qa.md` — manual and repeatable non-diffing frontend Visual QA workflow, viewport expectations, manifest usage, and artifact-placement rules
 - `operations/working_and_archive_policy.md` — tracked active-task working folders, ignored completed-task archives, and task-scoped return-package rules
 - `operations/feature_promotion_rules.md` — durable promotion path for new product capabilities
 - `operations/parser_routing_growth_guardrails.md` — durable parser/routing growth and no-broad-fallback policy
@@ -98,8 +99,6 @@ Active master plans, active queues, and near-future planning docs.
 - `planning/raw-product/PUBLIC_QUERY_ACCEPTANCE_COVERAGE_PREFLIGHT.md` — completed preflight and execution-status record for the 67-case public phrasing acceptance gate, Waves 1 and 2A–2D, required acceptance-family coverage, no-broad-fallback guards, availability shorthand, route priority, and the V2 fuzzy-player-typo deferral
 - `planning/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_PREFLIGHT.md` — documentation-only preflight for the completed cleanup of division-opponent phrasing; broad fallback is resolved as guarded `opponent_division` unsupported behavior, with no division support added
 - `planning/raw-product/VITE_BUNDLE_ANALYSIS_PREFLIGHT.md` — documentation-only Vite large-chunk preflight with current build evidence, eager bundle contributors, split-candidate risks, and the measured internal-route lazy-loading recommendation
-- `planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` — manual desktop/mobile screenshot checklist plus validated non-diffing artifact-capture evidence for the 20-case visual QA corpus baseline
-- `planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md` — preflight and execution-status record for Playwright-backed, non-diffing screenshot artifact capture of the expanded 20-case Visual QA baseline
 - `planning/raw-product/QUERY_FEEDBACK_REVIEW_CONSOLE_V1_PREFLIGHT.md` — query feedback review console preflight and execution-status record for immutable feedback grouping, mutable triage overlays, gated admin API endpoints, and the lazy `/admin/feedback` internal console
 - `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
 - `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs

@@ -188,7 +188,7 @@ coverage, not every raw QA case rendered or visual layout coverage.
 |---|---|
 | Corpus | `qa/frontend_visual_qa_corpus.yaml` |
 | Baseline size | 20 cases / 40 required desktop-mobile viewport reviews |
-| Manual checklist | `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md` |
+| Manual checklist | `docs/operations/frontend_visual_qa.md` |
 | Expanded local baseline | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; 20/20 cases reviewed at desktop and mobile, request errors 0, blockers none |
 | Screenshot artifact validation | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`; canonical local run `visual_qa_20_case_baseline` captured 20 desktop and 20 mobile cards with request errors 0, statuses `ok: 15`, `no_result: 5`, `error: 0`, overflow false, and 42 expected PNGs total |
 | Preview rerun | `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` |

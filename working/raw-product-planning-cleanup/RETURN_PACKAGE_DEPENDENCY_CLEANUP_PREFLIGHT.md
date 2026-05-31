@@ -79,7 +79,7 @@ These durable docs link directly to exact Raw Product return-package paths.
 | `docs/planning/raw-product/DIVISION_PHRASE_BOUNDARY_CLEANUP_PREFLIGHT.md` | Completed preflight cites execution evidence and route-priority package. | Replace with the durable division-boundary summary and route-priority snapshot doc. |
 | `working/frontend-visual-qa-followups/VISUAL_QA_NOTES.md` | Visual follow-up notes cite older visual fix packages. | Promote findings into the notes or current visual checklist, then remove package paths. |
 | `docs/planning/raw-product/VISUAL_QA_CORPUS_EXPANSION_PREFLIGHT.md` | Corpus-expansion context cites public UI and hardening packages. | Replace with durable visual QA checklist and release evidence summary. |
-| `docs/planning/raw-product/VISUAL_QA_SCREENSHOT_AUTOMATION_PREFLIGHT.md` | Screenshot automation context cites visual QA packages. | Replace with durable visual QA baseline and artifact-run facts. |
+| `docs/operations/frontend_visual_qa.md` | Durable screenshot workflow, visual QA baseline, and artifact-run rules. | Keep current as the operations runbook. |
 | `docs/planning/raw-product/NATURAL_QUERY_ROUTE_PRIORITY_SNAPSHOT_PREFLIGHT.md` | Route-priority context cites a constants-extraction package. | Replace with durable route-priority snapshot and decision-map docs. |
 | `docs/planning/raw-product/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` | Decision-map context cites extraction preflight package. | Replace with the durable extraction preflight doc. |
 

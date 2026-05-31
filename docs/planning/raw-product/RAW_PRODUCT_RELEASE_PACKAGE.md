@@ -300,7 +300,7 @@ Latest release artifacts:
 - Frontend-copy report:
   `outputs/frontend_copy_qa/20260518T175548Z/frontend_copy_report.md`
 - Visual QA checklist:
-  `docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md`
+  `docs/operations/frontend_visual_qa.md`
 - Preview manual QA evidence:
   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`
 - Release-readiness checklist:
