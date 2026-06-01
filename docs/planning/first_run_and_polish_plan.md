@@ -5,7 +5,7 @@
 > polish details.
 >
 > Whole-plan completion authority is
-> [`product_polish_master_plan.md`](./product_polish_master_plan.md). This
+> [`product_polish_master_plan.md`](../../working/product-polish/product_polish_master_plan.md). This
 > doc covers Track A Part 3 only.
 
 ---

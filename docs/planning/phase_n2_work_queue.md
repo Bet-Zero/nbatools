@@ -1,7 +1,7 @@
 # Phase N2 Work Queue
 
 > **Role:** Sequenced, PR-sized work items for Phase N2 of
-> [`production_deployment_plan.md`](./production_deployment_plan.md) -
+> [`production_deployment_plan.md`](../../working/phase-n4-domain-cutover/production_deployment_plan.md) -
 > _Frontend deployment, custom domain, and production cutover._
 >
 > **How to work this file:** Find the first unchecked item below. Review the
@@ -43,7 +43,7 @@ Vercel deployment, or use another repo-native approach.
 **Files likely touched:**
 
 - `docs/planning/phase_n2_frontend_deployment_inventory.md` (new)
-- Possibly `docs/planning/production_deployment_plan.md` if the strategy
+- Possibly `working/phase-n4-domain-cutover/production_deployment_plan.md` if the strategy
   changes Phase N2 scope
 
 **Acceptance criteria:**
@@ -306,8 +306,8 @@ the next queue for monitoring, freshness, and stability.
 
 - `docs/planning/phase_n2_work_queue.md` - check this item, add retrospective
 - `docs/planning/phase_n3_work_queue.md` (new)
-- `docs/planning/production_deployment_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/phase-n4-domain-cutover/production_deployment_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 
 **Acceptance criteria:**
 

@@ -152,7 +152,7 @@ first executable Part 2 queue.
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/phase_c1_work_queue.md` (new)
 - `docs/planning/visual_foundation_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**
@@ -173,7 +173,7 @@ first executable Part 2 queue.
 - `docs/planning/phase_v5_part1_completion_audit.md`
 - `docs/planning/phase_v5_component_layout_inventory.md`
 - `docs/planning/component_experience_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 
 ---
 

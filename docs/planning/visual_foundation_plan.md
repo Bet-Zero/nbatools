@@ -6,7 +6,7 @@
 > work builds on.
 >
 > Whole-plan completion authority is
-> [`product_polish_master_plan.md`](./product_polish_master_plan.md). This
+> [`product_polish_master_plan.md`](../../working/product-polish/product_polish_master_plan.md). This
 > doc covers Track A Part 1 only.
 
 ---
@@ -61,7 +61,7 @@ tokens. The current `App.css` becomes a tokens-only file. Component-specific
 styles move into proper component-scoped CSS modules or styled approach.
 Result: the foundation is real, not just a tokens file sitting unused.
 
-**Companion queue:** [`phase_v1_work_queue.md`](../archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
+**Companion queue:** [`phase_v1_work_queue.md`](../../archive/docs-archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
 **Status:** Complete. Handoff artifact:
 [`phase_v2_work_queue.md`](./phase_v2_work_queue.md).
 

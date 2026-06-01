@@ -1,7 +1,7 @@
 # Phase N1 Work Queue
 
 > **Role:** Sequenced, PR-sized work items for Phase N1 of
-> [`production_deployment_plan.md`](./production_deployment_plan.md) —
+> [`production_deployment_plan.md`](../../working/phase-n4-domain-cutover/production_deployment_plan.md) —
 > _Backend refactor for Vercel + R2 data sync._
 >
 > **How to work this file:** Find the first unchecked item below. Review the
@@ -332,7 +332,7 @@ queue.
 
 - `docs/planning/phase_n1_work_queue.md` — check this item, add retrospective
 - `docs/planning/phase_n2_work_queue.md` (new)
-- `docs/planning/production_deployment_plan.md` (if scope change)
+- `working/phase-n4-domain-cutover/production_deployment_plan.md` (if scope change)
 
 **Acceptance criteria:**
 

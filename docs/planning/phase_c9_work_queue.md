@@ -151,7 +151,7 @@ first executable Part 3 queue.
   retrospective
 - `docs/planning/phase_p1_work_queue.md` (new)
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**
@@ -172,7 +172,7 @@ first executable Part 3 queue.
 - `docs/planning/phase_c9_part2_completion_audit.md`
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 
 ---
 

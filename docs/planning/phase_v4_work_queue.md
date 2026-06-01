@@ -391,7 +391,7 @@ drafts the final Track A Part 1 handoff queue.
 - `docs/planning/phase_v4_work_queue.md` - check this item, add retrospective
 - `docs/planning/phase_v5_work_queue.md` (new)
 - `docs/planning/visual_foundation_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**

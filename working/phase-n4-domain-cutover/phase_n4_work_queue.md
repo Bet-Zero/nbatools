@@ -44,7 +44,7 @@ clean HTTPS.
 **Files likely touched:**
 
 - `docs/operations/deployment.md`
-- `docs/planning/phase_n4_domain_cutover_results.md` (new, if useful)
+- `working/phase-n4-domain-cutover/phase_n4_domain_cutover_results.md` (new, if useful)
 
 **Acceptance criteria:**
 
@@ -72,7 +72,7 @@ from a concrete checklist instead of reconstructing the operator procedure.
 
 **Scope:**
 
-- Create `docs/planning/phase_n4_domain_cutover_checklist.md`.
+- Create `working/phase-n4-domain-cutover/phase_n4_domain_cutover_checklist.md`.
 - Capture the exact operator sequence for domain purchase/selection,
   Vercel-domain attachment, DNS verification, production readiness checks,
   deploy-on-main evidence capture, and post-cutover smoke commands.
@@ -82,7 +82,7 @@ from a concrete checklist instead of reconstructing the operator procedure.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n4_domain_cutover_checklist.md` (new)
+- `working/phase-n4-domain-cutover/phase_n4_domain_cutover_checklist.md` (new)
 - `docs/operations/deployment.md`
 - `docs/index.md`
 
@@ -121,7 +121,7 @@ documented.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n4_domain_cutover_results.md` (new)
+- `working/phase-n4-domain-cutover/phase_n4_domain_cutover_results.md` (new)
 - `docs/operations/deployment.md`
 
 **Acceptance criteria:**
@@ -138,7 +138,7 @@ documented.
 
 **Reference docs:**
 
-- `docs/planning/phase_n4_domain_cutover_checklist.md`
+- `working/phase-n4-domain-cutover/phase_n4_domain_cutover_checklist.md`
 - `docs/planning/phase_n1_e2e_results.md`
 - `docs/operations/deployment.md`
 
@@ -159,7 +159,7 @@ proof that the real domain works end to end.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n4_production_smoke_results.md` (new)
+- `working/phase-n4-domain-cutover/phase_n4_production_smoke_results.md` (new)
 
 **Acceptance criteria:**
 
@@ -175,7 +175,7 @@ proof that the real domain works end to end.
 
 **Reference docs:**
 
-- `docs/planning/phase_n4_domain_cutover_checklist.md`
+- `working/phase-n4-domain-cutover/phase_n4_domain_cutover_checklist.md`
 - `docs/planning/phase_n3_preview_monitoring_baseline.md`
 
 ---
@@ -196,9 +196,9 @@ final deployment state instead of leaving the remaining domain work implicit.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n4_work_queue.md`
-- `docs/planning/production_deployment_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/phase-n4-domain-cutover/phase_n4_work_queue.md`
+- `working/phase-n4-domain-cutover/production_deployment_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**

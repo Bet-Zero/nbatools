@@ -430,7 +430,7 @@ and creates the executable felt-polish queue.
   retrospective
 - `docs/planning/phase_p4_work_queue.md` (new)
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**
@@ -459,7 +459,7 @@ and creates the executable felt-polish queue.
 **Reference docs to consult:**
 
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/operations/ui_guide.md`
 
 ---
@@ -509,6 +509,6 @@ artifact for Track A Part 3 Phase P4.
 - Track B deployment remains separate and still controls the real URL, custom
   domain, and production data-sync requirements in the master plan.
 - Immediate continuation: re-read
-  [`product_polish_master_plan.md`](./product_polish_master_plan.md), follow its
+  [`product_polish_master_plan.md`](../../working/product-polish/product_polish_master_plan.md), follow its
   Active Continuation to [`phase_p4_work_queue.md`](./phase_p4_work_queue.md),
   and start with the first unchecked P4 item.

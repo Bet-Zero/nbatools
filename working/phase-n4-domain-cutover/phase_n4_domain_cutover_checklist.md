@@ -28,9 +28,9 @@ Record these before item 3 begins:
 
 Phase N4 should leave behind these concrete artifacts:
 
-1. `docs/planning/phase_n4_domain_cutover_results.md` - custom-domain setup,
+1. `working/phase-n4-domain-cutover/phase_n4_domain_cutover_results.md` - custom-domain setup,
    production readiness, and deploy-on-main evidence.
-2. `docs/planning/phase_n4_production_smoke_results.md` - browser and API
+2. `working/phase-n4-domain-cutover/phase_n4_production_smoke_results.md` - browser and API
    smoke results on the custom domain.
 3. `outputs/deployment_smoke/phase_n4_<domain>_<YYYY-MM-DD>.json` -
    machine-readable smoke report from `tools/deployment_smoke.py`.
@@ -59,7 +59,7 @@ Phase N4 should leave behind these concrete artifacts:
 10. Use the N4 item 3 PR merge as the deploy-on-main evidence event unless a
     later PR is explicitly chosen for that purpose.
 11. After the item 3 merge, record the production deployment URL, commit, and
-    deployment timestamp in `phase_n4_domain_cutover_results.md`.
+    deployment timestamp in `working/phase-n4-domain-cutover/phase_n4_domain_cutover_results.md`.
 12. Run the custom-domain smoke pass for item 4:
 
 ```bash

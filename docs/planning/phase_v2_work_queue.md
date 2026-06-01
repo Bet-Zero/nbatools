@@ -407,7 +407,7 @@ queue.
 - `docs/planning/phase_v2_work_queue.md` - check this item, add retrospective
 - `docs/planning/phase_v3_work_queue.md` (new)
 - `docs/planning/visual_foundation_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**

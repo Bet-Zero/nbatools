@@ -1,7 +1,7 @@
 # Phase N3 Work Queue
 
 > **Role:** Sequenced, PR-sized work items for Phase N3 of
-> [`production_deployment_plan.md`](./production_deployment_plan.md) -
+> [`production_deployment_plan.md`](../../working/phase-n4-domain-cutover/production_deployment_plan.md) -
 > _Monitoring, deployed freshness evidence, and stability._
 >
 > **Deployment target rule:** Until the developer buys or chooses the custom
@@ -48,7 +48,7 @@ deployed surface, not on the still-missing custom domain.
 **Files likely touched:**
 
 - `docs/planning/phase_n3_monitoring_inventory.md` (new)
-- Possibly `docs/planning/production_deployment_plan.md` if the workflow needs
+- Possibly `working/phase-n4-domain-cutover/production_deployment_plan.md` if the workflow needs
   clarification
 
 **Acceptance criteria:**
@@ -209,9 +209,9 @@ Track B wrap-up queue that closes the remaining custom-domain work.
 **Files likely touched:**
 
 - `docs/planning/phase_n3_work_queue.md`
-- `docs/planning/phase_n4_work_queue.md` (new)
-- `docs/planning/production_deployment_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/phase-n4-domain-cutover/phase_n4_work_queue.md` (new)
+- `working/phase-n4-domain-cutover/production_deployment_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 
 **Acceptance criteria:**
 

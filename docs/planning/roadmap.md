@@ -6,7 +6,7 @@ It is intentionally phased. The goal is to expand **answerable NBA questions**, 
 
 For the authoritative answer to "is the whole plan done?", what core capability
 families remain open, and what continuation must happen next, use
-[`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md). This roadmap is
+[`master_completion_plan.md`](../../archive/docs-archive/completed-plans/master_completion_plan.md). This roadmap is
 directional; it is not the master completion authority.
 
 ---
@@ -125,7 +125,7 @@ Make results trustworthy for real use.
 
 ### What exists
 
-- `docs/planning/data_freshness_plan.md` — design and implementation plan
+- `working/data-freshness/data_freshness_plan.md` — design and implementation plan
 - `commands/freshness.py` — freshness computation, classification, `FreshnessStatus` enum
 - `commands/pipeline/orchestrator.py` — canonical data pipeline with manifest tracking
 - `commands/pipeline/auto_refresh.py` — automated refresh loop

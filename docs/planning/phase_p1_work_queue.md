@@ -278,7 +278,7 @@ creates the executable loading/error/empty-states queue.
   retrospective
 - `docs/planning/phase_p2_work_queue.md` (new)
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**
@@ -298,7 +298,7 @@ creates the executable loading/error/empty-states queue.
 **Reference docs to consult:**
 
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/operations/ui_guide.md`
 
 ---

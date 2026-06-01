@@ -50,7 +50,7 @@ Required inputs inspected:
 Additional context inspected:
 
 - `docs/index.md`
-- `docs/planning/natural_query_cleanup_plan.md`
+- `working/natural-query-maintenance/natural_query_cleanup_plan.md`
 - `src/nbatools/commands/_constants.py`
 - `src/nbatools/commands/_date_utils.py`
 - `src/nbatools/commands/_parse_helpers.py`

@@ -281,7 +281,7 @@ the next executable Part 2 queue.
   retrospective
 - `docs/planning/component_experience_plan.md`
 - `docs/planning/phase_c3_work_queue.md` (new)
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 **Acceptance criteria:**
@@ -302,7 +302,7 @@ the next executable Part 2 queue.
 
 - This file
 - `docs/planning/component_experience_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 
 ---
 

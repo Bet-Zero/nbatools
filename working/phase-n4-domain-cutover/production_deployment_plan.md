@@ -4,7 +4,7 @@
 > from localhost to a deployed product with synced data.
 >
 > Whole-plan completion authority is
-> [`product_polish_master_plan.md`](./product_polish_master_plan.md). This
+> [`product_polish_master_plan.md`](../product-polish/product_polish_master_plan.md). This
 > doc covers Track B only.
 
 ---
@@ -40,14 +40,14 @@ Four phases, each with a companion work queue.
 Refactor FastAPI to Vercel Functions. Add the `sync-r2` pipeline command.
 Wire the deployed app to read from R2.
 
-**Companion queue:** [`phase_n1_work_queue.md`](./phase_n1_work_queue.md)
+**Companion queue:** [`phase_n1_work_queue.md`](../../docs/planning/phase_n1_work_queue.md)
 
 ### Phase N2 — Frontend deployment + custom domain
 
 Deploy the React frontend to Vercel. Configure custom domain. HTTPS.
 Deploy-on-push from main. Verify end-to-end.
 
-**Companion queue:** [`phase_n2_work_queue.md`](./phase_n2_work_queue.md)
+**Companion queue:** [`phase_n2_work_queue.md`](../../docs/planning/phase_n2_work_queue.md)
 
 ### Phase N3 — Monitoring, freshness, and stability
 
@@ -58,7 +58,7 @@ phase makes the deployed monitoring path, freshness evidence, and stability
 workflow repeatable. Custom-domain-only checks stay deferred to wrap-up
 time.
 
-**Companion queue:** [`phase_n3_work_queue.md`](./phase_n3_work_queue.md)
+**Companion queue:** [`phase_n3_work_queue.md`](../../docs/planning/phase_n3_work_queue.md)
 
 ### Phase N4 — Track B closure
 

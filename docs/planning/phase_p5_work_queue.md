@@ -122,7 +122,7 @@ completion audit before the final handoff updates active continuation.
 **Files likely touched:**
 
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 - `docs/planning/phase_p5_work_queue.md`
 
@@ -149,7 +149,7 @@ completion audit before the final handoff updates active continuation.
 
 - `docs/planning/phase_p5_part3_completion_audit.md`
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
 ---
@@ -175,7 +175,7 @@ and moves the master plan to the next open continuation.
 
 - `docs/planning/phase_p5_work_queue.md` - check this item and add
   retrospective
-- `docs/planning/product_polish_master_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
 - `docs/planning/first_run_and_polish_plan.md`
 - `docs/index.md`
 
@@ -203,8 +203,8 @@ and moves the master plan to the next open continuation.
 
 - `docs/planning/phase_p5_part3_completion_audit.md`
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/product_polish_master_plan.md`
-- `docs/planning/production_deployment_plan.md`
+- `working/product-polish/product_polish_master_plan.md`
+- `working/phase-n4-domain-cutover/production_deployment_plan.md`
 - `docs/planning/phase_n1_work_queue.md`
 
 ---

@@ -27,7 +27,7 @@ Out of scope: anything that only matters for a multi-tenant paid product
 **Whole plan status: in progress.**
 
 Engine and parser are complete (see
-[`master_completion_plan.md`](../archive/completed-plans/master_completion_plan.md)). This plan begins
+[`master_completion_plan.md`](../../archive/docs-archive/completed-plans/master_completion_plan.md)). This plan begins
 the product polish work. Track A Parts 1 and 2 are complete; Track A Part 3 is
 closed by Phase P5. Track A is closed. Track B deployment remains open and is
 the active continuation.
@@ -67,8 +67,8 @@ parts.
 
 #### Part 1 — Visual Foundation
 
-**Plan doc:** [`visual_foundation_plan.md`](./visual_foundation_plan.md)
-**First queue:** [`phase_v1_work_queue.md`](../archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
+**Plan doc:** [`visual_foundation_plan.md`](../../docs/planning/visual_foundation_plan.md)
+**First queue:** [`phase_v1_work_queue.md`](../../archive/docs-archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
 
 Build the design system into a usable primitives library. Tokens become live
 across the app, fonts are wired in, player headshots and team logos render
@@ -78,8 +78,8 @@ Roughly 2-3 weeks part-time.
 
 #### Part 2 — Component Experience
 
-**Plan doc:** [`component_experience_plan.md`](./component_experience_plan.md)
-**First queue:** [`phase_c1_work_queue.md`](./phase_c1_work_queue.md)
+**Plan doc:** [`component_experience_plan.md`](../../docs/planning/component_experience_plan.md)
+**First queue:** [`phase_c1_work_queue.md`](../../docs/planning/phase_c1_work_queue.md)
 
 Every query class — summary, leaderboard, comparison, finder, streak,
 record, split, playoff, occurrence, count — gets a real designed layout.
@@ -90,8 +90,8 @@ Roughly 4-6 weeks part-time.
 
 #### Part 3 — First-Run and Polish
 
-**Plan doc:** [`first_run_and_polish_plan.md`](./first_run_and_polish_plan.md)
-**First queue:** [`phase_p1_work_queue.md`](./phase_p1_work_queue.md)
+**Plan doc:** [`first_run_and_polish_plan.md`](../../docs/planning/first_run_and_polish_plan.md)
+**First queue:** [`phase_p1_work_queue.md`](../../docs/planning/phase_p1_work_queue.md)
 
 Landing experience, starter queries, freshness banner, mobile verification
 pass, keyboard shortcuts, copy buttons, share links, transitions, error
@@ -102,8 +102,8 @@ Roughly 2 weeks part-time.
 
 ### Track B — Production Deployment (parallel, developer-gated)
 
-**Plan doc:** [`production_deployment_plan.md`](./production_deployment_plan.md)
-**First queue:** [`phase_n1_work_queue.md`](./phase_n1_work_queue.md)
+**Plan doc:** [`production_deployment_plan.md`](../phase-n4-domain-cutover/production_deployment_plan.md)
+**First queue:** [`phase_n1_work_queue.md`](../../docs/planning/phase_n1_work_queue.md)
 
 Vercel + Cloudflare R2 + custom domain. Refactors the FastAPI app into
 Vercel Functions. Sets up the laptop-to-R2 data sync mechanism.
@@ -120,7 +120,7 @@ Roughly 1-2 weeks part-time, mostly waiting on developer steps.
 ## Active Continuation
 
 **Active continuation: Track B, Phase N4.** Specifically,
-[`phase_n4_work_queue.md`](./phase_n4_work_queue.md).
+[`phase_n4_work_queue.md`](../phase-n4-domain-cutover/phase_n4_work_queue.md).
 
 Track A is closed. Track B is the remaining open track. Phase N1 closed the
 backend deployment foundation: R2 sync/read support, Vercel Function handlers,
@@ -161,7 +161,7 @@ When both tracks are fully closed, the polish plan is done.
 ### Design system
 
 Locked in detail in
-[`docs/architecture/design_system.md`](../architecture/design_system.md)
+[`docs/architecture/design_system.md`](../../docs/architecture/design_system.md)
 (created by the design-system-foundation task that runs before Track A
 starts). Summary:
 
@@ -179,7 +179,7 @@ starts). Summary:
 
 StatMuse-influenced — dark, image-rich, query-centric, card-based — but
 calmer and more analytical. See
-[`docs/architecture/design_system.md`](../architecture/design_system.md) for
+[`docs/architecture/design_system.md`](../../docs/architecture/design_system.md) for
 the full philosophy.
 
 ---
@@ -268,7 +268,7 @@ plan. It self-locates the active queue, runs items in order, and rolls
 forward across phase handoffs without needing to be edited per phase.
 
 ```text
-Read docs/planning/product_polish_master_plan.md and find the "Active
+Read working/product-polish/product_polish_master_plan.md and find the "Active
 Continuation" section — it names the current active work queue. Open that
 queue, read its "How to work this file" instructions, then start at the
 first unchecked item and continue through items in order without stopping.
