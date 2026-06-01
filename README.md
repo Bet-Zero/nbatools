@@ -84,7 +84,7 @@ The product has explicit boundaries. When a question falls outside them, the eng
 - Subjective, opinion, or narrative questions (best defender, MVP candidate, clutch, cooled off, best player lately).
 - Inference beyond available data, including invented metric definitions for terms the product has not approved.
 - Query families that are still being evaluated against the promotion path (see [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md)).
-- Specific guarded families that are out of scope for the current release — for example personal-foul leaderboards, single-team advanced-stat scalar summaries, rookie leaderboards, league-wide starter/bench leaderboards, team bench scoring, opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, minutes leaderboards, and team single-game threes. The full list with current behavior and future support path lives in [docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md) §4.
+- Specific guarded families that are out of scope for the current release — for example personal-foul leaderboards, single-team advanced-stat scalar summaries, rookie leaderboards, league-wide starter/bench leaderboards, team bench scoring, opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, minutes leaderboards, and team single-game threes. The durable supported and unsupported boundary lives in [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
 
 The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 
@@ -196,10 +196,9 @@ Current release status: `RELEASE_CANDIDATE_WITH_NOTES` / `PREVIEW_READY_WITH_NOT
 
 Pointers:
 
-- Release package (supported and explicitly unsupported boundary, validation summary, QA artifacts): [docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md).
-- Release-candidate handoff: [docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md).
-- Release-readiness checklist: [docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md](docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md).
-- Post-review hardening plan (Waves 1–6): [docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md](docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md).
+- Verified shipped behavior: [docs/reference/current_state_guide.md](docs/reference/current_state_guide.md).
+- Supported and explicitly unsupported query boundary: [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
+- Generated QA evidence scoreboard: [docs/operations/query_validation_map.md](docs/operations/query_validation_map.md).
 - Parser/routing growth guardrails: [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 - Feature promotion rules: [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md).
 - Query feedback review runbook (weekly beta cadence): [docs/operations/query_feedback_review.md](docs/operations/query_feedback_review.md).

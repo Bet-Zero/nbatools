@@ -52,8 +52,9 @@ have document-level horizontal overflow.
 4. Wait for all requested cases to finish loading through the live query path.
 5. Review the desktop pass at approximately `1280px`.
 6. Review the mobile pass at approximately `390px`.
-7. Record pass/fail notes, blocking findings, and deferred polish in the active
-   task folder under `working/<task-slug>/`.
+7. Record pass/fail notes, blocking findings, and deferred polish with the
+   active task materials according to
+   [`working_and_archive_policy.md`](working_and_archive_policy.md).
 8. Promote durable conclusions into `docs/` when the review changes a
    long-lived runbook, contract, or verified current-state statement.
 
@@ -125,8 +126,8 @@ outputs/public_ui_render_review/<run_id>/
 `outputs/public_ui_render_review/` is complementary rendered UI review evidence,
 not a replacement for the `/visual-qa` screenshot manifest or manual checklist.
 
-The policy for `outputs/` is pending a separate audit. This runbook does not
-change that policy.
+Generated files under `outputs/` are evidence artifacts only. They are not
+durable source-of-truth documentation.
 
 ## What Counts As UI-Reviewed
 
@@ -146,10 +147,9 @@ Record:
 ## File Placement
 
 - Put durable workflow rules and verified long-lived conclusions in `docs/`.
-- Put active checklists, triage notes, screenshot notes, and handoff notes in
-  `working/<task-slug>/`.
-- Move completed task folders to top-level ignored `archive/<task-slug>/` after
-  durable facts have been promoted into `docs/`.
+- Put active checklists, triage notes, screenshot notes, and handoff notes with
+  the active task materials according to
+  [`working_and_archive_policy.md`](working_and_archive_policy.md).
 - Keep generated screenshots, metrics, manifests, and rendered-review artifacts
   under `outputs/`.
 

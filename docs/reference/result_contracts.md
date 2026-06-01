@@ -14,7 +14,6 @@ Related docs:
 - [docs/architecture/project_conventions.md](../architecture/project_conventions.md) — engineering conventions (see section 9, UI-readiness)
 - [docs/data_contracts.md](data_contracts.md) — dataset-level contracts
 - [docs/current_state_guide.md](current_state_guide.md) — currently shipped behavior
-- [docs/planning/roadmap.md](../planning/roadmap.md) — Phase 5 (product-layer readiness) and Phase 6 (first UI)
 
 ---
 
@@ -225,7 +224,7 @@ Future result objects should carry:
   results when applicable
 - **grouped_boolean_used** — whether a grouped boolean expression was parsed and applied
 - **head_to_head_used** — whether a head-to-head restriction was applied
-- **current_through** — freshness marker for the underlying data; should align with the working definition in [docs/planning/data_freshness_plan.md](../planning/data_freshness_plan.md#9-current-through--what-users-should-be-able-to-trust). Future-ready — not all results carry this today.
+- **current_through** — freshness marker for the underlying data: the latest covered game date for the relevant result scope. The durable freshness states and API behavior are documented in [current_state_guide.md](current_state_guide.md#data-freshness). Future-ready — not all results carry this today.
 - **notes / caveats** — short, machine-readable notes when the engine applied a semantic fallback. Examples:
   - leaderboard metric not present in season-advanced table, derived from game logs
   - sample-aware player rate recomputed from the filtered sample rather than season-average

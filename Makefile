@@ -9,6 +9,7 @@
 .PHONY: test-smoke-queries test-phase-smoke test-smoke-all
 .PHONY: parser-examples-sweep raw-query-answer-qa query-feedback-export
 .PHONY: visual-qa-screenshots
+.PHONY: docs-governance
 
 PYTHON ?= python
 PYTEST ?= pytest
@@ -107,3 +108,7 @@ query-feedback-export:
 ## Build the frontend and start the local API shell before running this target.
 visual-qa-screenshots:
 	npm --prefix frontend run qa:visual-screenshots -- --base-url "$(VISUAL_QA_BASE_URL)" $(if $(VISUAL_QA_RUN_ID),--run-id "$(VISUAL_QA_RUN_ID)")
+
+## Durable-doc path and relative-link governance check.
+docs-governance:
+	python3 tools/check_docs_governance.py

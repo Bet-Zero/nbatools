@@ -1,326 +1,73 @@
 # NBA Tools Documentation
 
-This docs set reflects the current shipped query surface of NBA Tools.
-
-If you're new, start here and follow the order below.
-
----
+This index lists durable source-of-truth documentation only. Task plans,
+preflights, review notes, generated evidence, and historical receipts do not
+belong in the durable documentation map.
 
 ## Start Here
 
-1. `../README.md` — project overview and fastest examples
-2. `reference/quick_query_guide.md` — quick-start examples (shortest path to trying queries)
-3. `reference/current_state_guide.md` — verified shipped behavior (the source of truth for what works)
-4. `reference/query_catalog.md` — living catalog of supported question/query types and common phrasing
-5. `reference/query_guide.md` — full structured and natural query reference
+1. [`../README.md`](../README.md) - project overview and fastest examples
+2. [`reference/quick_query_guide.md`](reference/quick_query_guide.md) - quick-start examples
+3. [`reference/current_state_guide.md`](reference/current_state_guide.md) - verified shipped behavior
+4. [`reference/query_catalog.md`](reference/query_catalog.md) - living catalog of supported query types and phrasing
+5. [`reference/query_guide.md`](reference/query_guide.md) - full structured and natural query reference
 
----
+## Reference
 
-## Directory Layout
+Current-state documentation, verified behavior, and data contracts.
 
-```text
-docs/
-  index.md                 ← you are here
-  reference/               — current-state, verified behavior, data specs
-  architecture/            — design docs, conventions, internal layers
-  operations/              — runbooks, pipeline ops, UI dev guide
-  planning/                — active plans and active work queues
-  archive/                 — completed/superseded planning artifacts
-  audits/                  — audit snapshots, historical docs
-```
+- [`reference/current_state_guide.md`](reference/current_state_guide.md) - verified shipped behavior
+- [`reference/quick_query_guide.md`](reference/quick_query_guide.md) - shortest path to trying queries
+- [`reference/query_catalog.md`](reference/query_catalog.md) - supported query inventory and explicit boundaries
+- [`reference/query_guide.md`](reference/query_guide.md) - comprehensive structured and natural query reference
+- [`reference/natural_search_and_deep_tools_boundary.md`](reference/natural_search_and_deep_tools_boundary.md) - natural-search product boundary
+- [`reference/data_catalog.md`](reference/data_catalog.md) - dataset inventory
+- [`reference/data_contracts.md`](reference/data_contracts.md) - dataset-level contracts and source boundaries
+- [`reference/result_contracts.md`](reference/result_contracts.md) - target engine result contracts
+- [`reference/result_contracts/core_result_table_contracts.md`](reference/result_contracts/core_result_table_contracts.md) - locked route/result/table display contracts
+- [`reference/system_conventions.md`](reference/system_conventions.md) - data format and naming conventions
 
----
+## Architecture
 
-## Reference — `reference/`
+Long-lived engineering conventions and internal layer design.
 
-Current-state documentation and verified behavior specs.
+- [`architecture/project_conventions.md`](architecture/project_conventions.md) - engineering and documentation rules
+- [`architecture/api_layer.md`](architecture/api_layer.md) - FastAPI HTTP layer
+- [`architecture/query_service_layer.md`](architecture/query_service_layer.md) - query service interface
+- [`architecture/structured_result_layer.md`](architecture/structured_result_layer.md) - structured result object design
+- [`architecture/design_system.md`](architecture/design_system.md) - visual foundation reference
+- [`architecture/parser/overview.md`](architecture/parser/overview.md) - parser framing and principles
+- [`architecture/parser/specification.md`](architecture/parser/specification.md) - parser component specification
+- [`architecture/parser/examples.md`](architecture/parser/examples.md) - parser example library
 
-- `reference/current_state_guide.md` — verified shipped behavior
-- `reference/quick_query_guide.md` — quick-start examples
-- `reference/query_catalog.md` — living catalog of supported question/query types and phrasing patterns
-- `reference/query_guide.md` — comprehensive reference (structured + natural)
-- `reference/natural_search_and_deep_tools_boundary.md` — durable boundary between natural search and deeper guided tools
-- `reference/data_catalog.md` — dataset inventory
-- `reference/data_contracts.md` — dataset-level contracts
-- `reference/result_contracts.md` — **design target** for engine result shapes
-- `reference/result_contracts/core_result_table_contracts.md` — locked Wave 1 route/result/table display contracts
-- `reference/system_conventions.md` — data format and naming conventions
+## Operations
 
-## Architecture — `architecture/`
+Runbooks and durable workflow policies.
 
-Engineering conventions and internal layer design.
+- [`operations/pipeline_runbook.md`](operations/pipeline_runbook.md) - data pipeline operations
+- [`operations/deployment.md`](operations/deployment.md) - Cloudflare R2 and Vercel deployment
+- [`operations/query_feedback_review.md`](operations/query_feedback_review.md) - query feedback review workflow
+- [`operations/query_smoke_workflow.md`](operations/query_smoke_workflow.md) - natural-query smoke workflow
+- [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) - Raw QA operations
+- [`operations/query_validation_map.md`](operations/query_validation_map.md) - validation-layer map and generated-evidence scoreboard
+- [`operations/frontend_visual_qa.md`](operations/frontend_visual_qa.md) - frontend Visual QA workflow
+- [`operations/working_and_archive_policy.md`](operations/working_and_archive_policy.md) - task-artifact lifecycle policy
+- [`operations/feature_promotion_rules.md`](operations/feature_promotion_rules.md) - product-capability promotion rules
+- [`operations/parser_routing_growth_guardrails.md`](operations/parser_routing_growth_guardrails.md) - parser/routing growth guardrails
+- [`operations/parser_examples_full_sweep_protocol.md`](operations/parser_examples_full_sweep_protocol.md) - parser example sweep protocol
+- [`operations/ui_guide.md`](operations/ui_guide.md) - web UI setup and component reference
 
-- `architecture/project_conventions.md` — engineering conventions and architecture rules
-- `architecture/api_layer.md` — FastAPI HTTP layer
-- `architecture/query_service_layer.md` — query service interface
-- `architecture/structured_result_layer.md` — structured result object design
-- `architecture/design_system.md` — locked visual foundation reference for tokens, typography, color, and component treatment
+## Documentation Rules
 
-## Operations — `operations/`
-
-Runbooks and operational guides.
-
-- `operations/pipeline_runbook.md` — data pipeline operations
-- `operations/deployment.md` — Cloudflare R2 and Vercel deployment storage setup
-- `operations/query_feedback_review.md` — query feedback storage and triage workflow
-- `operations/query_smoke_workflow.md` — terminal-driven natural-query smoke workflow
-- `operations/raw_query_answer_qa.md` — two-layer Raw QA runbook for machine regression, family-level product-review artifacts, no-broad-fallback proof, and human + ChatGPT handoff
-- `operations/query_validation_map.md` — plain-English map and current scoreboard for Raw QA corpus, slices, product review, rendered UI review, and pytest query tests
-- `operations/frontend_visual_qa.md` — manual and repeatable non-diffing frontend Visual QA workflow, viewport expectations, manifest usage, and artifact-placement rules
-- `operations/working_and_archive_policy.md` — tracked active-task working folders, ignored completed-task archives, and task-scoped return-package rules
-- `operations/feature_promotion_rules.md` — durable promotion path for new product capabilities
-- `operations/parser_routing_growth_guardrails.md` — durable parser/routing growth and no-broad-fallback policy
-- `operations/ui_guide.md` — web UI setup, dev workflow, component reference
-
-## Planning — `planning/`
-
-Active master plans, active queues, and near-future planning docs.
-
-- `planning/product_polish_master_plan.md` — single top-level authority for the product polish push from engineering-complete to friends-tier-production-grade
-- `planning/visual_foundation_plan.md` — Track A Part 1 plan for design tokens, primitives, app shell, imagery, and team theming foundations
-- `planning/component_experience_plan.md` — Track A Part 2 plan for query-class-specific result layouts
-- `planning/result_display_map.md` — route-by-route display intent and reconciliation map for result rendering
-- `planning/result_display_implementation_plan.md` — completed first-pass result display implementation queue
-- `planning/result_display_followup_queue.md` — active follow-up queue for remaining route-level result display gaps
-- `planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` — release-readiness checkpoint for backend raw QA, public-query acceptance coverage, frontend-copy QA, visual QA, public UI readiness, deploy parity, division-boundary cleanup evidence, post-review hardening closure, and next options
-- `planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` — current Raw Product release-readiness checklist, public-query acceptance gate, preview manual validation steps, final public UI readiness evidence, division-boundary cleanup evidence, and post-review hardening closure notes
-- `planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` — final release package for the current supported and explicitly unsupported Raw Product boundary; current public UI status is ready with notes, the public-query acceptance gate is clean at 67/67, division-opponent phrasing is guarded as unsupported, and post-review hardening Waves 1–6 are complete
-- `planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md` — final release-candidate handoff for the current Raw Product boundary; current state is handoff complete with public UI ready with notes, public-query acceptance coverage complete, division-boundary cleanup complete, and full frontend tests clean
-- `planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` — durable release evidence summary promoted from return-package receipts; source-of-truth evidence for Raw Product release/readiness status, QA, public-query acceptance coverage, feedback, deployment, public UI, hardening, division cleanup, build/lint, and deferred notes
-- `planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` — broader Raw Product post-review notes; closure refresh records Waves 1–6 complete and remaining notes deferred
-- `planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md` — completed hardening roadmap (Waves 1–6) that turned the Raw Product post-review notes and parser/routing growth notes into bounded execution waves; statuses remain `*_WITH_NOTES`
-- `../working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md` — active natural-query maintenance decision map and test matrix for preserving route order, unsupported boundaries, collision groups, and extraction validation
-- `planning/result-display-lock-in/result_display_wave_2_findings.md` — Wave 2 lock-in findings for core leaderboard result displays
-- `planning/result-display-lock-in/result_display_wave_3_findings.md` — Wave 3 lock-in findings for entity summaries and game logs
-- `planning/result-display-lock-in/result_display_wave_4_findings.md` — Wave 4 lock-in findings for records, comparisons, and playoff history
-- `planning/result-display-lock-in/result_display_wave_5_findings.md` — Wave 5 lock-in findings for no-result behavior
-- `planning/result-display-lock-in/final_visual_qa_punch_list_findings.md` — final Result Display Lock-In punch-list findings and validation
-- `planning/phase_v2_work_queue.md` — completed Track A visual-foundation primitives queue and Phase V2 retrospective
-- `planning/phase_v2_primitives_inventory.md` — primitive needs inventory and API-boundary record produced by Phase V2 item 1
-- `planning/phase_v3_work_queue.md` — completed Track A visual-foundation queue for app shell and layout work
-- `planning/phase_v3_app_shell_inventory.md` — app-shell ownership and boundary inventory produced by Phase V3 item 1
-- `planning/phase_v4_work_queue.md` — completed Track A visual-foundation queue for player imagery, team logos, and team-color plumbing
-- `planning/phase_v4_identity_inventory.md` — identity data, target UI surface, and fallback inventory produced by Phase V4 item 1
-- `planning/phase_v5_work_queue.md` — completed Track A visual-foundation closure queue for Part 1 retrospective and Part 2 handoff
-- `planning/phase_v5_part1_completion_audit.md` — Track A Part 1 done-definition audit produced by Phase V5 item 1
-- `planning/phase_v5_component_layout_inventory.md` — Track A Part 2 renderer/data readiness inventory produced by Phase V5 item 2
-- `planning/phase_c1_work_queue.md` — completed Track A component-experience queue for player summary layout work
-- `planning/phase_c2_work_queue.md` — completed Track A component-experience queue for leaderboard layout work
-- `planning/phase_c2_leaderboard_inventory.md` — leaderboard row-shape and metric-priority inventory produced by Phase C2 item 1
-- `planning/phase_c3_work_queue.md` — completed Track A component-experience queue for player comparison layout work
-- `planning/phase_c3_comparison_inventory.md` — comparison row-shape and renderer-boundary inventory produced by Phase C3 item 1
-- `planning/phase_c4_work_queue.md` — completed Track A component-experience queue for player game finder layout work
-- `planning/phase_c4_finder_inventory.md` — finder row-shape and renderer-boundary inventory produced by Phase C4 item 1
-- `planning/phase_c5_work_queue.md` — completed Track A component-experience queue for team summary, team record, and split layout work
-- `planning/phase_c5_team_split_inventory.md` — team summary, record, matchup-record, and split row-shape inventory produced by Phase C5 item 1
-- `planning/phase_c6_work_queue.md` — completed Track A component-experience queue for streak and occurrence layout work
-- `planning/phase_c6_streak_occurrence_inventory.md` — streak, count, and occurrence row-shape inventory produced by Phase C6 item 1
-- `planning/phase_c7_work_queue.md` — completed Track A component-experience queue for head-to-head and playoff layout work
-- `planning/phase_c7_head_to_head_playoff_inventory.md` — head-to-head and playoff row-shape inventory produced by Phase C7 item 1
-- `planning/phase_c8_work_queue.md` — completed Track A component-experience queue for the full mobile pass across redesigned components
-- `planning/phase_c8_mobile_inventory.md` — mobile-risk and verification-fixture inventory produced by Phase C8 item 1
-- `planning/phase_c9_work_queue.md` — completed Track A component-experience closure queue for the Part 2 retrospective and Part 3 handoff
-- `planning/phase_c9_part2_completion_audit.md` — Track A Part 2 done-definition audit produced by Phase C9 item 1
-- `planning/phase_p1_work_queue.md` — completed Track A first-run queue for landing, starter queries, freshness, and first-run mobile polish
-- `planning/phase_p1_first_run_inventory.md` — first-run surface, starter-query, freshness, and mobile inventory produced by Phase P1 item 1
-- `planning/phase_p2_work_queue.md` — completed Track A loading/error/empty-state queue for designed non-result states and recovery paths
-- `planning/phase_p2_state_inventory.md` — loading, empty, no-result, error, retry, and freshness state inventory produced by Phase P2 item 1
-- `planning/phase_p3_work_queue.md` — completed Track A broader mobile-verification queue for first-run, result chrome, panels, and result renderers
-- `planning/phase_p3_mobile_inventory.md` — mobile viewport, fixture, risk, and evidence inventory produced by Phase P3 item 1
-- `planning/phase_p4_work_queue.md` — completed Track A felt-polish queue for keyboard shortcuts, copy/share feedback, stat help, transitions, and history ergonomics
-- `planning/phase_p4_felt_polish_inventory.md` — felt-polish current-state, fixture, risk, and verification inventory produced by Phase P4 item 1
-- `planning/phase_p5_work_queue.md` — completed Track A Part 3 closure queue for first-run/polish audit, Track A closure, and master-plan handoff
-- `planning/phase_p5_part3_completion_audit.md` — Track A Part 3 done-definition audit produced by Phase P5 item 1
-- `planning/phase_n1_work_queue.md` — completed Track B backend deployment and R2 queue
-- `planning/phase_n1_api_inventory.md` — FastAPI route, state, cold-start, and Vercel-refactor inventory produced by Phase N1 item 4
-- `planning/phase_n1_e2e_results.md` — deployed R2/Vercel end-to-end verification results produced by Phase N1 item 6
-- `planning/phase_n2_work_queue.md` — completed Track B frontend deployment queue; deferred custom-domain/cutover items now roll forward through Phase N4
-- `planning/phase_n2_frontend_deployment_inventory.md` — frontend build/deploy strategy inventory produced by Phase N2 item 1
-- `planning/phase_n2_preview_ui_e2e_results.md` — deployed preview UI workflow verification results produced by Phase N2 item 3
-- `planning/phase_n3_work_queue.md` — completed Track B monitoring/freshness queue using the deployed Vercel URL; the seven-day synthetic soak was intentionally skipped for friends-tier scope
-- `planning/phase_n3_monitoring_inventory.md` — deployed monitoring target, smoke-case, header-field, and wrap-up-deferral inventory produced by Phase N3 item 1
-- `planning/phase_n3_preview_monitoring_baseline.md` — first deployed smoke baseline and freshness-banner verification produced by Phase N3 item 3
-- `planning/phase_n3_stability_soak_log.md` — closed day-0 stability-baseline record and soak-skip decision from Phase N3 item 4
-- `planning/phase_n4_work_queue.md` — active Track B custom-domain, production-cutover, production-smoke, and closure queue
-- `planning/phase_n4_domain_cutover_checklist.md` — operator-ready checklist for custom-domain purchase, Vercel/DNS attachment, cutover evidence, and post-cutover smoke
-- `planning/data_freshness_plan.md` — data freshness design and implementation plan
-- `planning/natural_query_cleanup_plan.md` — natural query cleanup tracker
-- `planning/query_bugs.md` — recurring query bug patterns and resolution log
-- `planning/roadmap.md` — planned and future capabilities
-
-## Active Working Artifacts — `../working/`
-
-Tracked task-scoped working artifacts. These are active work files, not durable
-source-of-truth documentation.
-
-- `../working/public-query-acceptance-review/` — public-query acceptance product-review triage, Wave 2B probes, and harness preflight
-- `../working/raw-query-answer-qa-review/` — Raw Query Answer QA findings inventory
-- `../working/frontend-visual-qa-followups/` — frontend Visual QA follow-up notes
-- `../working/raw-product-post-launch/` — Raw Product post-launch deferred-work priorities
-- `../working/natural-query-maintenance/` — natural-query extraction preflight
-
-## Archive — `archive/`
-
-Completed or superseded planning artifacts preserved for historical reference.
-
-- `archive/completed-plans/` — closed planning authorities and completion plans
-- `archive/completed-work-queues/` — historical phase/work queue series
-- `archive/handoffs-and-boundaries/` — closed source-boundary docs and handoffs
-- `archive/inventories/` — historical inventory/recon docs tied to closed phases
-- `archive/product-polish/` — completed product-polish queues and inventories
-
-## Documentation Category Rules
-
-### Reference
-
-Stable, current truth about product behavior. Keep current; archive only when replaced by a newer reference doc.
-
-### Architecture
-
-Long-lived design/convention docs. Archive only when implementation is removed or replaced by a newer architecture decision.
-
-### Operations
-
-Runbooks and workflows. Keep active while workflow exists; archive when workflow is retired.
-
-### Planning
-
-Active master plans and active queues only. Completed queues and superseded plans should move to `archive/`.
-
-### Archive
-
-Historical planning artifacts. Preserved for history and context, but not active continuation authority.
-
-### Audits / Reviews / Verdicts
-
-Point-in-time assessments that can remain in `audits/` (and repo-level verdict docs) unless clearly superseded.
-
-### Working / Temporary Inventories
-
-New working artifacts belong in tracked top-level `../working/<task-slug>/`
-folders, not under `docs/`. When a task closes, promote durable facts into
-`docs/` as needed, then move its working folder to ignored top-level
-`../archive/<task-slug>/`. The top-level `archive/` folder is separate from
-`working/` and is distinct from the durable documentation history under
-`docs/archive/`.
-
-### Return Packages
-
-Return packages are task-scoped working documents, not durable docs and not
-their own top-level folder. Put a new return package inside the relevant tracked
-`../working/<task-slug>/` folder while the task is active. Promote durable facts
-into `docs/` before moving the completed task folder to ignored top-level
-`../archive/<task-slug>/`.
-
-The existing top-level `../return_packages/` ignore rule remains only as legacy
-migration protection. Do not create new standalone return-package folders.
-
-The policy for `../outputs/` is pending a separate audit because it may contain
-generated reports, screenshots, JSONL reports, review artifacts, and manifests.
-
-## Audits — `audits/`
-
-Point-in-time audit snapshots and historical records.
-
-- `audits/architecture_hygiene_audit.md` — full architecture review
-- `audits/glue_layer_scope_audit.md` — glue layer scope assessment
-- `audits/natural_query_final_scope_audit.md` — natural_query.py final scope audit
-- `audits/repo_structure_audit.md` — folder/file architecture audit
-- `audits/result_contracts_audit.md` — result contracts audit (pre-structured-result-layer)
-- `audits/scripts_retirement.md` — scripts retirement decision record
-
-## Review Artifacts
-
-- `cosmetic_fixes_pass1_report.md` — pass 1 report for chip wrapping, average precision, and date-format cleanup from the `/review` screenshot pass
-- `correctness_fixes_pass3_report.md` — pass 3 report for count headlines, game-summary answers, opponent-points filters, playoff-round display, and team-headline grammar fixes
-- `editorial_polish_pass4_report.md` — pass 4 report for hero-sentence prose, integer-zero trimming, and hero-only mono-font cleanup
-- `output_shapes.md` — exhaustive result-renderer shape taxonomy with current parser-example sweep counts
-- `query_intent_audit.md` — fine-grained query intent → answer shape audit: every distinct intent, its current route, current shape, available data, and gap notes
-- `determination_layer_audit.md` — per-shape field selection, tie-handling, qualifiers, truncation, and context disambiguation
-- `primitive_audit_report.md` — shared result-rendering primitive design-system compliance audit
-- `shape_cleanup_report.md` — follow-up renderer shape cleanup and team-context hero accent report
-- `frontend_apply_report.md` — frontend display pass report for query-intent audit backend patterns
-- `new_shapes_apply_report.md` — frontend implementation report for Top Performances and Rolling Stretch result shapes
-
-## Verdicts
-
-- `repo_structure_final_verdict.md` — final assessment: is the repo-structure phase done enough to stop?
+- Keep stable product behavior and contracts in `reference/`.
+- Keep long-lived engineering decisions in `architecture/`.
+- Keep repeatable workflows and policies in `operations/`.
+- Keep temporary task artifacts outside the durable docs tree according to
+  [`operations/working_and_archive_policy.md`](operations/working_and_archive_policy.md).
+- Treat generated reports, screenshots, and manifests as evidence artifacts,
+  not durable source of truth.
+- Run `make docs-governance` after documentation changes.
 
 ## Release History
 
-- `../CHANGELOG.md`
-
----
-
-## What NBA Tools Currently Supports
-
-- natural-language NBA queries
-- structured CLI commands
-- player and team leaderboards
-- player and team summaries
-- player and team comparisons
-- split summaries
-- matchup / head-to-head phrasing
-- month / date-window queries
-- `since All-Star break`
-- player streaks
-- team streaks
-- CSV / TXT / JSON exports
-
----
-
-## Recommended Reading Paths
-
-### Fastest path
-
-1. `reference/quick_query_guide.md`
-2. try a few `nbatools-cli ask` queries
-3. use `reference/current_state_guide.md` as reference
-
-### Full product understanding
-
-1. `../README.md`
-2. `reference/current_state_guide.md`
-3. `reference/query_catalog.md`
-4. `reference/query_guide.md`
-5. `reference/data_catalog.md`
-6. `operations/pipeline_runbook.md`
-
-### Extending the system
-
-1. `architecture/project_conventions.md`
-2. `archive/completed-plans/master_completion_plan.md`
-3. `reference/system_conventions.md`
-4. `../CHANGELOG.md`
-
----
-
-## CLI Entry Points
-
-Main commands:
-
-```bash
-nbatools-cli ask
-nbatools-cli query
-```
-
-Help:
-
-```bash
-nbatools-cli --help
-nbatools-cli ask --help
-nbatools-cli query --help
-```
-
-Tests:
-
-```bash
-pytest
-nbatools-cli test
-```
-
----
-
-## Current Tested State
-
-- full suite: **1650+ passing tests** across 41+ test files
+- [`../CHANGELOG.md`](../CHANGELOG.md)

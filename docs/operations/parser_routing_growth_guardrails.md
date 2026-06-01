@@ -11,10 +11,6 @@ frontend behavior. It does not change result contracts or QA corpus
 expectations. It does not initiate any refactor. It defines the bar that any
 new natural-language query support must clear before it ships.
 
-Source review notes:
-
-- `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`
-
 Companion policy:
 
 - `docs/operations/feature_promotion_rules.md`

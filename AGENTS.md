@@ -84,7 +84,7 @@ For parser work, treat all of these as first-class input styles:
 - search-bar / fragment form
 - compressed shorthand form
 
-Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. See `docs/planning/master_completion_plan.md` for the top-level completion authority and active continuation, `docs/planning/query_surface_expansion_plan.md` for the completed Part 1 parser/query-surface plan, `docs/planning/parser_execution_completion_plan.md` for the closed Part 2 execution/data closure record, and the "Phase-based work queues" section below for how to pick up scheduled work.
+Do not assume users will type full grammatical questions. Favor intent + slots over sentence grammar. Use `docs/reference/query_catalog.md` for the shipped query inventory, `docs/reference/current_state_guide.md` for verified behavior, and the "Task-based work queues" section below for scheduled work.
 
 ### Frontend-layer rule
 
@@ -138,7 +138,7 @@ If a new source is approved, implementation must document before broad rollout:
 - fallback behavior when coverage/trust is missing
 - why the chosen placement is structurally correct
 
-Prefer a dedicated dataset and backfill path over mutating unrelated existing tables unless there is a strong documented reason approved in planning docs.
+Prefer a dedicated dataset and backfill path over mutating unrelated existing tables unless there is a strong documented reason recorded in the task preflight and promoted into the durable data contract.
 
 ## Testing expectations
 
@@ -299,7 +299,7 @@ Permanent execution rule for queue-driven work:
 2. As soon as that queue item is complete, commit it as its own PR-sized unit, push, and open the PR immediately.
 3. Wait for CI (`lint` + `test-fast`) on that PR, then merge immediately once CI is green.
 4. After merge, immediately continue to the next unchecked item in the active queue.
-5. Do not treat one merged item as whole-plan completion; stop only when `master_completion_plan.md` says the whole plan is done, or when the queue's current step explicitly requires review-handoff/blocker escalation.
+5. Do not treat one merged item as whole-workstream completion; stop only when the active queue's completion rule is met, or when the queue's current step explicitly requires review-handoff/blocker escalation.
 
 This gives us atomic per-item git history, keeps `main` green via CI, and avoids ceremony that doesn't apply to solo work. Do not leave PRs open waiting for review. Do not skip PRs in favor of direct-to-main commits unless explicitly told to.
 
@@ -310,7 +310,6 @@ Each doc has a specific role. The `docs/` directory is organized by role:
 - `docs/reference/` — current-state, verified behavior, data specs
 - `docs/architecture/` — design docs, conventions, internal layers
 - `docs/operations/` — runbooks, pipeline ops, UI dev guide
-- `docs/planning/` — roadmap, active plans
 - `docs/audits/` — audit snapshots, historical docs
 
 Key docs:
@@ -318,8 +317,6 @@ Key docs:
 - `README.md` -> user-facing overview and high-level examples
 - `docs/reference/current_state_guide.md` -> verified shipped behavior only
 - `docs/reference/query_catalog.md` -> living catalog of supported question/query types and common phrasing patterns
-- `docs/planning/query_surface_expansion_plan.md` -> active plan for broadening question/search/shorthand query coverage
-- `docs/planning/roadmap.md` -> planned or next capabilities
 - `docs/architecture/project_conventions.md` -> architecture and engineering rules
 - `docs/reference/data_contracts.md` -> dataset definitions and expectations
 - `docs/operations/ui_guide.md` -> web UI setup, dev workflow, and component reference
@@ -383,32 +380,33 @@ must be promoted into `docs/`.
   for exact package references and remove or replace those dependencies in the
   same cleanup wave.
 
-### Phase-based work queues
+### Task-based work queues
 
-Some active plans in `docs/planning/` organize their work into phases with companion **work queue** files — sequenced, PR-sized task lists that live alongside the plan. The parser/surface expansion plan uses this pattern; other large, multi-phase efforts may adopt it.
+Active workstreams may use sequenced, PR-sized work queues. These are task
+coordination artifacts, not durable product documentation. Keep them in the
+tracked task workspace governed by `docs/operations/working_and_archive_policy.md`.
 
-`docs/planning/master_completion_plan.md` is the top-level completion authority.
-When asked whether "the plan" is done, agents must interpret that as the whole
-master plan unless the user explicitly names a narrower subplan. Closed
+When asked whether "the plan" is done, interpret that as the whole named
+workstream unless the user explicitly names a narrower subplan. Closed
 subplans, completed queues, explicit deferrals, placeholders, and parser-only
-completion do not answer overall completion. If the master plan says the whole
-plan is not done, follow the active continuation path named there.
+completion do not answer overall completion. Follow the active continuation
+path named by the current task queue.
 
 #### How it works
 
-- The **plan doc** (e.g. `docs/planning/query_surface_expansion_plan.md`) defines phases, scope, guardrails, and direction. It stays stable across a phase.
-- The **active phase's work queue** (e.g. `docs/planning/phase_a_work_queue.md`) contains the current sequenced items, each with acceptance criteria and test commands. It changes continuously as items complete.
+- The **task plan** defines phases, scope, guardrails, and direction. It stays stable across a phase.
+- The **active phase's work queue** contains the current sequenced items, each with acceptance criteria and test commands. It changes continuously as items complete.
 - The **final item of each queue** must either draft the next queue/phase or write an explicit review-handoff that names the files/artifacts to review and the immediate next action after review.
 
 #### Completion-level rule
 
-Planning docs must distinguish between:
+Task plans must distinguish between:
 
 - **parser/query-surface completion** — parser recognition, slot extraction, routing, and docs/tests for the surface are in place
 - **execution/data completion** — the user-facing query family returns execution-backed results for the documented product boundary, or the family is explicitly out of scope by documented product decision
 - **product/capability completion** — parser/query-surface completion and execution/data completion are both true, or the capability is explicitly out of scope by documented product decision
 
-Do **not** let a plan, phase, or queue imply product completion from parser/route/placeholder completion alone. Explicit deferral is a tracked open state for the master plan unless a documented product decision marks the family out of scope. If a plan only completes a subsystem, it must label itself as Part 1 (or equivalent) and link to the continuation path.
+Do **not** let a plan, phase, or queue imply product completion from parser/route/placeholder completion alone. Explicit deferral is a tracked open state unless a documented product decision marks the family out of scope. If a plan only completes a subsystem, it must label itself as Part 1 (or equivalent) and link to the continuation path.
 
 #### Agent workflow
 

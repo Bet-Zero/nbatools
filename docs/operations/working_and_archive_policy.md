@@ -17,7 +17,7 @@ working/                      # tracked active-task working artifacts
   <task-slug>/
 archive/                      # ignored completed-task working artifacts
   <task-slug>/
-outputs/                      # policy pending a separate audit
+outputs/                      # generated artifacts and evidence only
 return_packages/              # legacy ignored migration protection only
 ```
 
@@ -64,8 +64,6 @@ not their own top-level folder. A return package belongs inside the relevant
 - current-state reference documentation
 - architecture decisions and conventions
 - operational runbooks and policies
-- durable planning authorities and active queues when they serve as
-  source-of-truth project coordination docs
 - durable audit records
 
 Durable facts from working artifacts must be promoted into `docs/` before the
@@ -80,8 +78,9 @@ task folder is archived.
 The top-level `archive/` folder is separate from `working/`. Archived working
 files are historical/local only and must not be treated as source of truth.
 
-## Pending `outputs/` Audit
+## Generated `outputs/` Artifacts
 
-This policy does not change `outputs/`. Its policy is pending a separate audit
-because it may contain generated reports, screenshots, JSONL reports, review
-artifacts, and manifests.
+`outputs/` may contain generated reports, screenshots, JSONL reports, review
+artifacts, and manifests. These files are generated evidence only. They are not
+durable source-of-truth documentation. Promote any long-lived conclusion into
+the appropriate durable doc.

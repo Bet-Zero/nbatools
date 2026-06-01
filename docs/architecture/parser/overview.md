@@ -1,6 +1,6 @@
 # Parser Overview
 
-> **Purpose of this doc:** High-level framing for anyone (or any agent) working on the natural-query parser in `nbatools`. Read this first to understand _the approach_. For implementation detail, see [`specification.md`](./specification.md). For test inputs and worked examples, see [`examples.md`](./examples.md). For active expansion work, see [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md).
+> **Purpose of this doc:** High-level framing for anyone (or any agent) working on the natural-query parser in `nbatools`. Read this first to understand _the approach_. For implementation detail, see [`specification.md`](./specification.md). For test inputs and worked examples, see [`examples.md`](./examples.md). For the shipped query inventory, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
 ---
 
@@ -196,6 +196,6 @@ If the system enforces none of those four things, it will feel like a search eng
 | [`AGENTS.md`](../../../AGENTS.md)                                                                 | Repo-wide agent conventions, working style, testing |
 | [`docs/reference/query_catalog.md`](../../reference/query_catalog.md)                             | Living inventory of shipped query capabilities      |
 | [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md)                 | Strict verified current behavior                    |
-| [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md) | Active plan for expanding the natural-query surface |
+| [`docs/operations/parser_routing_growth_guardrails.md`](../../operations/parser_routing_growth_guardrails.md)           | Durable rules for expanding the natural-query surface |
 
-Read this doc for the _why_. Read the spec for the _what_. Read the examples for _how it shows up in real user language_. Read the expansion plan for _what's being built next_.
+Read this doc for the _why_. Read the spec for the _what_. Read the examples for _how it shows up in real user language_. Read the guardrails before expanding the shipped surface.

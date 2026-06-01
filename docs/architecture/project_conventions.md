@@ -434,7 +434,7 @@ Use for:
 
 Do not use it for speculative or planned behavior.
 
-## 10.3 `docs/planning/roadmap.md`
+## 10.3 Task Plans And Roadmaps
 
 Use for:
 
@@ -442,6 +442,11 @@ Use for:
 - phased milestones
 - planned expansions
 - not-yet-shipped ideas
+
+Keep active plans, preflights, roadmaps, and work queues in the tracked task
+workspace described by `docs/operations/working_and_archive_policy.md`. Promote
+durable facts into reference, architecture, or operations docs before closing
+the task.
 
 ## 10.4 `docs/reference/data_contracts.md`
 
@@ -476,7 +481,6 @@ docs/
   reference/               — current-state, verified behavior, data specs
   architecture/            — design docs, conventions, internal layers
   operations/              — runbooks, pipeline ops, UI dev guide
-  planning/                — roadmap, active plans
   audits/                  — audit snapshots, historical docs
 ```
 
@@ -487,7 +491,7 @@ When adding a new doc, place it in the directory that matches its role:
 | Verified shipped behavior or data spec | `docs/reference/` | current_state_guide, data_contracts, query_guide |
 | Engineering convention or layer design | `docs/architecture/` | project_conventions, api_layer |
 | Operational runbook or dev guide | `docs/operations/` | pipeline_runbook, ui_guide |
-| Roadmap, plan, or active design proposal | `docs/planning/` | roadmap, data_freshness_plan |
+| Roadmap, plan, or active design proposal | Task workspace governed by `docs/operations/working_and_archive_policy.md` | task plan, preflight |
 | Point-in-time audit or completed plan | `docs/audits/` | architecture_hygiene_audit, scripts_retirement |
 
 After adding or moving a doc, update `docs/index.md` to include it.

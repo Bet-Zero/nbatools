@@ -332,8 +332,8 @@ Contract rules:
 ## 1C. `play_by_play_events` and derived clutch stats
 
 The approved source path for clutch execution is official `PlayByPlayV3` event
-data plus local score-state derivation. This is documented in
-[`docs/planning/clutch_source_boundary.md`](../planning/clutch_source_boundary.md).
+data plus local score-state derivation. This section is the durable source
+boundary.
 
 The raw `play_by_play_events` dataset path, validation, and loader exist. The
 processed `player_game_clutch_stats` and `team_game_clutch_stats` derivation
@@ -413,8 +413,8 @@ Contract rules:
 
 The approved future source path for `player_on_off` execution is the upstream
 `teamplayeronoffsummary` split table, called through
-`nba_api.stats.endpoints.TeamPlayerOnOffSummary`. This is documented in
-[`docs/planning/phase_i_on_off_source_boundary.md`](../planning/phase_i_on_off_source_boundary.md).
+`nba_api.stats.endpoints.TeamPlayerOnOffSummary`. This section is the durable
+source boundary.
 
 This section defines the approved raw source dataset for `player_on_off`
 execution. The route may only use rows when validation marks the requested
@@ -511,8 +511,8 @@ Contract rules:
 
 The approved source path for `lineup_summary` and `lineup_leaderboard`
 execution is the upstream `leaguelineupviz` lineup-unit table, called through
-`nba_api.stats.endpoints.LeagueLineupViz`. This is documented in
-[`docs/planning/phase_j_lineup_source_boundary.md`](../planning/phase_j_lineup_source_boundary.md).
+`nba_api.stats.endpoints.LeagueLineupViz`. This section is the durable source
+boundary.
 
 This raw source dataset path, validation, loader, and coverage-gated route
 execution exist. Missing or untrusted coverage returns an explicit

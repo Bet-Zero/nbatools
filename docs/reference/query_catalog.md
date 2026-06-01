@@ -20,8 +20,9 @@
 
 When this catalog marks a family as parser-recognized but still unfiltered,
 placeholder-backed, or explicitly deferred, that note reflects current shipped
-behavior only. Part 2 execution/data closure is tracked in
-[parser_execution_completion_plan.md](../planning/parser_execution_completion_plan.md).
+behavior only. This catalog and
+[current_state_guide.md](current_state_guide.md) are the durable shipped
+boundary.
 
 ---
 

@@ -6,10 +6,8 @@ This runbook covers v1 query feedback and diagnostic logging review.
 
 This is the primary workflow for the runbook. During beta and early launch,
 the goal is to keep collected feedback from becoming a junk drawer by
-reviewing it on a regular cadence with explicit ownership. The cadence
-encodes the working rule from
-[`docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`](../planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md)
-§5:
+reviewing it on a regular cadence with explicit ownership. The durable working
+rule for that cadence is:
 
 ```text
 identify the risk
@@ -105,10 +103,7 @@ cadence calls for them.
 
 Every group in `feedback_review.md` is classified into exactly one of the
 following eight categories. These are the product-level triage labels and
-are the contract for what the routine produces. They are the categories
-named in
-[`docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`](../planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md)
-§5.
+are the durable contract for what the routine produces.
 
 | Category | When to use | Typical follow-up |
 | --- | --- | --- |
@@ -201,8 +196,8 @@ dedicated feedback bucket was unavailable. The verified preview key shape is:
 query_feedback/preview/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json
 ```
 
-Evidence is recorded in
-`docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
+Generated QA evidence and current scoreboard terminology are documented in
+[`query_validation_map.md`](query_validation_map.md).
 
 The endpoint is backend-owned. The frontend never receives R2 credentials and
 does not write directly to storage.

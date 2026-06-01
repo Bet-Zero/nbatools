@@ -2,7 +2,7 @@
 
 > **Purpose of this doc:** The example library. Use this for test inputs, equivalence verification, and to see how real user language maps to the parser's canonical parse state. For framing, see [`overview.md`](./overview.md). For component specs, see [`specification.md`](./specification.md). For the living inventory of currently-shipped query shapes, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-When an example below carries an explicit unfiltered-results, coverage-gated, placeholder, or deferral note, that note describes current shipped behavior only. Part 2 execution/data closure is tracked in [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md).
+When an example below carries an explicit unfiltered-results, coverage-gated, placeholder, or deferral note, that note describes current shipped behavior only. Use [`docs/reference/query_catalog.md`](../../reference/query_catalog.md) and [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md) for the durable shipped boundary.
 
 ---
 
@@ -1035,4 +1035,4 @@ A parser that maps all three to the same parse state is robust to most real-worl
 
 ---
 
-> **Related**: [`overview.md`](./overview.md) (framing & principles) · [`specification.md`](./specification.md) (component spec) · [`docs/reference/query_catalog.md`](../../reference/query_catalog.md) (living shipped inventory) · [`docs/planning/query_surface_expansion_plan.md`](../../planning/query_surface_expansion_plan.md) (active expansion plan)
+> **Related**: [`overview.md`](./overview.md) (framing & principles) · [`specification.md`](./specification.md) (component spec) · [`docs/reference/query_catalog.md`](../../reference/query_catalog.md) (living shipped inventory) · [`docs/operations/parser_routing_growth_guardrails.md`](../../operations/parser_routing_growth_guardrails.md) (durable expansion rules)

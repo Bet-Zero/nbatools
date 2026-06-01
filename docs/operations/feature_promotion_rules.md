@@ -13,10 +13,6 @@ frontend behavior. It does not change result contracts or QA corpus
 expectations. It does not add features. It defines the bar that any new
 supported area must clear before it is treated as shipped.
 
-Source review notes:
-
-- `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`
-
 Companion policy:
 
 - `docs/operations/parser_routing_growth_guardrails.md`
@@ -92,8 +88,8 @@ code is touched.
   the "Data-backed Feature Promotion Checklist" section of
   `docs/operations/deployment.md`).
 
-The preflight is a written artifact. It can live in
-`docs/planning/raw-product/` alongside the family it covers.
+The preflight is a task-scoped working artifact. Keep it with the active task
+materials according to [`working_and_archive_policy.md`](working_and_archive_policy.md).
 
 ### 3.3 Data contract
 

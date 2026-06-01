@@ -4,7 +4,7 @@
 >
 > **Scope:** This doc describes the parser's _design_ — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters, coverage-gated filters, or placeholder routes), the Part 2 closure record is [`parser_execution_completion_plan.md`](../../planning/parser_execution_completion_plan.md). This file remains a current-state design reference, not a roadmap.
+Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters, coverage-gated filters, or placeholder routes), use [`docs/reference/query_catalog.md`](../../reference/query_catalog.md) and [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md) for the durable shipped boundary. This file remains a current-state design reference, not a roadmap.
 
 ---
 
