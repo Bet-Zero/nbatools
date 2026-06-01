@@ -264,7 +264,7 @@ creates the executable loading/error/empty-states queue.
 **Scope:**
 
 - Write the Phase P1 retrospective in this file.
-- Draft `phase_p2_work_queue.md` for Track A Part 3 Phase P2.
+- Draft the Phase P2 work queue for Track A Part 3.
 - Refresh `first_run_and_polish_plan.md` if P1 changes Part 3 priorities,
   phase names, or guardrails.
 - Update `product_polish_master_plan.md` so Active Continuation points to Track
@@ -276,7 +276,7 @@ creates the executable loading/error/empty-states queue.
 
 - `docs/planning/phase_p1_work_queue.md` - check this item and add
   retrospective
-- `docs/planning/phase_p2_work_queue.md` (new)
+- Phase P2 work queue (created for the handoff and archived after completion)
 - `docs/planning/first_run_and_polish_plan.md`
 - `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
@@ -284,8 +284,8 @@ creates the executable loading/error/empty-states queue.
 **Acceptance criteria:**
 
 - Retrospective captures what went well, what was harder, and residuals.
-- `phase_p2_work_queue.md` exists with concrete PR-sized loading/error/empty
-  state items.
+- The Phase P2 queue exists with concrete PR-sized loading/error/empty state
+  items.
 - Active-continuation docs point to Track A Part 3 Phase P2.
 - Phase P1 is explicitly closed without implying Track A Part 3 or the whole
   polish plan is complete.
@@ -340,13 +340,12 @@ Residuals:
 Handoff:
 
 - Phase P1 is closed.
-- Track A Part 3 continues with
-  [`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
+- Track A Part 3 continued with Phase P2, which has since been completed and
+  archived.
 
 ---
 
 ## Appendix: progress tracking
 
-When all items above are checked `[x]`, Phase P1 is complete. The draft of
-`phase_p2_work_queue.md` from item 5 is the handoff artifact for Track A Part 3
-Phase P2.
+When all items above are checked `[x]`, Phase P1 is complete. The Phase P2 queue
+drafted by item 5 is the handoff artifact for Track A Part 3 Phase P2.

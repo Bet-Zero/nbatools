@@ -99,8 +99,8 @@ queue is [`phase_p1_work_queue.md`](./phase_p1_work_queue.md).
 Goal: every state that isn't "showing a result" gets designed.
 
 Status: complete. P2 shipped designed loading, no-result, unsupported,
-ambiguous, empty-section, and network/API failure states with retry paths. The
-queue is [`phase_p2_work_queue.md`](./phase_p2_work_queue.md).
+ambiguous, empty-section, and network/API failure states with retry paths. Its
+completed queue has been archived.
 
 ### Phase P3 — Mobile verification and fixes
 
@@ -108,8 +108,8 @@ Goal: explicit mobile pass on every existing component, with fixes.
 
 Status: complete. P3 shipped explicit mobile verification and fixes across the
 app shell, first-run/non-result states, result chrome, secondary panels,
-table-heavy results, and card-heavy renderers. The queue is
-[`phase_p3_work_queue.md`](./phase_p3_work_queue.md).
+table-heavy results, and card-heavy renderers. Its completed queue has been
+archived.
 
 ### Phase P4 — Felt polish and small details
 
@@ -118,18 +118,17 @@ links, tooltips, keyboard shortcuts, query history UI.
 
 Status: complete. P4 shipped keyboard shortcuts and query-history recall,
 copy/share success and failure feedback, stat abbreviation help, restrained
-state/value motion, and saved/history ergonomics. The queue is
-[`phase_p4_work_queue.md`](./phase_p4_work_queue.md).
+state/value motion, and saved/history ergonomics. Its completed queue has been
+archived.
 
 ### Phase P5 — Retrospective and master-plan closure
 
 Goal: capture learnings. Update `product_polish_master_plan.md` to declare
 the polish plan complete (or name a continuation if any blockers remain).
 
-Status: complete. Phase P5 item 1 produced
-[`phase_p5_part3_completion_audit.md`](./phase_p5_part3_completion_audit.md),
-which found no Track A Part 3 closure-blocking residuals. The closed queue is
-[`phase_p5_work_queue.md`](./phase_p5_work_queue.md).
+Status: complete. The archived Phase P5 completion audit found no Track A Part
+3 closure-blocking residuals. The completed Phase P5 queue has also been
+archived.
 
 ---
 
@@ -173,16 +172,9 @@ This is "feels finished":
 ## Phase queue handoff
 
 Phase P1's queue was drafted by Track A Part 2's final phase retrospective:
-[`phase_p1_work_queue.md`](./phase_p1_work_queue.md). Phase P2's queue was
-drafted by Phase P1's retrospective:
-[`phase_p2_work_queue.md`](./phase_p2_work_queue.md). Phase P3's queue was
-drafted by Phase P2's retrospective:
-[`phase_p3_work_queue.md`](./phase_p3_work_queue.md). Phase P4's queue was
-drafted by Phase P3's retrospective:
-[`phase_p4_work_queue.md`](./phase_p4_work_queue.md). Phase P5's queue was
-drafted by Phase P4's retrospective:
-[`phase_p5_work_queue.md`](./phase_p5_work_queue.md). Each subsequent phase's
-queue is drafted by the prior phase's retrospective.
+[`phase_p1_work_queue.md`](./phase_p1_work_queue.md). Each subsequent phase's
+queue was drafted by the prior phase's retrospective and has since been
+completed and archived.
 
 Phase P5 closed Track A. Track B deployment remains open, so the whole product
 polish plan continues under Track B until deployment is also closed.
