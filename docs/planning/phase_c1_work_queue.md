@@ -88,7 +88,7 @@ accidentally changing team summaries, team records, or playoff summaries.
 
 **Reference docs to consult:**
 
-- `docs/planning/phase_v5_component_layout_inventory.md`
+- Archived Phase V5 component-layout inventory
 - `docs/planning/component_experience_plan.md`
 - `frontend/src/components/ResultSections.tsx`
 - `frontend/src/components/SummarySection.tsx`
@@ -134,7 +134,7 @@ designed player summary instead of a table dump.
 
 **Reference docs to consult:**
 
-- `docs/planning/phase_v5_component_layout_inventory.md`
+- Archived Phase V5 component-layout inventory
 - `docs/architecture/design_system.md`
 - `docs/operations/ui_guide.md`
 - `frontend/src/design-system/Stat.tsx`
@@ -187,7 +187,7 @@ data, not compute or refetch it.
 
 **Reference docs to consult:**
 
-- `docs/planning/phase_v5_component_layout_inventory.md`
+- Archived Phase V5 component-layout inventory
 - `docs/reference/result_contracts.md`
 - `src/nbatools/commands/player_game_summary.py`
 - `src/nbatools/commands/structured_results.py`
@@ -233,7 +233,7 @@ quick read on form across the queried sample.
 **Reference docs to consult:**
 
 - `docs/planning/component_experience_plan.md`
-- `docs/planning/phase_v5_component_layout_inventory.md`
+- Archived Phase V5 component-layout inventory
 - `frontend/src/components/PlayerSummarySection.tsx`
 - `frontend/src/components/DataTable.tsx`
 

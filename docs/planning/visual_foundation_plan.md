@@ -62,8 +62,8 @@ styles move into proper component-scoped CSS modules or styled approach.
 Result: the foundation is real, not just a tokens file sitting unused.
 
 **Companion queue:** [`phase_v1_work_queue.md`](../../archive/docs-archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
-**Status:** Complete. Handoff artifact:
-[`phase_v2_work_queue.md`](./phase_v2_work_queue.md).
+**Status:** Complete. Its Phase V2 handoff queue has since been completed and
+archived.
 
 ### Phase V2 — Primitives library
 
@@ -72,9 +72,9 @@ out of. Button, Card, Stat, StatBlock, DataTable, Badge, Skeleton, Avatar
 (player headshot wrapper), TeamBadge (team logo + color treatment),
 SectionHeader, ResultEnvelopeShell. Each documented with usage examples.
 
-**Companion queue:** [`phase_v2_work_queue.md`](./phase_v2_work_queue.md)
-**Status:** Complete. Handoff artifact:
-[`phase_v3_work_queue.md`](./phase_v3_work_queue.md).
+**Companion queue:** completed and archived.
+**Status:** Complete. Its Phase V3 handoff queue has since been completed and
+archived.
 
 ### Phase V3 — App shell and layout
 
@@ -82,9 +82,9 @@ Goal: the app gets a real layout — header with branding and query bar,
 main content area, results region, freshness indicator at the top, sample
 queries when empty. Replaces the current bare-bones structure.
 
-**Companion queue:** [`phase_v3_work_queue.md`](./phase_v3_work_queue.md)
-**Status:** Complete. Handoff artifact:
-[`phase_v4_work_queue.md`](./phase_v4_work_queue.md).
+**Companion queue:** completed and archived.
+**Status:** Complete. Its Phase V4 handoff queue has since been completed and
+archived.
 
 ### Phase V4 — Player imagery and team theming
 
@@ -93,16 +93,16 @@ render consistently. The `--team-primary` and `--team-secondary` CSS
 variables get populated dynamically based on team context. Existing
 results render with the new theming applied automatically.
 
-**Companion queue:** [`phase_v4_work_queue.md`](./phase_v4_work_queue.md)
-**Status:** Complete. Handoff artifact:
-[`phase_v5_work_queue.md`](./phase_v5_work_queue.md).
+**Companion queue:** completed and archived.
+**Status:** Complete. Its Phase V5 handoff queue has since been completed and
+archived.
 
 ### Phase V5 — Retrospective and Part 2 handoff
 
 Goal: capture learnings, draft `component_experience_plan.md` (Part 2 of
 Track A), draft `phase_c1_work_queue.md` (Part 2's first queue).
 
-**Companion queue:** [`phase_v5_work_queue.md`](./phase_v5_work_queue.md)
+**Companion queue:** completed and archived.
 **Status:** Complete. Handoff artifact:
 [`phase_c1_work_queue.md`](./phase_c1_work_queue.md).
 
