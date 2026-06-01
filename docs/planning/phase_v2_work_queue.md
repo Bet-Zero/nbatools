@@ -79,7 +79,7 @@ surface and decide which behavior belongs in primitives versus wrappers.
 **Reference docs to consult:**
 
 - `docs/architecture/design_system.md`
-- `docs/archive/product-polish/completed-work-queues/phase_v1_work_queue.md` retrospective
+- `archive/docs-archive/product-polish/completed-work-queues/phase_v1_work_queue.md` retrospective
 - `frontend/src/components/`
 
 ---
