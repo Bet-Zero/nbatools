@@ -10,7 +10,7 @@
 ## Sources Reviewed
 
 - `docs/planning/phase_p1_first_run_inventory.md`
-- `docs/planning/phase_c8_mobile_inventory.md`
+- Archived Phase C8 mobile inventory
 - `docs/planning/phase_p2_state_inventory.md`
 - `docs/operations/ui_guide.md`
 - `frontend/src/App.tsx`

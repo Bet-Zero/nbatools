@@ -87,7 +87,7 @@ states.
 **Reference docs/files to consult:**
 
 - `docs/planning/first_run_and_polish_plan.md`
-- `docs/planning/phase_c9_part2_completion_audit.md`
+- Archived Phase C9 Part 2 completion audit
 - `docs/operations/ui_guide.md`
 - `frontend/src/App.tsx`
 - `frontend/src/components/EmptyState.tsx`

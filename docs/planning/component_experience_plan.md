@@ -208,10 +208,8 @@ Goal: audit Track A Part 2 against its done definition, capture learnings,
 refresh Part 2 status/residuals, and draft `phase_p1_work_queue.md` (Part 3's
 first queue).
 
-Status: complete. The C9 completion audit is recorded in
-[`phase_c9_part2_completion_audit.md`](./phase_c9_part2_completion_audit.md)
-and found no blocking Track A Part 2 gaps. C9 refreshed the Part 2
-status/residual docs and drafted
+Status: complete. The archived C9 completion audit found no blocking Track A
+Part 2 gaps. C9 refreshed the Part 2 status/residual docs and drafted
 [`phase_p1_work_queue.md`](./phase_p1_work_queue.md) for Track A Part 3.
 
 ---
