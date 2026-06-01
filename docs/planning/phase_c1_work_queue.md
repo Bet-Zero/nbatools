@@ -302,7 +302,7 @@ the next executable Part 2 queue.
 - `docs/planning/phase_c1_work_queue.md` - check this item and add
   retrospective
 - `docs/planning/component_experience_plan.md`
-- `docs/planning/phase_c2_work_queue.md` (new)
+- Phase C2 work queue (created for the handoff and archived after completion)
 - `working/product-polish/product_polish_master_plan.md`
 - `docs/index.md`
 
@@ -368,8 +368,8 @@ Track A Part 2 and the overall product polish plan remain in progress.
 - Generic summary routes remain intentionally table-oriented until their later
   Part 2 phases redesign them.
 
-**Immediate handoff:** Continue Track A Part 2 with Phase C2, using
-[`phase_c2_work_queue.md`](./phase_c2_work_queue.md).
+**Immediate handoff:** Phase C2 was the next Track A Part 2 queue and has since
+been completed and archived.
 
 ---
 
