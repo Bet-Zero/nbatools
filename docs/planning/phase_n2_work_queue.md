@@ -154,7 +154,7 @@ core user workflows against R2-backed API functions.
 **Reference docs:**
 
 - `docs/operations/ui_guide.md`
-- `docs/planning/phase_n1_e2e_results.md`
+- Phase N1 deployed-mode E2E evidence artifact
 
 ---
 
@@ -237,7 +237,7 @@ custom-domain production deployment created by this item's merge to `main`.
 
 **Reference docs:**
 
-- `docs/planning/phase_n1_e2e_results.md`
+- Phase N1 deployed-mode E2E evidence artifact
 - `docs/operations/deployment.md`
 
 ---
@@ -283,7 +283,7 @@ evidence that Phase N3's monitoring and stability soak can compare against.
 **Reference docs:**
 
 - Archived Phase N2 preview UI E2E evidence
-- `docs/planning/phase_n1_e2e_results.md`
+- Phase N1 deployed-mode E2E evidence artifact
 
 ---
 

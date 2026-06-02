@@ -100,7 +100,7 @@ from a concrete checklist instead of reconstructing the operator procedure.
 **Reference docs:**
 
 - `docs/planning/phase_n2_work_queue.md`
-- `docs/planning/phase_n3_preview_monitoring_baseline.md`
+- `working/phase-n4-domain-cutover/phase_n3_preview_monitoring_baseline.md`
 - `docs/operations/deployment.md`
 
 ---
@@ -139,7 +139,7 @@ documented.
 **Reference docs:**
 
 - `working/phase-n4-domain-cutover/phase_n4_domain_cutover_checklist.md`
-- `docs/planning/phase_n1_e2e_results.md`
+- `working/phase-n4-domain-cutover/phase_n1_e2e_results.md`
 - `docs/operations/deployment.md`
 
 ---
@@ -176,7 +176,7 @@ proof that the real domain works end to end.
 **Reference docs:**
 
 - `working/phase-n4-domain-cutover/phase_n4_domain_cutover_checklist.md`
-- `docs/planning/phase_n3_preview_monitoring_baseline.md`
+- `working/phase-n4-domain-cutover/phase_n3_preview_monitoring_baseline.md`
 
 ---
 

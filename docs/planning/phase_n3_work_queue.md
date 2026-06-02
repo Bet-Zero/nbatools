@@ -63,7 +63,7 @@ deployed surface, not on the still-missing custom domain.
 
 **Reference docs:**
 
-- `docs/planning/phase_n1_e2e_results.md`
+- Phase N1 deployed-mode E2E evidence artifact
 - Archived Phase N2 preview UI E2E evidence
 - `docs/operations/deployment.md`
 - `frontend/src/components/FreshnessStatus.tsx`
@@ -119,7 +119,8 @@ not ad hoc terminal curls or browser sessions.
 **Scope:**
 
 - Run the item 2 harness against the active deployed URL.
-- Record the baseline in `docs/planning/phase_n3_preview_monitoring_baseline.md`.
+- Record the baseline in the Phase N3 preview monitoring baseline evidence
+  artifact.
 - Verify the deployed UI freshness banner state against `/freshness` and note
   whether the banner matches the backend signal.
 - Document any route whose first observed time should be watched during the
@@ -128,7 +129,7 @@ not ad hoc terminal curls or browser sessions.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n3_preview_monitoring_baseline.md` (new)
+- Phase N3 preview monitoring baseline evidence artifact (new)
 - Possibly `docs/operations/deployment.md`
 
 **Acceptance criteria:**

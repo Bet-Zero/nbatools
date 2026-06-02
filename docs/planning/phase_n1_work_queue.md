@@ -289,7 +289,7 @@ actually works. This is the integration test for items 1-5.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n1_e2e_results.md` (new)
+- Phase N1 deployed-mode E2E evidence artifact (new)
 - Possibly `vercel.json` if config tweaks are needed
 - Possibly handler files if any failed
 
