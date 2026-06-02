@@ -67,8 +67,8 @@ parts.
 
 #### Part 1 — Visual Foundation
 
-**Plan doc:** [`visual_foundation_plan.md`](../../docs/planning/visual_foundation_plan.md)
-**First queue:** [`phase_v1_work_queue.md`](../../archive/docs-archive/product-polish/completed-work-queues/phase_v1_work_queue.md)
+**Historical status:** Complete. The closed Track A Part 1 planning artifacts
+have been archived.
 
 Build the design system into a usable primitives library. Tokens become live
 across the app, fonts are wired in, player headshots and team logos render
@@ -78,8 +78,8 @@ Roughly 2-3 weeks part-time.
 
 #### Part 2 — Component Experience
 
-**Plan doc:** [`component_experience_plan.md`](../../docs/planning/component_experience_plan.md)
-**First queue:** [`phase_c1_work_queue.md`](../../docs/planning/phase_c1_work_queue.md)
+**Historical status:** Complete. The closed Track A Part 2 planning artifacts
+have been archived.
 
 Every query class — summary, leaderboard, comparison, finder, streak,
 record, split, playoff, occurrence, count — gets a real designed layout.
@@ -90,8 +90,8 @@ Roughly 4-6 weeks part-time.
 
 #### Part 3 — First-Run and Polish
 
-**Plan doc:** [`first_run_and_polish_plan.md`](../../docs/planning/first_run_and_polish_plan.md)
-**First queue:** [`phase_p1_work_queue.md`](../../docs/planning/phase_p1_work_queue.md)
+**Historical status:** Complete. The closed Track A Part 3 planning artifacts
+have been archived.
 
 Landing experience, starter queries, freshness banner, mobile verification
 pass, keyboard shortcuts, copy buttons, share links, transitions, error
