@@ -307,7 +307,8 @@ opponent-conference scope phrase in the answer sentence.
 ### 5.8 Preview / deployment smoke
 
 The opponent-conference promotion is also the worked example of the
-data/R2 deployment guardrail in `RAW_PRODUCT_POST_REVIEW_NOTES.md` §6. The
+data/R2 deployment guardrail in
+[`deployment.md`](deployment.md#data-backed-feature-promotion-checklist). The
 `raw/teams/team_conference_membership.csv` object was required to exist in
 R2 for deployed runtime behavior, and deployment smoke confirmed the
 deployed runtime returned the clean answer rather than a fallback.

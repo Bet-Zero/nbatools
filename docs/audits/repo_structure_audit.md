@@ -120,7 +120,7 @@ frontend/src/
 - `data_catalog.md` — data catalog
 - `pipeline_runbook.md` — pipeline operations guide
 - `ui_guide.md` — web UI guide
-- `roadmap.md` — future plans
+- legacy future-plan file — historical roadmap snapshot
 - `index.md` — docs navigation hub
 
 **Architecture design docs (semi-living):**
@@ -286,7 +286,7 @@ docs/
   data_catalog.md
   pipeline_runbook.md
   ui_guide.md
-  roadmap.md
+  legacy future-plan file
   repo_structure_audit.md
   
   # Architecture design docs
@@ -443,7 +443,7 @@ Import updates applied to: `cli_apps/raw.py`, `cli_apps/processing.py`, `cli_app
 | Query reference update | `docs/reference/query_guide.md` |
 | Dataset schema change | `docs/reference/data_contracts.md` |
 | Engineering rule change | `docs/architecture/project_conventions.md` |
-| Future plan | `docs/planning/roadmap.md` |
+| Future plan | tracked task material under `working/` |
 | UI documentation | `docs/operations/ui_guide.md` |
 | Pipeline operations | `docs/operations/pipeline_runbook.md` |
 | Audit or completed plan | `docs/audits/<name>.md` (after Phase 1) |

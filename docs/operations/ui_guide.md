@@ -273,6 +273,19 @@ rows, infer winners, or synthesize missing values. Raw/detail tables remain
 available through the shared `RawDetailToggle` primitive when a pattern hides
 secondary columns behind a focused answer view.
 
+Shared result-display rules:
+
+- Successful results lead with an answer-first sentence hero.
+- Dense tables remain the visible primary answer for row-oriented results.
+- Normal scope and interpretation details render as context; caveats are for
+  real limitations or degraded coverage.
+- Detail toggles expose additional supplied fields instead of duplicating the
+  visible answer table.
+- Wide tables scroll inside their own frame, and long product-mode game logs
+  initially show 12 rows with a show-all control.
+- Comparison edge copy respects metric direction metadata so lower-is-better
+  and neutral metrics are not described as naive higher-is-better wins.
+
 The legacy per-query-class dispatcher and one-component-per-route section
 renderers have been removed. New result UI work should add a focused pattern or
 a small config extension to an existing pattern rather than creating another

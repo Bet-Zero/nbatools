@@ -231,7 +231,7 @@ omissions remain possible even when every selected case passes.
 
 ### 4.3 Readiness Evidence Is Too Compressed
 
-`docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` correctly
+`docs/reference/raw_product_release_status.md` correctly
 says broad raw QA coverage without family-level phrasing coverage is not enough.
 It then records public-query acceptance as `PASS` with a `67/67 passed`
 artifact. That artifact proves machine expectations. It does not prove that
@@ -679,7 +679,7 @@ Wave 1 should update durable workflow rules after the artifact exists.
 | `AGENTS.md` | Require product-review artifacts and corpus-review declarations for public corpus waves; prohibit readiness claims from counts alone |
 | `docs/operations/raw_query_answer_qa.md` | Keep the verified harness workflow in the durable operations runbook |
 | `docs/operations/raw_query_answer_qa.md` and `docs/operations/query_validation_map.md` | Separate the green Layer A gate from pending or completed Layer B product review and keep the current validation scoreboard durable |
-| `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` | Record machine regression and human product review as separate evidence rows without changing release status automatically |
+| `docs/reference/raw_product_release_status.md` | Record machine regression and human product review as separate evidence rows without changing release status automatically |
 | `docs/operations/parser_routing_growth_guardrails.md` | Add the family-registry and representative-human-review requirement for public feature promotion |
 | `docs/reference/query_catalog.md` | Tighten the maintenance note so advertised families require both generated family coverage and reviewed representative outputs |
 

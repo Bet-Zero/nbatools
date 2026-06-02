@@ -144,8 +144,8 @@ Current checkpoint:
 - Opponent-conference team-record filters are now supported for trusted
   current-era seasons `2024-25` and `2025-26`. Missing/untrusted coverage,
   divisions, and geography phrases remain unsupported/no-result.
-- Release-readiness checkpoint:
-  `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
+- Current Raw Product release status:
+  `docs/reference/raw_product_release_status.md`
 
 ## Finding summary
 

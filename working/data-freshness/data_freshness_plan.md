@@ -9,7 +9,7 @@ Related docs:
 - [docs/reference/data_catalog.md](../../docs/reference/data_catalog.md) — what tables exist and where they live
 - [docs/reference/data_contracts.md](../../docs/reference/data_contracts.md) — what query code depends on
 - [docs/operations/pipeline_runbook.md](../../docs/operations/pipeline_runbook.md) — how the pipeline is currently operated
-- [docs/planning/roadmap.md](../../docs/planning/roadmap.md) — Phase 4 (data freshness) and Phase 6 (UI)
+- [docs/operations/ui_guide.md](../../docs/operations/ui_guide.md) — shipped UI behavior and freshness presentation
 
 ---
 

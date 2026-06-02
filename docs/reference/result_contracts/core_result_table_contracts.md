@@ -11,6 +11,25 @@ Source files:
 - `frontend/src/components/results/patterns/*Result.tsx`
 - `src/nbatools/commands/structured_results.py`
 
+## Shared Presentation Rules
+
+- Successful results lead with a sentence-style hero that answers the supplied
+  query intent. For result families with row-level answers, a dense answer
+  table follows the hero and stays visible by default.
+- Normal interpretation details such as date windows, filters, and aggregation
+  scope render as context. Caveats are reserved for actual limitations,
+  degraded coverage, or missing data.
+- Detail toggles expose supplied fields that are not already visible. They do
+  not duplicate the primary answer table.
+- Wide tables scroll horizontally inside their own frame instead of widening
+  the page. Game-log product views initially cap long row sets at 12 rows and
+  expose the existing show-all control.
+- Comparison edge labels use metric direction metadata. Higher-is-better,
+  lower-is-better, and neutral metrics must not share one naive delta rule.
+- Presentation patterns may format and emphasize supplied result values. They
+  do not parse queries, calculate NBA facts, infer unsupported values, or hide
+  source-backed outliers.
+
 ## Shared Table Behavior
 
 | Pattern family | Current visible-column behavior | Hidden/detail behavior | Row cap | Footer/total behavior | Highlight behavior |

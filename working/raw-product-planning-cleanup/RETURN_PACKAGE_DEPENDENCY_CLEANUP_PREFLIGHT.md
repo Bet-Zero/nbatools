@@ -44,11 +44,7 @@ Required inputs inspected:
 - `AGENTS.md`
 - `archive/raw-product-planning-cleanup/legacy-return-package-plans/RETURN_PACKAGE_ARCHIVE_SWEEP_PREFLIGHT.md`
 - Archive Sweep Wave 1 return package in `return_packages/raw-product/`
-- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md`
-- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
-- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
-- `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
-- `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`
+- historical Raw Product release/status planning set
 - archived Raw Product post-review hardening plan
 - `docs/operations/query_feedback_review.md`
 
@@ -66,12 +62,9 @@ These durable docs link directly to exact Raw Product return-package paths.
 
 | Doc | Current dependency type | Cleanup direction |
 | --- | --- | --- |
-| `docs/planning/raw-product/RAW_PRODUCT_RELEASE_PACKAGE.md` | Current release evidence table and supporting package list. | Promote facts into durable release evidence, then replace package paths with durable doc/output references. |
-| `docs/planning/raw-product/RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md` | Current handoff evidence table. | Link to durable release evidence summary and output artifacts instead of package paths. |
-| `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md` | Release checklist evidence rows and later evidence notes. | Keep statuses unchanged, but replace package paths with durable evidence sections and output artifacts. |
-| `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` | Readiness checkpoint evidence notes. | Replace package paths with durable release evidence summary anchors. |
+| Historical Raw Product release/status planning set | Release evidence, handoff, checklist, and readiness notes. | Promote current facts into durable release evidence, then archive the historical planning set. |
 | `docs/operations/query_feedback_review.md` | Current preview feedback verification points to one package. | Promote the preview verification facts into the runbook and link release evidence summary only if needed. |
-| `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` | Closure evidence list for hardening waves. | Replace package-list evidence with durable closure facts and links to the docs created by those waves. |
+| Historical Raw Product post-review notes | Closure evidence list for hardening waves. | Replace package-list evidence with durable closure facts and links to the docs created by those waves. |
 | Archived Raw Product post-review hardening plan | Inputs reviewed and closure evidence lists cite wave packages. | Replace wave-package inputs with durable outcome docs and a compact closure evidence summary. |
 | `docs/operations/raw_query_answer_qa.md` and `docs/operations/query_validation_map.md` | Durable harness workflow and current validation scoreboard. | Keep as the operational source of truth for Raw QA usage and reporting. |
 | `docs/reference/result_contracts/core_result_table_contracts.md` | Durable weak-contract and leaderboard-column contract. | Keep as the source of truth for current renderer behavior. |
@@ -84,9 +77,8 @@ These durable docs link directly to exact Raw Product return-package paths.
 
 Adjacent finding outside this Raw Product cleanup set:
 
-- archived result-display preflight findings artifact
-  and
-  `docs/planning/result-display-lock-in/result_display_lock_in_implementation_spec.md`
+- archived result-display preflight findings artifact and historical
+  result-display lock-in planning spec
   directly cite
   `RESULT_DISPLAY_PREFLIGHT_RETURN_PACKAGE.md` in
   `return_packages/result_display/`.
@@ -176,22 +168,16 @@ the following facts live in durable docs before removing exact package links.
 Recommended execution approach:
 
 1. Create a durable release evidence summary:
-   `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md`.
+   `docs/reference/raw_product_release_status.md`.
    This summary should collect the current evidence facts listed above and
    should reference durable docs and generated `outputs/` artifacts. It should
    not link to exact return-package paths.
-2. Update the four release/readiness docs to link to the evidence summary and
-   generated output artifacts instead of return-package files:
-   - `RAW_PRODUCT_RELEASE_PACKAGE.md`
-   - `RAW_PRODUCT_RELEASE_CANDIDATE_HANDOFF.md`
-   - `RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
-   - `RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
+2. Promote the current facts from the historical release/readiness planning
+   set into the durable status page and generated output pointers.
 3. Update the feedback runbook so the preview verification facts are durable in
    `docs/operations/query_feedback_review.md`; remove the package path.
 4. Update post-review and hardening docs so closure evidence is expressed as
-   durable outcomes and durable doc references:
-   - `RAW_PRODUCT_POST_REVIEW_NOTES.md`
-   - archived Raw Product post-review hardening plan
+   durable outcomes and durable doc references.
 5. Update stale-context preflight docs by replacing package paths with durable
    docs or inline summaries:
    - weak-contract and leaderboard preflight docs
@@ -287,7 +273,7 @@ Promotion and Link Replacement**.
 
 ### Acceptance Criteria
 
-- `docs/planning/raw-product/RAW_PRODUCT_RELEASE_EVIDENCE_SUMMARY.md` exists
+- `docs/reference/raw_product_release_status.md` exists
   and records the promoted evidence facts without exact return-package paths.
 - The Raw Product release package, handoff, readiness checklist, and checkpoint
   no longer depend on exact return-package paths.
