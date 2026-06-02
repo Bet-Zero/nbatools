@@ -38,7 +38,7 @@ Required inputs inspected:
 - `working/natural-query-maintenance/NATURAL_QUERY_DECISION_MAP_AND_TEST_MATRIX.md`
 - `docs/operations/parser_routing_growth_guardrails.md`
 - `docs/operations/feature_promotion_rules.md`
-- `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md`
+- archived Raw Product post-review hardening plan
 - `docs/audits/architecture_hygiene_audit.md`
 - `src/nbatools/commands/natural_query.py`
 - `src/nbatools/query_service.py`

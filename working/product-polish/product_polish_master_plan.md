@@ -103,7 +103,8 @@ Roughly 2 weeks part-time.
 ### Track B — Production Deployment (parallel, developer-gated)
 
 **Plan doc:** [`production_deployment_plan.md`](../phase-n4-domain-cutover/production_deployment_plan.md)
-**First queue:** [`phase_n1_work_queue.md`](../../docs/planning/phase_n1_work_queue.md)
+**Historical status:** Track B Phases N1-N3 are closed. Phase N4 is the active
+continuation.
 
 Vercel + Cloudflare R2 + custom domain. Refactors the FastAPI app into
 Vercel Functions. Sets up the laptop-to-R2 data sync mechanism.

@@ -40,14 +40,15 @@ Four phases, each with a companion work queue.
 Refactor FastAPI to Vercel Functions. Add the `sync-r2` pipeline command.
 Wire the deployed app to read from R2.
 
-**Companion queue:** [`phase_n1_work_queue.md`](../../docs/planning/phase_n1_work_queue.md)
+**Historical status:** Complete. The closed Phase N1 queue has been archived.
 
 ### Phase N2 — Frontend deployment + custom domain
 
 Deploy the React frontend to Vercel. Configure custom domain. HTTPS.
 Deploy-on-push from main. Verify end-to-end.
 
-**Companion queue:** [`phase_n2_work_queue.md`](../../docs/planning/phase_n2_work_queue.md)
+**Historical status:** Preview deployment work complete. The closed Phase N2
+queue has been archived; remaining domain-gated work continues in Phase N4.
 
 ### Phase N3 — Monitoring, freshness, and stability
 
@@ -58,7 +59,7 @@ phase makes the deployed monitoring path, freshness evidence, and stability
 workflow repeatable. Custom-domain-only checks stay deferred to wrap-up
 time.
 
-**Companion queue:** [`phase_n3_work_queue.md`](../../docs/planning/phase_n3_work_queue.md)
+**Historical status:** Complete. The closed Phase N3 queue has been archived.
 
 ### Phase N4 — Track B closure
 

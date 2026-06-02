@@ -60,7 +60,7 @@ clean HTTPS.
 
 **Reference docs:**
 
-- `docs/planning/phase_n2_work_queue.md`
+- Historical Phase N2 custom-domain queue
 - `docs/operations/deployment.md`
 
 ---
@@ -99,7 +99,7 @@ from a concrete checklist instead of reconstructing the operator procedure.
 
 **Reference docs:**
 
-- `docs/planning/phase_n2_work_queue.md`
+- Historical Phase N2 custom-domain queue
 - `working/phase-n4-domain-cutover/phase_n3_preview_monitoring_baseline.md`
 - `docs/operations/deployment.md`
 

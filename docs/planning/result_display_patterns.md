@@ -269,8 +269,8 @@ For each pattern:
    the old per-route components those routes used to use.
 8. Move to the next pattern.
 
-The order is in the implementation queue
-([`result_display_implementation_plan.md`](./result_display_implementation_plan.md)).
+The original implementation order was executed through the completed
+result-display queue, which has been archived.
 
 ---
 

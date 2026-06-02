@@ -49,7 +49,7 @@ Required inputs inspected:
 - `docs/planning/raw-product/RAW_PRODUCT_RELEASE_READINESS_CHECKLIST.md`
 - `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md`
 - `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md`
-- `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md`
+- archived Raw Product post-review hardening plan
 - `docs/operations/query_feedback_review.md`
 
 Reference scans used:
@@ -72,7 +72,7 @@ These durable docs link directly to exact Raw Product return-package paths.
 | `docs/planning/raw-product/RAW_PRODUCT_QA_RELEASE_READINESS_CHECKPOINT.md` | Readiness checkpoint evidence notes. | Replace package paths with durable release evidence summary anchors. |
 | `docs/operations/query_feedback_review.md` | Current preview feedback verification points to one package. | Promote the preview verification facts into the runbook and link release evidence summary only if needed. |
 | `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_NOTES.md` | Closure evidence list for hardening waves. | Replace package-list evidence with durable closure facts and links to the docs created by those waves. |
-| `docs/planning/raw-product/RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md` | Inputs reviewed and closure evidence lists cite wave packages. | Replace wave-package inputs with durable outcome docs and a compact closure evidence summary. |
+| Archived Raw Product post-review hardening plan | Inputs reviewed and closure evidence lists cite wave packages. | Replace wave-package inputs with durable outcome docs and a compact closure evidence summary. |
 | `docs/operations/raw_query_answer_qa.md` and `docs/operations/query_validation_map.md` | Durable harness workflow and current validation scoreboard. | Keep as the operational source of truth for Raw QA usage and reporting. |
 | `docs/reference/result_contracts/core_result_table_contracts.md` | Durable weak-contract and leaderboard-column contract. | Keep as the source of truth for current renderer behavior. |
 | `docs/reference/query_catalog.md` and `docs/reference/query_guide.md` | Durable division-boundary references. | Keep as the source of truth for guarded `opponent_division` unsupported behavior. |
@@ -84,7 +84,7 @@ These durable docs link directly to exact Raw Product return-package paths.
 
 Adjacent finding outside this Raw Product cleanup set:
 
-- `docs/planning/result-display-lock-in/result_display_preflight_findings.md`
+- archived result-display preflight findings artifact
   and
   `docs/planning/result-display-lock-in/result_display_lock_in_implementation_spec.md`
   directly cite
@@ -191,7 +191,7 @@ Recommended execution approach:
 4. Update post-review and hardening docs so closure evidence is expressed as
    durable outcomes and durable doc references:
    - `RAW_PRODUCT_POST_REVIEW_NOTES.md`
-   - `RAW_PRODUCT_POST_REVIEW_HARDENING_PLAN.md`
+   - archived Raw Product post-review hardening plan
 5. Update stale-context preflight docs by replacing package paths with durable
    docs or inline summaries:
    - weak-contract and leaderboard preflight docs

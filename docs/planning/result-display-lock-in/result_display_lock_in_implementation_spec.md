@@ -2,10 +2,8 @@
 
 > Status: synthesized implementation spec from the 19-family screenshot review.
 >
-> Source decision logs:
->
-> - `../result_display_family_review_lock_in.md` — Families 1–15 and global rules G1–G20
-> - `../result_display_family_review_lock_in_batch_6_addendum.md` — Families 16–19 and global rules G21–G24
+> Source decision logs: the archived screenshot-review records for Families
+> 1–19 and global rules G1–G24.
 >
 > Purpose: turn the screenshot-review decision logs into one implementation-ready source of truth for result display UI, copy, table behavior, no-result behavior, and validation.
 
@@ -816,9 +814,7 @@ Goal: inspect current code and map exact files/functions to this spec. No code c
 
 Deliverable:
 
-```txt
-docs/planning/result-display-lock-in/result_display_preflight_findings.md
-```
+The completed preflight findings artifact has been archived.
 
 Questions to answer:
 
