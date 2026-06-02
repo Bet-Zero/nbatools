@@ -6,11 +6,10 @@ belong in the durable documentation map.
 
 ## Start Here
 
-1. [`../README.md`](../README.md) - project overview and fastest examples
-2. [`reference/quick_query_guide.md`](reference/quick_query_guide.md) - quick-start examples
-3. [`reference/current_state_guide.md`](reference/current_state_guide.md) - verified shipped behavior
-4. [`reference/query_catalog.md`](reference/query_catalog.md) - living catalog of supported query types and phrasing
-5. [`reference/query_guide.md`](reference/query_guide.md) - full structured and natural query reference
+1. [`reference/quick_query_guide.md`](reference/quick_query_guide.md) - quick-start examples
+2. [`reference/current_state_guide.md`](reference/current_state_guide.md) - verified shipped behavior
+3. [`reference/query_catalog.md`](reference/query_catalog.md) - living catalog of supported query types and phrasing
+4. [`reference/query_guide.md`](reference/query_guide.md) - full structured and natural query reference
 
 ## Reference
 
@@ -68,7 +67,3 @@ Runbooks and durable workflow policies.
 - Treat generated reports, screenshots, and manifests as evidence artifacts,
   not durable source of truth.
 - Run `make docs-governance` after documentation changes.
-
-## Release History
-
-- [`../CHANGELOG.md`](../CHANGELOG.md)

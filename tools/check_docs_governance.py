@@ -20,6 +20,13 @@ DURABLE_GLOBS = (
     "docs/operations/**/*.md",
     "docs/reference/**/*.md",
 )
+DOCS_ROOT_MARKDOWN_ALLOWLIST = {
+    Path("docs/index.md"),
+}
+PROHIBITED_DOCS_DIRECTORIES = (
+    Path("docs/planning"),
+    Path("docs/archive"),
+)
 
 BANNED_PATH_PATTERNS = {
     "planning/": re.compile(r"(?<![\w-])(?:docs/|\.\.?/)+planning/"),
@@ -131,6 +138,20 @@ def durable_files() -> list[Path]:
     return sorted(files)
 
 
+def check_docs_layout() -> list[str]:
+    errors: list[str] = []
+    for path in PROHIBITED_DOCS_DIRECTORIES:
+        if (ROOT / path).exists():
+            errors.append(f"{path}/: prohibited docs directory exists")
+
+    for path in sorted((ROOT / "docs").glob("*.md")):
+        relative_path = path.relative_to(ROOT)
+        if relative_path not in DOCS_ROOT_MARKDOWN_ALLOWLIST:
+            errors.append(f"{relative_path}: direct docs-root Markdown file is not allowlisted")
+
+    return errors
+
+
 def line_number(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
@@ -187,7 +208,7 @@ def check_relative_links(path: Path, text: str) -> list[str]:
 
 
 def main() -> int:
-    errors: list[str] = []
+    errors = check_docs_layout()
     for path in durable_files():
         text = (ROOT / path).read_text(encoding="utf-8")
         errors.extend(check_banned_paths(path, text))
