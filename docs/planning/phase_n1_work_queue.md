@@ -163,7 +163,7 @@ deployed app needs to read from R2 instead of the local filesystem.
 
 ---
 
-## 4. `[x]` Reconnaissance: audit FastAPI app for Vercel Functions refactor — completed: documented every current route/mount, middleware, startup/global state, cold-start measurements, Vercel constraints, refactor mapping, and R2 timeout risks in `phase_n1_api_inventory.md`.
+## 4. `[x]` Reconnaissance: audit FastAPI app for Vercel Functions refactor — completed: documented every current route/mount, middleware, startup/global state, cold-start measurements, Vercel constraints, refactor mapping, and R2 timeout risks in the archived Phase N1 API inventory.
 
 **Why:** Before refactoring, we need to know what we're refactoring. Vercel
 Functions are stateless function handlers, not a long-running server. The
@@ -182,14 +182,14 @@ decorators, and middleware that need to be reorganized.
   - Which routes depend on shared in-memory state (need rethinking)
   - Cold-start cost: how long does it take to load the data and respond to
     a first request?
-- Produce an inventory in `docs/planning/phase_n1_api_inventory.md`
+- Produce a Phase N1 API inventory planning artifact
 - Recommend an approach: which routes become individual functions, which can
   share a function file, what shared utilities can be hoisted to module
   level
 
 **Files likely touched:**
 
-- `docs/planning/phase_n1_api_inventory.md` (new)
+- Phase N1 API inventory planning artifact (new)
 - No code changes — reconnaissance only
 
 **Acceptance criteria:**

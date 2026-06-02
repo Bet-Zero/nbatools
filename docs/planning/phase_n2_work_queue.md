@@ -21,7 +21,7 @@
 
 ---
 
-## 1. `[x]` Audit the frontend deployment path and choose the build strategy — completed: `phase_n2_frontend_deployment_inventory.md` chooses a Vercel build-time Vite build, keeps generated `dist/` assets out of git, and defines the item 2 punchlist for build command, asset serving, tests, docs, and preview verification.
+## 1. `[x]` Audit the frontend deployment path and choose the build strategy — completed: the archived Phase N2 frontend-deployment inventory chooses a Vercel build-time Vite build, keeps generated `dist/` assets out of git, and defines the item 2 punchlist for build command, asset serving, tests, docs, and preview verification.
 
 **Why:** Phase N1 intentionally shipped the API fallback because the React
 bundle was not part of the Vercel deployment. Before changing build behavior,
@@ -33,8 +33,8 @@ Vercel deployment, or use another repo-native approach.
 - Inspect the current Vite output path (`src/nbatools/ui/dist/`), package data
   inclusion, `.gitignore`, `vercel.json`, Vercel build behavior, and CI
   frontend scripts.
-- Document the chosen build strategy and tradeoffs in
-  `docs/planning/phase_n2_frontend_deployment_inventory.md`.
+- Document the chosen build strategy and tradeoffs in the Phase N2
+  frontend-deployment inventory.
 - Identify any Vercel constraints that could affect Python Functions plus Node
   frontend build in one deployment.
 - Confirm the strategy keeps the React frontend a thin presentation layer and
@@ -42,7 +42,7 @@ Vercel deployment, or use another repo-native approach.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n2_frontend_deployment_inventory.md` (new)
+- Phase N2 frontend-deployment inventory (new)
 - Possibly `working/phase-n4-domain-cutover/production_deployment_plan.md` if the strategy
   changes Phase N2 scope
 
@@ -114,7 +114,7 @@ talks to the same deployed API functions.
 
 ---
 
-## 3. `[x]` Verify preview UI workflows end-to-end — completed: `phase_n2_preview_ui_e2e_results.md` documents the deployed preview browser pass for first-run load, health/freshness, representative natural queries, result renderers, raw JSON, copy link, saved queries, history, and desktop/phone viewport checks.
+## 3. `[x]` Verify preview UI workflows end-to-end — completed: the archived Phase N2 preview UI E2E evidence documents the deployed preview browser pass for first-run load, health/freshness, representative natural queries, result renderers, raw JSON, copy link, saved queries, history, and desktop/phone viewport checks.
 
 **Why:** Loading the UI is not enough; the deployed React app must execute the
 core user workflows against R2-backed API functions.
@@ -130,11 +130,11 @@ core user workflows against R2-backed API functions.
   - `top 10 scorers 2025-26`
   - `Jokic summary (over 25 points and over 10 rebounds) 2025-26`
 - Verify at desktop and phone-sized viewport targets.
-- Document results in `docs/planning/phase_n2_preview_ui_e2e_results.md`.
+- Document results in the Phase N2 preview UI E2E evidence artifact.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n2_preview_ui_e2e_results.md` (new)
+- Phase N2 preview UI E2E evidence artifact (new)
 - Possibly frontend files if verification finds UI-only defects
 
 **Acceptance criteria:**
@@ -282,7 +282,7 @@ evidence that Phase N3's monitoring and stability soak can compare against.
 
 **Reference docs:**
 
-- `docs/planning/phase_n2_preview_ui_e2e_results.md`
+- Archived Phase N2 preview UI E2E evidence
 - `docs/planning/phase_n1_e2e_results.md`
 
 ---

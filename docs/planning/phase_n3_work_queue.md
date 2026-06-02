@@ -29,7 +29,7 @@
 
 ---
 
-## 1. `[x]` Audit the deployed monitoring/freshness surface and lock the N3 evidence workflow - completed on 2026-05-02: `phase_n3_monitoring_inventory.md` locks the active deployment-target rule, canonical smoke cases, evidence artifacts, and the custom-domain checks deferred to Phase N4.
+## 1. `[x]` Audit the deployed monitoring/freshness surface and lock the N3 evidence workflow - completed on 2026-05-02: the archived Phase N3 monitoring inventory locks the active deployment-target rule, canonical smoke cases, evidence artifacts, and the custom-domain checks deferred to Phase N4.
 
 **Why:** N3 needs a domain-agnostic monitoring plan anchored on the actual
 deployed surface, not on the still-missing custom domain.
@@ -38,8 +38,7 @@ deployed surface, not on the still-missing custom domain.
 
 - Review the current deployed URL, Phase N1/N2 timing evidence, the
   deployment runbook, and the shipped frontend freshness banner behavior.
-- Document the chosen N3 evidence path in
-  `docs/planning/phase_n3_monitoring_inventory.md`.
+- Document the chosen N3 evidence path in the Phase N3 monitoring inventory.
 - Define the canonical smoke targets for N3 (`GET /`, `GET /health`,
   `GET /freshness`, and representative `/query` calls).
 - Define which deployment headers/timing fields matter.
@@ -47,7 +46,7 @@ deployed surface, not on the still-missing custom domain.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n3_monitoring_inventory.md` (new)
+- Phase N3 monitoring inventory (new)
 - Possibly `working/phase-n4-domain-cutover/production_deployment_plan.md` if the workflow needs
   clarification
 
@@ -65,7 +64,7 @@ deployed surface, not on the still-missing custom domain.
 **Reference docs:**
 
 - `docs/planning/phase_n1_e2e_results.md`
-- `docs/planning/phase_n2_preview_ui_e2e_results.md`
+- Archived Phase N2 preview UI E2E evidence
 - `docs/operations/deployment.md`
 - `frontend/src/components/FreshnessStatus.tsx`
 
@@ -148,11 +147,11 @@ not ad hoc terminal curls or browser sessions.
 **Reference docs:**
 
 - Item 1 inventory
-- `docs/planning/phase_n2_preview_ui_e2e_results.md`
+- Archived Phase N2 preview UI E2E evidence
 
 ---
 
-## 4. `[-]` Skip the 7-day deployed stability soak - skipped on 2026-05-02: friends-tier scope makes an extended synthetic soak lower value than ongoing real usage, while `phase_n3_stability_soak_log.md` preserves the day-0 baseline and the existing smoke harness remains available for targeted checks when needed.
+## 4. `[-]` Skip the 7-day deployed stability soak - skipped on 2026-05-02: friends-tier scope makes an extended synthetic soak lower value than ongoing real usage, while the archived Phase N3 stability soak log preserves the day-0 baseline and the existing smoke harness remains available for targeted checks when needed.
 
 **Why:** Friends-tier release scope does not justify holding Track B open for a
 seven-day synthetic soak when the deployed app will now get real usage and the
@@ -161,8 +160,8 @@ fallback check.
 
 **Scope:**
 
-- Create `docs/planning/phase_n3_stability_soak_log.md` with day-0 evidence,
-  check cadence, incident template, and current watch-list routes.
+- Create a Phase N3 stability soak log with day-0 evidence, check cadence,
+  incident template, and current watch-list routes.
 - Record the first soak entry using the item 2 harness and the active deployed
   URL.
 - Define what counts as manual intervention, incident, and soak reset.
@@ -171,7 +170,7 @@ fallback check.
 
 **Files likely touched:**
 
-- `docs/planning/phase_n3_stability_soak_log.md` (new)
+- Phase N3 stability soak log (new)
 
 **Acceptance criteria:**
 
