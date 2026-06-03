@@ -307,6 +307,9 @@ def test_acceptance_family_registry_loads_current_public_families() -> None:
     registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
 
     assert registry["surface"] == "public_query_acceptance"
+    assert registry["review_closure"]["state"] == "human_review_complete"
+    assert registry["review_closure"]["case_count"] == 113
+    assert registry["review_closure"]["ui_spot_check"]["status"] == "passed"
     assert len(registry["families"]) == 16
     assert "player_comparisons" not in registry["families_by_id"]
     availability = registry["families_by_id"]["team_record_availability"]
@@ -327,6 +330,8 @@ def test_acceptance_family_registry_loads_current_public_families() -> None:
         "inverse_sibling",
         "nearby_unsupported",
     ]
+    comparisons = registry["families_by_id"]["comparisons"]
+    assert comparisons["product_decisions"][0]["status"] == "resolved"
 
 
 def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
@@ -455,6 +460,70 @@ def test_product_review_markdown_includes_family_matrix_and_handoff(tmp_path) ->
     assert availability["human_review"] == "pending"
     assert "short" in availability["missing_variants"]
     assert not availability["public_accepted"]
+
+
+def test_product_review_uses_registry_review_closure_for_matching_clean_scope() -> None:
+    registry = {
+        "surface": "public_query_acceptance",
+        "review_closure": {
+            "state": "human_review_complete",
+            "scope": "public_query_acceptance",
+            "reviewed_run_id": "reviewed_run",
+            "completed_on": "2026-06-03",
+            "case_count": 1,
+            "ui_spot_check": {"status": "passed"},
+        },
+        "families": [
+            {
+                "id": "player_stats_this_season",
+                "label": "Player stats this season",
+                "public_surface": True,
+                "required_variants": ["canonical"],
+                "not_applicable_variants": [],
+                "intentionally_unsupported_variants": [],
+                "coverage_questions": [],
+                "sibling_families": [],
+                "product_decisions": [],
+            }
+        ],
+    }
+    rows = [
+        {
+            "id": "player_stats",
+            "query": "Jokic stats",
+            "acceptance": {
+                "family": "player_stats_this_season",
+                "variant": "canonical",
+                "review_required": True,
+            },
+            "expected": {"expected_route": "player_game_summary", "expected_status": "ok"},
+            "route": "player_game_summary",
+            "result_status": "ok",
+            "shape_hint": "entity_summary",
+            "answer_summary": "Nikola Jokic summary",
+            "applied_filters": [],
+            "section_summaries": {"summary": {"row_count": 1, "top_rows": [{"games": 10}]}},
+            "expectation_results": {"status": "pass"},
+            "manual_review": {"status": "unreviewed", "tags": [], "notes": ""},
+            "suspicious_flags": [],
+        }
+    ]
+    summary = {
+        "run_id": "latest_public_query_acceptance",
+        "corpus_path": "qa/raw_query_answer_corpus.yaml",
+        "case_count": 1,
+        "failed_case_ids": [],
+    }
+
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+    family = review["family_summary"][0]
+
+    assert review["machine_regression"] == "pass"
+    assert review["coverage_declaration"] == "complete"
+    assert review["review_declaration"] == "human_review_complete"
+    assert family["human_review"] == "reviewed_pass"
+    assert family["human_review_source"] == "registry_closure"
+    assert family["public_accepted"]
 
 
 def test_slice_loading_by_direct_path(tmp_path) -> None:

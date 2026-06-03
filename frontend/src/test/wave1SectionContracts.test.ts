@@ -177,6 +177,7 @@ describe("Wave 1 result section contracts", () => {
         mode: "team",
         showSummaryStrip: false,
         rawDetailTitle: "Game Detail",
+        collapseToDetail: true,
       },
     ]);
     expect(classifyResultShape(withGameLog)).toBe(RESULT_SHAPES.team_record);

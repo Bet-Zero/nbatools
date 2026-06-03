@@ -1,5 +1,15 @@
 version: 1
 surface: public_query_acceptance
+review_closure:
+  state: human_review_complete
+  scope: public_query_acceptance
+  reviewed_run_id: 20260603T020837Z
+  completed_on: "2026-06-03"
+  case_count: 113
+  ui_spot_check:
+    status: passed
+    notes: Curry 5+ threes this season and Lakers playoff history spot checks passed.
+  notes: Public acceptance representative outputs were reviewed; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
 
 variant_grid: &public_variant_grid
   - canonical
@@ -131,6 +141,7 @@ families:
     product_decisions:
       - question: What should bare player-vs-player phrasing such as LeBron vs KD do?
         variant: short
+        status: resolved
         current_behavior: V1 returns a clean ambiguous/no-result boundary for bare player-vs-player phrasing instead of a silent comparison table.
         decision_owner: Product review
         next_action: Keep the boundary until a typed clarification response and UI are approved.

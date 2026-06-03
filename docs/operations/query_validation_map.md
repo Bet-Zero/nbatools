@@ -124,12 +124,12 @@ Latest `public_query_acceptance` slice run result:
 | Suspicious flag cases | 0 |
 | Informational flag cases | 46 |
 | Verified outlier cases | 1 |
-| Human product review | `human_review_complete` for `outputs/raw_query_answer_qa/20260603T020837Z/` |
+| Human product review | `human_review_complete` for the tracked `public_query_acceptance` closure in `qa/raw_query_answer_acceptance_families.yaml` |
 | UI spot checks | Passed for Curry 5+ threes this season and Lakers playoff history |
 
 The current human product-review state is complete for the public-acceptance
-run listed above. The generated outputs remain evidence snapshots only; durable
-status is recorded in this map and
+closure tracked in `qa/raw_query_answer_acceptance_families.yaml`. The generated
+outputs remain evidence snapshots only; durable status is recorded in this map and
 [`raw_product_release_status.md`](../reference/raw_product_release_status.md).
 
 The Raw QA `summary.json` artifact records the corpus path and number of cases

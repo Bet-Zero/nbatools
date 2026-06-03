@@ -14,7 +14,7 @@ from one another.
 | --- | --- | --- |
 | Full Raw QA corpus | `298/298` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
 | `public_query_acceptance` slice | `113/113` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
-| Human product review | `human_review_complete` | Passed for the current public-acceptance run recorded in the validation map; generated outputs remain evidence snapshots only. |
+| Human product review | `human_review_complete` | Tracked in `qa/raw_query_answer_acceptance_families.yaml` for the current public-acceptance closure; generated outputs remain evidence snapshots only. |
 | Representative rendered UI review | Selected representative browser-rendered queries passed; public-acceptance closure spot checks for Curry 5+ threes this season and Lakers playoff history passed | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
 
 The generated artifacts linked from the validation map are evidence snapshots.

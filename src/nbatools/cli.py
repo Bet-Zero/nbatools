@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 import typer
 
@@ -45,7 +46,9 @@ def version():
 @app.command("test")
 def test():
     """Run the full test suite."""
-    subprocess.run(["pytest"])
+    result = subprocess.run([sys.executable, "-m", "pytest"], check=False)
+    if result.returncode != 0:
+        raise typer.Exit(code=result.returncode)
 
 
 @app.command("ask")

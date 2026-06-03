@@ -187,6 +187,7 @@ describe("routeToPattern", () => {
         mode: "team",
         showSummaryStrip: false,
         rawDetailTitle: "Game Detail",
+        collapseToDetail: true,
       },
     ]);
   });

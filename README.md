@@ -131,7 +131,7 @@ For full control over filters and windows, use the structured query interface:
     nbatools-cli query player-game-finder --player "Kobe Bryant" --season 2005-06 --stat pts --min-value 40
     nbatools-cli query game-finder --team BOS --season 2025-26 --home-only --wins-only
 
-26 structured routes are available. Run `nbatools-cli query --help` for the full list.
+30 structured engine/API routes are available. Run `GET /routes` for the full engine surface and `nbatools-cli query --help` for structured CLI wrappers.
 
 ### HTTP API
 
@@ -206,8 +206,8 @@ Pointers:
 
 ### Current tested state
 
-- full suite: ~**1,684 test functions** across 42 test files
-- coverage spans parser, routing, result contracts, CLI smoke, API, query service, and specialized query areas
+- Python pytest collection: **3,100+ test items** across 80 test files
+- coverage spans parser, routing, result contracts, CLI smoke, API, query service, frontend contracts, Raw QA harness behavior, and specialized query areas
 
 Run tests:
 

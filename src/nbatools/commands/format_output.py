@@ -665,6 +665,7 @@ _REASON_DISPLAY = {
     "unrouted": "Could not map this query to a supported pattern.",
     "unsupported": "This query combination is not supported.",
     "ambiguous": "The query matched multiple entities. Please be more specific.",
+    "ambiguous_query": "This query can mean more than one supported request. Please add detail.",
     "filter_not_supported": "This filter cannot be applied — the required data is unavailable.",
     "error": "An error occurred while processing this query.",
 }

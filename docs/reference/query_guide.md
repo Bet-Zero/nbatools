@@ -485,4 +485,4 @@ nbatools-cli query player-game-summary --player "Nikola Jokić" --season 2025-26
 
 Current tested state:
 
-- full suite: **1650+ passing tests** across 41+ test files
+- Python pytest collection: **3,100+ test items** across 80 test files

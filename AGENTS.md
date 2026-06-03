@@ -179,7 +179,7 @@ Or run the matching domain slice (`make test-query`, `make test-api`, etc.). Eit
 
 #### CI is the backstop — local tests are for fast feedback
 
-CI (`.github/workflows/ci.yml`) runs lint, `make test-unit`, and `make test` (the full parallel suite) on every PR. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
+CI (`.github/workflows/ci.yml`) runs lint, docs governance, frontend install/build/lint/test, and `make test-unit` on every PR. `make test` (the full parallel suite) runs on main pushes, nightly, and manual dispatch. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
 
 - Run focused pytest on the directly-changed test files, **or** the matching `make test-<domain>` slice.
 - Push the PR. CI runs the comprehensive suite in parallel while you move on.
@@ -253,13 +253,15 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 
 ### What runs when
 
-| Trigger             | `lint` | `test-fast` | `test-full` |
-| ------------------- | ------ | ----------- | ----------- |
-| Pull request        | ✓      | ✓           |             |
-| Push to `main`      | ✓      | ✓           | ✓           |
-| Nightly (06:00 UTC) | ✓      | ✓           | ✓           |
-| Manual dispatch     | ✓      | ✓           | ✓           |
+| Trigger             | `lint` | `docs-governance` | `frontend` | `test-fast` | `test-full` |
+| ------------------- | ------ | ----------------- | ---------- | ----------- | ----------- |
+| Pull request        | ✓      | ✓                 | ✓          | ✓           |             |
+| Push to `main`      | ✓      | ✓                 | ✓          | ✓           | ✓           |
+| Nightly (06:00 UTC) | ✓      | ✓                 | ✓          | ✓           | ✓           |
+| Manual dispatch     | ✓      | ✓                 | ✓          | ✓           | ✓           |
 
+- **`docs-governance`** calls `make docs-governance`.
+- **`frontend`** calls `npm --prefix frontend ci`, `npm --prefix frontend run build`, `npm --prefix frontend run lint`, and `npm --prefix frontend test`.
 - **`test-fast`** calls `make test-unit`. Excludes `slow` and `needs_data` tests. Runs in parallel. This is the fast feedback path.
 - **`test-full`** calls `make test`. Full regression suite in parallel. This is the correctness backstop.
 
@@ -272,7 +274,7 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 | Subsystem confidence                                     | `make test-<domain>`  | —             |
 | Before declaring work complete (localized)               | `make test-impacted`  | —             |
 | Before declaring work complete (cross-cutting/risky)     | `make test-preflight` | —             |
-| PR pushed                                                | —                     | `test-fast`   |
+| PR pushed                                                | —                     | `docs-governance`, `frontend`, `test-fast` |
 | Merged to main / nightly                                 | —                     | `test-full`   |
 
 Local development uses `make test-impacted` (testmon) for the fastest feedback **on localized changes**. For cross-cutting changes it degenerates into "almost the whole suite, but serial," so use `make test-preflight` (parallel) instead. CI does not use testmon — it uses `make test-unit` (marker-based exclusion, parallel) as the fast path. Testmon state is a local development optimization only.

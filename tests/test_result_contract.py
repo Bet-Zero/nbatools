@@ -53,11 +53,13 @@ class TestResultEnums:
         assert ResultReason.NO_DATA == "no_data"
         assert ResultReason.UNROUTED == "unrouted"
         assert ResultReason.AMBIGUOUS == "ambiguous"
+        assert ResultReason.AMBIGUOUS_QUERY == "ambiguous_query"
         assert ResultReason.UNSUPPORTED == "unsupported"
+        assert ResultReason.FILTER_NOT_SUPPORTED == "filter_not_supported"
         assert ResultReason.ERROR == "error"
 
-    def test_result_reason_has_six_values(self):
-        assert len(ResultReason) == 7
+    def test_result_reason_has_current_values(self):
+        assert len(ResultReason) == 8
 
 
 # ===================================================================

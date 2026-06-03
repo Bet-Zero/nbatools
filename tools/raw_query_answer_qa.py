@@ -60,6 +60,22 @@ MANUAL_REVIEW_STATUSES = {
     "expected_unsupported",
     "needs_product_decision",
 }
+REVIEW_CLOSURE_STATES = {
+    "human_review_pending",
+    "human_review_complete",
+    "human_review_complete_with_followup",
+}
+PRODUCT_DECISION_STATUSES = {
+    "open",
+    "resolved",
+    "deferred",
+}
+UI_SPOT_CHECK_STATUSES = {
+    "not_run",
+    "passed",
+    "failed",
+    "not_applicable",
+}
 ACCEPTANCE_VARIANTS = {
     "canonical",
     "short",
@@ -418,8 +434,53 @@ def normalize_product_decisions(value: Any, *, label: str) -> list[dict[str, str
         if "variant" in decision and decision["variant"] not in ACCEPTANCE_VARIANTS:
             allowed = ", ".join(sorted(ACCEPTANCE_VARIANTS))
             raise ValueError(f"{label} entry {index} variant must be one of: {allowed}")
+        status = str(raw_decision.get("status") or "open")
+        if status not in PRODUCT_DECISION_STATUSES:
+            allowed = ", ".join(sorted(PRODUCT_DECISION_STATUSES))
+            raise ValueError(f"{label} entry {index} status must be one of: {allowed}")
+        decision["status"] = status
         decisions.append(decision)
     return decisions
+
+
+def normalize_review_closure(value: Any, *, label: str) -> dict[str, Any]:
+    if value is None:
+        return {"state": "human_review_pending"}
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be a mapping")
+
+    state = require_nonempty_string(value.get("state"), label=f"{label}.state")
+    if state not in REVIEW_CLOSURE_STATES:
+        allowed = ", ".join(sorted(REVIEW_CLOSURE_STATES))
+        raise ValueError(f"{label}.state must be one of: {allowed}")
+
+    closure: dict[str, Any] = {"state": state}
+    for key in ("scope", "reviewed_run_id", "completed_on", "notes"):
+        if key in value:
+            closure[key] = require_nonempty_string(value[key], label=f"{label}.{key}")
+    if "case_count" in value:
+        case_count = value["case_count"]
+        if not isinstance(case_count, int) or case_count <= 0:
+            raise ValueError(f"{label}.case_count must be a positive integer")
+        closure["case_count"] = case_count
+
+    raw_ui_spot_check = value.get("ui_spot_check")
+    if raw_ui_spot_check is not None:
+        if not isinstance(raw_ui_spot_check, dict):
+            raise ValueError(f"{label}.ui_spot_check must be a mapping")
+        status = str(raw_ui_spot_check.get("status") or "not_run")
+        if status not in UI_SPOT_CHECK_STATUSES:
+            allowed = ", ".join(sorted(UI_SPOT_CHECK_STATUSES))
+            raise ValueError(f"{label}.ui_spot_check.status must be one of: {allowed}")
+        ui_spot_check: dict[str, str] = {"status": status}
+        if "notes" in raw_ui_spot_check:
+            ui_spot_check["notes"] = require_nonempty_string(
+                raw_ui_spot_check["notes"],
+                label=f"{label}.ui_spot_check.notes",
+            )
+        closure["ui_spot_check"] = ui_spot_check
+
+    return closure
 
 
 def load_acceptance_family_registry(path: Path) -> dict[str, Any]:
@@ -514,6 +575,10 @@ def load_acceptance_family_registry(path: Path) -> dict[str, Any]:
         "surface": require_nonempty_string(
             data.get("surface"),
             label="Acceptance family registry surface",
+        ),
+        "review_closure": normalize_review_closure(
+            data.get("review_closure"),
+            label="Acceptance family registry review_closure",
         ),
         "families": families,
         "families_by_id": {family["id"]: family for family in families},
@@ -2262,7 +2327,7 @@ def variant_resolution_map(
     decision_variants = {
         decision.get("variant")
         for decision in family["product_decisions"]
-        if decision.get("variant")
+        if decision.get("variant") and decision.get("status", "open") == "open"
     }
 
     checklist: list[dict[str, Any]] = []
@@ -2300,7 +2365,8 @@ def product_decision_rows(
     decisions: list[dict[str, Any]] = []
     for family in families:
         for decision in family["product_decisions"]:
-            decisions.append({"family": family["id"], **decision})
+            if decision.get("status", "open") == "open":
+                decisions.append({"family": family["id"], **decision})
     for row in rows:
         acceptance = row.get("acceptance") or {}
         manual_review = row.get("manual_review") or {}
@@ -2354,6 +2420,14 @@ def build_product_review(
     summary: dict[str, Any],
 ) -> dict[str, Any]:
     families = family_registry["families"]
+    review_closure = family_registry.get("review_closure") or {"state": "human_review_pending"}
+    closure_state = review_closure.get("state", "human_review_pending")
+    closure_case_count = review_closure.get("case_count")
+    closure_matches_scope = (
+        closure_state != "human_review_pending"
+        and not summary["failed_case_ids"]
+        and (closure_case_count is None or closure_case_count == summary["case_count"])
+    )
     rows_by_family: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         family = (row.get("acceptance") or {}).get("family")
@@ -2376,13 +2450,30 @@ def build_product_review(
         decision_variants = [
             row["variant"] for row in family_checklist if row["state"] == "needs_product_decision"
         ]
-        family_human_review = human_review_status(family_rows)
         if decisions_by_family[family["id"]] or decision_variants:
             coverage_review = "needs_product_decision"
         elif missing_variants:
             coverage_review = "missing_variants"
         else:
             coverage_review = "complete"
+        row_human_review = human_review_status(family_rows)
+        closure_can_mark_reviewed = bool(
+            closure_matches_scope
+            and family_rows
+            and not machine_fail_count
+            and coverage_review == "complete"
+            and not any(row.get("suspicious_flags") for row in family_rows)
+        )
+        if closure_can_mark_reviewed:
+            family_human_review = (
+                "reviewed_followup"
+                if closure_state == "human_review_complete_with_followup"
+                else "reviewed_pass"
+            )
+            human_review_source = "registry_closure"
+        else:
+            family_human_review = row_human_review
+            human_review_source = "case_manual_review"
         representative_count = sum(
             bool((row.get("acceptance") or {}).get("review_required")) for row in family_rows
         )
@@ -2417,6 +2508,7 @@ def build_product_review(
                 "missing_variants": missing_variants,
                 "coverage_review": coverage_review,
                 "human_review": family_human_review,
+                "human_review_source": human_review_source,
                 "representative_count": representative_count,
                 "public_accepted": public_accepted,
                 "coverage_questions": family["coverage_questions"],
@@ -2438,6 +2530,14 @@ def build_product_review(
         compact_product_review_row(row) for row in rows if row.get("suspicious_flags")
     ]
 
+    family_coverage_statuses = {family["coverage_review"] for family in family_summary}
+    if "needs_product_decision" in family_coverage_statuses:
+        coverage_declaration = "needs_product_decision"
+    elif "missing_variants" in family_coverage_statuses:
+        coverage_declaration = "missing_variants"
+    else:
+        coverage_declaration = "complete"
+
     family_human_statuses = {family["human_review"] for family in family_summary}
     if "pending" in family_human_statuses:
         review_declaration = "human_review_pending"
@@ -2451,7 +2551,9 @@ def build_product_review(
         "corpus_path": summary["corpus_path"],
         "case_count": summary["case_count"],
         "machine_regression": "fail" if summary["failed_case_ids"] else "pass",
+        "coverage_declaration": coverage_declaration,
         "review_declaration": review_declaration,
+        "review_closure": review_closure,
         "family_registry_surface": family_registry["surface"],
         "family_summary": family_summary,
         "variant_checklist": checklist,
@@ -2479,17 +2581,39 @@ def write_product_review_markdown(path: Path, product_review: dict[str, Any]) ->
         f"- Cases run: {md_code(product_review['case_count'])}",
         f"- Family registry surface: {md_code(product_review['family_registry_surface'])}",
         f"- Machine regression: {md_code(product_review['machine_regression'])}",
+        f"- Coverage review: {md_code(product_review['coverage_declaration'])}",
         f"- Human review declaration: {md_code(product_review['review_declaration'])}",
-        "",
-        "Machine regression passing does not mean coverage review, human review, or "
-        "public acceptance is complete.",
-        "",
-        "## Feature-Family Summary",
-        "",
-        "| Family | Public | Cases | Machine pass/fail | Required variants | Covered variants | "
-        "Missing variants | Coverage review | Human review | Public accepted |",
-        "|---|---|---:|---|---|---|---|---|---|---|",
     ]
+    review_closure = product_review.get("review_closure") or {}
+    if review_closure.get("state") != "human_review_pending":
+        lines.extend(
+            [
+                "- Human review closure source: "
+                f"{md_code('qa/raw_query_answer_acceptance_families.yaml')}",
+                f"- Reviewed scope: {md_code(review_closure.get('scope'))}",
+                f"- Reviewed run ID: {md_code(review_closure.get('reviewed_run_id'))}",
+                f"- Review completed on: {md_code(review_closure.get('completed_on'))}",
+            ]
+        )
+        ui_spot_check = review_closure.get("ui_spot_check") or {}
+        if ui_spot_check:
+            lines.append(f"- UI spot check: {md_code(ui_spot_check.get('status'))}")
+        if review_closure.get("notes"):
+            lines.append(f"- Review closure notes: {md_escape(review_closure['notes'])}")
+    lines.extend(
+        [
+            "",
+            "Machine regression passing does not mean coverage review, human review, or "
+            "public acceptance is complete.",
+            "",
+            "## Feature-Family Summary",
+            "",
+            "| Family | Public | Cases | Machine pass/fail | "
+            "Required variants | Covered variants | Missing variants | "
+            "Coverage review | Human review | Public accepted |",
+            "|---|---|---:|---|---|---|---|---|---|---|",
+        ]
+    )
     for family in product_review["family_summary"]:
         lines.append(
             "| "

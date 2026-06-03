@@ -96,7 +96,7 @@ class TestNaturalQueryExecution:
 
     @pytest.mark.needs_data
     def test_player_compare_returns_comparison_result(self):
-        qr = execute_natural_query("Jokic vs Embiid 2024-25")
+        qr = execute_natural_query("Jokic vs Embiid recent form")
         assert isinstance(qr.result, ComparisonResult)
         assert qr.is_ok
         assert qr.route == "player_compare"

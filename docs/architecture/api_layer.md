@@ -205,7 +205,7 @@ The API layer contains no business logic. It validates input, calls the query se
 ## What is now UI-callable
 
 - Natural-language queries (any query the CLI `ask` command supports)
-- All 25 structured routes (summaries, comparisons, finders, streaks, leaderboards, records, playoff, occurrence, by-decade)
+- All 30 structured routes (summaries, comparisons, finders, streaks, leaderboards, records, playoff, occurrence, on/off, lineup, by-decade)
 - Route discovery
 - Health checks
 - **Data freshness status** (`/freshness` endpoint — status, current_through, per-season details, last refresh outcome)

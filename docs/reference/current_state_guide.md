@@ -104,25 +104,37 @@ Examples:
 
     nbatools-cli ask "Jokic recent form"
     nbatools-cli ask "Celtics last 15 games summary"
-    nbatools-cli ask "Jokic s    nbatools-cli ask "Jokic s    nbatools-cli ask "Jokic s    nbatools-cli askon queries
+    nbatools-cli ask "Jokic stats this season"
+
+### 4. Comparison queries
 
 Side-by-side stats for two entities.
 
-- player vs play- player vs play- player vs play- player vs play- player vs play- player vshead phrasin- player vs play- pand multi-season comparisons
+- player vs player comparisons
+- team vs team comparisons
+- head-to-head phrasing
+- playoff and multi-season comparisons
 
 Examples:
 
     nbatools-cli ask "Jokic vs Embiid recent form"
     nbatools-cli ask "Kobe vs LeBron playoffs in 2008-09"
-    nbatools-cli ask "Celtics vs Bucks fro    nbatools-cli ask "Celtics vs Bucks fro    nbath2h    nbatid"
+    nbatools-cli ask "Celtics vs Bucks from 2020-21 to 2023-24"
     nbatools-cli ask "Lakers head-to-head vs Celtics"
 
 ### 5. Split queries
 
-Summary stats broken down by home/away or wins/loSummary stats broken suSummary stats broken down by home/away or wiwithSummary stats bro
-EEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEEEEEEEEEEEEEEbaEEEE-cli ask "Jokic home away split last 20 games"
-nbatools- nbatools- nbatools- ses"
-nbato nbato nbato nbato nbato 5 points and over 10 rebounds) or over 15 assists"
+Summary stats broken down by home/away or wins/losses.
+
+- player home/away splits
+- team home/away splits
+- player win/loss splits
+- team win/loss splits
+
+Examples:
+
+    nbatools-cli ask "Jokic home away split last 20 games"
+    nbatools-cli ask "Lakers wins losses split this season"
 
 ### 6. Leaderboard queries
 
@@ -130,14 +142,18 @@ Ranked lists of entities by a statistic.
 
 - player season leaders (averages)
 - team season leaders (averages)
-- top single-game play- top single-game play- top single-game play- top single-game play- top single-game play- top single-game play- top single-game play- top single-gamegames with multiple thresholds)
+- top single-game player performances
+- top single-game team performances
+- occurrence leaderboards
+- compound occurrence leaderboards with multiple thresholds
 
 Examples:
 
-    nbatools-cli ask     nbatools-cli ask     nbatools-cli ask     nbatools-cts% among players"
+    nbatools-cli ask "top scorers this season"
+    nbatools-cli ask "best efg% among players"
     nbatools-cli ask "most 30 point games"
     nbatools-cli ask "most games with 30+ points and 10+ rebounds"
-    nbatools-cli ask "best offensiv    nbatools-cli asls-cli ask "teams with best efg%"
+    nbatools-cli ask "teams with best efg%"
     nbatools-cli ask "teams with most threes"
 
 ### 7. Streak queries
@@ -216,11 +232,17 @@ Examples:
 
 The parser detects explicit intent markers:
 
-| Intent | Triggers | Intent | Triggers | Intent --------------| Intent | Triggers | Inten "list", "show", "find", "games where" |
+| Intent | Triggers |
+| --- | --- |
+| finder | "list", "show", "find", "games where" |
 | count | "how many", "count", "total", "number of" |
-| summary | "summary", "averages", "avg", "how did", "how has"|
+| summary | "summary", "averages", "avg", "how did", "how has" |
+| comparison | "vs", "versus", "compare", "head-to-head", "h2h" |
+| split | "split", "home away", "wins losses" |
 | leaderboard | "leaders", "who leads", "rank", "ranking" |
+| streak | "streak", "straight", "consecutive", "longest" |
 | record | "record", "wins", "losses", "w-l" |
+| playoff | "playoff", "finals", "round" |
 
 ### Threshold language
 
@@ -306,16 +328,17 @@ notes rather than silently pretending the filter ran.
 
 ### Date and window support
 
-| Pattern           | Examples               |
-| ----------------- | ---------------------- | ------------ | --------------- | ---------------------------- | ------------ | -------- | --- |
-| season range      | `from 2020-21 t        | season range | `from 2020-21 t | season range `since 2020-21` |
-| last N seasons    | `last 3 seasons`       |
-| last N games      | `last 10 games`        | last N games | last N games w  | `in Ma                       | last N games | `        |
-| since month       | `s                     | since month  | `s              | since month                  |
-| rolling days      | `last 30 days`         |
-| All-Star break    | `since All-Star break` |
-| career / all-time | `career`, `all-time`   |
-| season t          | season t               | seas`pl      | season t        | seaar                        | season t     | season t | s   |
+| Pattern | Examples |
+| --- | --- |
+| single season | `this season`, `in 2025-26` |
+| season range | `from 2020-21 to 2023-24`, `since 2020-21` |
+| last N seasons | `last 3 seasons` |
+| last N games | `last 10 games` |
+| month | `in March` |
+| since month | `since February` |
+| rolling days | `last 30 days` |
+| All-Star break | `since All-Star break` |
+| career / all-time | `career`, `all-time` |
 
 ### Opponent / matchup / head-to-head
 
@@ -344,7 +367,7 @@ The parser includes entity resolution with:
 
 ## Structured routes
 
-The query service exposes 25 structured routes:
+The query service exposes 30 structured routes:
 
 **Player routes:**
 
@@ -354,6 +377,8 @@ The query service exposes 25 structured routes:
 - `player_compare`
 - `player_occurrence_leaders`
 - `player_split_summary`
+- `player_on_off`
+- `player_stretch_leaderboard`
 
 **Team routes:**
 
@@ -370,6 +395,11 @@ The query service exposes 25 structured routes:
 
 - `season_leaders`
 - `season_team_leaders`
+
+**Lineup routes:**
+
+- `lineup_summary`
+- `lineup_leaderboard`
 
 **Top games:**
 
@@ -424,7 +454,7 @@ Examples:
 
     nbatools-cli ask "Jokic recent form" --txt outputs/jokic_recent.txt
     nbatools-cli ask "top scorers in March" --csv outputs/top_scorers_march.csv
-    nbatools-cli ask "Jokic vs Embiid recent form    nbatools-uts/jo    nbatoolrecent.json
+    nbatools-cli ask "Jokic vs Embiid recent form" --json <path>.json
 
 ---
 
@@ -546,8 +576,8 @@ Invalid routes in the structured query endpoint return a `NoResult` with `result
 
 ## Current tested-state snapshot
 
-- full suite: **1742 passing tests**
-- 42 test files covering parser, routing, result contracts, CLI smoke, API, query service, and specialized query coverage
-- test areas include: natural query parsing, explicit intent detection, leaderboard queries, streak queries, matchup queries, boolean parsing, occurrence/compound occurrence queries, playoff his- test areas include: natural query parsing, explicit intent detection, leuti- test areas include: nage- test areas include: natural query parres- test areas include: natural qud more
+- Python pytest collection: **3,100+ test items**
+- 80 test files covering parser, routing, result contracts, CLI smoke, API, query service, Raw QA harness behavior, frontend contract support, and specialized query coverage
+- test areas include natural query parsing, explicit intent detection, leaderboard queries, streak queries, matchup queries, boolean parsing, occurrence/compound occurrence queries, playoff history, historical team/player queries, context filters, trust-status behavior, and API/UI contracts
 
 This count reflects the current repo state. It should be updated whenever the test surface changes materially.

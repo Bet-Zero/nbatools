@@ -230,6 +230,16 @@ Descriptive-only metadata fails before query execution.
 These statuses are independent. Do not infer `human_reviewed` or
 `public_accepted` from a clean machine run.
 
+## Tracked Review Closure
+
+The public acceptance family registry
+(`qa/raw_query_answer_acceptance_families.yaml`) may include top-level
+`review_closure` metadata for an approved run or slice. The Raw QA harness uses
+that tracked metadata only when the generated run is machine-clean and the case
+count matches any recorded closure count. This lets generated
+`product_review.md` artifacts preserve the distinction between machine passing,
+coverage complete, human-review complete, and UI spot-check status.
+
 ## Human + ChatGPT Review
 
 After running the public slice, send ChatGPT:

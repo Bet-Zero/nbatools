@@ -2,10 +2,10 @@ name: CI
 
 # ── Trigger policy ────────────────────────────────────────────────
 #
-#   pull_request  → lint + test-fast   (quick feedback for iteration)
-#   push to main  → lint + test-fast + test-full  (regression gate)
-#   nightly       → lint + test-fast + test-full  (backstop)
-#   manual        → lint + test-fast + test-full  (on-demand confidence)
+#   pull_request  → lint + docs-governance + frontend + test-fast
+#   push to main  → lint + docs-governance + frontend + test-fast + test-full
+#   nightly       → lint + docs-governance + frontend + test-fast + test-full
+#   manual        → lint + docs-governance + frontend + test-fast + test-full
 #
 # All test jobs call Makefile targets so the repo owns the pytest
 # flags.  See AGENTS.md § "CI testing policy" and CONTRIBUTING.md
@@ -31,6 +31,29 @@ jobs:
       - run: pip install ruff
       - run: ruff check src/ tests/ tools/
       - run: ruff format --check src/ tests/ tools/
+
+  docs-governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: make docs-governance
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm --prefix frontend ci
+      - run: npm --prefix frontend run build
+      - run: npm --prefix frontend run lint
+      - run: npm --prefix frontend test
 
   # ── Fast feedback ────────────────────────────────────────────────
   # Runs on every trigger.  Uses `make test-unit` which excludes
