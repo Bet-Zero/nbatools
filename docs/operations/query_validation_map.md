@@ -124,8 +124,13 @@ Latest `public_query_acceptance` slice run result:
 | Suspicious flag cases | 0 |
 | Informational flag cases | 46 |
 | Verified outlier cases | 1 |
-| Human product review | `human_review_complete` |
-| UI spot checks | Passed for Curry 5+ threes and Lakers playoff history |
+| Human product review | `human_review_pending` |
+| UI spot checks | Pending for Curry 5+ threes this season and Lakers playoff history |
+
+The current human product-review state is a conditional pass pending only the
+two targeted rendered UI spot checks listed above. Do not mark the public
+acceptance review complete until those two rendered outputs have actually been
+inspected.
 
 The Raw QA `summary.json` artifact records the corpus path and number of cases
 run, but it does not currently record the requested slice name. For unnamed

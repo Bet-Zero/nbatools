@@ -3,9 +3,8 @@
 > **Role: Track B plan for the product polish master plan.** Takes nbatools
 > from localhost to a deployed product with synced data.
 >
-> Whole-plan completion authority is
-> [`product_polish_master_plan.md`](../product-polish/product_polish_master_plan.md). This
-> doc covers Track B only.
+> Whole-plan status is tracked in durable release status docs. This doc covers
+> Track B only.
 
 ---
 
@@ -65,7 +64,8 @@ time.
 
 Capture learnings. Finish any custom-domain-specific wrap-up that Phase N3
 could not execute before the domain existed. Verify Track B's done
-definition is met. Update the master plan with Track B closure status.
+definition is met. Update the durable release status docs with Track B closure
+status.
 
 **Companion queue:** [`phase_n4_work_queue.md`](./phase_n4_work_queue.md)
 

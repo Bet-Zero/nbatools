@@ -189,8 +189,8 @@ final deployment state instead of leaving the remaining domain work implicit.
 
 - Review N1-N4 outcomes, surprises, and residual risks.
 - Confirm Track B's done definition is fully met.
-- Update `production_deployment_plan.md` and
-  `product_polish_master_plan.md` with Track B closure status.
+- Update `production_deployment_plan.md` and durable release status docs with
+  Track B closure status.
 - Update any planning/index docs that should no longer describe Track B as
   active.
 
@@ -198,7 +198,7 @@ final deployment state instead of leaving the remaining domain work implicit.
 
 - `working/phase-n4-domain-cutover/phase_n4_work_queue.md`
 - `working/phase-n4-domain-cutover/production_deployment_plan.md`
-- `working/product-polish/product_polish_master_plan.md`
+- `docs/reference/raw_product_release_status.md`
 - `docs/index.md`
 
 **Acceptance criteria:**
