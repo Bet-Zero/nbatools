@@ -19,4 +19,7 @@ When the task is complete, move its folder to the separate top-level
 `archive/<task-slug>/` location. `archive/` is ignored and is not inside
 `working/`.
 
-The policy for `outputs/` is pending a separate audit.
+`outputs/` is fully gitignored and is for generated artifacts and evidence only.
+Working files may cite generated output paths as task evidence, but durable
+facts must be promoted into `docs/` before the task is closed. Tests and corpora
+must use tracked fixtures outside `outputs/` when they need stable input data.

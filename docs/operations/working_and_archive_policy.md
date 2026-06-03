@@ -84,3 +84,25 @@ files are historical/local only and must not be treated as source of truth.
 artifacts, and manifests. These files are generated evidence only. They are not
 durable source-of-truth documentation. Promote any long-lived conclusion into
 the appropriate durable doc.
+
+`outputs/` remains fully gitignored. Do not track subsets of `outputs/`; if a
+test or corpus needs fixture data, put the fixture under a tracked fixture path
+outside `outputs/`.
+
+Durable docs may reference `outputs/` only as generated evidence paths,
+generated artifact destinations, export examples, or validation snapshots whose
+durable conclusion is summarized in docs. Do not make an ignored generated file
+the only source of a product fact, release decision, test input, or corpus
+contract.
+
+Timestamped run directories should be retained only while they are useful:
+
+- keep the latest successful run per workflow
+- keep active investigation runs
+- keep exact paths cited by tracked working files while that work is active
+- keep local evidence needed to reproduce a current validation snapshot
+- keep test-required fixtures only when those fixtures live outside `outputs/`
+
+Older generated runs should be deleted after the relevant task closes or the
+durable fact has been promoted. Completed working notes belong in `archive/`;
+bulk generated outputs do not need to be archived by default.

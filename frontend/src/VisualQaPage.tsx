@@ -13,8 +13,8 @@ import {
   VISUAL_QA_CASES,
   VISUAL_QA_CHECKLIST_DOC,
   VISUAL_QA_INTERNAL_ROUTE,
-  VISUAL_QA_SOURCE_FRONTEND_COPY_RUN,
-  VISUAL_QA_SOURCE_RAW_RUN,
+  VISUAL_QA_PROVENANCE_FRONTEND_COPY_RUN,
+  VISUAL_QA_PROVENANCE_RAW_RUN,
   type VisualQaCase,
 } from "./visualQaCases";
 import styles from "./VisualQaPage.module.css";
@@ -321,18 +321,18 @@ export default function VisualQaPage() {
             </section>
 
             <section className={styles.metaPanel}>
-              <h2>Manifest sources</h2>
+              <h2>Manifest provenance</h2>
               <ul>
                 <li>
-                  Raw QA source:<span> </span>
+                  Raw QA provenance:<span> </span>
                   <span className={styles.path}>
-                    {VISUAL_QA_SOURCE_RAW_RUN}
+                    {VISUAL_QA_PROVENANCE_RAW_RUN}
                   </span>
                 </li>
                 <li>
-                  Frontend-copy source:<span> </span>
+                  Frontend-copy provenance:<span> </span>
                   <span className={styles.path}>
-                    {VISUAL_QA_SOURCE_FRONTEND_COPY_RUN}
+                    {VISUAL_QA_PROVENANCE_FRONTEND_COPY_RUN}
                   </span>
                 </li>
                 <li>

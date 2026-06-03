@@ -129,12 +129,40 @@ OUTPUT_REFERENCE_ALLOWLIST = {
 MARKDOWN_LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 OUTPUT_PATH = re.compile(r"outputs/[A-Za-z0-9_./<>-]*")
 EXTERNAL_SCHEMES = ("http://", "https://", "mailto:", "tel:")
+TRACKED_OUTPUT_DEPENDENCY_GLOBS = (
+    "qa/**/*.yaml",
+    "qa/**/*.json",
+    "frontend/src/test/**/*.ts",
+    "frontend/src/test/**/*.tsx",
+    "tests/**/*.py",
+)
+TRACKED_OUTPUT_DEPENDENCY_ALLOWLIST = {
+    Path("qa/frontend_visual_qa_corpus.json"): (
+        "outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl",
+        "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
+    ),
+    Path("qa/frontend_visual_qa_corpus.yaml"): (
+        "outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl",
+        "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
+    ),
+    Path("tests/test_raw_query_answer_qa.py"): (
+        "outputs/test/report.jsonl",
+        "outputs/test/summary.json",
+    ),
+}
 
 
 def durable_files() -> list[Path]:
     files = set(DURABLE_ENTRYPOINTS)
     for pattern in DURABLE_GLOBS:
         files.update(path.relative_to(ROOT) for path in ROOT.glob(pattern))
+    return sorted(files)
+
+
+def tracked_output_dependency_files() -> list[Path]:
+    files: set[Path] = set()
+    for pattern in TRACKED_OUTPUT_DEPENDENCY_GLOBS:
+        files.update(path.relative_to(ROOT) for path in ROOT.glob(pattern) if path.is_file())
     return sorted(files)
 
 
@@ -183,6 +211,20 @@ def check_output_paths(path: Path, text: str) -> list[str]:
     return errors
 
 
+def check_tracked_output_dependencies(path: Path, text: str) -> list[str]:
+    errors: list[str] = []
+    allowed_values = TRACKED_OUTPUT_DEPENDENCY_ALLOWLIST.get(path, ())
+    for match in OUTPUT_PATH.finditer(text):
+        value = match.group(0)
+        if value in allowed_values:
+            continue
+        errors.append(
+            f"{path}:{line_number(text, match.start())}: "
+            f"tracked corpus/test files may not depend on ignored outputs: {value}"
+        )
+    return errors
+
+
 def normalize_link_target(raw_target: str) -> str:
     target = raw_target.strip()
     if target.startswith("<") and target.endswith(">"):
@@ -214,6 +256,9 @@ def main() -> int:
         errors.extend(check_banned_paths(path, text))
         errors.extend(check_output_paths(path, text))
         errors.extend(check_relative_links(path, text))
+    for path in tracked_output_dependency_files():
+        text = (ROOT / path).read_text(encoding="utf-8")
+        errors.extend(check_tracked_output_dependencies(path, text))
 
     if errors:
         print("docs governance check failed:")

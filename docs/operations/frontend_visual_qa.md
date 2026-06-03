@@ -129,6 +129,11 @@ not a replacement for the `/visual-qa` screenshot manifest or manual checklist.
 Generated files under `outputs/` are evidence artifacts only. They are not
 durable source-of-truth documentation.
 
+Tracked visual QA corpus metadata may name generated `outputs/` runs only as
+provenance. The visual QA page and tests must not read those generated paths as
+runtime input; any stable test fixture belongs under a tracked fixture path
+outside `outputs/`.
+
 ## What Counts As UI-Reviewed
 
 A scope is `UI-reviewed` only when a reviewer actually inspects the rendered

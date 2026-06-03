@@ -1,5 +1,5 @@
 version: 1
-source_backend_run: outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl
+source_backend_run: qa/fixtures/frontend_copy_backend_report.jsonl
 description: Frontend hero/copy QA Wave 2 selected review subset.
 cases:
   - id: celtics_record_playoff_teams
