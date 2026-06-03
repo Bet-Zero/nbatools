@@ -100,8 +100,11 @@ OUTPUT_REFERENCE_ALLOWLIST = {
         "outputs/raw_query_answer_qa/<run_id>/product_review.md",
     ),
     Path("docs/operations/raw_query_answer_qa.md"): (
+        "outputs/raw_query_answer_qa/",
+        "outputs/raw_query_answer_qa/latest_public_query_acceptance/",
         "outputs/raw_query_answer_qa/<prior_run_id>/report.jsonl",
         "outputs/raw_query_answer_qa/<prior_run_id>/summary.json",
+        "outputs/raw_query_answer_qa/<run_id>/",
         "outputs/raw_query_answer_qa/<run_id>/product_review.json",
         "outputs/raw_query_answer_qa/<run_id>/product_review.md",
         "outputs/raw_query_answer_qa/<run_id>/report.jsonl",

@@ -27,6 +27,42 @@ The existing full-corpus command remains:
 make raw-query-answer-qa
 ```
 
+## Output Modes
+
+Default runs use timestamped UTC run IDs and write durable evidence-shaped
+artifacts under:
+
+```text
+outputs/raw_query_answer_qa/<run_id>/
+```
+
+Use timestamped runs for handoffs, historical evidence, comparison baselines,
+and any path that may be cited outside the immediate local review loop.
+
+For repeated local review of the public acceptance slice, use a named latest
+folder with explicit overwrite:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --slice public_query_acceptance \
+  --run-id latest_public_query_acceptance \
+  --overwrite-run-id \
+  --fail-on-expectation-failure
+```
+
+This writes to:
+
+```text
+outputs/raw_query_answer_qa/latest_public_query_acceptance/
+```
+
+`--overwrite-run-id` is only for direct child folders under
+`outputs/raw_query_answer_qa/`. It deletes and recreates that named run folder
+before writing the new artifacts. Do not use latest folders as durable source
+of truth, product evidence, or long-lived doc references; they are mutable
+local review scratch paths.
+
 ## Run Variants
 
 Use the direct harness command when selecting a specific scope or when a
@@ -102,6 +138,8 @@ metadata does not change the harness exit status.
   Without that flag, failed IDs remain visible in the artifacts but do not make
   the command exit non-zero.
 - Use `--run-id <label>` when a stable human-facing artifact path is useful.
+  The label must be a folder name, not a path. Existing named run directories
+  are refused unless `--overwrite-run-id` is also supplied.
 
 ## Generated Artifacts
 

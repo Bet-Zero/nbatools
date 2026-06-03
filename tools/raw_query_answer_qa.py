@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 import re
+import shutil
 import sys
 import time
 from collections import Counter
@@ -183,6 +184,8 @@ PREFERRED_MARKDOWN_COLUMNS = [
 DEFAULT_VERIFIED_OUTLIERS_PATH = ROOT / "qa" / "verified_outliers.yaml"
 DEFAULT_SLICE_DIR = ROOT / "qa" / "harness_slices"
 DEFAULT_ACCEPTANCE_FAMILIES_PATH = ROOT / "qa" / "raw_query_answer_acceptance_families.yaml"
+DEFAULT_RAW_QA_OUTPUT_ROOT = ROOT / "outputs" / "raw_query_answer_qa"
+RUN_ID_LABEL_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*")
 
 
 def parse_args() -> argparse.Namespace:
@@ -192,6 +195,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--corpus", default="qa/raw_query_answer_corpus.yaml")
     parser.add_argument("--out", default="outputs/raw_query_answer_qa")
     parser.add_argument("--run-id", default=None)
+    parser.add_argument("--overwrite-run-id", action="store_true")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--case", action="append", default=[])
     parser.add_argument("--slice", action="append", default=[])
@@ -209,6 +213,80 @@ def resolve_path(path_text: str) -> Path:
     if path.is_absolute():
         return path
     return ROOT / path
+
+
+def validate_run_id_label(run_id: str) -> str:
+    label = run_id.strip()
+    if not label:
+        raise ValueError("--run-id must be a non-empty folder name")
+    path = Path(label)
+    if path.is_absolute() or path.name != label or label in {".", ".."}:
+        raise ValueError("--run-id must be a folder name, not a path")
+    if RUN_ID_LABEL_PATTERN.fullmatch(label) is None:
+        raise ValueError(
+            "--run-id may contain only letters, numbers, dots, hyphens, and underscores, "
+            "and must start with a letter or number"
+        )
+    return label
+
+
+def validate_overwrite_run_directory(
+    run_dir: Path,
+    *,
+    expected_root: Path = DEFAULT_RAW_QA_OUTPUT_ROOT,
+) -> None:
+    root = expected_root.resolve(strict=False)
+    parent = run_dir.parent.resolve(strict=False)
+    target = run_dir.resolve(strict=False)
+    if parent != root or target == root or not target.is_relative_to(root):
+        raise ValueError(
+            "--overwrite-run-id may only replace a named run directory directly under "
+            f"{display_path(expected_root)}"
+        )
+    if run_dir.is_symlink():
+        raise ValueError(f"Refusing to overwrite symlinked run directory: {display_path(run_dir)}")
+
+
+def validate_run_directory_target(
+    run_dir: Path,
+    *,
+    overwrite_run_id: bool,
+    expected_root: Path = DEFAULT_RAW_QA_OUTPUT_ROOT,
+) -> None:
+    if overwrite_run_id:
+        validate_overwrite_run_directory(run_dir, expected_root=expected_root)
+    if not run_dir.exists():
+        return
+    if not run_dir.is_dir():
+        raise ValueError(
+            f"Run output path already exists and is not a directory: {display_path(run_dir)}"
+        )
+    if not overwrite_run_id:
+        raise ValueError(
+            f"Run directory already exists: {display_path(run_dir)}. "
+            "Use --overwrite-run-id with --run-id to replace it."
+        )
+
+
+def prepare_run_directory(
+    run_dir: Path,
+    *,
+    overwrite_run_id: bool,
+    expected_root: Path = DEFAULT_RAW_QA_OUTPUT_ROOT,
+) -> None:
+    if run_dir.exists():
+        if not overwrite_run_id:
+            raise ValueError(
+                f"Run directory already exists: {display_path(run_dir)}. "
+                "Use --overwrite-run-id with --run-id to replace it."
+            )
+        validate_overwrite_run_directory(run_dir, expected_root=expected_root)
+        if not run_dir.is_dir():
+            raise ValueError(
+                f"Run output path already exists and is not a directory: {display_path(run_dir)}"
+            )
+        shutil.rmtree(run_dir)
+    run_dir.mkdir(parents=True, exist_ok=False)
 
 
 def display_path(path: Path) -> str:
@@ -2983,8 +3061,15 @@ def main() -> int:
     args = parse_args()
     corpus_path = resolve_path(args.corpus)
     out_base = resolve_path(args.out)
-    run_id = args.run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    if args.overwrite_run_id and args.run_id is None:
+        raise ValueError("--overwrite-run-id requires --run-id")
+    run_id = (
+        validate_run_id_label(args.run_id)
+        if args.run_id
+        else datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    )
     run_dir = out_base / run_id
+    validate_run_directory_target(run_dir, overwrite_run_id=args.overwrite_run_id)
     report_jsonl_path = run_dir / "report.jsonl"
     report_md_path = run_dir / "report.md"
     summary_path = run_dir / "summary.json"
@@ -3015,7 +3100,7 @@ def main() -> int:
     ]
     completed_at = datetime.now(UTC).isoformat()
 
-    run_dir.mkdir(parents=True, exist_ok=True)
+    prepare_run_directory(run_dir, overwrite_run_id=args.overwrite_run_id)
     output_paths = {
         "report_jsonl": report_jsonl_path,
         "report_md": report_md_path,

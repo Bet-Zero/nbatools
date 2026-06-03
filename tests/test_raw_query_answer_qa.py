@@ -341,8 +341,60 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 109
+    assert len(selected) == 113
     assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
+
+
+def test_run_id_label_accepts_folder_name_only() -> None:
+    assert qa.validate_run_id_label("latest_public_query_acceptance") == (
+        "latest_public_query_acceptance"
+    )
+
+    for run_id in ("", ".", "..", "../outside", "nested/run", "/tmp/run", "bad name"):
+        with pytest.raises(ValueError, match="--run-id"):
+            qa.validate_run_id_label(run_id)
+
+
+def test_existing_named_run_directory_requires_overwrite(tmp_path) -> None:
+    expected_root = tmp_path / "outputs" / "raw_query_answer_qa"
+    run_dir = expected_root / "latest_public_query_acceptance"
+    run_dir.mkdir(parents=True)
+    (run_dir / "stale.txt").write_text("old")
+
+    with pytest.raises(ValueError, match="already exists"):
+        qa.validate_run_directory_target(
+            run_dir,
+            overwrite_run_id=False,
+            expected_root=expected_root,
+        )
+
+    qa.validate_run_directory_target(
+        run_dir,
+        overwrite_run_id=True,
+        expected_root=expected_root,
+    )
+    qa.prepare_run_directory(
+        run_dir,
+        overwrite_run_id=True,
+        expected_root=expected_root,
+    )
+
+    assert run_dir.exists()
+    assert list(run_dir.iterdir()) == []
+
+
+def test_overwrite_run_directory_must_be_direct_child_of_raw_qa_root(tmp_path) -> None:
+    expected_root = tmp_path / "outputs" / "raw_query_answer_qa"
+    outside_run_dir = tmp_path / "other_outputs" / "latest_public_query_acceptance"
+    nested_run_dir = expected_root / "nested" / "latest_public_query_acceptance"
+
+    for run_dir in (outside_run_dir, nested_run_dir):
+        with pytest.raises(ValueError, match="directly under"):
+            qa.validate_run_directory_target(
+                run_dir,
+                overwrite_run_id=True,
+                expected_root=expected_root,
+            )
 
 
 def test_product_review_markdown_includes_family_matrix_and_handoff(tmp_path) -> None:
