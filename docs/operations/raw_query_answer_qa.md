@@ -252,10 +252,13 @@ The artifact ends with an exact prompt block. Use it as written. ChatGPT helps
 identify corpus gaps, suspicious outputs, and product decisions. The user owns
 the final product decision. Agents execute approved follow-up only.
 
-## Corpus-Wave Return Packages
+## Corpus-Wave Handoff Receipts
 
-Every public corpus-wave return package must state whether the corpus itself
-was reviewed or only the machine expectations passed. Use exactly one:
+When a public corpus-wave task needs a handoff receipt, keep it task-scoped
+and follow [`working_and_archive_policy.md`](working_and_archive_policy.md).
+Do not create a standalone top-level return-package folder. The receipt must
+state whether the corpus itself was reviewed or only the machine expectations
+passed. Use exactly one:
 
 ```text
 machine_only

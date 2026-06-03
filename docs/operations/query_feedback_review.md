@@ -69,7 +69,7 @@ cadence calls for them.
    [Triage categories](#triage-categories) below. ChatGPT is not the final
    judge; it is a triage helper.
 
-4. **Fill the triage worksheet.**
+4. **Fill the triage worksheet or admin overlay.**
 
    ```text
    outputs/query_feedback_exports/<run_id>/triage_decisions_template.csv
@@ -78,7 +78,10 @@ cadence calls for them.
    `triage_decisions_template.csv` is the editable review worksheet. One
    row per group. Fill `review_status`, the chosen triage category,
    `linked_case_id` when a group becomes a QA case or planning item,
-   `reviewer_notes`, and `next_action`. See
+   `reviewer_notes`, `next_action`, and the engineering fix category from
+   [Engineering fix categories](#engineering-fix-categories). The
+   `/admin/feedback` console stores the same review decision as a mutable
+   triage overlay beside the immutable feedback stream. See
    [Triage Template Workflow](#triage-template-workflow) for the field
    conventions and [Triage Statuses](#triage-statuses) for the status
    vocabulary.
@@ -120,6 +123,47 @@ The eight categories are the primary triage labels for the routine. The
 [Triage Decisions](#triage-decisions) and [Triage Statuses](#triage-statuses)
 sections below describe the follow-up actions and progress states; they
 remain in place as the operational vocabulary for the worksheet.
+
+### Engineering fix categories
+
+After the product triage decision is chosen, add exactly one engineering
+fix category to the worksheet `reviewer_notes` / `next_action` fields or to
+the admin overlay `review_notes`. This category tells an agent where to start
+and which validation path to use.
+
+```text
+review_status: new | reviewed | deferred | closed
+triage_decision: bug | support_candidate | expected_unsupported | duplicate |
+  no_action | needs_more_data | parser_routing_risk | ui_copy_issue
+engineering_fix_category: parser_routing | backend_data |
+  frontend_rendering | unsupported_future | ambiguous_clarification |
+  typo_alias | corpus_expectation | stale_freshness |
+  product_should_not_support
+linked_case_or_issue: <QA case id, issue id, or planning pointer>
+next_action: <smallest executable follow-up>
+closure_evidence: <tests, Raw QA case/run, visual review, docs, or deferral>
+```
+
+The engineering category is not written into immutable source feedback
+records. Source records remain immutable; persistent review state belongs in
+the triage overlay described in [Mutable Triage Overlay](#mutable-triage-overlay).
+
+## Feedback Category To Fix Path
+
+Use this table after triage. It is intentionally a routing map, not a
+replacement for the detailed runbooks it links to.
+
+| Engineering category | Use when | Likely files touched | Required tests/checks | Optional tests/checks | Raw QA requirement | Frontend visual/render requirement | Route metadata/docs requirement | Feature promotion applies? |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `parser_routing` | Query routes wrong, fails to route, drops a slot, or erodes an unsupported boundary. | Parser helpers, entity resolution, natural query routing. | `make test-parser`; `make test-query`; follow [`parser_routing_growth_guardrails.md`](parser_routing_growth_guardrails.md). | `make test-preflight` for high fan-in parser/routing changes. | Required when public behavior, route, status, reason, filters, or boundary changes. | Only if result copy/layout changes. | Update route input metadata and query docs when accepted inputs or boundaries change. | Yes if a previously unsupported capability becomes supported. |
+| `backend_data` | Route is right, but calculation, filtering, data coverage, source trust, or result shape is wrong. | Command modules, shared command helpers, data/freshness utilities, data contracts. | `make test-engine`; run the affected Raw QA case or slice if query behavior changes. | `make test-query`; `make test-api`; `make test-preflight` for shared helpers or data contracts. | Required when the returned contract or public answer changes. | Only if renderer behavior changes. | Update result/data docs when contracts or coverage semantics move. | Yes for new supported data-backed capability. |
+| `frontend_rendering` | Backend response is acceptable, but UI copy, chips, density, overflow, hierarchy, or rendering is confusing. | Frontend components, styles, API types/client if needed. | `npm --prefix frontend test`; `npm --prefix frontend run build`; `npm --prefix frontend run lint`. | Targeted review from [`frontend_visual_qa.md`](frontend_visual_qa.md). | Not required when backend result shape and behavior are unchanged. | Required for layout, overflow, hierarchy, or visible copy changes. | Update UI docs only when durable UI behavior changes. | Only if the UI change is part of a new supported capability. |
+| `unsupported_future` | Valid stat-shaped demand is outside the current product boundary. | Usually none until a promotion is approved. | Record deferral or promotion preflight. | Raw QA unsupported-boundary guard if repeated demand risks drift. | Not required unless adding a boundary guard or promoting. | No, unless promotion changes rendering. | Document only durable product decisions. | Yes before support ships. |
+| `ambiguous_clarification` | Query is valid-looking but needs clarification, not a silent broad answer. | Parser/routing, no-result/unsupported handling, possibly frontend clarification UI. | `make test-parser`; `make test-query`. | `make test-api`; frontend tests if clarification UI changes. | Required if public ambiguity behavior is pinned or changed. | Required only if clarification UI/copy changes. | Update docs/metadata if a new ambiguity reason or guidance shape ships. | Yes if ambiguity is resolved by adding supported capability. |
+| `typo_alias` | Misspelling, nickname, abbreviation, or partial entity behavior is wrong or unclear. | Entity resolution, alias tables, parser helpers. | `make test-parser`; `make test-query`. | Targeted Raw QA case for public alias or typo boundary changes. | Required when accepted aliases or typo boundaries change. | No, unless UI copy changes. | Update query docs when alias support or typo policy changes. | Yes for fuzzy matching or broader alias policy. |
+| `corpus_expectation` | Behavior is correct or intentionally changed, but a Raw QA expectation, slice, family tag, or review metadata is wrong. | Raw QA corpus, slice, or acceptance-family metadata only. | Targeted Raw QA case/slice from [`raw_query_answer_qa.md`](raw_query_answer_qa.md); check current terms in [`query_validation_map.md`](query_validation_map.md). | Full public acceptance slice when family metadata changes. | This is the work item. | No, unless the case exists to validate UI-derived copy/layout separately. | Update validation map only when durable scoreboard/current evidence changes. | Only if expectation change reflects a promoted capability. |
+| `stale_freshness` | Answer is confusing because data is stale, freshness metadata is missing, or source coverage/R2 availability is wrong. | Freshness utilities, pipeline/source config, deployment/data docs, API freshness surfaces. | Relevant engine/API tests for freshness or data availability. | Deployment smoke or R2 verification when runtime data availability is involved. | Not required when refresh/freshness contract fixes the issue without changing query semantics. | Required only if freshness UI changes. | Update freshness/data docs when contract or coverage semantics change. | Yes for new data-backed support; no for routine refresh. |
+| `product_should_not_support` | Product decision says the request should remain unsupported. | Parser guards and docs only if the current system answers too broadly. | Parser/query tests if a guard changes behavior. | Raw QA boundary case if drift risk exists. | Required only when adding or tightening a boundary guard. | No, unless unsupported copy changes. | Update query catalog/guide when the durable boundary changes. | No, unless later reversed into support. |
 
 ### Ownership model
 
@@ -466,14 +510,20 @@ heuristic sorting aid, not automatic QA truth.
 Use `triage_decisions_template.csv` as the editable review worksheet.
 
 1. Sort by `suggested_triage`, `count`, and `prioritize_review`.
-2. Fill `review_status` as the review progresses.
+2. Fill `review_status` with the same values used by the admin overlay:
+   `new`, `reviewed`, `deferred`, or `closed`.
 3. Fill `triage_decision` only after human review.
 4. Add a `linked_case_id` when the group becomes a QA case, data issue, product
    issue, or planning item.
-5. Use `reviewer_notes` and `next_action` to record the manual decision.
+5. Add the engineering fix category from
+   [Engineering fix categories](#engineering-fix-categories).
+6. Use `reviewer_notes`, `next_action`, and closure evidence to record the
+   manual decision.
 
-Do not mutate source R2 records during this process. If mutable triage state is
-needed later, build a separate authenticated overlay workflow.
+Do not mutate source R2 records during this process. For persistent review
+state, use the authenticated admin overlay workflow. The overlay updates only
+the review object for the group; it does not update the original feedback
+records.
 
 ## QA Conversion Rules
 
@@ -497,32 +547,76 @@ reviewed groups into curated artifacts.
 Do not automatically modify `qa/raw_query_answer_corpus.yaml`,
 `qa/frontend_copy_corpus.yaml`, or `qa/frontend_visual_qa_corpus.json`.
 
+## Do Not Add A Raw QA Case When
+
+Not every feedback item becomes a Raw QA case. Do not add a Raw QA case for:
+
+- duplicate feedback already covered by an existing case, issue, or planning
+  item
+- one-off malformed input outside the supported boundary
+- frontend-only rendering bugs when backend route/status/result shape is
+  unchanged
+- stale data issues where a data refresh, coverage fix, or freshness contract
+  is the actual fix
+- product decisions that intentionally remain unsupported, unless boundary
+  drift risk needs a guard
+- feedback that has not been reproduced or classified
+
+Add Raw QA only when it pins query-engine behavior: expected status, route,
+reason, filters, result shape, sections, row counts, hard assertions, or an
+unsupported-boundary guard. Use [`raw_query_answer_qa.md`](raw_query_answer_qa.md)
+for the detailed harness workflow and [`query_validation_map.md`](query_validation_map.md)
+for current evidence terminology.
+
 ## Triage Statuses
 
-Use these statuses in exported review notes or a future triage UI:
+Use the same statuses in the exported worksheet and the admin triage overlay:
 
 - `new`
-- `reviewing`
-- `accepted_bug`
-- `accepted_support_candidate`
-- `expected_unsupported`
-- `duplicate`
-- `added_to_corpus`
+- `reviewed`
+- `deferred`
 - `closed`
+
+`reviewed` means the group has a final triage decision but follow-up may still
+be pending. `deferred` means the next action is intentionally paused on product
+decision, data availability, or missing repro. `closed` means the closure
+evidence for the engineering category has been recorded.
 
 ## Triage Decisions
 
-- `raw_qa_case`: backend/parser/query behavior should change or be guarded by
-  a new expectation.
-- `frontend_copy_case`: backend result is correct, but rendered wording or
-  product copy is confusing or wrong.
-- `visual_qa_case`: layout, overflow, density, or visual hierarchy issue.
-- `data_issue`: freshness, missing R2 object, source coverage, or verified data
-  anomaly.
-- `parser_issue`: unrouted, ambiguous, or slot extraction mismatch.
-- `unsupported_family`: valid demand outside the current product boundary.
-- `no_action`: expected unsupported behavior, duplicate, or non-actionable
-  report.
+Use these product-level decisions in the admin overlay and in
+`triage_decisions_template.csv`:
+
+- `bug`
+- `support_candidate`
+- `expected_unsupported`
+- `duplicate`
+- `no_action`
+- `needs_more_data`
+- `parser_routing_risk`
+- `ui_copy_issue`
+
+The exporter still provides `suggested_triage` buckets such as `raw_qa_case`,
+`parser_issue`, `data_issue`, `frontend_copy_case`, and `visual_qa_case`. Those
+are sorting hints. The reviewer-owned `triage_decision` and engineering fix
+category are the durable handoff.
+
+## Closure Criteria
+
+Close a group only when the worksheet or overlay records the evidence that
+matches its engineering category:
+
+| Engineering category | Closure evidence |
+| --- | --- |
+| `parser_routing` | Repro classified; targeted parser/query tests pass; Raw QA case added or updated when public behavior changes; parser/routing guardrails checked. |
+| `backend_data` | Calculation/data fix verified by engine tests; affected Raw QA case or slice passes when public answer/contract changes; data/freshness contract updated when needed. |
+| `frontend_rendering` | Frontend tests pass; frontend build and lint pass; visual/render review completed when layout, overflow, hierarchy, or visible copy changed. |
+| `unsupported_future` | Product deferral or promotion preflight pointer recorded; no behavior change made unless promotion follows [`feature_promotion_rules.md`](feature_promotion_rules.md). |
+| `ambiguous_clarification` | Ambiguous behavior reproduced and pinned; parser/query tests pass; Raw QA guard exists when public ambiguity behavior changes. |
+| `typo_alias` | Alias or typo policy decision recorded; parser/query tests pass; Raw QA guard added when public alias or typo-boundary behavior changes. |
+| `corpus_expectation` | Raw QA expectation, slice, or family metadata corrected; targeted case/slice passes; current evidence wording remains consistent with [`query_validation_map.md`](query_validation_map.md). |
+| `stale_freshness` | Refresh, coverage, R2 availability, or freshness contract fix verified; API/UI checks pass when freshness surfaces changed; no unnecessary corpus case added. |
+| `product_should_not_support` | Durable boundary decision recorded; query docs updated if boundary changed; Raw QA unsupported guard added only when drift risk exists. |
 
 ## Privacy and Retention
 
