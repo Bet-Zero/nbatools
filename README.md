@@ -134,9 +134,11 @@ For full control over filters and windows, use the structured query interface:
 Explicit CLI wrappers are convenience commands and may cover a focused subset of the structured surface. For full route coverage, list and execute the shared engine/API routes directly:
 
     nbatools-cli query routes
+    nbatools-cli query routes --details
+    nbatools-cli query route-help team_record
     nbatools-cli query route team_record --kwargs-json '{"team":"LAL","season":"2025-26"}'
 
-30 structured engine/API routes are available through `GET /routes` and `nbatools-cli query routes`.
+30 structured engine/API routes are available through `GET /routes` and `nbatools-cli query routes`. Use `route-help` for route-specific kwargs guidance before calling the generic route executor.
 
 ### HTTP API
 

@@ -51,6 +51,32 @@ def test_query_routes_lists_every_valid_route():
     assert listed_routes == sorted(VALID_ROUTES)
 
 
+def test_query_routes_details_lists_route_guidance():
+    result = runner.invoke(queries.app, ["routes", "--details"])
+
+    assert result.exit_code == 0
+    assert "team_record:" in result.output
+    assert "required: team" in result.output
+
+
+def test_query_route_help_displays_representative_route_metadata():
+    result = runner.invoke(queries.app, ["route-help", "team_record"])
+
+    assert result.exit_code == 0
+    assert "team_record" in result.output
+    assert "Implementation: nbatools.commands.team_record.build_team_record_result" in result.output
+    assert "Required kwargs: team" in result.output
+    assert "opponent_conference" in result.output
+    assert "--kwargs-json" in result.output
+
+
+def test_query_route_help_rejects_invalid_route():
+    result = runner.invoke(queries.app, ["route-help", "not_a_real_route"])
+
+    assert result.exit_code != 0
+    assert "Unknown route 'not_a_real_route'" in result.output
+
+
 def test_query_route_invokes_representative_valid_route(monkeypatch):
     calls = _install_fake_route_runner(monkeypatch)
 

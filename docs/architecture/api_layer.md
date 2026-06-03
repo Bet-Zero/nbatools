@@ -80,7 +80,7 @@ Execute a structured (route-based) query.
 ```json
 {
   "route": "season_leaders",
-  "kwargs": { "season": "2025-26", "stat": "PTS", "top_n": 10 }
+  "kwargs": { "season": "2025-26", "stat": "PTS", "limit": 10 }
 }
 ```
 

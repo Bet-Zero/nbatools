@@ -23,6 +23,11 @@ from nbatools.commands.team_streak_finder import run as team_streak_finder_run
 from nbatools.commands.top_player_games import run as top_player_games_run
 from nbatools.commands.top_team_games import run as top_team_games_run
 from nbatools.query_service import VALID_ROUTES, execute_structured_query
+from nbatools.route_input_metadata import (
+    RouteInputMetadata,
+    get_route_input_metadata,
+    iter_route_input_metadata,
+)
 
 app = typer.Typer(
     help=(
@@ -141,10 +146,72 @@ def _validate_route_name(route_name: str) -> str:
     return route_name
 
 
+def _join_names(names: tuple[str, ...]) -> str:
+    return ", ".join(names) if names else "(none)"
+
+
+def _echo_route_help(metadata: RouteInputMetadata) -> None:
+    typer.echo(metadata.route)
+    typer.echo(f"  Description: {metadata.description}")
+    typer.echo(f"  Implementation: {metadata.implementation_path}")
+    typer.echo(f"  Required kwargs: {_join_names(metadata.required_kwargs)}")
+    typer.echo(f"  Optional kwargs: {_join_names(metadata.optional_kwargs)}")
+
+    if metadata.one_of_groups:
+        typer.echo("  One-of groups:")
+        for group in metadata.one_of_groups:
+            options = [" + ".join(option) for option in group.options]
+            typer.echo(f"    - {group.description}: {' | '.join(options)}")
+
+    if metadata.aliases:
+        typer.echo("  Aliases / naming notes:")
+        for canonical, aliases in metadata.aliases.items():
+            typer.echo(f"    - {canonical}: {'; '.join(aliases)}")
+
+    if metadata.allowed_values:
+        typer.echo("  Allowed values:")
+        for field_name, values in metadata.allowed_values.items():
+            typer.echo(f"    - {field_name}: {', '.join(values)}")
+
+    if metadata.examples:
+        typer.echo("  Examples:")
+        for example in metadata.examples:
+            typer.echo(f"    - --kwargs-json {json.dumps(example, sort_keys=True)}")
+
+    if metadata.notes:
+        typer.echo("  Notes:")
+        for note in metadata.notes:
+            typer.echo(f"    - {note}")
+
+
 @app.command("routes", help="List every structured route exposed by the query service.")
-def routes():
+def routes(
+    details: bool = typer.Option(
+        False,
+        "--details",
+        help="Show short input guidance for each route.",
+    ),
+):
+    if details:
+        for metadata in iter_route_input_metadata():
+            typer.echo(
+                f"{metadata.route}: {metadata.description} "
+                f"(required: {_join_names(metadata.required_kwargs)})"
+            )
+        return
+
     for route_name in sorted(VALID_ROUTES):
         typer.echo(route_name)
+
+
+@app.command("route-help", help="Show input guidance for a structured route.")
+def route_help(
+    route_name: str = typer.Argument(
+        ..., help="Structured route name. Run `nbatools-cli query routes` to list routes."
+    ),
+):
+    route_name = _validate_route_name(route_name)
+    _echo_route_help(get_route_input_metadata(route_name))
 
 
 @app.command("route", help="Execute any structured route with JSON keyword arguments.")
