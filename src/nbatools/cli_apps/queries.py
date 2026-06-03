@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 from collections.abc import Callable
 from typing import Any
 
@@ -21,7 +22,7 @@ from nbatools.commands.team_split_summary import run as team_split_summary_run
 from nbatools.commands.team_streak_finder import run as team_streak_finder_run
 from nbatools.commands.top_player_games import run as top_player_games_run
 from nbatools.commands.top_team_games import run as top_team_games_run
-from nbatools.query_service import execute_structured_query
+from nbatools.query_service import VALID_ROUTES, execute_structured_query
 
 app = typer.Typer(
     help=(
@@ -84,6 +85,23 @@ def _run_and_handle_exports(
         )
 
     route_kwargs = _normalize_route_kwargs(func, args, kwargs)
+    _run_route_and_handle_exports(
+        route,
+        route_kwargs,
+        csv=csv,
+        txt=txt,
+        json_path=json_path,
+    )
+
+
+def _run_route_and_handle_exports(
+    route: str,
+    route_kwargs: dict[str, Any],
+    *,
+    csv: str | None = None,
+    txt: str | None = None,
+    json_path: str | None = None,
+) -> None:
     qr = execute_structured_query(route, **route_kwargs)
     render_query_result(
         qr,
@@ -101,6 +119,55 @@ def _export_options():
         "txt": typer.Option(None, "--txt", help="Optional path to save raw text output."),
         "json_path": typer.Option(None, "--json", help="Optional path to save raw output as JSON."),
     }
+
+
+def _parse_kwargs_json(kwargs_json: str) -> dict[str, Any]:
+    try:
+        parsed = json.loads(kwargs_json)
+    except json.JSONDecodeError as exc:
+        raise typer.BadParameter(f"--kwargs-json must be valid JSON: {exc.msg}") from exc
+    if not isinstance(parsed, dict):
+        raise typer.BadParameter("--kwargs-json must decode to a JSON object")
+    return parsed
+
+
+def _validate_route_name(route_name: str) -> str:
+    if route_name not in VALID_ROUTES:
+        valid_routes = ", ".join(sorted(VALID_ROUTES))
+        raise typer.BadParameter(
+            f"Unknown route {route_name!r}. Use `nbatools-cli query routes` to list valid "
+            f"routes: {valid_routes}"
+        )
+    return route_name
+
+
+@app.command("routes", help="List every structured route exposed by the query service.")
+def routes():
+    for route_name in sorted(VALID_ROUTES):
+        typer.echo(route_name)
+
+
+@app.command("route", help="Execute any structured route with JSON keyword arguments.")
+def route(
+    route_name: str = typer.Argument(
+        ..., help="Structured route name. Run `nbatools-cli query routes` to list routes."
+    ),
+    kwargs_json: str = typer.Option(
+        "{}", "--kwargs-json", help="JSON object forwarded as route keyword arguments."
+    ),
+    csv: str = typer.Option(None, "--csv", help="Optional path to save raw CSV/tabular output."),
+    txt: str = typer.Option(None, "--txt", help="Optional path to save raw text output."),
+    json_path: str = typer.Option(None, "--json", help="Optional path to save raw output as JSON."),
+):
+    route_name = _validate_route_name(route_name)
+    route_kwargs = _parse_kwargs_json(kwargs_json)
+    _run_route_and_handle_exports(
+        route_name,
+        route_kwargs,
+        csv=csv,
+        txt=txt,
+        json_path=json_path,
+    )
 
 
 @app.command("top-player-games", help="Show the top player games for a stat in a season.")

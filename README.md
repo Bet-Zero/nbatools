@@ -131,7 +131,12 @@ For full control over filters and windows, use the structured query interface:
     nbatools-cli query player-game-finder --player "Kobe Bryant" --season 2005-06 --stat pts --min-value 40
     nbatools-cli query game-finder --team BOS --season 2025-26 --home-only --wins-only
 
-30 structured engine/API routes are available. Run `GET /routes` for the full engine surface and `nbatools-cli query --help` for structured CLI wrappers.
+Explicit CLI wrappers are convenience commands and may cover a focused subset of the structured surface. For full route coverage, list and execute the shared engine/API routes directly:
+
+    nbatools-cli query routes
+    nbatools-cli query route team_record --kwargs-json '{"team":"LAL","season":"2025-26"}'
+
+30 structured engine/API routes are available through `GET /routes` and `nbatools-cli query routes`.
 
 ### HTTP API
 
