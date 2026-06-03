@@ -95,6 +95,8 @@ OUTPUT_REFERENCE_ALLOWLIST = {
         "outputs/raw_query_answer_qa/20260531T094037Z/",
         "outputs/raw_query_answer_qa/20260531T094225Z/product_review.md",
         "outputs/raw_query_answer_qa/20260531T164639Z/",
+        "outputs/raw_query_answer_qa/20260603T020837Z/",
+        "outputs/raw_query_answer_qa/20260603T020837Z/product_review.md",
         "outputs/raw_query_answer_qa/<run_id>/product_review.md",
     ),
     Path("docs/operations/raw_query_answer_qa.md"): (

@@ -2,19 +2,20 @@
 
 ## Current Status
 
-Snapshot: 2026-05-31.
+Snapshot: 2026-06-03.
 
 Raw Product QA is machine-clean for the current corpus and the current public
-acceptance slice. Human product review remains pending. Machine results,
-product review, and rendered UI review are separate evidence layers and must
-not be inferred from one another.
+acceptance slice. The current public-acceptance human product review is closed
+for the run recorded in the validation map. Machine results, product review,
+and rendered UI review are separate evidence layers and must not be inferred
+from one another.
 
 | Evidence layer | Current status | Durable evidence pointer |
 | --- | --- | --- |
 | Full Raw QA corpus | `298/298` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest full run path. |
 | `public_query_acceptance` slice | `113/113` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest slice run path. |
-| Human product review | `human_review_pending` | The latest public-acceptance product-review artifact retains this declaration. |
-| Representative rendered UI review | Passed for the selected 10-query set after fixes | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest rendered UI review path. |
+| Human product review | `human_review_complete` | The latest public-acceptance product-review artifact was reviewed for product correctness after the machine-passing slice run. |
+| Representative rendered UI review | Passed for the selected 10-query set after fixes; public-acceptance closure spot checks passed for Curry 5+ threes and Lakers playoff history | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest rendered UI review path and current slice evidence. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed
