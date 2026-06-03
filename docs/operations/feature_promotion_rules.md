@@ -4,9 +4,9 @@
 
 This is a durable policy document that governs how new product capabilities
 are promoted in NBA Tools. It is the product-level companion to
-`PARSER_ROUTING_GROWTH_GUARDRAILS.md`. Together they replace the implicit
-"add a parser rule and ship" path with an explicit promotion path that any
-new supported area must follow.
+`docs/operations/parser_routing_growth_guardrails.md`. Together they replace
+the implicit "add a parser rule and ship" path with an explicit promotion
+path that any new supported area must follow.
 
 This doc is policy only. It does not change parser, routing, backend, or
 frontend behavior. It does not change result contracts or QA corpus
@@ -89,7 +89,8 @@ code is touched.
   `docs/operations/deployment.md`).
 
 The preflight is a task-scoped working artifact. Keep it with the active task
-materials according to [`working_and_archive_policy.md`](working_and_archive_policy.md).
+materials according to
+[`docs/operations/working_and_archive_policy.md`](working_and_archive_policy.md).
 
 ### 3.3 Data contract
 
@@ -115,7 +116,7 @@ Decide the route the family targets and the result contract it returns.
 - Specify the no-result / unsupported result shape at the boundary, in
   enough detail that the frontend renderer behavior is unambiguous.
 - Cross-check the route choice against the route collision groups in
-  `PARSER_ROUTING_GROWTH_GUARDRAILS.md` §5.
+  `docs/operations/parser_routing_growth_guardrails.md` §5.
 
 ### 3.5 Parser support
 
@@ -128,8 +129,8 @@ upstream of them.
 - Honor the no-broad-fallback rule: low-confidence or out-of-boundary
   queries return the unsupported shape, not a wider answer.
 - Parser changes must satisfy the accepted, rejected, collision, and
-  unsupported-boundary checks in `PARSER_ROUTING_GROWTH_GUARDRAILS.md`
-  §3–§8.
+  unsupported-boundary checks in
+  `docs/operations/parser_routing_growth_guardrails.md` §3–§8.
 
 ### 3.6 Raw QA cases
 
@@ -190,6 +191,25 @@ complete until they do.
 - Update `docs/index.md` if a new durable doc is added under `docs/`.
 - Update the active raw product release / handoff docs only if the
   release boundary itself moves.
+
+### 3.10 Validation and evidence conventions
+
+Feature promotion uses the repo's current validation and evidence conventions;
+this document is the blueprint, not a duplicate command reference.
+
+- Use `make doctor` for lightweight local setup sanity before relying on
+  validation results.
+- Use `make docs-governance` for durable-doc, path, link, lifecycle, and
+  generated-evidence policy checks.
+- Use the relevant validation tier from `CONTRIBUTING.md` for the scope of the
+  change.
+- Use Raw QA latest mode for repeatable local public-acceptance review runs;
+  see `docs/operations/raw_query_answer_qa.md` for command details.
+- Treat timestamped generated artifacts as evidence snapshots, not
+  source-of-truth docs.
+- Use `docs/operations/query_validation_map.md` for current Raw QA and public
+  acceptance status, including the tracked human-review-complete
+  `public_query_acceptance` closure.
 
 ## 4. Per-feature contract
 
@@ -276,9 +296,10 @@ unsupported shape, not a broader team_record answer.
   `opponent_conference` filter applied; no new sections introduced.
 - Unsupported shape at the boundary: `filter_not_supported` /
   `conference_coverage`.
-- Collision groups touched (from `PARSER_ROUTING_GROWTH_GUARDRAILS.md` §5):
-  opponent conference vs conference finals vs geography phrases; team
-  record vs team comparison vs team matchup.
+- Collision groups touched (from
+  `docs/operations/parser_routing_growth_guardrails.md` §5): opponent
+  conference vs conference finals vs geography phrases; team record vs team
+  comparison vs team matchup.
 
 ### 5.5 Parser support
 
@@ -308,9 +329,9 @@ opponent-conference scope phrase in the answer sentence.
 
 The opponent-conference promotion is also the worked example of the
 data/R2 deployment guardrail in
-[`deployment.md`](deployment.md#data-backed-feature-promotion-checklist). The
-`raw/teams/team_conference_membership.csv` object was required to exist in
-R2 for deployed runtime behavior, and deployment smoke confirmed the
+[`docs/operations/deployment.md`](deployment.md#data-backed-feature-promotion-checklist).
+The `raw/teams/team_conference_membership.csv` object was required to exist
+in R2 for deployed runtime behavior, and deployment smoke confirmed the
 deployed runtime returned the clean answer rather than a fallback.
 
 The detailed data/R2 promotion checklist lives in
@@ -350,7 +371,12 @@ This policy doc does not:
 
 - prescribe the size of a promotion (small additive families and larger new
   routes both use the same path; the contract scales with scope)
-- replace the existing planning, preflight, or return-package conventions
+- replace active task artifact conventions: active task materials, completed
+  or deferred history, generated evidence, stable fixtures, and legacy
+  return-package handling follow
+  `docs/operations/working_and_archive_policy.md`; stable fixtures belong in
+  `qa/fixtures/`, and the legacy return-package location should not be used
+  for new work
 - require a category selector before search (explicit non-goal of the Raw
   Product post-review)
 - mandate a parser rewrite (explicit non-goal of the parser/routing growth
