@@ -17,9 +17,7 @@ Usage pattern (copy into a test module):
         ])
 
 See ``docs/architecture/parser/examples.md`` §7 for the catalog of
-equivalence groups this is designed against, and
-``docs/planning/phase_a_work_queue.md`` for the broader Phase A work this
-helper supports.
+equivalence groups this is designed against.
 """
 
 from __future__ import annotations

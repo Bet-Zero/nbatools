@@ -49,7 +49,7 @@ const visualQaCorpus = parseVisualQaCorpus(visualQaCorpusJson);
 
 export const VISUAL_QA_INTERNAL_ROUTE = "/visual-qa";
 export const VISUAL_QA_CHECKLIST_DOC =
-  "docs/planning/raw-product/FRONTEND_VISUAL_QA_WAVE_1_CHECKLIST.md";
+  "docs/operations/frontend_visual_qa.md";
 export const VISUAL_QA_PROVENANCE_RAW_RUN =
   visualQaCorpus.provenance_raw_run;
 export const VISUAL_QA_PROVENANCE_FRONTEND_COPY_RUN =

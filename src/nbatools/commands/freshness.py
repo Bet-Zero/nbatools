@@ -3,7 +3,8 @@
 Provides ``compute_current_through()`` — a local-first, file-based utility
 that determines the latest date the loaded data is complete through.
 
-This follows the definition in ``docs/planning/data_freshness_plan.md``:
+This follows the freshness contract documented in
+``docs/reference/current_state_guide.md``:
 
     current through = the latest game_date in the games CSV where
     is_final = 1, provided the backfill manifest reports both

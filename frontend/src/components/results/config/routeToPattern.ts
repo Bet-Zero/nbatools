@@ -7,10 +7,8 @@ import type { QueryResponse } from "../../../api/types";
  *
  * For now, every route resolves to a single `fallback_table` pattern.
  * As real patterns ship, route mappings move out of the `default`
- * branch into named cases below. See
- * `docs/planning/result_display_patterns.md` for the architecture and
- * `docs/planning/result_display_implementation_plan.md` for the build
- * sequence.
+ * branch into named cases below. See `docs/operations/ui_guide.md`
+ * for the current result-rendering architecture.
  */
 export type PatternConfig =
   | { type: "entity_summary"; sectionKey?: string }
