@@ -14,8 +14,8 @@ from one another.
 | --- | --- | --- |
 | Full Raw QA corpus | `298/298` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
 | `public_query_acceptance` slice | `113/113` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
-| Human product review | `human_review_pending` | The latest public-acceptance product-review artifact is conditionally passing, pending the two targeted UI spot checks named in the validation map. |
-| Representative rendered UI review | Selected representative browser-rendered queries passed; public-acceptance closure still needs targeted UI spot checks for Curry 5+ threes this season and Lakers playoff history | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
+| Human product review | `human_review_complete` | Passed for the current public-acceptance run recorded in the validation map; generated outputs remain evidence snapshots only. |
+| Representative rendered UI review | Selected representative browser-rendered queries passed; public-acceptance closure spot checks for Curry 5+ threes this season and Lakers playoff history passed | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed
@@ -25,8 +25,6 @@ below.
 
 The following product-launch items remain open:
 
-- public-acceptance closure UI spot checks for Curry 5+ threes this season and
-  Lakers playoff history
 - branding and final product name
 - final production domain
 - custom-domain production cutover
