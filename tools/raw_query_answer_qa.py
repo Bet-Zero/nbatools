@@ -2108,6 +2108,7 @@ def summarize_rows(
     completed_at: str,
     corpus_path: Path,
     output_paths: dict[str, Path],
+    slice_values: list[str] | None = None,
 ) -> dict[str, Any]:
     status_counts = Counter(str(row.get("result_status")) for row in rows)
     category_counts = Counter(str(row.get("category")) for row in rows)
@@ -2164,6 +2165,7 @@ def summarize_rows(
         "started_at": started_at,
         "completed_at": completed_at,
         "corpus_path": display_path(corpus_path),
+        "slice_names": list(slice_values or []),
         "case_count": len(rows),
         "result_status_counts": dict(sorted(status_counts.items())),
         "category_counts": dict(sorted(category_counts.items())),
@@ -2937,6 +2939,7 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         f"- Started: {md_code(summary['started_at'])}",
         f"- Completed: {md_code(summary['completed_at'])}",
         f"- Corpus: {md_code(summary['corpus_path'])}",
+        f"- Slices: {md_code(summary.get('slice_names') or [])}",
         f"- Cases: {md_code(summary['case_count'])}",
         "",
         "## Summary Counts",
@@ -3239,6 +3242,7 @@ def main() -> int:
         completed_at=completed_at,
         corpus_path=corpus_path,
         output_paths=output_paths,
+        slice_values=args.slice,
     )
     if args.compare_to:
         summary["comparison"] = build_run_comparison(rows, resolve_path(args.compare_to))
@@ -3255,7 +3259,11 @@ def main() -> int:
     write_product_review_markdown(product_review_md_path, product_review)
 
     failed_case_ids = summary["failed_case_ids"]
-    print(f"Wrote raw query answer QA report: {run_dir.relative_to(ROOT)}")
+    print(f"Wrote raw query answer QA report: {display_path(run_dir)}")
+    if summary["slice_names"]:
+        print(f"Slices: {', '.join(summary['slice_names'])}")
+    else:
+        print("Slices: none")
     print(f"Cases: {summary['case_count']}")
     print(f"Result statuses: {summary['result_status_counts']}")
     print(f"Expectation cases: {summary['expectation_case_counts']}")

@@ -256,6 +256,11 @@ Deployed runtime is Cloudflare R2 (data) + Vercel (frontend + API). Vercel exclu
 
 ## Setup
 
+Requirements:
+
+- Python 3.11 or newer. CI covers Python 3.11, 3.12, and 3.13.
+- Node 22 for frontend work (`.nvmrc`). The frontend lockfile also supports compatible Node 20.19+ and 24+ ranges, but CI uses Node 22.
+
     # Install in editable mode with dev dependencies
     pip install -e ".[dev]"
 

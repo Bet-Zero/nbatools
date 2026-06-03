@@ -4,10 +4,16 @@ Thanks for your interest! Here's how to get started.
 
 ## Development Setup
 
+Expected versions:
+
+- Python 3.11 or newer. CI covers Python 3.11, 3.12, and 3.13.
+- Node 22 for frontend work (`.nvmrc`). CI uses Node 22.
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+npm --prefix frontend ci
 pre-commit install
 ```
 
@@ -16,6 +22,7 @@ pre-commit install
 Makefile targets provide deterministic test commands:
 
 ```bash
+make doctor           # Lightweight local tool/setup check; does not run tests
 make test-impacted    # Default for localized changes — tests affected by recent edits (testmon, serial)
 make test-preflight   # Default for cross-cutting changes — all tests except slow (parallel)
 make test-ci-fast     # Local equivalent of the PR CI fast gate
@@ -23,14 +30,24 @@ make test-smoke-all   # Stable + phase natural-query smoke suites
 make test             # Full regression suite (parallel via xdist)
 ```
 
-You can still invoke `pytest` directly with any flags you like.
-If your shell does not have the virtualenv first on `PATH`, pass tool paths
-explicitly, for example `make PYTEST=.venv/bin/pytest test-smoke-all`.
+Makefile targets prefer `.venv/bin/python -m pytest` when `.venv` exists and
+fall back to `python3 -m pytest` otherwise. You can still override `PYTHON` or
+`PYTEST` for unusual environments.
+
+### Command tiers
+
+| Tier | Commands |
+| --- | --- |
+| Quick sanity | `make doctor`; `make docs-governance`; `make test-smoke-queries`; `make test-api` |
+| Before commit | Quick sanity plus `npm --prefix frontend run lint`; `npm --prefix frontend test`; run focused pytest/domain targets for touched code |
+| Before push | `npm --prefix frontend run build`; `npm --prefix frontend run lint`; `npm --prefix frontend test`; `make test-ci-fast` |
+| Before release | `make test`; Raw QA public acceptance: `.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml --slice public_query_acceptance --run-id latest_public_query_acceptance --overwrite-run-id --fail-on-expectation-failure` |
 
 ### When to use each
 
 | Command               | When                                                                                            |
 | --------------------- | ----------------------------------------------------------------------------------------------- |
+| `make doctor`         | Lightweight local setup check; verifies tools are present without running heavy tests           |
 | `make test-impacted`  | Default for **localized** changes — small, leaf-level edits in a single module                  |
 | `make test-preflight` | Default for **cross-cutting** changes — see "When to skip testmon" below                        |
 | `make test-ci-fast`   | Match the PR `test-fast` gate locally without using testmon                                     |

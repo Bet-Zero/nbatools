@@ -3,6 +3,7 @@
 # Deterministic targets for running the test suite.
 # See CONTRIBUTING.md for when to use each.
 
+.PHONY: doctor
 .PHONY: test test-impacted test-impacted-parser test-impacted-query
 .PHONY: test-preflight test-unit test-ci-fast
 .PHONY: test-parser test-query test-engine test-api test-output
@@ -11,10 +12,58 @@
 .PHONY: visual-qa-screenshots
 .PHONY: docs-governance
 
-PYTHON ?= python
-PYTEST ?= pytest
+PYTHON ?= $(shell if [ -x .venv/bin/python ]; then printf '%s' .venv/bin/python; elif command -v python3 >/dev/null 2>&1; then command -v python3; elif command -v python >/dev/null 2>&1; then command -v python; else printf '%s' python3; fi)
+PYTEST ?= $(PYTHON) -m pytest
 VISUAL_QA_BASE_URL ?= http://127.0.0.1:8000
 VISUAL_QA_RUN_ID ?=
+
+## Lightweight local setup check. Does not run tests.
+doctor:
+	@set -u; status=0; \
+	echo "nbatools doctor"; \
+	echo ""; \
+	echo "Python"; \
+	echo "  executable: $(PYTHON)"; \
+	if $(PYTHON) --version >/dev/null 2>&1; then \
+		echo "  version: $$($(PYTHON) --version 2>&1)"; \
+	else \
+		echo "  [fail] configured Python is not runnable"; status=1; \
+	fi; \
+	if [ -x .venv/bin/python ]; then \
+		echo "  [ok] .venv present"; \
+	else \
+		echo "  [warn] .venv not found; using fallback Python"; \
+	fi; \
+	if $(PYTHON) -m pytest --version >/dev/null 2>&1; then \
+		echo "  [ok] pytest available via $(PYTHON) -m pytest"; \
+	else \
+		echo "  [fail] pytest is not available via $(PYTHON) -m pytest"; status=1; \
+	fi; \
+	echo ""; \
+	echo "Node"; \
+	if command -v node >/dev/null 2>&1; then \
+		echo "  node: $$(node --version)"; \
+	else \
+		echo "  [fail] node not found"; status=1; \
+	fi; \
+	if command -v npm >/dev/null 2>&1; then \
+		echo "  npm: $$(npm --version)"; \
+	else \
+		echo "  [fail] npm not found"; status=1; \
+	fi; \
+	if [ -d frontend/node_modules ]; then \
+		echo "  [ok] frontend/node_modules present"; \
+	else \
+		echo "  [warn] frontend/node_modules missing; run npm --prefix frontend ci"; \
+	fi; \
+	echo ""; \
+	echo "Docs"; \
+	if [ -f tools/check_docs_governance.py ]; then \
+		echo "  [ok] docs governance script present"; \
+	else \
+		echo "  [fail] docs governance script missing"; status=1; \
+	fi; \
+	exit $$status
 
 ## Full regression suite (parallel via xdist).
 ## Use before merging, in CI, or when you want complete confidence.
@@ -98,7 +147,7 @@ parser-examples-sweep:
 
 ## Curated raw query answer QA harness; writes ignored artifacts under outputs/.
 raw-query-answer-qa:
-	.venv/bin/python tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+	$(PYTHON) tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
 
 ## Read-only query feedback review export; writes ignored artifacts under outputs/.
 query-feedback-export:
@@ -111,4 +160,4 @@ visual-qa-screenshots:
 
 ## Durable-doc path and relative-link governance check.
 docs-governance:
-	python3 tools/check_docs_governance.py
+	$(PYTHON) tools/check_docs_governance.py

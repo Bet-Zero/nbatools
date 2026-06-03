@@ -209,8 +209,10 @@ def test_summary_counts_distinguish_informational_and_suspicious_flags() -> None
         completed_at="2026-05-13T00:00:01+00:00",
         corpus_path=qa.ROOT / "qa/raw_query_answer_corpus.yaml",
         output_paths={"report_jsonl": qa.ROOT / "outputs/test/report.jsonl"},
+        slice_values=["public_query_acceptance"],
     )
 
+    assert summary["slice_names"] == ["public_query_acceptance"]
     assert summary["suspicious_flag_case_count"] == 1
     assert summary["suspicious_flag_counts"] == {"missing_backend_answer_text": 1}
     assert summary["informational_flag_case_count"] == 1
