@@ -27,8 +27,8 @@ run did not add expected-ok cases and did not encode current bad behavior.
 
 Read and applied:
 
-- `outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md`
-- `working/public-query-acceptance-review/PUBLIC_QUERY_ACCEPTANCE_PRODUCT_REVIEW_TRIAGE.md`
+- the Wave 2A product-review summary from
+  `working/public-query-acceptance-review/PUBLIC_QUERY_ACCEPTANCE_PRODUCT_REVIEW_TRIAGE.md`
 - `docs/reference/natural_search_and_deep_tools_boundary.md`
 - `qa/raw_query_answer_corpus.yaml`
 - `qa/harness_slices/public_query_acceptance.yaml`

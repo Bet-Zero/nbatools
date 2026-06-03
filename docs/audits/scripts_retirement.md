@@ -12,7 +12,7 @@ The `/scripts/` directory contained standalone analysis scripts that predated th
 
 ### `nba_3pt_battle_records/` — Retired
 
-**What it did:** Fetched team game logs directly from `nba_api`, compared FG3M and FG3_PCT between the two teams in each game, and tallied whether the "3-point battle winner" also won the game. Wrote CSV/JSON to `outputs/nba_3pt_battle_records/`.
+**What it did:** Fetched team game logs directly from `nba_api`, compared FG3M and FG3_PCT between the two teams in each game, and tallied whether the "3-point battle winner" also won the game. Wrote ad-hoc CSV/JSON output files.
 
 **Why retired:** Fully replaced by the canonical engine.
 
@@ -24,7 +24,7 @@ The `/scripts/` directory contained standalone analysis scripts that predated th
 
 ### `top10_h2h/` — Retired
 
-**What it did:** Fetched standings and team game logs from `nba_api`, identified the top 10 teams by win%, built a head-to-head wins matrix, and wrote CSV to `outputs/top10_h2h/`.
+**What it did:** Fetched standings and team game logs from `nba_api`, identified the top 10 teams by win%, built a head-to-head wins matrix, and wrote ad-hoc CSV output files.
 
 **Why retired:** The building blocks exist in the canonical engine. Team-vs-team records, matchup filtering, and team comparisons are all available through structured commands.
 
@@ -50,7 +50,7 @@ The `/scripts/` directory contained standalone analysis scripts that predated th
 
 ### `top10_pointdiff/` — Retired
 
-**What it did:** Fetched standings and team game logs from `nba_api`, built a point differential matrix among the top 10 teams, and wrote CSV to `outputs/top10_pointdiff/`.
+**What it did:** Fetched standings and team game logs from `nba_api`, built a point differential matrix among the top 10 teams, and wrote ad-hoc CSV output files.
 
 **Why retired:** Team point differential rankings are available through the canonical leaderboard system.
 
@@ -86,4 +86,4 @@ If you have a local `/scripts/` directory, you can safely delete it:
 rm -rf scripts/
 ```
 
-The `outputs/` directory (also gitignored) contains leftover output files from manual script runs and can also be cleaned up at your discretion.
+Generated output files from retired manual script runs are gitignored and can be cleaned up at your discretion.

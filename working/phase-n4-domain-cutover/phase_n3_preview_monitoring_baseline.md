@@ -5,8 +5,8 @@
 Deployment target:
 `https://nbatools-kn8wz220h-brents-projects-686e97fc.vercel.app/`
 
-Machine-readable report:
-`outputs/deployment_smoke/phase_n3_preview_baseline_2026-05-02.json`
+Machine-readable report: generated locally during the smoke run. The ignored
+output artifact is not retained as durable evidence.
 
 This baseline captures the first full Phase N3 smoke/monitoring run against the
 domain-agnostic deployment target that exists before custom-domain purchase.
@@ -18,7 +18,7 @@ domain-agnostic deployment target that exists before custom-domain purchase.
 ```bash
 ./.venv/bin/python tools/deployment_smoke.py \
   --base-url https://nbatools-kn8wz220h-brents-projects-686e97fc.vercel.app \
-  --output outputs/deployment_smoke/phase_n3_preview_baseline_2026-05-02.json
+  --output <generated-smoke-report.json>
 ```
 
 Result: report `ok: true`, `case_count: 6`, `failure_count: 0`.

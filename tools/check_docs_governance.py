@@ -89,14 +89,11 @@ OUTPUT_REFERENCE_ALLOWLIST = {
     ),
     Path("docs/operations/query_validation_map.md"): (
         "outputs/public_ui_render_review/",
-        "outputs/public_ui_render_review/20260531T_ui_review/",
         "outputs/public_ui_render_review/<run_id>/",
         "outputs/raw_query_answer_qa/",
-        "outputs/raw_query_answer_qa/20260531T094037Z/",
-        "outputs/raw_query_answer_qa/20260531T094225Z/product_review.md",
-        "outputs/raw_query_answer_qa/20260531T164639Z/",
         "outputs/raw_query_answer_qa/20260603T020837Z/",
         "outputs/raw_query_answer_qa/20260603T020837Z/product_review.md",
+        "outputs/raw_query_answer_qa/latest_public_query_acceptance/",
         "outputs/raw_query_answer_qa/<run_id>/product_review.md",
     ),
     Path("docs/operations/raw_query_answer_qa.md"): (
@@ -142,14 +139,6 @@ TRACKED_OUTPUT_DEPENDENCY_GLOBS = (
     "tests/**/*.py",
 )
 TRACKED_OUTPUT_DEPENDENCY_ALLOWLIST = {
-    Path("qa/frontend_visual_qa_corpus.json"): (
-        "outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl",
-        "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
-    ),
-    Path("qa/frontend_visual_qa_corpus.yaml"): (
-        "outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl",
-        "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
-    ),
     Path("tests/test_raw_query_answer_qa.py"): (
         "outputs/test/report.jsonl",
         "outputs/test/summary.json",

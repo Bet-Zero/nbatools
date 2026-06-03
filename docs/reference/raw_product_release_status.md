@@ -12,10 +12,10 @@ from one another.
 
 | Evidence layer | Current status | Durable evidence pointer |
 | --- | --- | --- |
-| Full Raw QA corpus | `298/298` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest full run path. |
-| `public_query_acceptance` slice | `113/113` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest slice run path. |
+| Full Raw QA corpus | `298/298` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
+| `public_query_acceptance` slice | `113/113` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
 | Human product review | `human_review_complete` | The latest public-acceptance product-review artifact was reviewed for product correctness after the machine-passing slice run. |
-| Representative rendered UI review | Passed for the selected 10-query set after fixes; public-acceptance closure spot checks passed for Curry 5+ threes and Lakers playoff history | [`query_validation_map.md`](../operations/query_validation_map.md#latest-known-generated-runs) records the latest rendered UI review path and current slice evidence. |
+| Representative rendered UI review | Passed for the selected 10-query set after fixes; public-acceptance closure spot checks passed for Curry 5+ threes and Lakers playoff history | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed

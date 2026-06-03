@@ -155,14 +155,11 @@ The Markdown report already includes useful query-review cards with:
 - representative top rows
 - notes, caveats, and review flags
 
-The latest `public_query_acceptance` report is:
-
-```text
-outputs/raw_query_answer_qa/20260528T225801Z/report.md
-```
-
-It records 67/67 expectation cases passing, 409 passing checks, 0 suspicious
-flag cases, and 54 `unreviewed` manual-review statuses.
+The latest `public_query_acceptance` report reviewed during this preflight
+recorded 67/67 expectation cases passing, 409 passing checks, 0 suspicious
+flag cases, and 54 `unreviewed` manual-review statuses. The historical ignored
+output path is not retained; use `docs/operations/query_validation_map.md` for
+current evidence.
 
 ### 3.4 What The Current Report Does Not Show
 
@@ -829,22 +826,15 @@ Wave 1 does not mark families public accepted. The generated artifact exposes
 missing variants, pending representative-output review, and product-decision
 rows for Wave 2.
 
-Validation artifact:
-
-```text
-outputs/raw_query_answer_qa/20260531T064312Z_wave1_public_acceptance/product_review.md
-```
+Validation artifact: Wave 1 public-acceptance product-review output. The
+historical ignored output path is not retained.
 
 The targeted Layer A run passed 67/67 machine expectations. Layer B remains
 `human_review_pending`.
 
-Broader harness safety artifact:
-
-```text
-outputs/raw_query_answer_qa/20260531T064312Z_wave1_full/report.md
-```
-
-The full corpus passed 294/294 machine expectations with zero suspicious rows.
+Broader harness safety artifact: Wave 1 full-corpus report output. The
+historical ignored output path is not retained. The full corpus passed 294/294
+machine expectations with zero suspicious rows.
 
 ## 16. Wave 2A Implementation Status
 
@@ -863,11 +853,9 @@ Completed:
 - added pending representative-output review cards for every public feature
   family
 
-Validation artifact:
-
-```text
-outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md
-```
+Validation artifact: Wave 2A taxonomy-safe-retags product-review output. The
+historical ignored output path is not retained; use
+`docs/operations/query_validation_map.md` for current evidence.
 
 Wave 2A does not mark families public accepted. Layer B remains
 `human_review_pending`; Wave 2B probes and Wave 2C rendered-output review remain

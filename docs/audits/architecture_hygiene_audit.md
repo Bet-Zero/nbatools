@@ -122,14 +122,14 @@ The repo has matured into a well-layered system. The conventions doc describes a
 - `/scripts/` contains 4 standalone analysis scripts (`nba_3pt_battle_records/`, `top10_h2h/`, `top10_h2h_required_players/`, `top10_pointdiff/`) that:
   - Directly call `nba_api.stats.endpoints` (bypassing the pipeline)
   - Have their own retry logic and custom headers
-  - Output to `outputs/<script_name>/`
+  - Output to ad-hoc generated-output directories
   - Overlap partially with CLI commands (e.g., `battle-summary`)
-- `/outputs/` contains leftover output files from manual runs.
+- The gitignored generated-output directory contains leftover files from manual runs.
 
 **What needs cleanup:**
 
 - The `/scripts/` directory should be evaluated: migrate useful scripts into `commands/` + CLI wrappers, or explicitly retire them with a CHANGELOG note.
-- `/outputs/` sample files should be in `.gitignore` or documented as examples.
+- Generated sample files should be in `.gitignore` or documented as examples.
 
 **Severity: Low–Medium.** The pipeline is canonical. Scripts are vestigial but not actively harmful.
 

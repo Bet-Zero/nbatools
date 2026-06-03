@@ -9,11 +9,8 @@ ambiguous/no-result boundary. Human rendered-output review remains pending.
 
 ## 1. Scope
 
-This is a documentation-only triage of:
-
-```text
-outputs/raw_query_answer_qa/20260531T064312Z_wave1_public_acceptance/product_review.md
-```
+This is a documentation-only triage of the Wave 1 public-acceptance generated
+product-review artifact. The historical ignored output path is not retained.
 
 This pass does not change production code, parser/routing behavior, query
 result behavior, frontend rendering, release status, corpus expectations, or
@@ -293,11 +290,9 @@ Completed:
 - added at least one pending `review_required` representative card for every
   public feature family
 
-Generated review artifact:
-
-```text
-outputs/raw_query_answer_qa/20260531T073042Z_wave2a_taxonomy_safe_retags/product_review.md
-```
+Generated review artifact: Wave 2A public-acceptance product-review output.
+The historical ignored output path is not retained; use
+`docs/operations/query_validation_map.md` for current evidence.
 
 The matrix has no missing variants, but public acceptance remains intentionally
 open. No family is public accepted, the human-review declaration remains

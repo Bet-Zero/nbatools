@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "provenance_raw_run": "outputs/raw_query_answer_qa/20260517T070422Z/report.jsonl",
-  "provenance_frontend_copy_run": "outputs/frontend_copy_qa/20260521T025916Z/frontend_copy_report.jsonl",
+  "provenance_raw_run": "Raw QA corpus-derived visual case selection; historical generated output path intentionally not retained.",
+  "provenance_frontend_copy_run": "Frontend-copy QA-derived visual case selection; historical generated output path intentionally not retained.",
   "cases":
     [
       {
