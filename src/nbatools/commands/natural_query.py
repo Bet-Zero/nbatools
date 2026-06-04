@@ -32,6 +32,7 @@ from nbatools.commands._leaderboard_utils import (
     detect_team_leaderboard_stat,
     wants_ascending_leaderboard,
 )
+from nbatools.commands._lineup_on_off_route_utils import try_lineup_on_off_route
 from nbatools.commands._matchup_utils import (
     detect_bare_player_vs_player_query,
     detect_head_to_head,
@@ -1316,8 +1317,6 @@ def _finalize_route(parsed: dict) -> dict:
     unresolved_without_player = parsed.get("unresolved_without_player")
     lineup_members = parsed.get("lineup_members") or []
     presence_state = parsed.get("presence_state")
-    unit_size = parsed.get("unit_size")
-    minute_minimum = parsed.get("minute_minimum")
     lineup_query_mode = parsed.get("lineup_query_mode")
     window_size = parsed.get("window_size")
     stretch_metric = parsed.get("stretch_metric")
@@ -1531,57 +1530,8 @@ def _finalize_route(parsed: dict) -> dict:
             limit=top_n or 10,
         )
         route_kwargs["unresolved_player_fragment"] = unresolved_player_fragment
-    elif lineup_members and presence_state is not None:
-        route = "player_on_off"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "start_date": start_date,
-            "end_date": end_date,
-            "season_type": season_type,
-            "player": player or lineup_members[0],
-            "team": team,
-            "opponent": opponent,
-            "lineup_members": lineup_members,
-            "presence_state": presence_state,
-            "last_n": last_n,
-        }
-    elif lineup_query_mode == "lineup_summary":
-        route = "lineup_summary"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "start_date": start_date,
-            "end_date": end_date,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "lineup_members": lineup_members,
-            "unit_size": unit_size,
-            "minute_minimum": minute_minimum,
-            "stat": stat,
-            "last_n": last_n,
-        }
-    elif lineup_query_mode == "lineup_leaderboard":
-        route = "lineup_leaderboard"
-        route_kwargs = {
-            "season": season,
-            "start_season": start_season,
-            "end_season": end_season,
-            "start_date": start_date,
-            "end_date": end_date,
-            "season_type": season_type,
-            "team": team,
-            "opponent": opponent,
-            "lineup_members": lineup_members,
-            "unit_size": unit_size,
-            "minute_minimum": minute_minimum,
-            "stat": stat,
-            "limit": top_n or 10,
-            "last_n": last_n,
-        }
+    elif (lineup_route := try_lineup_on_off_route(parsed)) is not None:
+        route, route_kwargs = lineup_route
     elif (
         team_rolling_stretch_boundary
         and window_size is not None
