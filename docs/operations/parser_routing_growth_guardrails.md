@@ -263,8 +263,7 @@ Add parser-growth guardrails now.
 Refactor/extract gradually and safely.
 ```
 
-Safe extraction candidates (execution deferred; document only in this
-guardrail doc):
+Safe extraction candidates include:
 
 - stat aliases / constants
 - player / team aliases if duplicated
@@ -272,6 +271,36 @@ guardrail doc):
 - unsupported-boundary definitions
 - route-family-specific helpers
 - note / caveat construction helpers
+
+Established route-family helper pattern:
+
+- `src/nbatools/commands/natural_query.py` remains the orchestration layer
+  for parse-state collection, ordered route selection, shared post-processing,
+  confidence, alternates, and compatibility glue.
+- Route-family-specific finalization logic belongs in focused helper modules
+  rather than large new inline `_finalize_route` branches.
+- Editing `natural_query.py` is acceptable when wiring a helper into the
+  correct priority position, adjusting shared parse-state orchestration,
+  applying common post-processing, or preserving small compatibility surfaces.
+- Create or extend a helper module when a route family needs more than one
+  conditional branch, custom `route_kwargs`, unsupported-boundary handling, or
+  family-specific precedence logic.
+- Preserve observable behavior during extraction: branch order, route names,
+  `route_kwargs`, notes, confidence, and unsupported behavior must remain
+  unchanged unless the task is an explicit feature promotion.
+
+The first established example is
+`src/nbatools/commands/_lineup_on_off_route_utils.py`, which owns the
+`player_on_off`, `lineup_summary`, and `lineup_leaderboard` finalization
+branches while `natural_query.py` wires it at the original priority point.
+
+Expected validation for behavior-preserving route-helper extraction:
+
+- `make test-parser`
+- `make test-query`
+- a relevant Raw QA slice, especially `natural_query_route_priority`
+- `make test-preflight` for high-fan-in parser extractions
+- `make docs-governance`
 
 A single-pass rewrite is an explicit non-goal. Any future extraction wave
 must follow the same accepted/rejected/collision/unsupported-boundary

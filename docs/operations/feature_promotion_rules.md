@@ -128,6 +128,9 @@ upstream of them.
   wrong-route growth.
 - Honor the no-broad-fallback rule: low-confidence or out-of-boundary
   queries return the unsupported shape, not a wider answer.
+- When parser support adds or changes route-family finalization, follow the
+  route-family helper pattern in
+  `docs/operations/parser_routing_growth_guardrails.md` §10.1.
 - Parser changes must satisfy the accepted, rejected, collision, and
   unsupported-boundary checks in
   `docs/operations/parser_routing_growth_guardrails.md` §3–§8.
