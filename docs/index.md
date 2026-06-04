@@ -11,6 +11,20 @@ belong in the durable documentation map.
 3. [`reference/query_catalog.md`](reference/query_catalog.md) - living catalog of supported query types and phrasing
 4. [`reference/query_guide.md`](reference/query_guide.md) - full structured and natural query reference
 
+## Agent Start / Change Impact Matrix
+
+| Change type | Start-here doc | Likely files/areas | Required checks | Optional checks |
+| --- | --- | --- | --- | --- |
+| Docs-only change | [`operations/working_and_archive_policy.md`](operations/working_and_archive_policy.md) | `docs/`, `README.md`, `AGENTS.md` | `make docs-governance`; `git diff --check` | `make doctor` |
+| Parser/routing change | [`operations/parser_routing_growth_guardrails.md`](operations/parser_routing_growth_guardrails.md) | `src/nbatools/commands/natural_query.py`, parser helpers, parser/query tests | `make test-parser`; `make test-query`; `make test-preflight` for high fan-in edits | `make test-smoke-all` |
+| Backend route/data change | [`architecture/query_service_layer.md`](architecture/query_service_layer.md) | `src/nbatools/commands/`, `src/nbatools/query_service.py`, `docs/reference/data_contracts.md` | `make test-engine`; `make test-api` when response shape changes | `make test-preflight`; query smoke |
+| Frontend render change | [`operations/ui_guide.md`](operations/ui_guide.md) | `frontend/src/`, `frontend/src/api/`, `src/nbatools/ui/dist/` | `npm --prefix frontend run build`; `npm --prefix frontend run lint`; `npm --prefix frontend test` | [`operations/frontend_visual_qa.md`](operations/frontend_visual_qa.md) |
+| Corpus-only change | [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) | `qa/`, tracked fixtures under `qa/fixtures/` | Run the named corpus/QA slice; inspect generated product review when public acceptance is involved | `make docs-governance` if docs changed |
+| Feedback-derived bug fix | [`operations/query_feedback_review.md`](operations/query_feedback_review.md) | feedback export/review artifacts, parser/route/engine area that owns the bug, QA cases | Follow triage/fix/closure workflow; run tests for touched subsystem | `make query-feedback-export`; Raw QA regression slice |
+| New feature/query family promotion | [`operations/feature_promotion_rules.md`](operations/feature_promotion_rules.md) | data contract, route/result contract, parser, Raw QA, frontend when rendered, release docs | Complete promotion gates; run subsystem tests plus required QA and docs checks | `make doctor`; deployment smoke when data-backed |
+| Route metadata/CLI diagnostic change | [`architecture/query_service_layer.md`](architecture/query_service_layer.md) | `src/nbatools/route_input_metadata.py`, `src/nbatools/cli_apps/queries.py`, `/routes` docs | Route metadata/CLI tests for touched path; `make test-api` if route list/API behavior changes | `make test-output` |
+| Deployment/data-backed change | [`operations/deployment.md`](operations/deployment.md) | data contract docs, R2 sync path, deployment smoke, Vercel/R2 settings | `make doctor`; R2 dry-run/sync or documented head-object evidence; deployment smoke; `make docs-governance` | `make test-preflight` for runtime behavior changes |
+
 ## Reference
 
 Current-state documentation, verified behavior, and data contracts.

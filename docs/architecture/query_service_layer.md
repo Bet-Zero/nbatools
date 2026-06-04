@@ -36,15 +36,18 @@ qr = execute_structured_query(
 print(qr.result.leaders)  # pandas DataFrame
 ```
 
-Valid routes (25 total): `top_player_games`, `top_team_games`,
+Valid routes are defined by `VALID_ROUTES` in `src/nbatools/query_service.py`
+and exposed by `GET /routes` plus `nbatools-cli query routes`. The current
+service surface has 30 routes: `top_player_games`, `top_team_games`,
 `season_leaders`, `season_team_leaders`, `player_game_summary`,
 `game_summary`, `player_game_finder`, `game_finder`, `player_compare`,
-`team_compare`, `player_split_summary`, `team_split_summary`,
+`team_compare`, `team_record`, `team_matchup_record`,
+`team_record_leaderboard`, `player_split_summary`, `team_split_summary`,
 `player_streak_finder`, `team_streak_finder`, `player_occurrence_leaders`,
-`team_occurrence_leaders`, `team_record`, `team_matchup_record`,
-`team_record_leaderboard`, `playoff_round_record`, `playoff_history`,
-`playoff_appearances`, `playoff_matchup_history`, `record_by_decade`,
-`record_by_decade_leaderboard`, `matchup_by_decade`.
+`team_occurrence_leaders`, `player_on_off`, `lineup_summary`,
+`lineup_leaderboard`, `player_stretch_leaderboard`, `playoff_history`,
+`playoff_appearances`, `playoff_matchup_history`, `playoff_round_record`,
+`record_by_decade`, `record_by_decade_leaderboard`, `matchup_by_decade`.
 
 ## QueryResult envelope
 

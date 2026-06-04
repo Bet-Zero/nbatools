@@ -226,6 +226,14 @@ the parser/routing half lives in
 [`docs/operations/parser_routing_growth_guardrails.md`](parser_routing_growth_guardrails.md).
 This section is the deployment half of the same contract.
 
+Promotion evidence belongs in the active task's tracked working materials and
+handoff receipt while the task is open. Follow
+[`docs/operations/working_and_archive_policy.md`](working_and_archive_policy.md):
+use the active task workspace only while work is active, promote durable facts
+back into `docs`, then move completed task materials to the ignored historical
+archive. The top-level `return_packages` directory is legacy ignored migration
+protection only; do not use it for new deployment or promotion work.
+
 Working principle:
 
 ```text
@@ -244,7 +252,8 @@ deployed runtime needs for the feature to answer correctly.
 
 - The list lives in the promotion's per-feature contract (see
   [`feature_promotion_rules.md`](feature_promotion_rules.md)
-  §4) and is reproduced in the promotion's return package.
+  §4) and is reproduced in the task-scoped active-work handoff receipt while the
+  task is active.
 - Keys are written as full bucket-relative paths
   (`raw/teams/team_conference_membership.csv`), not as glob patterns or
   shorthand.
@@ -261,7 +270,7 @@ feature's deployment smoke is run.
 - Run `nbatools-cli pipeline sync-r2 --dry-run` to surface missing or stale
   keys, then `nbatools-cli pipeline sync-r2` to upload.
 - For each required key, capture `head_object` evidence and record it in
-  the promotion's return package: `Bucket`, `Key`, `ContentLength`,
+  the task-scoped active-work handoff receipt: `Bucket`, `Key`, `ContentLength`,
   `LastModified`, and the `nbatools-md5` metadata value.
 - A missing or unreachable key is a deploy blocker. Do not proceed to the
   deployment smoke step until every required key returns a clean
@@ -281,7 +290,7 @@ case that exercises the feature against the deployed runtime.
   and any feature-specific evidence (e.g. resolved entity counts,
   metadata keys, scope filters present in the payload).
 - The smoke report is captured in `outputs/deployment_smoke/` and
-  referenced from the promotion's return package.
+  referenced from the task-scoped active-work handoff receipt.
 - The smoke step runs after R2 sync verification (rule 2) and before the
   feature is treated as shipped. A smoke pass without rule-2 evidence is
   not sufficient: a transient R2 cache hit can hide a missing object.
@@ -363,7 +372,7 @@ nbatools-md5=f9cc9a60c8f659651723a55640966d73
 ```
 
 Any new opponent-conference promotion (new season, new mapping) must
-re-capture this evidence in its return package.
+re-capture this evidence in its task-scoped active-work handoff receipt.
 
 #### 6.3 Deployment smoke (pointed at the feature)
 
@@ -404,10 +413,10 @@ allowed to silently widen the scope.
   checklist is the deployment-side bar that proposal must clear.
 - When a reviewer evaluates a promotion, rules 1–5 are the minimum
   deployment-side review surface.
-- When the promotion's return package is written, it must include the
-  required-key list (rule 1), `head_object` evidence (rule 2), and a
-  reference to the deployment smoke report (rule 3); when applicable, it
-  must also include the missing-data smoke evidence (rule 4).
+- When the promotion's task-scoped active-work handoff receipt is written, it
+  must include the required-key list (rule 1), `head_object` evidence (rule
+  2), and a reference to the deployment smoke report (rule 3); when
+  applicable, it must also include the missing-data smoke evidence (rule 4).
 - When a future promotion changes which R2 objects the feature needs, the
   list is re-asserted and the `head_object` evidence is re-captured. A
   promotion that reuses old evidence is not adequately gated.

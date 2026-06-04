@@ -1,5 +1,9 @@
 # Scripts Retirement
 
+> **Historical audit snapshot.** This file is retained for context and is not
+> the current source of truth. Start from [`../index.md`](../index.md) and the
+> relevant durable docs for current guidance.
+
 **Date:** 2026-04-16
 
 ## Summary

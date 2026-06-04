@@ -1,5 +1,9 @@
 # natural_query.py — Final Scope Audit
 
+> **Historical audit snapshot.** This file is retained for context and is not
+> the current source of truth. Start from [`../index.md`](../index.md) and the
+> relevant durable docs for current guidance.
+
 > Audit date: 2026-04-17
 > Audited file: `src/nbatools/commands/natural_query.py` — 1 679 lines, 31 functions
 > Previously extracted: 7 helper modules totalling ~2 340 lines

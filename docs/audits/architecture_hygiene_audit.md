@@ -1,5 +1,9 @@
 # Architecture & Hygiene Audit
 
+> **Historical audit snapshot.** This file is retained for context and is not
+> the current source of truth. Start from [`../index.md`](../index.md) and the
+> relevant durable docs for current guidance.
+
 **Date:** 2025-04-16
 **Scope:** Full architecture review against `docs/architecture/project_conventions.md`
 
