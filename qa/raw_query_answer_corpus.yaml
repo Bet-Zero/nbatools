@@ -1982,22 +1982,51 @@ cases:
         - stat_mapping
       notes: "Review FT% stat mapping and minimum filter behavior."
 
-  - id: minutes_leaders_unsupported
+  - id: minutes_leaders_supported
     query: "Who played the most minutes this season?"
-    category: unsupported_boundary
+    category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: unsupported
-    expected_shape: no_result
-    review_notes: "Minutes are documented as a stat alias, but current leaderboard execution returns unsupported."
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: minutes
+    review_notes: "Basic box-score minutes leaderboard now ranks total minutes."
     manual_review:
       status: unreviewed
       tags:
         - stat_mapping
-        - unsupported_boundary
-      notes: "Review as a stat coverage gap or intentional leaderboard boundary."
+        - basic_box_score
+      notes: "Review minutes total leaderboard wording and primary metric."
+
+  - id: three_point_attempt_leaders_basic_stat
+    query: "3PA leaders this season"
+    category: leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: fg3a
+    review_notes: "Basic box-score three-point-attempt leaderboard now ranks total 3PA."
+    manual_review:
+      status: unreviewed
+      tags:
+        - stat_mapping
+        - basic_box_score
+      notes: "Review 3PA alias binding and leaderboard primary metric."
 
   - id: usage_rate_leader
     query: "Who has the highest usage rate this season?"
@@ -4409,22 +4438,25 @@ cases:
     query: "personal fouls leaders this season"
     category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: personal_foul_leaderboard
-    review_notes: "Personal fouls are not a documented stat alias; should not fall back to points leaders."
+      - path: result.metadata.stat
+        equals: pf
+    review_notes: "Personal-foul leaderboard should execute as a basic box-score stat and not fall back to points."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
         - stat_alias
-        - unsupported_boundary
-      notes: "Review product decision for personal fouls / PF support."
+        - basic_box_score
+        - no_broad_fallback
+      notes: "Review PF total leaderboard wording and primary metric."
 
   - id: pace_team_leaders_wave4
     query: "team pace leaders this season"
@@ -5869,25 +5901,25 @@ cases:
     query: "players with most personal fouls this season"
     category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
     hard_assertions:
       - path: result.metadata.stat
         equals: pf
-      - path: result.metadata.unsupported_filters.0
-        equals: personal_foul_leaderboard
-    review_notes: "Personal-foul leaderboard phrase variant should hit the explicit unsupported boundary."
+    review_notes: "Personal-foul phrase variant should execute as a PF leaderboard and not fall back to points."
     manual_review:
-      status: expected_unsupported
+      status: unreviewed
       tags:
-        - unsupported_boundary
         - stat_alias
+        - basic_box_score
         - no_broad_fallback
-      notes: "Expected unsupported until a personal-foul leaderboard contract is approved."
+      notes: "Review PF total leaderboard wording and primary metric."
 
   - id: lakers_record_against_west_wave5
     query: "Lakers record against the West"

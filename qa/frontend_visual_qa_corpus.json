@@ -135,28 +135,28 @@
     },
     {
       "id": "personal_foul_leaders_wave4",
-      "category": "unsupported_stat_leaderboard",
+      "category": "basic_stat_leaderboard",
       "query": "personal fouls leaders this season",
       "viewports": [
         "desktop_1280",
         "mobile_390"
       ],
       "visual_focus": [
-        "Primary unsupported message appears above diagnostics",
-        "No-result hierarchy stays product-facing rather than backend-facing",
-        "PF shorthand does not look like the answer"
+        "Leaderboard hero names the first PF leader",
+        "PF total appears as the primary metric column",
+        "Team, GP, season, and type context remain readable"
       ],
       "desktop_focus": [
-        "Primary title and message dominate the card",
-        "Diagnostic notes stay clearly secondary"
+        "Leaderboard table fits without horizontal clipping",
+        "PF metric is visually highlighted as the requested stat"
       ],
       "mobile_focus": [
-        "Long unsupported details wrap below the primary message",
-        "The first visible state is still the product-facing message"
+        "PF table label remains legible",
+        "Rows remain scannable without overlapping columns"
       ],
       "expected_primary_visual_concerns": [
-        "Diagnostic details can visually compete with the unsupported message",
-        "Long no-result text may push the primary message below the fold on mobile"
+        "PF label can look terse without clear metric highlighting",
+        "Leaderboard columns may compress on mobile"
       ]
     },
     {

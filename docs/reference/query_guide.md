@@ -56,13 +56,20 @@ Natural examples:
 - `What players have the best field goal percentage among guards?` (position-filtered leaderboard)
 - `guard scoring leaders this season` (position-filtered leaderboard)
 - `forwards FG% leaders this season` (position-filtered leaderboard)
+- `personal fouls leaders this season` / `PF leaders this season` (basic box-score total leaderboard)
+- `Who played the most minutes this season?` (basic box-score total leaderboard)
+- `3PA leaders this season` (basic box-score total leaderboard)
+
+Basic box-score volume leaderboards for `pf`, `minutes`, `fgm`, `fga`,
+`fg3a`, `ftm`, and `fta` rank totals. Existing per-game leaderboards such as
+points per game continue to use the existing per-game semantics.
 
 Unsupported leaderboard boundaries currently return `no_result` /
 `filter_not_supported` rather than broad fallback leaderboards:
 
 - rookie leaderboards, such as `rookie scoring leaders this season`
 - league-wide starter/bench leaderboards, such as `starter assist leaders this season`
-- personal-foul leaderboards, such as `personal fouls leaders this season` and `players with most personal fouls`
+- fouls-drawn leaderboards, such as `players best at drawing fouls`
 - team bench scoring, such as `Celtics bench scoring this season`
 - single-team advanced-stat summaries, such as `Warriors net rating this season`
   (league-wide team advanced-stat leaderboards remain supported)
@@ -220,6 +227,9 @@ Natural examples:
 - `opponent PPG leaders`
 - `best 3 point percentage`
 - `best field goal percentage`
+- `PF leaders this season`
+- `3PA leaders this season`
+- `Who played the most minutes this season?`
 - `team fg%`
 
 ## Matchups and head-to-head

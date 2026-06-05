@@ -243,8 +243,8 @@ def test_slice_loading_by_name_uses_saved_slice_file() -> None:
     case_ids = qa.load_slice_case_ids("product_boundaries")
 
     assert case_ids[:2] == [
-        "players_personal_fouls_wave5",
         "warriors_net_rating_single_team_wave5",
+        "turnover_leaders_wave4",
     ]
 
 

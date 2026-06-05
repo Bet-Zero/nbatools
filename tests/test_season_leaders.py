@@ -239,3 +239,78 @@ def test_season_leaders_percentage_guardrail_filters_low_attempt_outlier(tmp_pat
     assert {"ts_pct", "fga_total", "fta_total"}.issubset(df.columns)
     assert df.iloc[0]["fga_total"] == 300
     assert df.iloc[0]["fta_total"] == 100
+
+
+def test_season_leaders_executes_promoted_basic_total_stats(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    rows = []
+    for game_id in range(1, 26):
+        rows.append(
+            {
+                "game_id": game_id,
+                "game_date": f"2099-10-{game_id:02d}",
+                "player_id": 1,
+                "player_name": "Volume Leader",
+                "team_id": 100,
+                "team_abbr": "AAA",
+                "pts": 20,
+                "reb": 5,
+                "ast": 2,
+                "fgm": 10,
+                "fga": 20,
+                "fg3m": 2,
+                "fg3a": 8,
+                "ftm": 6,
+                "fta": 7,
+                "minutes": 35,
+                "pf": 4,
+            }
+        )
+    for game_id in range(26, 51):
+        rows.append(
+            {
+                "game_id": game_id,
+                "game_date": f"2099-11-{(game_id - 25):02d}",
+                "player_id": 2,
+                "player_name": "Lower Volume",
+                "team_id": 200,
+                "team_abbr": "BBB",
+                "pts": 18,
+                "reb": 4,
+                "ast": 3,
+                "fgm": 6,
+                "fga": 12,
+                "fg3m": 1,
+                "fg3a": 3,
+                "ftm": 3,
+                "fta": 4,
+                "minutes": 25,
+                "pf": 1,
+            }
+        )
+
+    _write_csv(tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv", rows)
+
+    expected_columns = {
+        "pf": "pf_total",
+        "minutes": "minutes_total",
+        "fgm": "fgm_total",
+        "fga": "fga_total",
+        "fg3a": "fg3a_total",
+        "ftm": "ftm_total",
+        "fta": "fta_total",
+    }
+    for stat, total_col in expected_columns.items():
+        result = season_leaders_build_result(
+            season="2099-00",
+            stat=stat,
+            limit=5,
+            season_type="Regular Season",
+            min_games=1,
+            ascending=False,
+        )
+
+        df = result.leaders
+        assert df.iloc[0]["player_name"] == "Volume Leader"
+        assert total_col in df.columns

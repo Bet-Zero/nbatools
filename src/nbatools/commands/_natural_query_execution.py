@@ -577,13 +577,6 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "finder contract; use standard team scoring queries instead "
             f"(blocked: {', '.join(all_filters)})"
         )
-    if filter_id == "personal_foul_leaderboard":
-        return (
-            "personal-foul leaderboards are not supported yet by the current season "
-            "leaderboard contract; use supported box-score leaderboards such as "
-            "turnovers, steals, blocks, assists, rebounds, or points "
-            f"(blocked: {', '.join(all_filters)})"
-        )
     if filter_id == "award_query":
         return (
             "NBA awards and award winners are not supported by the current stats "

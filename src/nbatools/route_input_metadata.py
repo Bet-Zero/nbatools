@@ -84,6 +84,43 @@ RECORD_STAT_VALUES = ("wins", "losses", "win_pct")
 PRESENCE_STATE_VALUES = ("on", "off", "both")
 SPECIAL_EVENT_VALUES = ("double_double", "triple_double")
 STRETCH_METRIC_VALUES = ("game_score", "pts", "reb", "ast", "ts_pct")
+SEASON_LEADER_STAT_VALUES = (
+    "pts",
+    "reb",
+    "oreb",
+    "dreb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "fg3m",
+    "pf",
+    "minutes",
+    "fgm",
+    "fga",
+    "fg3a",
+    "ftm",
+    "fta",
+    "fg_pct",
+    "fg3_pct",
+    "ft_pct",
+    "efg_pct",
+    "ts_pct",
+    "plus_minus",
+    "games_played",
+    "games_20p",
+    "games_30p",
+    "games_40p",
+    "games_10r",
+    "games_10a",
+    "usg_pct",
+    "ast_pct",
+    "reb_pct",
+    "tov_pct",
+    "net_rating",
+    "off_rating",
+    "def_rating",
+)
 
 
 ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
@@ -161,9 +198,10 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "clutch",
         ),
         aliases={"limit": ("top_n is a natural-parser slot; direct route calls use limit",)},
-        allowed_values={"season_type": SEASON_TYPE_VALUES},
+        allowed_values={"season_type": SEASON_TYPE_VALUES, "stat": SEASON_LEADER_STAT_VALUES},
         examples=(
             {"season": "2025-26", "stat": "pts", "limit": 10},
+            {"season": "2025-26", "stat": "pf", "limit": 10},
             {"start_season": "2020-21", "end_season": "2024-25", "stat": "ast"},
         ),
         notes=("Default stat is pts when omitted.",),

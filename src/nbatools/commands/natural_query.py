@@ -144,9 +144,6 @@ from nbatools.commands._parse_helpers import (
     detect_opponent_quality as detect_opponent_quality,
 )
 from nbatools.commands._parse_helpers import (
-    detect_personal_foul_leaderboard_boundary as detect_personal_foul_leaderboard_boundary,
-)
-from nbatools.commands._parse_helpers import (
     detect_player_summary_stat_context as detect_player_summary_stat_context,
 )
 from nbatools.commands._parse_helpers import (
@@ -278,7 +275,11 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "leading scorer",
     "catch-and-shoot",
     "catch and shoot",
+    "draw fouls",
+    "draws fouls",
     "drawing fouls",
+    "drawn fouls",
+    "fouls drawn",
     "transition scorer",
     "isolation defender",
     "shot creator",
@@ -812,7 +813,6 @@ def _build_parse_state(query: str) -> dict:
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
     role_leaderboard_boundary = detect_role_leaderboard_boundary(q)
     team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
-    personal_foul_leaderboard_boundary = detect_personal_foul_leaderboard_boundary(q)
     award_query_boundary = detect_award_query_boundary(q)
     opponent_conference = detect_opponent_conference(q)
     opponent_conference_boundary = opponent_conference is not None
@@ -821,9 +821,6 @@ def _build_parse_state(query: str) -> dict:
     if opponent_division_boundary:
         opponent_conference = None
         opponent_conference_boundary = False
-    if personal_foul_leaderboard_boundary:
-        leaderboard_intent = True
-
     if (
         stretch_request
         and top_n == window_size
@@ -918,7 +915,6 @@ def _build_parse_state(query: str) -> dict:
             or max_value is not None
             or leaderboard_intent
             or team_leaderboard_intent
-            or personal_foul_leaderboard_boundary
             or record_intent
             or window_size is not None
         ) and not historical_route_intent:
@@ -1137,7 +1133,6 @@ def _build_parse_state(query: str) -> dict:
         "rookie_leaderboard_boundary": rookie_leaderboard_boundary,
         "role_leaderboard_boundary": role_leaderboard_boundary,
         "team_bench_scoring_boundary": team_bench_scoring_boundary,
-        "personal_foul_leaderboard_boundary": personal_foul_leaderboard_boundary,
         "award_query_boundary": award_query_boundary,
         "opponent_conference": opponent_conference,
         "opponent_conference_boundary": opponent_conference_boundary,
@@ -1330,7 +1325,6 @@ def _finalize_route(parsed: dict) -> dict:
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
     role_leaderboard_boundary = parsed.get("role_leaderboard_boundary", False)
     team_bench_scoring_boundary = parsed.get("team_bench_scoring_boundary", False)
-    personal_foul_leaderboard_boundary = parsed.get("personal_foul_leaderboard_boundary", False)
     award_query_boundary = parsed.get("award_query_boundary", False)
     opponent_conference = parsed.get("opponent_conference")
     opponent_conference_boundary = parsed.get("opponent_conference_boundary", False)
@@ -2062,33 +2056,6 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
-    elif personal_foul_leaderboard_boundary:
-        route = "season_leaders"
-        stat = "pf"
-        notes.append(
-            "unsupported_boundary: personal-foul leaderboards are not supported "
-            "until a fouls-committed stat contract is approved"
-        )
-        route_kwargs = {
-            "season": season or default_season_for_context(season_type),
-            "stat": "pf",
-            "limit": top_n or 10,
-            "season_type": season_type,
-            "min_games": 1,
-            "ascending": False,
-            "start_date": start_date,
-            "end_date": end_date,
-            "start_season": start_season,
-            "end_season": end_season,
-            "opponent": opponent,
-            "position": position_filter,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "last_n": last_n,
-            "unsupported_filters": ["personal_foul_leaderboard"],
-        }
     elif rookie_leaderboard_boundary and not any(
         [player, player_a, player_b, team, team_a, team_b]
     ):
@@ -2776,8 +2743,6 @@ def _finalize_route(parsed: dict) -> dict:
         "playoff_round_record",
     }:
         out["season_type"] = "Playoffs"
-    if route_kwargs.get("unsupported_filters") == ["personal_foul_leaderboard"]:
-        out["stat"] = route_kwargs["stat"]
     if route == "season_team_leaders" and route_kwargs.get("stat"):
         out["stat"] = route_kwargs["stat"]
     out["intent"] = route_to_intent(route, count_intent=count_intent)

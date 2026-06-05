@@ -68,6 +68,23 @@ def test_parse_highest_assists_per_game():
     assert parsed["route_kwargs"]["stat"] == "ast"
 
 
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("Who leads the NBA in points per game this season?", "pts"),
+        ("three pointers made leaders this season", "fg3m"),
+        ("PF leaders this season", "pf"),
+        ("players with most personal fouls this season", "pf"),
+    ],
+)
+def test_player_leaderboard_stat_aliases_do_not_fallback_to_points(query, stat):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["route_kwargs"]["stat"] == stat
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
 @pytest.mark.slow
 @pytest.mark.needs_data
 def test_natural_top_scorers_raw_smoke():

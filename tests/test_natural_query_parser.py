@@ -745,18 +745,46 @@ def test_best_defensive_rating_stays_defensive_rating():
     [
         "personal fouls leaders this season",
         "personal foul leaders this season",
+        "fouls leaders this season",
+        "PF leaders this season",
         "players with most personal fouls this season",
         "players with the most personal fouls",
         "most personal fouls this season",
     ],
 )
-def test_personal_foul_leaderboard_variants_are_unsupported_boundaries(query):
+def test_personal_foul_leaderboard_variants_route_to_pf(query):
     parsed = parse_query(query)
 
     assert parsed["route"] == "season_leaders"
     assert parsed["stat"] == "pf"
     assert parsed["route_kwargs"]["stat"] == "pf"
-    assert parsed["route_kwargs"]["unsupported_filters"] == ["personal_foul_leaderboard"]
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    ("query", "stat"),
+    [
+        ("field goals made leaders this season", "fgm"),
+        ("FGM leaders this season", "fgm"),
+        ("field goals attempted leaders this season", "fga"),
+        ("FGA leaders this season", "fga"),
+        ("three pointers attempted leaders this season", "fg3a"),
+        ("threes attempted leaders this season", "fg3a"),
+        ("3PA leaders this season", "fg3a"),
+        ("free throws made leaders this season", "ftm"),
+        ("FTM leaders this season", "ftm"),
+        ("free throws attempted leaders this season", "fta"),
+        ("FTA leaders this season", "fta"),
+        ("minutes leaders this season", "minutes"),
+    ],
+)
+def test_basic_box_score_volume_aliases_route_to_season_leaders(query, stat):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["stat"] == stat
+    assert parsed["route_kwargs"]["stat"] == stat
+    assert "unsupported_filters" not in parsed["route_kwargs"]
 
 
 @pytest.mark.parametrize(
@@ -1127,7 +1155,6 @@ def test_team_bench_scoring_does_not_set_role():
         ("starter assist leaders this season", "role_leaderboard"),
         ("Celtics bench scoring this season", "team_bench_scoring"),
         ("Celtics bench scoring home vs away", "team_bench_scoring"),
-        ("personal fouls leaders this season", "personal_foul_leaderboard"),
         ("who won mvp this season", "award_query"),
         ("mvp winner this season", "award_query"),
         ("who won rookie of the year", "award_query"),

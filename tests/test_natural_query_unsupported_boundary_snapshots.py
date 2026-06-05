@@ -37,12 +37,6 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["team_bench_scoring"],
         },
         {
-            "query": "players with most personal fouls this season",
-            "route": "season_leaders",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["personal_foul_leaderboard"],
-        },
-        {
             "query": "Celtics record against east coast teams",
             "route": "team_record",
             "reason": "filter_not_supported",

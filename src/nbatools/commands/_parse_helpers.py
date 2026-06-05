@@ -169,28 +169,6 @@ def detect_team_bench_scoring_boundary(text: str) -> bool:
     )
 
 
-def detect_personal_foul_leaderboard_boundary(text: str) -> bool:
-    """Detect unsupported personal-foul leaderboard requests."""
-    if re.search(r"\b(?:draw|draws|drawing|drawn)\s+fouls?\b", text):
-        return False
-
-    if re.search(r"\bfouls?\s+leaders?\b", text):
-        return True
-
-    if not re.search(r"\bpersonal\s+fouls?\b", text):
-        return False
-
-    return bool(
-        re.search(r"\bleaders?\b", text)
-        or re.search(
-            r"\b(?:top|highest|most|fewest|least|lowest|worst|bottom|rank|ranked|ranking)\b",
-            text,
-        )
-        or re.search(r"\bwho\s+(?:has|had|leads?|led)\s+the\s+most\b", text)
-        or re.search(r"\bplayers?\s+with\s+(?:the\s+)?most\b", text)
-    )
-
-
 _AWARD_TERMS_PATTERN = (
     r"(?:"
     r"\bmvp\b|"

@@ -183,8 +183,14 @@ Every recognized stat phrasing grouped by canonical stat name. Both standard nam
 | `stl`          | `stl`, `steal`, `steals`, `swipes`                                                                                                                                                   |
 | `blk`          | `blk`, `block`, `blocks`, `swats`                                                                                                                                                    |
 | `fg3m`         | `3s`, `3pm`, `fg3m`, `threes`, `threes made`, `three-point makes`, `three pointers made`                                                                                             |
+| `pf`           | `pf`, `foul`, `fouls`, `personal foul`, `personal fouls`                                                                                                                             |
 | `tov`          | `tov`, `turnover`, `turnovers`                                                                                                                                                       |
-| `minutes`      | `minutes`                                                                                                                                                                            |
+| `minutes`      | `min`, `minutes`                                                                                                                                                                     |
+| `fgm`          | `fgm`, `field goal made`, `field goals made`                                                                                                                                         |
+| `fga`          | `fga`, `field goal attempted`, `field goal attempts`, `field goals attempted`                                                                                                         |
+| `fg3a`         | `3pa`, `fg3a`, `threes attempted`, `three attempts`, `three pointer attempted`, `three pointer attempts`, `three pointers attempted`, `three-pointer attempted`, `three-pointer attempts`, `three-pointers attempted` |
+| `ftm`          | `ftm`, `free throw made`, `free throws made`                                                                                                                                         |
+| `fta`          | `fta`, `free throw attempted`, `free throw attempts`, `free throws attempted`                                                                                                         |
 | `fg_pct`       | `fg%`, `fg_pct`, `field goal %`, `field goal percentage`                                                                                                                             |
 | `fg3_pct`      | `3p%`, `3pt%`, `fg3_pct`, `3 point %`, `3-point %`, `three point %`, `three-point %`, `3 point percentage`, `3-point percentage`, `three point percentage`, `three-point percentage` |
 | `ft_pct`       | `ft%`, `ft_pct`, `free throw %`, `free throw percentage`                                                                                                                             |
@@ -453,6 +459,9 @@ Examples:
 - `best 3 point percentage` (recognized stat alias → fg3_pct)
 - `best field goal percentage` (recognized stat alias → fg_pct)
 - `best free throw percentage` (recognized stat alias → ft_pct)
+- `personal fouls leaders this season` / `PF leaders this season` (basic box-score total leaderboard → pf)
+- `Who played the most minutes this season?` (basic box-score total leaderboard → minutes)
+- `3PA leaders this season` (basic box-score total leaderboard → fg3a)
 - `highest scoring games this season` (routes to top_player_games, not ppg leaderboard)
 - `biggest scoring games this season` / `most dominant games by plus-minus this season` (single-game leaderboard variants)
 - `most assists in a game this season` / `single-game rebound leaders this season` (non-scoring single-game leaderboard variants)
@@ -461,6 +470,14 @@ Examples:
 - `points leaders last 10`, `last 10 scoring leaders`, `top scorers last 10 games` (shorthand → `season_leaders`, stat=pts, last_n=10)
 - `Who scores the most at home this season?` / `most points at home this season` (leaderboard + home filter)
 - `hottest from three lately`, `hottest from 3 lately`, `best shot blocker last 10 games`, `best rim protector over the past month`, `best offensive rebounder lately` (skill phrasing mapped to supported leaderboard stats)
+
+Ranking semantics:
+
+- box-score volume aliases promoted for `season_leaders` (`pf`, `minutes`,
+  `fgm`, `fga`, `fg3a`, `ftm`, `fta`) rank season totals
+- existing public per-game semantics remain unchanged for aliases such as
+  points per game, rebounds per game, assists per game, steals per game,
+  blocks per game, turnovers per game, plus-minus per game, and made threes
 
 ### Team leaderboards
 
@@ -495,13 +512,12 @@ Leaderboard no-match behavior:
   such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
   shot creation, and per-game attempt minimums are unsupported boundaries; routed
   fallbacks include an explicit `unsupported_boundary` note
-- rookie leaderboards, league-wide starter/bench leaderboards, and
-  personal-foul leaderboards are unsupported boundaries; these return
+- rookie leaderboards and league-wide starter/bench leaderboards are
+  unsupported boundaries; these return
   `no_result` / `filter_not_supported` rather than broad points/assist
   leaderboards
-- personal-foul leaderboard variants such as `players with most personal fouls`
-  and `most personal fouls this season` share the same unsupported boundary;
-  fouls-drawn wording is not mapped to personal fouls committed
+- fouls-drawn wording is not mapped to personal fouls committed; drawing-foul
+  queries remain unsupported until a fouls-drawn data contract exists
 - league-wide team advanced-stat leaderboards for net rating, offensive rating,
   defensive rating, and pace are supported, but single-team scalar summaries
   such as `Warriors net rating this season` return `no_result` /

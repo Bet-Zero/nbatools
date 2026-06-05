@@ -127,6 +127,7 @@ const DISPLAY_ORDER = [
   "season_type",
   "minutes_per_game",
   "min_per_game",
+  "minutes_total",
   "pts_per_game",
   "reb_per_game",
   "ast_per_game",
@@ -143,6 +144,7 @@ const DISPLAY_ORDER = [
   "fg3a_total",
   "ftm_total",
   "fta_total",
+  "pf_total",
   "pts_total",
   "reb_total",
   "ast_total",
@@ -165,8 +167,10 @@ const TABLE_LABELS: Record<string, string> = {
   games_played: "GP",
   min_per_game: "MPG",
   minutes_per_game: "MPG",
+  minutes_total: "MIN",
   net_rating: "Net",
   off_rating: "ORtg",
+  pf_total: "PF",
   pts_per_game: "PPG",
   reb_per_game: "RPG",
   season_type: "Type",
@@ -188,8 +192,10 @@ const SENTENCE_LABELS: Record<string, string> = {
   games_played: "games played",
   min_per_game: "minutes per game",
   minutes_per_game: "minutes per game",
+  minutes_total: "minutes",
   net_rating: "net rating",
   off_rating: "offensive rating",
+  pf_total: "personal fouls",
   pts_per_game: "points per game",
   reb_per_game: "rebounds per game",
   stl_per_game: "steals per game",
@@ -654,7 +660,9 @@ function queryMetricHint(data: QueryResponse): string | null {
   const metadata = data.result?.metadata ?? {};
   for (const key of ["stat", "metric", "target_stat", "target_metric"]) {
     const value = metadata[key];
-    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "string" && value.trim()) {
+      return normalizeMetricHint(value.trim());
+    }
   }
 
   const query =
@@ -672,6 +680,19 @@ function queryMetricHint(data: QueryResponse): string | null {
   if (/\b(rpg|rebounds per game|rebounds)\b/.test(query)) return "reb_per_game";
   if (/\b(apg|assists per game|assists)\b/.test(query)) return "ast_per_game";
   return null;
+}
+
+function normalizeMetricHint(value: string): string {
+  const totalMetricMap: Record<string, string> = {
+    fga: "fga_total",
+    fg3a: "fg3a_total",
+    fgm: "fgm_total",
+    fta: "fta_total",
+    ftm: "ftm_total",
+    minutes: "minutes_total",
+    pf: "pf_total",
+  };
+  return totalMetricMap[value] ?? value;
 }
 
 function metricPriority(row: SectionRow, key: string): number {

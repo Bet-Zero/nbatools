@@ -338,16 +338,6 @@ class TestP2BoundaryRoutingCleanup:
             ("starter assist leaders this season", "season_leaders", "role_leaderboard"),
             ("Celtics bench scoring this season", "game_finder", "team_bench_scoring"),
             ("Celtics bench scoring home vs away", "game_finder", "team_bench_scoring"),
-            (
-                "personal fouls leaders this season",
-                "season_leaders",
-                "personal_foul_leaderboard",
-            ),
-            (
-                "players with most personal fouls this season",
-                "season_leaders",
-                "personal_foul_leaderboard",
-            ),
         ],
     )
     def test_unsupported_boundary_queries_return_no_result(self, query, route, unsupported_filter):
