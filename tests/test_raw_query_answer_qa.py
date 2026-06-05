@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from nbatools.query_service import VALID_ROUTES
 from tools import raw_query_answer_qa as qa
 
 
@@ -45,6 +46,21 @@ def _verified_outlier() -> dict:
         "value": 83,
         "verification_status": "verified_official",
     }
+
+
+def test_shape_hint_route_policy_covers_valid_routes() -> None:
+    route_specific = set(qa.SHAPE_BY_ROUTE) | set(qa.LEADERBOARD_ROUTES)
+    section_derived = {
+        "matchup_by_decade",
+        "player_compare",
+        "player_game_finder",
+        "player_split_summary",
+        "team_compare",
+        "team_occurrence_leaders",
+        "team_split_summary",
+    }
+
+    assert route_specific | section_derived == set(VALID_ROUTES)
 
 
 def test_verified_high_point_outlier_is_not_open_suspicious() -> None:

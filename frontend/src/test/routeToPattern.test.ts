@@ -4,6 +4,7 @@ import {
   routeToPattern,
   type PatternConfig,
 } from "../components/results/config/routeToPattern";
+import backendValidRoutes from "./fixtures/backendValidRoutes.json";
 
 function makeResponse(
   route: string,
@@ -74,11 +75,23 @@ const WAVE_2_ROUTES = [
   "lineup_leaderboard",
 ];
 
+const BACKEND_VALID_ROUTES = backendValidRoutes as string[];
+
 function expectPattern(route: string, expected: PatternConfig[]) {
   expect(routeToPattern(makeResponse(route))).toEqual(expected);
 }
 
 describe("routeToPattern", () => {
+  it("guards every backend-valid route from falling through to fallback_table", () => {
+    for (const route of BACKEND_VALID_ROUTES) {
+      const patterns = routeToPattern(makeResponse(route));
+      expect(patterns, route).not.toHaveLength(0);
+      expect(patterns.map((pattern) => pattern.type), route).not.toContain(
+        "fallback_table",
+      );
+    }
+  });
+
   it("guards every Wave 1 route from falling through to fallback_table", () => {
     for (const route of WAVE_1_ROUTES) {
       const patterns = routeToPattern(makeResponse(route));
