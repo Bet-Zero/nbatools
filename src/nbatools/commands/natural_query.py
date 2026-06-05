@@ -93,6 +93,9 @@ from nbatools.commands._parse_helpers import (
     default_season_for_context as default_season_for_context,
 )
 from nbatools.commands._parse_helpers import (
+    detect_award_query_boundary as detect_award_query_boundary,
+)
+from nbatools.commands._parse_helpers import (
     detect_back_to_back as detect_back_to_back,
 )
 from nbatools.commands._parse_helpers import (
@@ -810,6 +813,7 @@ def _build_parse_state(query: str) -> dict:
     role_leaderboard_boundary = detect_role_leaderboard_boundary(q)
     team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
     personal_foul_leaderboard_boundary = detect_personal_foul_leaderboard_boundary(q)
+    award_query_boundary = detect_award_query_boundary(q)
     opponent_conference = detect_opponent_conference(q)
     opponent_conference_boundary = opponent_conference is not None
     opponent_conference_geography_boundary = detect_opponent_conference_geography_boundary(q)
@@ -1134,6 +1138,7 @@ def _build_parse_state(query: str) -> dict:
         "role_leaderboard_boundary": role_leaderboard_boundary,
         "team_bench_scoring_boundary": team_bench_scoring_boundary,
         "personal_foul_leaderboard_boundary": personal_foul_leaderboard_boundary,
+        "award_query_boundary": award_query_boundary,
         "opponent_conference": opponent_conference,
         "opponent_conference_boundary": opponent_conference_boundary,
         "opponent_conference_geography_boundary": opponent_conference_geography_boundary,
@@ -1326,6 +1331,7 @@ def _finalize_route(parsed: dict) -> dict:
     role_leaderboard_boundary = parsed.get("role_leaderboard_boundary", False)
     team_bench_scoring_boundary = parsed.get("team_bench_scoring_boundary", False)
     personal_foul_leaderboard_boundary = parsed.get("personal_foul_leaderboard_boundary", False)
+    award_query_boundary = parsed.get("award_query_boundary", False)
     opponent_conference = parsed.get("opponent_conference")
     opponent_conference_boundary = parsed.get("opponent_conference_boundary", False)
     opponent_conference_geography_boundary = parsed.get(
@@ -1414,6 +1420,27 @@ def _finalize_route(parsed: dict) -> dict:
             "source": "placeholder_template",
         }
         out["notes"] = [placeholder_note]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if award_query_boundary:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["award_query"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: NBA awards and award winners are not supported "
+            "by the current stats query contract"
+        ]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
         return out

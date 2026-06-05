@@ -163,6 +163,18 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "route": "season_leaders",
             "reason": "filter_not_supported",
         },
+        {
+            "query": "who won mvp this season",
+            "route": None,
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["award_query"],
+        },
+        {
+            "query": "who won rookie of the year",
+            "route": None,
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["award_query"],
+        },
     ],
     ids=lambda case: case["query"],
 )

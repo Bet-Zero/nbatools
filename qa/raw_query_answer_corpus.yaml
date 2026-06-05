@@ -1833,6 +1833,28 @@ cases:
         - awards
       notes: "Expected unsupported/product-boundary query."
 
+  - id: feedback_mvp_award_winner_boundary
+    query: "who won mvp this season"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: award_query
+    review_notes: "Feedback-derived awards winner query should decline explicitly without inferring from stat leaderboards."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - awards
+        - no_broad_fallback
+      notes: "Expected unsupported until an awards-result data contract is approved."
+
   - id: best_player_lately_ambiguous
     query: "Who is the best player lately?"
     category: unsupported_boundary

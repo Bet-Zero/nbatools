@@ -79,6 +79,11 @@ If a feature is not reflected here, it should not be assumed shipped.
   (bare `PLAYER vs PLAYER` phrasing such as `Jokic vs Embiid` returns an
   ambiguous/no-result boundary until clarification UI exists)
 - team vs team: `Celtics vs Bucks`
+- awards and award-winner questions such as `who won MVP this season`,
+  `MVP winner this season`, and `nba award winners this season` are explicit
+  unsupported boundaries; they return `no_result` / `filter_not_supported`
+  with `metadata.unsupported_filters=["award_query"]` and do not infer winners
+  from stat leaderboards
 
 ### 2.2 Time/context filters
 

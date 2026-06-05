@@ -584,6 +584,13 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "turnovers, steals, blocks, assists, rebounds, or points "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "award_query":
+        return (
+            "NBA awards and award winners are not supported by the current stats "
+            "query contract; use supported stat summaries, comparisons, or "
+            "leaderboards instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "single_team_advanced_stat_summary":
         return (
             "single-team advanced-stat summaries are not supported yet; try a "

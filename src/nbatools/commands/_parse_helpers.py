@@ -191,6 +191,35 @@ def detect_personal_foul_leaderboard_boundary(text: str) -> bool:
     )
 
 
+_AWARD_TERMS_PATTERN = (
+    r"(?:"
+    r"\bmvp\b|"
+    r"\bmost\s+valuable\s+player\b|"
+    r"\brookie\s+of\s+the\s+year\b|"
+    r"\bdefensive\s+player\s+of\s+the\s+year\b|"
+    r"\bdpoy\b|"
+    r"\bsixth\s+man(?:\s+of\s+the\s+year)?\b|"
+    r"\bmost\s+improved(?:\s+player)?\b|"
+    r"\bmip\b|"
+    r"\bcoach\s+of\s+the\s+year\b|"
+    r"\bclutch\s+player\s+of\s+the\s+year\b|"
+    r"\bawards?\b"
+    r")"
+)
+
+
+def detect_award_query_boundary(text: str) -> bool:
+    """Detect unsupported awards-result requests without inferring from stats."""
+    if not re.search(_AWARD_TERMS_PATTERN, text):
+        return False
+
+    return bool(
+        re.search(r"\b(?:who|which|what)\s+(?:player\s+)?won\b", text)
+        or re.search(r"\bwon\s+(?:the\s+)?", text)
+        or re.search(r"\bwinners?\b", text)
+    )
+
+
 def detect_opponent_conference(text: str) -> str | None:
     """Extract a normalized opponent-conference filter from supported phrasing."""
     patterns = [

@@ -245,6 +245,14 @@ fragments such as `Kevn Durant` or `Stephn Curry` return `no_result` /
 correcting through a last-name or nickname alias. Intentional fuzzy correction
 is deferred to V2.
 
+## Awards boundary
+
+Awards and award-winner phrasing such as `who won MVP this season`,
+`MVP winner this season`, and `nba award winners this season` is outside the
+current stats query contract. These queries return `no_result` /
+`filter_not_supported` with `metadata.unsupported_filters=["award_query"]`
+instead of inferring winners from stat leaderboards.
+
 ## Player availability team records
 
 - `Lakers record without LeBron`

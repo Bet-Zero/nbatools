@@ -1128,12 +1128,31 @@ def test_team_bench_scoring_does_not_set_role():
         ("Celtics bench scoring this season", "team_bench_scoring"),
         ("Celtics bench scoring home vs away", "team_bench_scoring"),
         ("personal fouls leaders this season", "personal_foul_leaderboard"),
+        ("who won mvp this season", "award_query"),
+        ("mvp winner this season", "award_query"),
+        ("who won rookie of the year", "award_query"),
+        ("nba award winners this season", "award_query"),
     ],
 )
 def test_p2_boundary_queries_set_unsupported_filter(query, unsupported_filter):
     parsed = parse_query(query)
     assert parsed["route_kwargs"]["unsupported_filters"] == [unsupported_filter]
     assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+
+def test_award_winner_boundary_does_not_route_to_season_leaders():
+    parsed = parse_query("who won mvp this season")
+
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["award_query"]
+
+
+def test_award_boundary_preserves_normal_stat_leader_routing():
+    parsed = parse_query("Who leads the NBA in points per game this season?")
+
+    assert parsed["route"] == "season_leaders"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert "unsupported_filters" not in parsed["route_kwargs"]
 
 
 @pytest.mark.parametrize(

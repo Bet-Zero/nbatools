@@ -41,6 +41,7 @@ from nbatools.commands._natural_query_execution import (
     _execute_grouped_boolean_build_result,
     _execute_or_query_build_result,
     _extract_grouped_condition_text,
+    _unsupported_filter_note,
 )
 from nbatools.commands.entity_resolution import ALL_TEAM_ABBRS, resolve_team
 from nbatools.commands.format_output import route_to_query_class
@@ -163,6 +164,9 @@ def _resolve_player_context(player_name: Any) -> dict[str, Any] | None:
     if not key:
         return None
     context = _player_identity_lookup().get(key)
+    if context is None:
+        _player_identity_lookup.cache_clear()
+        context = _player_identity_lookup().get(key)
     return dict(context) if context else None
 
 
@@ -178,6 +182,12 @@ def _resolve_team_context(team_value: Any) -> dict[str, Any] | None:
         candidates.append(resolved.resolved)
     candidates.append(text)
 
+    for candidate in candidates:
+        context = lookup.get(_identity_key(candidate))
+        if context:
+            return dict(context)
+    _team_identity_lookup.cache_clear()
+    lookup = _team_identity_lookup()
     for candidate in candidates:
         context = lookup.get(_identity_key(candidate))
         if context:
@@ -1074,6 +1084,30 @@ def execute_natural_query(query: str) -> QueryResult:
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
     count_intent = parsed.get("count_intent", False)
+
+    unsupported_filters = kwargs.get("unsupported_filters")
+    if route is None and unsupported_filters:
+        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
+        normalized_filters = [str(value) for value in unsupported_filters if str(value)]
+        notes = list(parsed.get("notes") or [])
+        if normalized_filters:
+            note = _unsupported_filter_note(normalized_filters[0], normalized_filters)
+            if note not in notes:
+                notes.append(note)
+        result = NoResult(
+            query_class="unknown",
+            reason="filter_not_supported",
+            result_status="no_result",
+            result_reason="filter_not_supported",
+            notes=notes,
+        )
+        _merge_metadata_notes(metadata, notes)
+        return QueryResult(
+            result=result,
+            metadata=metadata,
+            query=query,
+            route=None,
+        )
 
     # -- Entity ambiguity: return structured ambiguity result --
     entity_ambiguity = parsed.get("entity_ambiguity")
