@@ -1,10 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { ResultContextSummary } from "../../components/ResultEnvelope";
 import ResultRenderer from "../../components/results/ResultRenderer";
 import { makeResponse } from "./helpers";
 
 describe("ResultRenderer leaderboard patterns", () => {
-
   it("renders season leaderboards as a sentence hero and dense answer table", () => {
     const data = makeResponse({
       query: "most ppg in 2025 playoffs",
@@ -77,6 +77,175 @@ describe("ResultRenderer leaderboard patterns", () => {
     ).not.toBeInTheDocument();
   });
 
+  it.each([
+    {
+      query: "3PA leaders this season",
+      stat: "fg3a",
+      metricKey: "fg3a_total",
+      metricValue: 740,
+      leader: "LaMelo Ball",
+      team: "CHA",
+      expectedHero:
+        "LaMelo Ball led the NBA with 740 three-point attempts in the 2025-26 regular season.",
+      expectedChip: "3PA",
+      expectedHeader: "3PA",
+      absent: [/fg3a total/i, /fg3a_total/i, /\bFG3A\b/],
+    },
+    {
+      query: "field goals attempted leaders this season",
+      stat: "fga",
+      metricKey: "fga_total",
+      metricValue: 1510,
+      leader: "Anthony Edwards",
+      team: "MIN",
+      expectedHero:
+        "Anthony Edwards led the NBA with 1,510 field goals attempted in the 2025-26 regular season.",
+      expectedChip: "FGA",
+      expectedHeader: "FGA",
+      absent: [/fga total/i, /fga_total/i],
+    },
+    {
+      query: "free throws attempted leaders this season",
+      stat: "fta",
+      metricKey: "fta_total",
+      metricValue: 645,
+      leader: "Luka Doncic",
+      team: "LAL",
+      expectedHero:
+        "Luka Doncic led the NBA with 645 free throws attempted in the 2025-26 regular season.",
+      expectedChip: "FTA",
+      expectedHeader: "FTA",
+      absent: [/fta total/i, /fta_total/i],
+    },
+    {
+      query: "field goals made leaders this season",
+      stat: "fgm",
+      metricKey: "fgm_total",
+      metricValue: 736,
+      leader: "Jaylen Brown",
+      team: "BOS",
+      expectedHero:
+        "Jaylen Brown led the NBA with 736 field goals made in the 2025-26 regular season.",
+      expectedChip: "FGM",
+      expectedHeader: "FGM",
+      absent: [/fgm total/i, /fgm_total/i],
+    },
+    {
+      query: "free throws made leaders this season",
+      stat: "ftm",
+      metricKey: "ftm_total",
+      metricValue: 540,
+      leader: "Shai Gilgeous-Alexander",
+      team: "OKC",
+      expectedHero:
+        "Shai Gilgeous-Alexander led the NBA with 540 free throws made in the 2025-26 regular season.",
+      expectedChip: "FTM",
+      expectedHeader: "FTM",
+      absent: [/ftm total/i, /ftm_total/i],
+    },
+    {
+      query: "players with most personal fouls this season",
+      stat: "pf",
+      metricKey: "pf_total",
+      metricValue: 267,
+      leader: "Wendell Carter Jr.",
+      team: "ORL",
+      expectedHero:
+        "Wendell Carter Jr. led the NBA with 267 personal fouls in the 2025-26 regular season.",
+      expectedChip: "PF",
+      expectedHeader: "PF",
+      absent: [/pf_total/i],
+    },
+    {
+      query: "minutes leaders this season",
+      stat: "minutes",
+      metricKey: "minutes_total",
+      metricValue: 2954,
+      leader: "Amen Thompson",
+      team: "HOU",
+      expectedHero:
+        "Amen Thompson led the NBA with 2,954 minutes in the 2025-26 regular season.",
+      expectedChip: "Minutes",
+      expectedHeader: "MIN",
+      absent: [/minutes_total/i],
+    },
+  ])(
+    "renders user-facing total-stat leaderboard labels for $query",
+    ({
+      query,
+      stat,
+      metricKey,
+      metricValue,
+      leader,
+      team,
+      expectedHero,
+      expectedChip,
+      expectedHeader,
+      absent,
+    }) => {
+      const data = makeResponse({
+        query,
+        route: "season_leaders",
+        result: {
+          query_class: "leaderboard",
+          result_status: "ok",
+          metadata: {
+            query_text: query,
+            route: "season_leaders",
+            season: "2025-26",
+            season_type: "Regular Season",
+            stat,
+            ascending: false,
+          },
+          notes: [],
+          caveats: [],
+          sections: {
+            leaderboard: [
+              {
+                rank: 1,
+                player_name: leader,
+                player_id: 1,
+                team_abbr: team,
+                games_played: 72,
+                [metricKey]: metricValue,
+                season: "2025-26",
+                season_type: "Regular Season",
+              },
+              {
+                rank: 2,
+                player_name: "Second Player",
+                player_id: 2,
+                team_abbr: "BOS",
+                games_played: 70,
+                [metricKey]: metricValue - 10,
+                season: "2025-26",
+                season_type: "Regular Season",
+              },
+            ],
+          },
+          current_through: "2026-04-12",
+        },
+      });
+
+      const { container } = render(
+        <ResultRenderer
+          data={data}
+          resultContext={<ResultContextSummary data={data} />}
+        />,
+      );
+
+      expect(screen.getByText(expectedHero)).toBeInTheDocument();
+      expect(screen.getAllByText(expectedChip).length).toBeGreaterThan(0);
+      expect(
+        screen.getByRole("columnheader", { name: expectedHeader }),
+      ).toBeInTheDocument();
+
+      const visibleText = container.textContent ?? "";
+      for (const pattern of absent) {
+        expect(visibleText).not.toMatch(pattern);
+      }
+    },
+  );
 
   it("includes position context in guard-filtered leaderboard heroes", () => {
     const data = makeResponse({
