@@ -579,6 +579,10 @@ _FALLBACK_PLAYER_NAMES: set[str] = {
 
 def _read_player_names(data_dir: Path | None = None) -> set[str]:
     """Read canonical player names from player game stats CSVs."""
+    global _player_names_cache
+    if data_dir is None and _player_names_cache is not None:
+        return set(_player_names_cache)
+
     names: set[str] = set(_FALLBACK_PLAYER_NAMES)
     if data_dir is None:
         csv_paths = data_glob("raw/player_game_stats/*.csv")
@@ -596,6 +600,8 @@ def _read_player_names(data_dir: Path | None = None) -> set[str]:
             names.update(df["player_name"].dropna().unique())
         except Exception:
             continue
+    if data_dir is None:
+        _player_names_cache = set(names)
     return names
 
 
@@ -636,6 +642,7 @@ def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
 _player_last_name_index: dict[str, list[str]] | None = None
 _player_full_name_index: dict[str, str] | None = None
 _player_full_name_keys: tuple[str, ...] | None = None
+_player_names_cache: set[str] | None = None
 
 
 def _get_player_index() -> dict[str, list[str]]:
@@ -672,9 +679,11 @@ def _get_player_full_name_keys() -> tuple[str, ...]:
 def reset_player_index() -> None:
     """Force rebuild of the player index (for testing)."""
     global _player_last_name_index, _player_full_name_index, _player_full_name_keys
+    global _player_names_cache
     _player_last_name_index = None
     _player_full_name_index = None
     _player_full_name_keys = None
+    _player_names_cache = None
 
 
 # ---------------------------------------------------------------------------
@@ -728,6 +737,146 @@ for _ta_key in TEAM_ALIASES_EXPANDED:
     for _w in _ta_key.lower().split():
         if len(_w) >= 3:  # skip very short fragments
             _TEAM_ALIAS_WORDS.add(_w)
+
+
+_PLAYER_REFERENCE_STOPWORDS: set[str] = {
+    "after",
+    "against",
+    "all",
+    "and",
+    "are",
+    "assist",
+    "assists",
+    "at",
+    "average",
+    "averages",
+    "away",
+    "before",
+    "best",
+    "between",
+    "block",
+    "blocks",
+    "career",
+    "compare",
+    "comparison",
+    "comparisons",
+    "consecutive",
+    "count",
+    "did",
+    "do",
+    "does",
+    "during",
+    "finder",
+    "for",
+    "form",
+    "from",
+    "game",
+    "games",
+    "had",
+    "has",
+    "have",
+    "head",
+    "highest",
+    "home",
+    "in",
+    "is",
+    "last",
+    "lead",
+    "leader",
+    "leaderboard",
+    "leaders",
+    "leading",
+    "leads",
+    "league",
+    "least",
+    "led",
+    "list",
+    "loss",
+    "losses",
+    "lowest",
+    "made",
+    "missed",
+    "most",
+    "nba",
+    "on",
+    "or",
+    "over",
+    "past",
+    "pct",
+    "per",
+    "percentage",
+    "playoff",
+    "playoffs",
+    "player",
+    "players",
+    "point",
+    "points",
+    "postseason",
+    "rank",
+    "ranked",
+    "ranking",
+    "rated",
+    "rating",
+    "rebound",
+    "rebounds",
+    "recent",
+    "record",
+    "regular",
+    "road",
+    "scoring",
+    "season",
+    "seasons",
+    "show",
+    "since",
+    "split",
+    "stat",
+    "statistics",
+    "stats",
+    "steal",
+    "steals",
+    "straight",
+    "streak",
+    "the",
+    "threes",
+    "this",
+    "time",
+    "to",
+    "top",
+    "total",
+    "under",
+    "versus",
+    "vs",
+    "was",
+    "were",
+    "what",
+    "when",
+    "which",
+    "who",
+    "win",
+    "wins",
+    "with",
+    "worst",
+    "year",
+}
+
+
+def _player_reference_candidate_words(q: str) -> list[str]:
+    """Return query words worth checking against the data-backed player index."""
+    candidates: list[str] = []
+    for raw_word in q.split():
+        word = raw_word.strip(' .?!,;:"()[]{}')
+        if word.endswith("'s"):
+            word = word[:-2]
+        if word in _PLAYER_REFERENCE_STOPWORDS:
+            continue
+        if re.match(r"^\d", word):
+            continue
+        if len(word) < 2:
+            continue
+        if word in _TEAM_ALIAS_WORDS:
+            continue
+        candidates.append(word)
+    return candidates
 
 
 # ---------------------------------------------------------------------------
@@ -855,6 +1004,7 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
         return _no_match()
 
     matches: list[tuple[int, int, int, str, str]] = []
+    candidate_words = _player_reference_candidate_words(q)
 
     def add_matches(alias_map: dict[str, str], source: str, priority: int) -> None:
         for key, resolved in alias_map.items():
@@ -884,8 +1034,9 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
     # start at the same position, full-name/data-backed matches beat broad
     # single-token aliases inside that same span.
     add_matches(PLAYER_FULL_NAME_ALIASES, "full_name_alias", 0)
-    full_name_index = _get_player_full_name_index()
-    add_full_name_matches(full_name_index)
+    if len(candidate_words) >= 2:
+        full_name_index = _get_player_full_name_index()
+        add_full_name_matches(full_name_index)
     add_matches(CURATED_PLAYER_ALIASES, "alias", 1)
     add_matches(PLAYER_NICKNAME_ALIASES, "nickname", 1)
     if matches:
@@ -893,113 +1044,7 @@ def resolve_player_in_query(text: str) -> ResolutionResult:
         return _confident(resolved, source=source)
 
     # 5. Try data-driven last-name on each word (skip common stopwords)
-    _stop = {
-        "last",
-        "past",
-        "recent",
-        "games",
-        "game",
-        "vs",
-        "versus",
-        "against",
-        "summary",
-        "average",
-        "averages",
-        "record",
-        "home",
-        "away",
-        "road",
-        "wins",
-        "win",
-        "loss",
-        "losses",
-        "playoff",
-        "playoffs",
-        "postseason",
-        "career",
-        "season",
-        "seasons",
-        "from",
-        "to",
-        "in",
-        "on",
-        "at",
-        "with",
-        "for",
-        "during",
-        "over",
-        "under",
-        "between",
-        "and",
-        "or",
-        "the",
-        "top",
-        "best",
-        "worst",
-        "most",
-        "least",
-        "highest",
-        "lowest",
-        "points",
-        "point",
-        "rebounds",
-        "rebound",
-        "assists",
-        "assist",
-        "steals",
-        "steal",
-        "blocks",
-        "block",
-        "threes",
-        "scoring",
-        "split",
-        "streak",
-        "straight",
-        "consecutive",
-        "finder",
-        "count",
-        "list",
-        "show",
-        "leaders",
-        "leader",
-        "leaderboard",
-        "comparisons",
-        "compare",
-        "comparison",
-        "head",
-        "since",
-        "before",
-        "after",
-        "all",
-        "time",
-        "regular",
-        "form",
-        "stats",
-        "stat",
-        "statistics",
-        "rating",
-        "rated",
-        "ranked",
-        "rank",
-        "ranking",
-        "made",
-        "missed",
-        "pct",
-        "percentage",
-        "per",
-        "total",
-    }
-    words = q.split()
-    for word in words:
-        if word in _stop:
-            continue
-        if re.match(r"^\d", word):
-            continue
-        if len(word) < 2:
-            continue
-        # Skip words that are team aliases (e.g. "boston", "miami", "houston")
-        if word in _TEAM_ALIAS_WORDS:
-            continue
+    for word in candidate_words:
         if word in NEVER_AUTO_RESOLVE_LAST_NAMES:
             # Check the curated aliases first (they ARE allowed)
             # Already checked above, so this is a true ambiguity

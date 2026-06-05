@@ -13,6 +13,7 @@ Covers:
 
 import pytest
 
+from nbatools.commands import entity_resolution
 from nbatools.commands._matchup_utils import detect_team_in_text
 from nbatools.commands.entity_resolution import (
     ResolutionResult,
@@ -217,6 +218,49 @@ class TestResolvePlayerInQuery:
         r = resolve_player_in_query("sga season summary")
         assert r.is_confident
         assert r.resolved == "Shai Gilgeous-Alexander"
+
+    def test_leaguewide_leaderboard_query_skips_data_backed_player_indexes(
+        self,
+        monkeypatch,
+        request,
+    ):
+        entity_resolution.reset_player_index()
+        request.addfinalizer(entity_resolution.reset_player_index)
+
+        def fail_build(*_args, **_kwargs):
+            raise AssertionError("player index should not be built")
+
+        monkeypatch.setattr(entity_resolution, "_build_player_full_name_index", fail_build)
+        monkeypatch.setattr(entity_resolution, "_build_player_index", fail_build)
+
+        parsed = parse_query("Who leads the NBA in points per game this season?")
+
+        assert parsed["route"] == "season_leaders"
+        assert parsed["player"] is None
+        assert parsed["stat"] == "pts"
+
+    def test_data_backed_full_name_query_still_builds_full_name_index(self, monkeypatch, request):
+        entity_resolution.reset_player_index()
+        request.addfinalizer(entity_resolution.reset_player_index)
+        calls = 0
+
+        def build_full_name_index(*_args, **_kwargs):
+            nonlocal calls
+            calls += 1
+            return {"payton pritchard": "Payton Pritchard"}
+
+        monkeypatch.setattr(
+            entity_resolution,
+            "_build_player_full_name_index",
+            build_full_name_index,
+        )
+
+        r = resolve_player_in_query("Payton Pritchard recent form")
+
+        assert r.is_confident
+        assert r.resolved == "Payton Pritchard"
+        assert r.source == "full_name"
+        assert calls == 1
 
     def test_ad_in_query(self):
         r = resolve_player_in_query("ad playoff stats since 2020")
