@@ -3,13 +3,13 @@ surface: public_query_acceptance
 review_closure:
   state: human_review_complete
   scope: public_query_acceptance
-  reviewed_run_id: 20260603T020837Z
-  completed_on: "2026-06-03"
-  case_count: 113
+  reviewed_run_id: 20260606T232744Z
+  completed_on: "2026-06-06"
+  case_count: 114
   ui_spot_check:
-    status: passed
-    notes: Curry 5+ threes this season and Lakers playoff history spot checks passed.
-  notes: Public acceptance representative outputs were reviewed; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
+    status: not_applicable
+    notes: Opponent-division promotion reuses the existing team_record renderer; no frontend layout change was introduced.
+  notes: Public acceptance representative outputs and the promoted opponent-division team-record cases were reviewed; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
 
 variant_grid: &public_variant_grid
   - canonical
@@ -34,8 +34,8 @@ families:
     public_surface: true
     required_variants: *public_variant_grid
     coverage_questions:
-      - Do single-team record phrasings preserve location, season, and opponent qualifiers?
-      - Do matchup and unsupported division siblings avoid broad single-team fallback?
+      - Do single-team record phrasings preserve location, season, opponent, conference, and division qualifiers?
+      - Do matchup, no-subject division, mixed conference-plus-division, and playoff division siblings avoid broad single-team fallback?
     sibling_families:
       - team_record_availability
 

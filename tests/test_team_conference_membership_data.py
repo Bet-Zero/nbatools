@@ -8,6 +8,7 @@ import pytest
 from nbatools.commands.data_utils import (
     get_team_conference_map,
     get_teams_by_conference,
+    get_teams_by_division,
     load_team_conference_membership,
 )
 
@@ -24,7 +25,7 @@ REQUIRED_COLUMNS = {
     "source",
     "coverage_trusted",
 }
-EXPECTED_DIVISIONS = {"Atlantic", "Central", "Southeast", "Northwest", "Pacific", "Southwest"}
+EXPECTED_DIVISIONS = ("Atlantic", "Central", "Southeast", "Northwest", "Pacific", "Southwest")
 
 
 def _load_raw_membership() -> pd.DataFrame:
@@ -67,7 +68,7 @@ def test_trusted_season_has_complete_balanced_membership(season: str):
     assert set(df["conference"]) == {"East", "West"}
 
     division_counts = df["division"].value_counts().to_dict()
-    assert set(df["division"]) == EXPECTED_DIVISIONS
+    assert set(df["division"]) == set(EXPECTED_DIVISIONS)
     assert division_counts == {division: 5 for division in EXPECTED_DIVISIONS}
 
 
@@ -127,16 +128,33 @@ def test_get_teams_by_conference_returns_balanced_team_lists(season: str, confer
     assert teams == sorted(teams)
 
 
+@pytest.mark.parametrize("season", SUPPORTED_SEASONS)
+@pytest.mark.parametrize("division", EXPECTED_DIVISIONS)
+def test_get_teams_by_division_returns_balanced_team_lists(season: str, division: str):
+    teams = get_teams_by_division(season, division)
+
+    assert len(teams) == 5
+    assert teams == sorted(teams)
+
+
 def test_unknown_season_has_no_trusted_conference_coverage():
     assert get_team_conference_map("2099-00") == {}
     assert get_teams_by_conference("2099-00", "East") == []
+    assert get_teams_by_division("2099-00", "Atlantic") == []
 
 
 def test_require_trusted_coverage_rejects_unknown_season():
     with pytest.raises(ValueError, match="Missing trusted team-conference coverage"):
         get_teams_by_conference("2099-00", "East", require_trusted_coverage=True)
+    with pytest.raises(ValueError, match="Missing trusted team-division coverage"):
+        get_teams_by_division("2099-00", "Atlantic", require_trusted_coverage=True)
 
 
 def test_get_teams_by_conference_rejects_unknown_conference():
     with pytest.raises(ValueError, match="Unsupported conference"):
         get_teams_by_conference("2025-26", "Central")
+
+
+def test_get_teams_by_division_rejects_unknown_division():
+    with pytest.raises(ValueError, match="Unsupported division"):
+        get_teams_by_division("2025-26", "East")

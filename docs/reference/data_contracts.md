@@ -828,15 +828,15 @@ Recommended uniqueness expectation:
 - `2025-26`
 
 Each trusted season must validate to exactly 30 teams, exactly 15 East teams,
-and exactly 15 West teams.
+exactly 15 West teams, and exactly five teams in each NBA division.
 
 ### Field rules
 
 - `conference` must be exactly `East` or `West`
 - `coverage_trusted` must be a stable boolean/0-1 value
 - `source` must identify the source decision for the row
-- `division` is included for future division support and must be non-empty on
-  trusted rows
+- `division` must be one of `Atlantic`, `Central`, `Southeast`, `Northwest`,
+  `Pacific`, or `Southwest`
 - `team_id` is required for the current trusted rows and must match the
   corresponding `team_game_stats` identity for the same season
 
@@ -851,6 +851,8 @@ and exactly 15 West teams.
 
 - `team_record` opponent-conference filters for trusted current-era seasons
   (`2024-25`, `2025-26`)
+- `team_record` opponent-division filters for trusted current-era regular
+  seasons (`2024-25`, `2025-26`)
 - data validation tests for membership coverage and game-log abbreviation
   consistency
 
@@ -876,9 +878,12 @@ Do not infer conference membership from standings rank ordering. Do not use the
 incomplete `teams_reference.csv` file as the source of truth for this contract.
 
 Missing or untrusted conference coverage keeps opponent-conference query
-behavior unsupported/no-result. It must never broaden into an unfiltered
-full-season team record. Division filtering and geography phrases such as
-`east coast teams` are outside this contract.
+behavior unsupported/no-result. Missing or untrusted division coverage keeps
+opponent-division query behavior unsupported/no-result. Neither condition may
+broaden into an unfiltered full-season team record. Geography phrases such as
+`east coast teams`, no-subject division record leaderboards, mixed
+conference-plus-division wording, and playoff division record wording remain
+outside this contract.
 
 ---
 

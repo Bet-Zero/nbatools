@@ -130,9 +130,9 @@ def _parse_kwargs_json(kwargs_json: str) -> dict[str, Any]:
     try:
         parsed = json.loads(kwargs_json)
     except json.JSONDecodeError as exc:
-        raise typer.BadParameter(f"--kwargs-json must be valid JSON: {exc.msg}") from exc
+        raise ValueError(f"--kwargs-json must be valid JSON: {exc.msg}") from exc
     if not isinstance(parsed, dict):
-        raise typer.BadParameter("--kwargs-json must decode to a JSON object")
+        raise ValueError("--kwargs-json must decode to a JSON object")
     return parsed
 
 
@@ -227,7 +227,11 @@ def route(
     json_path: str = typer.Option(None, "--json", help="Optional path to save raw output as JSON."),
 ):
     route_name = _validate_route_name(route_name)
-    route_kwargs = _parse_kwargs_json(kwargs_json)
+    try:
+        route_kwargs = _parse_kwargs_json(kwargs_json)
+    except ValueError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=2) from exc
     _run_route_and_handle_exports(
         route_name,
         route_kwargs,

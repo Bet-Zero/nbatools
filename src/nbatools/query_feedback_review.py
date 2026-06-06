@@ -160,10 +160,13 @@ def load_r2_records(
     prefix: str,
     client: Any | None = None,
 ) -> list[LoadedFeedbackRecord]:
-    env = dict(os.environ)
-    env["R2_BUCKET_NAME"] = bucket
-    config = data_source.load_r2_config(env=env)
-    r2_client = client or data_source.create_r2_client(config)
+    if client is None:
+        env = dict(os.environ)
+        env["R2_BUCKET_NAME"] = bucket
+        config = data_source.load_r2_config(env=env)
+        r2_client = data_source.create_r2_client(config)
+    else:
+        r2_client = client
     records: list[LoadedFeedbackRecord] = []
     continuation_token: str | None = None
     prefix_value = prefix.strip("/")

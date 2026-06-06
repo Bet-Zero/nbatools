@@ -6078,81 +6078,129 @@ cases:
 
   - id: celtics_atlantic_division_guard
     query: "Celtics record vs Atlantic Division"
-    category: unsupported_boundary
+    category: team_record
     priority: p2
     acceptance:
       family: team_records
-      variant: nearby_unsupported
+      variant: synonym
       no_broad_fallback: true
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: team_record
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: team_record
+    expected_filters:
+      - kind: division
+        label: Opponent division
+        value: Atlantic
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
     hard_assertions:
       - path: result.metadata.team
         equals: BOS
+      - path: result.metadata.opponent_division
+        equals: Atlantic
       - path: result.metadata.opponent_conference
         equals:
-      - path: result.metadata.unsupported_filters.0
-        equals: opponent_division
-    review_notes: "NBA division opponent filters are explicitly unsupported and must not fall back to broad team records."
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 16
+      - path: result.sections.summary.0.wins
+        equals: 10
+      - path: result.sections.summary.0.losses
+        equals: 6
+    review_notes: "NBA division opponent filters are execution-backed for trusted current-era team-division coverage."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
-        - unsupported_boundary
-        - division_guard
+        - context_filter
+        - opponent_division
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+      notes: "Promotion review passed: resolves trusted Atlantic Division opponents and returns BOS 10-6 over 16 games."
 
   - id: lakers_pacific_division_guard
     query: "Lakers record against Pacific Division"
-    category: unsupported_boundary
+    category: team_record
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: team_record
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: team_record
+    expected_filters:
+      - kind: division
+        label: Opponent division
+        value: Pacific
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
     hard_assertions:
       - path: result.metadata.team
         equals: LAL
-      - path: result.metadata.unsupported_filters.0
-        equals: opponent_division
-    review_notes: "Pacific Division wording should be guarded instead of ignored."
+      - path: result.metadata.opponent_division
+        equals: Pacific
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 17
+      - path: result.sections.summary.0.wins
+        equals: 10
+      - path: result.sections.summary.0.losses
+        equals: 7
+    review_notes: "Pacific Division wording executes as an opponent-division team record."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
-        - unsupported_boundary
-        - division_guard
+        - context_filter
+        - opponent_division
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+      notes: "Promotion review passed: resolves trusted Pacific Division opponents and returns LAL 10-7 over 17 games."
 
   - id: knicks_central_division_guard
     query: "Knicks record vs Central Division"
-    category: unsupported_boundary
+    category: team_record
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: team_record
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: team_record
+    expected_filters:
+      - kind: division
+        label: Opponent division
+        value: Central
+    expected_sections:
+      - summary
+      - by_season
+    expected_row_counts:
+      summary: 1
+      by_season: 1
     hard_assertions:
       - path: result.metadata.team
         equals: NYK
-      - path: result.metadata.unsupported_filters.0
-        equals: opponent_division
-    review_notes: "Central Division wording should be guarded despite common-word overlap."
+      - path: result.metadata.opponent_division
+        equals: Central
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.summary.0.games
+        equals: 17
+      - path: result.sections.summary.0.wins
+        equals: 10
+      - path: result.sections.summary.0.losses
+        equals: 7
+    review_notes: "Central Division wording executes as an opponent-division team record."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
-        - unsupported_boundary
-        - division_guard
+        - context_filter
+        - opponent_division
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+      notes: "Promotion review passed: resolves trusted Central Division opponents and returns NYK 10-7 over 17 games."
 
   - id: record_against_northwest_division_teams_guard
     query: "record against Northwest Division teams"
@@ -6164,6 +6212,10 @@ cases:
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
+    acceptance:
+      family: team_records
+      variant: nearby_unsupported
+      no_broad_fallback: true
     hard_assertions:
       - path: result.metadata.unsupported_filters.0
         equals: opponent_division
@@ -6174,7 +6226,36 @@ cases:
         - unsupported_boundary
         - division_guard
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+      notes: "No-subject division record leaderboards remain unsupported after named-team opponent-division promotion."
+
+  - id: celtics_atlantic_division_coverage_guard
+    query: "Celtics record vs Atlantic Division in 2023-24"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.team
+        equals: BOS
+      - path: result.metadata.season
+        equals: 2023-24
+      - path: result.metadata.opponent_division
+        equals: Atlantic
+      - path: result.metadata.unsupported_filters.0
+        equals: division_coverage
+    review_notes: "Historical division filters require trusted team-division coverage and must not broaden to a full team record."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - division_guard
+        - coverage_guard
+        - no_broad_fallback
+      notes: "Expected unsupported until historical team-division membership coverage is approved."
 
   - id: lakers_western_conference_pacific_division_guard
     query: "Lakers record against Western Conference Pacific Division teams"
@@ -6201,7 +6282,7 @@ cases:
         - division_guard
         - opponent_conference
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+      notes: "Mixed conference-plus-division wording remains unsupported after named-team opponent-division promotion."
 
   - id: celtics_playoff_atlantic_division_guard
     query: "Celtics playoff record vs Atlantic Division"
@@ -6228,7 +6309,7 @@ cases:
         - division_guard
         - playoff_record
         - no_broad_fallback
-      notes: "Expected unsupported until opponent-division filtering is explicitly promoted."
+      notes: "Playoff division record phrasing remains unsupported after regular-season named-team opponent-division promotion."
 
   - id: celtics_conference_finals_atlantic_division_guard
     query: "Celtics conference finals record vs Atlantic Division"

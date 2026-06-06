@@ -314,6 +314,14 @@ notes rather than silently pretending the filter ran.
   requested slice. Team-level bench semantics and broader route expansion are
   out of scope for the core finish line unless a future product queue reopens
   them.
+- Opponent-conference and named-team opponent-division filters execute on
+  regular-season `team_record` queries when trusted
+  `team_conference_membership` rows cover the requested season. Supported
+  current-era coverage is `2024-25` and `2025-26`. Missing/untrusted coverage,
+  geography phrases such as `east coast teams`, no-subject division record
+  leaderboards, mixed conference-plus-division wording, and playoff division
+  record wording return explicit unsupported/no-result responses instead of
+  broad team records.
 - On/off queries execute on `player_on_off` when trusted
   `team_player_on_off_summary` rows cover the requested single-player slice.
   Missing or untrusted coverage, multi-player on/off requests, and slices
@@ -346,6 +354,8 @@ notes rather than silently pretending the filter ran.
 | ------------------------------- | ---------------------------------------------------------------------------- |
 | vs opponent (team)              | `Jokic vs Lakers`                                                            |
 | vs opponent (player)            | `LeBron stats vs Kevin Durant`, `Jokic averages against Stephen Curry`       |
+| team record vs conference       | `Celtics record against the East`                                            |
+| team record vs division         | `Celtics record vs Atlantic Division`                                        |
 | without player                  | `Lakers record without LeBron`, `Warriors w/o Curry`, `Suns when Booker out` |
 | summary vs opponent             | `Jokic summary vs Lakers`                                                    |
 | head-to-head                    | `Jokic h2h vs Embiid`, `Lakers head-to-head vs Celtics`                      |

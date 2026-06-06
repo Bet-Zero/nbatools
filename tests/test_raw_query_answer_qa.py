@@ -326,8 +326,8 @@ def test_acceptance_family_registry_loads_current_public_families() -> None:
 
     assert registry["surface"] == "public_query_acceptance"
     assert registry["review_closure"]["state"] == "human_review_complete"
-    assert registry["review_closure"]["case_count"] == 113
-    assert registry["review_closure"]["ui_spot_check"]["status"] == "passed"
+    assert registry["review_closure"]["case_count"] == 114
+    assert registry["review_closure"]["ui_spot_check"]["status"] == "not_applicable"
     assert len(registry["families"]) == 16
     assert "player_comparisons" not in registry["families_by_id"]
     availability = registry["families_by_id"]["team_record_availability"]
@@ -364,7 +364,7 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 113
+    assert len(selected) == 114
     assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
 
 
