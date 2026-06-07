@@ -29,6 +29,16 @@ those only when a reviewed sample is promoted into the Raw QA corpus.
 
 ## Run
 
+Human review should use a named 10-query slice by default:
+
+```bash
+make exploratory-query-review-slice SLICE=006_opponent_quality_filters
+```
+
+Do not run the full exploratory batch for human review unless that broader run
+is explicitly requested. Full exploratory runs are useful for occasional
+inventory or smoke-style inspection, but they are not the default review unit.
+
 Default sample file:
 
 ```bash
@@ -75,7 +85,8 @@ Use `--limit` to run a prefix of the input file and `--top-rows` to control
 how many section rows are copied into the Markdown review cards.
 
 Without `--slice`, the command runs the full input file. `--all` is accepted as
-an explicit full-run marker, but it does not change the behavior.
+an explicit full-run marker, but it does not change the behavior. Prefer
+`--slice` for normal human review.
 
 ## Input Format
 
@@ -102,18 +113,39 @@ Small review batches live under:
 qa/exploratory/slices/
 ```
 
+Each new exploratory slice should contain exactly 10 samples unless there is a
+strong documented reason not to. Ten queries is the default review unit because
+it gives each case enough individual attention while still surfacing repeated
+product trends.
+
 Each slice is input-only and uses the same sample rules as the full exploratory
 file:
 
 ```yaml
-id: 001_player_last_n
-description: Player last-N game summaries
-review_goal: Check player name parsing, last-N filters, summary shape, and game log rows.
+id: 006_opponent_quality_filters
+description: Team record queries filtered by opponent quality
+review_goal: Check whether opponent-quality phrases are parsed, applied, and shown in the rendered snapshot.
 samples:
-  - id: luka_last_10
-    query: "Luka Doncic stats last 10 games"
-  - id: lebron_last_5
-    query: "LeBron James stats last 5 games"
+  - id: thunder_vs_top_10
+    query: "Thunder record vs top 10 teams"
+  - id: celtics_vs_top_5
+    query: "Celtics record vs top 5 teams"
+  - id: lakers_vs_playoff_teams
+    query: "Lakers record against playoff teams"
+  - id: nuggets_vs_winning_teams
+    query: "Nuggets record vs winning teams"
+  - id: knicks_vs_over_500
+    query: "Knicks record against teams over .500"
+  - id: bucks_vs_losing_teams
+    query: "Bucks record against losing teams"
+  - id: wolves_vs_top_seeded_teams
+    query: "Timberwolves record vs top seeded teams"
+  - id: mavs_vs_west_playoff_teams
+    query: "Mavericks record against West playoff teams"
+  - id: warriors_vs_good_teams
+    query: "Warriors record vs good teams"
+  - id: suns_vs_bad_teams
+    query: "Suns record vs bad teams"
 ```
 
 Slices must not include expected statuses, routes, filters, answer checks, Raw
@@ -174,6 +206,79 @@ Scratch runs whose `--run-id` contains terms such as `smoke`, `codex`,
 
 Human/product reviewers should start with `review.md`. Use `report.md` when a
 case needs internal diagnostic context.
+
+For each 10-query slice:
+
+1. Run the slice.
+2. Open the generated `review.md`.
+3. Review each case individually.
+4. Classify each case using the standard labels below.
+5. Summarize the slice-level trends.
+6. Decide whether to run another 10-query slice, create one targeted 10-query
+   follow-up slice, or stop and fix a repeated product issue.
+
+Use these reviewer labels:
+
+- Good
+- Answer needs work
+- Wrong/missing table
+- Subject/table mismatch
+- Filter treated as subject
+- Evidence columns insufficient
+- Query/filter problem
+- Unsupported
+- Promote to Raw QA
+
+After each slice:
+
+- If 8-10 cases look good, run another 10-query slice.
+- If 3 or more cases fail with the same pattern, stop and fix that repeated
+  pattern.
+- If failures are mixed, create one targeted 10-query follow-up slice to clarify
+  the trend.
+- If a case is `no_result`, ambiguous, or data-dependent, mark it for
+  product/data review before treating it as a bug.
+- Do not fix one-off cases until repeated patterns are clear, unless the issue
+  is obviously catastrophic.
+
+Use this slice summary format:
+
+```text
+Slice:
+Cases reviewed: 10
+
+Judgments:
+- Good:
+- Answer needs work:
+- Wrong/missing table:
+- Subject/table mismatch:
+- Filter treated as subject:
+- Evidence columns insufficient:
+- Query/filter problem:
+- Unsupported:
+- Promote to Raw QA:
+
+Main trend:
+Secondary trend:
+Recommended next action:
+```
+
+For any bad or questionable case, use this note format:
+
+```text
+Query:
+Expected:
+Actual:
+Problem type:
+Likely layer:
+```
+
+Use 10-query slices to find repeated behavior patterns before fixing individual
+cases. Stop reviewing and create a product-fix task when 3 or more cases in a
+slice fail for the same reason, the same pattern appears across multiple
+slices, a query family clearly routes to the wrong result type, a filter class
+is clearly missing or unapplied, or the answer/table mismatch is systematic.
+Keep the shared query output snapshot as the single human review surface.
 
 Each `report.md` card starts with the existing query/result display terms:
 

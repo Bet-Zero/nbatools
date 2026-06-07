@@ -1,0 +1,33 @@
+id: 006_opponent_quality_filters
+description: Team record queries filtered by opponent quality
+review_goal: Check whether opponent-quality phrases are parsed, applied, and shown in the rendered snapshot.
+samples:
+  - id: thunder_vs_top_10
+    query: "Thunder record vs top 10 teams"
+
+  - id: celtics_vs_top_5
+    query: "Celtics record vs top 5 teams"
+
+  - id: lakers_vs_playoff_teams
+    query: "Lakers record against playoff teams"
+
+  - id: nuggets_vs_winning_teams
+    query: "Nuggets record vs winning teams"
+
+  - id: knicks_vs_over_500
+    query: "Knicks record against teams over .500"
+
+  - id: bucks_vs_losing_teams
+    query: "Bucks record against losing teams"
+
+  - id: wolves_vs_top_seeded_teams
+    query: "Timberwolves record vs top seeded teams"
+
+  - id: mavs_vs_west_playoff_teams
+    query: "Mavericks record against West playoff teams"
+
+  - id: warriors_vs_good_teams
+    query: "Warriors record vs good teams"
+
+  - id: suns_vs_bad_teams
+    query: "Suns record vs bad teams"

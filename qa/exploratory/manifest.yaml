@@ -14,3 +14,6 @@ slices:
   - id: 005_leaderboards_top_performances
     file: slices/005_leaderboards_top_performances.yaml
     status: pending_review
+  - id: 006_opponent_quality_filters
+    file: slices/006_opponent_quality_filters.yaml
+    status: pending_review

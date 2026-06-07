@@ -16,3 +16,18 @@ samples:
 
   - id: mavs_record_with_kyrie
     query: Mavericks record with Kyrie
+
+  - id: celtics_record_with_tatum
+    query: Celtics record with Tatum
+
+  - id: celtics_record_without_tatum
+    query: Celtics record without Tatum
+
+  - id: bucks_record_with_giannis
+    query: Bucks record with Giannis
+
+  - id: nuggets_record_without_jokic
+    query: Nuggets record without Jokic
+
+  - id: suns_record_with_booker
+    query: Suns record with Booker

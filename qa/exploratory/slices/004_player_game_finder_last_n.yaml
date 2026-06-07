@@ -16,3 +16,18 @@ samples:
 
   - id: curry_vs_celtics
     query: Steph Curry vs Celtics
+
+  - id: anthony_edwards_last_5
+    query: Anthony Edwards last 5 games
+
+  - id: giannis_vs_celtics
+    query: Giannis vs Celtics
+
+  - id: tatum_vs_heat
+    query: Jayson Tatum vs Heat
+
+  - id: durant_last_5
+    query: Kevin Durant last 5 games
+
+  - id: wembanyama_vs_lakers
+    query: Victor Wembanyama vs Lakers

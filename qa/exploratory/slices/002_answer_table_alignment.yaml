@@ -10,3 +10,24 @@ samples:
 
   - id: thunder_record_vs_top_10
     query: Thunder record vs top 10 teams
+
+  - id: lakers_record_with_lebron
+    query: Lakers record with LeBron
+
+  - id: lakers_record_without_lebron
+    query: Lakers record without LeBron
+
+  - id: nikola_jokic_vs_lakers
+    query: Nikola Jokic vs Lakers
+
+  - id: luka_last_5
+    query: Luka Doncic last 5 games
+
+  - id: top_scorers_this_season
+    query: top scorers this season
+
+  - id: highest_scoring_games_this_season
+    query: highest scoring games this season
+
+  - id: highest_team_scoring_games
+    query: highest team scoring games

@@ -16,3 +16,18 @@ samples:
 
   - id: highest_team_scoring_games
     query: highest team scoring games
+
+  - id: most_assists_this_season
+    query: most assists this season
+
+  - id: top_three_point_shooters_this_season
+    query: top three point shooters this season
+
+  - id: best_defensive_teams_this_season
+    query: best defensive teams this season
+
+  - id: most_team_points_in_a_game_this_season
+    query: most team points in a game this season
+
+  - id: teams_with_most_wins_this_season
+    query: teams with most wins this season
