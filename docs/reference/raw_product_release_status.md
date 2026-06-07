@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Snapshot: 2026-06-03.
+Snapshot: 2026-06-06.
 
 Raw Product QA is machine-clean for the current corpus and the current public
 acceptance slice. The current public-acceptance human product review is closed
@@ -12,10 +12,10 @@ from one another.
 
 | Evidence layer | Current status | Durable evidence pointer |
 | --- | --- | --- |
-| Full Raw QA corpus | `298/298` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
-| `public_query_acceptance` slice | `113/113` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
+| Full Raw QA corpus | `301/301` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
+| `public_query_acceptance` slice | `114/114` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
 | Human product review | `human_review_complete` | Tracked in `qa/raw_query_answer_acceptance_families.yaml` for the current public-acceptance closure; generated outputs remain evidence snapshots only. |
-| Representative rendered UI review | Selected representative browser-rendered queries passed; public-acceptance closure spot checks for Curry 5+ threes this season and Lakers playoff history passed | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
+| Representative rendered UI review | Selected representative browser-rendered queries passed; the opponent-division promotion reused the existing `team_record` renderer and required no new frontend layout spot check | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed

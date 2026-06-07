@@ -266,6 +266,8 @@ TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS = [
     "coverage_trusted",
 ]
 
+NBA_DIVISIONS = {"Atlantic", "Central", "Southeast", "Northwest", "Pacific", "Southwest"}
+
 PERIOD_DESCRIPTOR_LOOKUP = {
     ("quarter", "1"): (1, 1),
     ("quarter", "2"): (2, 2),
@@ -498,6 +500,8 @@ def _load_team_conference_membership_cached(data_root: str) -> pd.DataFrame:
         raise ValueError("team_conference_membership team_id must be present")
     if not df["conference"].isin(["East", "West"]).all():
         raise ValueError("team_conference_membership conference must be East or West")
+    if not df["division"].isin(NBA_DIVISIONS).all():
+        raise ValueError("team_conference_membership division must be a recognized NBA division")
 
     return df
 
@@ -549,6 +553,38 @@ def get_teams_by_conference(
             raise ValueError(f"Missing trusted team-conference coverage for {season}")
 
     return sorted(conference_trusted["team_abbr"].astype(str).str.upper().tolist())
+
+
+def get_teams_by_division(
+    season: str,
+    division: str,
+    *,
+    require_trusted_coverage: bool = False,
+) -> list[str]:
+    """Return trusted team abbreviations for a season and NBA division."""
+    normalized = str(division).strip().title()
+    canonical = {value.lower(): value for value in NBA_DIVISIONS}.get(normalized.lower())
+    if canonical is None:
+        raise ValueError(f"Unsupported division: {division}")
+
+    df = load_team_conference_membership()
+    season_trusted = df.loc[df["season"].eq(season) & df["coverage_trusted"].eq(1)]
+    division_trusted = season_trusted.loc[season_trusted["division"].eq(canonical)]
+
+    if require_trusted_coverage:
+        conference_counts = season_trusted["conference"].value_counts().to_dict()
+        division_counts = season_trusted["division"].value_counts().to_dict()
+        if (
+            len(season_trusted) != 30
+            or season_trusted["team_abbr"].nunique() != 30
+            or conference_counts.get("East") != 15
+            or conference_counts.get("West") != 15
+            or any(division_counts.get(value) != 5 for value in NBA_DIVISIONS)
+            or len(division_trusted) != 5
+        ):
+            raise ValueError(f"Missing trusted team-division coverage for {season}")
+
+    return sorted(division_trusted["team_abbr"].astype(str).str.upper().tolist())
 
 
 def resolve_opponent_quality_teams(

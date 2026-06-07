@@ -88,6 +88,7 @@ class TestPlayerVsPlayerAsOpponent:
         assert parsed.get("opponent_player") == "Stephen Curry"
 
 
+@pytest.mark.needs_data
 class TestBarePlayerVsPlayerAmbiguousBoundary:
     """Bare player-vs-player should not silently execute a comparison table."""
 

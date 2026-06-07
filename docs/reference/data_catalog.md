@@ -111,8 +111,8 @@ Reference table
 One row per season and `team_abbr`
 
 ### Purpose
-Provides trusted season-aware conference membership for current-era team
-context filters.
+Provides trusted season-aware conference and division membership for current-era
+team context filters.
 
 ### Key columns
 - `season`
@@ -127,8 +127,8 @@ context filters.
 - `2024-25`
 - `2025-26`
 
-Both covered seasons are trusted and validate to 30 teams, 15 East teams, and
-15 West teams.
+Both covered seasons are trusted and validate to 30 teams, 15 East teams,
+15 West teams, and five teams in each NBA division.
 
 ### Source notes
 The current rows are manually curated from the current NBA team
@@ -146,15 +146,17 @@ and reviewable.
   `data/raw/team_game_stats/<season>_regular_season.csv`
 - every team abbreviation in the matching team-game file has a trusted
   conference membership row
-- `division` is included for future division support and must be non-empty for
-  trusted rows
+- `division` must be one of the six NBA divisions and each trusted season must
+  have exactly five teams per division
 
 ### Current use
-This table powers current-era opponent-conference `team_record` filters for
-trusted seasons `2024-25` and `2025-26`. If trusted coverage is missing for a
-requested season, query behavior remains unsupported/no-result instead of
-falling back to an unfiltered full-season record. Division filters and geography
-phrases such as `east coast teams` are not supported by this table.
+This table powers current-era opponent-conference and named-team
+opponent-division `team_record` filters for trusted seasons `2024-25` and
+`2025-26`. If trusted coverage is missing for a requested season, query
+behavior remains unsupported/no-result instead of falling back to an unfiltered
+full-season record. Geography phrases such as `east coast teams`, no-subject
+division record leaderboards, mixed conference-plus-division wording, and
+playoff division record wording are not supported by this table.
 
 ---
 

@@ -60,39 +60,42 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "fields": {
                 "team": "BOS",
                 "opponent_conference": None,
+                "opponent_division": "Atlantic",
                 "opponent_division_boundary": True,
             },
             "route_kwargs": {
                 "team": "BOS",
-                "unsupported_filters": ["opponent_division"],
+                "opponent_division": "Atlantic",
             },
-            "note_contains": "unsupported_boundary",
+            "no_unsupported_filters": True,
         },
         {
             "query": "Lakers record against Pacific Division",
             "route": "team_record",
             "fields": {
                 "team": "LAL",
+                "opponent_division": "Pacific",
                 "opponent_division_boundary": True,
             },
             "route_kwargs": {
                 "team": "LAL",
-                "unsupported_filters": ["opponent_division"],
+                "opponent_division": "Pacific",
             },
-            "note_contains": "unsupported_boundary",
+            "no_unsupported_filters": True,
         },
         {
             "query": "Knicks record vs Central Division",
             "route": "team_record",
             "fields": {
                 "team": "NYK",
+                "opponent_division": "Central",
                 "opponent_division_boundary": True,
             },
             "route_kwargs": {
                 "team": "NYK",
-                "unsupported_filters": ["opponent_division"],
+                "opponent_division": "Central",
             },
-            "note_contains": "unsupported_boundary",
+            "no_unsupported_filters": True,
         },
         {
             "query": "record against Northwest Division teams",

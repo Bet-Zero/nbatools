@@ -356,6 +356,7 @@ def test_team_record_explicit_season_road_still_works():
     assert parsed["away_only"] is True
 
 
+@pytest.mark.needs_data
 def test_team_record_since_explicit_calendar_date_uses_since_window():
     parsed = parse_query("Celtics road record since January 1")
 
@@ -1198,6 +1199,33 @@ def test_team_record_opponent_conference_phrases_set_normalized_slot(query, conf
     assert parsed["opponent_conference"] == conference
     assert parsed["route_kwargs"]["opponent_conference"] == conference
     assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    ("query", "division"),
+    [
+        ("Celtics record vs Atlantic Division", "Atlantic"),
+        ("Lakers record against Pacific Division", "Pacific"),
+        ("Knicks record versus Central Division teams", "Central"),
+    ],
+)
+def test_team_record_opponent_division_phrases_set_normalized_slot(query, division):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "team_record"
+    assert parsed["opponent_division"] == division
+    assert parsed["route_kwargs"]["opponent_division"] == division
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+def test_mixed_conference_division_stays_unsupported_boundary():
+    parsed = parse_query("Lakers record against Western Conference Pacific Division teams")
+
+    assert parsed["route"] == "team_record"
+    assert parsed["opponent_conference"] is None
+    assert parsed["opponent_division"] is None
+    assert parsed["opponent_division_boundary"] is True
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["opponent_division"]
 
 
 def test_east_coast_teams_does_not_parse_as_opponent_conference():

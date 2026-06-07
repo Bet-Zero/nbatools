@@ -17,7 +17,7 @@ import pandas as pd
 import pytest
 
 import nbatools.query_service as query_service
-from nbatools.commands.data_utils import get_teams_by_conference
+from nbatools.commands.data_utils import get_teams_by_conference, get_teams_by_division
 from nbatools.commands.structured_results import (
     ComparisonResult,
     FinderResult,
@@ -1352,6 +1352,63 @@ class TestOpponentConferenceTeamRecords:
             natural.to_dict()["sections"]["by_season"]
             == explicit.to_dict()["sections"]["by_season"]
         )
+
+
+# ===================================================================
+# Opponent-division team records
+# ===================================================================
+
+
+@pytest.mark.needs_data
+class TestOpponentDivisionTeamRecords:
+    def test_celtics_current_season_record_against_atlantic(self):
+        qr = execute_natural_query("Celtics record vs Atlantic Division")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "BOS"
+        assert qr.metadata["season"] == "2025-26"
+        assert qr.metadata["opponent_division"] == "Atlantic"
+        assert len(qr.metadata["opponent_team_abbrs"]) == 5
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert {
+            "label": "Opponent division",
+            "value": "Atlantic",
+            "kind": "division",
+        } in qr.metadata["applied_filters"]
+
+        summary = qr.to_dict()["sections"]["summary"][0]
+        assert summary["games"] == 16
+        assert summary["wins"] == 10
+        assert summary["losses"] == 6
+
+    def test_division_record_matches_explicit_opponent_list(self):
+        natural = execute_natural_query("Lakers record against Pacific Division")
+        explicit = execute_structured_query(
+            "team_record",
+            team="LAL",
+            season="2025-26",
+            season_type="Regular Season",
+            opponent=get_teams_by_division("2025-26", "Pacific"),
+        )
+
+        assert natural.to_dict()["sections"]["summary"] == explicit.to_dict()["sections"]["summary"]
+        assert (
+            natural.to_dict()["sections"]["by_season"]
+            == explicit.to_dict()["sections"]["by_season"]
+        )
+
+    def test_missing_division_coverage_returns_no_result_without_broad_record(self):
+        qr = execute_natural_query("Celtics record vs Atlantic Division in 2023-24")
+
+        assert qr.route == "team_record"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["opponent_division"] == "Atlantic"
+        assert qr.metadata["unsupported_filters"] == ["division_coverage"]
+        assert qr.to_dict()["sections"] == {}
 
 
 # ===================================================================

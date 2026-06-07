@@ -280,6 +280,15 @@ def _build_applied_filters(
                 "kind": "conference",
             }
         )
+    opponent_division = source.get("opponent_division") or route_kwargs.get("opponent_division")
+    if opponent_division:
+        applied_filters.append(
+            {
+                "label": "Opponent division",
+                "value": str(opponent_division),
+                "kind": "division",
+            }
+        )
     if source.get("opponent"):
         applied_filters.append({"label": "Opponent", "value": source["opponent"], "kind": "team"})
     if source.get("without_player"):
@@ -493,6 +502,8 @@ def _build_query_metadata(
         "opponent": parsed.get("opponent"),
         "opponent_conference": parsed.get("opponent_conference")
         or route_kwargs.get("opponent_conference"),
+        "opponent_division": parsed.get("opponent_division")
+        or route_kwargs.get("opponent_division"),
         "opponent_team_abbrs": route_kwargs.get("opponent_team_abbrs"),
         "with_player": parsed.get("with_player") or route_kwargs.get("with_player"),
         "without_player": parsed.get("without_player"),
@@ -1443,6 +1454,7 @@ def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
         "team": team,
         "opponent": kwargs.get("opponent"),
         "opponent_conference": kwargs.get("opponent_conference"),
+        "opponent_division": kwargs.get("opponent_division"),
         "opponent_team_abbrs": kwargs.get("opponent_team_abbrs"),
         "with_player": kwargs.get("with_player"),
         "without_player": kwargs.get("without_player"),

@@ -43,24 +43,6 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["opponent_conference"],
         },
         {
-            "query": "Celtics record vs Atlantic Division",
-            "route": "team_record",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["opponent_division"],
-        },
-        {
-            "query": "Lakers record against Pacific Division",
-            "route": "team_record",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["opponent_division"],
-        },
-        {
-            "query": "Knicks record vs Central Division",
-            "route": "team_record",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["opponent_division"],
-        },
-        {
             "query": "record against Northwest Division teams",
             "route": "team_record_leaderboard",
             "reason": "filter_not_supported",
@@ -83,6 +65,12 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "route": "playoff_history",
             "reason": "filter_not_supported",
             "unsupported_filters": ["single_team_playoff_round_record"],
+        },
+        {
+            "query": "Celtics record vs Atlantic Division in 2023-24",
+            "route": "team_record",
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["division_coverage"],
         },
         {
             "query": "Celtics record against the East in 2023-24",

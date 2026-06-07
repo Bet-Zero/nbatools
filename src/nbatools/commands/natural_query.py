@@ -138,6 +138,9 @@ from nbatools.commands._parse_helpers import (
     detect_opponent_conference_geography_boundary as detect_opponent_conference_geography_boundary,
 )
 from nbatools.commands._parse_helpers import (
+    detect_opponent_division as detect_opponent_division,
+)
+from nbatools.commands._parse_helpers import (
     detect_opponent_division_boundary as detect_opponent_division_boundary,
 )
 from nbatools.commands._parse_helpers import (
@@ -718,6 +721,7 @@ __all__ = [
     "detect_opponent_conference",
     "detect_opponent_conference_boundary",
     "detect_opponent_conference_geography_boundary",
+    "detect_opponent_division",
     "detect_opponent_division_boundary",
     "detect_opponent_quality",
     "detect_quarter",
@@ -817,6 +821,7 @@ def _build_parse_state(query: str) -> dict:
     opponent_conference = detect_opponent_conference(q)
     opponent_conference_boundary = opponent_conference is not None
     opponent_conference_geography_boundary = detect_opponent_conference_geography_boundary(q)
+    opponent_division = detect_opponent_division(q)
     opponent_division_boundary = detect_opponent_division_boundary(q)
     if opponent_division_boundary:
         opponent_conference = None
@@ -1137,6 +1142,7 @@ def _build_parse_state(query: str) -> dict:
         "opponent_conference": opponent_conference,
         "opponent_conference_boundary": opponent_conference_boundary,
         "opponent_conference_geography_boundary": opponent_conference_geography_boundary,
+        "opponent_division": opponent_division,
         "opponent_division_boundary": opponent_division_boundary,
         "min_value": min_value,
         "max_value": max_value,
@@ -1331,6 +1337,7 @@ def _finalize_route(parsed: dict) -> dict:
     opponent_conference_geography_boundary = parsed.get(
         "opponent_conference_geography_boundary", False
     )
+    opponent_division = parsed.get("opponent_division")
     opponent_division_boundary = parsed.get("opponent_division_boundary", False)
 
     notes: list[str] = []
@@ -1747,8 +1754,24 @@ def _finalize_route(parsed: dict) -> dict:
         opponent_division_boundary
         and record_intent
         and not any([player, player_a, player_b, team_a, team_b])
+        and not (
+            team
+            and opponent_division
+            and season_type == "Regular Season"
+            and not any(
+                [
+                    with_player,
+                    without_player,
+                    unresolved_with_player,
+                    unresolved_without_player,
+                ]
+            )
+        )
     ):
-        notes.append("unsupported_boundary: opponent-division filters are not supported yet")
+        notes.append(
+            "unsupported_boundary: opponent-division filters are not supported "
+            "for this record scope"
+        )
         if team:
             route = "team_record"
             route_kwargs = {
@@ -1768,6 +1791,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "max_value": max_value,
                 "start_date": start_date,
                 "end_date": end_date,
+                "opponent_division": opponent_division,
                 "unsupported_filters": ["opponent_division"],
             }
         else:
@@ -1788,6 +1812,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "ascending": False,
                 "start_date": start_date,
                 "end_date": end_date,
+                "opponent_division": opponent_division,
                 "unsupported_filters": ["opponent_division"],
             }
     elif (
@@ -2128,6 +2153,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_season": end_season,
             "season_type": season_type,
             "opponent": opponent,
+            "opponent_division": opponent_division,
             "with_player": with_player,
             "without_player": without_player,
             "home_only": home_only,
@@ -2161,6 +2187,7 @@ def _finalize_route(parsed: dict) -> dict:
             "max_value": max_value,
             "start_date": start_date,
             "end_date": end_date,
+            "opponent_division": opponent_division,
         }
     elif _single_team_advanced_stat_summary_boundary(parsed):
         route = "game_summary"
@@ -2611,6 +2638,7 @@ def _finalize_route(parsed: dict) -> dict:
             "end_season": end_season,
             "season_type": season_type,
             "opponent": opponent,
+            "opponent_division": opponent_division,
             "with_player": with_player,
             "without_player": without_player,
             "home_only": home_only,

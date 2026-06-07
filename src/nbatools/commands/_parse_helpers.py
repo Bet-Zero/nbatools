@@ -237,18 +237,39 @@ def detect_opponent_conference_geography_boundary(text: str) -> bool:
     )
 
 
+_DIVISION_NAMES_PATTERN = r"atlantic|central|southeast|northwest|pacific|southwest"
+_OPPONENT_DIVISION_PATTERN = re.compile(
+    rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
+    rf"(?P<conference_prefix>(?:east|west|eastern|western)\s+(?:conference\s+)?)?"
+    rf"(?P<division>{_DIVISION_NAMES_PATTERN})\s+division"
+    rf"(?:\s+(?:teams?|opponents?))?\b"
+)
+
+
+def _normalize_division_name(value: str) -> str:
+    return {
+        "atlantic": "Atlantic",
+        "central": "Central",
+        "southeast": "Southeast",
+        "northwest": "Northwest",
+        "pacific": "Pacific",
+        "southwest": "Southwest",
+    }[value.strip().lower()]
+
+
+def detect_opponent_division(text: str) -> str | None:
+    """Extract a normalized opponent-division filter for accepted phrasing."""
+    match = _OPPONENT_DIVISION_PATTERN.search(text)
+    if not match:
+        return None
+    if match.group("conference_prefix"):
+        return None
+    return _normalize_division_name(match.group("division"))
+
+
 def detect_opponent_division_boundary(text: str) -> bool:
-    """Detect explicit unsupported NBA opponent-division record filters."""
-    division_names = r"atlantic|central|southeast|northwest|pacific|southwest"
-    return bool(
-        re.search(
-            rf"\b(?:against|vs\.?|versus)\s+(?:the\s+)?"
-            rf"(?:(?:east|west|eastern|western)\s+(?:conference\s+)?)?"
-            rf"(?P<division>{division_names})\s+division"
-            rf"(?:\s+(?:teams?|opponents?))?\b",
-            text,
-        )
-    )
+    """Detect explicit NBA opponent-division record filters."""
+    return bool(_OPPONENT_DIVISION_PATTERN.search(text))
 
 
 def wants_team_leaderboard(text: str) -> bool:
