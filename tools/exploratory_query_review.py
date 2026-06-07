@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import sys
 import time
 from collections import Counter
@@ -25,6 +26,8 @@ SRC = ROOT / "src"
 DEFAULT_INPUT_PATH = Path("qa/exploratory_query_samples.yaml")
 DEFAULT_MANIFEST_PATH = Path("qa/exploratory/manifest.yaml")
 DEFAULT_SLICES_ROOT = Path("qa/exploratory/slices")
+OUTPUT_ARTIFACT_NAMES = ("report.md", "summary.json", "report.jsonl")
+OUTPUT_NAV_ENTRIES = {"latest", "latest_by_slice", "archive", "index.md", "README.md"}
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(SRC) not in sys.path:
@@ -202,9 +205,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--overwrite-run-id", action="store_true")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--top-rows", type=int, default=3)
+    parser.add_argument(
+        "--organize-existing-outputs",
+        action="store_true",
+        help=(
+            "Move existing top-level exploratory output run folders into archive/ "
+            "without deleting report artifacts."
+        ),
+    )
     args = parser.parse_args()
     if args.all and args.slice_id:
         parser.error("--all and --slice are mutually exclusive")
+    if args.organize_existing_outputs and (args.slice_id or args.all):
+        parser.error("--organize-existing-outputs cannot be combined with --slice or --all")
     return args
 
 
@@ -1466,6 +1479,247 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
     path.write_text("\n".join(lines).rstrip() + "\n")
 
 
+def clean_output_root(out_base: Path) -> None:
+    for path in [
+        out_base,
+        out_base / "latest",
+        out_base / "latest_by_slice",
+        out_base / "archive",
+        out_base / "archive" / "runs",
+        out_base / "archive" / "smoke",
+        out_base / "archive" / "debug",
+    ]:
+        path.mkdir(parents=True, exist_ok=True)
+
+
+def run_archive_kind(run_id: str) -> str:
+    text = run_id.casefold()
+    if "smoke" in text:
+        return "smoke"
+    if any(token in text for token in ("codex", "debug", "tmp", "temp", "scratch", "audit")):
+        return "debug"
+    return "runs"
+
+
+def run_archive_name(run_id: str, slice_id: str | None) -> str:
+    if run_archive_kind(run_id) == "runs":
+        return f"{run_id}__{slice_id or 'all'}"
+    return run_id
+
+
+def archived_run_dir(out_base: Path, run_id: str, slice_id: str | None) -> Path:
+    kind = run_archive_kind(run_id)
+    return out_base / "archive" / kind / run_archive_name(run_id, slice_id)
+
+
+def replace_directory_with_artifacts(source_dir: Path, destination_dir: Path) -> None:
+    if destination_dir.exists():
+        if destination_dir.is_symlink() or destination_dir.is_file():
+            destination_dir.unlink()
+        else:
+            shutil.rmtree(destination_dir)
+    destination_dir.mkdir(parents=True, exist_ok=False)
+    for name in OUTPUT_ARTIFACT_NAMES:
+        source = source_dir / name
+        if source.exists():
+            shutil.copy2(source, destination_dir / name)
+
+
+def refresh_latest_outputs(out_base: Path, run_dir: Path, slice_id: str | None) -> dict[str, Path]:
+    latest_dir = out_base / "latest"
+    replace_directory_with_artifacts(run_dir, latest_dir)
+    paths = {"latest_report": latest_dir / "report.md"}
+
+    if slice_id:
+        latest_slice_dir = out_base / "latest_by_slice" / slice_id
+        replace_directory_with_artifacts(run_dir, latest_slice_dir)
+        paths["latest_slice_report"] = latest_slice_dir / "report.md"
+    return paths
+
+
+def write_output_readme(out_base: Path) -> None:
+    clean_output_root(out_base)
+    readme = out_base / "README.md"
+    lines = [
+        "# Exploratory Query Review Outputs",
+        "",
+        "- Open `latest/report.md` for the most recent exploratory review run.",
+        "- Open `latest_by_slice/<slice_id>/report.md` for the newest report for a slice.",
+        "- Historical normal runs live under `archive/runs/`.",
+        "- Smoke and debug outputs live under `archive/smoke/` or `archive/debug/`.",
+        "- Backend `ok` means a structured result was returned; it does not prove correctness.",
+        "",
+        "Use `index.md` for recent archived normal runs.",
+    ]
+    readme.write_text("\n".join(lines).rstrip() + "\n")
+
+
+def archived_run_entries(out_base: Path) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    runs_root = out_base / "archive" / "runs"
+    if not runs_root.exists():
+        return entries
+
+    for summary_path in sorted(runs_root.glob("*/summary.json")):
+        try:
+            summary = json.loads(summary_path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        run_dir = summary_path.parent
+        folder_name = run_dir.name
+        run_id = str(summary.get("run_id") or folder_name.rsplit("__", 1)[0])
+        slice_id = str(summary.get("slice_id") or "all")
+        completed = str(summary.get("completed_at") or summary.get("started_at") or "")
+        entries.append(
+            {
+                "completed_at": completed,
+                "run_id": run_id,
+                "slice_id": slice_id,
+                "case_count": summary.get("case_count", 0),
+                "result_status_counts": summary.get("result_status_counts") or {},
+                "report_path": run_dir / "report.md",
+            }
+        )
+    return sorted(entries, key=lambda row: str(row["completed_at"]), reverse=True)
+
+
+def output_root_relative(path: Path, out_base: Path) -> str:
+    try:
+        return str(path.relative_to(out_base))
+    except ValueError:
+        return display_path(path)
+
+
+def write_output_index(out_base: Path) -> Path:
+    clean_output_root(out_base)
+    index_path = out_base / "index.md"
+    entries = archived_run_entries(out_base)
+    latest_report = out_base / "latest" / "report.md"
+    lines = [
+        "# Exploratory Query Review Index",
+        "",
+        f"- Latest report: [{display_path(latest_report)}]"
+        f"({output_root_relative(latest_report, out_base)})",
+        "",
+        "## Recent Normal Runs",
+        "",
+    ]
+
+    if not entries:
+        lines.append("_No archived normal runs yet._")
+    else:
+        lines.extend(
+            [
+                "| run_id | slice_id | case count | result status counts | report |",
+                "| --- | --- | ---: | --- | --- |",
+            ]
+        )
+        for entry in entries[:25]:
+            report_path = entry["report_path"]
+            lines.append(
+                "| "
+                f"{md_code(entry['run_id'])} | "
+                f"{md_code(entry['slice_id'])} | "
+                f"{md_code(entry['case_count'])} | "
+                f"{md_code(entry['result_status_counts'])} | "
+                f"[{display_path(report_path)}]"
+                f"({output_root_relative(report_path, out_base)}) |"
+            )
+
+    index_path.write_text("\n".join(lines).rstrip() + "\n")
+    return index_path
+
+
+def publish_navigation_outputs(
+    *,
+    out_base: Path,
+    run_dir: Path,
+    slice_id: str | None,
+) -> dict[str, Path]:
+    clean_output_root(out_base)
+    latest_paths = refresh_latest_outputs(out_base, run_dir, slice_id)
+    write_output_readme(out_base)
+    index_path = write_output_index(out_base)
+    return {**latest_paths, "index": index_path}
+
+
+def has_run_artifacts(path: Path) -> bool:
+    return any((path / name).exists() for name in OUTPUT_ARTIFACT_NAMES)
+
+
+def unique_destination(path: Path) -> Path:
+    if not path.exists():
+        return path
+    for index in range(1, 1000):
+        candidate = path.with_name(f"{path.name}__migrated_{index}")
+        if not candidate.exists():
+            return candidate
+    raise ValueError(f"Could not find a free migration destination for {display_path(path)}")
+
+
+def move_without_overwrite(source: Path, destination: Path) -> Path:
+    destination = unique_destination(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(source), str(destination))
+    return destination
+
+
+def migrate_timestamp_run_folder(out_base: Path, source: Path) -> list[Path]:
+    moved: list[Path] = []
+    runs_root = out_base / "archive" / "runs"
+    if has_run_artifacts(source):
+        moved.append(move_without_overwrite(source, runs_root / f"{source.name}__all"))
+        return moved
+
+    child_runs = [
+        child for child in sorted(source.iterdir()) if child.is_dir() and has_run_artifacts(child)
+    ]
+    if child_runs:
+        for child in child_runs:
+            moved.append(move_without_overwrite(child, runs_root / f"{source.name}__{child.name}"))
+        try:
+            source.rmdir()
+        except OSError:
+            moved.append(move_without_overwrite(source, runs_root / f"{source.name}__extra"))
+        return moved
+
+    moved.append(move_without_overwrite(source, runs_root / f"{source.name}__all"))
+    return moved
+
+
+def organize_existing_outputs(out_base: Path) -> list[dict[str, str]]:
+    clean_output_root(out_base)
+    moved: list[dict[str, str]] = []
+    timestamp_pattern = re.compile(r"^\d{8}T\d{6}Z$")
+
+    for entry in sorted(out_base.iterdir()):
+        if entry.name in OUTPUT_NAV_ENTRIES:
+            continue
+        if not entry.is_dir():
+            continue
+
+        kind = run_archive_kind(entry.name)
+        destinations: list[Path]
+        if timestamp_pattern.fullmatch(entry.name):
+            destinations = migrate_timestamp_run_folder(out_base, entry)
+        elif kind in {"smoke", "debug"}:
+            destinations = [move_without_overwrite(entry, out_base / "archive" / kind / entry.name)]
+        else:
+            destinations = migrate_timestamp_run_folder(out_base, entry)
+
+        for destination in destinations:
+            moved.append(
+                {
+                    "source": display_path(entry),
+                    "destination": display_path(destination),
+                }
+            )
+
+    write_output_readme(out_base)
+    write_output_index(out_base)
+    return moved
+
+
 def run_review(
     *,
     input_path: Path,
@@ -1488,9 +1742,9 @@ def run_review(
         validate_run_id_label(run_id) if run_id else datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     )
     slice_id = validate_run_id_label(str(slice_metadata["slice_id"])) if slice_metadata else None
-    run_parent = out_base / resolved_run_id
-    run_dir = run_parent / slice_id if slice_id else run_parent
-    overwrite_root = run_parent if slice_id else out_base
+    clean_output_root(out_base)
+    run_dir = archived_run_dir(out_base, resolved_run_id, slice_id)
+    overwrite_root = run_dir.parent
     validate_run_directory_target(
         run_dir,
         overwrite_run_id=overwrite_run_id,
@@ -1537,16 +1791,36 @@ def run_review(
     write_jsonl(output_paths["report_jsonl"], rows)
     dump_json(output_paths["summary_json"], summary)
     write_markdown(output_paths["report_md"], rows, summary)
+    navigation_paths = publish_navigation_outputs(
+        out_base=out_base,
+        run_dir=run_dir,
+        slice_id=slice_id,
+    )
 
-    return {"run_dir": run_dir, "rows": rows, "summary": summary}
+    return {
+        "run_dir": run_dir,
+        "rows": rows,
+        "summary": summary,
+        "navigation_paths": navigation_paths,
+    }
 
 
 def main() -> int:
     args = parse_args()
+    out_base = resolve_path(args.out)
+    if args.organize_existing_outputs:
+        moved = organize_existing_outputs(out_base)
+        print("Exploratory output organization complete.")
+        print(f"Moved entries: {len(moved)}")
+        for entry in moved:
+            print(f"- {entry['source']} -> {entry['destination']}")
+        print(f"Index: {display_path(out_base / 'index.md')}")
+        return 0
+
     input_path, samples, slice_metadata = load_review_source(args)
     result = run_review(
         input_path=input_path,
-        out_base=resolve_path(args.out),
+        out_base=out_base,
         run_id=args.run_id,
         overwrite_run_id=args.overwrite_run_id,
         limit=args.limit,
@@ -1555,7 +1829,7 @@ def main() -> int:
         slice_metadata=slice_metadata,
     )
     summary = result["summary"]
-    print(f"Wrote exploratory query review: {display_path(result['run_dir'])}")
+    navigation_paths = result["navigation_paths"]
     if summary.get("slice_id"):
         print(f"Slice: {summary['slice_id']} ({summary['slice_sample_count']} samples)")
     print(f"Samples: {summary['case_count']}")
@@ -1567,6 +1841,12 @@ def main() -> int:
     print(f"Review flags: {summary['review_flag_counts']}")
     print(f"No-result cases: {summary['no_result_case_count']}")
     print(f"Error cases: {summary['error_case_count']}")
+    print("Exploratory review complete.")
+    print(f"Latest report: {display_path(navigation_paths['latest_report'])}")
+    print(f"Run archive: {display_path(result['run_dir'])}")
+    print(f"Index: {display_path(navigation_paths['index'])}")
+    if summary.get("slice_id"):
+        print(f"Latest slice report: {display_path(navigation_paths['latest_slice_report'])}")
     return 0
 
 

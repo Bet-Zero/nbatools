@@ -64,6 +64,13 @@ Named local review folder:
   --overwrite-run-id
 ```
 
+Organize existing local output folders:
+
+```bash
+.venv/bin/python tools/exploratory_query_review.py \
+  --organize-existing-outputs
+```
+
 Use `--limit` to run a prefix of the input file and `--top-rows` to control
 how many section rows are copied into the Markdown review cards.
 
@@ -129,19 +136,13 @@ the manifest, the runner falls back to
 
 ## Generated Artifacts
 
-Each run writes:
+Each run writes `report.jsonl`, `report.md`, and `summary.json` into the
+generated exploratory output tree. The generated output root is intentionally
+kept to stable navigation entries only; open its generated `README.md` and
+`index.md` for the concrete local paths and recent-run list.
 
-```text
-outputs/exploratory_query_review/<run_id>/report.jsonl
-outputs/exploratory_query_review/<run_id>/report.md
-outputs/exploratory_query_review/<run_id>/summary.json
-```
-
-Slice runs write the same files under:
-
-```text
-outputs/exploratory_query_review/<run_id>/<slice_id>/
-```
+Scratch runs whose `--run-id` contains terms such as `smoke`, `codex`,
+`debug`, `tmp`, or `audit` are kept out of the normal recent-run index.
 
 - `report.jsonl` contains one structured row per sample, including the
   QueryResponse payload, search-box preview, route/status/query class, inferred
@@ -160,6 +161,10 @@ outputs/exploratory_query_review/<run_id>/<slice_id>/
   These are backend execution/result counts, not correctness counts.
   Slice runs also include `slice_id`, `slice_description`, `slice_review_goal`,
   `input_slice_path`, and `slice_sample_count`.
+- The latest report navigation entry is refreshed after every run.
+- Slice-specific latest navigation is refreshed after every slice run.
+- The generated index lists recent normal runs newest-first.
+- The generated README explains the output folder layout.
 
 ## Reading The Search-Box Preview
 
