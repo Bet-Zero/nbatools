@@ -2,3 +2,6 @@ slices:
   - id: 001_player_last_n
     file: slices/001_player_last_n.yaml
     status: pending_review
+  - id: 002_answer_table_alignment
+    file: slices/002_answer_table_alignment.yaml
+    status: pending_review

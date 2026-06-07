@@ -1,0 +1,12 @@
+id: 002_answer_table_alignment
+description: Answer and table alignment checks
+review_goal: Check whether the answer line and table shown actually reflect the query condition.
+samples:
+  - id: booker_vs_lakers
+    query: Devin Booker vs Lakers
+
+  - id: lakers_record_with_luka
+    query: Lakers record with Luka
+
+  - id: thunder_record_vs_top_10
+    query: Thunder record vs top 10 teams
