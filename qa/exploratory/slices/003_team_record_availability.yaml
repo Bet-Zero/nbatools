@@ -1,0 +1,18 @@
+id: 003_team_record_availability
+description: Team record with/without player filters
+review_goal: Check whether player availability is rendered as a team-record filter with a team game-log evidence table.
+samples:
+  - id: lakers_record_with_lebron
+    query: Lakers record with LeBron
+
+  - id: lakers_record_without_lebron
+    query: Lakers record without LeBron
+
+  - id: sixers_record_with_embiid
+    query: Sixers record with Embiid
+
+  - id: warriors_record_without_curry
+    query: Warriors record without Steph Curry
+
+  - id: mavs_record_with_kyrie
+    query: Mavericks record with Kyrie

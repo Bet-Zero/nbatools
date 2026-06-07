@@ -169,8 +169,12 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert "**Answer shown**" in human_review
     assert "**Rendered output**" in human_review
     assert "### Table — Team record" in human_review
+    assert "Table type: record_summary" in human_review
+    assert "Column schema: team_record_summary_default" in human_review
     assert "| Team | W-L | Games | Home/Away |" in human_review
     assert "### Detail — Game Detail" in human_review
+    assert "Table type: team_game_log" in human_review
+    assert "Column schema: team_game_log_default" in human_review
     assert "| # | Date | Team |  | Opp | W/L |" in human_review
     assert "**Reviewer checks**" in human_review
     assert "[ ] Subject/table mismatch" in human_review

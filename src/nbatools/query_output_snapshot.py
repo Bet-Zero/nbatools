@@ -244,6 +244,18 @@ LEADERBOARD_EXCLUDED_METRIC_KEYS = {
     "sample_size",
     "games_played",
 }
+DEFAULT_COLUMN_SCHEMA_BY_TABLE_TYPE = {
+    "player_game_log": "player_game_log_default",
+    "team_game_log": "team_game_log_default",
+    "leaderboard": "leaderboard_default",
+    "top_performances": "top_performances_default",
+    "record_summary": "record_summary_default",
+    "split_comparison": "split_comparison_default",
+    "comparison_table": "comparison_default",
+    "streak_table": "streak_default",
+    "playoff_history": "playoff_history_default",
+    "fallback_table": "fallback_default",
+}
 
 
 def build_query_ui_snapshot(payload: dict[str, Any] | None, *, top_rows: int = 3) -> dict[str, Any]:
@@ -611,6 +623,7 @@ def _blocks_for_pattern(
                 section_key="leaderboard",
                 top_rows=top_rows,
                 mode=str(pattern.get("subject") or ""),
+                table_type="top_performances",
             )
         ]
     if pattern_type == "split":
@@ -623,13 +636,19 @@ def _blocks_for_pattern(
                 section_key=section_key,
                 top_rows=top_rows,
                 mode=f"{pattern.get('subject') or 'split'} split",
+                table_type="split_comparison",
             )
         ]
     if pattern_type == "streak":
         rows = _section_rows(sections, str(pattern.get("section_key") or "streak"))
         return [
             _generic_table_block(
-                "Streaks", rows, section_key="streak", top_rows=top_rows, mode="streak table"
+                "Streaks",
+                rows,
+                section_key="streak",
+                top_rows=top_rows,
+                mode="streak table",
+                table_type="streak_table",
             )
         ]
     if pattern_type == "comparison":
@@ -641,6 +660,7 @@ def _blocks_for_pattern(
                 section_key="comparison",
                 top_rows=top_rows,
                 mode=f"{pattern.get('subject') or 'entity'} comparison",
+                table_type="comparison_table",
             )
         ]
     if pattern_type == "playoff_history":
@@ -656,6 +676,7 @@ def _blocks_for_pattern(
                 section_key="by_season",
                 top_rows=top_rows,
                 mode=str(pattern.get("mode") or "playoff history"),
+                table_type="playoff_history",
             )
         ]
     if pattern_type == "rolling_stretch":
@@ -667,6 +688,7 @@ def _blocks_for_pattern(
                 section_key="leaderboard",
                 top_rows=top_rows,
                 mode="rolling stretch",
+                table_type="leaderboard",
             )
         ]
     blocks: list[dict[str, Any]] = []
@@ -680,6 +702,7 @@ def _blocks_for_pattern(
                     section_key=section_key,
                     top_rows=top_rows,
                     mode="fallback table",
+                    table_type="fallback_table",
                 )
             )
     return blocks
@@ -722,6 +745,8 @@ def _entity_summary_blocks(
                 mode="season stats",
                 filters=_filter_labels(metadata),
                 top_rows=top_rows,
+                table_type="record_summary",
+                column_schema="player_by_season_default",
             )
         )
     return blocks
@@ -779,6 +804,7 @@ def _game_log_blocks(
                 block_type=block_type,
                 collapsed=bool(pattern.get("collapse_to_detail")),
                 collapsed_label="Show game detail" if pattern.get("collapse_to_detail") else None,
+                table_type=_game_log_table_type(mode),
             )
         )
     for detail_key in pattern.get("detail_section_keys") or []:
@@ -792,6 +818,7 @@ def _game_log_blocks(
                     top_rows=top_rows,
                     mode="detail table",
                     block_type="detail_table",
+                    table_type="fallback_table",
                 )
             )
     return blocks
@@ -817,6 +844,7 @@ def _record_blocks(
                 section_key=section_key,
                 top_rows=top_rows,
                 mode=mode.replace("_", " "),
+                table_type="record_summary",
             )
         ]
 
@@ -844,6 +872,8 @@ def _record_blocks(
             mode="Team record",
             filters=_filter_labels(metadata),
             top_rows=top_rows,
+            table_type="record_summary",
+            column_schema="team_record_summary_default",
         ),
     ]
     by_season = _section_rows(sections, "by_season")
@@ -858,6 +888,8 @@ def _record_blocks(
                 mode="Team season records",
                 filters=_filter_labels(metadata),
                 top_rows=top_rows,
+                table_type="record_summary",
+                column_schema="team_record_by_season_default",
             )
         )
     return blocks
@@ -889,6 +921,7 @@ def _leaderboard_blocks(
             mode="Leaderboard",
             filters=_filter_labels(metadata),
             top_rows=top_rows,
+            table_type="leaderboard",
         )
     ]
 
@@ -906,14 +939,24 @@ def _table_block(
     block_type: str = "table",
     collapsed: bool = False,
     collapsed_label: str | None = None,
+    table_type: str | None = None,
+    column_schema: str | None = None,
 ) -> dict[str, Any]:
     headers = [str(column["label"]) for column in columns]
     rendered_rows: list[list[str]] = []
     for index, row in enumerate(rows[:top_rows]):
         rendered_rows.append([_render_column(row, column, index) for column in columns])
+    resolved_table_type = table_type or "fallback_table"
+    resolved_column_schema = (
+        column_schema
+        or DEFAULT_COLUMN_SCHEMA_BY_TABLE_TYPE.get(resolved_table_type)
+        or "fallback_default"
+    )
     return {
         "type": block_type,
         "title": title,
+        "table_type": resolved_table_type,
+        "column_schema": resolved_column_schema,
         "subject": subject,
         "mode": mode,
         "section_key": section_key,
@@ -934,6 +977,8 @@ def _generic_table_block(
     top_rows: int,
     mode: str,
     block_type: str = "table",
+    table_type: str = "fallback_table",
+    column_schema: str | None = None,
 ) -> dict[str, Any]:
     columns = [{"key": key, "label": _format_col_header(key)} for key in _generic_columns(rows)]
     return _table_block(
@@ -946,6 +991,8 @@ def _generic_table_block(
         filters=[],
         top_rows=top_rows,
         block_type=block_type,
+        table_type=table_type,
+        column_schema=column_schema,
     )
 
 
@@ -968,6 +1015,10 @@ def _block_markdown_lines(block: dict[str, Any], *, heading_level: int) -> list[
     if filters:
         lines.append(f"Filter: {md_escape('; '.join(str(item) for item in filters))}  ")
     if block_type in {"table", "detail_table"}:
+        if block.get("table_type"):
+            lines.append(f"Table type: {md_escape(block.get('table_type'))}  ")
+        if block.get("column_schema"):
+            lines.append(f"Column schema: {md_escape(block.get('column_schema'))}  ")
         lines.append(f"Rows: {md_escape(block.get('row_count'))}  ")
         if block.get("collapsed"):
             lines.append(
@@ -1455,6 +1506,10 @@ def _game_log_mode(rows: list[dict[str, Any]], requested: str) -> str:
     if any("player_name" in row or "player_id" in row for row in rows):
         return "player"
     return "team"
+
+
+def _game_log_table_type(mode: str) -> str:
+    return "player_game_log" if mode == "player" else "team_game_log"
 
 
 def _game_log_subject(

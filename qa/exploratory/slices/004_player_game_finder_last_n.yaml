@@ -1,0 +1,18 @@
+id: 004_player_game_finder_last_n
+description: Player game finder and last-N game evidence
+review_goal: Check player last-N and opponent finder answers against visible player game-log rows.
+samples:
+  - id: luka_last_5
+    query: Luka Doncic last 5 games
+
+  - id: lebron_last_5
+    query: LeBron James last 5 games
+
+  - id: jokic_vs_lakers
+    query: Nikola Jokic vs Lakers
+
+  - id: sga_last_3
+    query: SGA last 3 games
+
+  - id: curry_vs_celtics
+    query: Steph Curry vs Celtics

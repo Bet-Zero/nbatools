@@ -5,3 +5,12 @@ slices:
   - id: 002_answer_table_alignment
     file: slices/002_answer_table_alignment.yaml
     status: pending_review
+  - id: 003_team_record_availability
+    file: slices/003_team_record_availability.yaml
+    status: pending_review
+  - id: 004_player_game_finder_last_n
+    file: slices/004_player_game_finder_last_n.yaml
+    status: pending_review
+  - id: 005_leaderboards_top_performances
+    file: slices/005_leaderboards_top_performances.yaml
+    status: pending_review

@@ -515,6 +515,8 @@ def test_raw_qa_report_uses_query_output_snapshot_markdown(tmp_path) -> None:
     assert "**Answer shown**" in markdown
     assert "The Los Angeles Lakers are 43-21" in markdown
     assert "#### Table — Team record" in markdown
+    assert "Table type: record_summary" in markdown
+    assert "Column schema: team_record_summary_default" in markdown
     assert "Filter: With player: Luka Doncic" in markdown
     assert "| Team | W-L | Games | Win % |" in markdown
 

@@ -1,0 +1,18 @@
+id: 005_leaderboards_top_performances
+description: Leaderboards and top performances
+review_goal: Check whether leaderboard and top-performance answers match the ranked table identity, metric, and visible rows.
+samples:
+  - id: top_scorers_this_season
+    query: top scorers this season
+
+  - id: most_rebounds_this_season
+    query: most rebounds this season
+
+  - id: best_team_record_this_season
+    query: best team record this season
+
+  - id: highest_scoring_games_this_season
+    query: highest scoring games this season
+
+  - id: highest_team_scoring_games
+    query: highest team scoring games
