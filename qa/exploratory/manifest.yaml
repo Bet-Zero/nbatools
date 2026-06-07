@@ -1,0 +1,4 @@
+slices:
+  - id: 001_player_last_n
+    file: slices/001_player_last_n.yaml
+    status: pending_review

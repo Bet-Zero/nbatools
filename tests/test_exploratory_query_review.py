@@ -9,6 +9,11 @@ def _write_json(path, data) -> None:
     path.write_text(json.dumps(data) + "\n")
 
 
+def _write_text(path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+
+
 def _payload(
     *,
     query: str,
@@ -190,6 +195,17 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert rows[1]["search_box_preview"]["display_shape"]["key"] == "no_result_message"
     assert len(rows[0]["section_summaries"]["game_log"]["top_rows"]) == 1
     assert rows[0]["section_summaries"]["game_log"]["top_rows"][0]["game_date"] == "2026-01-01"
+    assert "does not grade correctness" in markdown
+    assert "Backend `ok` means the query returned a structured backend result" in markdown
+    assert "These are backend execution/result counts, not correctness counts." in markdown
+    assert "A count of zero does not mean every answer is semantically correct." in markdown
+    assert "Do not treat every backend `ok` as correct." in markdown
+    query_pos = markdown.index(f"**Query:** `{ok_query}`")
+    answer_pos = markdown.index("**Answer line:** The Lakers went 2-1 on the road.")
+    shape_pos = markdown.index("**Display shape:** `Team Record` (`team_record`)")
+    details_pos = markdown.index("<summary>Supporting details</summary>")
+    assert query_pos < answer_pos < shape_pos < details_pos
+    assert "<details>" in markdown
     assert "Search Box Preview" in markdown
     assert "Display shape: `Team Record` (`team_record`)" in markdown
     assert "Visible sections/tables:" in markdown
@@ -197,6 +213,130 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert "Raw QA promotion draft:" in markdown
     assert "The Lakers went 2-1 on the road." in markdown
     assert "2026-01-02" not in markdown
+
+
+def test_slice_review_writes_slice_metadata_and_nested_reports(tmp_path, monkeypatch) -> None:
+    slice_query = "Luka Doncic stats last 10 games"
+    other_query = "LeBron James stats last 5 games"
+    manifest_path = tmp_path / "qa/exploratory/manifest.yaml"
+    slice_path = tmp_path / "qa/exploratory/slices/001_player_last_n.yaml"
+    _write_text(
+        manifest_path,
+        """
+slices:
+  - id: 001_player_last_n
+    file: slices/001_player_last_n.yaml
+    status: pending_review
+""".lstrip(),
+    )
+    _write_text(
+        slice_path,
+        f"""
+id: 001_player_last_n
+description: Player last-N game summaries
+review_goal: Check player name parsing and last-N filters.
+samples:
+  - id: luka_last_10
+    query: "{slice_query}"
+  - id: lebron_last_5
+    query: "{other_query}"
+""".lstrip(),
+    )
+
+    resolved_path = review.resolve_slice_path(
+        slice_id="001_player_last_n",
+        manifest_path=manifest_path,
+        slices_root=tmp_path / "qa/exploratory/slices",
+    )
+    _version, samples, slice_metadata = review.load_slice(
+        resolved_path,
+        requested_slice_id="001_player_last_n",
+    )
+
+    assert resolved_path == slice_path
+    assert [sample["id"] for sample in samples] == ["luka_last_10", "lebron_last_5"]
+    assert slice_metadata == {
+        "slice_id": "001_player_last_n",
+        "slice_description": "Player last-N game summaries",
+        "slice_review_goal": "Check player name parsing and last-N filters.",
+        "input_slice_path": str(slice_path),
+        "slice_sample_count": 2,
+    }
+
+    payloads = {
+        slice_query: _payload(
+            query=slice_query,
+            route="player_game_summary",
+            status="ok",
+            query_class="summary",
+            sections={
+                "summary": [{"player_name": "Luka Doncic", "games": 10}],
+                "game_log": [{"game_date": "2026-01-01", "player_name": "Luka Doncic"}],
+            },
+            filters=[{"kind": "window", "label": "Last N games", "value": 10}],
+        ),
+        other_query: _payload(
+            query=other_query,
+            route="player_game_summary",
+            status="ok",
+            query_class="summary",
+            sections={
+                "summary": [{"player_name": "LeBron James", "games": 5}],
+                "game_log": [{"game_date": "2026-01-01", "player_name": "LeBron James"}],
+            },
+            filters=[{"kind": "window", "label": "Last N games", "value": 5}],
+        ),
+    }
+
+    monkeypatch.setattr(review, "execute_query_payload", lambda query: payloads[query])
+
+    result = review.run_review(
+        input_path=resolved_path,
+        out_base=tmp_path / "out",
+        run_id="review",
+        overwrite_run_id=False,
+        limit=1,
+        top_rows=1,
+        samples=samples,
+        slice_metadata=slice_metadata,
+    )
+
+    run_dir = result["run_dir"]
+    summary = json.loads((run_dir / "summary.json").read_text())
+    rows = [json.loads(line) for line in (run_dir / "report.jsonl").read_text().splitlines()]
+    markdown = (run_dir / "report.md").read_text()
+
+    assert run_dir == tmp_path / "out/review/001_player_last_n"
+    assert summary["slice_id"] == "001_player_last_n"
+    assert summary["slice_description"] == "Player last-N game summaries"
+    assert summary["slice_review_goal"] == "Check player name parsing and last-N filters."
+    assert summary["input_slice_path"] == str(slice_path)
+    assert summary["slice_sample_count"] == 2
+    assert summary["case_count"] == 1
+    assert rows[0]["slice_id"] == "001_player_last_n"
+    assert rows[0]["slice_sample_count"] == 2
+    assert rows[0]["id"] == "luka_last_10"
+    assert "This is an exploratory slice report." in markdown
+    assert "Slice ID: `001_player_last_n`" in markdown
+    assert "Slice sample count: `2`" in markdown
+    assert slice_query in markdown
+    assert other_query not in markdown
+
+    stale_path = run_dir / "stale.txt"
+    stale_path.write_text("old")
+    second = review.run_review(
+        input_path=resolved_path,
+        out_base=tmp_path / "out",
+        run_id="review",
+        overwrite_run_id=True,
+        limit=1,
+        top_rows=1,
+        samples=samples,
+        slice_metadata=slice_metadata,
+    )
+
+    assert second["run_dir"] == run_dir
+    assert not stale_path.exists()
 
 
 def test_player_last_n_summary_classifies_as_search_box_recent_games() -> None:

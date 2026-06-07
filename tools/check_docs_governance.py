@@ -70,6 +70,7 @@ OUTPUT_REFERENCE_ALLOWLIST = {
         "outputs/exploratory_query_review/<run_id>/report.md",
         "outputs/exploratory_query_review/<run_id>/summary.json",
         "outputs/exploratory_query_review/<run_id>/",
+        "outputs/exploratory_query_review/<run_id>/<slice_id>/",
     ),
     Path("docs/operations/frontend_visual_qa.md"): (
         "outputs/",

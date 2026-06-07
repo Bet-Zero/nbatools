@@ -22,6 +22,9 @@ except ModuleNotFoundError:  # pragma: no cover - local dev venv includes PyYAML
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
+DEFAULT_INPUT_PATH = Path("qa/exploratory_query_samples.yaml")
+DEFAULT_MANIFEST_PATH = Path("qa/exploratory/manifest.yaml")
+DEFAULT_SLICES_ROOT = Path("qa/exploratory/slices")
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 if str(SRC) not in sys.path:
@@ -168,13 +171,41 @@ def parse_args() -> argparse.Namespace:
             "human-review artifacts."
         )
     )
-    parser.add_argument("--input", required=True, help="YAML or JSON sample file.")
+    parser.add_argument(
+        "--input",
+        default=str(DEFAULT_INPUT_PATH),
+        help="YAML or JSON sample file for a full exploratory run.",
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Run the full exploratory sample file. This is also the default without --slice.",
+    )
+    parser.add_argument(
+        "--slice",
+        dest="slice_id",
+        default=None,
+        help="Run one exploratory slice by ID, such as 001_player_last_n.",
+    )
+    parser.add_argument(
+        "--manifest",
+        default=str(DEFAULT_MANIFEST_PATH),
+        help="Optional exploratory slice manifest YAML/JSON.",
+    )
+    parser.add_argument(
+        "--slices-root",
+        default=str(DEFAULT_SLICES_ROOT),
+        help="Directory used to resolve --slice when no manifest entry is present.",
+    )
     parser.add_argument("--out", default="outputs/exploratory_query_review")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--overwrite-run-id", action="store_true")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--top-rows", type=int, default=3)
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.all and args.slice_id:
+        parser.error("--all and --slice are mutually exclusive")
+    return args
 
 
 def resolve_path(path_text: str) -> Path:
@@ -219,6 +250,19 @@ def raw_sample_entries(data: Any, *, path: Path) -> list[Any]:
     )
 
 
+def normalize_samples(raw_entries: list[Any]) -> list[dict[str, Any]]:
+    samples: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for index, raw_sample in enumerate(raw_entries, start=1):
+        sample = normalize_sample(raw_sample, index=index)
+        sample_id = str(sample["id"])
+        if sample_id in seen_ids:
+            raise ValueError(f"Duplicate sample id: {sample_id}")
+        seen_ids.add(sample_id)
+        samples.append(sample)
+    return samples
+
+
 def normalize_sample(raw_sample: Any, *, index: int) -> dict[str, Any]:
     if isinstance(raw_sample, str):
         raw = {"query": raw_sample}
@@ -255,21 +299,116 @@ def normalize_sample(raw_sample: Any, *, index: int) -> dict[str, Any]:
 def load_samples(path: Path) -> tuple[int | None, list[dict[str, Any]]]:
     data = read_yaml_or_json(path)
     raw_entries = raw_sample_entries(data, path=path)
-
-    samples: list[dict[str, Any]] = []
-    seen_ids: set[str] = set()
-    for index, raw_sample in enumerate(raw_entries, start=1):
-        sample = normalize_sample(raw_sample, index=index)
-        sample_id = str(sample["id"])
-        if sample_id in seen_ids:
-            raise ValueError(f"Duplicate sample id: {sample_id}")
-        seen_ids.add(sample_id)
-        samples.append(sample)
+    samples = normalize_samples(raw_entries)
 
     version = data.get("version") if isinstance(data, dict) else None
     if isinstance(version, int | str) and str(version).isdigit():
         return int(version), samples
     return None, samples
+
+
+def manifest_slice_path(
+    *,
+    slice_id: str,
+    manifest_path: Path,
+) -> Path | None:
+    if not manifest_path.exists():
+        return None
+    data = read_yaml_or_json(manifest_path)
+    if not isinstance(data, dict):
+        raise ValueError(f"Exploratory manifest must be a mapping: {display_path(manifest_path)}")
+    slices = data.get("slices")
+    if not isinstance(slices, list):
+        raise ValueError(
+            f"Exploratory manifest must contain a slices list: {display_path(manifest_path)}"
+        )
+
+    for index, entry in enumerate(slices, start=1):
+        if not isinstance(entry, dict):
+            raise ValueError(f"Manifest slice entry {index} must be a mapping")
+        entry_id = require_nonempty_string(entry.get("id"), label=f"Manifest slice {index} id")
+        if entry_id != slice_id:
+            continue
+        file_text = require_nonempty_string(
+            entry.get("file"),
+            label=f"Manifest slice {entry_id} file",
+        )
+        path = Path(file_text)
+        return path if path.is_absolute() else manifest_path.parent / path
+    return None
+
+
+def resolve_slice_path(
+    *,
+    slice_id: str,
+    manifest_path: Path,
+    slices_root: Path,
+) -> Path:
+    safe_slice_id = validate_run_id_label(slice_id)
+    from_manifest = manifest_slice_path(slice_id=safe_slice_id, manifest_path=manifest_path)
+    if from_manifest is not None:
+        return from_manifest
+    return slices_root / f"{safe_slice_id}.yaml"
+
+
+def load_slice(
+    path: Path,
+    *,
+    requested_slice_id: str | None = None,
+) -> tuple[int | None, list[dict[str, Any]], dict[str, Any]]:
+    data = read_yaml_or_json(path)
+    if not isinstance(data, dict):
+        raise ValueError(f"Exploratory slice must be a mapping: {display_path(path)}")
+
+    slice_id = require_nonempty_string(data.get("id"), label="Slice id")
+    if requested_slice_id is not None and slice_id != requested_slice_id:
+        raise ValueError(
+            f"Slice id mismatch: requested {requested_slice_id}, "
+            f"but {display_path(path)} declares {slice_id}"
+        )
+    description = require_nonempty_string(
+        data.get("description"),
+        label=f"Slice {slice_id} description",
+    )
+    review_goal_value = data.get("review_goal")
+    review_goal = (
+        require_nonempty_string(review_goal_value, label=f"Slice {slice_id} review_goal")
+        if review_goal_value is not None
+        else None
+    )
+    samples = normalize_samples(raw_sample_entries(data, path=path))
+    version = data.get("version")
+    numeric_version = (
+        int(version) if isinstance(version, int | str) and str(version).isdigit() else None
+    )
+    slice_metadata = {
+        "slice_id": slice_id,
+        "slice_description": description,
+        "slice_review_goal": review_goal,
+        "input_slice_path": display_path(path),
+        "slice_sample_count": len(samples),
+    }
+    return numeric_version, samples, slice_metadata
+
+
+def load_review_source(
+    args: argparse.Namespace,
+) -> tuple[Path, list[dict[str, Any]], dict[str, Any] | None]:
+    if args.slice_id:
+        manifest_path = resolve_path(args.manifest)
+        slices_root = resolve_path(args.slices_root)
+        slice_id = validate_run_id_label(args.slice_id)
+        input_path = resolve_slice_path(
+            slice_id=slice_id,
+            manifest_path=manifest_path,
+            slices_root=slices_root,
+        )
+        _version, samples, slice_metadata = load_slice(input_path, requested_slice_id=slice_id)
+        return input_path, samples, slice_metadata
+
+    input_path = resolve_path(args.input)
+    _version, samples = load_samples(input_path)
+    return input_path, samples, None
 
 
 def execute_query_payload(query: str) -> dict[str, Any]:
@@ -924,6 +1063,7 @@ def summarize_rows(
     completed_at: str,
     input_path: Path,
     output_paths: dict[str, Path],
+    slice_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     route_counts = Counter(str(row.get("route") or "<none>") for row in rows)
     status_counts = Counter(str(row.get("result_status") or "<none>") for row in rows)
@@ -962,11 +1102,17 @@ def summarize_rows(
                 }
             )
 
+    slice_metadata = slice_metadata or {}
     return {
         "run_id": run_id,
         "started_at": started_at,
         "completed_at": completed_at,
         "input_path": display_path(input_path),
+        "slice_id": slice_metadata.get("slice_id"),
+        "slice_description": slice_metadata.get("slice_description"),
+        "slice_review_goal": slice_metadata.get("slice_review_goal"),
+        "input_slice_path": slice_metadata.get("input_slice_path"),
+        "slice_sample_count": slice_metadata.get("slice_sample_count"),
         "case_count": len(rows),
         "result_status_counts": dict(sorted(status_counts.items())),
         "route_counts": dict(sorted(route_counts.items())),
@@ -988,7 +1134,9 @@ def summarize_rows(
         "review_state": "human_review_pending",
         "validation_note": (
             "Exploratory query review is input-only human inspection, not Raw QA "
-            "regression evidence."
+            "regression evidence. Backend result statuses are execution/result "
+            "statuses only; result_status=ok means the backend returned a structured "
+            "result, not that the answer is semantically correct."
         ),
     }
 
@@ -1037,15 +1185,36 @@ def format_review_flags(flags: list[dict[str, Any]]) -> str:
 
 
 def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, Any]) -> None:
+    is_slice_report = summary.get("slice_id") is not None
+    opening_note = (
+        "This is an exploratory slice report. It records what the backend returned for "
+        "this slice's queries. It has no expected outputs and does not grade correctness. "
+        "Backend status values are execution/result statuses only, not pass/fail QA "
+        "judgments."
+        if is_slice_report
+        else (
+            "This report is an exploratory output snapshot. It records what the real "
+            "backend returned for each query. It has no expected outputs and does not "
+            "grade correctness. Backend status values are execution/result statuses "
+            "only, not pass/fail QA judgments."
+        )
+    )
     lines: list[str] = [
         "# Exploratory Query Review",
         "",
-        "This report is an input-only human-inspection snapshot. It has no expected "
-        "outputs, does not pass or fail cases, and is not Raw QA regression evidence.",
+        opening_note,
+        "",
+        "Backend `ok` means the query returned a structured backend result. It does not "
+        "imply semantic correctness, good query handling, or Raw QA pass/fail status. "
+        "A human reviewer still needs to inspect the query/result pair.",
         "",
         "Reviewed cases should be promoted manually into `qa/raw_query_answer_corpus.yaml` "
         "only after a reviewer records expected status, route, shape, filters, row counts, "
         "or hard assertions.",
+        "",
+        "Human review should focus on whether the returned result appears appropriate for "
+        "the query. Some unsupported or ambiguous queries are intentionally included. Do "
+        "not treat every `no_result` as a bug. Do not treat every backend `ok` as correct.",
         "",
         "## Run Metadata",
         "",
@@ -1055,20 +1224,43 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         f"- Input: {md_code(summary['input_path'])}",
         f"- Samples: {md_code(summary['case_count'])}",
         f"- Review state: {md_code(summary['review_state'])}",
-        "",
-        "## Summary Counts",
-        "",
-        f"- Result statuses: {md_code(summary['result_status_counts'])}",
-        f"- Routes: {md_code(summary['route_counts'])}",
-        f"- Query classes: {md_code(summary['query_class_counts'])}",
-        f"- Display shapes: {md_code(summary['display_shape_counts'])}",
-        f"- Categories: {md_code(summary['category_counts'])}",
-        f"- Review flags: {md_code(summary['review_flag_counts'])}",
-        f"- Display problem cases: {md_code(summary['display_problem_case_count'])}",
-        f"- Suspicious cases: {md_code(summary['suspicious_case_count'])}",
-        f"- No-result cases: {md_code(summary['no_result_case_count'])}",
-        f"- Error cases: {md_code(summary['error_case_count'])}",
     ]
+    if is_slice_report:
+        lines.extend(
+            [
+                f"- Slice ID: {md_code(summary.get('slice_id'))}",
+                f"- Slice description: {md_escape(summary.get('slice_description'))}",
+                (
+                    f"- Slice review goal: {md_escape(summary.get('slice_review_goal'))}"
+                    if summary.get("slice_review_goal")
+                    else "- Slice review goal: _none_"
+                ),
+                f"- Input slice file: {md_code(summary.get('input_slice_path'))}",
+                f"- Slice sample count: {md_code(summary.get('slice_sample_count'))}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "## Summary Counts",
+            "",
+            "These are backend execution/result counts, not correctness counts.",
+            "",
+            f"- Backend result statuses: {md_code(summary['result_status_counts'])}",
+            f"- Routes: {md_code(summary['route_counts'])}",
+            f"- Query classes: {md_code(summary['query_class_counts'])}",
+            f"- Display shapes: {md_code(summary['display_shape_counts'])}",
+            f"- Categories: {md_code(summary['category_counts'])}",
+            f"- Review flags: {md_code(summary['review_flag_counts'])}",
+            f"- Display problem cases: {md_code(summary['display_problem_case_count'])}",
+            f"- Suspicious cases: {md_code(summary['suspicious_case_count'])}",
+            f"- No-result cases: {md_code(summary['no_result_case_count'])}",
+            f"- Error cases: {md_code(summary['error_case_count'])}",
+            "",
+            "Automatically detected flags are limited to structural/display/result-shape "
+            "issues. A count of zero does not mean every answer is semantically correct.",
+        ]
+    )
     append_slowest_cases_section(lines, summary)
 
     lines.extend(["", "## Review Queue", ""])
@@ -1079,11 +1271,21 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         preview = row.get("search_box_preview") or {}
         display_shape = preview.get("display_shape") or {}
         problem_flags = preview.get("problem_flags") or []
+        answer_line = md_escape(preview["answer_line"]) if preview.get("answer_line") else "_none_"
         lines.extend(
             [
                 f"### {row['id']}",
                 "",
-                f"- Query: {md_code(row.get('query'))}",
+                f"**Query:** {md_code(row.get('query'))}",
+                "",
+                f"**Answer line:** {answer_line}",
+                "",
+                f"**Display shape:** {md_code(display_shape.get('name'))} "
+                f"({md_code(display_shape.get('key'))})",
+                "",
+                "<details>",
+                "<summary>Supporting details</summary>",
+                "",
                 f"- Category: {md_code(row.get('category'))}",
                 f"- Priority: {md_code(row.get('priority'))}",
                 (
@@ -1168,7 +1370,7 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
             )
             if top_rows:
                 lines.extend(["", markdown_table(top_rows)])
-        lines.append("")
+        lines.extend(["", "</details>", ""])
 
     path.write_text("\n".join(lines).rstrip() + "\n")
 
@@ -1181,6 +1383,8 @@ def run_review(
     overwrite_run_id: bool,
     limit: int | None,
     top_rows: int,
+    samples: list[dict[str, Any]] | None = None,
+    slice_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if overwrite_run_id and run_id is None:
         raise ValueError("--overwrite-run-id requires --run-id")
@@ -1192,24 +1396,37 @@ def run_review(
     resolved_run_id = (
         validate_run_id_label(run_id) if run_id else datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     )
-    run_dir = out_base / resolved_run_id
+    slice_id = validate_run_id_label(str(slice_metadata["slice_id"])) if slice_metadata else None
+    run_parent = out_base / resolved_run_id
+    run_dir = run_parent / slice_id if slice_id else run_parent
+    overwrite_root = run_parent if slice_id else out_base
     validate_run_directory_target(
         run_dir,
         overwrite_run_id=overwrite_run_id,
-        expected_root=out_base,
+        expected_root=overwrite_root,
     )
 
-    _version, samples = load_samples(input_path)
-    selected = samples[:limit] if limit is not None else samples
+    source_samples = samples if samples is not None else load_samples(input_path)[1]
+    selected = source_samples[:limit] if limit is not None else source_samples
 
     started_at = datetime.now(UTC).isoformat()
     rows = [run_sample_with_timing(sample, top_rows=top_rows) for sample in selected]
+    if slice_metadata:
+        row_slice_metadata = {
+            "slice_id": slice_metadata.get("slice_id"),
+            "slice_description": slice_metadata.get("slice_description"),
+            "slice_review_goal": slice_metadata.get("slice_review_goal"),
+            "input_slice_path": slice_metadata.get("input_slice_path"),
+            "slice_sample_count": slice_metadata.get("slice_sample_count"),
+        }
+        for row in rows:
+            row.update(row_slice_metadata)
     completed_at = datetime.now(UTC).isoformat()
 
     prepare_run_directory(
         run_dir,
         overwrite_run_id=overwrite_run_id,
-        expected_root=out_base,
+        expected_root=overwrite_root,
     )
     output_paths = {
         "report_jsonl": run_dir / "report.jsonl",
@@ -1223,6 +1440,7 @@ def run_review(
         completed_at=completed_at,
         input_path=input_path,
         output_paths=output_paths,
+        slice_metadata=slice_metadata,
     )
 
     write_jsonl(output_paths["report_jsonl"], rows)
@@ -1234,18 +1452,26 @@ def run_review(
 
 def main() -> int:
     args = parse_args()
+    input_path, samples, slice_metadata = load_review_source(args)
     result = run_review(
-        input_path=resolve_path(args.input),
+        input_path=input_path,
         out_base=resolve_path(args.out),
         run_id=args.run_id,
         overwrite_run_id=args.overwrite_run_id,
         limit=args.limit,
         top_rows=args.top_rows,
+        samples=samples,
+        slice_metadata=slice_metadata,
     )
     summary = result["summary"]
     print(f"Wrote exploratory query review: {display_path(result['run_dir'])}")
+    if summary.get("slice_id"):
+        print(f"Slice: {summary['slice_id']} ({summary['slice_sample_count']} samples)")
     print(f"Samples: {summary['case_count']}")
-    print(f"Result statuses: {summary['result_status_counts']}")
+    print(f"Backend result statuses: {summary['result_status_counts']}")
+    print(
+        "Backend ok means a structured result was returned; it does not imply semantic correctness."
+    )
     print(f"Routes: {summary['route_counts']}")
     print(f"Review flags: {summary['review_flag_counts']}")
     print(f"No-result cases: {summary['no_result_case_count']}")

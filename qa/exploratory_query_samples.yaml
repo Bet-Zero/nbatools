@@ -5,21 +5,318 @@ version: 1
 samples:
   - id: jokic_triple_double_record
     query: "What is Denver's record when Nikola Jokic has a triple-double?"
-    category: team_record_availability
-    priority: p0
-    notes: "Good candidate to compare against existing Raw QA coverage."
 
   - id: points_per_game_leader
     query: "Who leads the NBA in points per game this season?"
-    category: leaderboard
-    priority: p1
 
   - id: celtics_playoff_teams
     query: "What is the Celtics' record against playoff teams?"
-    category: opponent_quality
-    priority: p1
 
   - id: shorthand_lakers_road
     query: "Lakers road record last season"
-    category: fragment_form
-    priority: p2
+
+  - id: luka_doncic_stats_last_10_games
+    query: "Luka Doncic stats in last 10 games"
+
+  - id: lebron_james_stats_last_5_games
+    query: "LeBron James stats last 5 games"
+
+  - id: nikola_jokic_last_10_games
+    query: "Nikola Jokic last 10 games"
+
+  - id: shai_gilgeous_alexander_last_10
+    query: "SGA stats in his last 10 games"
+
+  - id: jayson_tatum_last_10_games
+    query: "Jayson Tatum stats last 10 games"
+
+  - id: anthony_edwards_last_5_games
+    query: "Anthony Edwards last 5 games"
+
+  - id: giannis_last_10_games
+    query: "Giannis stats last 10 games"
+
+  - id: curry_last_10_games
+    query: "Steph Curry last 10 games"
+
+  - id: kevin_durant_last_5_games
+    query: "Kevin Durant stats in last 5 games"
+
+  - id: wembanyama_last_10_games
+    query: "Victor Wembanyama stats last 10 games"
+
+  - id: luka_points_last_10_games
+    query: "Luka Doncic points per game last 10 games"
+
+  - id: jokic_triple_doubles_this_season
+    query: "How many triple doubles does Nikola Jokic have this season?"
+
+  - id: lebron_assists_this_season
+    query: "LeBron assists per game this season"
+
+  - id: sga_points_per_game_this_season
+    query: "SGA points per game this season"
+
+  - id: tatum_rebounds_this_season
+    query: "Jayson Tatum rebounds per game this season"
+
+  - id: giannis_points_rebounds_assists
+    query: "Giannis points rebounds assists this season"
+
+  - id: luka_vs_celtics
+    query: "Luka Doncic stats vs Celtics"
+
+  - id: lebron_vs_warriors
+    query: "LeBron James stats against the Warriors"
+
+  - id: jokic_vs_lakers
+    query: "Nikola Jokic stats vs Lakers"
+
+  - id: curry_vs_lakers_last_season
+    query: "Steph Curry stats vs Lakers last season"
+
+  - id: nba_points_leaders_this_season
+    query: "NBA points per game leaders this season"
+
+  - id: nba_assists_leaders_this_season
+    query: "NBA assists leaders this season"
+
+  - id: nba_rebounds_leaders_this_season
+    query: "NBA rebounds leaders this season"
+
+  - id: nba_blocks_leaders_this_season
+    query: "NBA blocks leaders this season"
+
+  - id: nba_steals_leaders_this_season
+    query: "NBA steals leaders this season"
+
+  - id: nba_three_point_leaders_this_season
+    query: "NBA three point leaders this season"
+
+  - id: best_three_point_percentage_this_season
+    query: "Best 3 point percentage this season"
+
+  - id: highest_usage_rate_this_season
+    query: "Highest usage rate this season"
+
+  - id: best_true_shooting_this_season
+    query: "Best true shooting percentage this season"
+
+  - id: nba_plus_minus_leaders_this_season
+    query: "NBA plus minus leaders this season"
+
+  - id: celtics_record_this_season
+    query: "Celtics record this season"
+
+  - id: lakers_record_this_season
+    query: "Lakers record this season"
+
+  - id: knicks_record_this_season
+    query: "Knicks record this season"
+
+  - id: warriors_record_this_season
+    query: "Warriors record this season"
+
+  - id: nuggets_record_this_season
+    query: "Nuggets record this season"
+
+  - id: thunder_record_this_season
+    query: "Thunder record this season"
+
+  - id: celtics_home_record
+    query: "Celtics home record this season"
+
+  - id: lakers_road_record
+    query: "Lakers road record this season"
+
+  - id: warriors_home_record_last_season
+    query: "Warriors home record last season"
+
+  - id: knicks_road_record_last_season
+    query: "Knicks road record last season"
+
+  - id: celtics_last_10_games
+    query: "Celtics last 10 games"
+
+  - id: lakers_last_10_games
+    query: "Lakers last 10 games"
+
+  - id: knicks_last_10_games
+    query: "Knicks last 10 games"
+
+  - id: warriors_last_5_games
+    query: "Warriors last 5 games"
+
+  - id: thunder_last_10_games
+    query: "Thunder last 10 games"
+
+  - id: nuggets_last_10_games
+    query: "Nuggets last 10 games"
+
+  - id: celtics_record_vs_playoff_teams
+    query: "Celtics record against playoff teams"
+
+  - id: lakers_record_vs_playoff_teams
+    query: "Lakers record against playoff teams"
+
+  - id: thunder_record_vs_winning_teams
+    query: "Thunder record against teams over .500"
+
+  - id: knicks_record_vs_winning_teams
+    query: "Knicks record vs teams above 500"
+
+  - id: nuggets_record_vs_losing_teams
+    query: "Nuggets record against teams under .500"
+
+  - id: best_team_record_this_season
+    query: "Best team record this season"
+
+  - id: worst_team_record_this_season
+    query: "Worst team record this season"
+
+  - id: best_home_record_this_season
+    query: "Best home record in the NBA this season"
+
+  - id: best_road_record_this_season
+    query: "Best road record in the NBA this season"
+
+  - id: best_defense_this_season
+    query: "Best defense in the NBA this season"
+
+  - id: best_offense_this_season
+    query: "Best offense in the NBA this season"
+
+  - id: highest_scoring_team_this_season
+    query: "Highest scoring team this season"
+
+  - id: lowest_scoring_team_this_season
+    query: "Lowest scoring team this season"
+
+  - id: celtics_vs_lakers_this_season
+    query: "Celtics vs Lakers this season"
+
+  - id: nuggets_vs_lakers_last_season
+    query: "Nuggets vs Lakers last season"
+
+  - id: warriors_vs_kings_this_season
+    query: "Warriors vs Kings this season"
+
+  - id: knicks_vs_celtics_this_season
+    query: "Knicks vs Celtics this season"
+
+  - id: thunder_vs_nuggets_this_season
+    query: "Thunder vs Nuggets this season"
+
+  - id: who_won_celtics_lakers_last_game
+    query: "Who won the last Celtics Lakers game?"
+
+  - id: lakers_last_game_result
+    query: "Lakers last game result"
+
+  - id: celtics_last_game_result
+    query: "Celtics last game result"
+
+  - id: knicks_last_game_score
+    query: "Knicks last game score"
+
+  - id: luka_last_game_stats
+    query: "Luka Doncic last game stats"
+
+  - id: jokic_last_game_stats
+    query: "Jokic last game stats"
+
+  - id: lebron_last_game_stats
+    query: "LeBron last game stats"
+
+  - id: sga_last_game_stats
+    query: "SGA last game stats"
+
+  - id: celtics_playoff_record_last_year
+    query: "Celtics playoff record last year"
+
+  - id: lakers_playoff_record_last_year
+    query: "Lakers playoff record last year"
+
+  - id: jokic_playoff_stats_last_year
+    query: "Jokic playoff stats last year"
+
+  - id: lebron_playoff_stats_last_year
+    query: "LeBron playoff stats last year"
+
+  - id: nba_playoff_points_leaders_last_year
+    query: "NBA playoff points leaders last year"
+
+  - id: messy_luka_last_ten
+    query: "how has luka been in the last ten games"
+
+  - id: messy_jokic_recent
+    query: "what has jokic done lately"
+
+  - id: messy_best_players_now
+    query: "who are the best players right now"
+
+  - id: messy_best_team_now
+    query: "who is the best team right now"
+
+  - id: messy_lakers_good_on_road
+    query: "are the lakers good on the road"
+
+  - id: typo_luka_last_10_gams
+    query: "Luka Doncic stats last 10 gams"
+
+  - id: typo_warriors_reccord
+    query: "Warriors reccord this season"
+
+  - id: typo_celtics_vs_playof_teams
+    query: "Celtics record vs playof teams"
+
+  - id: abbreviation_bos_record
+    query: "BOS record this season"
+
+  - id: abbreviation_lal_road_record
+    query: "LAL road record this season"
+
+  - id: abbreviation_gsw_last_10
+    query: "GSW last 10 games"
+
+  - id: abbreviation_okc_record
+    query: "OKC record this season"
+
+  - id: abbreviation_nyk_last_game
+    query: "NYK last game score"
+
+  - id: unsupported_clutch_leaders
+    query: "NBA clutch points leaders this season"
+
+  - id: unsupported_mvp_ladder
+    query: "MVP ladder this season"
+
+  - id: unsupported_injury_status
+    query: "Is Luka Doncic injured?"
+
+  - id: unsupported_next_lakers_game
+    query: "When is the next Lakers game?"
+
+  - id: unsupported_betting_odds
+    query: "Lakers Celtics betting odds tonight"
+
+  - id: unsupported_wnba_query
+    query: "Aces record this season"
+
+  - id: unsupported_college_query
+    query: "Duke basketball record this season"
+
+  - id: vague_best_shooter
+    query: "best shooter in the NBA"
+
+  - id: vague_best_scorer
+    query: "best scorer in the NBA"
+
+  - id: vague_best_defender
+    query: "best defender in the NBA"
+
+  - id: vague_most_efficient_player
+    query: "most efficient player this season"
+
+  - id: vague_best_bench_player
+    query: "best bench player this season"

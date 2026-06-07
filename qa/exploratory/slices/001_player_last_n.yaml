@@ -1,0 +1,33 @@
+id: 001_player_last_n
+description: Player last-N game summaries
+review_goal: Check player name parsing, last-N filters, summary shape, and game log rows.
+samples:
+  - id: luka_last_10
+    query: "Luka Doncic stats last 10 games"
+
+  - id: lebron_last_5
+    query: "LeBron James stats last 5 games"
+
+  - id: jokic_last_10
+    query: "Nikola Jokic last 10 games"
+
+  - id: sga_last_10
+    query: "SGA stats in his last 10 games"
+
+  - id: tatum_last_10
+    query: "Jayson Tatum stats last 10 games"
+
+  - id: anthony_edwards_last_5
+    query: "Anthony Edwards last 5 games"
+
+  - id: giannis_last_10
+    query: "Giannis stats last 10 games"
+
+  - id: curry_last_10
+    query: "Steph Curry last 10 games"
+
+  - id: durant_last_5
+    query: "Kevin Durant stats in last 5 games"
+
+  - id: wembanyama_last_10
+    query: "Victor Wembanyama stats last 10 games"

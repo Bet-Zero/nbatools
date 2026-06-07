@@ -153,6 +153,10 @@ raw-query-answer-qa:
 exploratory-query-review:
 	$(PYTHON) tools/exploratory_query_review.py --input qa/exploratory_query_samples.yaml
 
+## Input-only exploratory query slice review; pass SLICE=001_player_last_n.
+exploratory-query-review-slice:
+	$(PYTHON) tools/exploratory_query_review.py --slice $(SLICE)
+
 ## Read-only query feedback review export; writes ignored artifacts under outputs/.
 query-feedback-export:
 	$(PYTHON) tools/export_query_feedback.py
