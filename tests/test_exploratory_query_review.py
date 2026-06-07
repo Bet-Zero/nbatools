@@ -164,17 +164,24 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert run_dir == tmp_path / "out/archive/runs/review__all"
     assert (tmp_path / "out/latest/review.md").read_text() == human_review
     assert (tmp_path / "out/latest/report.md").read_text() == markdown
+    assert "# Query Output Snapshot Review" in human_review
     assert "**Query**" in human_review
-    assert "**Answer**" in human_review
-    assert "**Table shown**" in human_review
-    assert "**Quick review**" in human_review
+    assert "**Answer shown**" in human_review
+    assert "**Rendered output**" in human_review
+    assert "### Table — Team record" in human_review
+    assert "| Team | W-L | Games | Home/Away |" in human_review
+    assert "### Detail — Game Detail" in human_review
+    assert "| # | Date | Team |  | Opp | W/L |" in human_review
+    assert "**Reviewer checks**" in human_review
+    assert "[ ] Subject/table mismatch" in human_review
+    assert "[ ] Filter treated as subject" in human_review
+    assert "[ ] Evidence columns insufficient" in human_review
     assert "QueryResponse.query" not in human_review
     assert "ResultHero.sentence" not in human_review
     assert "result.sections" not in human_review
     assert "PatternConfig" not in human_review
     assert "The Lakers went 2-1 on the road." in human_review
-    assert "Record Detail" in human_review
-    assert "Filters: Location=Road" in human_review
+    assert "Filter: Location: Road" in human_review
     assert (tmp_path / "out/index.md").exists()
     assert (tmp_path / "out/README.md").exists()
     assert sorted(path.name for path in (tmp_path / "out").iterdir()) == [
@@ -230,17 +237,13 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert "These are backend execution/result counts, not correctness counts." in markdown
     assert "A count of zero does not mean every answer is semantically correct." in markdown
     assert "Do not treat every backend `ok` as correct." in markdown
-    query_pos = markdown.index(f"**QueryResponse.query:** `{ok_query}`")
-    answer_pos = markdown.index(
-        "**ResultHero.sentence / search_box_preview.answer_line:** The Lakers went 2-1 on the road."
-    )
-    section_pos = markdown.index(
-        "**ResultTable / result.sections:** `result.sections.summary` "
-        "(`1` row(s), `hero_or_summary`, `4` column(s))"
-    )
-    details_pos = markdown.index("<summary>Supporting details</summary>")
-    assert query_pos < answer_pos < section_pos < details_pos
+    query_pos = markdown.index("**Query**")
+    answer_pos = markdown.index("**Answer shown**")
+    rendered_pos = markdown.index("**Rendered output**")
+    details_pos = markdown.index("<summary>Supporting diagnostics</summary>")
+    assert query_pos < answer_pos < rendered_pos < details_pos
     assert "<details>" in markdown
+    assert "Query Output Snapshot" in markdown
     assert "Search Box Preview" in markdown
     assert "Display shape: `Team Record` (`team_record`)" in markdown
     assert "Primary section: `result.sections.summary`" in markdown
@@ -368,10 +371,10 @@ samples:
     assert rows[0]["slice_id"] == "001_player_last_n"
     assert rows[0]["slice_sample_count"] == 2
     assert rows[0]["id"] == "luka_last_10"
-    assert "# Exploratory Review — 001_player_last_n" in human_review
+    assert "# Query Output Snapshot Review" in human_review
     assert "- Slice: `001_player_last_n`" in human_review
-    assert "Open this file first for quick human review." in human_review
-    assert "Full diagnostic details are in `report.md`." in human_review
+    assert "Open this file first. It shows the answer and rendered table text" in human_review
+    assert "Full backend diagnostics are in `report.md`." in human_review
     assert "This is an exploratory slice report." in markdown
     assert "Slice ID: `001_player_last_n`" in markdown
     assert "Slice sample count: `2`" in markdown

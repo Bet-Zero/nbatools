@@ -34,6 +34,13 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from nbatools.api_handlers import query_result_to_payload  # noqa: E402
+from nbatools.query_output_snapshot import (  # noqa: E402
+    build_query_ui_snapshot,
+    route_to_snapshot_patterns,
+    snapshot_debug_markdown_lines,
+    snapshot_for_exception,
+    snapshot_review_markdown_lines,
+)
 from nbatools.query_service import execute_natural_query  # noqa: E402
 from tools.raw_query_answer_qa import (  # noqa: E402
     answer_text_from_metadata,
@@ -454,58 +461,6 @@ def has_displayable_rows(sections: dict[str, Any]) -> bool:
     return any(isinstance(rows, list) and len(rows) > 0 for rows in sections.values())
 
 
-def filter_text(value: Any, key: str) -> str:
-    if not isinstance(value, dict):
-        return ""
-    raw = value.get(key)
-    return str(raw or "").casefold()
-
-
-def should_show_player_summary_game_log(
-    *,
-    query: str,
-    metadata: dict[str, Any],
-    sections: dict[str, Any],
-) -> bool:
-    if not section_rows(sections, "game_log"):
-        return False
-
-    window_size = metadata.get("window_size")
-    if isinstance(window_size, int | float) and not isinstance(window_size, bool):
-        return True
-    if re.search(r"\blast\s+\d+\s*(?:games?|gms?)?\b", query, flags=re.I):
-        return True
-    if metadata.get("opponent_context"):
-        return True
-
-    filters = metadata.get("applied_filters")
-    if not isinstance(filters, list):
-        return False
-    meaningful_kinds = {
-        "date",
-        "location",
-        "outcome",
-        "period",
-        "player",
-        "position",
-        "quality",
-        "role",
-        "schedule",
-        "season",
-        "situation",
-        "threshold",
-        "window",
-    }
-    for item in filters:
-        kind = filter_text(item, "kind")
-        label = filter_text(item, "label")
-        if kind == "team" and "opponent" in label:
-            return True
-        if kind in meaningful_kinds:
-            return True
-    return False
-
-
 def route_to_display_patterns(
     *,
     query: str,
@@ -513,151 +468,12 @@ def route_to_display_patterns(
     metadata: dict[str, Any],
     sections: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    route_key = route or metadata.get("route")
-    if route_key == "player_game_summary":
-        if should_show_player_summary_game_log(query=query, metadata=metadata, sections=sections):
-            return [
-                {"type": "entity_summary", "section_key": "summary"},
-                {
-                    "type": "game_log",
-                    "section_key": "game_log",
-                    "summary_key": "summary",
-                    "show_summary_strip": False,
-                },
-            ]
-        return [{"type": "entity_summary", "section_key": "summary"}]
-    if route_key == "player_game_finder":
-        return [
-            {
-                "type": "game_log",
-                "section_key": "finder",
-                "mode": "player",
-                "raw_detail_title": "Player Game Detail",
-            }
-        ]
-    if route_key == "game_finder":
-        return [
-            {
-                "type": "game_log",
-                "section_key": "finder",
-                "mode": "team",
-                "raw_detail_title": "Game Detail",
-            }
-        ]
-    if route_key == "top_player_games":
-        return [{"type": "top_performances", "section_key": "leaderboard", "subject": "player"}]
-    if route_key == "top_team_games":
-        return [{"type": "top_performances", "section_key": "leaderboard", "subject": "team"}]
-    if route_key == "game_summary":
-        return [
-            {
-                "type": "game_log",
-                "section_key": "game_log",
-                "summary_key": "summary",
-                "mode": "team",
-                "raw_detail_title": "Game Detail",
-                "detail_section_keys": ["top_performers"],
-            }
-        ]
-    if route_key == "player_split_summary":
-        return [{"type": "split", "subject": "player"}]
-    if route_key == "team_split_summary":
-        return [{"type": "split", "subject": "team"}]
-    if route_key == "player_on_off":
-        return [
-            {
-                "type": "split",
-                "section_key": "summary",
-                "summary_key": "summary",
-                "subject": "player",
-                "bucket_key": "presence_state",
-                "split_label_override": "On/Off",
-                "primary_detail_title": "On/Off Detail",
-                "summary_detail_title": None,
-            }
-        ]
-    if route_key in {"player_streak_finder", "team_streak_finder"}:
-        return [{"type": "streak", "section_key": "streak"}]
-    if route_key == "playoff_history":
-        return [{"type": "playoff_history", "mode": "history"}]
-    if route_key == "playoff_round_record":
-        return [{"type": "playoff_history", "mode": "round_record"}]
-    if route_key == "playoff_matchup_history":
-        return [{"type": "playoff_history", "mode": "matchup"}]
-    if route_key == "player_compare":
-        return [
-            {
-                "type": "comparison",
-                "subject": "player",
-                "head_to_head": metadata.get("head_to_head_used") is True,
-            }
-        ]
-    if route_key == "team_compare":
-        return [
-            {
-                "type": "comparison",
-                "subject": "team",
-                "head_to_head": metadata.get("head_to_head_used") is True,
-            }
-        ]
-    if route_key == "team_matchup_record":
-        return [{"type": "comparison", "subject": "team", "head_to_head": True}]
-    if route_key == "team_record":
-        if section_rows(sections, "game_log"):
-            return [
-                {"type": "record", "mode": "team_record"},
-                {
-                    "type": "game_log",
-                    "section_key": "game_log",
-                    "summary_key": "summary",
-                    "mode": "team",
-                    "show_summary_strip": False,
-                    "raw_detail_title": "Game Detail",
-                    "collapse_to_detail": True,
-                },
-            ]
-        return [{"type": "record", "mode": "team_record"}]
-    if route_key == "record_by_decade":
-        return [{"type": "record", "mode": "record_by_decade"}]
-    if route_key == "record_by_decade_leaderboard":
-        return [{"type": "record", "mode": "record_by_decade_leaderboard"}]
-    if route_key == "matchup_by_decade":
-        return [{"type": "record", "mode": "matchup_by_decade"}]
-    if route_key in {
-        "season_leaders",
-        "season_team_leaders",
-        "team_record_leaderboard",
-        "player_occurrence_leaders",
-        "team_occurrence_leaders",
-    }:
-        return [{"type": "leaderboard", "section_key": "leaderboard"}]
-    if route_key == "player_stretch_leaderboard":
-        return [{"type": "rolling_stretch", "section_key": "leaderboard"}]
-    if route_key == "lineup_summary":
-        return [{"type": "entity_summary", "section_key": "summary"}]
-    if route_key == "lineup_leaderboard":
-        return [{"type": "leaderboard", "section_key": "leaderboard", "metric_key": "net_rating"}]
-    if route_key == "playoff_appearances":
-        if section_rows(sections, "leaderboard"):
-            return [
-                {
-                    "type": "leaderboard",
-                    "section_key": "leaderboard",
-                    "metric_key": "appearances",
-                    "sentence_metric_label": "playoff appearances",
-                }
-            ]
-        if section_rows(sections, "summary") or section_rows(sections, "by_season"):
-            return [{"type": "playoff_history", "mode": "appearances"}]
-        return [
-            {
-                "type": "leaderboard",
-                "section_key": "leaderboard",
-                "metric_key": "appearances",
-                "sentence_metric_label": "playoff appearances",
-            }
-        ]
-    return [{"type": "fallback_table"}]
+    return route_to_snapshot_patterns(
+        query=query,
+        route=route,
+        metadata=metadata,
+        sections=sections,
+    )
 
 
 def no_result_display_shape(result_status: str | None, result_reason: str | None) -> str:
@@ -1014,6 +830,7 @@ def build_review_flags(
 
 def row_from_exception(sample: dict[str, Any], exc: Exception) -> dict[str, Any]:
     errors = [{"type": type(exc).__name__, "message": str(exc)}]
+    snapshot = snapshot_for_exception(str(sample.get("query") or ""), exc)
     preview = build_search_box_preview(
         query=str(sample.get("query") or ""),
         route=None,
@@ -1050,6 +867,7 @@ def row_from_exception(sample: dict[str, Any], exc: Exception) -> dict[str, Any]
             "notes": [],
             "caveats": [],
             "errors": errors,
+            "query_output_snapshot": snapshot,
             "search_box_preview": preview,
             "review_flags": build_review_flags(
                 sample,
@@ -1091,6 +909,7 @@ def run_sample(sample: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
         sections=sections,
     )
     section_summaries = build_section_summaries(sections, top_rows=top_rows)
+    snapshot = build_query_ui_snapshot(payload, top_rows=top_rows)
     preview = build_search_box_preview(
         query=query,
         route=payload.get("route"),
@@ -1128,6 +947,7 @@ def run_sample(sample: dict[str, Any], *, top_rows: int) -> dict[str, Any]:
             "notes": payload.get("notes") or result.get("notes") or [],
             "caveats": payload.get("caveats") or result.get("caveats") or [],
             "errors": [],
+            "query_output_snapshot": snapshot,
             "search_box_preview": preview,
             "review_flags": build_review_flags(
                 sample,
@@ -1463,13 +1283,18 @@ def write_human_review(path: Path, rows: list[dict[str, Any]], summary: dict[str
     run_id = str(summary.get("run_id") or path.parent.name.rsplit("__", 1)[0])
     case_count = summary.get("case_count", len(rows))
     lines: list[str] = [
-        f"# Exploratory Review — {slice_label}",
+        "# Query Output Snapshot Review",
         "",
         f"- Run ID: {md_code(run_id)}",
         f"- Slice: {md_code(slice_label)}",
         f"- Cases: {md_code(case_count)}",
         "",
-        "Open this file first for quick human review. Full diagnostic details are in `report.md`.",
+        (
+            "Open this file first. It shows the answer and rendered table text the "
+            "app would show for each query."
+        ),
+        "",
+        "Full backend diagnostics are in `report.md`.",
         "",
         (
             "Backend `ok` means the system returned a structured result. "
@@ -1481,39 +1306,19 @@ def write_human_review(path: Path, rows: list[dict[str, Any]], summary: dict[str
         lines.extend(["", "_No samples selected._"])
 
     for index, row in enumerate(rows, start=1):
-        primary = primary_section_for_review(row)
-        row_count = row_count_for_section(primary)
+        lines.extend(["", "---", ""])
+        snapshot = row.get("query_output_snapshot") or build_query_ui_snapshot(
+            row.get("payload"),
+            top_rows=3,
+        )
         lines.extend(
-            [
-                "",
-                "---",
-                "",
-                f"## {index}. {md_escape(row.get('id'))}",
-                "",
-                "**Query**  ",
-                md_escape(row.get("query")),
-                "",
-                "**Answer**  ",
-                md_escape(answer_for_review(row)),
-                "",
-                "**Table shown**  ",
-                md_escape(table_shown_label(row)),
-                f"Rows: {md_escape(row_count)}  ",
-                f"Other sections: {md_escape(other_sections_summary(row))}  ",
-                (
-                    "Filters: "
-                    f"{md_escape(filter_summary_for_review(row.get('applied_filters') or []))}  "
-                ),
-                f"Notes: {md_escape(notes_summary_for_review(row))}",
-                "",
-                "**Quick review**  ",
-                "[ ] Good  ",
-                "[ ] Answer needs work  ",
-                "[ ] Wrong/missing table  ",
-                "[ ] Query/filter problem  ",
-                "[ ] Unsupported  ",
-                "[ ] Promote later",
-            ]
+            snapshot_review_markdown_lines(
+                case_id=row.get("id"),
+                snapshot=snapshot,
+                index=index,
+                heading_level=2,
+                include_checks=True,
+            )
         )
 
     path.write_text("\n".join(lines).rstrip() + "\n")
@@ -1606,20 +1411,29 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         preview = row.get("search_box_preview") or {}
         display_shape = preview.get("display_shape") or {}
         problem_flags = preview.get("problem_flags") or []
-        answer_line = md_escape(preview["answer_line"]) if preview.get("answer_line") else "_none_"
+        snapshot = row.get("query_output_snapshot") or build_query_ui_snapshot(
+            row.get("payload"),
+            top_rows=3,
+        )
         primary_section = format_primary_result_section(preview.get("primary_section"))
         lines.extend(
             [
                 f"### {row['id']}",
                 "",
-                f"**QueryResponse.query:** {md_code(row.get('query'))}",
-                "",
-                f"**ResultHero.sentence / search_box_preview.answer_line:** {answer_line}",
-                "",
-                f"**ResultTable / result.sections:** {primary_section}",
-                "",
+            ]
+        )
+        lines.extend(
+            snapshot_review_markdown_lines(
+                case_id=row.get("id"),
+                snapshot=snapshot,
+                heading_level=4,
+                include_checks=False,
+            )
+        )
+        lines.extend(
+            [
                 "<details>",
-                "<summary>Supporting details</summary>",
+                "<summary>Supporting diagnostics</summary>",
                 "",
                 f"- Category: {md_code(row.get('category'))}",
                 f"- Priority: {md_code(row.get('priority'))}",
@@ -1644,6 +1458,8 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
                 f"- Primary section: {primary_section}",
                 f"- Visible sections/tables: {md_code(preview.get('visible_sections') or [])}",
                 f"- Display problem flags: {md_code(problem_flags) if problem_flags else '_none_'}",
+                "",
+                *snapshot_debug_markdown_lines(snapshot),
                 "",
                 "**Engine Details**",
                 "",

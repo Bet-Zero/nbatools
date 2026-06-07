@@ -420,6 +420,105 @@ def test_overwrite_run_directory_must_be_direct_child_of_raw_qa_root(tmp_path) -
             )
 
 
+def test_raw_qa_report_uses_query_output_snapshot_markdown(tmp_path) -> None:
+    payload = {
+        "ok": True,
+        "query": "Lakers record with Luka",
+        "route": "team_record",
+        "result_status": "ok",
+        "result_reason": None,
+        "intent": "team_record",
+        "result": {
+            "query_class": "summary",
+            "metadata": {
+                "query_class": "summary",
+                "applied_filters": [
+                    {"kind": "player", "label": "With player", "value": "Luka Doncic"}
+                ],
+            },
+            "sections": {
+                "summary": [
+                    {
+                        "team_name": "Los Angeles Lakers",
+                        "games": 64,
+                        "wins": 43,
+                        "losses": 21,
+                        "win_pct": 0.672,
+                    }
+                ]
+            },
+        },
+    }
+    snapshot = qa.build_query_ui_snapshot(payload, top_rows=1)
+    row = {
+        **_case(),
+        "id": "lakers_record_with_luka",
+        "query": "Lakers record with Luka",
+        "category": "team_record",
+        "priority": "p1",
+        "route": "team_record",
+        "intent": "team_record",
+        "query_class": "summary",
+        "result_status": "ok",
+        "result_reason": None,
+        "shape_hint": "team_record",
+        "shape_source": "backend_approximation",
+        "answer_text_policy": "frontend_hero_expected",
+        "answer_text_status": "frontend_hero_expected",
+        "answer_text": None,
+        "answer_summary": "Los Angeles Lakers -- 43-21 over 64 games",
+        "applied_filters": [{"kind": "player", "label": "With player", "value": "Luka Doncic"}],
+        "section_summaries": {"summary": {"row_count": 1, "top_rows": []}},
+        "query_output_snapshot": snapshot,
+        "expectation_results": {"status": "pass", "pass_count": 1, "fail_count": 0},
+        "expected": {"review_notes": None},
+        "manual_review": {"status": "unreviewed", "tags": [], "notes": ""},
+        "suspicious_flags": [],
+        "informational_flags": [],
+        "verified_outliers": [],
+        "suggested_review_tags": [],
+        "notes": [],
+        "caveats": [],
+        "errors": [],
+    }
+    summary = {
+        "run_id": "review",
+        "started_at": "2026-06-07T00:00:00+00:00",
+        "completed_at": "2026-06-07T00:00:01+00:00",
+        "corpus_path": "qa/raw_query_answer_corpus.yaml",
+        "slice_names": [],
+        "case_count": 1,
+        "result_status_counts": {"ok": 1},
+        "category_counts": {"team_record": 1},
+        "route_counts": {"team_record": 1},
+        "manual_review_status_counts": {"unreviewed": 1},
+        "manual_review_tag_counts": {},
+        "answer_text_policy_counts": {"frontend_hero_expected": 1},
+        "answer_text_status_counts": {"frontend_hero_expected": 1},
+        "suspicious_flag_case_count": 0,
+        "suspicious_flag_counts": {},
+        "informational_flag_case_count": 0,
+        "informational_flag_counts": {},
+        "verified_outlier_case_count": 0,
+        "verified_outlier_counts": {},
+        "suggested_review_tag_counts": {},
+        "expectation_case_counts": {"pass": 1},
+        "expectation_check_counts": {"pass": 1},
+        "failed_case_ids": [],
+        "slowest_cases": [],
+    }
+    path = tmp_path / "report.md"
+
+    qa.write_markdown(path, [row], summary)
+    markdown = path.read_text()
+
+    assert "**Answer shown**" in markdown
+    assert "The Los Angeles Lakers are 43-21" in markdown
+    assert "#### Table — Team record" in markdown
+    assert "Filter: With player: Luka Doncic" in markdown
+    assert "| Team | W-L | Games | Win % |" in markdown
+
+
 def test_product_review_markdown_includes_family_matrix_and_handoff(tmp_path) -> None:
     registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
     rows = [

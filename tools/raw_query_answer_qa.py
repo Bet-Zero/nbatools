@@ -26,6 +26,11 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from nbatools.api_handlers import query_result_to_payload  # noqa: E402
+from nbatools.query_output_snapshot import (  # noqa: E402
+    build_query_ui_snapshot,
+    snapshot_for_exception,
+    snapshot_review_markdown_lines,
+)
 from nbatools.query_service import execute_natural_query  # noqa: E402
 
 
@@ -1791,6 +1796,7 @@ def run_case(
         qr = execute_natural_query(query)
         payload = query_result_to_payload(qr)
     except Exception as exc:  # pragma: no cover - exercised manually through harness.
+        snapshot = snapshot_for_exception(query, exc, top_rows=top_rows)
         review_flags = build_review_flags(
             case,
             result_status="error",
@@ -1823,6 +1829,7 @@ def run_case(
             "applied_filters": [],
             "sections": {},
             "section_summaries": {},
+            "query_output_snapshot": snapshot,
             "notes": [],
             "caveats": [],
             "errors": [{"type": type(exc).__name__, "message": str(exc)}],
@@ -1868,6 +1875,7 @@ def run_case(
         metadata=metadata,
         sections=sections,
     )
+    snapshot = build_query_ui_snapshot(payload, top_rows=top_rows)
 
     return json_ready(
         {
@@ -1889,6 +1897,7 @@ def run_case(
             "applied_filters": applied_filters,
             "sections": sections,
             "section_summaries": build_section_summaries(sections, top_rows=top_rows),
+            "query_output_snapshot": snapshot,
             "notes": payload.get("notes") or result.get("notes") or [],
             "caveats": payload.get("caveats") or result.get("caveats") or [],
             "errors": [],
@@ -2409,6 +2418,7 @@ def compact_product_review_row(row: dict[str, Any]) -> dict[str, Any]:
         "answer_summary": row.get("answer_summary"),
         "applied_filters": row.get("applied_filters") or [],
         "section_summaries": row.get("section_summaries") or {},
+        "query_output_snapshot": row.get("query_output_snapshot"),
         "expectation_status": (row.get("expectation_results") or {}).get("status"),
         "manual_review": row.get("manual_review") or {},
         "suspicious_flags": row.get("suspicious_flags") or [],
@@ -2666,10 +2676,24 @@ def write_product_review_markdown(path: Path, product_review: dict[str, Any]) ->
     if not product_review["representative_rows"]:
         lines.append("_None tagged yet._")
     for row in product_review["representative_rows"]:
+        snapshot = row.get("query_output_snapshot")
         lines.extend(
             [
                 f"### {row['id']}",
                 "",
+            ]
+        )
+        if snapshot:
+            lines.extend(
+                snapshot_review_markdown_lines(
+                    case_id=row.get("id"),
+                    snapshot=snapshot,
+                    heading_level=4,
+                    include_checks=False,
+                )
+            )
+        lines.extend(
+            [
                 f"- Query: {md_code(row['query'])}",
                 (
                     f"- Family / concept / variant: {md_code(row['family'])} / "
@@ -2703,17 +2727,18 @@ def write_product_review_markdown(path: Path, product_review: dict[str, Any]) ->
                 "- Reviewer notes:",
             ]
         )
-        for section_name, section_summary in row["section_summaries"].items():
-            top_rows = section_summary.get("top_rows") or []
-            if top_rows:
-                lines.extend(
-                    [
-                        "",
-                        f"Section {md_code(section_name)} top rows:",
-                        "",
-                        markdown_table(top_rows),
-                    ]
-                )
+        if not snapshot:
+            for section_name, section_summary in row["section_summaries"].items():
+                top_rows = section_summary.get("top_rows") or []
+                if top_rows:
+                    lines.extend(
+                        [
+                            "",
+                            f"Section {md_code(section_name)} top rows:",
+                            "",
+                            markdown_table(top_rows),
+                        ]
+                    )
         lines.append("")
 
     lines.extend(
@@ -3094,10 +3119,24 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
 
     for row in rows:
         expectation_results = row.get("expectation_results") or {}
+        snapshot = row.get("query_output_snapshot")
         lines.extend(
             [
                 f"### {row['id']}",
                 "",
+            ]
+        )
+        if snapshot:
+            lines.extend(
+                snapshot_review_markdown_lines(
+                    case_id=row.get("id"),
+                    snapshot=snapshot,
+                    heading_level=4,
+                    include_checks=False,
+                )
+            )
+        lines.extend(
+            [
                 f"- Query: {md_code(row.get('query'))}",
                 f"- Category: {md_code(row.get('category'))}",
                 f"- Priority: {md_code(row.get('priority'))}",
