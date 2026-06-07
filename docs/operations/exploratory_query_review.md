@@ -136,19 +136,22 @@ the manifest, the runner falls back to
 
 ## Generated Artifacts
 
-Each run writes `report.jsonl`, `report.md`, and `summary.json` into the
-generated exploratory output tree. The generated output root is intentionally
-kept to stable navigation entries only; open its generated `README.md` and
-`index.md` for the concrete local paths and recent-run list.
+Each run writes `review.md`, `report.md`, `report.jsonl`, and `summary.json`
+into the generated exploratory output tree. The generated output root is
+intentionally kept to stable navigation entries only; open its generated
+`README.md` and `index.md` for the concrete local paths and recent-run list.
 
 Scratch runs whose `--run-id` contains terms such as `smoke`, `codex`,
 `debug`, `tmp`, or `audit` are kept out of the normal recent-run index.
 
+- `review.md` is the first-open human review worksheet. It uses plain-English
+  labels (`Query`, `Answer`, `Table shown`, `Quick review`) and avoids internal
+  renderer, route-pattern, raw JSON, and backend field dumps.
 - `report.jsonl` contains one structured row per sample, including the
   QueryResponse payload, search-box preview, route/status/query class, inferred
   shape, metadata, applied filters, sections, section summaries, review flags,
   timing, and slice metadata when the run used `--slice`.
-- `report.md` is the manual review worksheet. Each case starts with
+- `report.md` is the diagnostic review worksheet. Each case starts with
   `QueryResponse.query`, `ResultHero.sentence` /
   `search_box_preview.answer_line`, and the primary `ResultTable` /
   `result.sections` entry for quick scanning. Supporting details remain
@@ -161,12 +164,16 @@ Scratch runs whose `--run-id` contains terms such as `smoke`, `codex`,
   These are backend execution/result counts, not correctness counts.
   Slice runs also include `slice_id`, `slice_description`, `slice_review_goal`,
   `input_slice_path`, and `slice_sample_count`.
-- The latest report navigation entry is refreshed after every run.
+- The latest human review and diagnostic report navigation entries are
+  refreshed after every run.
 - Slice-specific latest navigation is refreshed after every slice run.
 - The generated index lists recent normal runs newest-first.
 - The generated README explains the output folder layout.
 
 ## Reading The Search-Box Preview
+
+Human/product reviewers should start with `review.md`. Use `report.md` when a
+case needs internal diagnostic context.
 
 Each `report.md` card starts with the existing query/result display terms:
 
@@ -210,8 +217,9 @@ cite them as durable product evidence.
 
 Promotion is manual:
 
-1. Review `report.md` and decide whether the behavior is correct, buggy,
-   intentionally unsupported, or needs follow-up.
+1. Review `review.md` first, then open `report.md` when a case needs diagnostic
+   detail. Decide whether the behavior is correct, buggy, intentionally
+   unsupported, or needs follow-up.
 2. For a verified case that should become regression coverage, add a new case
    to `qa/raw_query_answer_corpus.yaml`.
 3. Add explicit expectations: status, route, shape, sections, row counts,

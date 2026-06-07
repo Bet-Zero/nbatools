@@ -26,7 +26,7 @@ SRC = ROOT / "src"
 DEFAULT_INPUT_PATH = Path("qa/exploratory_query_samples.yaml")
 DEFAULT_MANIFEST_PATH = Path("qa/exploratory/manifest.yaml")
 DEFAULT_SLICES_ROOT = Path("qa/exploratory/slices")
-OUTPUT_ARTIFACT_NAMES = ("report.md", "summary.json", "report.jsonl")
+OUTPUT_ARTIFACT_NAMES = ("review.md", "report.md", "summary.json", "report.jsonl")
 OUTPUT_NAV_ENTRIES = {"latest", "latest_by_slice", "archive", "index.md", "README.md"}
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -1287,6 +1287,238 @@ def format_review_flags(flags: list[dict[str, Any]]) -> str:
     return ", ".join(md_code(part) for part in parts)
 
 
+SECTION_TITLES: dict[str, str] = {
+    "summary": "Summary",
+    "by_season": "By Season",
+    "comparison": "Comparison",
+    "split_comparison": "Split Comparison",
+    "finder": "Matching Games",
+    "leaderboard": "Leaderboard",
+    "streak": "Streaks",
+    "game_log": "Game Detail",
+    "top_performers": "Top Performers",
+    "count": "Count",
+}
+
+REASON_TITLES: dict[str, str] = {
+    "no_match": "No matching rows",
+    "no_data": "Data unavailable",
+    "unrouted": "Query was not recognized",
+    "ambiguous": "Ambiguous query",
+    "ambiguous_query": "Ambiguous query",
+    "unsupported": "Unsupported query",
+    "filter_not_supported": "Unsupported filter",
+    "error": "Error while running query",
+    "exception": "Error while running query",
+}
+
+
+def humanize_token(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    return " ".join(part for part in text.replace("_", " ").split()).title()
+
+
+def pluralize_rows(count: Any) -> str:
+    try:
+        number = int(count)
+    except (TypeError, ValueError):
+        return "rows"
+    return "row" if number == 1 else "rows"
+
+
+def primary_section_for_review(row: dict[str, Any]) -> dict[str, Any] | None:
+    preview = row.get("search_box_preview") or {}
+    primary = preview.get("primary_section")
+    return primary if isinstance(primary, dict) else None
+
+
+def visible_sections_for_review(row: dict[str, Any]) -> list[dict[str, Any]]:
+    preview = row.get("search_box_preview") or {}
+    sections = preview.get("visible_sections")
+    if not isinstance(sections, list):
+        return []
+    return [section for section in sections if isinstance(section, dict)]
+
+
+def human_section_title(section_name: Any, row: dict[str, Any]) -> str:
+    name = str(section_name or "").strip()
+    route = str(row.get("route") or "")
+    if name == "game_log":
+        if route in {"player_game_summary", "player_game_finder"}:
+            return "Player Game Detail"
+        return "Game Detail"
+    if name == "summary" and route == "team_record":
+        return "Record Detail"
+    return SECTION_TITLES.get(name, humanize_token(name) or "Section")
+
+
+def row_count_for_section(section: dict[str, Any] | None) -> int:
+    if not section:
+        return 0
+    try:
+        return int(section.get("row_count") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def table_shown_label(row: dict[str, Any]) -> str:
+    if row.get("result_status") == "error":
+        return "Error message"
+    if row.get("result_status") == "no_result":
+        return "No-result message"
+
+    primary = primary_section_for_review(row)
+    if not primary:
+        return "No table shown"
+    row_count = row_count_for_section(primary)
+    title = human_section_title(primary.get("name"), row)
+    if primary.get("name") == "game_log":
+        noun = "game" if row_count == 1 else "games"
+    else:
+        noun = pluralize_rows(row_count)
+    return f"{title} — {row_count} {noun}"
+
+
+def other_sections_summary(row: dict[str, Any]) -> str:
+    primary = primary_section_for_review(row)
+    primary_name = primary.get("name") if primary else None
+    parts: list[str] = []
+    for section in visible_sections_for_review(row):
+        name = section.get("name")
+        if not name or name == primary_name:
+            continue
+        row_count = row_count_for_section(section)
+        parts.append(f"{human_section_title(name, row)} ({row_count})")
+    return ", ".join(parts) if parts else "_none_"
+
+
+def filter_summary_for_review(filters: list[dict[str, Any]]) -> str:
+    if not filters:
+        return "_none_"
+    parts: list[str] = []
+    for item in filters[:4]:
+        label = str(item.get("label") or item.get("kind") or "Filter").strip()
+        value = item.get("value")
+        if value is None or str(value).strip() == "":
+            parts.append(label)
+        else:
+            parts.append(f"{label}={value}")
+    if len(filters) > 4:
+        parts.append(f"+{len(filters) - 4} more")
+    return ", ".join(parts)
+
+
+def truncate_review_text(text: str, *, limit: int = 160) -> str:
+    stripped = " ".join(text.split())
+    if len(stripped) <= limit:
+        return stripped
+    return stripped[: limit - 3].rstrip() + "..."
+
+
+def notes_summary_for_review(row: dict[str, Any]) -> str:
+    notes: list[str] = []
+    if row.get("result_status") in {"no_result", "error"}:
+        reason = str(row.get("result_reason") or "").strip()
+        notes.append(REASON_TITLES.get(reason, humanize_token(reason) or "No answer returned"))
+
+    for caveat in row.get("caveats") or []:
+        if isinstance(caveat, str) and caveat.strip():
+            notes.append(caveat.strip())
+
+    for error in row.get("errors") or []:
+        if isinstance(error, dict):
+            message = str(error.get("message") or "").strip()
+            if message:
+                notes.append(f"Error: {message}")
+
+    preview = row.get("search_box_preview") or {}
+    for flag in preview.get("problem_flags") or []:
+        if isinstance(flag, dict):
+            message = str(flag.get("message") or "").strip()
+            if message:
+                notes.append(message)
+
+    deduped: list[str] = []
+    for note in notes:
+        cleaned = truncate_review_text(note)
+        if cleaned and cleaned not in deduped:
+            deduped.append(cleaned)
+    return "; ".join(deduped[:3]) if deduped else "_none_"
+
+
+def answer_for_review(row: dict[str, Any]) -> str:
+    if row.get("result_status") == "error":
+        return "Error while running query."
+    if row.get("result_status") == "no_result":
+        return "No answer returned."
+    preview = row.get("search_box_preview") or {}
+    answer = preview.get("answer_line")
+    return str(answer).strip() if answer else "_none_"
+
+
+def write_human_review(path: Path, rows: list[dict[str, Any]], summary: dict[str, Any]) -> None:
+    slice_label = str(summary.get("slice_id") or "all")
+    run_id = str(summary.get("run_id") or path.parent.name.rsplit("__", 1)[0])
+    case_count = summary.get("case_count", len(rows))
+    lines: list[str] = [
+        f"# Exploratory Review — {slice_label}",
+        "",
+        f"- Run ID: {md_code(run_id)}",
+        f"- Slice: {md_code(slice_label)}",
+        f"- Cases: {md_code(case_count)}",
+        "",
+        "Open this file first for quick human review. Full diagnostic details are in `report.md`.",
+        "",
+        (
+            "Backend `ok` means the system returned a structured result. "
+            "It does not mean the answer is correct."
+        ),
+    ]
+
+    if not rows:
+        lines.extend(["", "_No samples selected._"])
+
+    for index, row in enumerate(rows, start=1):
+        primary = primary_section_for_review(row)
+        row_count = row_count_for_section(primary)
+        lines.extend(
+            [
+                "",
+                "---",
+                "",
+                f"## {index}. {md_escape(row.get('id'))}",
+                "",
+                "**Query**  ",
+                md_escape(row.get("query")),
+                "",
+                "**Answer**  ",
+                md_escape(answer_for_review(row)),
+                "",
+                "**Table shown**  ",
+                md_escape(table_shown_label(row)),
+                f"Rows: {md_escape(row_count)}  ",
+                f"Other sections: {md_escape(other_sections_summary(row))}  ",
+                (
+                    "Filters: "
+                    f"{md_escape(filter_summary_for_review(row.get('applied_filters') or []))}  "
+                ),
+                f"Notes: {md_escape(notes_summary_for_review(row))}",
+                "",
+                "**Quick review**  ",
+                "[ ] Good  ",
+                "[ ] Answer needs work  ",
+                "[ ] Wrong/missing table  ",
+                "[ ] Query/filter problem  ",
+                "[ ] Unsupported  ",
+                "[ ] Promote later",
+            ]
+        )
+
+    path.write_text("\n".join(lines).rstrip() + "\n")
+
+
 def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, Any]) -> None:
     is_slice_report = summary.get("slice_id") is not None
     opening_note = (
@@ -1528,11 +1760,15 @@ def replace_directory_with_artifacts(source_dir: Path, destination_dir: Path) ->
 def refresh_latest_outputs(out_base: Path, run_dir: Path, slice_id: str | None) -> dict[str, Path]:
     latest_dir = out_base / "latest"
     replace_directory_with_artifacts(run_dir, latest_dir)
-    paths = {"latest_report": latest_dir / "report.md"}
+    paths = {
+        "latest_review": latest_dir / "review.md",
+        "latest_report": latest_dir / "report.md",
+    }
 
     if slice_id:
         latest_slice_dir = out_base / "latest_by_slice" / slice_id
         replace_directory_with_artifacts(run_dir, latest_slice_dir)
+        paths["latest_slice_review"] = latest_slice_dir / "review.md"
         paths["latest_slice_report"] = latest_slice_dir / "report.md"
     return paths
 
@@ -1543,8 +1779,10 @@ def write_output_readme(out_base: Path) -> None:
     lines = [
         "# Exploratory Query Review Outputs",
         "",
-        "- Open `latest/report.md` for the most recent exploratory review run.",
-        "- Open `latest_by_slice/<slice_id>/report.md` for the newest report for a slice.",
+        "- Open `latest/review.md` first for quick human review.",
+        "- Use `latest/report.md` for full diagnostic details.",
+        "- Open `latest_by_slice/<slice_id>/review.md` for the newest human review for a slice.",
+        "- Use `latest_by_slice/<slice_id>/report.md` for slice diagnostic details.",
         "- Historical normal runs live under `archive/runs/`.",
         "- Smoke and debug outputs live under `archive/smoke/` or `archive/debug/`.",
         "- Backend `ok` means a structured result was returned; it does not prove correctness.",
@@ -1577,10 +1815,44 @@ def archived_run_entries(out_base: Path) -> list[dict[str, Any]]:
                 "slice_id": slice_id,
                 "case_count": summary.get("case_count", 0),
                 "result_status_counts": summary.get("result_status_counts") or {},
+                "review_path": run_dir / "review.md",
                 "report_path": run_dir / "report.md",
             }
         )
     return sorted(entries, key=lambda row: str(row["completed_at"]), reverse=True)
+
+
+def read_jsonl_rows(path: Path) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    if not path.exists():
+        return rows
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        value = json.loads(line)
+        if isinstance(value, dict):
+            rows.append(value)
+    return rows
+
+
+def backfill_missing_human_reviews(out_base: Path) -> None:
+    archive_root = out_base / "archive"
+    if not archive_root.exists():
+        return
+    for summary_path in archive_root.glob("*/*/summary.json"):
+        run_dir = summary_path.parent
+        review_path = run_dir / "review.md"
+        if review_path.exists():
+            continue
+        report_jsonl = run_dir / "report.jsonl"
+        if not report_jsonl.exists():
+            continue
+        try:
+            summary = json.loads(summary_path.read_text())
+            rows = read_jsonl_rows(report_jsonl)
+        except (OSError, json.JSONDecodeError):
+            continue
+        write_human_review(review_path, rows, summary)
 
 
 def output_root_relative(path: Path, out_base: Path) -> str:
@@ -1592,12 +1864,16 @@ def output_root_relative(path: Path, out_base: Path) -> str:
 
 def write_output_index(out_base: Path) -> Path:
     clean_output_root(out_base)
+    backfill_missing_human_reviews(out_base)
     index_path = out_base / "index.md"
     entries = archived_run_entries(out_base)
+    latest_review = out_base / "latest" / "review.md"
     latest_report = out_base / "latest" / "report.md"
     lines = [
         "# Exploratory Query Review Index",
         "",
+        f"- Latest human review: [{display_path(latest_review)}]"
+        f"({output_root_relative(latest_review, out_base)})",
         f"- Latest report: [{display_path(latest_report)}]"
         f"({output_root_relative(latest_report, out_base)})",
         "",
@@ -1610,11 +1886,15 @@ def write_output_index(out_base: Path) -> Path:
     else:
         lines.extend(
             [
-                "| run_id | slice_id | case count | result status counts | report |",
-                "| --- | --- | ---: | --- | --- |",
+                (
+                    "| run_id | slice_id | case count | result status counts | "
+                    "human review | full report |"
+                ),
+                "| --- | --- | ---: | --- | --- | --- |",
             ]
         )
         for entry in entries[:25]:
+            review_path = entry["review_path"]
             report_path = entry["report_path"]
             lines.append(
                 "| "
@@ -1622,6 +1902,8 @@ def write_output_index(out_base: Path) -> Path:
                 f"{md_code(entry['slice_id'])} | "
                 f"{md_code(entry['case_count'])} | "
                 f"{md_code(entry['result_status_counts'])} | "
+                f"[{display_path(review_path)}]"
+                f"({output_root_relative(review_path, out_base)}) | "
                 f"[{display_path(report_path)}]"
                 f"({output_root_relative(report_path, out_base)}) |"
             )
@@ -1775,6 +2057,7 @@ def run_review(
     )
     output_paths = {
         "report_jsonl": run_dir / "report.jsonl",
+        "review_md": run_dir / "review.md",
         "report_md": run_dir / "report.md",
         "summary_json": run_dir / "summary.json",
     }
@@ -1790,6 +2073,7 @@ def run_review(
 
     write_jsonl(output_paths["report_jsonl"], rows)
     dump_json(output_paths["summary_json"], summary)
+    write_human_review(output_paths["review_md"], rows, summary)
     write_markdown(output_paths["report_md"], rows, summary)
     navigation_paths = publish_navigation_outputs(
         out_base=out_base,
@@ -1842,10 +2126,12 @@ def main() -> int:
     print(f"No-result cases: {summary['no_result_case_count']}")
     print(f"Error cases: {summary['error_case_count']}")
     print("Exploratory review complete.")
-    print(f"Latest report: {display_path(navigation_paths['latest_report'])}")
+    print(f"Human review: {display_path(navigation_paths['latest_review'])}")
+    print(f"Full report: {display_path(navigation_paths['latest_report'])}")
     print(f"Run archive: {display_path(result['run_dir'])}")
     print(f"Index: {display_path(navigation_paths['index'])}")
     if summary.get("slice_id"):
+        print(f"Latest slice review: {display_path(navigation_paths['latest_slice_review'])}")
         print(f"Latest slice report: {display_path(navigation_paths['latest_slice_report'])}")
     return 0
 

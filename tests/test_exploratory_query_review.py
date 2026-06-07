@@ -158,10 +158,23 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     run_dir = result["run_dir"]
     summary = json.loads((run_dir / "summary.json").read_text())
     rows = [json.loads(line) for line in (run_dir / "report.jsonl").read_text().splitlines()]
+    human_review = (run_dir / "review.md").read_text()
     markdown = (run_dir / "report.md").read_text()
 
     assert run_dir == tmp_path / "out/archive/runs/review__all"
+    assert (tmp_path / "out/latest/review.md").read_text() == human_review
     assert (tmp_path / "out/latest/report.md").read_text() == markdown
+    assert "**Query**" in human_review
+    assert "**Answer**" in human_review
+    assert "**Table shown**" in human_review
+    assert "**Quick review**" in human_review
+    assert "QueryResponse.query" not in human_review
+    assert "ResultHero.sentence" not in human_review
+    assert "result.sections" not in human_review
+    assert "PatternConfig" not in human_review
+    assert "The Lakers went 2-1 on the road." in human_review
+    assert "Record Detail" in human_review
+    assert "Filters: Location=Road" in human_review
     assert (tmp_path / "out/index.md").exists()
     assert (tmp_path / "out/README.md").exists()
     assert sorted(path.name for path in (tmp_path / "out").iterdir()) == [
@@ -327,16 +340,23 @@ samples:
     run_dir = result["run_dir"]
     summary = json.loads((run_dir / "summary.json").read_text())
     rows = [json.loads(line) for line in (run_dir / "report.jsonl").read_text().splitlines()]
+    human_review = (run_dir / "review.md").read_text()
     markdown = (run_dir / "report.md").read_text()
 
     assert run_dir == tmp_path / "out/archive/runs/review__001_player_last_n"
+    assert (tmp_path / "out/latest/review.md").read_text() == human_review
     assert (tmp_path / "out/latest/report.md").read_text() == markdown
+    assert (tmp_path / "out/latest_by_slice/001_player_last_n/review.md").read_text() == (
+        human_review
+    )
     assert (tmp_path / "out/latest_by_slice/001_player_last_n/report.md").read_text() == markdown
     index = (tmp_path / "out/index.md").read_text()
     assert "`review`" in index
     assert "`001_player_last_n`" in index
+    assert "archive/runs/review__001_player_last_n/review.md" in index
     assert "archive/runs/review__001_player_last_n/report.md" in index
     readme = (tmp_path / "out/README.md").read_text()
+    assert "latest/review.md" in readme
     assert "latest/report.md" in readme
     assert "Backend `ok` means a structured result was returned" in readme
     assert summary["slice_id"] == "001_player_last_n"
@@ -348,6 +368,10 @@ samples:
     assert rows[0]["slice_id"] == "001_player_last_n"
     assert rows[0]["slice_sample_count"] == 2
     assert rows[0]["id"] == "luka_last_10"
+    assert "# Exploratory Review — 001_player_last_n" in human_review
+    assert "- Slice: `001_player_last_n`" in human_review
+    assert "Open this file first for quick human review." in human_review
+    assert "Full diagnostic details are in `report.md`." in human_review
     assert "This is an exploratory slice report." in markdown
     assert "Slice ID: `001_player_last_n`" in markdown
     assert "Slice sample count: `2`" in markdown
@@ -369,6 +393,7 @@ samples:
 
     assert second["run_dir"] == run_dir
     assert not stale_path.exists()
+    assert (second["run_dir"] / "review.md").exists()
 
 
 def test_player_last_n_summary_classifies_as_search_box_recent_games() -> None:
@@ -455,6 +480,7 @@ def test_named_run_requires_overwrite_for_existing_directory(tmp_path) -> None:
 
     assert second["run_dir"] == first["run_dir"]
     assert not stale_path.exists()
+    assert (second["run_dir"] / "review.md").exists()
     assert (second["run_dir"] / "report.md").exists()
 
 
@@ -481,6 +507,8 @@ def test_scratch_run_ids_route_under_smoke_or_debug(tmp_path) -> None:
 
     assert smoke["run_dir"] == tmp_path / "out/archive/smoke/codex_slice_smoke"
     assert debug["run_dir"] == tmp_path / "out/archive/debug/codex_result_terms_audit"
+    assert (smoke["run_dir"] / "review.md").exists()
+    assert (debug["run_dir"] / "review.md").exists()
     assert not (tmp_path / "out/codex_slice_smoke").exists()
     assert not (tmp_path / "out/codex_result_terms_audit").exists()
 
@@ -506,9 +534,11 @@ def test_organize_existing_outputs_moves_top_level_runs_without_deleting(tmp_pat
     assert (out_base / "archive/runs/20260607T072615Z__all/report.md").read_text() == (
         "full report"
     )
+    assert (out_base / "archive/runs/20260607T072615Z__all/review.md").exists()
     assert (
         out_base / "archive/runs/20260607T072530Z__001_player_last_n/report.md"
     ).read_text() == "slice report"
+    assert (out_base / "archive/runs/20260607T072530Z__001_player_last_n/review.md").exists()
     assert (
         out_base / "archive/smoke/codex_slice_smoke/001_player_last_n/report.md"
     ).read_text() == "smoke report"
