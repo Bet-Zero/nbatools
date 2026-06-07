@@ -79,14 +79,34 @@ outputs/exploratory_query_review/<run_id>/summary.json
 ```
 
 - `report.jsonl` contains one structured row per sample, including the
-  QueryResponse payload, route/status/query class, inferred shape, metadata,
-  applied filters, sections, section summaries, review flags, and timing.
+  QueryResponse payload, search-box preview, route/status/query class, inferred
+  shape, metadata, applied filters, sections, section summaries, review flags,
+  and timing.
 - `report.md` is the manual review worksheet. It includes each query, route,
-  result status/reason, query class, answer summary, filters, notes/caveats,
-  section row counts, capped top rows, and blank reviewer fields.
+  result status/reason, query class, search-box display shape, renderer
+  patterns, answer line, filters, notes/caveats, section row counts, capped top
+  rows, and blank reviewer fields.
 - `summary.json` contains counts by route, result status, query class,
-  category, review flags, no-result cases, error cases, suspicious cases, and
-  slowest cases.
+  search-box display shape, category, review flags, display-problem cases,
+  no-result cases, error cases, suspicious cases, and slowest cases.
+
+## Reading The Search-Box Preview
+
+Each `report.md` card starts with a `Search Box Preview` section. This is the
+part to read when asking "what would the search box show?"
+
+| Field | Meaning |
+| --- | --- |
+| `Display shape` | Frontend result-shape catalog entry, such as `Entity Summary + Recent Games`, `Player Game Log`, `Team Record`, or `Leaderboard Table`. |
+| `Renderer patterns` | Ordered frontend renderer stack, such as an entity summary followed by a game-log table. |
+| `Answer line` | Backend answer text when supplied, otherwise the tool's compact summary of the same payload. |
+| `Visible sections/tables` | Section names, row counts, and whether the section is a hero/summary, primary table, or detail table. |
+| `Display problem flags` | Flags for unclear presentation, such as `fallback_display_shape`, `unclassified_display_shape`, or `ok_without_visible_sections`. |
+
+Example: a player last-N query such as `Luka stats last 10 games` should show
+`Entity Summary + Recent Games` with renderer patterns for a summary hero and a
+`game_log` table. If a query only gets `Fallback Tables` or `Unclassified`, that
+is a review problem to resolve before treating the surface as clean.
 
 Named folders with `--overwrite-run-id` are mutable local scratch paths. Do not
 cite them as durable product evidence.

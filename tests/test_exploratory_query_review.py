@@ -71,6 +71,7 @@ def test_load_samples_accepts_input_only_list_and_metadata(tmp_path) -> None:
     assert version == 1
     assert [sample["id"] for sample in samples] == ["sample_001", "celtics_record"]
     assert samples[1]["category"] == "opponent_quality"
+    assert samples[1]["input_notes"] == "review season-type semantics"
     assert samples[1]["metadata"]["tags"] == ["beta"]
 
 
@@ -158,17 +159,89 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert summary["result_status_counts"] == {"error": 1, "no_result": 1, "ok": 1}
     assert summary["route_counts"] == {"<none>": 1, "season_leaders": 1, "team_record": 1}
     assert summary["query_class_counts"] == {"<none>": 1, "leaderboard": 1, "summary": 1}
+    assert summary["display_shape_counts"] == {
+        "no_result_message": 2,
+        "team_record": 1,
+    }
     assert summary["no_result_case_ids"] == ["no_result_case"]
     assert summary["error_case_ids"] == ["exception_case"]
     assert summary["suspicious_case_count"] == 0
     assert summary["review_flag_counts"] == {"exception": 1, "no_result": 1}
     assert rows[0]["payload"]["route"] == "team_record"
+    assert rows[0]["search_box_preview"]["display_shape"] == {
+        "key": "team_record",
+        "name": "Team Record",
+        "description": "Team record hero with a single-summary record table.",
+    }
+    assert rows[0]["search_box_preview"]["renderer_patterns"] == [
+        {"type": "record", "mode": "team_record"},
+        {
+            "type": "game_log",
+            "section_key": "game_log",
+            "summary_key": "summary",
+            "mode": "team",
+            "show_summary_strip": False,
+            "raw_detail_title": "Game Detail",
+            "collapse_to_detail": True,
+        },
+    ]
+    assert rows[0]["search_box_preview"]["answer_line"] == "The Lakers went 2-1 on the road."
+    assert rows[0]["search_box_preview"]["visible_sections"][1]["name"] == "game_log"
+    assert rows[1]["search_box_preview"]["display_shape"]["key"] == "no_result_message"
     assert len(rows[0]["section_summaries"]["game_log"]["top_rows"]) == 1
     assert rows[0]["section_summaries"]["game_log"]["top_rows"][0]["game_date"] == "2026-01-01"
+    assert "Search Box Preview" in markdown
+    assert "Display shape: `Team Record` (`team_record`)" in markdown
+    assert "Visible sections/tables:" in markdown
     assert "Reviewer status:" in markdown
     assert "Raw QA promotion draft:" in markdown
     assert "The Lakers went 2-1 on the road." in markdown
     assert "2026-01-02" not in markdown
+
+
+def test_player_last_n_summary_classifies_as_search_box_recent_games() -> None:
+    query = "Luka stats last 10 games"
+    payload = _payload(
+        query=query,
+        route="player_game_summary",
+        status="ok",
+        query_class="summary",
+        sections={
+            "summary": [{"player_name": "Luka Doncic", "pts_avg": 31.4}],
+            "by_season": [{"season": "2025-26", "pts_avg": 31.4}],
+            "game_log": [{"game_date": "2026-01-01", "player_name": "Luka Doncic"}],
+        },
+    )
+    preview = review.build_search_box_preview(
+        query=query,
+        route=payload["route"],
+        result_status=payload["result_status"],
+        result_reason=payload["result_reason"],
+        query_class="summary",
+        answer_text=None,
+        answer_text_source=None,
+        answer_summary="Luka Doncic -- 10 games, 31.4 PPG",
+        metadata=payload["result"]["metadata"],
+        sections=payload["result"]["sections"],
+        section_summaries=review.build_section_summaries(
+            payload["result"]["sections"],
+            top_rows=1,
+        ),
+    )
+
+    assert preview["display_shape"]["key"] == "entity_summary_with_gamelog"
+    assert preview["display_shape"]["name"] == "Entity Summary + Recent Games"
+    assert preview["renderer_patterns"] == [
+        {"type": "entity_summary", "section_key": "summary"},
+        {
+            "type": "game_log",
+            "section_key": "game_log",
+            "summary_key": "summary",
+            "show_summary_strip": False,
+        },
+    ]
+    assert preview["visible_sections"][2]["name"] == "game_log"
+    assert preview["visible_sections"][2]["row_count"] == 1
 
 
 def test_named_run_requires_overwrite_for_existing_directory(tmp_path) -> None:
