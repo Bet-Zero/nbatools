@@ -1218,6 +1218,24 @@ def test_team_record_opponent_division_phrases_set_normalized_slot(query, divisi
     assert "unsupported_filters" not in parsed["route_kwargs"]
 
 
+@pytest.mark.parametrize(
+    ("query", "division"),
+    [
+        ("record against Northwest Division teams", "Northwest"),
+        ("best record against Atlantic Division teams", "Atlantic"),
+        ("team records vs Pacific Division", "Pacific"),
+    ],
+)
+def test_team_record_leaderboard_opponent_division_phrases_set_normalized_slot(query, division):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "team_record_leaderboard"
+    assert parsed["team"] is None
+    assert parsed["opponent_division"] == division
+    assert parsed["route_kwargs"]["opponent_division"] == division
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
 def test_mixed_conference_division_stays_unsupported_boundary():
     parsed = parse_query("Lakers record against Western Conference Pacific Division teams")
 

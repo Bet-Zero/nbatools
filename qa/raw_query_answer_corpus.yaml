@@ -6204,6 +6204,51 @@ cases:
 
   - id: record_against_northwest_division_teams_guard
     query: "record against Northwest Division teams"
+    category: team_record_leaderboard
+    priority: p2
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record_leaderboard
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: division
+        label: Opponent division
+        value: Northwest
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    acceptance:
+      family: team_records
+      variant: inverse_sibling
+      no_broad_fallback: true
+    hard_assertions:
+      - path: result.metadata.opponent_division
+        equals: Northwest
+      - path: result.metadata.opponent_team_abbrs.0
+        equals: DEN
+      - path: result.metadata.unsupported_filters
+        equals:
+      - path: result.sections.leaderboard.0.team_abbr
+        equals: DET
+      - path: result.sections.leaderboard.0.wins
+        equals: 8
+      - path: result.sections.leaderboard.0.losses
+        equals: 2
+      - path: result.sections.leaderboard.0.win_pct
+        equals: 0.8
+    review_notes: "No-subject division record phrasing executes as a team-record leaderboard against trusted Northwest Division opponents."
+    manual_review:
+      status: pass
+      tags:
+        - context_filter
+        - opponent_division
+        - leaderboard
+        - no_broad_fallback
+      notes: "Promotion review passed: resolves trusted Northwest Division opponents and returns a filtered team-record leaderboard."
+
+  - id: playoff_record_against_northwest_division_teams_guard
+    query: "playoff record against Northwest Division teams"
     category: unsupported_boundary
     priority: p2
     answer_text_policy: no_answer_text_expected
@@ -6217,16 +6262,20 @@ cases:
       variant: nearby_unsupported
       no_broad_fallback: true
     hard_assertions:
+      - path: result.metadata.season_type
+        equals: Playoffs
+      - path: result.metadata.opponent_division
+        equals: Northwest
       - path: result.metadata.unsupported_filters.0
         equals: opponent_division
-    review_notes: "No-subject division record phrasing should not broaden to a league record leaderboard."
+    review_notes: "Playoff no-subject division record leaderboards remain unsupported and must not broaden to a regular-season or unfiltered leaderboard."
     manual_review:
       status: expected_unsupported
       tags:
         - unsupported_boundary
         - division_guard
         - no_broad_fallback
-      notes: "No-subject division record leaderboards remain unsupported after named-team opponent-division promotion."
+      notes: "Expected unsupported because opponent-division promotion is limited to regular-season record leaderboards."
 
   - id: celtics_atlantic_division_coverage_guard
     query: "Celtics record vs Atlantic Division in 2023-24"
@@ -6282,7 +6331,7 @@ cases:
         - division_guard
         - opponent_conference
         - no_broad_fallback
-      notes: "Mixed conference-plus-division wording remains unsupported after named-team opponent-division promotion."
+      notes: "Mixed conference-plus-division wording remains unsupported after regular-season opponent-division promotion."
 
   - id: celtics_playoff_atlantic_division_guard
     query: "Celtics playoff record vs Atlantic Division"
@@ -6309,7 +6358,7 @@ cases:
         - division_guard
         - playoff_record
         - no_broad_fallback
-      notes: "Playoff division record phrasing remains unsupported after regular-season named-team opponent-division promotion."
+      notes: "Playoff division record phrasing remains unsupported after regular-season opponent-division promotion."
 
   - id: celtics_conference_finals_atlantic_division_guard
     query: "Celtics conference finals record vs Atlantic Division"

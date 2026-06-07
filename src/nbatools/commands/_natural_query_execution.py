@@ -494,7 +494,7 @@ def _resolve_opponent_division_kwargs(
         original_kwargs["opponent_division"] = division
 
     season_type = sanitized.get("season_type") or "Regular Season"
-    if route != "team_record" or season_type != "Regular Season":
+    if route not in {"team_record", "team_record_leaderboard"} or season_type != "Regular Season":
         _mark_original_unsupported_filter(original_kwargs, "opponent_division")
         return sanitized, [], ["opponent_division"]
 

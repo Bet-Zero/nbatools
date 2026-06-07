@@ -1411,6 +1411,62 @@ class TestOpponentDivisionTeamRecords:
         assert qr.to_dict()["sections"] == {}
 
 
+@pytest.mark.needs_data
+class TestOpponentDivisionTeamRecordLeaderboards:
+    def test_current_season_record_leaderboard_against_northwest(self):
+        qr = execute_natural_query("record against Northwest Division teams")
+
+        assert qr.route == "team_record_leaderboard"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["season"] == "2025-26"
+        assert qr.metadata["season_type"] == "Regular Season"
+        assert qr.metadata["opponent_division"] == "Northwest"
+        assert qr.metadata["opponent_team_abbrs"] == ["DEN", "MIN", "OKC", "POR", "UTA"]
+        assert (
+            "unsupported_filters" not in qr.metadata or qr.metadata["unsupported_filters"] is None
+        )
+        assert {
+            "label": "Opponent division",
+            "value": "Northwest",
+            "kind": "division",
+        } in qr.metadata["applied_filters"]
+
+        leaderboard = qr.to_dict()["sections"]["leaderboard"]
+        assert len(leaderboard) == 10
+        assert leaderboard[0]["team_abbr"] == "DET"
+        assert leaderboard[0]["wins"] == 8
+        assert leaderboard[0]["losses"] == 2
+        assert leaderboard[0]["win_pct"] == 0.8
+
+    def test_division_record_leaderboard_matches_explicit_opponent_list(self):
+        natural = execute_natural_query("team records vs Pacific Division")
+        explicit = execute_structured_query(
+            "team_record_leaderboard",
+            season="2025-26",
+            season_type="Regular Season",
+            stat="win_pct",
+            opponent=get_teams_by_division("2025-26", "Pacific"),
+            limit=10,
+            ascending=False,
+        )
+
+        assert (
+            natural.to_dict()["sections"]["leaderboard"]
+            == explicit.to_dict()["sections"]["leaderboard"]
+        )
+
+    def test_playoff_division_record_leaderboard_stays_unsupported(self):
+        qr = execute_natural_query("playoff record against Northwest Division teams")
+
+        assert qr.route == "team_record_leaderboard"
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["season_type"] == "Playoffs"
+        assert qr.metadata["opponent_division"] == "Northwest"
+        assert qr.metadata["unsupported_filters"] == ["opponent_division"]
+        assert qr.to_dict()["sections"] == {}
+
+
 # ===================================================================
 # Service entry points via __init__
 # ===================================================================

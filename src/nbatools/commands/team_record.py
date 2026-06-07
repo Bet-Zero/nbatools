@@ -608,7 +608,7 @@ def build_record_leaderboard_result(
     end_season: str | None = None,
     season_type: str = "Regular Season",
     stat: str = "win_pct",
-    opponent: str | None = None,
+    opponent: str | list[str] | tuple[str, ...] | set[str] | None = None,
     without_player: str | None = None,
     home_only: bool = False,
     away_only: bool = False,
@@ -699,7 +699,7 @@ def build_record_leaderboard_result(
     if len(seasons) > 1:
         caveats.append(f"multi-season record leaderboard across {seasons[0]} to {seasons[-1]}")
     if opponent:
-        caveats.append(f"record vs {opponent.upper()} only")
+        caveats.append(f"record vs {describe_opponent_filter(opponent)} only")
     if home_only:
         caveats.append("home record only")
     if away_only:

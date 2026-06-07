@@ -276,6 +276,9 @@ def wants_team_leaderboard(text: str) -> bool:
     if detect_team_leaderboard_stat(text) is not None:
         return True
 
+    if re.search(r"\bteam\s+records?\b", text):
+        return True
+
     if re.search(r"\bteams?\b", text):
         if re.search(
             r"\b(best|highest|most|top(?:\s+\d+)?|rank|ranked|ranking|lowest|fewest|least|worst|bottom(?:\s+\d+)?)\b",

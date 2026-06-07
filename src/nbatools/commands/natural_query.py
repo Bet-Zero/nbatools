@@ -1339,6 +1339,18 @@ def _finalize_route(parsed: dict) -> dict:
     )
     opponent_division = parsed.get("opponent_division")
     opponent_division_boundary = parsed.get("opponent_division_boundary", False)
+    supported_opponent_division_record_scope = (
+        bool(opponent_division)
+        and season_type == "Regular Season"
+        and not any(
+            [
+                with_player,
+                without_player,
+                unresolved_with_player,
+                unresolved_without_player,
+            ]
+        )
+    )
 
     notes: list[str] = []
     route = None
@@ -1754,19 +1766,7 @@ def _finalize_route(parsed: dict) -> dict:
         opponent_division_boundary
         and record_intent
         and not any([player, player_a, player_b, team_a, team_b])
-        and not (
-            team
-            and opponent_division
-            and season_type == "Regular Season"
-            and not any(
-                [
-                    with_player,
-                    without_player,
-                    unresolved_with_player,
-                    unresolved_without_player,
-                ]
-            )
-        )
+        and not supported_opponent_division_record_scope
     ):
         notes.append(
             "unsupported_boundary: opponent-division filters are not supported "
