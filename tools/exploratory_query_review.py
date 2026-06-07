@@ -802,6 +802,7 @@ def build_search_box_preview(
             }
         )
     answer_line = answer_text or answer_summary
+    primary_section = primary_result_section(visible_sections, patterns)
     return json_ready(
         {
             "display_shape": display_shape,
@@ -813,9 +814,98 @@ def build_search_box_preview(
             "result_status": result_status,
             "result_reason": result_reason,
             "query_class": query_class,
+            "primary_section": primary_section,
             "visible_sections": visible_sections,
             "problem_flags": problem_flags,
         }
+    )
+
+
+def primary_result_section(
+    visible_sections: list[dict[str, Any]],
+    patterns: list[dict[str, Any]] | None = None,
+) -> dict[str, Any] | None:
+    by_name = {
+        str(section.get("name")): dict(section)
+        for section in visible_sections
+        if section.get("name")
+    }
+
+    pattern_sections = primary_section_candidates_from_patterns(patterns or [])
+    for section_name in pattern_sections:
+        section = by_name.get(section_name)
+        if section:
+            return section
+
+    for kind in ("table", "detail_table", "hero_or_summary"):
+        for section in visible_sections:
+            if section.get("kind") == kind:
+                return dict(section)
+    return None
+
+
+def primary_section_candidates_from_patterns(patterns: list[dict[str, Any]]) -> list[str]:
+    candidates: list[str] = []
+    has_non_summary_pattern = any(pattern.get("type") != "entity_summary" for pattern in patterns)
+    for pattern in patterns:
+        pattern_type = pattern.get("type")
+        if pattern_type == "entity_summary":
+            if not has_non_summary_pattern:
+                candidates.append(str(pattern.get("section_key") or "summary"))
+            continue
+        if pattern_type == "game_log":
+            candidates.append(str(pattern.get("section_key") or "game_log"))
+            fallback = pattern.get("fallback_section_key")
+            if fallback:
+                candidates.append(str(fallback))
+        elif pattern_type in {"leaderboard", "top_performances", "rolling_stretch"}:
+            candidates.append(str(pattern.get("section_key") or "leaderboard"))
+        elif pattern_type == "split":
+            candidates.append(str(pattern.get("section_key") or "split_comparison"))
+        elif pattern_type == "streak":
+            candidates.append(str(pattern.get("section_key") or "streak"))
+        elif pattern_type == "comparison":
+            candidates.extend(["comparison", "summary"])
+        elif pattern_type == "record":
+            mode = pattern.get("mode")
+            if mode == "team_record":
+                candidates.extend(["summary", "by_season"])
+            elif mode == "record_by_decade_leaderboard":
+                candidates.append("leaderboard")
+            else:
+                candidates.extend(["by_season", "summary"])
+        elif pattern_type == "playoff_history":
+            mode = pattern.get("mode")
+            if mode == "round_record":
+                candidates.extend(["leaderboard", "summary"])
+            elif mode == "matchup":
+                candidates.extend(["summary", "by_season"])
+            elif mode == "appearances":
+                candidates.extend(["leaderboard", "by_season", "summary"])
+            else:
+                candidates.extend(["by_season", "summary"])
+
+    deduped: list[str] = []
+    for candidate in candidates:
+        if candidate not in deduped:
+            deduped.append(candidate)
+    return deduped
+
+
+def format_primary_result_section(section: dict[str, Any] | None) -> str:
+    if not section:
+        return "_none_"
+    name = section.get("name")
+    if not name:
+        return "_none_"
+    row_count = section.get("row_count", 0)
+    kind = section.get("kind") or "section"
+    columns = section.get("columns")
+    column_count = len(columns) if isinstance(columns, list) else 0
+    return (
+        f"{md_code(f'result.sections.{name}')} "
+        f"({md_code(row_count)} row(s), {md_code(kind)}, "
+        f"{md_code(column_count)} column(s))"
     )
 
 
@@ -1272,16 +1362,16 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
         display_shape = preview.get("display_shape") or {}
         problem_flags = preview.get("problem_flags") or []
         answer_line = md_escape(preview["answer_line"]) if preview.get("answer_line") else "_none_"
+        primary_section = format_primary_result_section(preview.get("primary_section"))
         lines.extend(
             [
                 f"### {row['id']}",
                 "",
-                f"**Query:** {md_code(row.get('query'))}",
+                f"**QueryResponse.query:** {md_code(row.get('query'))}",
                 "",
-                f"**Answer line:** {answer_line}",
+                f"**ResultHero.sentence / search_box_preview.answer_line:** {answer_line}",
                 "",
-                f"**Display shape:** {md_code(display_shape.get('name'))} "
-                f"({md_code(display_shape.get('key'))})",
+                f"**ResultTable / result.sections:** {primary_section}",
                 "",
                 "<details>",
                 "<summary>Supporting details</summary>",
@@ -1306,6 +1396,7 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
                     else "- Answer line: _not available_"
                 ),
                 f"- Answer line source: {md_code(preview.get('answer_line_source'))}",
+                f"- Primary section: {primary_section}",
                 f"- Visible sections/tables: {md_code(preview.get('visible_sections') or [])}",
                 f"- Display problem flags: {md_code(problem_flags) if problem_flags else '_none_'}",
                 "",

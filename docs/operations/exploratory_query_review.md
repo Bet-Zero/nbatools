@@ -147,10 +147,12 @@ outputs/exploratory_query_review/<run_id>/<slice_id>/
   QueryResponse payload, search-box preview, route/status/query class, inferred
   shape, metadata, applied filters, sections, section summaries, review flags,
   timing, and slice metadata when the run used `--slice`.
-- `report.md` is the manual review worksheet. Each case starts with a compact
-  `Query`, `Answer line`, and `Display shape` summary for quick scanning.
-  Supporting details remain available below that summary, including route,
-  result status/reason, query class, renderer patterns, filters, notes/caveats,
+- `report.md` is the manual review worksheet. Each case starts with
+  `QueryResponse.query`, `ResultHero.sentence` /
+  `search_box_preview.answer_line`, and the primary `ResultTable` /
+  `result.sections` entry for quick scanning. Supporting details remain
+  available below that summary, including display shape, route, result
+  status/reason, query class, renderer patterns, filters, notes/caveats,
   section row counts, capped top rows, and blank reviewer fields.
 - `summary.json` contains counts by route, result status, query class,
   search-box display shape, category, review flags, display-problem cases,
@@ -161,10 +163,12 @@ outputs/exploratory_query_review/<run_id>/<slice_id>/
 
 ## Reading The Search-Box Preview
 
-Each `report.md` card starts with a compact human-review summary:
+Each `report.md` card starts with the existing query/result display terms:
 
 ```text
-Query -> Answer line -> Display shape
+QueryResponse.query
+ResultHero.sentence / search_box_preview.answer_line
+ResultTable / result.sections
 ```
 
 This is the part to read when asking "what would the search box show?" If the
@@ -173,6 +177,9 @@ the case.
 
 | Field | Meaning |
 | --- | --- |
+| `QueryResponse.query` | Original query string returned in the API `QueryResponse` envelope. |
+| `ResultHero.sentence` / `search_box_preview.answer_line` | Main answer sentence when the frontend pattern renders a `ResultHero`; the exploratory tool records it as `search_box_preview.answer_line`, using backend `answer_phrase`/`count_phrase` when present and otherwise a compact report-only summary. |
+| `ResultTable` / `result.sections` | Primary backend section expected to feed the first main table or section under the answer, such as `result.sections.game_log`, `result.sections.summary`, `result.sections.leaderboard`, or `result.sections.split_comparison`. |
 | `Display shape` | Frontend result-shape catalog entry, such as `Entity Summary + Recent Games`, `Player Game Log`, `Team Record`, or `Leaderboard Table`. |
 | `Renderer patterns` | Ordered frontend renderer stack, such as an entity summary followed by a game-log table. |
 | `Answer line` | Backend answer text when supplied, otherwise the tool's compact summary of the same payload. |

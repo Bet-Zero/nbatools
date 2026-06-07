@@ -191,6 +191,12 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
         },
     ]
     assert rows[0]["search_box_preview"]["answer_line"] == "The Lakers went 2-1 on the road."
+    assert rows[0]["search_box_preview"]["primary_section"] == {
+        "name": "summary",
+        "row_count": 1,
+        "kind": "hero_or_summary",
+        "columns": ["team_abbr", "games", "wins", "losses"],
+    }
     assert rows[0]["search_box_preview"]["visible_sections"][1]["name"] == "game_log"
     assert rows[1]["search_box_preview"]["display_shape"]["key"] == "no_result_message"
     assert len(rows[0]["section_summaries"]["game_log"]["top_rows"]) == 1
@@ -200,14 +206,20 @@ def test_run_review_writes_reports_and_summary_counts(tmp_path, monkeypatch) -> 
     assert "These are backend execution/result counts, not correctness counts." in markdown
     assert "A count of zero does not mean every answer is semantically correct." in markdown
     assert "Do not treat every backend `ok` as correct." in markdown
-    query_pos = markdown.index(f"**Query:** `{ok_query}`")
-    answer_pos = markdown.index("**Answer line:** The Lakers went 2-1 on the road.")
-    shape_pos = markdown.index("**Display shape:** `Team Record` (`team_record`)")
+    query_pos = markdown.index(f"**QueryResponse.query:** `{ok_query}`")
+    answer_pos = markdown.index(
+        "**ResultHero.sentence / search_box_preview.answer_line:** The Lakers went 2-1 on the road."
+    )
+    section_pos = markdown.index(
+        "**ResultTable / result.sections:** `result.sections.summary` "
+        "(`1` row(s), `hero_or_summary`, `4` column(s))"
+    )
     details_pos = markdown.index("<summary>Supporting details</summary>")
-    assert query_pos < answer_pos < shape_pos < details_pos
+    assert query_pos < answer_pos < section_pos < details_pos
     assert "<details>" in markdown
     assert "Search Box Preview" in markdown
     assert "Display shape: `Team Record` (`team_record`)" in markdown
+    assert "Primary section: `result.sections.summary`" in markdown
     assert "Visible sections/tables:" in markdown
     assert "Reviewer status:" in markdown
     assert "Raw QA promotion draft:" in markdown
@@ -382,6 +394,8 @@ def test_player_last_n_summary_classifies_as_search_box_recent_games() -> None:
     ]
     assert preview["visible_sections"][2]["name"] == "game_log"
     assert preview["visible_sections"][2]["row_count"] == 1
+    assert preview["primary_section"]["name"] == "game_log"
+    assert preview["primary_section"]["kind"] == "table"
 
 
 def test_named_run_requires_overwrite_for_existing_directory(tmp_path) -> None:
