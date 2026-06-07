@@ -453,6 +453,7 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "season_type",
             "stat",
             "opponent",
+            "opponent_division",
             "without_player",
             "home_only",
             "away_only",
@@ -464,8 +465,15 @@ ROUTE_INPUT_METADATA: dict[str, RouteInputMetadata] = {
             "end_date",
         ),
         allowed_values={"season_type": SEASON_TYPE_VALUES, "stat": RECORD_STAT_VALUES},
-        examples=({"season": "2025-26", "stat": "win_pct", "limit": 10},),
-        notes=("Unsupported stat values currently fall back to win_pct in execution.",),
+        examples=(
+            {"season": "2025-26", "stat": "win_pct", "limit": 10},
+            {"season": "2025-26", "stat": "win_pct", "opponent_division": "Atlantic"},
+        ),
+        notes=(
+            "Unsupported stat values currently fall back to win_pct in execution.",
+            "opponent_division is a dispatch-only natural query filter resolved to opponent teams.",
+        ),
+        dispatch_only_kwargs=("opponent_division",),
     ),
     "player_split_summary": RouteInputMetadata(
         route="player_split_summary",

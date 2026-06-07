@@ -31,7 +31,7 @@ def detect_record_intent(text: str) -> bool:
     """
     return bool(
         re.search(
-            r"\b(?:record|win(?:ning)?\s+(?:percent(?:age)?|pct)|win\s*%"
+            r"\b(?:records?|win(?:ning)?\s+(?:percent(?:age)?|pct)|win\s*%"
             r"|most\s+(?:home\s+|away\s+)?wins|most\s+(?:home\s+|away\s+)?losses"
             r"|fewest\s+(?:home\s+|away\s+)?losses"
             r"|best\s+(?:home\s+|away\s+|playoff\s+|postseason\s+)?record"
@@ -416,6 +416,7 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
     end_season = parsed["end_season"]
     season_type = parsed["season_type"]
     opponent = parsed["opponent"]
+    opponent_division = parsed.get("opponent_division")
     without_player = parsed.get("without_player")
     home_only = parsed["home_only"]
     away_only = parsed["away_only"]
@@ -476,6 +477,7 @@ def try_record_leaderboard_route(parsed: dict) -> tuple[str, dict, list[str]] | 
             "season_type": season_type,
             "stat": record_stat,
             "opponent": opponent,
+            "opponent_division": opponent_division,
             "without_player": without_player,
             "home_only": home_only,
             "away_only": away_only,

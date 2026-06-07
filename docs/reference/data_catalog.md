@@ -150,13 +150,13 @@ and reviewable.
   have exactly five teams per division
 
 ### Current use
-This table powers current-era opponent-conference and named-team
-opponent-division `team_record` filters for trusted seasons `2024-25` and
-`2025-26`. If trusted coverage is missing for a requested season, query
-behavior remains unsupported/no-result instead of falling back to an unfiltered
-full-season record. Geography phrases such as `east coast teams`, no-subject
-division record leaderboards, mixed conference-plus-division wording, and
-playoff division record wording are not supported by this table.
+This table powers current-era opponent-conference `team_record` filters and
+opponent-division `team_record` / `team_record_leaderboard` filters for trusted
+seasons `2024-25` and `2025-26`. If trusted coverage is missing for a requested
+season, query behavior remains unsupported/no-result instead of falling back to
+an unfiltered full-season record. Geography phrases such as `east coast teams`,
+mixed conference-plus-division wording, and playoff division record wording are
+not supported by this table.
 
 ---
 

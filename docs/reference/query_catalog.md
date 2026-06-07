@@ -155,9 +155,10 @@ If a feature is not reflected here, it should not be assumed shipped.
 - opponent-division context for team records: `vs Atlantic Division`,
   `against Pacific Division`, `against Northwest Division teams`
   (resolved through trusted `team_conference_membership` division coverage for
-  named-team regular-season `team_record` queries in `2024-25` and `2025-26`;
-  missing or untrusted coverage returns `no_result` / `filter_not_supported`,
-  not a broad full-season record)
+  named-team regular-season `team_record` queries and no-subject
+  `team_record_leaderboard` queries in `2024-25` and `2025-26`; missing or
+  untrusted coverage returns `no_result` / `filter_not_supported`, not a broad
+  full-season record)
 - split views: `home vs away`, `home versus away`, `wins vs losses`, `wins versus losses`, `in wins and losses`
 
 ### 2.4 Threshold language
@@ -628,6 +629,9 @@ Examples:
 - `Celtics record vs Atlantic Division`
 - `Lakers record against Western Conference teams`
 - `Lakers record against Pacific Division`
+- `record against Northwest Division teams`
+- `best record against Atlantic Division teams`
+- `team records vs Pacific Division`
 - `Lakers road record against West last season`
 - `Knicks record against Eastern Conference teams since January 1`
 - `best home record over the last 5 seasons`
@@ -900,6 +904,11 @@ Current behavior:
   Division`, `Lakers record against Pacific Division`, and `Knicks record vs
   Central Division` are supported for regular-season `team_record` queries in
   trusted seasons `2024-25` and `2025-26`
+- no-subject opponent-division record leaderboard filters such as `record
+  against Northwest Division teams`, `best record against Atlantic Division
+  teams`, and `team records vs Pacific Division` are supported for
+  regular-season `team_record_leaderboard` queries in trusted seasons `2024-25`
+  and `2025-26`
 - the resolved division list keeps all five division members, including the
   subject team when applicable; this has no effect because teams do not play
   themselves
@@ -908,9 +917,6 @@ Current behavior:
   `no_result` / `filter_not_supported` instead of broad full-season records
 - mixed conference plus division text does not return a broader
   conference-only or division-only answer
-- no-subject division record phrasing, such as
-  `record against Northwest Division teams`, preserves the closest
-  `team_record_leaderboard` route but still returns unsupported/no-result
 - playoff division record phrasing remains unsupported; `conference finals`
   phrasing remains a playoff-round concept, not an opponent-conference or
   opponent-division filter

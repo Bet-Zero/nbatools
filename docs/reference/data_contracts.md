@@ -851,8 +851,8 @@ exactly 15 West teams, and exactly five teams in each NBA division.
 
 - `team_record` opponent-conference filters for trusted current-era seasons
   (`2024-25`, `2025-26`)
-- `team_record` opponent-division filters for trusted current-era regular
-  seasons (`2024-25`, `2025-26`)
+- `team_record` and `team_record_leaderboard` opponent-division filters for
+  trusted current-era regular seasons (`2024-25`, `2025-26`)
 - data validation tests for membership coverage and game-log abbreviation
   consistency
 
@@ -881,9 +881,8 @@ Missing or untrusted conference coverage keeps opponent-conference query
 behavior unsupported/no-result. Missing or untrusted division coverage keeps
 opponent-division query behavior unsupported/no-result. Neither condition may
 broaden into an unfiltered full-season team record. Geography phrases such as
-`east coast teams`, no-subject division record leaderboards, mixed
-conference-plus-division wording, and playoff division record wording remain
-outside this contract.
+`east coast teams`, mixed conference-plus-division wording, and playoff
+division record wording remain outside this contract.
 
 ---
 

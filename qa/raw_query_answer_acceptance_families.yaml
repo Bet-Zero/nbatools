@@ -3,13 +3,13 @@ surface: public_query_acceptance
 review_closure:
   state: human_review_complete
   scope: public_query_acceptance
-  reviewed_run_id: 20260606T232744Z
-  completed_on: "2026-06-06"
-  case_count: 114
+  reviewed_run_id: 20260607T033127Z
+  completed_on: "2026-06-07"
+  case_count: 115
   ui_spot_check:
     status: not_applicable
-    notes: Opponent-division promotion reuses the existing team_record renderer; no frontend layout change was introduced.
-  notes: Public acceptance representative outputs and the promoted opponent-division team-record cases were reviewed; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
+    notes: Opponent-division promotion reuses the existing team_record and leaderboard renderers; no frontend layout change was introduced.
+  notes: Public acceptance representative outputs and the promoted opponent-division team-record and team-record-leaderboard cases were reviewed; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
 
 variant_grid: &public_variant_grid
   - canonical
@@ -35,7 +35,7 @@ families:
     required_variants: *public_variant_grid
     coverage_questions:
       - Do single-team record phrasings preserve location, season, opponent, conference, and division qualifiers?
-      - Do matchup, no-subject division, mixed conference-plus-division, and playoff division siblings avoid broad single-team fallback?
+      - Do matchup and no-subject division leaderboard siblings route intentionally while mixed conference-plus-division and playoff division siblings avoid broad fallback?
     sibling_families:
       - team_record_availability
 

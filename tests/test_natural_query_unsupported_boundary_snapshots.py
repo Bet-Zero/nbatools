@@ -43,7 +43,7 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["opponent_conference"],
         },
         {
-            "query": "record against Northwest Division teams",
+            "query": "playoff record against Northwest Division teams",
             "route": "team_record_leaderboard",
             "reason": "filter_not_supported",
             "unsupported_filters": ["opponent_division"],

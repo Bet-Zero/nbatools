@@ -289,15 +289,20 @@ instead of a broad fallback.
 - `Celtics record vs Atlantic Division`
 - `Lakers record against Western Conference teams`
 - `Lakers record against Pacific Division`
+- `record against Northwest Division teams`
+- `best record against Atlantic Division teams`
+- `team records vs Pacific Division`
 - `Lakers road record against West last season`
 - `Knicks record against Eastern Conference teams since January 1`
 
-Opponent-conference and named-team opponent-division team-record filters are
-supported for trusted current-era regular-season coverage (`2024-25` and
+Opponent-conference team-record filters, named-team opponent-division
+team-record filters, and no-subject opponent-division team-record leaderboards
+are supported for trusted current-era regular-season coverage (`2024-25` and
 `2025-26`). Conference phrases include `against the East`, `against East
 teams`, `against Eastern Conference teams`, `vs the West`, `vs West teams`, and
 `versus Western Conference opponents`. Division phrases include `vs Atlantic
-Division`, `against Pacific Division`, and `vs Central Division`.
+Division`, `against Pacific Division`, `vs Central Division`, and
+`against Northwest Division teams`.
 
 Missing/untrusted seasons and geography phrases such as `east coast teams`
 remain unsupported and return `no_result` / `filter_not_supported` instead of
@@ -305,9 +310,9 @@ broad full-season records. The resolved conference list keeps all 15 conference
 members and the resolved division list keeps all five division members,
 including the subject team when applicable; this has no effect because teams do
 not play themselves. No-subject division record phrases such as `record against
-Northwest Division teams` preserve `team_record_leaderboard` but still return
-unsupported/no-result. Mixed conference-plus-division phrasing such as `Lakers
-record against Western Conference Pacific Division teams` does not return a
+Northwest Division teams` execute as filtered `team_record_leaderboard` results.
+Mixed conference-plus-division phrasing such as `Lakers record against Western
+Conference Pacific Division teams` does not return a
 broader conference-only or division-only answer. Playoff division record
 phrasing remains unsupported, and `conference finals` record phrasing remains a
 playoff-round unsupported boundary.
