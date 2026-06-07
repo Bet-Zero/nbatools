@@ -65,6 +65,12 @@ OUTPUT_REFERENCE_ALLOWLIST = {
         "outputs/deployment_smoke/<label>.json",
         "outputs/deployment_smoke/preview.json",
     ),
+    Path("docs/operations/exploratory_query_review.md"): (
+        "outputs/exploratory_query_review/<run_id>/report.jsonl",
+        "outputs/exploratory_query_review/<run_id>/report.md",
+        "outputs/exploratory_query_review/<run_id>/summary.json",
+        "outputs/exploratory_query_review/<run_id>/",
+    ),
     Path("docs/operations/frontend_visual_qa.md"): (
         "outputs/",
         "outputs/frontend_visual_qa/<run_id>/",
@@ -88,6 +94,8 @@ OUTPUT_REFERENCE_ALLOWLIST = {
         "outputs/query_feedback_exports/<run_id>/triage_decisions_template.csv",
     ),
     Path("docs/operations/query_validation_map.md"): (
+        "outputs/exploratory_query_review/",
+        "outputs/exploratory_query_review/<run_id>/",
         "outputs/public_ui_render_review/",
         "outputs/public_ui_render_review/<run_id>/",
         "outputs/raw_query_answer_qa/",

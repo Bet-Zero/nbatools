@@ -1,0 +1,25 @@
+version: 1
+
+# Exploratory samples are input-only. Do not add expected_status,
+# expected_route, hard_assertions, or Raw QA acceptance metadata here.
+samples:
+  - id: jokic_triple_double_record
+    query: "What is Denver's record when Nikola Jokic has a triple-double?"
+    category: team_record_availability
+    priority: p0
+    notes: "Good candidate to compare against existing Raw QA coverage."
+
+  - id: points_per_game_leader
+    query: "Who leads the NBA in points per game this season?"
+    category: leaderboard
+    priority: p1
+
+  - id: celtics_playoff_teams
+    query: "What is the Celtics' record against playoff teams?"
+    category: opponent_quality
+    priority: p1
+
+  - id: shorthand_lakers_road
+    query: "Lakers road record last season"
+    category: fragment_form
+    priority: p2

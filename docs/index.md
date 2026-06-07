@@ -20,6 +20,7 @@ belong in the durable documentation map.
 | Backend route/data change | [`architecture/query_service_layer.md`](architecture/query_service_layer.md) | `src/nbatools/commands/`, `src/nbatools/query_service.py`, `docs/reference/data_contracts.md` | `make test-engine`; `make test-api` when response shape changes | `make test-preflight`; query smoke |
 | Frontend render change | [`operations/ui_guide.md`](operations/ui_guide.md) | `frontend/src/`, `frontend/src/api/`, `src/nbatools/ui/dist/` | `npm --prefix frontend run build`; `npm --prefix frontend run lint`; `npm --prefix frontend test` | [`operations/frontend_visual_qa.md`](operations/frontend_visual_qa.md) |
 | Corpus-only change | [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) | `qa/`, tracked fixtures under `qa/fixtures/` | Run the named corpus/QA slice; inspect generated product review when public acceptance is involved | `make docs-governance` if docs changed |
+| Exploratory query review | [`operations/exploratory_query_review.md`](operations/exploratory_query_review.md) | `qa/exploratory_query_samples.yaml`, ad hoc sample inputs, generated review snapshots | Run `make exploratory-query-review`; inspect the generated report manually | Promote reviewed cases into Raw QA before treating them as regression coverage |
 | Feedback-derived bug fix | [`operations/query_feedback_review.md`](operations/query_feedback_review.md) | feedback export/review artifacts, parser/route/engine area that owns the bug, QA cases | Follow triage/fix/closure workflow; run tests for touched subsystem | `make query-feedback-export`; Raw QA regression slice |
 | New feature/query family promotion | [`operations/feature_promotion_rules.md`](operations/feature_promotion_rules.md) | data contract, route/result contract, parser, Raw QA, frontend when rendered, release docs | Complete promotion gates; run subsystem tests plus required QA and docs checks | `make doctor`; deployment smoke when data-backed |
 | Route metadata/CLI diagnostic change | [`architecture/query_service_layer.md`](architecture/query_service_layer.md) | `src/nbatools/route_input_metadata.py`, `src/nbatools/cli_apps/queries.py`, `/routes` docs | Route metadata/CLI tests for touched path; `make test-api` if route list/API behavior changes | `make test-output` |
@@ -61,6 +62,7 @@ Runbooks and durable workflow policies.
 - [`operations/pipeline_runbook.md`](operations/pipeline_runbook.md) - data pipeline operations
 - [`operations/deployment.md`](operations/deployment.md) - Cloudflare R2 and Vercel deployment
 - [`operations/query_feedback_review.md`](operations/query_feedback_review.md) - query feedback review workflow
+- [`operations/exploratory_query_review.md`](operations/exploratory_query_review.md) - input-only natural-query review workflow
 - [`operations/query_smoke_workflow.md`](operations/query_smoke_workflow.md) - natural-query smoke workflow
 - [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) - Raw QA operations
 - [`operations/query_validation_map.md`](operations/query_validation_map.md) - validation-layer map and generated-evidence scoreboard

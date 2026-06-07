@@ -8,7 +8,7 @@
 .PHONY: test-preflight test-unit test-ci-fast
 .PHONY: test-parser test-query test-engine test-api test-output
 .PHONY: test-smoke-queries test-phase-smoke test-smoke-all
-.PHONY: parser-examples-sweep raw-query-answer-qa query-feedback-export
+.PHONY: parser-examples-sweep raw-query-answer-qa exploratory-query-review query-feedback-export
 .PHONY: visual-qa-screenshots
 .PHONY: docs-governance
 
@@ -148,6 +148,10 @@ parser-examples-sweep:
 ## Curated raw query answer QA harness; writes ignored artifacts under outputs/.
 raw-query-answer-qa:
 	$(PYTHON) tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+
+## Input-only natural-query review snapshot; writes ignored artifacts under outputs/.
+exploratory-query-review:
+	$(PYTHON) tools/exploratory_query_review.py --input qa/exploratory_query_samples.yaml
 
 ## Read-only query feedback review export; writes ignored artifacts under outputs/.
 query-feedback-export:

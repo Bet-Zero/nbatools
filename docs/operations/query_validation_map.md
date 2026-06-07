@@ -10,6 +10,11 @@ curated case source is `qa/raw_query_answer_corpus.yaml`. Saved subset
 selectors live under `qa/harness_slices/`. Python query tests are configured
 separately through `Makefile` and `pyproject.toml`.
 
+Exploratory query review is implemented separately by
+`tools/exploratory_query_review.py`. Its default input is
+`qa/exploratory_query_samples.yaml`. It runs input-only samples and writes
+human-inspection snapshots; it is not expectation coverage.
+
 ## Validation Layers
 
 ### Full Raw QA Corpus
@@ -52,6 +57,25 @@ separately through `Makefile` and `pyproject.toml`.
 The product review doc helps a reviewer inspect family coverage,
 representative answers, suspicious rows, and product decisions. It does not
 change the scope of the harness run that generated it.
+
+### Exploratory Query Review
+
+- Source: `qa/exploratory_query_samples.yaml` or another input-only YAML/JSON
+  sample file.
+- Command:
+
+  ```bash
+  .venv/bin/python tools/exploratory_query_review.py \
+    --input qa/exploratory_query_samples.yaml
+  ```
+
+- Output: `outputs/exploratory_query_review/<run_id>/`
+- Meaning: human-readable and JSONL snapshots of what the shared natural-query
+  engine returned for each sample.
+- Important: this is not Raw QA, not pytest, and not validation evidence. A
+  reviewed exploratory row becomes regression coverage only after it is
+  manually promoted into `qa/raw_query_answer_corpus.yaml` with explicit
+  expectations.
 
 ### Rendered UI Review
 
@@ -168,8 +192,11 @@ Use these durable sources when validating or refreshing this map:
 | `Makefile` | `test-query` and Raw QA convenience targets |
 | `pyproject.toml` | pytest marker configuration |
 | `tools/raw_query_answer_qa.py` | Raw QA harness behavior and generated paths |
+| `tools/exploratory_query_review.py` | input-only exploratory review behavior and generated paths |
 | `qa/raw_query_answer_corpus.yaml` | full curated Raw QA corpus |
+| `qa/exploratory_query_samples.yaml` | default exploratory review sample input |
 | `qa/harness_slices/` | named Raw QA subset selectors |
+| `outputs/exploratory_query_review/` | generated exploratory review snapshots; not validation evidence |
 | `outputs/raw_query_answer_qa/` | generated Raw QA reports and product-review artifacts |
 | `outputs/public_ui_render_review/` | generated rendered UI review artifacts |
 
