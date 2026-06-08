@@ -1,0 +1,33 @@
+id: 007_top_single_game_performances
+description: Top single-game player and team performance queries
+review_goal: Check whether "highest/top/most ... games" routes to single-game performance tables, while season-leader phrasing routes to leaderboard tables. Also check whether answer text describes the top row clearly instead of using weak fallback language.
+samples:
+  - id: highest_scoring_games
+    query: "highest scoring games this season"
+
+  - id: top_scoring_games
+    query: "top scoring games this season"
+
+  - id: most_points_in_game
+    query: "most points in a game this season"
+
+  - id: highest_rebound_games
+    query: "highest rebound games this season"
+
+  - id: most_assists_in_game
+    query: "most assists in a game this season"
+
+  - id: highest_team_scoring_games
+    query: "highest team scoring games this season"
+
+  - id: most_points_by_team_in_game
+    query: "most points by a team in a game this season"
+
+  - id: top_team_scoring_games
+    query: "top team scoring games this season"
+
+  - id: highest_scoring_teams
+    query: "highest scoring teams this season"
+
+  - id: team_scoring_leaders
+    query: "team scoring leaders this season"

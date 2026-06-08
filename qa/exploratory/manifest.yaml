@@ -17,3 +17,6 @@ slices:
   - id: 006_opponent_quality_filters
     file: slices/006_opponent_quality_filters.yaml
     status: pending_review
+  - id: 007_top_single_game_performances
+    file: slices/007_top_single_game_performances.yaml
+    status: pending_review
