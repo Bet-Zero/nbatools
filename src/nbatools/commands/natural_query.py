@@ -641,6 +641,24 @@ def _specific_date_top_scorer_intent(q: str, start_date: str | None, end_date: s
     )
 
 
+def _wants_top_team_games(q: str) -> bool:
+    """Detect team single-game performance intent without catching team seasons."""
+    return bool(
+        re.search(
+            r"\b(?:top|highest|best|biggest)\s+team\s+"
+            r"(?:(?:points?|scoring)\s+)?(?:games?|performances?|nights?)\b",
+            q,
+        )
+        or re.search(
+            r"\b(?:top|highest|best|biggest)\s+"
+            r"(?:(?:points?|scoring)\s+)?team\s+"
+            r"(?:games?|performances?|nights?)\b",
+            q,
+        )
+        or re.search(r"\bmost\s+points\s+by\s+a\s+team\s+in\s+a\s+game\b", q)
+    )
+
+
 def _team_how_did_do_record_intent(q: str) -> bool:
     """Detect narrow team W/L summary phrasing like ``how did the Lakers do``."""
     return bool(
@@ -849,6 +867,7 @@ def _build_parse_state(query: str) -> dict:
     streak_request = extract_streak_request(q)
     team_streak_request = extract_team_streak_request(q)
     season_high_intent = detect_season_high_intent(q)
+    top_team_game_intent = _wants_top_team_games(q)
     distinct_player_count = detect_distinct_player_count(q)
     distinct_team_count = detect_distinct_team_count(q)
 
@@ -1179,6 +1198,7 @@ def _build_parse_state(query: str) -> dict:
         "team_streak_request": team_streak_request,
         "streak_default_window": streak_default_window,
         "season_high_intent": season_high_intent,
+        "top_team_game_intent": top_team_game_intent,
         "distinct_player_count": distinct_player_count,
         "distinct_team_count": distinct_team_count,
         "opponent_player": opponent_player,
@@ -1315,6 +1335,7 @@ def _finalize_route(parsed: dict) -> dict:
     streak_request = parsed.get("streak_request")
     team_streak_request = parsed.get("team_streak_request")
     season_high_intent = parsed.get("season_high_intent", False)
+    top_team_game_intent = parsed.get("top_team_game_intent", False)
     distinct_player_count = parsed.get("distinct_player_count", False)
     opponent_player = parsed.get("opponent_player")
     with_player = parsed.get("with_player")
@@ -1644,6 +1665,26 @@ def _finalize_route(parsed: dict) -> dict:
     # ---------------------------------------------------------------------------
     # Season-high / single-game-best routing
     # ---------------------------------------------------------------------------
+    elif (
+        season_high_intent and top_team_game_intent and not player and not player_a and not player_b
+    ):
+        route = "top_team_games"
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": stat or "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "opponent": opponent,
+        }
+        notes.append("default: top team games ranked by " + (stat or "pts"))
     elif season_high_intent and player and not player_a and not player_b:
         # Single player season-high: "Cade Cunningham season high"
         # Route to finder, limit 1, sort by stat descending
@@ -1673,7 +1714,15 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
         }
         notes.append("season_high: showing top single-game performances")
-    elif season_high_intent and not player and not player_a and not player_b:
+    elif (
+        season_high_intent
+        and not player
+        and not player_a
+        and not player_b
+        and not team
+        and not team_a
+        and not team_b
+    ):
         # League-wide season-high: "highest scoring games this season"
         route = "top_player_games"
         route_kwargs = {
@@ -2022,6 +2071,9 @@ def _finalize_route(parsed: dict) -> dict:
         "top" in q
         and "games" in q
         and player is None
+        and team is None
+        and team_a is None
+        and team_b is None
         and ("scoring" in q or stat is not None)
         and not leaderboard_intent
     ):
@@ -2042,14 +2094,7 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         notes.append("default: top games ranked by " + (stat or "pts"))
-    elif (
-        "top team" in q
-        or ("top" in q and "team games" in q)
-        or re.search(
-            r"\b(highest.?scoring|best team perf|biggest team scor|top scoring team)",
-            q,
-        )
-    ):
+    elif top_team_game_intent and not player and not player_a and not player_b:
         # Expanded trigger: catches "highest-scoring team games", "best team
         # performances", "biggest team scoring nights" in addition to the
         # literal "top team" / "top ... team games" phrasings.

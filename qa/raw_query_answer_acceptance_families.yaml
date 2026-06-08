@@ -3,13 +3,13 @@ surface: public_query_acceptance
 review_closure:
   state: human_review_complete
   scope: public_query_acceptance
-  reviewed_run_id: 20260607T033127Z_plus_006_opponent_quality_filters
-  completed_on: "2026-06-07"
-  case_count: 123
+  reviewed_run_id: 20260608T040000Z_top_single_game_performances_007
+  completed_on: "2026-06-08"
+  case_count: 127
   ui_spot_check:
     status: not_applicable
-    notes: Opponent-division promotion reuses the existing team_record and leaderboard renderers; no frontend layout change was introduced.
-  notes: Public acceptance representative outputs and the promoted opponent-division team-record and team-record-leaderboard cases were reviewed; slice 006 opponent-quality team-record representatives were promoted after rendered exploratory review; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
+    notes: Slice 007 promotion reuses existing top-performance and leaderboard UI renderers; no frontend layout change was introduced.
+  notes: Public acceptance representative outputs and the promoted slice 007 top single-game performance boundary cases were reviewed after rendered exploratory review; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
 
 variant_grid: &public_variant_grid
   - canonical

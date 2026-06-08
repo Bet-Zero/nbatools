@@ -616,14 +616,20 @@ def _blocks_for_pattern(
         )
     if pattern_type == "top_performances":
         rows = _section_rows(sections, str(pattern.get("section_key") or "leaderboard"))
+        subject = str(pattern.get("subject") or "player")
+        metric = _leaderboard_metric(rows, metadata, None)
         return [
-            _generic_table_block(
-                "Top Performances",
-                rows,
+            _table_block(
+                title="Top Performances",
+                rows=rows,
+                columns=_top_performance_columns(rows, metric=metric, subject=subject),
                 section_key="leaderboard",
+                subject="Teams" if subject == "team" else "Players",
+                mode=f"single-game {subject} performances",
+                filters=_filter_labels(metadata),
                 top_rows=top_rows,
-                mode=str(pattern.get("subject") or ""),
                 table_type="top_performances",
+                column_schema="top_performances_default",
             )
         ]
     if pattern_type == "split":
@@ -1093,6 +1099,18 @@ def _answer_for_payload(
                 "text": _leaderboard_sentence(rows[0], metadata),
                 "source": "ResultHero",
             }
+    if route in {"top_player_games", "top_team_games"}:
+        rows = _section_rows(sections, "leaderboard")
+        if rows:
+            return {
+                "text": _top_performance_sentence(
+                    rows[0],
+                    metadata,
+                    query=query,
+                    subject="team" if route == "top_team_games" else "player",
+                ),
+                "source": "ResultHero",
+            }
     summary = _compact_answer_summary(
         route=route,
         result_status=result_status,
@@ -1274,6 +1292,165 @@ def _leaderboard_sentence(row: dict[str, Any], metadata: dict[str, Any]) -> str:
     if metric and value != "—":
         return f"{leader} led with {value} {_format_col_header(metric).lower()}."
     return f"{leader} led the leaderboard."
+
+
+def _top_performance_sentence(
+    row: dict[str, Any],
+    metadata: dict[str, Any],
+    *,
+    query: str,
+    subject: str,
+) -> str:
+    leader = _team_subject(row, metadata) if subject == "team" else _row_subject(row, metadata)
+    leader = leader or ("This team" if subject == "team" else "This player")
+    metric = _leaderboard_metric([row], metadata, None) or "pts"
+    value = _top_performance_value(row, metric)
+    scope = _top_performance_scope(query, row, metadata)
+    context = _top_performance_context(row, subject)
+    return (
+        f"{leader} had the top {_top_performance_metric_phrase(metric)}{scope} "
+        f"with {value}{context}."
+    )
+
+
+def _top_performance_metric_phrase(metric: str) -> str:
+    return {
+        "ast": "assist game",
+        "blk": "block game",
+        "fg3m": "three-point game",
+        "plus_minus": "plus-minus game",
+        "pts": "scoring game",
+        "reb": "rebounding game",
+        "stl": "steal game",
+        "tov": "turnover game",
+    }.get(metric, f"{_format_col_header(metric).lower()} game")
+
+
+def _top_performance_value(row: dict[str, Any], metric: str) -> str:
+    value = _format_prose_value(row.get(metric), metric)
+    unit = {
+        "ast": "assists",
+        "blk": "blocks",
+        "fg3m": "threes",
+        "pts": "points",
+        "reb": "rebounds",
+        "stl": "steals",
+        "tov": "turnovers",
+    }.get(metric)
+    if unit and value != "—":
+        return f"{value} {unit}"
+    return value
+
+
+def _top_performance_scope(query: str, row: dict[str, Any], metadata: dict[str, Any]) -> str:
+    if re.search(r"\bthis\s+season\b", query, flags=re.I):
+        return " this season"
+    return _season_context(row, metadata)
+
+
+def _top_performance_context(row: dict[str, Any], subject: str) -> str:
+    parts: list[str] = []
+    outcome = _outcome_noun(row)
+    score = _score_cell(row, subject) if _has_score(row, subject) else None
+    if score and outcome:
+        parts.append(f"in a {score} {outcome}")
+    elif outcome:
+        parts.append(f"in a {outcome}")
+    elif score:
+        parts.append(f"in a {score} game")
+
+    opponent = _opponent_cell(row)
+    if opponent != "—":
+        parts.append(f"against {opponent}")
+
+    date = _format_compact_date(_text(row, "game_date"))
+    if date != "—":
+        parts.append(f"on {date}")
+
+    return f" {' '.join(parts)}" if parts else ""
+
+
+def _outcome_noun(row: dict[str, Any]) -> str | None:
+    wl = str(row.get("wl") or "").strip().upper()
+    if wl == "W":
+        return "win"
+    if wl == "L":
+        return "loss"
+    return None
+
+
+def _top_performance_columns(
+    rows: list[dict[str, Any]],
+    *,
+    metric: str | None,
+    subject: str,
+) -> list[dict[str, Any]]:
+    columns: list[dict[str, Any]] = [
+        {
+            "key": "rank",
+            "label": "Rank",
+            "value": lambda row, index: str(row.get("rank") or index + 1),
+        }
+    ]
+    if subject == "team":
+        columns.append(
+            {
+                "key": "team",
+                "label": "Team",
+                "value": lambda row, index: _team_subject(row, {}) or "—",
+            }
+        )
+    else:
+        columns.append(
+            {
+                "key": "player",
+                "label": "Player",
+                "value": lambda row, index: _text(row, "player_name") or "—",
+            }
+        )
+        columns.append(
+            {"key": "team", "label": "Team", "value": lambda row, index: _team_cell(row, {})}
+        )
+
+    columns.extend(
+        [
+            {
+                "key": "date",
+                "label": "Date",
+                "value": lambda row, index: _format_compact_date(_text(row, "game_date")),
+            },
+            {"key": "opponent", "label": "Opp", "value": lambda row, index: _opponent_cell(row)},
+            {
+                "key": "wl",
+                "label": "W/L",
+                "value": lambda row, index: str(row.get("wl") or "—").upper(),
+            },
+        ]
+    )
+    if subject == "team" and any(_has_score(row, "team") for row in rows):
+        columns.append(
+            {
+                "key": "score",
+                "label": "Score",
+                "value": lambda row, index: _score_cell(row, "team"),
+            }
+        )
+
+    stat_order = GAME_LOG_TEAM_STATS if subject == "team" else GAME_LOG_PLAYER_STATS
+    preferred_stats = [metric] if metric else []
+    preferred_stats.extend(key for key in stat_order if key != metric)
+    for key in preferred_stats:
+        if not key or not any(_has_stat_column(row, key) for row in rows):
+            continue
+        if key == "margin":
+            columns.append(
+                {"key": key, "label": "Margin", "value": lambda row, index: _margin_cell(row)}
+            )
+        else:
+            columns.append({"key": key, "label": GAME_LOG_LABELS.get(key, _format_col_header(key))})
+        if len(columns) >= 12:
+            break
+    return columns
 
 
 def _team_record_columns(
@@ -1698,6 +1875,19 @@ def _score_cell(row: dict[str, Any], mode: str) -> str:
     if not _has_value(left) or not _has_value(right):
         return "—"
     return f"{_format_value(left, 'pts')}-{_format_value(right, 'pts')}"
+
+
+def _margin_cell(row: dict[str, Any]) -> str:
+    if _has_value(row.get("plus_minus")):
+        return _format_value(row.get("plus_minus"), "plus_minus")
+    if _has_value(row.get("margin")):
+        return _format_value(row.get("margin"), "margin")
+    if _has_value(row.get("pts")) and _has_value(row.get("opponent_pts")):
+        try:
+            return _format_value(float(row["pts"]) - float(row["opponent_pts"]), "margin")
+        except (TypeError, ValueError):
+            return "—"
+    return "—"
 
 
 def _has_stat_column(row: dict[str, Any], key: str) -> bool:

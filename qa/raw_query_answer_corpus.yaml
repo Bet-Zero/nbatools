@@ -974,6 +974,162 @@ cases:
       - leaderboard
     review_notes: "Compressed top-team-performance form."
 
+  - id: top_scoring_games_single_game_007
+    query: "top scoring games this season"
+    category: top_performances
+    priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: synonym
+      concept: player_single_game_stat_high
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: top_player_games
+      qualifier_model:
+        - points
+        - current_season
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+      - path: result.sections.leaderboard.0.player_name
+        equals: Bam Adebayo
+      - path: result.sections.leaderboard.0.pts
+        equals: 83
+    review_notes: "Slice 007 promotion: top scoring games means player single-game scoring performances."
+    manual_review:
+      status: pass
+      tags:
+        - top_performance
+        - slice_007
+      notes: "Reviewed in exploratory slice 007 after fix; rendered answer and table scope are correct."
+
+  - id: highest_team_scoring_games_single_game_007
+    query: "highest team scoring games this season"
+    category: top_performances
+    priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: sentence
+      concept: team_single_game_stat_high
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: top_team_games
+      qualifier_model:
+        - team_scope
+        - points
+        - current_season
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_team_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+      - path: result.sections.leaderboard.0.team_name
+        equals: Denver Nuggets
+      - path: result.sections.leaderboard.0.pts
+        equals: 157
+      - path: result.sections.leaderboard.0.opponent_pts
+        equals: 103
+    review_notes: "Slice 007 promotion: highest team scoring games means team single-game scoring performances."
+    manual_review:
+      status: pass
+      tags:
+        - top_performance
+        - team_scope
+        - slice_007
+      notes: "Reviewed in exploratory slice 007 after fix; rendered answer and table scope are correct."
+
+  - id: most_points_by_team_in_game_007
+    query: "most points by a team in a game this season"
+    category: top_performances
+    priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: inverse_sibling
+      concept: team_single_game_stat_high
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: highest_scoring_teams_season_leader_boundary_007
+      intent_model: top_team_games
+      qualifier_model:
+        - team_scope
+        - points
+        - single_game
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_team_games
+    expected_shape: top_performances
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+      - path: result.sections.leaderboard.0.team_name
+        equals: Denver Nuggets
+      - path: result.sections.leaderboard.0.pts
+        equals: 157
+    review_notes: "Slice 007 promotion: explicit by-a-team in-a-game phrasing stays on top_team_games."
+    manual_review:
+      status: pass
+      tags:
+        - top_performance
+        - team_scope
+        - slice_007
+      notes: "Reviewed in exploratory slice 007 after fix; rendered answer and table scope are correct."
+
+  - id: highest_scoring_teams_season_leader_boundary_007
+    query: "highest scoring teams this season"
+    category: leaderboard
+    priority: p1
+    acceptance:
+      family: top_single_game_performances
+      variant: inverse_sibling
+      concept: season_team_scoring_leaderboard_sibling
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: most_points_by_team_in_game_007
+      intent_model: season_team_leaders
+      qualifier_model:
+        - team_scope
+        - points_per_game
+        - current_season
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+      - path: result.sections.leaderboard.0.team_name
+        equals: Denver Nuggets
+    review_notes: "Slice 007 promotion: highest scoring teams remains a season team leaderboard."
+    manual_review:
+      status: pass
+      tags:
+        - leaderboard
+        - team_scope
+        - slice_007
+      notes: "Reviewed in exploratory slice 007 after fix; rendered answer and table scope are correct."
+
   - id: luka_best_game_this_season
     query: "Luka Doncic best game this season"
     category: top_performances

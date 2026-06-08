@@ -33,6 +33,10 @@ case_ids:
   - biggest_scoring_games
   - most_rebounds_single_game_this_year_public_sweep
   - pqa_top_games_synonym_single_game_rebounds
+  - top_scoring_games_single_game_007
+  - highest_team_scoring_games_single_game_007
+  - most_points_by_team_in_game_007
+  - highest_scoring_teams_season_leader_boundary_007
   - pqa_top_games_stat_typo_rebunds
   - jokic_triple_double_count
   - pqa_count_unsupported_players_played

@@ -1632,6 +1632,23 @@ def test_non_scoring_single_game_top_performance_routes_to_top_player_games(quer
 
 
 @pytest.mark.parametrize(
+    ("query", "route", "stat"),
+    [
+        ("top scoring games this season", "top_player_games", "pts"),
+        ("highest team scoring games this season", "top_team_games", "pts"),
+        ("most points by a team in a game this season", "top_team_games", "pts"),
+        ("top team scoring games this season", "top_team_games", "pts"),
+        ("highest scoring teams this season", "season_team_leaders", "pts"),
+        ("team scoring leaders this season", "season_team_leaders", "pts"),
+    ],
+)
+def test_single_game_and_season_team_scoring_boundaries(query, route, stat):
+    parsed = parse_query(query)
+    assert parsed["route"] == route
+    assert parsed["route_kwargs"]["stat"] == stat
+
+
+@pytest.mark.parametrize(
     "query",
     [
         "assist leaders this season",

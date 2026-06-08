@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Snapshot: 2026-06-07.
+Snapshot: 2026-06-08.
 
 Raw Product QA is machine-clean for the current corpus and the current public
 acceptance slice. The current public-acceptance human product review is closed
@@ -12,10 +12,10 @@ from one another.
 
 | Evidence layer | Current status | Durable evidence pointer |
 | --- | --- | --- |
-| Full Raw QA corpus | `302/302` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
-| `public_query_acceptance` slice | `115/115` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
+| Full Raw QA corpus | `314/314` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current full-run summary. |
+| `public_query_acceptance` slice | `127/127` expectation cases machine-passing | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current slice evidence. |
 | Human product review | `human_review_complete` | Tracked in `qa/raw_query_answer_acceptance_families.yaml` for the current public-acceptance closure; generated outputs remain evidence snapshots only. |
-| Representative rendered UI review | Selected representative browser-rendered queries passed; the opponent-division promotion reused the existing `team_record` and `leaderboard` renderers and required no new frontend layout spot check | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
+| Representative rendered UI review | Selected representative rendered-output queries passed; the slice 007 promotion reused existing top-performance and leaderboard renderers and required no new frontend layout spot check | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed

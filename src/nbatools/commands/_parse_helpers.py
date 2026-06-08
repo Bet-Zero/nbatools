@@ -46,8 +46,12 @@ def wants_leaderboard(text: str) -> bool:
     ):
         return False
 
-    # "highest/best scoring games" → single-game-best, not leaderboard
-    if re.search(r"\b(?:highest|best)\s+(?:scoring\s+)?games?\b", text):
+    # "top/highest/best scoring games" -> single-game-best, not a season leaderboard.
+    if re.search(
+        rf"\b(?:top|highest|best)\s+(?:single[- ]?)?(?:(?:team|player)\s+)?"
+        rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b",
+        text,
+    ):
         return False
 
     if detect_player_leaderboard_stat(text) is None:
@@ -1616,14 +1620,15 @@ def detect_season_high_intent(text: str) -> bool:
     - 'highest game' / 'highest single game'
     - 'game high' / 'game-high'
     - 'best scoring game(s)'
-    - 'highest scoring game(s)'
+    - 'top/highest scoring game(s)'
     - 'biggest scoring game(s)'
     - 'most dominant game(s)'
     """
     if re.search(
         r"\bseason[- ]?high\b"
-        r"|\bbest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
-        r"|\bhighest\s+(?:single\s+)?(?:scoring\s+)?games?\b"
+        r"|\b(?:best|highest)\s+(?:single[- ]?)?games?\b"
+        rf"|\b(?:top|best|highest)\s+(?:single[- ]?)?(?:(?:team|player)\s+)?"
+        rf"{STAT_PATTERN}\s+(?:(?:team|player)\s+)?games?\b"
         r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"
         r"|\bmost\s+dominant\s+(?:single\s+)?games?\b"
         r"|\bgame[- ]?high\b"
