@@ -52,6 +52,14 @@ case_ids:
   - pqa_comparison_subjective_better_jokic_embiid
   - lakers_playoff_history
   - celtics_record_playoff_teams
+  - team_record_thunder_top_10_teams_006
+  - team_record_celtics_top_5_teams_006
+  - team_record_bucks_losing_teams_006
+  - team_record_suns_bad_teams_006
+  - team_record_lakers_playoff_teams_006
+  - team_record_nuggets_winning_teams_006
+  - team_record_knicks_over_500_006
+  - team_record_mavericks_west_playoff_teams_006
   - bulls_finals_record_wave4
   - pqa_playoff_typo_lakeers_history
   - top_scorers_in_march

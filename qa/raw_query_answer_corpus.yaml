@@ -193,6 +193,350 @@ cases:
         - season_type
       notes: "Phrase maps to the existing playoff teams opponent-quality bucket without switching to playoff games."
 
+  - id: team_record_thunder_top_10_teams_006
+    query: "Thunder record vs top 10 teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - top_10_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: top 10 teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 28
+      - path: result.sections.summary.0.wins
+        equals: 18
+      - path: result.sections.summary.0.losses
+        equals: 10
+    review_notes: "Regression guard for slice 006: top-10 opponent-quality team record must not fall back to the full 82-game record."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 after fixing top-10 opponent-quality parsing."
+
+  - id: team_record_celtics_top_5_teams_006
+    query: "Celtics record vs top 5 teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - top_5_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: top 5 teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 10
+      - path: result.sections.summary.0.wins
+        equals: 2
+      - path: result.sections.summary.0.losses
+        equals: 8
+    review_notes: "Regression guard for slice 006: top-5 opponent-quality team record must not fall back to the full 82-game record."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 after fixing top-5 opponent-quality parsing."
+
+  - id: team_record_bucks_losing_teams_006
+    query: "Bucks record against losing teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - losing_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: losing teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 28
+      - path: result.sections.summary.0.wins
+        equals: 18
+      - path: result.sections.summary.0.losses
+        equals: 10
+    review_notes: "Regression guard for slice 006: losing-teams opponent-quality team record must not fall back to the full 82-game record."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 after fixing losing-teams opponent-quality parsing."
+
+  - id: team_record_suns_bad_teams_006
+    query: "Suns record vs bad teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - bad_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: bad teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 27
+      - path: result.sections.summary.0.wins
+        equals: 23
+      - path: result.sections.summary.0.losses
+        equals: 4
+    review_notes: "Regression guard for slice 006: bad-teams opponent-quality team record must not fall back to the full 82-game record."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 after fixing bad-teams opponent-quality parsing."
+
+  - id: team_record_lakers_playoff_teams_006
+    query: "Lakers record against playoff teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - playoff_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Regular Season
+      - path: result.sections.summary.0.games
+        equals: 53
+      - path: result.sections.summary.0.wins
+        equals: 27
+      - path: result.sections.summary.0.losses
+        equals: 26
+    review_notes: "Regression guard for slice 006: existing playoff-team opponent-quality phrase must keep applying and stay regular season."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 as a continuing-good representative case."
+
+  - id: team_record_nuggets_winning_teams_006
+    query: "Nuggets record vs winning teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - winning_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: winning teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 49
+      - path: result.sections.summary.0.wins
+        equals: 29
+      - path: result.sections.summary.0.losses
+        equals: 20
+    review_notes: "Regression guard for slice 006: existing winning-teams opponent-quality phrase must keep applying."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 as a continuing-good representative case."
+
+  - id: team_record_knicks_over_500_006
+    query: "Knicks record against teams over .500"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: synonym
+      concept: opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_quality
+        - teams_over_500
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: quality
+        value: teams over .500
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.sections.summary.0.games
+        equals: 52
+      - path: result.sections.summary.0.wins
+        equals: 29
+      - path: result.sections.summary.0.losses
+        equals: 23
+    review_notes: "Regression guard for slice 006: existing over-.500 opponent-quality phrase must keep applying."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 as a continuing-good representative case."
+
+  - id: team_record_mavericks_west_playoff_teams_006
+    query: "Mavericks record against West playoff teams"
+    category: team_record
+    priority: p1
+    acceptance:
+      family: team_records
+      variant: inverse_sibling
+      concept: compound_conference_opponent_quality_team_record
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - opponent_conference
+        - opponent_quality
+        - playoff_teams
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_record
+    expected_shape: team_record
+    expected_filters:
+      - kind: conference
+        value: West
+      - kind: quality
+        value: playoff teams
+    expected_sections:
+      - summary
+    expected_row_counts:
+      summary: 1
+    hard_assertions:
+      - path: result.metadata.season_type
+        equals: Regular Season
+      - path: result.sections.summary.0.games
+        equals: 36
+      - path: result.sections.summary.0.wins
+        equals: 9
+      - path: result.sections.summary.0.losses
+        equals: 27
+    review_notes: "Regression guard for slice 006: conference plus opponent-quality should intersect, not fall back to a full record or playoff-game season type."
+    manual_review:
+      status: pass
+      tags:
+        - opponent_quality
+        - opponent_conference
+        - exploratory_slice_006
+      notes: "Promoted from exploratory slice 006 after choosing support for the compound West playoff-team filter."
+
   - id: celtics_playoff_record
     query: "What is the Celtics playoff record?"
     category: team_record

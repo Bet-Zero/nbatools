@@ -285,6 +285,9 @@ instead of a broad fallback.
 - `Lakers 2024-25 road record`
 - `Celtics road record since January 1`
 - `Celtics record against playoff teams`
+- `Thunder record vs top 10 teams`
+- `Bucks record against losing teams`
+- `Mavericks record against West playoff teams`
 - `Celtics record against the East this season`
 - `Celtics record vs Atlantic Division`
 - `Lakers record against Western Conference teams`

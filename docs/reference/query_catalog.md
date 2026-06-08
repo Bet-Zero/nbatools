@@ -144,7 +144,7 @@ If a feature is not reflected here, it should not be assumed shipped.
   `Celtics bench scoring` and league-wide role leaderboards are explicit
   unsupported boundaries unless a future product queue reopens role route
   expansion)
-- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against teams over .500`, `against top-10 defenses`
+- opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against top 10 teams`, `against top 5 teams`, `against top seeded teams`, `against playoff teams`, `against non-playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against winning teams`, `against losing teams`, `against teams over .500`, `against teams under .500`, `against bad teams`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
   unsupported routes append an explicit note and remain unfiltered)
@@ -886,13 +886,29 @@ Examples:
 - `KD TS% vs top defenses`
 - `Celtics record against playoff teams`
 - `Celtics record against teams that made the playoffs`
+- `Thunder record vs top 10 teams`
+- `Celtics record vs top 5 teams`
+- `Bucks record against losing teams`
+- `Suns record vs bad teams`
+- `Mavericks record against West playoff teams`
 
 Current behavior:
 
 - parser sets a structured `opponent_quality` slot containing the surface term and resolved bucket definition
 - execution resolves that bucket to a concrete opponent-team list on the supported single-entity summary/finder/record routes
+- team-record opponent-quality filters cover `top 10 teams`, `top 5 teams`,
+  `top seeded teams`, `winning teams`, `losing teams`, `teams over .500`,
+  `teams under .500`, `playoff teams`, `non-playoff teams`, `good teams`, and
+  `bad teams`
+- conference-plus-quality team-record filters such as `West playoff teams`,
+  `Eastern Conference playoff teams`, and `East top 10 teams` are supported by
+  intersecting the conference and quality opponent-team sets
 - `top defenses` is accepted as shorthand for `top-10 defenses` only in explicit opponent context such as `against`, `vs`, or `versus`
-- `playoff teams` includes postseason-team phrasings such as `postseason teams` and `teams that made the playoffs`; this remains a regular-season opponent-quality context unless the query also explicitly asks for playoff competition
+- `playoff teams` includes postseason-team phrasings such as `postseason
+  teams` and `teams that made the playoffs`; `non-playoff teams` includes
+  `non playoff teams` / `non-playoff teams`; both remain regular-season
+  opponent-quality contexts unless the query also explicitly asks for playoff
+  competition
 - opponent-conference filters such as `Celtics record against the East` or
   `Lakers record against Western Conference teams` are supported for
   `team_record` queries in trusted seasons `2024-25` and `2025-26`; the filter

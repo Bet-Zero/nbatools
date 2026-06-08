@@ -464,15 +464,31 @@ def _resolve_opponent_conference_kwargs(
         return sanitized, [], ["conference_coverage"]
 
     resolved_opponents = list(next(iter(opponent_sets)))
+    existing_opponent = sanitized.get("opponent")
+    if existing_opponent:
+        if isinstance(existing_opponent, str):
+            existing_opponents = {existing_opponent.upper()}
+        else:
+            existing_opponents = {str(value).upper() for value in existing_opponent}
+        resolved_opponents = [team for team in resolved_opponents if team in existing_opponents]
+
     sanitized["opponent"] = resolved_opponents
     if original_kwargs is not None:
         original_kwargs["opponent_team_abbrs"] = resolved_opponents
         original_kwargs["opponent_conference_seasons"] = seasons
 
     season_label = seasons[0] if len(seasons) == 1 else f"{seasons[0]} to {seasons[-1]}"
-    notes = [
-        f"opponent conference filter: {conference} resolved to 15 trusted teams for {season_label}"
-    ]
+    if existing_opponent:
+        notes = [
+            "opponent conference filter: "
+            f"{conference} intersected with existing opponent filter to "
+            f"{len(resolved_opponents)} trusted teams for {season_label}"
+        ]
+    else:
+        notes = [
+            "opponent conference filter: "
+            f"{conference} resolved to 15 trusted teams for {season_label}"
+        ]
     if season_type != "Regular Season":
         notes.append("opponent conference membership is season-scoped team metadata")
 

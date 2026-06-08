@@ -121,6 +121,40 @@ OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
         },
         shipped=True,
     ),
+    "top 10 teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: top 10 teams by league win percentage",
+        {
+            "metric": "win_pct_rank",
+            "operator": "top_n",
+            "value": 10,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "top 5 teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: top 5 teams by league win percentage",
+        {
+            "metric": "win_pct_rank",
+            "operator": "top_n",
+            "value": 5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "top seeded teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: conference_rank <= 6",
+        {
+            "metric": "conference_rank",
+            "operator": "<=",
+            "value": 6,
+            "scope": "conference",
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
     "playoff teams": OpponentQualityTerm(
         "Latest regular-season standings snapshot: conference_rank <= 10",
         {
@@ -133,11 +167,45 @@ OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
         },
         shipped=True,
     ),
+    "non-playoff teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: conference_rank > 10",
+        {
+            "metric": "conference_rank",
+            "operator": ">",
+            "value": 10,
+            "scope": "conference",
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
     "teams over .500": OpponentQualityTerm(
         "Latest regular-season standings snapshot: win_pct > .500",
         {
             "metric": "win_pct",
             "operator": ">",
+            "value": 0.5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "losing teams": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct < .500",
+        {
+            "metric": "win_pct",
+            "operator": "<",
+            "value": 0.5,
+            "source": "standings_snapshots",
+            "snapshot": "latest_regular_season",
+        },
+        shipped=True,
+    ),
+    "teams under .500": OpponentQualityTerm(
+        "Latest regular-season standings snapshot: win_pct < .500",
+        {
+            "metric": "win_pct",
+            "operator": "<",
             "value": 0.5,
             "source": "standings_snapshots",
             "snapshot": "latest_regular_season",
@@ -184,6 +252,7 @@ OPPONENT_QUALITY_TERMS: dict[str, OpponentQualityTerm] = {
             "source": "standings_snapshots",
             "snapshot": "latest_regular_season",
         },
+        shipped=True,
     ),
 }
 

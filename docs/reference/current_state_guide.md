@@ -314,9 +314,14 @@ notes rather than silently pretending the filter ran.
   requested slice. Team-level bench semantics and broader route expansion are
   out of scope for the core finish line unless a future product queue reopens
   them.
-- Opponent-conference filters execute on regular-season `team_record` queries,
-  and opponent-division filters execute on named-team `team_record` queries and
-  no-subject `team_record_leaderboard` queries when trusted
+- Opponent-quality filters such as `top 10 teams`, `top 5 teams`,
+  `winning teams`, `losing teams`, `teams over .500`, `teams under .500`,
+  `playoff teams`, `non-playoff teams`, `good teams`, and `bad teams` execute
+  on supported single-entity summary/finder/record routes by resolving the
+  phrase to concrete opponent teams from trusted standings or team-advanced
+  data. Opponent-conference filters execute on regular-season `team_record`
+  queries, and opponent-division filters execute on named-team `team_record`
+  queries and no-subject `team_record_leaderboard` queries when trusted
   `team_conference_membership` rows cover the requested season. Supported
   current-era coverage is `2024-25` and `2025-26`. Missing/untrusted coverage,
   geography phrases such as `east coast teams`, mixed conference-plus-division

@@ -602,7 +602,7 @@ def resolve_opponent_quality_teams(
     resolved: set[str] = set()
 
     for season in seasons:
-        if metric in {"conference_rank", "win_pct"}:
+        if metric in {"conference_rank", "win_pct", "win_pct_rank"}:
             df = load_latest_standings_snapshot(season)
         elif metric in {"def_rating_rank", "off_rating_rank"}:
             df = load_latest_team_advanced(season)
@@ -611,7 +611,12 @@ def resolve_opponent_quality_teams(
 
         if metric == "conference_rank":
             ranks = pd.to_numeric(df.get("conference_rank"), errors="coerce")
-            mask = ranks <= float(value)
+            if operator == "<=":
+                mask = ranks <= float(value)
+            elif operator == ">":
+                mask = ranks > float(value)
+            else:
+                raise ValueError(f"Unsupported conference_rank operator: {operator}")
             teams = df.loc[mask, "team_abbr"]
         elif metric == "win_pct":
             win_pct = pd.to_numeric(df.get("win_pct"), errors="coerce")
@@ -624,6 +629,19 @@ def resolve_opponent_quality_teams(
             else:
                 raise ValueError(f"Unsupported win_pct operator: {operator}")
             teams = df.loc[mask, "team_abbr"]
+        elif metric == "win_pct_rank":
+            if operator != "top_n":
+                raise ValueError(f"Unsupported win_pct_rank operator: {operator}")
+            work = df.copy()
+            work["win_pct"] = pd.to_numeric(work.get("win_pct"), errors="coerce")
+            if "wins" in work.columns:
+                work["wins"] = pd.to_numeric(work.get("wins"), errors="coerce")
+            else:
+                work["wins"] = 0
+            teams = work.sort_values(
+                ["win_pct", "wins", "team_abbr"],
+                ascending=[False, False, True],
+            ).head(int(value))["team_abbr"]
         elif metric == "def_rating_rank":
             work = df.copy()
             work["def_rating"] = pd.to_numeric(work.get("def_rating"), errors="coerce")

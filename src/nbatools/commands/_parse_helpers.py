@@ -669,15 +669,31 @@ def detect_player_summary_stat_context(text: str) -> str | None:
     return None
 
 
+_OPPONENT_QUALITY_PREFIX_PATTERN = (
+    r"(?:against|vs\.?|versus)\s+(?:the\s+)?"
+    r"(?:(?:east|west|eastern|western)(?:\s+conference)?\s+)?"
+)
+
 _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
-    r"\b(?:against|vs\.?|versus)\s+(?:playoff|postseason)\s+teams\b",
+    rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}(?:playoff|postseason)\s+teams\b",
     r"\b(?:against|vs\.?|versus)\s+teams?\s+that\s+(?:made|make|qualified\s+for|qualify\s+for)\s+(?:the\s+)?(?:playoffs|postseason)\b",
-    r"\b(?:against|vs\.?|versus)\s+playoff\s+qualifiers\b",
+    rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}playoff\s+qualifiers\b",
+]
+
+_NON_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS = [
+    rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}(?:non[- ]playoff|non[- ]postseason)\s+teams\b",
+    r"\b(?:against|vs\.?|versus)\s+teams?\s+that\s+(?:missed|miss)\s+(?:the\s+)?(?:playoffs|postseason)\b",
 ]
 
 
 def detects_playoff_team_opponent_quality(text: str) -> bool:
-    return any(re.search(pattern, text) for pattern in _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS)
+    return any(
+        re.search(pattern, text)
+        for pattern in (
+            *_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS,
+            *_NON_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS,
+        )
+    )
 
 
 def _has_explicit_playoff_competition_context(text: str) -> bool:
@@ -1087,14 +1103,33 @@ def detect_home_away(text: str) -> tuple[bool, bool]:
 
 def detect_opponent_quality(text: str) -> dict | None:
     patterns = [
-        (r"\b(?:against|vs\.?|versus)\s+contenders\b", "contenders"),
-        (r"\b(?:against|vs\.?|versus)\s+good\s+teams\b", "good teams"),
-        (r"\b(?:against|vs\.?|versus)\s+top\s+teams\b", "top teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}contenders\b", "contenders"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}good\s+teams\b", "good teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}bad\s+teams\b", "bad teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+teams\b", "top teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+teams\b", "top 10 teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]5\s+teams\b", "top 5 teams"),
+        (
+            rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]seeded\s+teams\b",
+            "top seeded teams",
+        ),
         *[(pattern, "playoff teams") for pattern in _PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS],
-        (r"\b(?:against|vs\.?|versus)\s+winning\s+teams\b", "winning teams"),
-        (r"\b(?:against|vs\.?|versus)\s+teams?\s+over\s+\.500\b", "teams over .500"),
-        (r"\b(?:against|vs\.?|versus)\s+top[- ]10\s+defenses\b", "top-10 defenses"),
-        (r"\b(?:against|vs\.?|versus)\s+top\s+defenses\b", "top-10 defenses"),
+        *[
+            (pattern, "non-playoff teams")
+            for pattern in _NON_PLAYOFF_TEAM_OPPONENT_QUALITY_PATTERNS
+        ],
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}winning\s+teams\b", "winning teams"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}losing\s+teams\b", "losing teams"),
+        (
+            rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:over|above)\s+\.500\b",
+            "teams over .500",
+        ),
+        (
+            rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}teams?\s+(?:under|below)\s+\.500\b",
+            "teams under .500",
+        ),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top[- ]10\s+defenses\b", "top-10 defenses"),
+        (rf"\b{_OPPONENT_QUALITY_PREFIX_PATTERN}top\s+defenses\b", "top-10 defenses"),
     ]
     for pattern, term in patterns:
         if re.search(pattern, text):
