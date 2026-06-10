@@ -61,3 +61,4 @@ coverage.xml
 # Rich Text Format notes (local reference)
 *.rtf
 KICKOFF.md
+graphify-out/
