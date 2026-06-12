@@ -79,7 +79,7 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["conference_coverage"],
         },
         {
-            "query": "Warriors net rating this season",
+            "query": "Warriors net rating since January",
             "route": "game_summary",
             "reason": "filter_not_supported",
             "unsupported_filters": ["single_team_advanced_stat_summary"],

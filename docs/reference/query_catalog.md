@@ -520,10 +520,15 @@ Leaderboard no-match behavior:
 - fouls-drawn wording is not mapped to personal fouls committed; drawing-foul
   queries remain unsupported until a fouls-drawn data contract exists
 - league-wide team advanced-stat leaderboards for net rating, offensive rating,
-  defensive rating, and pace are supported, but single-team scalar summaries
-  such as `Warriors net rating this season` return `no_result` /
-  `filter_not_supported` until a single-team advanced-stat result contract is
-  approved
+  defensive rating, and pace are supported
+- single-team season advanced-stat scalar asks (`Warriors net rating this
+  season`, `wolves defensive rating`, `kings pace`) are supported: they route
+  to the full team leaderboard and the backend answer phrase pinpoints the
+  team's value and league rank. Date-windowed, season-range, opponent, and
+  home/away/wins/losses variants remain unsupported boundaries
+- league-wide threshold game lists (`who dropped 40 this week`, `who scored
+  50+ points this season`) are supported through `top_player_games` with a
+  minimum-value filter; every qualifying game is listed
 
 ### Position-filtered leaderboards
 

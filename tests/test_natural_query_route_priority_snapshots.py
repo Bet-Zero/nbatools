@@ -368,14 +368,13 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
         },
         {
             "query": "Warriors net rating this season",
-            "route": "game_summary",
+            "route": "season_team_leaders",
             "fields": {"team": "GSW", "stat": "net_rating"},
             "route_kwargs": {
-                "team": "GSW",
                 "stat": "net_rating",
-                "unsupported_filters": ["single_team_advanced_stat_summary"],
+                "limit": 30,
             },
-            "note_contains": "unsupported_boundary",
+            "note_contains": "single_team_advanced_stat",
         },
         {
             "query": "best net rating teams this season",

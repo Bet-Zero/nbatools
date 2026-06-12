@@ -56,6 +56,7 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     opponent: str | None = None,
+    min_value: float | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
     path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
@@ -127,6 +128,9 @@ def build_result(
 
     if last_n is not None and last_n > 0 and "game_date" in df.columns:
         df = df.sort_values(["game_date", "game_id"], ascending=[False, False]).head(last_n).copy()
+
+    if min_value is not None:
+        df = df[pd.to_numeric(df[col], errors="coerce") >= min_value].copy()
 
     if df.empty:
         return NoResult(

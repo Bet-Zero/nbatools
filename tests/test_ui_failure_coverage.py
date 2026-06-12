@@ -415,18 +415,35 @@ class TestP2BoundaryRoutingCleanup:
             ("Warriors pace this season", "pace"),
         ],
     )
-    def test_single_team_advanced_stat_summaries_return_unsupported_boundary(self, query, stat):
+    def test_single_team_advanced_stat_summaries_answer_with_rank(self, query, stat):
+        # Promoted 2026-06-12: the scalar answers from the full team
+        # leaderboard with a backend answer phrase carrying value + rank.
+        qr = execute_natural_query(query)
+
+        assert qr.route == "season_team_leaders"
+        assert qr.result.result_status == "ok"
+        assert qr.metadata["team"] == "GSW"
+        assert qr.metadata["stat"] == stat
+        phrase = qr.metadata.get("answer_phrase") or ""
+        assert "Warriors" in phrase
+        assert "of 30" in phrase
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "Warriors net rating since January",
+            "Warriors defensive rating last 10 games",
+        ],
+    )
+    def test_windowed_single_team_advanced_stats_stay_unsupported(self, query):
         qr = execute_natural_query(query)
 
         assert qr.route == "game_summary"
         assert qr.result.result_status == "no_result"
         assert qr.result.result_reason == "filter_not_supported"
-        assert qr.metadata["team"] == "GSW"
-        assert qr.metadata["stat"] == stat
         assert qr.metadata["unsupported_filters"] == ["single_team_advanced_stat_summary"]
         assert qr.to_dict()["sections"] == {}
-        notes = qr.metadata.get("notes", []) + qr.result.notes
-        assert any("single-team advanced-stat summaries" in note for note in notes)
 
     @pytest.mark.needs_data
     @pytest.mark.parametrize(

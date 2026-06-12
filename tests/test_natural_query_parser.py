@@ -814,14 +814,32 @@ def test_supported_defensive_and_turnover_leaderboards_still_route(query, stat):
         ("Warriors pace this season", "pace"),
     ],
 )
-def test_single_team_advanced_stat_scalar_queries_are_unsupported_boundaries(query, stat):
+def test_single_team_advanced_stat_scalar_queries_route_to_team_leaders(query, stat):
+    # Promoted 2026-06-12: the scalar answers from the full team
+    # leaderboard so the value arrives with its league rank.
     parsed = parse_query(query)
 
-    assert parsed["route"] == "game_summary"
-    assert parsed["route"] != "game_finder"
+    assert parsed["route"] == "season_team_leaders"
     assert parsed["team"] == "GSW"
     assert parsed["stat"] == stat
     assert parsed["route_kwargs"]["stat"] == stat
+    # def_rating ranks ascending (lowest is best); the rest descend.
+    assert parsed["route_kwargs"]["ascending"] is (stat == "def_rating")
+    assert "unsupported_filters" not in parsed["route_kwargs"]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Warriors net rating since January",
+        "Warriors defensive rating last 10 games",
+        "Warriors pace on the road",
+    ],
+)
+def test_windowed_single_team_advanced_scalars_stay_unsupported(query):
+    parsed = parse_query(query)
+
+    assert parsed["route"] == "game_summary"
     assert parsed["route_kwargs"]["unsupported_filters"] == ["single_team_advanced_stat_summary"]
 
 

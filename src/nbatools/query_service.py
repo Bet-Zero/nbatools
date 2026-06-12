@@ -789,6 +789,60 @@ def _record_suffix(games: Any) -> str:
     return f", going {wins}-{losses}"
 
 
+_TEAM_ADVANCED_SCALAR_LABELS = {
+    "off_rating": "offensive rating",
+    "def_rating": "defensive rating",
+    "net_rating": "net rating",
+    "pace": "pace",
+}
+
+
+def _ordinal(n: int) -> str:
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def _add_team_advanced_scalar_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Answer phrase for single-team advanced-stat scalar asks.
+
+    "wolves defensive rating" routes to the full team leaderboard; the
+    headline pinpoints the asked team's value and league rank.
+    """
+    if metadata.get("route") != "season_team_leaders":
+        return
+    stat = metadata.get("stat")
+    team = _clean_text(metadata.get("team"))
+    if not team or stat not in _TEAM_ADVANCED_SCALAR_LABELS:
+        return
+    if not isinstance(result, LeaderboardResult) or result.leaders.empty:
+        return
+    leaders = result.leaders
+    if "team_abbr" not in leaders.columns or stat not in leaders.columns:
+        return
+    match = leaders[leaders["team_abbr"].astype(str).str.upper() == team.upper()]
+    if match.empty:
+        return
+    row = match.iloc[0]
+    value = row[stat]
+    try:
+        rank = int(row["rank"]) if "rank" in leaders.columns else int(match.index[0]) + 1
+    except (TypeError, ValueError):
+        return
+    team_label = _clean_text(row.get("team_name")) or team
+    season = metadata.get("season")
+    season_type = (metadata.get("season_type") or "Regular Season").lower()
+    context = f"in the {season} {season_type}" if season else f"in the {season_type}"
+    label = _TEAM_ADVANCED_SCALAR_LABELS[stat]
+    article = "an" if label[0] in "aeiou" else "a"
+    metadata["answer_phrase"] = (
+        f"The {team_label} have {article} {label} of {_format_one_decimal(float(value))} "
+        f"({_ordinal(rank)} of {len(leaders)}) {context}."
+    )
+
+
 def _add_game_summary_answer_metadata(metadata: dict[str, Any], result: Any) -> None:
     if not isinstance(result, SummaryResult) or metadata.get("route") != "game_summary":
         return
@@ -1381,6 +1435,7 @@ def execute_natural_query(query: str) -> QueryResult:
             result.games,
         )
     _add_game_summary_answer_metadata(metadata, result)
+    _add_team_advanced_scalar_answer_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(

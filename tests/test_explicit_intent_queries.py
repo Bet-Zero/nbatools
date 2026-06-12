@@ -383,6 +383,38 @@ class TestRouteSelection:
         parsed = parse_query("Jokic recent form")
         assert parsed["fuzzy_date_window"] is False
 
+    def test_single_team_advanced_scalar_routes_to_team_leaders(self):
+        # "wolves defensive rating" answers from the full team leaderboard
+        # so the scalar arrives with its league rank.
+        parsed = parse_query("wolves defensive rating")
+        assert parsed["route"] == "season_team_leaders"
+        assert parsed["route_kwargs"].get("stat") == "def_rating"
+        # def_rating ranks ascending: lowest is best.
+        assert parsed["route_kwargs"].get("ascending") is True
+
+    def test_single_team_pace_routes_to_team_leaders(self):
+        parsed = parse_query("kings pace this season")
+        assert parsed["route"] == "season_team_leaders"
+        assert parsed["route_kwargs"].get("stat") == "pace"
+        assert parsed["route_kwargs"].get("ascending") is False
+
+    def test_windowed_team_advanced_scalar_still_refuses(self):
+        parsed = parse_query("wolves defensive rating since January")
+        assert parsed["route"] == "game_summary"
+        assert "single_team_advanced_stat_summary" in (
+            parsed["route_kwargs"].get("unsupported_filters") or []
+        )
+
+    def test_league_threshold_games_route(self):
+        parsed = parse_query("who dropped 40 this week")
+        assert parsed["route"] == "top_player_games"
+        assert parsed["route_kwargs"].get("min_value") == 40.0
+        assert parsed["route_kwargs"].get("stat") == "pts"
+
+    def test_league_threshold_does_not_steal_leaderboards(self):
+        parsed = parse_query("who leads the league in scoring")
+        assert parsed["route"] == "season_leaders"
+
     def test_team_leaderboard_rank(self):
         parsed = parse_query("rank teams by net rating 2024-25")
         assert parsed["route"] == "season_team_leaders"
@@ -578,6 +610,19 @@ class TestCountResult:
         qr = execute_natural_query("how many 30 point games has Jokic had 2024-25")
         assert isinstance(qr.result, CountResult)
         assert qr.result.count == len(qr.result.games)
+
+    def test_team_advanced_scalar_answer_phrase(self):
+        qr = execute_natural_query("celtics net rating")
+        md = qr.metadata or {}
+        phrase = md.get("answer_phrase") or ""
+        assert "net rating" in phrase
+        assert "of 30" in phrase
+        assert "Celtics" in phrase
+
+    def test_league_threshold_games_all_meet_threshold(self):
+        qr = execute_natural_query("who scored 50+ points this season")
+        assert isinstance(qr.result, LeaderboardResult)
+        assert (qr.result.leaders["pts"] >= 50).all()
 
     def test_count_result_sections_dict(self):
         import pandas as pd

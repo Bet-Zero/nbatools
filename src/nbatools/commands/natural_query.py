@@ -2328,11 +2328,37 @@ def _finalize_route(parsed: dict) -> dict:
             "end_date": end_date,
             "opponent_division": opponent_division,
         }
+    elif (
+        _single_team_advanced_stat_summary_boundary(parsed)
+        and not start_date
+        and not end_date
+        and not start_season
+        and not end_season
+        and not opponent
+        and not (home_only or away_only or wins_only or losses_only)
+        and last_n is None
+    ):
+        # Single-team season advanced-stat scalar ("wolves defensive
+        # rating"): answer from the full team leaderboard so the value
+        # arrives with its league rank.
+        route = "season_team_leaders"
+        notes.append(
+            "single_team_advanced_stat: answered from the full team "
+            "leaderboard with league rank context"
+        )
+        route_kwargs = {
+            "season": season,
+            "stat": stat,
+            "limit": 30,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": stat in LOWER_IS_BETTER_STATS,
+        }
     elif _single_team_advanced_stat_summary_boundary(parsed):
         route = "game_summary"
         notes.append(
-            "unsupported_boundary: single-team advanced-stat summaries are not "
-            "supported until a route/result contract is approved"
+            "unsupported_boundary: single-team advanced-stat summaries with "
+            "date windows or game filters are not supported"
         )
         route_kwargs = {
             "season": season,
@@ -2380,6 +2406,41 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         notes.append("specific_date_top_scorer: using game-level top performances")
+    elif (
+        not player
+        and not team
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and stat is not None
+        and min_value is not None
+        and not leaderboard_intent
+        and not team_leaderboard_intent
+        and not occurrence_event
+        and re.search(r"^\s*(?:who|which\s+players?)\b", q)
+    ):
+        # League-wide threshold games: "who dropped 40 this week",
+        # "who scored 40+ points this season" — list every qualifying
+        # game, not a capped top-10.
+        route = "top_player_games"
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": stat,
+            "limit": 100,
+            "season_type": season_type,
+            "ascending": False,
+            "start_date": start_date,
+            "end_date": end_date,
+            "min_value": min_value,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "opponent": opponent,
+        }
+        notes.append("league_threshold_games: listing all games at or above the threshold")
     elif (
         not player
         and not team
