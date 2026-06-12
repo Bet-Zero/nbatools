@@ -6,6 +6,7 @@ belong in the durable documentation map.
 
 ## Start Here
 
+0. [`reference/owner_guide.md`](reference/owner_guide.md) - plain-language guide to how the whole system works, written for the human owner
 1. [`reference/quick_query_guide.md`](reference/quick_query_guide.md) - quick-start examples
 2. [`reference/current_state_guide.md`](reference/current_state_guide.md) - verified shipped behavior
 3. [`reference/query_catalog.md`](reference/query_catalog.md) - living catalog of supported query types and phrasing
@@ -30,6 +31,7 @@ belong in the durable documentation map.
 
 Current-state documentation, verified behavior, and data contracts.
 
+- [`reference/owner_guide.md`](reference/owner_guide.md) - plain-language system overview for the human owner
 - [`reference/current_state_guide.md`](reference/current_state_guide.md) - verified shipped behavior
 - [`reference/quick_query_guide.md`](reference/quick_query_guide.md) - shortest path to trying queries
 - [`reference/query_catalog.md`](reference/query_catalog.md) - supported query inventory and explicit boundaries
