@@ -614,6 +614,16 @@ def _build_query_metadata(
     if alternates:
         meta["alternates"] = alternates
 
+    # Day-window queries ("yesterday", "this week") are anchored to the
+    # data's latest day; say so whether the window matched games or not.
+    if parsed.get("fuzzy_date_window") and meta.get("current_through"):
+        existing = meta.get("notes") or []
+        meta["notes"] = list(existing) + [
+            f"data is current through {meta['current_through']}; day-based "
+            f"windows like 'yesterday' or 'this week' are anchored to that "
+            f"date, not today"
+        ]
+
     return meta
 
 

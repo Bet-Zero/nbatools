@@ -80,11 +80,16 @@ Lock each into the corpus. Coverage climbs session by session.
 
 ## Phase 4 — New answer types, deliberately
 
-The battery will surface a short list of genuinely missing answer kinds
-(likely candidates: a championships answer for "rings" questions, a yes/no
-"did X make the playoffs"). For each one the owner decides: build it, or
-refuse it forever. What gets built goes through the existing promotion
-rules. Nothing gets built just because someone asked.
+The battery surfaces genuinely missing answer kinds (championships/"rings",
+rookie leaderboards, bench scoring, team defensive rating and pace, clutch
+record, league-wide threshold windows like "who dropped 40 this week").
+Owner's standing call: every legitimate NBA query/stat gets built
+eventually — refusals are temporary boundaries, not permanent decisions.
+The list is a prioritized build queue. Two rules keep it sane: build
+smartly (each through the existing promotion rules, refusing honestly
+until its turn), and never let coverage expansion become the only thing
+being worked on — trust, honesty, data, and product quality advance
+alongside it.
 
 ## Phase 5 — Wake the data (one session, whenever)
 

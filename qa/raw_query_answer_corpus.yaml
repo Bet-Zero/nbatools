@@ -7828,3 +7828,65 @@ cases:
       - path: result.metadata.player
         equals: Stephen Curry
     review_notes: "'how many threes' asks for the number of threes (stat total), never a count of games."
+
+  - id: fan_lebron_rings_boundary
+    query: "how many rings does lebron have"
+    category: unsupported_boundary
+    priority: p0
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: championship_count
+    review_notes: "Ring/championship counts must refuse explicitly, never answer with a count of games."
+
+  - id: fan_lakers_play_next_boundary
+    query: "when do the lakers play next"
+    category: unsupported_boundary
+    priority: p0
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: schedule_lookup
+    review_notes: "Future-schedule questions must refuse explicitly, never return past games as if they answered."
+
+  - id: fan_playoff_stats_this_year_honest_season
+    query: "Jokic playoff stats this year"
+    category: player_summary
+    priority: p0
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_summary
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2025-26
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "'this year' + playoffs must mean the current season's playoffs, never silently substitute 2024-25. Expected to flip to ok when 2025-26 playoff data is loaded — update expectations then."
+
+  - id: fan_unanchored_playoffs_default_note
+    query: "kyrie points in the playoffs"
+    category: player_game_finder
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.season
+        equals: 2024-25
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Unanchored playoff asks default to the most recent completed playoffs and must say so in notes. Kyrie Irving played no 2024-25 playoff games (injury), so the empty result is an honest zero."

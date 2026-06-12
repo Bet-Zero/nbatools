@@ -347,6 +347,42 @@ class TestRouteSelection:
         parsed = parse_query("Who has the best 3 point percentage this season?")
         assert parsed["route"] == "season_leaders"
 
+    def test_rings_question_refuses(self):
+        # Championship counts are not in the game-stats data; never answer
+        # with a count of games.
+        parsed = parse_query("how many rings does lebron have")
+        assert parsed["route"] is None
+        assert parsed["intent"] == "unsupported"
+
+    def test_schedule_question_refuses(self):
+        parsed = parse_query("when do the lakers play next")
+        assert parsed["route"] is None
+        assert parsed["intent"] == "unsupported"
+
+    def test_when_did_player_score_still_answers(self):
+        # Past-tense "when did" questions are answerable; only future
+        # schedule shapes refuse.
+        parsed = parse_query("when did jokic score 40")
+        assert parsed["route"] == "player_game_finder"
+
+    def test_this_year_playoffs_means_current_season(self):
+        # Never silently substitute the previous completed playoffs for an
+        # explicit current-season ask.
+        parsed = parse_query("Jokic playoff stats this year")
+        assert parsed["season"] == "2025-26"
+        assert parsed["season_type"] == "Playoffs"
+
+    def test_unanchored_playoffs_default_carries_note(self):
+        parsed = parse_query("kyrie points in the playoffs")
+        assert parsed["season"] == "2024-25"
+        assert any("defaulted" in n for n in parsed.get("notes") or [])
+
+    def test_fuzzy_day_window_sets_flag(self):
+        parsed = parse_query("bron points last night")
+        assert parsed["fuzzy_date_window"] is True
+        parsed = parse_query("Jokic recent form")
+        assert parsed["fuzzy_date_window"] is False
+
     def test_team_leaderboard_rank(self):
         parsed = parse_query("rank teams by net rating 2024-25")
         assert parsed["route"] == "season_team_leaders"

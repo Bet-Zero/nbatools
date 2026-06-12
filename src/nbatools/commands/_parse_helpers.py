@@ -202,6 +202,31 @@ def detect_award_query_boundary(text: str) -> bool:
     )
 
 
+def detect_championship_count_boundary(text: str) -> bool:
+    """Detect championship/ring/title questions the game-stats contract cannot answer.
+
+    "how many rings does lebron have" must refuse honestly, never answer
+    with a count of games.
+    """
+    return bool(re.search(r"\b(?:rings?|championships?|titles?)\b", text))
+
+
+def detect_schedule_lookup_boundary(text: str) -> bool:
+    """Detect future-schedule questions (next game, when do they play).
+
+    The engine answers questions about played games only; schedule
+    lookups must refuse honestly, never return past games.
+    """
+    return bool(
+        re.search(
+            r"\bplay(?:ing)?\s+next\b|\bnext\s+game\b|\bupcoming\s+games?\b"
+            r"|\bwhen\s+(?:do|does|is|are)\b[\w\s'\-]*\bplay(?:ing)?\b"
+            r"|\bwhat\s+time\b|\bschedule\b",
+            text,
+        )
+    )
+
+
 def detect_opponent_conference(text: str) -> str | None:
     """Extract a normalized opponent-conference filter from supported phrasing."""
     patterns = [

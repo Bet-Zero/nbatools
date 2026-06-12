@@ -18,6 +18,7 @@ from nbatools.commands._date_utils import (
     MONTH_NAME_TO_NUM,
     extract_date_range,
     has_explicit_calendar_date,
+    uses_fuzzy_date_term,
 )
 from nbatools.commands._default_rules import (
     metric_only_leaderboard_default,
@@ -102,6 +103,9 @@ from nbatools.commands._parse_helpers import (
     detect_career_intent as detect_career_intent,
 )
 from nbatools.commands._parse_helpers import (
+    detect_championship_count_boundary as detect_championship_count_boundary,
+)
+from nbatools.commands._parse_helpers import (
     detect_clutch as detect_clutch,
 )
 from nbatools.commands._parse_helpers import (
@@ -163,6 +167,9 @@ from nbatools.commands._parse_helpers import (
 )
 from nbatools.commands._parse_helpers import (
     detect_rookie_leaderboard_boundary as detect_rookie_leaderboard_boundary,
+)
+from nbatools.commands._parse_helpers import (
+    detect_schedule_lookup_boundary as detect_schedule_lookup_boundary,
 )
 from nbatools.commands._parse_helpers import (
     detect_season_high_intent as detect_season_high_intent,
@@ -836,6 +843,8 @@ def _build_parse_state(query: str) -> dict:
     role_leaderboard_boundary = detect_role_leaderboard_boundary(q)
     team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
     award_query_boundary = detect_award_query_boundary(q)
+    championship_count_boundary = detect_championship_count_boundary(q)
+    schedule_lookup_boundary = detect_schedule_lookup_boundary(q)
     opponent_conference = detect_opponent_conference(q)
     opponent_conference_boundary = opponent_conference is not None
     opponent_conference_geography_boundary = detect_opponent_conference_geography_boundary(q)
@@ -1103,6 +1112,7 @@ def _build_parse_state(query: str) -> dict:
                 anchor_date = ct_ts
 
     start_date, end_date = extract_date_range(q, season, anchor_date=anchor_date)
+    fuzzy_date_window = bool((start_date or end_date) and uses_fuzzy_date_term(q))
     stretch_display_mode = _stretch_display_mode(q, player)
 
     explicit_single_season = extract_season(q)
@@ -1158,6 +1168,9 @@ def _build_parse_state(query: str) -> dict:
         "role_leaderboard_boundary": role_leaderboard_boundary,
         "team_bench_scoring_boundary": team_bench_scoring_boundary,
         "award_query_boundary": award_query_boundary,
+        "championship_count_boundary": championship_count_boundary,
+        "schedule_lookup_boundary": schedule_lookup_boundary,
+        "fuzzy_date_window": fuzzy_date_window,
         "opponent_conference": opponent_conference,
         "opponent_conference_boundary": opponent_conference_boundary,
         "opponent_conference_geography_boundary": opponent_conference_geography_boundary,
@@ -1353,6 +1366,8 @@ def _finalize_route(parsed: dict) -> dict:
     role_leaderboard_boundary = parsed.get("role_leaderboard_boundary", False)
     team_bench_scoring_boundary = parsed.get("team_bench_scoring_boundary", False)
     award_query_boundary = parsed.get("award_query_boundary", False)
+    championship_count_boundary = parsed.get("championship_count_boundary", False)
+    schedule_lookup_boundary = parsed.get("schedule_lookup_boundary", False)
     opponent_conference = parsed.get("opponent_conference")
     opponent_conference_boundary = parsed.get("opponent_conference_boundary", False)
     opponent_conference_geography_boundary = parsed.get(
@@ -1390,6 +1405,29 @@ def _finalize_route(parsed: dict) -> dict:
     ):
         summary_intent = True
         parsed["summary_intent"] = True
+
+    # Playoff season honesty: never silently substitute the previous
+    # completed playoffs for an explicit current-season ask, and say so
+    # when an unanchored playoff ask falls back to the default.
+    if (
+        season_type == "Playoffs"
+        and season is not None
+        and season == default_season_for_context("Playoffs")
+        and extract_season(q) is None
+        and not parsed.get("explicit_relative_season")
+    ):
+        if re.search(r"\bthis\s+(?:year|season)\b|\bcurrent\s+season\b", q):
+            season = default_season_for_context("Regular Season")
+            parsed["season"] = season
+            notes.append(
+                f"current-season playoffs requested: showing the {season} "
+                f"playoffs; an empty result means no {season} playoff data is loaded"
+            )
+        else:
+            notes.append(
+                f"no season specified: defaulted to the {season} playoffs, "
+                f"the most recent completed playoffs in the data"
+            )
 
     # -- Occurrence event: propagate stat/min_value when occurrence event is
     #    detected and no explicit threshold conditions were parsed.  This lets
@@ -1488,6 +1526,48 @@ def _finalize_route(parsed: dict) -> dict:
         out["notes"] = [
             "unsupported_boundary: NBA awards and award winners are not supported "
             "by the current stats query contract"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if championship_count_boundary:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["championship_count"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: championship, ring, and title counts are not "
+            "in the game-stats data; the engine answers game-level stat questions"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if schedule_lookup_boundary:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["schedule_lookup"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: future schedule lookups are not supported; "
+            "the engine answers questions about games already played"
         ]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)

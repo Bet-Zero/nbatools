@@ -146,6 +146,15 @@ def _extract_since_explicit_calendar_date(
     return start, end
 
 
+def uses_fuzzy_date_term(text: str) -> bool:
+    """True when the text uses a day-anchored fuzzy window (yesterday,
+    last night, today, this week, last N days). Empty results for these
+    need a data-currency explanation."""
+    if any(re.search(term.regex, text) for term in FUZZY_DATE_TERMS):
+        return True
+    return bool(re.search(r"\blast\s+\d+\s+days?\b", text))
+
+
 def extract_date_range(
     text: str,
     season: str | None,
