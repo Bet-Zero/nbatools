@@ -1377,6 +1377,20 @@ def _finalize_route(parsed: dict) -> dict:
     route = None
     route_kwargs = None
 
+    # "<team> when <player> <condition>" ("knicks when brunson scores 30")
+    # is a record-shaped ask even without the word "record" — answer with
+    # the summary (record + averages) like the triple-double phrasing
+    # does, not with a game list.
+    if (
+        team
+        and player
+        and not summary_intent
+        and re.search(r"\bwhen\b", q)
+        and (min_value is not None or occurrence_event)
+    ):
+        summary_intent = True
+        parsed["summary_intent"] = True
+
     # -- Occurrence event: propagate stat/min_value when occurrence event is
     #    detected and no explicit threshold conditions were parsed.  This lets
     #    "how many 40 point games" correctly set stat=pts, min_value=40 even

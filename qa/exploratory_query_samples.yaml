@@ -3,6 +3,9 @@ version: 1
 # Exploratory samples are input-only. Do not add expected_status,
 # expected_route, hard_assertions, or Raw QA acceptance metadata here.
 samples:
+  - id: jokic_scoring_average_guard_misfire
+    query: "Jokic scoring average"
+
   - id: jokic_triple_double_record
     query: "What is Denver's record when Nikola Jokic has a triple-double?"
 

@@ -47,6 +47,27 @@ class TestResolvePlayer:
         assert r.is_confident
         assert r.resolved == "Shai Gilgeous-Alexander"
 
+    def test_shai_resolves(self):
+        r = resolve_player("shai")
+        assert r.is_confident
+        assert r.resolved == "Shai Gilgeous-Alexander"
+
+    def test_dbook_resolves(self):
+        r = resolve_player("dbook")
+        assert r.is_confident
+        assert r.resolved == "Devin Booker"
+
+    def test_unique_first_name_index(self):
+        from nbatools.commands.entity_resolution import _get_player_first_name_index
+
+        idx = _get_player_first_name_index()
+        assert idx.get("shai") == ["Shai Gilgeous-Alexander"]
+
+    def test_shared_first_name_stays_ambiguous(self):
+        # Shared first names ("jalen") must never auto-resolve.
+        r = resolve_player("jalen")
+        assert not r.is_confident
+
     def test_kd_resolves(self):
         r = resolve_player("kd")
         assert r.is_confident

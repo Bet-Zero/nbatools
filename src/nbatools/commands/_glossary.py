@@ -32,6 +32,9 @@ class FuzzyTimeTerm:
 FUZZY_LAST_N_TERMS: dict[str, int] = {
     "recently": 10,
     "lately": 10,
+    # "last game" is a one-game window, not a date phrase — "wemby blocks
+    # last game" must not silently return a full-season list.
+    "last game": 1,
 }
 
 # --- date-range expansions (resolve to ``extract_date_range``) ---
@@ -57,6 +60,8 @@ FUZZY_DATE_TERMS: list[DateRangeTerm] = [
     DateRangeTerm(regex=r"\b(?:past|last)\s+month\b", days_back=30),
     # `last couple weeks` / `past 2 weeks` / `past few weeks` → rolling 14 days
     DateRangeTerm(regex=r"\b(?:past|last)\s+(?:couple|couple\s+of|few|2)\s+weeks?\b", days_back=14),
+    # `this week` / `this past week` / `past week` → rolling 7 days
+    DateRangeTerm(regex=r"\b(?:this\s+(?:past\s+)?|past\s+|last\s+)week\b", days_back=7),
 ]
 
 

@@ -72,6 +72,12 @@ _LEADERBOARD_ONLY: dict[str, str] = {
 LEADERBOARD_STAT_ALIASES: dict[str, str] = {**STAT_ALIASES, **_LEADERBOARD_ONLY}
 
 TEAM_LEADERBOARD_STAT_ALIASES: dict[str, str] = {
+    # Team three-point shooting phrasing must rank by 3P%, not points.
+    # Generic "3 point percentage" stays player-flavored (season_leaders).
+    "3pt shooting": "fg3_pct",
+    "3 point shooting": "fg3_pct",
+    "three point shooting": "fg3_pct",
+    "three-point shooting": "fg3_pct",
     "best offensive teams": "off_rating",
     "offensive teams": "off_rating",
     "best offense": "off_rating",

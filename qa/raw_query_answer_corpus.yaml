@@ -7691,3 +7691,140 @@ cases:
       - path: result.sections.streak.0.streak_length
         equals: 14
     review_notes: "Public acceptance Wave 2C: sentence-form longest streak routes to player_streak_finder."
+
+  - id: shai_points_per_game
+    query: "Shai points per game"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Shai Gilgeous-Alexander
+    review_notes: "Common nickname plus per-game-average phrasing must reach the averages summary, not a game-list finder."
+
+  - id: how_many_points_average_summary
+    query: "how many points does Nikola Jokic average"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Nikola Jokić
+    review_notes: "'how many ... average' asks for a per-game rate; must not be answered as a count of games."
+
+  - id: fan_wemby_blocks_last_game
+    query: "wemby blocks last game"
+    category: player_game_finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: game_log_table
+    expected_sections:
+      - finder
+    expected_row_counts:
+      finder: 1
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Victor Wembanyama
+    review_notes: "'last game' is a one-game window; must never return a full-season list."
+
+  - id: fan_dbook_last_game_stats
+    query: "dbook last game stats"
+    category: player_summary
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Devin Booker
+    review_notes: "'dbook' nickname must resolve; 'last game stats' is a one-game summary."
+
+  - id: fan_knicks_when_brunson_scores_30
+    query: "knicks when brunson scores 30"
+    category: record_when_player_condition
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Jalen Brunson
+      - path: result.metadata.team
+        equals: NYK
+      - path: result.metadata.min_value
+        equals: 30.0
+    review_notes: "'<team> when <player> scores N' is a record-shaped ask; threshold must be applied, not dropped."
+
+  - id: fan_wemby_20_10_games
+    query: "wemby 20 10 games"
+    category: player_game_finder
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: game_log_table
+    expected_sections:
+      - finder
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Victor Wembanyama
+      - path: result.metadata.conditions.0.stat
+        equals: pts
+      - path: result.metadata.conditions.0.min_value
+        equals: 20.0
+      - path: result.metadata.conditions.1.stat
+        equals: reb
+      - path: result.metadata.conditions.1.min_value
+        equals: 10.0
+    review_notes: "Fan combo shorthand '20 10 games' means 20+ points and 10+ rebounds; both thresholds must apply."
+
+  - id: fan_best_3pt_shooting_team
+    query: "best 3pt shooting team"
+    category: team_leaderboard
+    priority: p0
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: fg3_pct
+    review_notes: "Three-point shooting phrasing must rank by 3P%, never silently fall back to points."
+
+  - id: fan_curry_threes_total
+    query: "how many threes did curry hit"
+    category: player_game_log_count
+    priority: p0
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_sections:
+      - count
+      - finder
+    hard_assertions:
+      - path: result.metadata.player
+        equals: Stephen Curry
+    review_notes: "'how many threes' asks for the number of threes (stat total), never a count of games."

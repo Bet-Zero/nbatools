@@ -963,6 +963,52 @@ def extract_threshold_conditions(text: str) -> list[dict]:
                     }
                 )
 
+    # Fan-verb scoring thresholds with implied points: "when brunson
+    # scores 30", "dropped 40", "puts up 25+". An explicit stat word after
+    # the number ("drops 12 assists") keeps that stat instead of points.
+    verb_pattern = (
+        rf"\b(?:scores?|scored|drops?|dropped|puts?\s+up|put\s+up)\s+"
+        rf"(\d{{1,3}})\s*\+?(?:\s+{STAT_PATTERN})?"
+    )
+    for m in re.finditer(verb_pattern, text):
+        stat_text = m.group(2) if (m.lastindex or 0) >= 2 else None
+        stat = (detect_stat(stat_text) if stat_text else None) or "pts"
+        min_value = _normalize_threshold_value(m.group(1), stat)
+        matches.append(
+            {
+                "start": m.start(),
+                "end": m.end(),
+                "stat": stat,
+                "min_value": min_value,
+                "max_value": None,
+                # Normalize trailing "+" / whitespace so equivalent
+                # phrasings ("scores 35 or more" / "scores 35+") record
+                # identical condition text.
+                "text": m.group(0).rstrip(" +"),
+            }
+        )
+
+    # Fan combo shorthand: "20 10 games" / "20 and 10 games" / "20/10
+    # games" = 20+ points and 10+ rebounds.
+    for m in re.finditer(
+        r"(?<!\bbetween )\b(\d{1,2})\s*(?:and\s+|/\s*)?(\d{1,2})\s+games?\b", text
+    ):
+        pts_value = int(m.group(1))
+        reb_value = int(m.group(2))
+        if not (10 <= pts_value <= 60 and 5 <= reb_value <= 30 and pts_value >= reb_value):
+            continue
+        for combo_stat, combo_value in (("pts", pts_value), ("reb", reb_value)):
+            matches.append(
+                {
+                    "start": m.start(),
+                    "end": m.end(),
+                    "stat": combo_stat,
+                    "min_value": float(combo_value),
+                    "max_value": None,
+                    "text": m.group(0),
+                }
+            )
+
     matches.extend(_extract_shooting_percentage_conditions(text))
 
     matches.sort(key=lambda x: x["start"])
@@ -1579,6 +1625,10 @@ def wants_summary(text: str) -> bool:
         # Preserve pre-existing `form` / `recent form` detection, but guard
         # with a word boundary so substrings like `perform` do not count.
         return True
+    # Per-game-average phrasing ("points per game", "Jokic ppg") asks for
+    # averages, not a game list.
+    if re.search(r"\bper\s+game\b|\bppg\b|\brpg\b|\bapg\b", text):
+        return True
     return False
 
 
@@ -1603,6 +1653,10 @@ def wants_count(text: str) -> bool:
     Triggers on phrases like 'how many', 'how often', 'count', 'number of',
     'total number', 'total count', 'total games'.
     """
+    # "how many points does X average" asks for a per-game rate, not a
+    # count of games — that is summary intent, handled by wants_summary.
+    if re.search(r"\bhow\s+many\b[\w\s'\-]*\b(?:do|does|did)\b[\w\s'\-]*\baverages?\b", text):
+        return False
     return bool(
         re.search(
             r"\b(how\s+many|how\s+often|count|number\s+of|total\s+(?:number|count|games))\b",

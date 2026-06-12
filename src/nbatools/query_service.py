@@ -642,6 +642,47 @@ def _merge_metadata_notes(metadata: dict[str, Any], result_notes: list[str]) -> 
         metadata["notes"] = merged
 
 
+# Stats whose per-game values can be meaningfully summed into a season
+# total for "how many <stat> did <player> ..." asks. Percentage and rating
+# stats must never be summed.
+_SUMMABLE_COUNT_STATS = {
+    "pts",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "fg3m",
+    "tov",
+    "fgm",
+    "ftm",
+    "oreb",
+    "dreb",
+}
+
+
+def _stat_total_count(parsed: dict, games: Any) -> int | None:
+    """Total of a stat across matched games for bare-stat count asks.
+
+    "how many threes did curry hit" asks for the number of threes, not the
+    number of games. Fires only for a bare summable stat with no
+    thresholds, no occurrence event, and no explicit "games" wording —
+    "how many 30 point games" keeps counting games.
+    """
+    stat = parsed.get("stat")
+    if not isinstance(stat, str) or stat not in _SUMMABLE_COUNT_STATS:
+        return None
+    if parsed.get("min_value") is not None or parsed.get("max_value") is not None:
+        return None
+    if parsed.get("occurrence_event") or parsed.get("conditions"):
+        return None
+    query_text = parsed.get("normalized_query") or ""
+    if re.search(r"\bgames?\b", query_text):
+        return None
+    if games is None or not hasattr(games, "columns") or stat not in games.columns:
+        return None
+    return int(games[stat].sum())
+
+
 def _build_count_phrase(
     count: int,
     parsed: dict,
@@ -666,6 +707,20 @@ def _build_count_phrase(
         )
 
     entity = player or _team_subject(metadata) or "Result"
+
+    # Stat totals read as the stat itself ("has made 247 threes"), not as
+    # a count of games.
+    if parsed.get("count_kind") == "stat_total":
+        stat = parsed.get("stat") or ""
+        stat_name = stat_phrase_label(stat)
+        if count == 1 and stat_name.endswith("s"):
+            stat_name = stat_name[:-1]
+        verb = {"fg3m": "has made", "fgm": "has made", "ftm": "has made", "pts": "has scored"}.get(
+            stat, "has recorded"
+        )
+        context = _count_context(metadata, player=bool(player))
+        return f"{entity} {verb} {count} {stat_name} {context}."
+
     conditions = normalize_stat_conditions(metadata.get("conditions") or parsed.get("conditions"))
     if len(conditions) >= 2:
         occurrence = _compound_occurrence_label(conditions)
@@ -1201,8 +1256,11 @@ def execute_natural_query(query: str) -> QueryResult:
 
     # Post-process: convert FinderResult → CountResult when count intent detected
     if count_intent and isinstance(result, FinderResult):
+        stat_total = _stat_total_count(parsed, result.games)
+        if stat_total is not None:
+            parsed["count_kind"] = "stat_total"
         result = CountResult(
-            count=len(result.games),
+            count=stat_total if stat_total is not None else len(result.games),
             games=result.games,
             result_status=result.result_status,
             result_reason=result.result_reason,

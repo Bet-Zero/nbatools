@@ -82,6 +82,7 @@ CURATED_PLAYER_ALIASES: dict[str, str] = {
 PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     # Initials / acronyms
     "sga": "Shai Gilgeous-Alexander",
+    "shai": "Shai Gilgeous-Alexander",
     "kd": "Kevin Durant",
     "cp3": "Chris Paul",
     "ad": "Anthony Davis",
@@ -108,6 +109,7 @@ PLAYER_NICKNAME_ALIASES: dict[str, str] = {
     "chef curry": "Stephen Curry",
     "dame": "Damian Lillard",
     "dame time": "Damian Lillard",
+    "dbook": "Devin Booker",
     "bam": "Bam Adebayo",
     "kat": "Karl-Anthony Towns",
     "melo": "Carmelo Anthony",
@@ -642,6 +644,7 @@ def _build_player_index(data_dir: Path | None = None) -> dict[str, list[str]]:
 _player_last_name_index: dict[str, list[str]] | None = None
 _player_full_name_index: dict[str, str] | None = None
 _player_full_name_keys: tuple[str, ...] | None = None
+_player_first_name_index: dict[str, list[str]] | None = None
 _player_names_cache: set[str] | None = None
 
 
@@ -666,6 +669,38 @@ def _get_player_full_name_index() -> dict[str, str]:
     return _player_full_name_index
 
 
+def _build_player_first_name_index(data_dir: Path | None = None) -> dict[str, list[str]]:
+    """Build a first-name → list[full-name] index from player game stats CSVs.
+
+    A unique first name ("shai", "giannis") identifies its player as well
+    as a unique last name does; shared first names ("anthony", "jalen")
+    stay ambiguous and never auto-resolve.
+    """
+    first_name_index: dict[str, list[str]] = {}
+    for name in sorted(_read_player_names(data_dir)):
+        parts = name.strip().split()
+        if len(parts) < 2:
+            continue
+        key = _strip_accents(parts[0]).lower()
+        if len(key) < 3:
+            # Initials-style first names ("CJ", "TJ") are curated aliases,
+            # not data-driven lookups.
+            continue
+        if key not in first_name_index:
+            first_name_index[key] = []
+        if name not in first_name_index[key]:
+            first_name_index[key].append(name)
+    return first_name_index
+
+
+def _get_player_first_name_index() -> dict[str, list[str]]:
+    """Get (or build) the cached player first-name index."""
+    global _player_first_name_index
+    if _player_first_name_index is None:
+        _player_first_name_index = _build_player_first_name_index()
+    return _player_first_name_index
+
+
 def _get_player_full_name_keys() -> tuple[str, ...]:
     """Return data-backed full names sorted longest-first for query scanning."""
     global _player_full_name_keys
@@ -679,11 +714,12 @@ def _get_player_full_name_keys() -> tuple[str, ...]:
 def reset_player_index() -> None:
     """Force rebuild of the player index (for testing)."""
     global _player_last_name_index, _player_full_name_index, _player_full_name_keys
-    global _player_names_cache
+    global _player_names_cache, _player_first_name_index
     _player_last_name_index = None
     _player_full_name_index = None
     _player_full_name_keys = None
     _player_names_cache = None
+    _player_first_name_index = None
 
 
 # ---------------------------------------------------------------------------
@@ -944,6 +980,18 @@ def resolve_player(text: str) -> ResolutionResult:
                 return _confident(candidates[0], source="last_name")
             if len(candidates) > 1:
                 return _ambiguous(candidates, source="last_name")
+
+    # 6. Data-driven first-name lookup (single word). A unique first name
+    # ("shai") identifies its player as well as a unique last name does;
+    # shared first names ("anthony") stay ambiguous and never auto-resolve.
+    if len(words) == 1:
+        first_name = words[0]
+        index = _get_player_first_name_index()
+        candidates = index.get(first_name, [])
+        if len(candidates) == 1:
+            return _confident(candidates[0], source="first_name")
+        if len(candidates) > 1:
+            return _ambiguous(candidates, source="first_name")
 
     return _no_match()
 

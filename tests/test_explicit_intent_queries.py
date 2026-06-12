@@ -111,6 +111,11 @@ class TestWantsCount:
     def test_total_count(self):
         assert wants_count("total count of wins vs heat")
 
+    def test_no_count_for_average_rate(self):
+        # "how many points does X average" asks for a per-game rate,
+        # not a count of games.
+        assert not wants_count("how many points does jokic average")
+
     def test_no_count_for_list(self):
         assert not wants_count("show me jokic games")
 
@@ -138,6 +143,15 @@ class TestWantsSummary:
 
     def test_record(self):
         assert wants_summary("celtics record vs heat since 2020")
+
+    def test_points_per_game(self):
+        assert wants_summary("jokic points per game")
+
+    def test_ppg_shorthand(self):
+        assert wants_summary("jokic ppg")
+
+    def test_rpg_shorthand(self):
+        assert wants_summary("jokic rpg this season")
 
     def test_no_summary_for_finder(self):
         assert not wants_summary("show me jokic games with 30 points")
@@ -283,6 +297,54 @@ class TestRouteSelection:
 
     def test_leaderboard_rank_routes_correctly(self):
         parsed = parse_query("rank players by ppg 2024-25")
+        assert parsed["route"] == "season_leaders"
+
+    def test_points_per_game_routes_to_summary(self):
+        parsed = parse_query("Shai points per game")
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["player"] == "Shai Gilgeous-Alexander"
+
+    def test_how_many_average_routes_to_summary(self):
+        parsed = parse_query("how many points does Jokic average")
+        assert parsed["route"] == "player_game_summary"
+
+    def test_per_game_leaderboard_still_routes_to_leaders(self):
+        # "per game" must not drag leaderboard questions into a
+        # single-player summary.
+        parsed = parse_query("who leads the NBA in points per game this season")
+        assert parsed["route"] == "season_leaders"
+
+    def test_last_game_is_one_game_window(self):
+        parsed = parse_query("wemby blocks last game")
+        assert parsed["route"] == "player_game_finder"
+        assert parsed["route_kwargs"].get("last_n") == 1
+
+    def test_team_when_player_scores_routes_to_summary(self):
+        # "<team> when <player> scores N" is a record-shaped ask: the
+        # threshold must apply and the answer is a summary, not a game list.
+        parsed = parse_query("knicks when brunson scores 30")
+        assert parsed["route"] == "player_game_summary"
+        assert parsed["route_kwargs"].get("team") == "NYK"
+        assert parsed["route_kwargs"].get("min_value") == 30.0
+
+    def test_twenty_ten_combo_sets_both_thresholds(self):
+        parsed = parse_query("wemby 20 10 games")
+        conds = [(c["stat"], c["min_value"]) for c in parsed.get("conditions") or []]
+        assert ("pts", 20.0) in conds
+        assert ("reb", 10.0) in conds
+
+    def test_last_n_games_does_not_become_combo(self):
+        parsed = parse_query("luka last 10 games")
+        assert not parsed.get("conditions")
+        assert parsed["route"] == "player_game_summary"
+
+    def test_team_3pt_shooting_ranks_by_fg3_pct(self):
+        parsed = parse_query("best 3pt shooting team")
+        assert parsed["route"] == "season_team_leaders"
+        assert parsed["route_kwargs"].get("stat") == "fg3_pct"
+
+    def test_player_3_point_percentage_stays_player_leaderboard(self):
+        parsed = parse_query("Who has the best 3 point percentage this season?")
         assert parsed["route"] == "season_leaders"
 
     def test_team_leaderboard_rank(self):
@@ -467,6 +529,19 @@ class TestCountResult:
         text = cr.to_labeled_text()
         assert "COUNT" in text
         assert "1" in text
+
+    def test_bare_stat_count_sums_stat_not_games(self):
+        # "how many threes did curry hit" asks for the number of threes,
+        # not the number of games he played.
+        qr = execute_natural_query("how many threes did curry hit")
+        assert isinstance(qr.result, CountResult)
+        games = qr.result.games
+        assert qr.result.count == int(games["fg3m"].sum())
+
+    def test_threshold_count_still_counts_games(self):
+        qr = execute_natural_query("how many 30 point games has Jokic had 2024-25")
+        assert isinstance(qr.result, CountResult)
+        assert qr.result.count == len(qr.result.games)
 
     def test_count_result_sections_dict(self):
         import pandas as pd
