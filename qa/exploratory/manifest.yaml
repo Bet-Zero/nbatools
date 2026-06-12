@@ -20,3 +20,18 @@ slices:
   - id: 007_top_single_game_performances
     file: slices/007_top_single_game_performances.yaml
     status: pending_review
+  - id: 008_fan_day_and_game_windows
+    file: slices/008_fan_day_and_game_windows.yaml
+    status: pending_review
+  - id: 009_fan_player_windows_and_filters
+    file: slices/009_fan_player_windows_and_filters.yaml
+    status: pending_review
+  - id: 010_fan_team_records_conditions
+    file: slices/010_fan_team_records_conditions.yaml
+    status: pending_review
+  - id: 011_fan_leaders_and_team_metrics
+    file: slices/011_fan_leaders_and_team_metrics.yaml
+    status: pending_review
+  - id: 012_fan_availability_and_special
+    file: slices/012_fan_availability_and_special.yaml
+    status: pending_review

@@ -1,0 +1,33 @@
+id: 012_fan_availability_and_special
+description: Owner fan battery — availability, multi-player, clutch, schedule-context, and combo-threshold questions
+review_goal: Check clutch/after-loss context filters, multi-player availability boundaries, and stat-combo games.
+samples:
+  - id: fan_suns_clutch_record
+    query: "suns clutch record"
+
+  - id: fan_mavs_luka_kyrie_both_play
+    query: "mavs when luka and kyrie both play"
+
+  - id: fan_okc_after_a_loss
+    query: "okc record after a loss"
+
+  - id: fan_wemby_20_10_games
+    query: "wemby 20 10 games"
+
+  - id: fan_magic_home_record
+    query: "magic home record"
+
+  - id: fan_pelicans_zion_25
+    query: "pelicans when zion scores 25"
+
+  - id: fan_hali_assists_this_year
+    query: "hali assists this year"
+
+  - id: fan_ja_last_10
+    query: "ja last 10 games"
+
+  - id: fan_bam_rebounds_vs_celtics
+    query: "bam rebounds vs celtics"
+
+  - id: fan_did_brunson_play_yesterday
+    query: "did brunson play yesterday"

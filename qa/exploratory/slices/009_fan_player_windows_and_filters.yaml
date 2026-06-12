@@ -1,0 +1,33 @@
+id: 009_fan_player_windows_and_filters
+description: Owner fan battery — player stats with seasons, opponents, thresholds, and playoff windows
+review_goal: Check nickname resolution, "this year" mapping to the current season, opponent filters, and threshold counts.
+samples:
+  - id: fan_curry_threes_hit
+    query: "how many threes did curry hit"
+
+  - id: fan_jokic_triple_doubles_this_year
+    query: "jokic triple doubles this year"
+
+  - id: fan_luka_last_10
+    query: "luka last 10 games"
+
+  - id: fan_ant_points_vs_nuggets
+    query: "ant points vs nuggets"
+
+  - id: fan_embiid_stats_this_season
+    query: "embiid stats this season"
+
+  - id: fan_sga_30_point_games
+    query: "sga 30 point games"
+
+  - id: fan_kd_stats_vs_warriors
+    query: "kd stats vs warriors"
+
+  - id: fan_kyrie_points_playoffs
+    query: "kyrie points in the playoffs"
+
+  - id: fan_tatum_vs_bucks_this_season
+    query: "tatum vs bucks this season"
+
+  - id: fan_dame_points_last_5
+    query: "dame points last 5"

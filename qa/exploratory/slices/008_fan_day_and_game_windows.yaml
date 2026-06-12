@@ -1,0 +1,33 @@
+id: 008_fan_day_and_game_windows
+description: Owner fan battery — day-based and last-game windows (last night, yesterday, today, tonight, this week, last game)
+review_goal: Check whether day-based phrasing answers truthfully, refuses honestly, or silently ignores the time window.
+samples:
+  - id: fan_bron_points_last_night
+    query: "bron points last night"
+
+  - id: fan_most_points_yesterday
+    query: "who had the most points yesterday"
+
+  - id: fan_wemby_blocks_last_game
+    query: "wemby blocks last game"
+
+  - id: fan_giannis_rebounds_tonight
+    query: "giannis rebounds tonight"
+
+  - id: fan_dbook_last_game_stats
+    query: "dbook last game stats"
+
+  - id: fan_dropped_40_this_week
+    query: "who dropped 40 this week"
+
+  - id: fan_trae_assists_last_night
+    query: "trae young assists last night"
+
+  - id: fan_most_boards_today
+    query: "who got the most boards today"
+
+  - id: fan_clippers_last_night_box_score
+    query: "clippers last night box score"
+
+  - id: fan_harden_assists_last_game
+    query: "harden assists last game"

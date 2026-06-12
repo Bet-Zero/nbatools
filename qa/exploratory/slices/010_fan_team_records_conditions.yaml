@@ -1,0 +1,33 @@
+id: 010_fan_team_records_conditions
+description: Owner fan battery — team records with availability, player-condition, location, and date filters
+review_goal: Check with/without-player records, player-condition records, home/road records, and since-window phrasing.
+samples:
+  - id: fan_celtics_record_without_tatum
+    query: "celtics record without tatum"
+
+  - id: fan_knicks_when_brunson_30
+    query: "knicks when brunson scores 30"
+
+  - id: fan_pacers_record_at_home
+    query: "pacers record at home"
+
+  - id: fan_lakers_last_5
+    query: "lakers last 5 games"
+
+  - id: fan_bulls_when_lavine_plays
+    query: "bulls record when lavine plays"
+
+  - id: fan_nuggets_record_jokic_triple_double
+    query: "nuggets record when jokic has a triple double"
+
+  - id: fan_heat_since_all_star_break
+    query: "heat record since all star break"
+
+  - id: fan_warriors_road_record
+    query: "warriors road record"
+
+  - id: fan_sixers_without_embiid
+    query: "sixers without embiid"
+
+  - id: fan_cavs_vs_east_teams
+    query: "cavs record against east teams"

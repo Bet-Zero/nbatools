@@ -1,0 +1,33 @@
+id: 011_fan_leaders_and_team_metrics
+description: Owner fan battery — league leaders, single-game bests, and advanced team metrics
+review_goal: Check leaderboard phrasing, rookie/bench boundaries, and whether advanced team metrics answer or refuse honestly.
+samples:
+  - id: fan_league_assists_leader
+    query: "who leads the league in assists"
+
+  - id: fan_most_3s_in_a_game_this_season
+    query: "most 3s in a game this season"
+
+  - id: fan_best_3pt_shooting_team
+    query: "best 3pt shooting team"
+
+  - id: fan_most_steals_this_season
+    query: "most steals this season"
+
+  - id: fan_rookie_scoring_leaders
+    query: "rookie scoring leaders"
+
+  - id: fan_most_blocks_average
+    query: "who averages the most blocks"
+
+  - id: fan_most_points_off_bench
+    query: "most points off the bench"
+
+  - id: fan_best_net_rating_teams
+    query: "teams with best net rating"
+
+  - id: fan_wolves_defensive_rating
+    query: "wolves defensive rating"
+
+  - id: fan_kings_pace_this_season
+    query: "kings pace this season"
