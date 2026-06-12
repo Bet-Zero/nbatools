@@ -49,7 +49,7 @@ first.
 
 **Done when:** the fan battery exists and the baseline number is known.
 
-## Phase 2 — Kill the lying answers first
+## Phase 2 — Kill the lying answers first ✅ (closed 2026-06-12)
 
 A wrong answer is worse than a refusal. Fix in order of trust damage:
 
@@ -69,6 +69,13 @@ A wrong answer is worse than a refusal. Fix in order of trust damage:
 Each fix gets corpus cases the same day, like the per-game fix did.
 
 **Done when:** the fan battery contains zero confidently-wrong answers.
+
+**Closed 2026-06-12:** battery liars fixed (sessions 1–2), then rings and
+schedule refuse-shapes, the playoff year substitution, and day-window
+data-currency notes (session 3). The core promise — right answer or
+honest refusal — now holds across the fan battery and the audit list.
+Known leftover (low priority): the multi-player availability boundary
+message ("mavs when luka and kyrie both play") is honest but muddled.
 
 ## Phase 3 — Widen what answers
 
