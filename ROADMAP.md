@@ -90,6 +90,12 @@ Lock each into the corpus. Coverage climbs session by session.
 The battery surfaces genuinely missing answer kinds (championships/"rings",
 rookie leaderboards, bench scoring, team defensive rating and pace, clutch
 record, league-wide threshold windows like "who dropped 40 this week").
+
+Built so far (2026-06-12): single-team advanced-stat scalars (defensive/
+offensive/net rating, pace — answered with league rank) and league-wide
+threshold game lists ("who dropped 40 this week"). Remaining queue, in
+rough data-readiness order: clutch record, rookie leaderboards, bench
+scoring, championships answer — each needs a data-contract check first.
 Owner's standing call: every legitimate NBA query/stat gets built
 eventually — refusals are temporary boundaries, not permanent decisions.
 The list is a prioritized build queue. Two rules keep it sane: build
