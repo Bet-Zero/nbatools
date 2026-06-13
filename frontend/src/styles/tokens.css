@@ -1,18 +1,22 @@
 :root {
   /* Backgrounds */
-  --bg-page: #1a1a1a;
-  --bg-elevated: #222222;
-  --bg-card: #2a2a2a;
-  --bg-input: #141414;
+  --bg-page: #161618;
+  --bg-elevated: #202023;
+  --bg-card: #28282c;
+  --bg-input: #131315;
 
   /* Shared surface aliases used by result primitives. */
   --surface-elevated: var(--bg-elevated);
   --surface-muted: var(--bg-card);
 
+  /* Subtle top-light highlight applied to elevated surfaces so cards read
+     as catching light from above rather than sitting flat. */
+  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
   /* Borders */
-  --border-subtle: #2f2f2f;
-  --border-default: #3d3d3d;
-  --border-strong: #525252;
+  --border-subtle: #2a2a2e;
+  --border-default: #38383d;
+  --border-strong: #4e4e55;
 
   /* Text */
   --text-primary: #f5f5f5;
@@ -66,10 +70,13 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  /* Shadows — layered (ambient + key) for softer, more natural depth
+     than a single hard drop shadow. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2);
+  --shadow-md:
+    0 2px 4px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg:
+    0 4px 8px rgba(0, 0, 0, 0.35), 0 16px 40px rgba(0, 0, 0, 0.5);
 
   /* Typography — sizes */
   --font-stat-hero: 56px;

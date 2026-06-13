@@ -25,11 +25,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-muted);
-  border: 1px solid var(--accent);
+  background: linear-gradient(
+    145deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 70%, #000000)
+  );
+  border: 1px solid color-mix(in srgb, var(--accent-hover) 70%, transparent);
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 0 var(--space-1) var(--accent-glow);
-  color: var(--accent-hover);
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: var(--text-on-accent);
   font-family: var(--font-mono);
   font-size: var(--font-small);
   font-weight: var(--weight-bold);

@@ -3,8 +3,14 @@
   min-height: 100vh;
   overflow-x: clip;
   background:
+    radial-gradient(
+      ellipse 120% 80% at 50% -10%,
+      color-mix(in srgb, var(--accent) 7%, transparent),
+      transparent 60%
+    ),
     radial-gradient(circle at top left, var(--bg-elevated), transparent 32rem),
     var(--bg-page);
+  background-attachment: fixed;
 }
 
 .container {
@@ -23,10 +29,15 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-5);
-  background: var(--bg-elevated);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-card) 60%, var(--bg-elevated)),
+      var(--bg-elevated)
+    );
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--highlight-top);
 }
 
 .statusRegion {
@@ -56,7 +67,7 @@
     var(--bg-elevated);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--highlight-top);
 }
 
 .mainRegion {

@@ -6,7 +6,7 @@
 
 .depthElevated {
   background: var(--bg-elevated);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--highlight-top);
 }
 
 .depthCard {

@@ -54,11 +54,23 @@
 
 .tone_warm,
 .tone_accent {
-  background: color-mix(in srgb, var(--accent) 4%, var(--bg-elevated));
+  background:
+    radial-gradient(
+      130% 100% at 0% 0%,
+      color-mix(in srgb, var(--accent) 9%, transparent),
+      transparent 55%
+    ),
+    color-mix(in srgb, var(--accent) 4%, var(--bg-elevated));
 }
 
 .tone_cool {
-  background: color-mix(in srgb, var(--info) 5%, var(--bg-elevated));
+  background:
+    radial-gradient(
+      130% 100% at 0% 0%,
+      color-mix(in srgb, var(--info) 10%, transparent),
+      transparent 55%
+    ),
+    color-mix(in srgb, var(--info) 5%, var(--bg-elevated));
 }
 
 .tone_team {
@@ -66,7 +78,13 @@
 }
 
 .hasTeamAccent {
-  background: var(--team-accent-muted);
+  background:
+    radial-gradient(
+      130% 100% at 0% 0%,
+      color-mix(in srgb, var(--team-accent) 16%, transparent),
+      transparent 55%
+    ),
+    var(--team-accent-muted);
 }
 
 .tone_warm::before,
@@ -76,16 +94,28 @@
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: var(--space-1);
-  background: var(--accent);
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 55%, transparent)
+  );
 }
 
 .tone_cool::before {
-  background: var(--info);
+  background: linear-gradient(
+    180deg,
+    var(--info),
+    color-mix(in srgb, var(--info) 55%, transparent)
+  );
 }
 
 .hasTeamAccent::before {
-  background: var(--team-accent);
+  background: linear-gradient(
+    180deg,
+    var(--team-accent),
+    color-mix(in srgb, var(--team-accent) 55%, transparent)
+  );
 }
 
 @media (max-width: 560px) {
