@@ -50,9 +50,10 @@ function stateProfile(
   if (reason === "unrouted") {
     return {
       variant: "unsupported",
-      title: "Unsupported Query",
-      label: "Not routed",
-      message: "This query type is not yet supported by the engine.",
+      title: "Can't answer that one yet",
+      label: "Outside coverage",
+      message:
+        "This isn't a question the engine knows how to answer yet. It covers stat questions about players, teams, games, and seasons — try rephrasing, or pick a starter query.",
       badgeVariant: "warning",
     };
   }
@@ -118,9 +119,10 @@ function stateProfile(
     case "unsupported":
       return {
         variant: "unsupported",
-        title: "Unsupported Query",
+        title: "Can't answer that one yet",
         label: "Unsupported combination",
-        message: "This query combination is not supported by the engine.",
+        message:
+          "That combination isn't supported yet. Try simplifying the question or removing a filter.",
         badgeVariant: "warning",
       };
     case "filter_not_supported":

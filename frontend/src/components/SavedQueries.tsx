@@ -117,7 +117,6 @@ export default function SavedQueries({
   return (
     <Card className={styles.savedQueries} depth="card" padding="md">
       <SectionHeader
-        eyebrow="Secondary"
         title="Saved Queries"
         count={`${queries.length} ${queries.length === 1 ? "query" : "queries"}`}
         actions={

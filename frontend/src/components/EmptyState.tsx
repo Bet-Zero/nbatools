@@ -1,4 +1,4 @@
-import { Badge, Card } from "../design-system";
+import { Card } from "../design-system";
 import styles from "./EmptyState.module.css";
 
 const CAPABILITIES = [
@@ -20,17 +20,13 @@ export default function EmptyState() {
   return (
     <Card className={styles.emptyState} depth="card" padding="lg">
       <div className={styles.content}>
-        <Badge variant="accent" size="sm" uppercase>
-          First run
-        </Badge>
         <h2 className={styles.title}>
-          Ask a basketball question. Get a structured answer.
+          Ask a basketball question. Get a straight answer.
         </h2>
         <p className={styles.description}>
-          nbatools turns natural-language NBA searches into answer-first cards,
-          rankings, and detail tables for players, teams, records, streaks,
-          matchups, and playoff history. Type a question above, or pick one
-          from the starter queries to see how it answers.
+          Players, teams, records, streaks, matchups, playoff history — type a
+          question the way you&apos;d say it, or pick a starter query to see
+          how it answers.
         </p>
       </div>
 

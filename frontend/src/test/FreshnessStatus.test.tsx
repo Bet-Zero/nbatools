@@ -66,7 +66,7 @@ describe("FreshnessStatus", () => {
     await waitFor(() => {
       expect(screen.getByText(/Data through 2026-04-13/)).toBeInTheDocument();
     });
-    expect(screen.getByText("fresh")).toBeInTheDocument();
+    expect(screen.getByText("current")).toBeInTheDocument();
   });
 
   it("shows stale status", async () => {
@@ -75,7 +75,7 @@ describe("FreshnessStatus", () => {
     );
     render(<FreshnessStatus pollInterval={0} />);
     await waitFor(() => {
-      expect(screen.getByText("stale")).toBeInTheDocument();
+      expect(screen.getByText("awaiting refresh")).toBeInTheDocument();
     });
   });
 
@@ -100,7 +100,7 @@ describe("FreshnessStatus", () => {
     );
     render(<FreshnessStatus pollInterval={0} />);
     await waitFor(() => {
-      expect(screen.getByText("failed")).toBeInTheDocument();
+      expect(screen.getByText("refresh failed")).toBeInTheDocument();
     });
   });
 
@@ -119,11 +119,19 @@ describe("FreshnessStatus", () => {
     ).toBeInTheDocument();
   });
 
-  it.each<[FreshnessStatusValue, string]>([
-    ["stale", "Review data age before sharing results."],
-    ["unknown", "Freshness is not confirmed."],
-    ["failed", "Refresh needs attention before results are trusted."],
-  ])("shows %s banner guidance", async (status, message) => {
+  it.each<[FreshnessStatusValue, string, string]>([
+    [
+      "stale",
+      "awaiting refresh",
+      "Stats run through the date shown — new games arrive with the next refresh.",
+    ],
+    ["unknown", "unknown", "Freshness is not confirmed."],
+    [
+      "failed",
+      "refresh failed",
+      "Refresh needs attention before results are trusted.",
+    ],
+  ])("shows %s banner guidance", async (status, badgeLabel, message) => {
     mockFetchFreshness.mockResolvedValue(
       makeFreshnessData({
         status,
@@ -135,7 +143,7 @@ describe("FreshnessStatus", () => {
     render(<FreshnessStatus pollInterval={0} variant="banner" />);
 
     await waitFor(() => {
-      expect(screen.getByText(status)).toBeInTheDocument();
+      expect(screen.getByText(badgeLabel)).toBeInTheDocument();
       expect(screen.getByText(message)).toBeInTheDocument();
     });
   });

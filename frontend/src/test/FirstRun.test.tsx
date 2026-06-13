@@ -93,7 +93,7 @@ describe("first-run starter queries", () => {
       expect(screen.getByText("Data freshness")).toBeInTheDocument(),
     );
 
-    const input = screen.getByLabelText("Search NBA performance");
+    const input = screen.getByLabelText("Ask an NBA question");
     input.focus();
     expect(input).toHaveFocus();
 
@@ -114,7 +114,7 @@ describe("first-run starter queries", () => {
     );
 
     const input = screen.getByLabelText(
-      "Search NBA performance",
+      "Ask an NBA question",
     ) as HTMLInputElement;
     fireEvent.change(input, {
       target: { value: "Jokic last 10 games" },
@@ -144,7 +144,7 @@ describe("first-run starter queries", () => {
       expect(screen.getByText("Data freshness")).toBeInTheDocument(),
     );
 
-    const input = screen.getByLabelText("Search NBA performance");
+    const input = screen.getByLabelText("Ask an NBA question");
 
     await user.clear(input);
     await user.type(input, "first query");
@@ -181,7 +181,7 @@ describe("first-run starter queries", () => {
       expect(screen.getByText("Data freshness")).toBeInTheDocument(),
     );
 
-    const input = screen.getByLabelText("Search NBA performance");
+    const input = screen.getByLabelText("Ask an NBA question");
     fireEvent.change(input, {
       target: { value: "Celtics summary 2024-25" },
     });
@@ -212,7 +212,7 @@ describe("first-run starter queries", () => {
     fireEvent.keyDown(kwargs, { key: "k", metaKey: true });
     expect(kwargs).toHaveFocus();
 
-    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+    fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
@@ -252,7 +252,7 @@ describe("first-run starter queries", () => {
     expect(new URLSearchParams(window.location.search).get("q")).toBe(
       "Jokic last 10 games",
     );
-    expect(screen.getByLabelText("Search NBA performance")).toHaveValue(
+    expect(screen.getByLabelText("Ask an NBA question")).toHaveValue(
       "Jokic last 10 games",
     );
     await waitFor(() =>
@@ -267,7 +267,7 @@ describe("first-run starter queries", () => {
 
     const { container } = render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+    fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
@@ -327,7 +327,7 @@ describe("first-run starter queries", () => {
     expect(screen.getByText(/Dev Tools/)).toBeInTheDocument();
     expect(screen.getByText("entity_summary + game_log")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+    fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
@@ -351,7 +351,7 @@ describe("first-run starter queries", () => {
 
     const { container } = render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+    fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
@@ -424,7 +424,7 @@ describe("first-run starter queries", () => {
 
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+    fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
       target: { value: "Jokic last 10 games" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));
@@ -508,7 +508,7 @@ describe("first-run starter queries", () => {
     await waitFor(() =>
       expect(screen.getByText("unreachable")).toBeInTheDocument(),
     );
-    fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+    fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
       target: { value: "Celtics record 2024-25" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Query" }));

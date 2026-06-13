@@ -55,9 +55,8 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
   return (
     <form className={styles.queryBar} onSubmit={handleSubmit}>
       <div className={styles.queryIntro}>
-        <div className={styles.eyebrow}>Ask anything</div>
         <label className={styles.label} htmlFor="nba-query-input">
-          Search NBA performance
+          Ask an NBA question
         </label>
       </div>
       <div className={styles.inputWrapper}>
@@ -68,7 +67,7 @@ const QueryBar = forwardRef<HTMLInputElement, Props>(function QueryBar(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask a stat-shaped question — e.g. Jokic recent form, top scorers this season"
+          placeholder='Try "Shai points per game" or "celtics record without tatum"'
           autoComplete="off"
           autoFocus
           disabled={disabled}

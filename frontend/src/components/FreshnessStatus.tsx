@@ -31,9 +31,16 @@ const BADGE_VARIANTS: Record<FreshnessStatusValue, BadgeVariant> = {
 
 const BANNER_MESSAGES: Record<FreshnessStatusValue, string> = {
   fresh: "Ready for a first query.",
-  stale: "Review data age before sharing results.",
+  stale: "Stats run through the date shown — new games arrive with the next refresh.",
   unknown: "Freshness is not confirmed.",
   failed: "Refresh needs attention before results are trusted.",
+};
+
+const BADGE_LABELS: Record<FreshnessStatusValue, string> = {
+  fresh: "current",
+  stale: "awaiting refresh",
+  unknown: "unknown",
+  failed: "refresh failed",
 };
 
 interface Props {
@@ -116,7 +123,7 @@ export default function FreshnessStatus({
           )}
         </span>
         <Badge variant={BADGE_VARIANTS[status]} size="sm" uppercase>
-          {status}
+          {BADGE_LABELS[status] ?? status}
         </Badge>
         <span className={styles.expand}>{expanded ? "▾" : "▸"}</span>
       </button>

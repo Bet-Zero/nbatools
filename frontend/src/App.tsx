@@ -469,10 +469,9 @@ export default function App() {
           NT
         </div>
         <div>
-          <div className={styles.eyebrow}>NBA search workspace</div>
           <h1 className={styles.appTitle}>nbatools</h1>
           <p className={styles.tagline}>
-            Natural-language lookup for players, teams, streaks, and leaders.
+            Ask any NBA stat question. Get a straight answer.
           </p>
         </div>
       </div>

@@ -1002,7 +1002,7 @@ cases:
       - unsupported_guidance
       - unsupported_analysis_boundary
     expected_semantic_facts:
-      - Unsupported Query
+      - Can't answer that one yet
       - cooled off
 
   - id: rookie_scoring_leaders_wave4
@@ -1424,7 +1424,7 @@ cases:
       - on_off_boundary
       - no_broad_fallback
     expected_semantic_facts:
-      - Unsupported Query
+      - Can't answer that one yet
       - Jayson Tatum
       - [on/off, On/Off]
     expected_absent_fragments:
@@ -1510,7 +1510,7 @@ cases:
       - lineup_leaderboard_boundary
       - no_broad_fallback
     expected_semantic_facts:
-      - Unsupported Query
+      - Can't answer that one yet
       - lineup
     expected_absent_fragments:
       - led the NBA
@@ -1522,7 +1522,7 @@ cases:
       - lineup_summary_boundary
       - no_broad_fallback
     expected_semantic_facts:
-      - Unsupported Query
+      - Can't answer that one yet
       - lineup
       - Anthony Edwards
     expected_absent_fragments:

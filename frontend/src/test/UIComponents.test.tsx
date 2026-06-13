@@ -10,7 +10,7 @@ describe("EmptyState", () => {
   it("renders first-run message", () => {
     render(<EmptyState />);
     expect(
-      screen.getByText("Ask a basketball question. Get a structured answer."),
+      screen.getByText("Ask a basketball question. Get a straight answer."),
     ).toBeInTheDocument();
   });
 
@@ -147,7 +147,7 @@ describe("NoResultDisplay", () => {
       />,
     );
 
-    expect(screen.getByText("Unsupported Query")).toBeInTheDocument();
+    expect(screen.getByText("Can't answer that one yet")).toBeInTheDocument();
     expect(
       screen.getByText(
         'I couldn\'t interpret "cooled off" as a supported stat query yet.',
@@ -170,10 +170,10 @@ describe("NoResultDisplay", () => {
         notes={["Cannot use both home_only and away_only"]}
       />,
     );
-    expect(screen.getByText("Unsupported Query")).toBeInTheDocument();
+    expect(screen.getByText("Can't answer that one yet")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "This query combination is not supported by the engine.",
+        "That combination isn't supported yet. Try simplifying the question or removing a filter.",
       ),
     ).toBeInTheDocument();
     openDetails();
@@ -518,7 +518,7 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
 
     rerender(<NoResultDisplay reason="unrouted" status="no_result" />);
-    expect(screen.getByText("Unsupported Query")).toBeInTheDocument();
+    expect(screen.getByText("Can't answer that one yet")).toBeInTheDocument();
     expect(
       screen.queryByLabelText("Suggested next steps"),
     ).not.toBeInTheDocument();

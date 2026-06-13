@@ -51,7 +51,7 @@ function makeResponse(
 }
 
 function submitQuery(query: string) {
-  fireEvent.change(screen.getByLabelText("Search NBA performance"), {
+  fireEvent.change(screen.getByLabelText("Ask an NBA question"), {
     target: { value: query },
   });
   fireEvent.click(screen.getByRole("button", { name: "Query" }));

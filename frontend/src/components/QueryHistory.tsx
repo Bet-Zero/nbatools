@@ -48,7 +48,6 @@ export default function QueryHistory({
   return (
     <Card className={styles.queryHistory} depth="card" padding="md">
       <SectionHeader
-        eyebrow="Session"
         title="History"
         count={`${entries.length} ${entries.length === 1 ? "query" : "queries"}`}
         actions={
