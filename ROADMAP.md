@@ -112,6 +112,18 @@ Deferred after data checks (2026-06-12), with the reason each is parked:
   starter-role data exists, but a team-level answer needs a new
   per-game bench-points aggregation contract; parked as a clean,
   well-scoped future build.
+
+Fan battery 2 (2026-06-13) — comparisons, career, playoffs, matchups,
+multi-condition, subjective traps. Fixed flagship comparison bugs
+(season/stat modifiers no longer block "jokic vs embiid this season";
+"lebron vs jordan career" refuses instead of silently answering for one
+player). Built team-scoped player leaders ("Lakers leading scorer",
+"who scores the most for the Celtics", "Celtics leader in assists") and
+sophomore leaderboards (experience_years == 1). Refused subjective "best
+player on X" and two-player "combined" totals. Confirmed already-honest:
+"mj/wilt career" and "most improved player" (friendly refusal card),
+bare "jokic vs embiid" (deliberate ambiguity prompt).
+
 Owner's standing call: every legitimate NBA query/stat gets built
 eventually — refusals are temporary boundaries, not permanent decisions.
 The list is a prioritized build queue. Two rules keep it sane: build
