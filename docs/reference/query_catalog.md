@@ -517,6 +517,16 @@ Leaderboard no-match behavior:
   are supported: players are filtered to roster experience of 0 years in
   each season, with roster coverage from 1996-97; seasons without roster
   data refuse honestly
+- sophomore leaderboards (`sophomore scoring leaders`, `second-year
+  assist leaders`) are supported the same way, filtered to roster
+  experience of 1 year per season
+- team-scoped player leaders (`Lakers leading scorer`, `who scores the
+  most for the Celtics`, `Celtics leader in assists`) are supported:
+  they rank that team's players for the stat, leader first. The
+  subjective `best player on the Lakers` is not supported (no objective
+  metric) and refuses
+- two-player combined totals (`luka and kyrie combined points`) are not
+  supported and refuse rather than answer for one player
 - league-wide starter/bench player leaderboards (`most points off the
   bench`, `top scorers among starters`) are supported using trusted
   per-game starter-role data; seasons without trusted coverage return

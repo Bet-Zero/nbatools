@@ -124,6 +124,9 @@ from nbatools.commands._parse_helpers import (
     detect_lineup_query as detect_lineup_query,
 )
 from nbatools.commands._parse_helpers import (
+    detect_multi_player_aggregate as detect_multi_player_aggregate,
+)
+from nbatools.commands._parse_helpers import (
     detect_nationally_televised as detect_nationally_televised,
 )
 from nbatools.commands._parse_helpers import (
@@ -178,6 +181,9 @@ from nbatools.commands._parse_helpers import (
     detect_season_type as detect_season_type,
 )
 from nbatools.commands._parse_helpers import (
+    detect_sophomore_leaderboard_boundary as detect_sophomore_leaderboard_boundary,
+)
+from nbatools.commands._parse_helpers import (
     detect_split_type as detect_split_type,
 )
 from nbatools.commands._parse_helpers import (
@@ -187,7 +193,13 @@ from nbatools.commands._parse_helpers import (
     detect_stretch_query as detect_stretch_query,
 )
 from nbatools.commands._parse_helpers import (
+    detect_subjective_best_player as detect_subjective_best_player,
+)
+from nbatools.commands._parse_helpers import (
     detect_team_bench_scoring_boundary as detect_team_bench_scoring_boundary,
+)
+from nbatools.commands._parse_helpers import (
+    detect_team_leader_stat as detect_team_leader_stat,
 )
 from nbatools.commands._parse_helpers import (
     detect_team_rolling_stretch_boundary as detect_team_rolling_stretch_boundary,
@@ -282,7 +294,6 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "drop-off",
     "co-star",
     "star teammate",
-    "leading scorer",
     "catch-and-shoot",
     "catch and shoot",
     "draw fouls",
@@ -299,7 +310,6 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "rebounding battle",
     "trailing after 3 quarters",
     "both play",
-    "leads the team in scoring",
     "offensive rating when",
     "offensive rating without",
     "10+ assists and 0 turnovers",
@@ -884,6 +894,10 @@ def _build_parse_state(query: str) -> dict:
     stretch_metric = stretch_request["stretch_metric"] if stretch_request else None
     team_rolling_stretch_boundary = detect_team_rolling_stretch_boundary(q)
     rookie_leaderboard_boundary = detect_rookie_leaderboard_boundary(q)
+    sophomore_leaderboard_boundary = detect_sophomore_leaderboard_boundary(q)
+    team_leader_stat = detect_team_leader_stat(q)
+    subjective_best_player = detect_subjective_best_player(q)
+    multi_player_aggregate = detect_multi_player_aggregate(q)
     role_leaderboard_boundary = detect_role_leaderboard_boundary(q)
     team_bench_scoring_boundary = detect_team_bench_scoring_boundary(q)
     award_query_boundary = detect_award_query_boundary(q)
@@ -1209,6 +1223,12 @@ def _build_parse_state(query: str) -> dict:
         "stretch_display_mode": stretch_display_mode,
         "team_rolling_stretch_boundary": team_rolling_stretch_boundary,
         "rookie_leaderboard_boundary": rookie_leaderboard_boundary,
+        "sophomore_leaderboard_boundary": sophomore_leaderboard_boundary,
+        # Only meaningful for a team-scoped leader; a league-wide "top scorers"
+        # query carries no team and must stay equivalent to "points leaders".
+        "team_leader_stat": team_leader_stat if team else None,
+        "subjective_best_player": subjective_best_player,
+        "multi_player_aggregate": multi_player_aggregate,
         "role_leaderboard_boundary": role_leaderboard_boundary,
         "team_bench_scoring_boundary": team_bench_scoring_boundary,
         "award_query_boundary": award_query_boundary,
@@ -1407,6 +1427,10 @@ def _finalize_route(parsed: dict) -> dict:
     stretch_display_mode = parsed.get("stretch_display_mode")
     team_rolling_stretch_boundary = parsed.get("team_rolling_stretch_boundary", False)
     rookie_leaderboard_boundary = parsed.get("rookie_leaderboard_boundary", False)
+    sophomore_leaderboard_boundary = parsed.get("sophomore_leaderboard_boundary", False)
+    team_leader_stat = parsed.get("team_leader_stat")
+    subjective_best_player = parsed.get("subjective_best_player", False)
+    multi_player_aggregate = parsed.get("multi_player_aggregate", False)
     role_leaderboard_boundary = parsed.get("role_leaderboard_boundary", False)
     team_bench_scoring_boundary = parsed.get("team_bench_scoring_boundary", False)
     award_query_boundary = parsed.get("award_query_boundary", False)
@@ -1612,6 +1636,51 @@ def _finalize_route(parsed: dict) -> dict:
         out["notes"] = [
             "unsupported_boundary: future schedule lookups are not supported; "
             "the engine answers questions about games already played"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    if multi_player_aggregate:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["multi_player_aggregate"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: combined totals across two players are not "
+            "supported; ask for each player separately or use a comparison"
+        ]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
+
+    # Subjective "best player" with no objective metric — refuse rather than
+    # answer with a game list. "best scorer / rebounder" is objective and is
+    # handled by the team-leader and leaderboard routes, not here.
+    if subjective_best_player and team_leader_stat is None:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = {
+            "season": season,
+            "start_season": start_season,
+            "end_season": end_season,
+            "start_date": start_date,
+            "end_date": end_date,
+            "season_type": season_type,
+            "unsupported_filters": ["subjective_query"],
+        }
+        out["intent"] = "unsupported"
+        out["notes"] = [
+            "unsupported_boundary: 'best player' is subjective; ask for a "
+            "specific stat leader such as 'Lakers leading scorer'"
         ]
         out["confidence"] = compute_parse_confidence(out)
         out["alternates"] = generate_alternates(out)
@@ -2281,6 +2350,62 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
+    elif (
+        team_leader_stat is not None
+        and team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+    ):
+        # Team-scoped player leader ("Lakers leading scorer"): the team's
+        # top players for the stat, leader first.
+        route = "season_leaders"
+        notes.append(f"team_scoped_leader: top {team} players ranked by the requested stat")
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": team_leader_stat,
+            "limit": top_n or 5,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": team_leader_stat in LOWER_IS_BETTER_STATS,
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_season": start_season,
+            "end_season": end_season,
+            "team": team,
+            "last_n": last_n,
+        }
+    elif sophomore_leaderboard_boundary and not any(
+        [player, player_a, player_b, team, team_a, team_b]
+    ):
+        # Sophomore leaderboards: roster experience_years == 1 per season.
+        route = "season_leaders"
+        notes.append(
+            "sophomore_leaderboard: filtered to players with 1 year of "
+            "roster experience in each season"
+        )
+        route_kwargs = {
+            "season": season or default_season_for_context(season_type),
+            "stat": stat or detect_player_leaderboard_stat(q) or "pts",
+            "limit": top_n or 10,
+            "season_type": season_type,
+            "min_games": 1,
+            "ascending": wants_ascending_leaderboard(q),
+            "start_date": start_date,
+            "end_date": end_date,
+            "start_season": start_season,
+            "end_season": end_season,
+            "opponent": opponent,
+            "position": position_filter,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "last_n": last_n,
+            "sophomores_only": True,
+        }
     elif rookie_leaderboard_boundary and not any(
         [player, player_a, player_b, team, team_a, team_b]
     ):

@@ -2372,14 +2372,15 @@ cases:
         - subjective_metric
         - recent_form
     answer_text_policy: no_answer_text_expected
-    expected_status: error
+    expected_status: no_result
     expected_route:
-    expected_reason: unrouted
-    expected_shape: error
-    expected_filters:
-      - kind: window
-        value: "10"
-    review_notes: "Vague best-player-lately query lacks an objective metric definition."
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: subjective_query
+    review_notes: "Vague best-player query lacks an objective metric; now refuses with a subjective_query note steering to a specific stat leader (improved 2026-06-13)."
     manual_review:
       status: expected_unsupported
       tags:
@@ -8003,3 +8004,61 @@ cases:
       - path: result.metadata.unsupported_filters.0
         equals: unresolved_player
     review_notes: "An unidentified second player must refuse, never collapse into a one-player summary."
+
+  - id: fan_lakers_leading_scorer
+    query: "lakers leading scorer"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.team
+        equals: LAL
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Team-scoped scoring leader: must rank the team's players, never return a generic team game list."
+
+  - id: fan_sophomore_scoring_leaders
+    query: "sophomore scoring leaders"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Sophomore (experience_years==1) leaders must filter to second-year players, not return the full-league board."
+
+  - id: fan_best_player_on_team_refuses
+    query: "best player on the lakers"
+    category: unsupported_boundary
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: subjective_query
+    review_notes: "'best player' is subjective with no metric; must refuse, never return a team game list."
+
+  - id: fan_two_player_combined_refuses
+    query: "luka and kyrie combined points"
+    category: unsupported_boundary
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: multi_player_aggregate
+    review_notes: "Two-player combined totals are unsupported; must refuse, never answer for one player."

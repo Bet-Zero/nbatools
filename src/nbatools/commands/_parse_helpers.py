@@ -155,6 +155,69 @@ def detect_rookie_leaderboard_boundary(text: str) -> bool:
     return bool(re.search(r"\brookies?\b", text) and wants_leaderboard(text))
 
 
+def detect_sophomore_leaderboard_boundary(text: str) -> bool:
+    """Detect sophomore (second-year) leaderboard requests."""
+    if re.search(r"\b(?:top|best|leading)\s+sophomores?\b", text):
+        return True
+    has_sophomore = bool(re.search(r"\bsophomores?\b|\b(?:2nd|second)[\s-]year\b", text))
+    return bool(has_sophomore and wants_leaderboard(text))
+
+
+_TEAM_LEADER_STAT_NOUNS = {
+    "scorer": "pts",
+    "scorers": "pts",
+    "scoring": "pts",
+    "rebounder": "reb",
+    "rebounders": "reb",
+    "rebounding": "reb",
+    "passer": "ast",
+    "passers": "ast",
+}
+
+
+def detect_team_leader_stat(text: str) -> str | None:
+    """Return the stat for a team-scoped player-leader ask, else None.
+
+    Handles "Lakers leading scorer", "who scores the most for the Celtics",
+    and "Lakers leader in assists". These are objective (per-game leader),
+    distinct from the subjective "best player on the Lakers".
+    """
+    # Person-nouns only ("top scorer"), never "top scoring games" which is a
+    # game-level query.
+    m = re.search(
+        r"\b(?:leading|top|best)\s+(scorer|scorers|rebounder|rebounders|passer|passers)\b",
+        text,
+    )
+    if m:
+        return _TEAM_LEADER_STAT_NOUNS.get(m.group(1))
+    if re.search(r"\bwho\s+(?:scores?|score)\s+(?:the\s+)?most\b", text):
+        return "pts"
+    if re.search(r"\bleads?\s+(?:the\s+team\s+)?in\s+scoring\b", text):
+        return "pts"
+    m = re.search(r"\bleader\s+in\s+([a-z0-9 %]+)", text)
+    if m:
+        return detect_stat(m.group(1))
+    return None
+
+
+def detect_subjective_best_player(text: str) -> bool:
+    """Detect subjective "best player" asks with no objective metric."""
+    return bool(re.search(r"\bbest\s+player\b", text))
+
+
+def detect_multi_player_aggregate(text: str) -> bool:
+    """Detect unsupported two-player combined-total asks.
+
+    "luka and kyrie combined points" silently dropping one player is a
+    wrong answer; these must refuse.
+    """
+    if re.search(r"\b[a-z][a-z'.\-]+\s+and\s+[a-z][a-z'.\-]+\s+combined\b", text):
+        return True
+    return bool(
+        re.search(r"\bcombined\s+(?:points?|stats?|scoring|numbers?)\b", text) and " and " in text
+    )
+
+
 def detect_role_leaderboard_boundary(text: str) -> bool:
     """Detect unsupported league-wide starter/bench leaderboard requests."""
     if not wants_leaderboard(text):

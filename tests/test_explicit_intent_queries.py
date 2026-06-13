@@ -415,6 +415,38 @@ class TestRouteSelection:
         parsed = parse_query("who leads the league in scoring")
         assert parsed["route"] == "season_leaders"
 
+    def test_team_leading_scorer_routes_team_scoped(self):
+        parsed = parse_query("lakers leading scorer")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("team") == "LAL"
+        assert parsed["route_kwargs"].get("stat") == "pts"
+
+    def test_team_leader_in_assists_sets_stat(self):
+        parsed = parse_query("celtics leader in assists")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("team") == "BOS"
+        assert parsed["route_kwargs"].get("stat") == "ast"
+
+    def test_who_scores_most_for_team(self):
+        parsed = parse_query("who scores the most for the celtics")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("team") == "BOS"
+
+    def test_sophomore_leaders_filter_sophomores(self):
+        parsed = parse_query("sophomore scoring leaders")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("sophomores_only") is True
+
+    def test_best_player_on_team_refuses(self):
+        parsed = parse_query("best player on the lakers")
+        assert parsed["route"] is None
+        assert parsed["route_kwargs"].get("unsupported_filters") == ["subjective_query"]
+
+    def test_two_player_combined_refuses(self):
+        parsed = parse_query("luka and kyrie combined points")
+        assert parsed["route"] is None
+        assert parsed["route_kwargs"].get("unsupported_filters") == ["multi_player_aggregate"]
+
     def test_rookie_leaderboard_routes_with_rookie_filter(self):
         parsed = parse_query("rookie scoring leaders")
         assert parsed["route"] == "season_leaders"

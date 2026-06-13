@@ -745,7 +745,9 @@ def build_result(
     last_n: int | None = None,
     clutch: bool = False,
     rookies_only: bool = False,
+    sophomores_only: bool = False,
     role: str | None = None,
+    team: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -854,6 +856,18 @@ def build_result(
     if losses_only and "wl" in basic.columns:
         basic = basic[basic["wl"] == "L"].copy()
 
+    # Team-scoped leaders ("Lakers leading scorer"): restrict to games the
+    # player logged for that team. A mid-season trade keeps only the games
+    # played for the requested team, which is the correct scope.
+    if team is not None and "team_abbr" in basic.columns:
+        basic = basic[basic["team_abbr"].astype(str).str.upper() == team.upper()].copy()
+        if basic.empty:
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_match",
+                notes=[f"No games found for {team} in the requested scope"],
+            )
+
     if last_n is not None and last_n > 0 and "game_date" in basic.columns:
         # Keep only each player's most recent N games
         basic = basic.sort_values(
@@ -936,32 +950,37 @@ def build_result(
                 notes=[f"No {role} games matched the specified filters"],
             )
 
-    # Rookie filtering: a player is a rookie only in his 0-experience
-    # season, so the restriction is per (season, player_id) pair.
+    # Experience filtering: a rookie is a 0-experience season, a sophomore a
+    # 1-experience season, so the restriction is per (season, player_id)
+    # pair. Both lean on the same roster-experience data and refuse honestly
+    # when that data is missing rather than label an unfiltered leaderboard.
     rookies_filtered = False
-    if rookies_only:
+    experience_label = "rookie" if rookies_only else "sophomore" if sophomores_only else None
+    if experience_label is not None:
+        target_experience = 0 if rookies_only else 1
         roster_exp = _load_roster_experience(seasons)
-        rookie_pairs = roster_exp[roster_exp["experience_years"] == 0][
+        experience_pairs = roster_exp[roster_exp["experience_years"] == target_experience][
             ["season", "player_id"]
         ].drop_duplicates()
-        if rookie_pairs.empty:
+        if experience_pairs.empty:
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
                 notes=[
-                    "rookie filter unavailable: no roster experience data for the requested seasons"
+                    f"{experience_label} filter unavailable: no roster experience data "
+                    "for the requested seasons"
                 ],
             )
         if "season" in basic.columns:
-            basic = basic.merge(rookie_pairs, on=["season", "player_id"], how="inner")
+            basic = basic.merge(experience_pairs, on=["season", "player_id"], how="inner")
         else:
-            basic = basic[basic["player_id"].isin(rookie_pairs["player_id"].unique())].copy()
+            basic = basic[basic["player_id"].isin(experience_pairs["player_id"].unique())].copy()
         rookies_filtered = True
         if basic.empty:
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
-                notes=["No rookie games matched the specified filters"],
+                notes=[f"No {experience_label} games matched the specified filters"],
             )
 
     clutch_executed = False
