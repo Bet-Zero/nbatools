@@ -2223,10 +2223,11 @@ def _finalize_route(parsed: dict) -> dict:
     elif rookie_leaderboard_boundary and not any(
         [player, player_a, player_b, team, team_a, team_b]
     ):
+        # Rookie leaderboards: roster experience_years == 0 per season.
         route = "season_leaders"
         notes.append(
-            "unsupported_boundary: rookie leaderboards are not supported until "
-            "roster-experience semantics are approved"
+            "rookie_leaderboard: filtered to players with 0 years of "
+            "roster experience in each season"
         )
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
@@ -2246,14 +2247,13 @@ def _finalize_route(parsed: dict) -> dict:
             "wins_only": wins_only,
             "losses_only": losses_only,
             "last_n": last_n,
-            "unsupported_filters": ["rookie_leaderboard"],
+            "rookies_only": True,
         }
     elif role_leaderboard_boundary and not any([player, player_a, player_b, team, team_a, team_b]):
+        # Starter/bench leaderboards run against trusted per-game starter
+        # flags; seasons without that coverage refuse inside the command.
+        leaderboard_role = detect_role(q)
         route = "season_leaders"
-        notes.append(
-            "unsupported_boundary: league-wide starter/bench leaderboards are "
-            "not supported by the current season leaderboard contract"
-        )
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
             "stat": stat or detect_player_leaderboard_stat(q) or "pts",
@@ -2272,8 +2272,18 @@ def _finalize_route(parsed: dict) -> dict:
             "wins_only": wins_only,
             "losses_only": losses_only,
             "last_n": last_n,
-            "unsupported_filters": ["role_leaderboard"],
         }
+        if leaderboard_role is not None:
+            notes.append(
+                f"role_leaderboard: filtered to {leaderboard_role} games "
+                f"using trusted starter-role data"
+            )
+            route_kwargs["role"] = leaderboard_role
+        else:
+            notes.append(
+                "unsupported_boundary: starter/bench phrasing did not resolve to a role filter"
+            )
+            route_kwargs["unsupported_filters"] = ["role_leaderboard"]
     elif (
         opponent_conference_geography_boundary
         and team
@@ -2955,7 +2965,10 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["one_possession"] = one_possession
     route_kwargs["nationally_televised"] = nationally_televised
     route_kwargs["clutch"] = clutch
-    route_kwargs["role"] = role
+    if route_kwargs.get("role") is None:
+        # Don't stomp a role set by a routing branch (league-wide
+        # starter/bench leaderboards detect role without a player entity).
+        route_kwargs["role"] = role
     route_kwargs["opponent_quality"] = opponent_quality
     route_kwargs["quarter"] = quarter
     route_kwargs["half"] = half

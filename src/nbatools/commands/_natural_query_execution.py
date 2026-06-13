@@ -191,6 +191,7 @@ _PHASE_G_PERIOD_TRANSPORT_ROUTES = {
 _PHASE_G_ROLE_TRANSPORT_ROUTES = {
     "player_game_summary",
     "player_game_finder",
+    "season_leaders",
 }
 
 _PHASE_H_SCHEDULE_CONTEXT_ROUTES = {

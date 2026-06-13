@@ -149,7 +149,9 @@ def extract_position_filter(text: str) -> str | None:
 
 
 def detect_rookie_leaderboard_boundary(text: str) -> bool:
-    """Detect unsupported rookie leaderboard requests."""
+    """Detect rookie leaderboard requests ("rookie scoring leaders")."""
+    if re.search(r"\b(?:top|best|leading)\s+rookies?\b", text):
+        return True
     return bool(re.search(r"\brookies?\b", text) and wants_leaderboard(text))
 
 
@@ -1309,7 +1311,7 @@ def detect_nationally_televised(text: str) -> bool:
 
 def detect_role(text: str) -> str | None:
     """Detect starter/bench role filters for player-context queries."""
-    if re.search(r"\bas\s+(?:a\s+)?starter\b|\bstarting\b", text):
+    if re.search(r"\bas\s+(?:a\s+)?starter\b|\bstarting\b|\bstarters?\b", text):
         return "starter"
     if re.search(r"\boff\s+the\s+bench\b|\bcoming\s+off\s+the\s+bench\b", text):
         return "bench"

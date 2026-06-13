@@ -415,6 +415,31 @@ class TestRouteSelection:
         parsed = parse_query("who leads the league in scoring")
         assert parsed["route"] == "season_leaders"
 
+    def test_rookie_leaderboard_routes_with_rookie_filter(self):
+        parsed = parse_query("rookie scoring leaders")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("rookies_only") is True
+
+    def test_top_rookies_routes_with_rookie_filter(self):
+        parsed = parse_query("top rookies this season")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("rookies_only") is True
+
+    def test_bench_leaderboard_routes_with_role(self):
+        parsed = parse_query("most points off the bench")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("role") == "bench"
+
+    def test_starter_leaderboard_routes_with_role(self):
+        parsed = parse_query("top scorers among starters this season")
+        assert parsed["route"] == "season_leaders"
+        assert parsed["route_kwargs"].get("role") == "starter"
+
+    def test_plain_leaderboard_has_no_role_or_rookie_filter(self):
+        parsed = parse_query("top scorers this season")
+        assert parsed["route_kwargs"].get("role") is None
+        assert not parsed["route_kwargs"].get("rookies_only")
+
     def test_team_leaderboard_rank(self):
         parsed = parse_query("rank teams by net rating 2024-25")
         assert parsed["route"] == "season_team_leaders"
@@ -623,6 +648,22 @@ class TestCountResult:
         qr = execute_natural_query("who scored 50+ points this season")
         assert isinstance(qr.result, LeaderboardResult)
         assert (qr.result.leaders["pts"] >= 50).all()
+
+    def test_rookie_leaderboard_executes_with_caveat(self):
+        qr = execute_natural_query("rookie scoring leaders")
+        assert isinstance(qr.result, LeaderboardResult)
+        assert any("rookies" in c for c in qr.result.caveats)
+
+    def test_bench_leaderboard_executes_with_caveat(self):
+        qr = execute_natural_query("most points off the bench")
+        assert isinstance(qr.result, LeaderboardResult)
+        assert any("bench games" in c for c in qr.result.caveats)
+
+    def test_bench_leaderboard_refuses_without_role_coverage(self):
+        # 2010-11 predates the trusted starter-role dataset.
+        qr = execute_natural_query("most bench points in 2010-11")
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
 
     def test_count_result_sections_dict(self):
         import pandas as pd

@@ -330,13 +330,6 @@ class TestP2BoundaryRoutingCleanup:
     @pytest.mark.parametrize(
         ("query", "route", "unsupported_filter"),
         [
-            ("rookie scoring leaders this season", "season_leaders", "rookie_leaderboard"),
-            (
-                "bench players scoring leaders this season",
-                "season_leaders",
-                "role_leaderboard",
-            ),
-            ("starter assist leaders this season", "season_leaders", "role_leaderboard"),
             ("Celtics bench scoring this season", "game_finder", "team_bench_scoring"),
             ("Celtics bench scoring home vs away", "game_finder", "team_bench_scoring"),
         ],

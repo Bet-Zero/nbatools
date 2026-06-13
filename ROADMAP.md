@@ -92,10 +92,26 @@ rookie leaderboards, bench scoring, team defensive rating and pace, clutch
 record, league-wide threshold windows like "who dropped 40 this week").
 
 Built so far (2026-06-12): single-team advanced-stat scalars (defensive/
-offensive/net rating, pace — answered with league rank) and league-wide
-threshold game lists ("who dropped 40 this week"). Remaining queue, in
-rough data-readiness order: clutch record, rookie leaderboards, bench
-scoring, championships answer — each needs a data-contract check first.
+offensive/net rating, pace — answered with league rank), league-wide
+threshold game lists ("who dropped 40 this week"), rookie leaderboards
+(roster experience_years == 0 per season, coverage from 1996-97), and
+league-wide starter/bench player leaderboards (trusted per-game starter
+flags; seasons without coverage refuse honestly).
+
+Deferred after data checks (2026-06-12), with the reason each is parked:
+
+- **Clutch record/filters** — no clutch dataset exists on disk (schema
+  stubs only). Needs a new NBA API pull through the pipeline and a data
+  contract before any clutch answer is possible.
+- **Championships/"rings" answers** — playoff data starts at 1996-97, so
+  a derived rings count would confidently lie about earlier history
+  (Jordan would get 2, not 6). Needs a curated champions reference table
+  added through the data-contract path; until then the explicit refusal
+  stays.
+- **Team bench scoring** ("Celtics bench scoring") — the trusted
+  starter-role data exists, but a team-level answer needs a new
+  per-game bench-points aggregation contract; parked as a clean,
+  well-scoped future build.
 Owner's standing call: every legitimate NBA query/stat gets built
 eventually — refusals are temporary boundaries, not permanent decisions.
 The list is a prioritized build queue. Two rules keep it sane: build

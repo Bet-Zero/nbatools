@@ -7,7 +7,9 @@ import pandas as pd
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     build_clutch_filter_coverage_note,
+    build_role_filter_coverage_note,
     load_player_game_clutch_stats_for_seasons,
+    load_player_game_starter_roles_for_seasons,
     safe_divide,
     select_trusted_clutch_stats,
 )
@@ -701,6 +703,28 @@ def _load_roster_positions(seasons: list[str]) -> pd.DataFrame:
     return rosters[["player_id", "position"]].copy()
 
 
+def _load_roster_experience(seasons: list[str]) -> pd.DataFrame:
+    """Load per-season roster experience: (season, player_id, experience_years).
+
+    Rookie status is season-specific, so rows are kept per (season,
+    player_id) pair rather than deduped across seasons.
+    """
+    frames: list[pd.DataFrame] = []
+    for s in seasons:
+        rpath = Path(f"data/raw/rosters/{s}.csv")
+        if data_exists(rpath):
+            frames.append(data_read_csv(rpath))
+    if not frames:
+        return pd.DataFrame(columns=["season", "player_id", "experience_years"])
+    rosters = pd.concat(frames, ignore_index=True)
+    required = {"season", "player_id", "experience_years"}
+    if not required.issubset(rosters.columns):
+        return pd.DataFrame(columns=["season", "player_id", "experience_years"])
+    rosters = rosters[["season", "player_id", "experience_years"]].copy()
+    rosters["experience_years"] = pd.to_numeric(rosters["experience_years"], errors="coerce")
+    return rosters.drop_duplicates(subset=["season", "player_id"])
+
+
 def build_result(
     season: str | None = None,
     stat: str = "pts",
@@ -720,6 +744,8 @@ def build_result(
     losses_only: bool = False,
     last_n: int | None = None,
     clutch: bool = False,
+    rookies_only: bool = False,
+    role: str | None = None,
 ) -> LeaderboardResult | NoResult:
     safe = season_type.lower().replace(" ", "_")
 
@@ -855,6 +881,88 @@ def build_result(
             position_filtered = True
         if basic.empty:
             return NoResult(query_class="leaderboard", reason="no_match")
+
+    # Starter/bench role filtering: trusted per-game starter flags only.
+    # Seasons without role coverage refuse honestly; a trivial trust gap
+    # (under 2% of player-games) proceeds with an explicit exclusion
+    # caveat — an unfiltered leaderboard wearing a "bench" label would be
+    # a wrong answer.
+    role_caveat: str | None = None
+    if role is not None:
+        roles = load_player_game_starter_roles_for_seasons(seasons, season_type)
+        join_cols = ["game_id", "team_id", "player_id"]
+        if roles.empty or not set(join_cols).issubset(basic.columns):
+            return NoResult(
+                query_class="leaderboard",
+                reason="filter_not_supported",
+                notes=[build_role_filter_coverage_note(role)],
+            )
+        # The game logs carry an untrusted native starter_flag; rename the
+        # trusted dataset's columns so the merge can't collide with it.
+        lookup = roles[join_cols + ["starter_flag", "role_source_trusted"]].drop_duplicates(
+            subset=join_cols
+        )
+        lookup = lookup.rename(
+            columns={
+                "starter_flag": "_role_starter_flag",
+                "role_source_trusted": "_role_source_trusted",
+            }
+        )
+        work = basic.merge(lookup, on=join_cols, how="left")
+        trusted = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
+        untrusted_rows = int((~trusted).sum())
+        if untrusted_rows > 0.02 * len(work):
+            return NoResult(
+                query_class="leaderboard",
+                reason="filter_not_supported",
+                notes=[build_role_filter_coverage_note(role)],
+            )
+        expected_flag = 1 if role == "starter" else 0
+        flags = pd.to_numeric(work["_role_starter_flag"], errors="coerce").fillna(-1)
+        basic = (
+            work.loc[trusted & flags.eq(expected_flag)]
+            .drop(columns=["_role_starter_flag", "_role_source_trusted"])
+            .copy()
+        )
+        role_caveat = f"filtered to {role} games using trusted starter-role data"
+        if untrusted_rows:
+            role_caveat += (
+                f"; {untrusted_rows} player-games lacked trusted role data and were excluded"
+            )
+        if basic.empty:
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_match",
+                notes=[f"No {role} games matched the specified filters"],
+            )
+
+    # Rookie filtering: a player is a rookie only in his 0-experience
+    # season, so the restriction is per (season, player_id) pair.
+    rookies_filtered = False
+    if rookies_only:
+        roster_exp = _load_roster_experience(seasons)
+        rookie_pairs = roster_exp[roster_exp["experience_years"] == 0][
+            ["season", "player_id"]
+        ].drop_duplicates()
+        if rookie_pairs.empty:
+            return NoResult(
+                query_class="leaderboard",
+                reason="filter_not_supported",
+                notes=[
+                    "rookie filter unavailable: no roster experience data for the requested seasons"
+                ],
+            )
+        if "season" in basic.columns:
+            basic = basic.merge(rookie_pairs, on=["season", "player_id"], how="inner")
+        else:
+            basic = basic[basic["player_id"].isin(rookie_pairs["player_id"].unique())].copy()
+        rookies_filtered = True
+        if basic.empty:
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_match",
+                notes=["No rookie games matched the specified filters"],
+            )
 
     clutch_executed = False
     if clutch:
@@ -1037,6 +1145,10 @@ def build_result(
             caveats.append(f"{target_col} recomputed from filtered game-log sample")
     if position_filtered:
         caveats.append(f"filtered to position group: {position}")
+    if rookies_filtered:
+        caveats.append("filtered to rookies: roster experience of 0 years in each season")
+    if role_caveat:
+        caveats.append(role_caveat)
     if clutch_executed:
         caveats.append("clutch filter: last five minutes of 4Q/OT, score within five")
 

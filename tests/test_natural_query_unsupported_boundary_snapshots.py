@@ -19,18 +19,6 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "unsupported_filters": ["team_rolling_stretch"],
         },
         {
-            "query": "rookie assist leaders this season",
-            "route": "season_leaders",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["rookie_leaderboard"],
-        },
-        {
-            "query": "bench rebound leaders this season",
-            "route": "season_leaders",
-            "reason": "filter_not_supported",
-            "unsupported_filters": ["role_leaderboard"],
-        },
-        {
             "query": "Celtics bench points this season",
             "route": "game_finder",
             "reason": "filter_not_supported",

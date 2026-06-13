@@ -1169,9 +1169,6 @@ def test_team_bench_scoring_does_not_set_role():
 @pytest.mark.parametrize(
     ("query", "unsupported_filter"),
     [
-        ("rookie scoring leaders this season", "rookie_leaderboard"),
-        ("bench players scoring leaders this season", "role_leaderboard"),
-        ("starter assist leaders this season", "role_leaderboard"),
         ("Celtics bench scoring this season", "team_bench_scoring"),
         ("Celtics bench scoring home vs away", "team_bench_scoring"),
         ("who won mvp this season", "award_query"),

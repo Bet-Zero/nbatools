@@ -513,10 +513,15 @@ Leaderboard no-match behavior:
   such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
   shot creation, and per-game attempt minimums are unsupported boundaries; routed
   fallbacks include an explicit `unsupported_boundary` note
-- rookie leaderboards and league-wide starter/bench leaderboards are
-  unsupported boundaries; these return
-  `no_result` / `filter_not_supported` rather than broad points/assist
-  leaderboards
+- rookie leaderboards (`rookie scoring leaders`, `top rookies this season`)
+  are supported: players are filtered to roster experience of 0 years in
+  each season, with roster coverage from 1996-97; seasons without roster
+  data refuse honestly
+- league-wide starter/bench player leaderboards (`most points off the
+  bench`, `top scorers among starters`) are supported using trusted
+  per-game starter-role data; seasons without trusted coverage return
+  `no_result` / `filter_not_supported` rather than an unfiltered
+  leaderboard
 - fouls-drawn wording is not mapped to personal fouls committed; drawing-foul
   queries remain unsupported until a fouls-drawn data contract exists
 - league-wide team advanced-stat leaderboards for net rating, offensive rating,

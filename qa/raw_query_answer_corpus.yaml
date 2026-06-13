@@ -4116,18 +4116,16 @@ cases:
       family: leaderboards
       variant: nearby_unsupported
       no_broad_fallback: true
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: rookie_leaderboard
-    review_notes: "Rookie leaderboard should be execution-backed or clearly unsupported, not a broad scoring leaderboard."
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Promoted 2026-06-12: rookie leaderboards are execution-backed (roster experience_years == 0)."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
         - role_filter
         - unsupported_boundary
@@ -4138,18 +4136,16 @@ cases:
     query: "bench players scoring leaders this season"
     category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: role_leaderboard
-    review_notes: "Bench-player leaderboard should be execution-backed or clearly unsupported."
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Promoted 2026-06-12: bench leaderboards are execution-backed (trusted starter-role data with coverage refusal)."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
         - role_filter
         - unsupported_boundary
@@ -4159,21 +4155,18 @@ cases:
     query: "starter assist leaders this season"
     category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: role_leaderboard
-    review_notes: "Starter leaderboard should be execution-backed or clearly unsupported."
+      - path: result.metadata.stat
+        equals: ast
+    review_notes: "Promoted 2026-06-12: starter leaderboards are execution-backed (trusted starter-role data with coverage refusal)."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
         - role_filter
-        - unsupported_boundary
       notes: "Review whether starter role context is ignored on league leaderboards."
 
   - id: jokic_as_starter_summary_wave4
@@ -6335,18 +6328,16 @@ cases:
     query: "rookie assist leaders this season"
     category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: rookie_leaderboard
-    review_notes: "Rookie assist leaderboard boundary should not broaden to all players."
+      - path: result.metadata.stat
+        equals: ast
+    review_notes: "Promoted 2026-06-12: rookie leaderboards are execution-backed (roster experience_years == 0)."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
         - unsupported_boundary
         - role_filter
@@ -6357,18 +6348,16 @@ cases:
     query: "bench rebound leaders this season"
     category: leaderboard
     priority: p2
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: season_leaders
-    expected_reason: filter_not_supported
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: leaderboard_table
     hard_assertions:
-      - path: result.metadata.unsupported_filters.0
-        equals: role_leaderboard
-    review_notes: "League-wide bench rebound leaderboard should remain an unsupported boundary."
+      - path: result.metadata.stat
+        equals: reb
+    review_notes: "Promoted 2026-06-12: bench leaderboards are execution-backed (trusted starter-role data with coverage refusal)."
     manual_review:
-      status: expected_unsupported
+      status: pass
       tags:
         - unsupported_boundary
         - role_filter
@@ -7946,3 +7935,41 @@ cases:
       - path: result.metadata.min_value
         equals: 50.0
     review_notes: "League-wide threshold game list: every qualifying game at or above the threshold, not a capped top-10."
+
+  - id: fan_rookie_scoring_leaders
+    query: "rookie scoring leaders"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Promoted 2026-06-12: rookie leaderboards filter to roster experience_years == 0 per season; honest refusal when roster data is missing."
+
+  - id: fan_bench_scoring_leaders
+    query: "most points off the bench"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+    review_notes: "Promoted 2026-06-12: bench leaderboards filter to trusted starter-role data with an exclusion caveat; coverage gaps refuse honestly."
+
+  - id: fan_bench_leaderboard_no_coverage_refused
+    query: "most bench points in 2010-11"
+    category: unsupported_boundary
+    priority: p2
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Seasons without trusted starter-role coverage must refuse the bench filter, never answer with an unfiltered leaderboard."
