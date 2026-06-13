@@ -555,6 +555,50 @@ def _unresolved_player_typo_boundary(parsed: dict) -> str | None:
     return None
 
 
+_VS_SECOND_OPERAND_RE = re.compile(r"\b(?:vs\.?|versus)\s+(?:the\s+)?([a-z][a-z'.\-]+)")
+# Words after "vs" that mark a split or scope, not a second player name.
+_VS_NON_PLAYER_OPERANDS = frozenset(
+    {"home", "away", "road", "wins", "win", "losses", "loss", "last", "past", "recent"}
+)
+
+
+def _unresolved_player_comparison_boundary(parsed: dict) -> str | None:
+    """Detect a "<player> vs <name>" comparison whose second name did not resolve.
+
+    "lebron vs jordan career" must not silently collapse into a one-player
+    summary; when the second operand is an unidentified player name (not a
+    team, opponent player, or split), refuse and ask the user to clarify.
+    """
+    if parsed.get("player_a") and parsed.get("player_b"):
+        return None
+    if not parsed.get("player"):
+        return None
+    # Any resolved opponent / split / situational interpretation means the
+    # "vs" is already understood and must not be second-guessed.
+    if any(
+        parsed.get(key)
+        for key in (
+            "opponent",
+            "opponent_player",
+            "opponent_quality",
+            "opponent_conference",
+            "opponent_division",
+            "split_type",
+            "head_to_head",
+            "presence_state",
+            "lineup_members",
+        )
+    ):
+        return None
+    match = _VS_SECOND_OPERAND_RE.search(parsed["normalized_query"])
+    if not match:
+        return None
+    operand = match.group(1)
+    if operand in _VS_NON_PLAYER_OPERANDS:
+        return None
+    return operand
+
+
 def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
     q = parsed["normalized_query"]
     if parsed.get("window_size") is None or parsed.get("stretch_metric") is None:
@@ -1685,6 +1729,23 @@ def _finalize_route(parsed: dict) -> dict:
             limit=top_n or 10,
         )
         route_kwargs["unresolved_player_fragment"] = unresolved_player_fragment
+    elif unresolved_compare_operand := _unresolved_player_comparison_boundary(parsed):
+        route = "player_compare"
+        notes.append(
+            "unsupported_boundary: a player-vs-player comparison was requested "
+            f"but the second player ('{unresolved_compare_operand}') could not be "
+            "identified; no single-player answer was substituted"
+        )
+        route_kwargs = _unsupported_route_kwargs(
+            "unresolved_player",
+            season=season or default_season_for_context(season_type),
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        route_kwargs["unresolved_player_fragment"] = unresolved_compare_operand
     elif (lineup_route := try_lineup_on_off_route(parsed)) is not None:
         route, route_kwargs = lineup_route
     elif (

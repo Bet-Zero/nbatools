@@ -551,7 +551,12 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
 
 
 _COMPARISON_TRAILING_CONTEXT = (
-    rf"(?:{STOP_WORDS}|since|before|after|when|where|who|what|which|how|why)"
+    rf"(?:{STOP_WORDS}|since|before|after|when|where|who|what|which|how|why"
+    r"|this|current|season|year|regular|career|all"
+    # Stat / metric words that follow the second player in a stat comparison
+    # ("curry vs dame 3 point shooting") and must not be read as a name typo.
+    r"|\d|points?|pts|rebounds?|reb|rebs|assists?|ast|asts|scoring|shooting"
+    r"|threes?|3pt|blocks?|steals?|turnovers?|efficiency|better|head)"
 )
 _VS_COMPARISON_PHRASE_RE = re.compile(
     r"(?:vs\.?|versus)\s+([a-z0-9 .&'\-]+?)"

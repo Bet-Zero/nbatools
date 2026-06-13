@@ -117,3 +117,43 @@ def test_natural_team_h2h_raw_smoke():
     assert "COMPARISON" in out
     assert "LAL" in out
     assert "BOS" in out
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "jokic vs embiid this season",
+        "curry vs dame 3 point shooting this year",
+        "jokic vs embiid recent form",
+    ],
+)
+def test_comparison_with_scope_or_stat_resolves_both_players(query):
+    # A season/stat modifier after the second player must not be misread as a
+    # name typo that blocks the comparison.
+    parsed = parse_query(query)
+    assert parsed["route"] == "player_compare"
+    assert parsed["player_a"]
+    assert parsed["player_b"]
+    assert "unsupported_filters" not in parsed.get("route_kwargs", {})
+
+
+def test_comparison_with_unidentified_second_player_refuses():
+    # "jordan" is ambiguous and must not silently collapse into a
+    # LeBron-only summary.
+    parsed = parse_query("lebron vs jordan career")
+    assert parsed["route"] == "player_compare"
+    assert parsed["route_kwargs"].get("unsupported_filters") == ["unresolved_player"]
+
+
+@pytest.mark.parametrize(
+    ("query", "expected_route"),
+    [
+        ("lebron vs warriors career", "player_game_summary"),
+        ("lebron stats vs kd", "player_game_finder"),
+        ("jokic home vs away", "player_split_summary"),
+        ("tatum in wins vs losses", "player_split_summary"),
+    ],
+)
+def test_vs_neighbors_not_caught_by_comparison_guard(query, expected_route):
+    parsed = parse_query(query)
+    assert parsed["route"] == expected_route
