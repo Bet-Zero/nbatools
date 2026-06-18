@@ -222,9 +222,20 @@ def _matches_loose_phrase(text: str, phrase: str) -> bool:
 
 
 def _detect_leaderboard_stat(text: str, aliases: dict[str, str]) -> str | None:
-    for key in sorted(aliases.keys(), key=len, reverse=True):
-        if _matches_loose_phrase(text, key):
-            return aliases[key]
+    # The season-type qualifier ("playoff(s)"/"postseason") is captured
+    # separately upstream; strip it as a fallback so it does not break
+    # contiguous stat-phrase matching ("best playoff offense" -> "best
+    # offense").
+    variants = [text]
+    stripped = re.sub(r"\b(?:playoffs?|postseason)\b", " ", text)
+    stripped = re.sub(r"\s+", " ", stripped).strip()
+    if stripped and stripped != text:
+        variants.append(stripped)
+
+    for variant in variants:
+        for key in sorted(aliases.keys(), key=len, reverse=True):
+            if _matches_loose_phrase(variant, key):
+                return aliases[key]
     return None
 
 

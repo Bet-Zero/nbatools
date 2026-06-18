@@ -63,6 +63,11 @@ def wants_leaderboard(text: str) -> bool:
     if re.search(r"\bleaders?\b", text):
         return True
 
+    # "who led/leads ... in <stat>" is leaderboard intent even without an
+    # explicit "the most" ("who led the playoffs in scoring").
+    if re.search(r"\bwho\s+(?:leads?|led)\b", text):
+        return True
+
     return bool(
         re.search(
             r"\btop(?:\s+\d+)?\b|\bhighest\b|\bmost\b|\bbest\b|\bhottest\b|\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom(?:\s+\d+)?\b",
@@ -1773,6 +1778,12 @@ def detect_season_high_intent(text: str) -> bool:
     - 'biggest scoring game(s)'
     - 'most dominant game(s)'
     """
+    # The season-type qualifier ("playoff(s)"/"postseason") is captured
+    # separately; strip it so it does not split phrases like "best playoff
+    # games" / "best playoff performances".
+    scan = re.sub(r"\b(?:playoffs?|postseason)\b", " ", text)
+    scan = re.sub(r"\s+", " ", scan).strip()
+
     if re.search(
         r"\bseason[- ]?high\b"
         r"|\b(?:best|highest)\s+(?:single[- ]?)?games?\b"
@@ -1781,25 +1792,28 @@ def detect_season_high_intent(text: str) -> bool:
         r"|\bbiggest\s+(?:single\s+)?(?:scoring\s+|triple[- ]double\s+)?games?\b"
         r"|\bmost\s+dominant\s+(?:single\s+)?games?\b"
         r"|\bgame[- ]?high\b"
+        # "best/top performances" is the same top-single-game concept as
+        # "best games", phrased differently.
+        r"|\b(?:best|top|highest|biggest|greatest)\s+(?:single[- ]?)?(?:scoring\s+)?performances?\b"
         r"|\bsingle[- ]?game\s+(?:high|best|record)\b",
-        text,
+        scan,
     ):
         return True
 
-    if detect_stat(text) is None:
+    if detect_stat(scan) is None:
         return False
 
-    single_game_marker = re.search(r"\bin a game\b|\bsingle[- ]game\b", text)
+    single_game_marker = re.search(r"\bin a game\b|\bsingle[- ]game\b", scan)
     ranking_marker = re.search(
         r"\b(?:most|highest|biggest|best|top|leaders?)\b",
-        text,
+        scan,
     )
     if single_game_marker and ranking_marker:
         return True
 
     stat_games_marker = re.search(
         rf"\b(?:highest|biggest|best)\s+{STAT_PATTERN}\s+games?\b",
-        text,
+        scan,
     )
     return bool(stat_games_marker)
 

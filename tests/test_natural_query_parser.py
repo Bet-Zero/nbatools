@@ -1425,6 +1425,31 @@ def test_second_round_record_since_routes_to_playoff_round_record(query):
     assert parsed["route_kwargs"]["end_season"] == "2025-26"
 
 
+def test_who_led_in_stat_routes_to_leaderboard():
+    # "who led ... in <stat>" is leaderboard intent without "the most".
+    parsed = parse_query("who led the playoffs in scoring")
+    assert parsed["route"] == "season_leaders"
+    assert parsed["season_type"] == "Playoffs"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+
+
+def test_playoff_qualifier_does_not_break_team_leaderboard_alias():
+    # The "playoff" infix must not split the "best offense" team alias.
+    parsed = parse_query("best playoff offense")
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["season_type"] == "Playoffs"
+    assert parsed["route_kwargs"]["stat"] == "off_rating"
+
+
+def test_best_performances_routes_like_best_games():
+    # "performances" is a synonym for the "best games" top-performance
+    # concept; the playoff infix must not break it either.
+    parsed = parse_query("best playoff performances this year")
+    assert parsed["route"] == "top_player_games"
+    assert parsed["season_type"] == "Playoffs"
+    assert parsed["route_kwargs"]["stat"] == "pts"
+
+
 @pytest.mark.parametrize(
     ("query", "team", "playoff_round"),
     [

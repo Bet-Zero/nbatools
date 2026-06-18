@@ -8066,3 +8066,48 @@ cases:
       - path: result.metadata.unsupported_filters.0
         equals: multi_player_aggregate
     review_notes: "Two-player combined totals are unsupported; must refuse, never answer for one player."
+
+  - id: fan_who_led_playoffs_in_scoring
+    query: "who led the playoffs in scoring"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "'who led ... in <stat>' is leaderboard intent without 'the most'. Battery 3."
+
+  - id: fan_best_playoff_offense
+    query: "best playoff offense"
+    category: team_leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: off_rating
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "Playoff qualifier infix must not break the 'best offense' team alias. Battery 3."
+
+  - id: fan_best_playoff_performances
+    query: "best playoff performances this year"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: top_player_games
+    expected_shape: top_performances
+    hard_assertions:
+      - path: result.metadata.stat
+        equals: pts
+      - path: result.metadata.season_type
+        equals: Playoffs
+    review_notes: "'performances' is a synonym for the 'best games' top-performance concept. Battery 3."
