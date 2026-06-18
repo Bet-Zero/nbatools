@@ -132,11 +132,27 @@ until its turn), and never let coverage expansion become the only thing
 being worked on — trust, honesty, data, and product quality advance
 alongside it.
 
-## Phase 5 — Wake the data (one session, whenever)
+## Phase 5 — Wake the data ✅ (done 2026-06-15)
 
-Run the refresh pipeline, add playoffs to the freshness report, decide
-whether the current playoffs are in scope. Not urgent by the owner's call,
-but it gates truthful "this year" answers.
+Done: the NBA API was reachable from the dev environment, so the 2025-26
+playoffs were pulled (85 games, through 2026-06-13) via `pipeline
+rebuild`. The 2025-26 regular season was already complete on disk (30
+teams × 82 games), so the real gap was always the postseason. Outcomes:
+
+- `LATEST_PLAYOFF_SEASON` advanced 2024-25 → 2025-26 (playoffs complete,
+  Finals ended ~June 13). "Jokic/LeBron playoff stats this year" now
+  answer with real data; the honesty-guard corpus case flipped to ok.
+- Freshness report now carries a Playoffs row beside the regular season;
+  overall current_through reflects 2026-06-13.
+- Fixed the unrelated stale `ops backfill-season`/`backfill-range`
+  commands (delegated to the in-process orchestrator).
+
+Not done (deliberately deferred): day-window queries ("last night") are
+still empty because the season is over — no recent games exist, so this
+is honest, not a gap. Playoff CSVs are local-only (gitignored, R2-backed)
+— a `pipeline sync-r2` is required before any deploy serves this data.
+In-season freshness (continuous regular-season refresh) only matters
+once a new season starts.
 
 ## Phase 6 — The launch leap (parked)
 
