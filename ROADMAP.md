@@ -124,6 +124,21 @@ player on X" and two-player "combined" totals. Confirmed already-honest:
 "mj/wilt career" and "most improved player" (friendly refusal card),
 bare "jokic vs embiid" (deliberate ambiguity prompt).
 
+Fan battery 3 (2026-06-15) — the just-activated 2025-26 playoff surface.
+All of stats, leaders, records, comparisons, splits, and finders answer
+correctly; zero confident-wrong answers found. Fixed three reasonable
+playoff queries that hit the unrouted error surface (the "playoff"
+qualifier was breaking phrase matching): "who led the playoffs in
+scoring", "best playoff offense", "best playoff performances". Confirmed
+honest (not bugs): "luka playoff averages" (Luka played 0 2025-26
+playoff games), "who won the title this year" (championship boundary).
+
+Minor follow-ups noted, not yet built (truthful but non-ideal shape, and
+each needs a dedicated surface): yes/no "did the Lakers make the
+playoffs" and round-depth "how far did the Celtics go" answer with a
+playoff game list; an unanchored "longest scoring streak" with no
+threshold falls through to a game finder.
+
 Owner's standing call: every legitimate NBA query/stat gets built
 eventually — refusals are temporary boundaries, not permanent decisions.
 The list is a prioritized build queue. Two rules keep it sane: build
