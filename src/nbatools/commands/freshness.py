@@ -356,35 +356,38 @@ def build_freshness_info(
     season_details: list[SeasonFreshness] = []
     overall_ct: str | None = None
 
-    for season in seasons:
-        ct = compute_current_through(season, season_type, data_root)
-        entry = manifest_entry(season, season_type, data_root)
-
+    def _row(season: str, stype: str) -> SeasonFreshness:
+        ct = compute_current_through(season, stype, data_root)
+        entry = manifest_entry(season, stype, data_root)
         raw_ok = bool(entry and entry.get("raw_complete"))
         proc_ok = bool(entry and entry.get("processed_complete"))
-        manifest_ok = raw_ok and proc_ok
-        loaded_at = entry.get("loaded_at") if entry else None
-
-        status = classify_freshness(
-            ct,
-            manifest_ok,
-            reference_date=reference_date,
-        )
-        season_details.append(
-            SeasonFreshness(
-                season=season,
-                season_type=season_type,
-                status=status,
-                current_through=ct,
-                raw_complete=raw_ok,
-                processed_complete=proc_ok,
-                loaded_at=loaded_at,
-            )
+        return SeasonFreshness(
+            season=season,
+            season_type=stype,
+            status=classify_freshness(ct, raw_ok and proc_ok, reference_date=reference_date),
+            current_through=ct,
+            raw_complete=raw_ok,
+            processed_complete=proc_ok,
+            loaded_at=entry.get("loaded_at") if entry else None,
         )
 
-        if ct is not None:
-            if overall_ct is None or ct > overall_ct:
-                overall_ct = ct
+    for season in seasons:
+        detail = _row(season, season_type)
+        season_details.append(detail)
+        if detail.current_through is not None:
+            if overall_ct is None or detail.current_through > overall_ct:
+                overall_ct = detail.current_through
+
+        # Additively surface playoff freshness alongside the regular-season
+        # report when playoff data for the same season has been loaded.
+        if season_type == "Regular Season" and season_data_available(
+            season, "Playoffs", data_root=data_root
+        ):
+            po_detail = _row(season, "Playoffs")
+            season_details.append(po_detail)
+            if po_detail.current_through is not None:
+                if overall_ct is None or po_detail.current_through > overall_ct:
+                    overall_ct = po_detail.current_through
 
     # Overall status: worst of season statuses
     if any(s.status == FreshnessStatus.FAILED for s in season_details):

@@ -322,7 +322,7 @@ class TestPlayoffHistoryRouting(unittest.TestCase):
         assert result["season_type"] == "Playoffs"
         assert result["route_kwargs"]["playoff_round"] == "02"
         assert result["route_kwargs"]["start_season"] == "2010-11"
-        assert result["route_kwargs"]["end_season"] == "2024-25"
+        assert result["route_kwargs"]["end_season"] == "2025-26"
 
     def test_single_team_finals_record_is_unsupported_boundary(self):
         result = self._parse("Warriors Finals record since 2015")

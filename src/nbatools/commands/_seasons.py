@@ -8,7 +8,7 @@ from __future__ import annotations
 
 EARLIEST_SEASON = "1996-97"
 LATEST_REGULAR_SEASON = "2025-26"
-LATEST_PLAYOFF_SEASON = "2024-25"
+LATEST_PLAYOFF_SEASON = "2025-26"
 
 
 # ---------------------------------------------------------------------------

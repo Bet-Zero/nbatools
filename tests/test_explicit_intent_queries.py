@@ -374,7 +374,7 @@ class TestRouteSelection:
 
     def test_unanchored_playoffs_default_carries_note(self):
         parsed = parse_query("kyrie points in the playoffs")
-        assert parsed["season"] == "2024-25"
+        assert parsed["season"] == "2025-26"
         assert any("defaulted" in n for n in parsed.get("notes") or [])
 
     def test_fuzzy_day_window_sets_flag(self):

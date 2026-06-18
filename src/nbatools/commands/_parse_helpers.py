@@ -810,9 +810,14 @@ def detect_season_type(text: str) -> str:
 
 
 def default_season_for_context(season_type: str) -> str:
+    from nbatools.commands._seasons import (
+        LATEST_PLAYOFF_SEASON,
+        LATEST_REGULAR_SEASON,
+    )
+
     if season_type == "Playoffs":
-        return "2024-25"
-    return "2025-26"
+        return LATEST_PLAYOFF_SEASON
+    return LATEST_REGULAR_SEASON
 
 
 def detect_split_type(text: str) -> str | None:

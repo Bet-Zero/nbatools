@@ -268,7 +268,7 @@ def test_recent_form_playoff_default_season():
     parsed = parse_query("LeBron recent form playoffs")
     assert parsed["player"] == "LeBron James"
     assert parsed["last_n"] == 10
-    assert parsed["season"] == "2024-25"
+    assert parsed["season"] == "2025-26"
     assert parsed["season_type"] == "Playoffs"
 
 
@@ -402,7 +402,7 @@ def test_last_n_games_does_not_parse_as_last_season():
 def test_single_threshold_defaults_season_for_player_finder():
     parsed = parse_query("LeBron playoff games over 30 points vs Boston")
     assert parsed["player"] == "LeBron James"
-    assert parsed["season"] == "2024-25"
+    assert parsed["season"] == "2025-26"
     assert parsed["season_type"] == "Playoffs"
     assert parsed["opponent"] == "BOS"
     assert parsed["stat"] == "pts"
@@ -1422,7 +1422,7 @@ def test_second_round_record_since_routes_to_playoff_round_record(query):
     assert parsed["season_type"] == "Playoffs"
     assert parsed["route_kwargs"]["playoff_round"] == "02"
     assert parsed["route_kwargs"]["start_season"] == "2010-11"
-    assert parsed["route_kwargs"]["end_season"] == "2024-25"
+    assert parsed["route_kwargs"]["end_season"] == "2025-26"
 
 
 @pytest.mark.parametrize(
@@ -1449,7 +1449,7 @@ def test_single_team_playoff_round_records_are_unsupported_boundary(query, team,
 def test_single_team_playoff_round_record_since_preserves_start_season():
     parsed = parse_query("Warriors Finals record since 2015")
     assert parsed["route_kwargs"]["start_season"] == "2015-16"
-    assert parsed["route_kwargs"]["end_season"] == "2024-25"
+    assert parsed["route_kwargs"]["end_season"] == "2025-26"
 
 
 def test_teams_over_point_five_surface_form_sets_opponent_quality_slot():

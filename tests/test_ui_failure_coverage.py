@@ -526,7 +526,7 @@ class TestPlayoffRoutingBoundaries:
         assert qr.result.result_status == "ok"
         assert qr.metadata["season_type"] == "Playoffs"
         assert qr.metadata["start_season"] == "2010-11"
-        assert qr.metadata["end_season"] == "2024-25"
+        assert qr.metadata["end_season"] == "2025-26"
 
         sections = qr.to_dict()["sections"]
         assert set(sections) == {"leaderboard"}
@@ -1501,9 +1501,10 @@ class TestOpponentQualityPlayoffTeamSemantics:
 
         summary = qr.to_dict()["sections"]["summary"][0]
         assert summary["season_type"] == "Playoffs"
-        assert summary["games"] == 11
-        assert summary["wins"] == 6
-        assert summary["losses"] == 5
+        # 2025-26 playoffs (default advanced when that data was loaded).
+        assert summary["games"] == 7
+        assert summary["wins"] == 3
+        assert summary["losses"] == 4
 
 
 class TestRawQueryAnswerWave5Coverage:

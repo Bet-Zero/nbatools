@@ -665,8 +665,8 @@ cases:
       - by_season
     expected_row_counts:
       summary: 1
-      by_season: 21
-    review_notes: "Single-team postseason history surface."
+      by_season: 22
+    review_notes: "Single-team postseason history surface. 22 seasons after the 2025-26 playoffs were loaded (Lakers made the field)."
 
   - id: heat_knicks_playoff_history
     query: "Heat vs Knicks playoff history"
@@ -5991,7 +5991,7 @@ cases:
       - path: result.metadata.start_season
         equals: 2010-11
       - path: result.metadata.end_season
-        equals: 2024-25
+        equals: 2025-26
       - path: result.sections.leaderboard.0.round
         equals: Second Round
       - path: result.sections.leaderboard.0.season_type
@@ -7849,17 +7849,21 @@ cases:
     query: "Jokic playoff stats this year"
     category: player_summary
     priority: p0
-    answer_text_policy: no_answer_text_expected
-    expected_status: no_result
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
     expected_route: player_game_summary
-    expected_shape: no_result
-    expected_sections: []
+    expected_shape: entity_summary
+    expected_sections:
+      - summary
+      - game_log
     hard_assertions:
+      - path: result.metadata.player
+        equals: Nikola Jokić
       - path: result.metadata.season
         equals: 2025-26
       - path: result.metadata.season_type
         equals: Playoffs
-    review_notes: "'this year' + playoffs must mean the current season's playoffs, never silently substitute 2024-25. Expected to flip to ok when 2025-26 playoff data is loaded — update expectations then."
+    review_notes: "'this year' + playoffs means the current season's playoffs. Flipped to ok 2026-06-15 when 2025-26 playoff data was loaded (the honesty guard worked: it never substituted 2024-25 while empty)."
 
   - id: fan_unanchored_playoffs_default_note
     query: "kyrie points in the playoffs"
@@ -7872,10 +7876,10 @@ cases:
     expected_sections: []
     hard_assertions:
       - path: result.metadata.season
-        equals: 2024-25
+        equals: 2025-26
       - path: result.metadata.season_type
         equals: Playoffs
-    review_notes: "Unanchored playoff asks default to the most recent completed playoffs and must say so in notes. Kyrie Irving played no 2024-25 playoff games (injury), so the empty result is an honest zero."
+    review_notes: "Unanchored playoff asks default to the most recent completed playoffs (now 2025-26) and must say so in notes. Kyrie Irving played no 2025-26 playoff games, so the empty result is an honest zero."
 
   - id: fan_wolves_defensive_rating_scalar
     query: "wolves defensive rating"
