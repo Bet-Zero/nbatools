@@ -57,6 +57,7 @@ class TestResolvePlayer:
         assert r.is_confident
         assert r.resolved == "Devin Booker"
 
+    @pytest.mark.needs_data
     def test_unique_first_name_index(self):
         from nbatools.commands.entity_resolution import _get_player_first_name_index
 
