@@ -1298,12 +1298,14 @@ class TestWithoutPlayer:
 
     def test_unsupported_boundary_note_for_semantic_fallback(self):
         parsed = parse_query("Which scorers have the biggest drop-off against top-10 defenses?")
-        assert parsed["route"] == "season_leaders"
+        assert parsed["route"] is None
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
         assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
     def test_unsupported_boundary_note_for_above_point_six_hundred_record_bucket(self):
         parsed = parse_query("best record vs teams above .600")
-        assert parsed["route"] == "team_record_leaderboard"
+        assert parsed["route"] is None
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
         assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
     @pytest.mark.parametrize(
@@ -1402,7 +1404,7 @@ class TestDateFilterDropPrevention:
         assert qr.to_dict()["sections"]["summary"]
 
     @pytest.mark.needs_data
-    def test_working_date_window_cases_still_preserve_date_filters(self):
+    def test_date_window_cases_preserve_supported_filters_and_refuse_advanced_fallback(self):
         march = execute_natural_query("top scorers in March")
         assert march.route == "season_leaders"
         assert march.result.result_status == "ok"
@@ -1425,15 +1427,13 @@ class TestDateFilterDropPrevention:
 
         offensive = execute_natural_query("best offensive teams since January")
         assert offensive.route == "season_team_leaders"
-        assert offensive.result.result_status == "ok"
+        assert offensive.result.result_status == "no_result"
+        assert offensive.result.result_reason == "filter_not_supported"
+        assert offensive.metadata["unsupported_filters"] == ["unsupported_concept"]
         assert offensive.metadata["start_date"] == "2026-01-01"
         assert offensive.metadata["end_date"] is None
-        assert {
-            "label": "Date range",
-            "value": "2026-01-01",
-            "kind": "date",
-        } in offensive.metadata["applied_filters"]
-        assert offensive.to_dict()["sections"]["leaderboard"]
+        assert offensive.metadata.get("applied_filters", []) == []
+        assert offensive.to_dict()["sections"] == {}
 
         last_night = execute_natural_query("Who scored the most points last night?")
         assert last_night.route == "season_leaders"

@@ -127,6 +127,7 @@ def test_natural_best_offensive_teams_in_march_raw_smoke():
         query="best offensive teams in March",
         pretty=False,
     )
-    assert "team_name" in out
-    assert "pts_per_game" in out
-    assert "2025-26" in out
+    assert "route,season_team_leaders" in out
+    assert "filter_not_supported" in out
+    assert "unsupported_concept" in out
+    assert "team_name" not in out

@@ -334,6 +334,27 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("uses typed public copy for unsupported concepts", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          query_text: "Jokic salary and contract",
+          unsupported_filters: ["unsupported_concept"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "That concept is not supported yet. Try asking for a specific player, team, game, or stat.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("unsupported_concept")).not.toBeInTheDocument();
+  });
+
   it("guides recent defensive-rating unsupported queries to safe alternatives", () => {
     render(
       <NoResultDisplay
