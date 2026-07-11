@@ -119,8 +119,20 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
         {
             "query": "who has cooled off lately",
             "route": None,
-            "status": "error",
-            "reason": "unrouted",
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["unsupported_concept"],
+        },
+        {
+            "query": "Jokic salary and contract",
+            "route": None,
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["unsupported_concept"],
+        },
+        {
+            "query": "How many games did LeBron and Curry both play?",
+            "route": None,
+            "reason": "filter_not_supported",
+            "unsupported_filters": ["unsupported_concept"],
         },
         {
             "query": "Who is the best duo this season?",

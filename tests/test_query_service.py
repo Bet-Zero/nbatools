@@ -993,26 +993,37 @@ class TestMetadataPreservation:
         assert any("sample_advanced_metrics" in n for n in notes)
 
     @pytest.mark.query
-    def test_natural_query_metadata_merges_parse_and_result_notes(self, monkeypatch):
-        class DummyResult:
-            current_through = None
-            notes = ["engine_note: execution fallback"]
-            result_reason = None
-            result_status = "ok"
+    def test_unsupported_concept_never_reaches_route_execution(self, monkeypatch):
+        def fail_if_executed(*args, **kwargs):
+            pytest.fail("unsupported concept reached route execution")
 
-            def to_dict(self):
-                return {}
-
-        def fake_execute_build_result(route, kwargs, extra_conditions=None):
-            assert route == "season_leaders"
-            return DummyResult()
-
-        monkeypatch.setattr(query_service, "_execute_build_result", fake_execute_build_result)
-
+        monkeypatch.setattr(query_service, "_execute_build_result", fail_if_executed)
         qr = execute_natural_query("Who's been the best shot creator in clutch time this season?")
+
+        assert qr.route is None
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["unsupported_concept"]
+        assert qr.to_dict()["sections"] == {}
         notes = qr.metadata.get("notes", [])
         assert any("unsupported_boundary" in note for note in notes)
-        assert any("engine_note" in note for note in notes)
+
+    @pytest.mark.needs_data
+    @pytest.mark.parametrize(
+        "query",
+        [
+            "Jokic salary and contract",
+            "How many games did LeBron and Curry both play?",
+        ],
+    )
+    def test_a01_audit_reproductions_fail_closed(self, query):
+        qr = execute_natural_query(query)
+
+        assert qr.route is None
+        assert qr.result.result_status == "no_result"
+        assert qr.result.result_reason == "filter_not_supported"
+        assert qr.metadata["unsupported_filters"] == ["unsupported_concept"]
+        assert qr.to_dict()["sections"] == {}
 
 
 # ===================================================================

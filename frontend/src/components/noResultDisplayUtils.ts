@@ -235,6 +235,9 @@ export function unsupportedBoundaryTitle(
   if (filters.includes("team_bench_scoring")) {
     return "Unsupported Summary";
   }
+  if (filters.includes("unsupported_concept")) {
+    return "Unsupported Question";
+  }
   if (filters.includes("opponent_conference")) {
     return "Unavailable Filter";
   }
@@ -256,6 +259,9 @@ function unsupportedBoundaryMessage(
   }
   if (filters.includes("team_bench_scoring")) {
     return "Team bench-scoring summaries are not supported yet.";
+  }
+  if (filters.includes("unsupported_concept")) {
+    return "That concept is not supported yet. Try asking for a specific player, team, game, or stat.";
   }
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";

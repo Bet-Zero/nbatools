@@ -1,8 +1,37 @@
 import pytest
 
-from nbatools.commands.natural_query import detect_opponent_quality, parse_query
+from nbatools.commands.natural_query import (
+    _UNSUPPORTED_BOUNDARY_PHRASES,
+    detect_opponent_quality,
+    parse_query,
+)
 
 pytestmark = pytest.mark.parser
+
+
+@pytest.mark.parametrize("phrase", _UNSUPPORTED_BOUNDARY_PHRASES)
+def test_generic_unsupported_phrases_fail_closed(phrase):
+    parsed = parse_query(f"Jokic summary {phrase}")
+
+    assert parsed["route"] is None
+    assert parsed["intent"] == "unsupported"
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
+    assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
+
+
+def test_minimum_attempts_boundary_fails_closed():
+    parsed = parse_query("Jokic summary minimum 5 attempts")
+
+    assert parsed["route"] is None
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
+
+
+def test_date_window_team_advanced_rating_boundary_fails_closed():
+    parsed = parse_query("best offensive rating teams since January")
+
+    assert parsed["route"] == "season_team_leaders"
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
+    assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
 
 def test_kobe_50_point_games_summary():

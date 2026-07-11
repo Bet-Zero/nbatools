@@ -716,19 +716,84 @@ cases:
         - subjective_trend
         - last_n_games
     answer_text_policy: no_answer_text_expected
-    expected_status: error
+    expected_status: no_result
     expected_route:
-    expected_reason: unrouted
-    expected_shape: error
-    expected_filters:
-      - kind: window
-        value: "10"
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_concept
     review_notes: "Intentional semantic boundary until trend/drop-off definitions exist."
     manual_review:
       status: expected_unsupported
       tags:
         - subjective_trend
       notes: "Expected unsupported/product-boundary query."
+
+  - id: a01_salary_contract_boundary
+    query: "Jokic salary and contract"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: player_stats_this_season
+      variant: nearby_unsupported
+      concept: salary_contract_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - salary_contract
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_concept
+    review_notes: "Salary and contract concepts must refuse instead of returning a player stat summary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+      notes: "Review the typed refusal and absence of player-stat answer rows."
+
+  - id: a01_multi_player_both_play_count_boundary
+    query: "How many games did LeBron and Curry both play?"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: nearby_unsupported
+      concept: multi_player_cooccurrence_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - multi_player_cooccurrence
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route:
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_concept
+    review_notes: "Unsupported multi-player co-occurrence counts must not return a one-player count or zero."
+    manual_review:
+      status: unreviewed
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+      notes: "Review the typed refusal and absence of count/finder answer rows."
 
   - id: assist_leaders_this_season
     query: "Who leads the NBA in assists this season?"
@@ -6910,13 +6975,14 @@ cases:
       variant: nearby_unsupported
       no_broad_fallback: true
     answer_text_policy: no_answer_text_expected
-    expected_status: error
+    expected_status: no_result
     expected_route:
-    expected_reason: unrouted
-    expected_shape: error
-    expected_filters:
-      - kind: window
-        value: "10"
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_concept
     review_notes: "Subjective cooled-off query should remain unsupported."
     manual_review:
       status: expected_unsupported

@@ -172,6 +172,18 @@ class TestNaturalQuery:
         resp = client.post("/query", json={})
         assert resp.status_code == 422
 
+    def test_unsupported_concept_returns_typed_no_result(self):
+        resp = client.post("/query", json={"query": "who has cooled off lately"})
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["ok"] is False
+        assert body["route"] is None
+        assert body["result_status"] == "no_result"
+        assert body["result_reason"] == "filter_not_supported"
+        assert body["result"]["sections"] == {}
+        assert body["result"]["metadata"]["unsupported_filters"] == ["unsupported_concept"]
+
     def test_natural_query_wrong_content_type(self):
         resp = client.post("/query", content="plain text")
         assert resp.status_code == 422

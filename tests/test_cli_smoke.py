@@ -578,6 +578,18 @@ def test_recent_form_playoff_default_smoke():
     assert "Rows returned:" in out or "LeBron James" in out
 
 
+def test_unsupported_concept_cli_refuses_without_answer_rows():
+    out = _capture_output(
+        natural_query_run,
+        query="Jokic salary and contract",
+        pretty=True,
+    )
+
+    assert "This filter cannot be applied" in out
+    assert "required data is unavailable" in out
+    assert "Nikola Joki" not in out
+
+
 def test_natural_player_split_pretty_smoke():
     out = _capture_output(
         natural_query_run,

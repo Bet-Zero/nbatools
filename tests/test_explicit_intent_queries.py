@@ -655,6 +655,7 @@ class TestCountResult:
         assert "COUNT" in text
         assert "1" in text
 
+    @pytest.mark.needs_data
     def test_bare_stat_count_sums_stat_not_games(self):
         # "how many threes did curry hit" asks for the number of threes,
         # not the number of games he played.
@@ -663,11 +664,13 @@ class TestCountResult:
         games = qr.result.games
         assert qr.result.count == int(games["fg3m"].sum())
 
+    @pytest.mark.needs_data
     def test_threshold_count_still_counts_games(self):
         qr = execute_natural_query("how many 30 point games has Jokic had 2024-25")
         assert isinstance(qr.result, CountResult)
         assert qr.result.count == len(qr.result.games)
 
+    @pytest.mark.needs_data
     def test_team_advanced_scalar_answer_phrase(self):
         qr = execute_natural_query("celtics net rating")
         md = qr.metadata or {}
@@ -676,21 +679,25 @@ class TestCountResult:
         assert "of 30" in phrase
         assert "Celtics" in phrase
 
+    @pytest.mark.needs_data
     def test_league_threshold_games_all_meet_threshold(self):
         qr = execute_natural_query("who scored 50+ points this season")
         assert isinstance(qr.result, LeaderboardResult)
         assert (qr.result.leaders["pts"] >= 50).all()
 
+    @pytest.mark.needs_data
     def test_rookie_leaderboard_executes_with_caveat(self):
         qr = execute_natural_query("rookie scoring leaders")
         assert isinstance(qr.result, LeaderboardResult)
         assert any("rookies" in c for c in qr.result.caveats)
 
+    @pytest.mark.needs_data
     def test_bench_leaderboard_executes_with_caveat(self):
         qr = execute_natural_query("most points off the bench")
         assert isinstance(qr.result, LeaderboardResult)
         assert any("bench games" in c for c in qr.result.caveats)
 
+    @pytest.mark.needs_data
     def test_bench_leaderboard_refuses_without_role_coverage(self):
         # 2010-11 predates the trusted starter-role dataset.
         qr = execute_natural_query("most bench points in 2010-11")

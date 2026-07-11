@@ -511,8 +511,10 @@ Leaderboard no-match behavior:
 - if data exists but the requested date/context/sample filters leave no games in scope, leaderboard routes return `no_match` rather than falling back to a broader leaderboard
 - rolling/date-window team advanced rating leaderboards and undefined skill concepts
   such as catch-and-shoot, drawing fouls, transition scoring, isolation defense,
-  shot creation, and per-game attempt minimums are unsupported boundaries; routed
-  fallbacks include an explicit `unsupported_boundary` note
+  shot creation, salary/contract questions, multi-player co-occurrence, and
+  per-game attempt minimums are unsupported boundaries; they return a typed
+  `no_result` / `filter_not_supported` response with
+  `metadata.unsupported_filters=["unsupported_concept"]` and no answer rows
 - rookie leaderboards (`rookie scoring leaders`, `top rookies this season`)
   are supported: players are filtered to roster experience of 0 years in
   each season, with roster coverage from 1996-97; seasons without roster

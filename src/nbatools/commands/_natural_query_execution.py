@@ -594,6 +594,12 @@ def _prepare_route_conditions(
 
 
 def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
+    if filter_id == "unsupported_concept":
+        return (
+            "the requested concept is outside the supported NBA stats contract; "
+            "no broader player, team, finder, or leaderboard answer was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "multi_player_availability":
         return (
             "multi-player availability filters are not supported with current data; "

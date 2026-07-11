@@ -317,21 +317,34 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "road by 20",
     "road team won by 20",
     "above .600",
+    "salary",
+    "contract",
 )
 
 
-def _unsupported_boundary_note(q: str, route: str, route_kwargs: dict) -> str | None:
+def _unsupported_phrase_boundary_note(q: str) -> str | None:
     if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or re.search(
         r"\bmin(?:imum)?\s+\d+\s+attempts\b", q
     ):
         return (
             "unsupported_boundary: this phrase is outside the shipped support boundary; "
-            "returned results, when present, are broad fallbacks and not execution-backed "
-            "for the unsupported concept"
+            "no result was executed for the unsupported concept"
         )
+    return None
+
+
+def _unsupported_boundary_note(
+    q: str,
+    route: str,
+    route_kwargs: dict,
+    *,
+    requested_stat: str | None = None,
+) -> str | None:
+    if boundary_note := _unsupported_phrase_boundary_note(q):
+        return boundary_note
 
     if route == "season_team_leaders":
-        stat = route_kwargs.get("stat")
+        stat = requested_stat or route_kwargs.get("stat")
         rolling_window = route_kwargs.get("last_n") is not None or bool(
             route_kwargs.get("start_date") or route_kwargs.get("end_date")
         )
@@ -1521,6 +1534,33 @@ def _finalize_route(parsed: dict) -> dict:
         max_value=max_value,
         occurrence_event=occurrence_event,
     )
+
+    # Generic semantic/product boundaries must fail before route inference can
+    # turn them into plausible player, finder, or leaderboard answers. Keep the
+    # dedicated team-record availability boundary more specific than the
+    # generic "both play" phrase guard.
+    generic_boundary_note = _unsupported_phrase_boundary_note(q)
+    dedicated_availability_boundary = bool(
+        "both play" in q and team and team_record_availability_intent
+    )
+    if generic_boundary_note and not dedicated_availability_boundary:
+        out = dict(parsed)
+        out["route"] = None
+        out["route_kwargs"] = _unsupported_route_kwargs(
+            "unsupported_concept",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            stat=stat,
+        )
+        out["intent"] = "unsupported"
+        out["notes"] = [generic_boundary_note]
+        out["confidence"] = compute_parse_confidence(out)
+        out["alternates"] = generate_alternates(out)
+        return out
 
     # -- Entity ambiguity: short-circuit if we can't resolve a required entity --
     entity_ambiguity = parsed.get("entity_ambiguity")
@@ -3214,8 +3254,14 @@ def _finalize_route(parsed: dict) -> dict:
             " recomputed from filtered sample"
         )
     if not route_kwargs.get("unsupported_filters") and (
-        boundary_note := _unsupported_boundary_note(q, route, route_kwargs)
+        boundary_note := _unsupported_boundary_note(
+            q,
+            route,
+            route_kwargs,
+            requested_stat=stat,
+        )
     ):
+        route_kwargs["unsupported_filters"] = ["unsupported_concept"]
         notes.append(boundary_note)
 
     if notes:
