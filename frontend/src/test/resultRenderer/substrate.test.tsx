@@ -4,6 +4,35 @@ import ResultRenderer from "../../components/results/ResultRenderer";
 import { makeResponse } from "./helpers";
 
 describe("ResultRenderer substrate and empty states", () => {
+  it("renders unavailable count filters as a no-result instead of zero", () => {
+    const data = makeResponse({
+      ok: false,
+      query: "How many Jokic games were clutch in 2025-26?",
+      route: "player_game_finder",
+      result_status: "no_result",
+      result_reason: "filter_not_supported",
+      result: {
+        query_class: "count",
+        result_status: "no_result",
+        result_reason: "filter_not_supported",
+        metadata: { clutch: true, query_class: "count" },
+        notes: ["clutch coverage is unavailable"],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "The requested filter or metric is not available in the current dataset.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/^0$/)).not.toBeInTheDocument();
+  });
+
   it("routes every result through the fallback table by default", () => {
     const data = makeResponse({
       route: "unmapped_route",

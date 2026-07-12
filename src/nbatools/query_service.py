@@ -70,6 +70,41 @@ from nbatools.data_source import data_glob, data_read_csv_dicts
 
 _COUNT_THRESHOLD_EPSILON = 0.0001
 
+
+def _is_trusted_empty_count_result(result: Any) -> bool:
+    """Return whether a negative result proves a fully evaluated empty sample."""
+    if (
+        getattr(result, "result_status", None) != ResultStatus.NO_RESULT
+        or getattr(result, "result_reason", None) != ResultReason.NO_MATCH
+    ):
+        return False
+    if isinstance(result, FinderResult):
+        return result.games.empty
+    if isinstance(result, LeaderboardResult):
+        return result.leaders.empty
+    if isinstance(result, CountResult):
+        return result.count == 0 and result.games.empty
+    return isinstance(result, NoResult)
+
+
+def _count_no_result(result: Any) -> NoResult:
+    """Preserve a negative result while exposing the requested count class."""
+    reason = getattr(result, "result_reason", None)
+    status = getattr(result, "result_status", ResultStatus.NO_RESULT)
+    if reason is None:
+        reason = ResultReason.ERROR if status == ResultStatus.ERROR else ResultReason.UNSUPPORTED
+    return NoResult(
+        query_class="count",
+        reason=str(reason),
+        result_status=str(status),
+        result_reason=str(reason),
+        current_through=getattr(result, "current_through", None),
+        metadata=dict(getattr(result, "metadata", {})),
+        notes=list(getattr(result, "notes", [])),
+        caveats=list(getattr(result, "caveats", [])),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Metadata helper
 # ---------------------------------------------------------------------------
@@ -1318,8 +1353,22 @@ def execute_natural_query(query: str) -> QueryResult:
             route=route,
         )
 
-    # Post-process: convert FinderResult → CountResult when count intent detected
-    if count_intent and isinstance(result, FinderResult):
+    # Post-process count intent without converting unavailable or unsupported
+    # execution into a definitive zero.  Only an explicit, fully evaluated
+    # no-match proves that the requested count is zero.
+    if count_intent and getattr(result, "result_status", None) != ResultStatus.OK:
+        if _is_trusted_empty_count_result(result):
+            result = CountResult(
+                count=0,
+                result_status=ResultStatus.OK,
+                current_through=result.current_through,
+                metadata=result.metadata,
+                notes=result.notes,
+                caveats=result.caveats,
+            )
+        else:
+            result = _count_no_result(result)
+    elif count_intent and isinstance(result, FinderResult):
         stat_total = _stat_total_count(parsed, result.games)
         if stat_total is not None:
             parsed["count_kind"] = "stat_total"
@@ -1413,14 +1462,6 @@ def execute_natural_query(query: str) -> QueryResult:
             notes=result.notes,
             caveats=result.caveats,
         )
-    elif count_intent and isinstance(result, NoResult):
-        result = CountResult(
-            count=0,
-            result_status="ok",
-            notes=result.notes,
-            caveats=result.caveats,
-        )
-
     metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
     # Override query_class in metadata when count intent is active
     if count_intent:

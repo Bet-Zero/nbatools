@@ -268,7 +268,11 @@ def build_result(
     if clutch:
         df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)
         if clutch_note:
-            notes.append(clutch_note)
+            return NoResult(
+                query_class="finder",
+                reason="filter_not_supported",
+                notes=[clutch_note],
+            )
 
     df, role_note = apply_player_role_filter(df, seasons, season_type, role)
     if role_note:

@@ -168,6 +168,31 @@ class TestNaturalQuery:
         assert body["result_reason"] == "unrouted"
         assert body["route"] is None
 
+    @patch("nbatools.api.execute_natural_query")
+    def test_negative_count_response_preserves_reason_without_count_section(self, mock_exec):
+        no_result = NoResult(
+            query_class="count",
+            reason="filter_not_supported",
+            notes=["clutch coverage is unavailable"],
+        )
+        mock_exec.return_value = QueryResult(
+            result=no_result,
+            metadata={"query_text": "clutch count", "query_class": "count"},
+            query="how many clutch games",
+            route="player_game_finder",
+        )
+
+        resp = client.post("/query", json={"query": "how many clutch games"})
+        body = resp.json()
+
+        assert resp.status_code == 200
+        assert body["ok"] is False
+        assert body["result_status"] == "no_result"
+        assert body["result_reason"] == "filter_not_supported"
+        assert body["result"]["query_class"] == "count"
+        assert body["result"]["sections"] == {}
+        assert "primary_count" not in body["result"]["metadata"]
+
     def test_natural_query_missing_body(self):
         resp = client.post("/query", json={})
         assert resp.status_code == 422

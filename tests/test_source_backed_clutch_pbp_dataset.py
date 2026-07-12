@@ -461,7 +461,7 @@ def test_clutch_season_leaders_uses_derived_clutch_rows(tmp_path, monkeypatch):
     assert result.leaders.loc[0, "clutch_events"] == 2
 
 
-def test_clutch_route_falls_back_unfiltered_when_coverage_missing(tmp_path, monkeypatch):
+def test_clutch_route_refuses_when_coverage_missing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _write_route_source_files(tmp_path)
     for path in (tmp_path / "data/processed/player_game_clutch_stats").glob("*.csv"):
@@ -474,7 +474,8 @@ def test_clutch_route_falls_back_unfiltered_when_coverage_missing(tmp_path, monk
         clutch=True,
     )
 
-    assert len(result.games) == 2
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
     assert any(
         "clutch filter is not supported with current data" in note
         and "try removing this filter" in note
