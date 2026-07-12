@@ -51,8 +51,8 @@ losses,25,0,25,0,102.68,43.68,20.36,7.36,4.64,12.68,12.2,0.492,0.525,-9.12
 """
 
 PLAYER_SUMMARY_RAW = """SUMMARY
-player_name,season_start,season_end,season_type,games,wins,losses,win_pct,minutes_avg,minutes_sum,pts_avg,pts_sum,reb_avg,reb_sum,ast_avg,ast_sum,efg_pct_avg,efg_pct_sum,ts_pct_avg,ts_pct_sum
-Nikola Jokić,2025-26,2025-26,Regular Season,10,9,1,0.9,36.1,361,24,240,13.6,136,12.7,127,0.602,6.02,0.63,6.3
+player_name,season_start,season_end,season_type,games,wins,losses,win_pct,minutes_avg,minutes_sum,pts_avg,pts_sum,reb_avg,reb_sum,ast_avg,ast_sum,efg_pct_avg,ts_pct_avg
+Nikola Jokić,2025-26,2025-26,Regular Season,10,9,1,0.9,36.1,361,24,240,13.6,136,12.7,127,0.602,0.63
 
 BY_SEASON
 season,games,wins,losses,pts_avg,reb_avg,ast_avg,minutes_avg,efg_pct_avg,ts_pct_avg

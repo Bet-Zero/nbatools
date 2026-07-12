@@ -638,6 +638,9 @@ League-wide seasonal environment context.
 - `avg_reb`
 - `avg_tov`
 
+`avg_fg3_pct` is the league sample's total 3-pointers made divided by total
+3-point attempts; it is not an arithmetic mean of team-game percentages.
+
 ---
 
 # 4. Metadata Tables

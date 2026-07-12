@@ -178,22 +178,13 @@ def summarize_usage_rate(
     Return simple summary stats for usage rate over a filtered sample.
     """
     if usage_col not in player_with_usage_df.columns:
-        return {
-            "usg_pct_avg": None,
-            "usg_pct_sum": None,
-        }
+        return {"usg_pct_avg": None}
 
     values = pd.to_numeric(player_with_usage_df[usage_col], errors="coerce")
     if values.notna().sum() == 0:
-        return {
-            "usg_pct_avg": None,
-            "usg_pct_sum": None,
-        }
+        return {"usg_pct_avg": None}
 
-    return {
-        "usg_pct_avg": float(values.mean()),
-        "usg_pct_sum": float(values.sum()),
-    }
+    return {"usg_pct_avg": float(values.mean())}
 
 
 def add_usage_to_grouped_summary(

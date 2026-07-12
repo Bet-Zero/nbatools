@@ -268,17 +268,10 @@ def compute_sample_advanced_metrics(df: pd.DataFrame) -> dict[str, float | None]
 def add_sample_advanced_metrics_to_summary_row(
     sample_df: pd.DataFrame,
     summary_row: dict,
-    include_sum_fields: bool = False,
 ) -> dict:
     out = dict(summary_row)
     metrics = compute_sample_advanced_metrics(sample_df)
     out.update(metrics)
-
-    if include_sum_fields:
-        for key, value in metrics.items():
-            sum_key = key.replace("_avg", "_sum")
-            out[sum_key] = value
-
     return out
 
 
