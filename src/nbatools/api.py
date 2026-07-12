@@ -16,12 +16,18 @@ import time
 from typing import Any
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from nbatools import __version__, api_ui
+from nbatools.api_contracts import (
+    NaturalQueryRequest,
+    StructuredQueryRequest,
+    validation_error_payload,
+)
 from nbatools.api_handlers import dev_fixtures_payload, query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
 from nbatools.query_feedback import (
@@ -78,18 +84,6 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 
-class NaturalQueryRequest(BaseModel):
-    query: str = Field(..., description="Natural-language NBA query text.")
-
-
-class StructuredQueryRequest(BaseModel):
-    route: str = Field(..., description="Named route (e.g. 'player_game_summary').")
-    kwargs: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Keyword arguments forwarded to the route's build_result function.",
-    )
-
-
 class QueryResponse(BaseModel):
     """Envelope returned by both query endpoints."""
 
@@ -113,6 +107,15 @@ class ErrorResponse(BaseModel):
     ok: bool = False
     error: str
     detail: str | None = None
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_error(
+    _request: Request,
+    exc: RequestValidationError,
+) -> JSONResponse:
+    """Keep FastAPI request failures aligned with the Vercel envelope."""
+    return JSONResponse(status_code=422, content=validation_error_payload(exc))
 
 
 class HealthResponse(BaseModel):

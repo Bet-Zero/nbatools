@@ -6,6 +6,13 @@ import time
 from http import HTTPStatus
 from typing import Any
 
+from pydantic import ValidationError
+
+from nbatools.api_contracts import (
+    NaturalQueryRequest,
+    StructuredQueryRequest,
+    validation_error_payload,
+)
 from nbatools.api_handlers import (
     dev_fixtures_payload,
     freshness_payload,
@@ -60,16 +67,17 @@ def dev_fixtures_response() -> tuple[int, dict[str, Any]]:
 
 
 def query_response(
-    body: dict[str, Any],
+    body: Any,
     *,
     source_page: str | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate and execute a natural query request body."""
-    query = body.get("query")
-    if not isinstance(query, str) or not query.strip():
-        return _validation_error("Field 'query' must be a non-empty string")
+    try:
+        request = NaturalQueryRequest.model_validate(body)
+    except ValidationError as exc:
+        return HTTPStatus.UNPROCESSABLE_ENTITY, validation_error_payload(exc)
     start_time = time.monotonic()
-    payload = natural_query_payload(query)
+    payload = natural_query_payload(request.query)
     maybe_log_query_diagnostic(
         payload,
         elapsed_ms=elapsed_ms_since(start_time),
@@ -87,23 +95,10 @@ def query_feedback_response(
     return handle_feedback_submission(body, source_page=source_page)
 
 
-def structured_query_response(body: dict[str, Any]) -> tuple[int, dict[str, Any]]:
+def structured_query_response(body: Any) -> tuple[int, dict[str, Any]]:
     """Validate and execute a structured query request body."""
-    route = body.get("route")
-    if not isinstance(route, str) or not route.strip():
-        return _validation_error("Field 'route' must be a non-empty string")
-
-    kwargs = body.get("kwargs", {})
-    if kwargs is None:
-        kwargs = {}
-    if not isinstance(kwargs, dict):
-        return _validation_error("Field 'kwargs' must be an object when provided")
-    return HTTPStatus.OK, structured_query_payload(route, kwargs)
-
-
-def _validation_error(detail: str) -> tuple[int, dict[str, Any]]:
-    return HTTPStatus.UNPROCESSABLE_ENTITY, {
-        "ok": False,
-        "error": "validation_error",
-        "detail": detail,
-    }
+    try:
+        request = StructuredQueryRequest.model_validate(body)
+    except ValidationError as exc:
+        return HTTPStatus.UNPROCESSABLE_ENTITY, validation_error_payload(exc)
+    return HTTPStatus.OK, structured_query_payload(request.route, request.kwargs)

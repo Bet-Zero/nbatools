@@ -86,6 +86,24 @@ Execute a structured (route-based) query.
 
 **Response:** Same envelope shape as `/query`.
 
+### Query request validation
+
+`POST /query` and `POST /structured-query` use one shared strict request
+contract in both FastAPI and the Vercel functions:
+
+- request objects reject unknown top-level fields instead of ignoring them
+- `query` must be a non-blank string of at most 500 characters
+- `route` must be a non-blank string of at most 64 characters
+- `kwargs` must be a non-null JSON object when provided
+- known structured routes reject missing, unknown, internal-only, and
+  wrong-type kwargs before command execution; values are not type-coerced
+- validation failures return HTTP 422 with
+  `{ "ok": false, "error": "validation_error", "detail": "..." }`
+
+Whole-body byte limits, nested-value budgets, season-span budgets, rate limits,
+and quotas are separate admission-control policy and are not implied by this
+structural request contract.
+
 ### `GET /freshness`
 
 Returns structured data freshness status — current_through, manifest state, per-season classification, and last refresh outcome.
