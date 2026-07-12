@@ -132,13 +132,21 @@ def _route_source_events_df() -> pd.DataFrame:
     )
 
 
-def _write_route_source_files(tmp_path) -> None:
+def _write_route_source_files(
+    tmp_path,
+    *,
+    pbp_game_ids: set[str] | None = None,
+    omit_player_clutch_game_id: str | None = None,
+    omit_team_clutch_game_id: str | None = None,
+) -> None:
     player_dir = tmp_path / "data/raw/player_game_stats"
     team_dir = tmp_path / "data/raw/team_game_stats"
+    pbp_dir = tmp_path / "data/raw/play_by_play_events"
     clutch_player_dir = tmp_path / "data/processed/player_game_clutch_stats"
     clutch_team_dir = tmp_path / "data/processed/team_game_clutch_stats"
     player_dir.mkdir(parents=True)
     team_dir.mkdir(parents=True)
+    pbp_dir.mkdir(parents=True)
     clutch_player_dir.mkdir(parents=True)
     clutch_team_dir.mkdir(parents=True)
 
@@ -244,12 +252,23 @@ def _write_route_source_files(tmp_path) -> None:
     ]
     pd.DataFrame(player_rows).to_csv(player_dir / "2099-00_regular_season.csv", index=False)
     pd.DataFrame(team_rows).to_csv(team_dir / "2099-00_regular_season.csv", index=False)
-    derive_player_game_clutch_stats(_route_source_events_df()).to_csv(
-        clutch_player_dir / "2099-00_regular_season.csv", index=False
-    )
-    derive_team_game_clutch_stats(_route_source_events_df()).to_csv(
-        clutch_team_dir / "2099-00_regular_season.csv", index=False
-    )
+    events = _route_source_events_df()
+    if pbp_game_ids is not None:
+        events = events[events["game_id"].astype(str).isin(pbp_game_ids)].copy()
+    events.to_csv(pbp_dir / "2099-00_regular_season.csv", index=False)
+
+    player_clutch = derive_player_game_clutch_stats(_route_source_events_df())
+    if omit_player_clutch_game_id is not None:
+        player_clutch = player_clutch[
+            player_clutch["game_id"].astype(str).ne(omit_player_clutch_game_id)
+        ].copy()
+    player_clutch.to_csv(clutch_player_dir / "2099-00_regular_season.csv", index=False)
+    team_clutch = derive_team_game_clutch_stats(_route_source_events_df())
+    if omit_team_clutch_game_id is not None:
+        team_clutch = team_clutch[
+            team_clutch["game_id"].astype(str).ne(omit_team_clutch_game_id)
+        ].copy()
+    team_clutch.to_csv(clutch_team_dir / "2099-00_regular_season.csv", index=False)
 
 
 def test_parse_clock_seconds_remaining_accepts_iso_and_scoreboard_formats():
@@ -318,10 +337,26 @@ def test_select_trusted_play_by_play_events_reports_coverage_failures():
     untrusted["pbp_validation_reason"] = "missing_game_events"
     df = pd.concat([trusted, untrusted], ignore_index=True)
 
-    selected, failures = select_trusted_play_by_play_events(df)
+    selected, failures = select_trusted_play_by_play_events(
+        df, game_ids={"0029900001", "0029900002"}
+    )
 
     assert set(selected["game_id"].astype(str)) == {"0029900001"}
-    assert failures == ["missing_game_events"]
+    assert len(failures) == 1
+    assert "play_by_play_events coverage incomplete" in failures[0]
+    assert "game_id=0029900002" in failures[0]
+    assert "missing_game_events" in failures[0]
+
+
+def test_select_trusted_play_by_play_events_reports_one_missing_requested_game():
+    selected, failures = select_trusted_play_by_play_events(
+        _normalized_pbp_df(),
+        game_ids={"0029900001", "0029900002"},
+    )
+
+    assert set(selected["game_id"].astype(str)) == {"0029900001"}
+    assert len(failures) == 1
+    assert "missing_keys=[game_id=0029900002]" in failures[0]
 
 
 def test_build_play_by_play_events_backfill_uses_game_sources(monkeypatch):
@@ -479,5 +514,75 @@ def test_clutch_route_refuses_when_coverage_missing(tmp_path, monkeypatch):
     assert any(
         "clutch filter is not supported with current data" in note
         and "try removing this filter" in note
+        for note in result.notes
+    )
+
+
+@pytest.mark.parametrize(
+    ("builder", "kwargs"),
+    [
+        (build_player_summary, {"player": "Jayson Tatum"}),
+        (build_player_finder, {"player": "Jayson Tatum"}),
+        (build_team_record_result, {"team": "BOS"}),
+        (build_season_leaders, {"stat": "pts", "min_games": 1}),
+    ],
+)
+def test_clutch_families_refuse_one_missing_requested_pbp_game(
+    tmp_path, monkeypatch, builder, kwargs
+):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path, pbp_game_ids={"G1"})
+
+    result = builder(
+        season="2099-00",
+        season_type="Regular Season",
+        clutch=True,
+        **kwargs,
+    )
+
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(
+        "play_by_play_events coverage incomplete" in note and "game_id=G2" in note
+        for note in result.notes
+    )
+
+
+@pytest.mark.parametrize(
+    ("builder", "kwargs", "fixture_kwargs", "dataset"),
+    [
+        (
+            build_player_finder,
+            {"player": "Jayson Tatum"},
+            {"omit_player_clutch_game_id": "G1"},
+            "player_game_clutch_stats",
+        ),
+        (
+            build_team_record_result,
+            {"team": "BOS"},
+            {"omit_team_clutch_game_id": "G1"},
+            "team_game_clutch_stats",
+        ),
+    ],
+)
+def test_clutch_families_refuse_one_missing_derived_clutch_window(
+    tmp_path, monkeypatch, builder, kwargs, fixture_kwargs, dataset
+):
+    monkeypatch.chdir(tmp_path)
+    _write_route_source_files(tmp_path, **fixture_kwargs)
+
+    result = builder(
+        season="2099-00",
+        season_type="Regular Season",
+        clutch=True,
+        **kwargs,
+    )
+
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(
+        f"{dataset} coverage incomplete" in note
+        and "window=clutch:last_5m_score_within_5" in note
+        and "game_id=G1" in note
         for note in result.notes
     )

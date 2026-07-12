@@ -128,8 +128,9 @@ If a feature is not reflected here, it should not be assumed shipped.
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
   (parser-recognized and engine-accepted; `player_game_finder` and `team_record`
   execute these filters when `player_game_period_stats` / `team_game_period_stats`
-  coverage exists for the requested slice, otherwise they fall back with an
-  explicit unfiltered-results note. Other routes still remain unfiltered and are
+  contains every requested entity-game key for the exact window; otherwise they
+  return `no_result` / `filter_not_supported` with exact missing key/window detail.
+  Other routes still remain unfiltered and are
   out of scope for the core finish line unless a future product queue reopens
   period route expansion.)
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
@@ -141,11 +142,11 @@ If a feature is not reflected here, it should not be assumed shipped.
   schedule-context route expansion.)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
   (parser-recognized and engine-executed for player summary/finder queries when trusted
-  `player_game_starter_roles` coverage exists for the requested slice; otherwise execution
-  appends an explicit unfiltered-results note. Team-only phrases like
-  `Celtics bench scoring` and league-wide role leaderboards are explicit
-  unsupported boundaries unless a future product queue reopens role route
-  expansion)
+  `player_game_starter_roles` coverage exists for every requested player-game;
+  otherwise execution returns `no_result` / `filter_not_supported` with exact
+  missing or untrusted key detail. `season_leaders` uses the same exact gate.
+  Team-only phrases like `Celtics bench scoring` remain an explicit unsupported
+  boundary.)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against top 10 teams`, `against top 5 teams`, `against top seeded teams`, `against playoff teams`, `against non-playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against winning teams`, `against losing teams`, `against teams over .500`, `against teams under .500`, `against bad teams`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
@@ -823,9 +824,10 @@ Current behavior:
   `season_leaders`
 - those routes use trusted `player_game_clutch_stats` /
   `team_game_clutch_stats` rows derived from official `PlayByPlayV3` events
-  when coverage exists for the requested slice
-- missing or untrusted clutch coverage keeps the explicit unfiltered-results
-  note rather than fabricating clutch output
+  only when raw play-by-play covers every requested base game and every
+  qualifying event key has the exact derived clutch window
+- one missing/untrusted PBP game or derived clutch key returns `no_result` /
+  `filter_not_supported` with exact coverage detail rather than a partial answer
 - whole-game logs, period-only box-score windows, and season-level clutch
   dashboard aggregates remain rejected as clutch substitutes
 
@@ -841,7 +843,8 @@ Current behavior:
 - parser sets `quarter` / `half` and routes normally
 - `player_game_finder` and `team_record` execute period filters when trusted
   `player_game_period_stats` / `team_game_period_stats` coverage exists for the
-  requested slice; otherwise they fall back with an explicit unfiltered-results note
+  requested slice; one missing entity-game key for the requested window returns
+  `no_result` / `filter_not_supported` with exact key/window detail
 - other routes, such as period leaderboard phrasing, still append the explicit
   unfiltered-results note because the current period-backed route boundary does
   not extend beyond `player_game_finder` / `team_record`
@@ -919,10 +922,11 @@ Current behavior:
 
 - parser sets `role` for player-context queries only
 - `player_game_summary` and `player_game_finder` apply starter / bench filtering only when the requested slice has complete trusted coverage in `player_game_starter_roles`
-- if trusted starter-role coverage is missing or untrusted for any row in the requested slice, execution keeps the explicit unfiltered-results note instead of partially filtering
-- league-wide starter/bench leaderboards and team-level bench scoring are
-  explicit unsupported boundaries and return `no_result` /
-  `filter_not_supported`
+- if trusted starter-role coverage is missing or untrusted for any row in the
+  requested slice, execution returns `no_result` / `filter_not_supported` with
+  exact key detail instead of partially filtering
+- `season_leaders` uses the same exact trusted player-game gate; team-level
+  bench scoring remains an explicit unsupported boundary
 
 ### Opponent-quality filter
 

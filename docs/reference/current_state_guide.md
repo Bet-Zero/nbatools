@@ -295,19 +295,25 @@ Grouped boolean logic currently works across:
 ### Coverage-gated context boundaries
 
 Some parser-recognized context filters are execution-backed only on their
-documented route boundaries. Unsupported routes keep explicit unfiltered-results
-notes rather than silently pretending the filter ran.
+documented route boundaries. Supported coverage-gated routes return
+`no_result` / `filter_not_supported` when their exact requested key set is
+missing or untrusted; they never present a partial or unfiltered game set as a
+complete answer. Unsupported routes keep explicit boundary notes.
 
 - Clutch filters execute on `player_game_summary`, `player_game_finder`,
   `team_record`, and `season_leaders` when trusted `player_game_clutch_stats`
   / `team_game_clutch_stats` rows cover the requested slice. The definition is
   last five minutes of the fourth quarter or overtime, score within five.
-  Missing or untrusted coverage keeps an explicit unfiltered-results note.
+  Raw play-by-play must cover every requested base game, and every qualifying
+  clutch event key must have the exact derived clutch window. Missing or
+  untrusted keys return exact game/key detail in a negative result.
   Whole-game logs, period-only box-score rows, and season-level clutch
   dashboard aggregates are not used as clutch substitutes.
 - Quarter / half / OT filters execute on `player_game_finder` and
   `team_record` when trusted `player_game_period_stats` /
-  `team_game_period_stats` coverage exists for the requested slice. Broader
+  `team_game_period_stats` coverage contains every requested entity-game key
+  for the exact quarter / half / OT window. Missing keys return an exact
+  coverage-gated negative result. Broader
   route expansion is out of scope for the core finish line unless a future
   product queue reopens it.
 - Schedule-context filters execute on `team_record` and
@@ -315,9 +321,10 @@ notes rather than silently pretending the filter ran.
   exists. `nationally_televised` also requires trusted national-TV source
   coverage. Broader route expansion is out of scope for the core finish line
   unless a future product queue reopens it.
-- Starter / bench role filters execute on `player_game_summary` and
-  `player_game_finder` when trusted `player_game_starter_roles` rows cover the
-  requested slice. Team-level bench semantics and broader route expansion are
+- Starter / bench role filters execute on `player_game_summary`,
+  `player_game_finder`, and `season_leaders` when every requested player-game
+  has a trusted `player_game_starter_roles` row. One missing or untrusted key
+  refuses the whole result with exact coverage detail. Team-level bench semantics are
   out of scope for the core finish line unless a future product queue reopens
   them.
 - Opponent-quality filters such as `top 10 teams`, `top 5 teams`,

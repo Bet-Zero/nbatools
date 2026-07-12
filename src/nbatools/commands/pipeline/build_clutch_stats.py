@@ -5,6 +5,8 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands.data_utils import (
+    CLUTCH_SCORE_MARGIN_MAX,
+    CLUTCH_TIME_REMAINING_START,
     PLAYER_GAME_CLUTCH_REQUIRED_COLUMNS,
     TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
     load_play_by_play_events_for_seasons,
@@ -17,8 +19,6 @@ from nbatools.commands.pipeline.validate_raw import (
 )
 
 CLUTCH_SOURCE = "play_by_play_events"
-CLUTCH_TIME_REMAINING_START = 300
-CLUTCH_SCORE_MARGIN_MAX = 5
 
 
 def add_event_points(events: pd.DataFrame) -> pd.DataFrame:

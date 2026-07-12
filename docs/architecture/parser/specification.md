@@ -499,7 +499,7 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
-**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder routes when trusted starter-role coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Period filters are execution-backed on `player_game_finder` and `team_record` when trusted `player_game_period_stats` / `team_game_period_stats` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Schedule-context filters are execution-backed on `team_record` and `player_game_summary` when trusted `schedule_context_features` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Those three coverage-gated boundaries are final for the core finish line; broader route expansion is out of scope unless a future product queue reopens it. Clutch remains parser-recognized and route-propagated with explicit unfiltered-results notes where backing data is still missing.
+**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder and season-leader routes only when every requested player-game has trusted starter-role coverage; one missing/untrusted key returns `filter_not_supported` with exact detail. Period filters are execution-backed on `player_game_finder` and `team_record` only when the exact requested entity-game window is complete; one missing key returns the same typed refusal. Schedule-context filters are execution-backed on `team_record` and `player_game_summary` when trusted `schedule_context_features` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Those three coverage-gated boundaries are final for the core finish line; broader route expansion is out of scope unless a future product queue reopens it. Clutch is parser-recognized and executes only when raw PBP covers every requested base game and every qualifying event key has the exact trusted derived clutch window; incomplete slices refuse with exact detail.
 
 Define where or when within a game the stat applies.
 
@@ -510,8 +510,8 @@ Define where or when within a game the stat applies.
 - `home`, `away` → `home_only` / `away_only`
 - `clutch`, `in the clutch`, `clutch time`, `late-game` → `clutch`
   parse slot; supported routes execute against trusted play-by-play-derived
-  clutch rows and keep an explicit unfiltered-results note when coverage is
-  missing or untrusted
+  clutch rows only after exact PBP/game and derived-window coverage passes;
+  missing or untrusted keys return `filter_not_supported`
 - `back-to-backs`, `b2b`, `second of a back-to-back` → `back_to_back=True`
 - `rest advantage`, `rest disadvantage`, `on 2 days rest` → `rest_days`
   (`"advantage"`, `"disadvantage"`, or an integer day count)
@@ -519,14 +519,15 @@ Define where or when within a game the stat applies.
 - `nationally televised`, `on national TV` → `nationally_televised=True`
 - `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
   for player-context queries only; team-only phrasing like `Celtics bench scoring`
-  is intentionally ignored. `player_game_summary` and `player_game_finder` apply the
-  filter only when trusted `player_game_starter_roles` coverage exists for the
-  requested slice; otherwise execution appends the explicit unfiltered-results note.
+  is intentionally ignored. `player_game_summary`, `player_game_finder`, and
+  `season_leaders` apply the filter only when trusted `player_game_starter_roles`
+  coverage exists for every requested player-game; otherwise execution returns
+  `filter_not_supported` with exact missing/untrusted keys.
 - `1st/2nd/3rd/4th quarter`, `first/second half`, `overtime`, `OT` → `quarter` / `half`
   parse slots. `player_game_finder` and `team_record` execute these filters when
-  trusted period-window coverage exists for the requested slice via
+  exact period-window coverage exists for the requested entity-game set via
   `player_game_period_stats` / `team_game_period_stats`; otherwise execution
-  appends the explicit unfiltered-results note. Other routes still append the
+  returns `filter_not_supported` with exact key/window detail. Other routes still append the
   explicit unfiltered-results note because period execution is not enabled there.
 
 Schedule-context slots above are execution-backed on `team_record` and
