@@ -381,6 +381,9 @@ export interface SeasonFreshness {
   raw_complete: boolean;
   processed_complete: boolean;
   loaded_at: string | null;
+  validation_state: "passed" | "failed" | "unknown" | "legacy_unverified";
+  generation_id: string | null;
+  validation_errors: string[];
 }
 
 export interface FreshnessResponse {

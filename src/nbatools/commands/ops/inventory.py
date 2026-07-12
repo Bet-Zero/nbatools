@@ -1,6 +1,9 @@
+import json
 from pathlib import Path
 
 import pandas as pd
+
+from nbatools.commands.validation_control import inspect_slice_manifest
 
 RAW_TABLE_DIRS = [
     "games",
@@ -11,6 +14,12 @@ RAW_TABLE_DIRS = [
     "player_game_stats",
     "team_season_advanced",
     "player_season_advanced",
+    "player_game_starter_roles",
+    "player_game_period_stats",
+    "team_game_period_stats",
+    "play_by_play_events",
+    "team_player_on_off_summary",
+    "league_lineup_viz",
     "teams",
 ]
 
@@ -20,6 +29,8 @@ PROCESSED_TABLE_DIRS = [
     "schedule_context_features",
     "player_game_features",
     "league_season_stats",
+    "player_game_clutch_stats",
+    "team_game_clutch_stats",
 ]
 
 
@@ -76,6 +87,7 @@ def run() -> None:
     raw_dir = data_dir / "raw"
     processed_dir = data_dir / "processed"
     manifest_path = data_dir / "metadata" / "backfill_manifest.csv"
+    validation_manifest_dir = data_dir / "metadata" / "dataset_manifests"
 
     print("NBA Tools Inventory")
     print("===================")
@@ -184,6 +196,34 @@ def run() -> None:
         print("\nMANIFEST")
         print("--------")
         print("No manifest found.")
+
+    receipt_states: list[tuple[str, str, list[str]]] = []
+    if validation_manifest_dir.exists():
+        for path in sorted(validation_manifest_dir.glob("*.json")):
+            try:
+                document = json.loads(path.read_text(encoding="utf-8"))
+                season = str(document["season"])
+                season_type = str(document["season_type"])
+                inspection = inspect_slice_manifest(season, season_type, data_root=data_dir)
+                receipt_states.append(
+                    (
+                        f"{season} {season_type}",
+                        inspection["validation_state"],
+                        inspection["errors"],
+                    )
+                )
+            except Exception as exc:
+                receipt_states.append((path.name, "failed", [f"manifest is corrupt: {exc}"]))
+
+    print("\nVALIDATION RECEIPTS")
+    print("-------------------")
+    print(f"receipt count: {len(receipt_states)}")
+    all_passed = bool(receipt_states) and all(state == "passed" for _, state, _ in receipt_states)
+    print(f"all validation receipts passed: {all_passed}")
+    for label, state, errors in receipt_states:
+        print(f"{label}: {state}")
+        for error in errors:
+            print(f"  {error}")
 
     print_section("RAW SEASON-ONLY LABELS", raw_season_only_labels)
     print_section("RAW SEASON-TYPE LABELS", raw_season_type_labels)

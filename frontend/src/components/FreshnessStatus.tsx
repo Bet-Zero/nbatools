@@ -149,6 +149,13 @@ export default function FreshnessStatus({
               <span className={styles.seasonCurrentThrough}>
                 {s.current_through ? `through ${s.current_through}` : "—"}
               </span>
+              <span
+                className={styles.seasonCurrentThrough}
+                title={s.validation_errors.join("; ") || undefined}
+              >
+                validation {s.validation_state}
+                {s.generation_id ? ` · ${s.generation_id.slice(0, 8)}` : ""}
+              </span>
             </div>
           ))}
 

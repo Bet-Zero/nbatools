@@ -1192,7 +1192,36 @@ Do not silently substitute season-average values for filtered-sample outputs.
 
 ---
 
-## 8. Command-to-dataset mapping summary
+## 8. Dataset validation receipt contract
+
+Each season/type slice has an authoritative, versioned validation receipt at:
+
+`data/metadata/dataset_manifests/<season>_<season_type>.json`
+
+Schema version 1 binds every applicable dataset record to one receipt
+`generation_id`. Each record declares its lifecycle layer, source, grain, key
+columns, required schema columns, row count, file SHA-256, key-set SHA-256,
+expected/observed coverage,
+trust result, and validation state. A receipt is `passed` only when all required
+files are present and readable, their keys match the required cross-dataset
+game/entity sets, required period windows are covered, trust fields pass, and
+every dataset record names the receipt generation.
+
+Optional capability datasets are recorded as `unavailable` when absent. That
+does not fail the base slice. Once an optional dataset is present, however, a
+corrupt file, incomplete key set, or failed trust marker fails the whole
+receipt; presence must never be promoted as trustworthy capability coverage.
+
+Receipt inspection recomputes current file checksums. A corrupt receipt,
+generation mismatch, checksum drift, missing required file, incomplete key or
+window set, or present-but-untrusted optional dataset is a failed validation
+state. `backfill_manifest.csv` remains a compatibility index, but file
+existence or a legacy completeness bit is not authoritative validation.
+
+Receipt creation is the final validation step after raw validation and
+processed builds. It does not rebuild, refresh, upload, or promote datasets.
+
+## 9. Command-to-dataset mapping summary
 
 ### Player query surface
 
@@ -1215,7 +1244,7 @@ Do not silently substitute season-average values for filtered-sample outputs.
 
 ---
 
-## 9. Future expectations
+## 10. Future expectations
 
 As the repo evolves toward a UI-based search app, these data contracts should help preserve:
 

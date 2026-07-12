@@ -26,7 +26,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
-from pathlib import Path
 
 from nbatools.commands._seasons import (
     LATEST_PLAYOFF_SEASON,
@@ -34,7 +33,7 @@ from nbatools.commands._seasons import (
     int_to_season,
     season_to_int,
 )
-from nbatools.commands.freshness import compute_current_through
+from nbatools.commands.freshness import compute_current_through, manifest_entry
 
 # ---------------------------------------------------------------------------
 # Result types
@@ -305,7 +304,8 @@ def refresh_season(
     season_type : str
         "Regular Season" or "Playoffs"
     skip_existing : bool
-        If True and all processed outputs already exist, skip this season.
+        If True, skip only when all processed outputs exist and the versioned
+        dataset validation receipt still passes inspection.
     allow_no_data_skip : bool
         If True, a "No data returned" from the games pull skips cleanly
         (useful for upcoming playoffs).
@@ -327,7 +327,7 @@ def refresh_season(
                 StageResult(
                     name="skip_check",
                     status=StageStatus.SKIPPED,
-                    error="All processed outputs already exist",
+                    error="All processed outputs exist and validation passed",
                 )
             )
             result.finished_at = datetime.now().isoformat(timespec="seconds")
@@ -576,8 +576,6 @@ def pipeline_status(
 
     Returns a dict with manifest info, current_through, and file inventory.
     """
-    import pandas as pd
-
     from nbatools.commands.ops.update_manifest import (
         processed_paths,
         raw_paths,
@@ -586,30 +584,19 @@ def pipeline_status(
     if season is None:
         season = LATEST_REGULAR_SEASON
 
-    manifest_path = Path("data/metadata/backfill_manifest.csv")
-
-    # Manifest row
-    manifest_row = None
-    if manifest_path.exists():
-        try:
-            df = pd.read_csv(manifest_path)
-            mask = (df["season"] == season) & (df["season_type"] == season_type)
-            rows = df.loc[mask]
-            if not rows.empty:
-                row = rows.iloc[0]
-                manifest_row = {
-                    "raw_complete": bool(row.get("raw_complete") == 1),
-                    "processed_complete": bool(row.get("processed_complete") == 1),
-                    "loaded_at": str(row.get("loaded_at", "")),
-                }
-        except Exception:
-            pass
+    manifest_row = manifest_entry(season, season_type)
 
     # File existence
     raw_exist = {str(p): p.exists() for p in raw_paths(season, season_type)}
     proc_exist = {str(p): p.exists() for p in processed_paths(season, season_type)}
 
     ct = compute_current_through(season, season_type)
+    validation_state = (
+        str(manifest_row.get("validation_state", "unknown")) if manifest_row else "unknown"
+    )
+    files_raw_complete = all(raw_exist.values())
+    files_processed_complete = all(proc_exist.values())
+    validation_passed = validation_state == "passed"
 
     return {
         "season": season,
@@ -618,6 +605,11 @@ def pipeline_status(
         "current_through": ct,
         "raw_files": raw_exist,
         "processed_files": proc_exist,
-        "raw_complete": all(raw_exist.values()),
-        "processed_complete": all(proc_exist.values()),
+        "raw_complete": files_raw_complete and validation_passed,
+        "processed_complete": files_processed_complete and validation_passed,
+        "files_raw_complete": files_raw_complete,
+        "files_processed_complete": files_processed_complete,
+        "validation_state": validation_state,
+        "generation_id": manifest_row.get("generation_id") if manifest_row else None,
+        "validation_errors": manifest_row.get("validation_errors", []) if manifest_row else [],
     }

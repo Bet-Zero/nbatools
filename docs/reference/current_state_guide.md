@@ -518,10 +518,17 @@ Build output lands in `src/nbatools/ui/dist/` and is served by FastAPI at `/`.
 
 The engine uses four explicit freshness states:
 
-- **fresh** — manifest complete, current_through is within 3 days.
-- **stale** — manifest complete, current_through is older than 3 days.
-- **unknown** — manifest or games data missing; freshness cannot be determined.
-- **failed** — last refresh attempt recorded a failure.
+- **fresh** — the versioned dataset receipt passes and `current_through` is
+  within 3 days.
+- **stale** — the versioned dataset receipt passes and `current_through` is
+  older than 3 days.
+- **unknown** — the versioned receipt or games data is missing, or only the
+  legacy completeness manifest exists; freshness is not validated.
+- **failed** — receipt inspection or the last refresh attempt failed.
+
+Each season detail includes `validation_state`, `generation_id`, and exact
+`validation_errors`. Legacy `backfill_manifest.csv` rows remain readable for
+compatibility but are reported as `legacy_unverified`, never fresh or complete.
 
 ### Pipeline CLI — refresh and auto-refresh
 
@@ -545,7 +552,14 @@ The auto-refresh runner executes `pipeline refresh` on a repeating schedule, wri
   "status": "fresh",
   "current_through": "2026-04-13",
   "checked_at": "2026-04-14T10:00:00",
-  "seasons": [ ... ],
+  "seasons": [{
+    "season": "2025-26",
+    "season_type": "Regular Season",
+    "status": "fresh",
+    "validation_state": "passed",
+    "generation_id": "...",
+    "validation_errors": []
+  }],
   "last_refresh_ok": true,
   "last_refresh_at": "2026-04-14T09:00:00",
   "last_refresh_error": null
@@ -559,6 +573,7 @@ The web UI displays a collapsible freshness panel with:
 - status badge (fresh / stale / unknown / failed)
 - current_through date
 - expandable per-season details
+- validation state and abbreviated generation identity
 - last refresh outcome
 - auto-polls every 2 minutes
 

@@ -656,6 +656,8 @@ class TestFreshness:
                     raw_complete=True,
                     processed_complete=True,
                     loaded_at="2026-04-14T09:00:00",
+                    validation_state="passed",
+                    generation_id="generation-test",
                 )
             ],
             last_refresh_ok=True,
@@ -685,6 +687,9 @@ class TestFreshness:
         assert season["status"] == "fresh"
         assert season["raw_complete"] is True
         assert season["processed_complete"] is True
+        assert season["validation_state"] == "passed"
+        assert season["generation_id"] == "generation-test"
+        assert season["validation_errors"] == []
 
     @patch("nbatools.api.build_freshness_info")
     def test_freshness_includes_last_refresh(self, mock_build):

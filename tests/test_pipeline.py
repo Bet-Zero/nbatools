@@ -294,6 +294,7 @@ class TestRefreshSeason:
         assert result.success
         assert len(result.stages) == 1
         assert result.stages[0].status == StageStatus.SKIPPED
+        assert result.stages[0].error == "All processed outputs exist and validation passed"
         assert result.current_through == "2026-04-10"
 
     def test_dry_run(self):
@@ -504,16 +505,58 @@ class TestCLISurface:
         assert "status" in result.output
         assert "sync-r2" in result.output
 
-    def test_status_command_runs(self):
+    @patch("nbatools.cli_apps.pipeline.pipeline_status")
+    def test_status_command_runs(self, mock_status):
         from typer.testing import CliRunner
 
         from nbatools.cli_apps.pipeline import app
 
+        mock_status.return_value = {
+            "season": "2025-26",
+            "season_type": "Regular Season",
+            "current_through": None,
+            "raw_complete": False,
+            "processed_complete": False,
+            "validation_state": "legacy_unverified",
+            "generation_id": None,
+            "manifest": None,
+            "raw_files": {},
+            "processed_files": {},
+            "validation_errors": ["versioned dataset manifest missing"],
+        }
         runner = CliRunner()
         result = runner.invoke(app, ["status"])
-        assert result.exit_code == 0
+        assert result.exit_code == 1
         assert "Season:" in result.output
         assert "Current through:" in result.output
+        assert "Validation state: legacy_unverified" in result.output
+
+    @patch("nbatools.cli_apps.pipeline.pipeline_status")
+    def test_status_command_exposes_exact_validation_failure(self, mock_status):
+        from typer.testing import CliRunner
+
+        from nbatools.cli_apps.pipeline import app
+
+        mock_status.return_value = {
+            "season": "2099-00",
+            "season_type": "Regular Season",
+            "current_through": None,
+            "raw_complete": False,
+            "processed_complete": False,
+            "validation_state": "failed",
+            "generation_id": "generation-test",
+            "manifest": None,
+            "raw_files": {},
+            "processed_files": {},
+            "validation_errors": ["team periods: game_id=2, period_family=quarter"],
+        }
+
+        result = CliRunner().invoke(app, ["status"])
+
+        assert result.exit_code == 1
+        assert "Validation state: failed" in result.output
+        assert "Generation: generation-test" in result.output
+        assert "team periods: game_id=2, period_family=quarter" in result.output
 
     def test_refresh_dry_run(self):
         from typer.testing import CliRunner
