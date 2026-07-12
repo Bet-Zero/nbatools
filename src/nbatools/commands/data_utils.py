@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 import unicodedata
+from collections.abc import Callable
 from functools import cache
+from typing import Any
 
 import pandas as pd
 
 from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
+
+CLUTCH_TIME_REMAINING_START = 300
+CLUTCH_SCORE_MARGIN_MAX = 5
+CLUTCH_WINDOW_LABEL = "clutch:last_5m_score_within_5"
+_COVERAGE_DETAIL_KEY_LIMIT = 25
 
 PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS = [
     "game_id",
@@ -345,6 +352,133 @@ def _normalize_period_request(
     return None
 
 
+def _coverage_key_value(value: Any) -> str:
+    if pd.isna(value):
+        return "<missing>"
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)
+
+
+def _coverage_key_tuples(df: pd.DataFrame, key_columns: list[str]) -> list[tuple[str, ...]]:
+    missing = [column for column in key_columns if column not in df.columns]
+    if missing:
+        raise ValueError(f"Missing coverage key columns: {missing}")
+    return sorted(
+        {
+            tuple(_coverage_key_value(value) for value in row)
+            for row in df[key_columns].itertuples(index=False, name=None)
+        }
+    )
+
+
+def _format_coverage_keys(keys: list[tuple[str, ...]], key_columns: list[str]) -> str:
+    shown = keys[:_COVERAGE_DETAIL_KEY_LIMIT]
+    detail = "; ".join(
+        ", ".join(f"{column}={value}" for column, value in zip(key_columns, key)) for key in shown
+    )
+    omitted = len(keys) - len(shown)
+    suffix = f"; ... (+{omitted} more)" if omitted else ""
+    return f"[{detail}{suffix}]"
+
+
+def exact_coverage_failure(
+    requested: pd.DataFrame,
+    available: pd.DataFrame,
+    *,
+    dataset: str,
+    key_columns: list[str],
+    window: str | None = None,
+    trust_column: str | None = None,
+    reason_column: str | None = None,
+) -> str | None:
+    """Describe exact missing or untrusted keys for a requested downstream slice."""
+    requested_keys = _coverage_key_tuples(requested, key_columns)
+    if not requested_keys:
+        return None
+
+    available_keys = _coverage_key_tuples(available, key_columns)
+    available_key_set = set(available_keys)
+    missing_keys = [key for key in requested_keys if key not in available_key_set]
+
+    untrusted_keys: list[tuple[str, ...]] = []
+    untrusted_reasons: set[str] = set()
+    if trust_column is not None:
+        if trust_column not in available.columns:
+            raise ValueError(f"{dataset} missing trust column: {trust_column}")
+        normalized_keys = available[key_columns].apply(
+            lambda column: column.map(_coverage_key_value)
+        )
+        trust = pd.to_numeric(available[trust_column], errors="coerce").fillna(0).eq(1)
+        key_tuples = normalized_keys.apply(tuple, axis=1)
+        trust_by_key = trust.groupby(key_tuples).all()
+        requested_key_set = set(requested_keys)
+        untrusted_keys = sorted(
+            key
+            for key, is_trusted in trust_by_key.items()
+            if key in requested_key_set and not is_trusted
+        )
+        if untrusted_keys and reason_column is not None and reason_column in available.columns:
+            untrusted_key_set = set(untrusted_keys)
+            untrusted_row_mask = key_tuples.isin(untrusted_key_set) & ~trust
+            untrusted_reasons.update(
+                reason
+                for reason in available.loc[untrusted_row_mask, reason_column]
+                .fillna("")
+                .astype(str)
+                .str.strip()
+                if reason
+            )
+
+    if not missing_keys and not untrusted_keys:
+        return None
+
+    covered_count = len(requested_keys) - len(missing_keys) - len(untrusted_keys)
+    parts = [
+        f"{dataset} coverage incomplete",
+        f"requested_keys={len(requested_keys)}",
+        f"covered_keys={covered_count}",
+    ]
+    if window is not None:
+        parts.append(f"window={window}")
+    if missing_keys:
+        parts.append(f"missing_keys_total={len(missing_keys)}")
+        parts.append(f"missing_keys={_format_coverage_keys(missing_keys, key_columns)}")
+    if untrusted_keys:
+        parts.append(f"untrusted_keys_total={len(untrusted_keys)}")
+        parts.append(f"untrusted_keys={_format_coverage_keys(untrusted_keys, key_columns)}")
+    if untrusted_reasons:
+        parts.append(f"untrusted_reasons=[{'; '.join(sorted(untrusted_reasons))}]")
+    return "; ".join(parts)
+
+
+def period_coverage_failure(
+    base: pd.DataFrame,
+    period_rows: pd.DataFrame,
+    *,
+    dataset: str,
+    entity_key_columns: list[str],
+    quarter: str | None = None,
+    half: str | None = None,
+) -> str | None:
+    descriptor = _normalize_period_request(quarter=quarter, half=half)
+    if descriptor is None:
+        return None
+    period_family, period_value = descriptor
+    return exact_coverage_failure(
+        base,
+        period_rows,
+        dataset=dataset,
+        key_columns=["game_id", *entity_key_columns],
+        window=f"{period_family}:{period_value}",
+    )
+
+
+def period_window_label(*, quarter: str | None = None, half: str | None = None) -> str | None:
+    descriptor = _normalize_period_request(quarter=quarter, half=half)
+    return f"{descriptor[0]}:{descriptor[1]}" if descriptor is not None else None
+
+
 def filter_period_rows(
     df: pd.DataFrame,
     *,
@@ -365,16 +499,18 @@ def filter_period_rows(
 def build_period_filter_coverage_note(
     quarter: str | None = None,
     half: str | None = None,
+    reason: str | None = None,
 ) -> str | None:
+    detail = f" ({reason})" if reason else ""
     if quarter is not None:
         return (
             "quarter filter is not supported with current data; try removing this filter "
-            "or asking for full-game stats."
+            f"or asking for full-game stats{detail}."
         )
     if half is not None:
         return (
             "half filter is not supported with current data; try removing this filter "
-            "or asking for full-game stats."
+            f"or asking for full-game stats{detail}."
         )
     return None
 
@@ -1315,8 +1451,17 @@ def select_trusted_play_by_play_events(
 ) -> tuple[pd.DataFrame, list[str]]:
     """Return trusted play-by-play rows plus coverage failures for matching games."""
     work = df.copy()
+    exact_failure: str | None = None
     if game_ids is not None:
         requested = {str(game_id) for game_id in game_ids}
+        exact_failure = exact_coverage_failure(
+            pd.DataFrame({"game_id": sorted(requested)}),
+            work,
+            dataset="play_by_play_events",
+            key_columns=["game_id"],
+            trust_column="pbp_source_trusted",
+            reason_column="pbp_validation_reason",
+        )
         work = work[work["game_id"].astype(str).isin(requested)]
 
     coverage_failures = sorted(
@@ -1329,6 +1474,8 @@ def select_trusted_play_by_play_events(
             if reason
         }
     )
+    if exact_failure:
+        coverage_failures = [exact_failure]
     trusted = work[work["pbp_source_trusted"].eq(1)].copy()
     return trusted.reset_index(drop=True), coverage_failures
 
@@ -1443,22 +1590,6 @@ def load_team_game_clutch_stats_for_seasons(seasons: list[str], season_type: str
     ).copy()
 
 
-def select_trusted_clutch_stats(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
-    """Return trusted clutch stat rows plus coverage failures."""
-    coverage_failures = sorted(
-        {
-            reason
-            for reason in df.loc[~df["clutch_source_trusted"].eq(1), "clutch_validation_reason"]
-            .fillna("")
-            .astype(str)
-            .str.strip()
-            if reason
-        }
-    )
-    trusted = df[df["clutch_source_trusted"].eq(1)].copy()
-    return trusted.reset_index(drop=True), coverage_failures
-
-
 def build_clutch_filter_coverage_note(reason: str | None = None) -> str:
     detail = f" ({reason})" if reason else ""
     return (
@@ -1488,9 +1619,141 @@ def _filter_clutch_rows_to_base(
     return clutch.merge(base_keys, on=key_columns, how="inner")
 
 
-def _clutch_coverage_note_for_failures(failures: list[str]) -> str:
-    reason = "; ".join(failures) if failures else None
-    return build_clutch_filter_coverage_note(reason)
+def _trusted_play_by_play_for_base(
+    base: pd.DataFrame,
+    seasons: list[str],
+    season_type: str,
+) -> tuple[pd.DataFrame, str | None]:
+    requested_games = _normalize_game_key_columns(base[["game_id"]]).drop_duplicates()
+    if requested_games.empty:
+        return _empty_play_by_play_events_df(), None
+    try:
+        events = load_play_by_play_events_for_seasons(seasons, season_type)
+    except FileNotFoundError:
+        return _empty_play_by_play_events_df(), build_clutch_filter_coverage_note(
+            "missing play_by_play_events dataset"
+        )
+
+    events = _normalize_game_key_columns(events)
+    coverage_failure = exact_coverage_failure(
+        requested_games,
+        events,
+        dataset="play_by_play_events",
+        key_columns=["game_id"],
+        trust_column="pbp_source_trusted",
+        reason_column="pbp_validation_reason",
+    )
+    if coverage_failure:
+        return _empty_play_by_play_events_df(), build_clutch_filter_coverage_note(coverage_failure)
+
+    requested_ids = set(requested_games["game_id"].astype(str))
+    trusted = events[
+        events["game_id"].astype(str).isin(requested_ids)
+        & pd.to_numeric(events["pbp_source_trusted"], errors="coerce").eq(1)
+    ].copy()
+    return trusted.reset_index(drop=True), None
+
+
+def _expected_clutch_keys_from_events(
+    events: pd.DataFrame,
+    base: pd.DataFrame,
+    key_columns: list[str],
+) -> pd.DataFrame:
+    if events.empty or base.empty:
+        return pd.DataFrame(columns=key_columns)
+
+    work = _normalize_game_key_columns(events)
+    score_margin = (
+        pd.to_numeric(work["score_home"], errors="coerce")
+        - pd.to_numeric(work["score_away"], errors="coerce")
+    ).abs()
+    clutch = work.loc[
+        pd.to_numeric(work["period"], errors="coerce").ge(4)
+        & pd.to_numeric(work["clock_seconds_remaining"], errors="coerce").le(
+            CLUTCH_TIME_REMAINING_START
+        )
+        & score_margin.le(CLUTCH_SCORE_MARGIN_MAX)
+    ].copy()
+    base_keys = _normalize_game_key_columns(base[key_columns]).drop_duplicates()
+    return clutch.merge(base_keys, on=key_columns, how="inner")[key_columns].drop_duplicates()
+
+
+def _select_clutch_stats_for_base(
+    base: pd.DataFrame,
+    seasons: list[str],
+    season_type: str,
+    *,
+    dataset: str,
+    key_columns: list[str],
+    loader: Callable[[list[str], str], pd.DataFrame],
+) -> tuple[pd.DataFrame, str | None]:
+    events, pbp_note = _trusted_play_by_play_for_base(base, seasons, season_type)
+    if pbp_note:
+        return pd.DataFrame(), pbp_note
+
+    expected = _expected_clutch_keys_from_events(events, base, key_columns)
+    if expected.empty:
+        return pd.DataFrame(), None
+
+    try:
+        clutch = loader(seasons, season_type)
+    except FileNotFoundError:
+        return pd.DataFrame(), build_clutch_filter_coverage_note(f"missing {dataset} dataset")
+
+    scoped = _filter_clutch_rows_to_base(clutch, base, key_columns)
+    correct_window = (
+        pd.to_numeric(scoped["clutch_window"], errors="coerce").eq(1)
+        & pd.to_numeric(scoped["clutch_time_remaining_start"], errors="coerce").eq(
+            CLUTCH_TIME_REMAINING_START
+        )
+        & pd.to_numeric(scoped["clutch_score_margin_max"], errors="coerce").eq(
+            CLUTCH_SCORE_MARGIN_MAX
+        )
+    )
+    window_rows = scoped.loc[correct_window].copy()
+    coverage_failure = exact_coverage_failure(
+        expected,
+        window_rows,
+        dataset=dataset,
+        key_columns=key_columns,
+        window=CLUTCH_WINDOW_LABEL,
+        trust_column="clutch_source_trusted",
+        reason_column="clutch_validation_reason",
+    )
+    if coverage_failure:
+        return pd.DataFrame(), build_clutch_filter_coverage_note(coverage_failure)
+
+    expected_tuples = set(_coverage_key_tuples(expected, key_columns))
+    normalized = window_rows[key_columns].apply(lambda column: column.map(_coverage_key_value))
+    selected_mask = normalized.apply(tuple, axis=1).isin(expected_tuples)
+    trusted_mask = pd.to_numeric(window_rows["clutch_source_trusted"], errors="coerce").eq(1)
+    return window_rows.loc[selected_mask & trusted_mask].reset_index(drop=True), None
+
+
+def select_player_clutch_stats_for_base(
+    base: pd.DataFrame, seasons: list[str], season_type: str
+) -> tuple[pd.DataFrame, str | None]:
+    return _select_clutch_stats_for_base(
+        base,
+        seasons,
+        season_type,
+        dataset="player_game_clutch_stats",
+        key_columns=["season", "season_type", "game_id", "team_id", "player_id"],
+        loader=load_player_game_clutch_stats_for_seasons,
+    )
+
+
+def select_team_clutch_stats_for_base(
+    base: pd.DataFrame, seasons: list[str], season_type: str
+) -> tuple[pd.DataFrame, str | None]:
+    return _select_clutch_stats_for_base(
+        base,
+        seasons,
+        season_type,
+        dataset="team_game_clutch_stats",
+        key_columns=["season", "season_type", "game_id", "team_id"],
+        loader=load_team_game_clutch_stats_for_seasons,
+    )
 
 
 def apply_player_clutch_filter(
@@ -1498,15 +1761,9 @@ def apply_player_clutch_filter(
 ) -> tuple[pd.DataFrame, str | None]:
     """Replace player game-log rows with trusted player-game clutch rows."""
     key_columns = ["season", "season_type", "game_id", "team_id", "player_id"]
-    try:
-        clutch = load_player_game_clutch_stats_for_seasons(seasons, season_type)
-    except FileNotFoundError:
-        return df.copy(), build_clutch_filter_coverage_note("missing player clutch dataset")
-
-    scoped = _filter_clutch_rows_to_base(clutch, df, key_columns)
-    trusted, failures = select_trusted_clutch_stats(scoped)
-    if failures:
-        return df.copy(), _clutch_coverage_note_for_failures(failures)
+    trusted, coverage_note = select_player_clutch_stats_for_base(df, seasons, season_type)
+    if coverage_note:
+        return df.copy(), coverage_note
     if trusted.empty:
         return df.iloc[0:0].copy(), None
 
@@ -1541,15 +1798,9 @@ def apply_team_clutch_filter(
 ) -> tuple[pd.DataFrame, str | None]:
     """Replace team game-log rows with trusted team-game clutch rows."""
     key_columns = ["season", "season_type", "game_id", "team_id"]
-    try:
-        clutch = load_team_game_clutch_stats_for_seasons(seasons, season_type)
-    except FileNotFoundError:
-        return df.copy(), build_clutch_filter_coverage_note("missing team clutch dataset")
-
-    scoped = _filter_clutch_rows_to_base(clutch, df, key_columns)
-    trusted, failures = select_trusted_clutch_stats(scoped)
-    if failures:
-        return df.copy(), _clutch_coverage_note_for_failures(failures)
+    trusted, coverage_note = select_team_clutch_stats_for_base(df, seasons, season_type)
+    if coverage_note:
+        return df.copy(), coverage_note
     if trusted.empty:
         return df.iloc[0:0].copy(), None
 
@@ -1751,12 +2002,16 @@ def apply_schedule_context_filters(
     return _drop_schedule_context_helper_columns(filtered), notes
 
 
-def build_role_filter_coverage_note(role: str | None = None) -> str | None:
+def build_role_filter_coverage_note(
+    role: str | None = None, *, detail: str | None = None
+) -> str | None:
     if role is None:
         return None
+    coverage_detail = f" ({detail})" if detail else ""
     return (
         f"role filter ({role}) is not supported with current data; try removing this "
-        "filter or asking for player stats without starter/bench role filters."
+        "filter or asking for player stats without starter/bench role filters"
+        f"{coverage_detail}."
     )
 
 
@@ -1836,8 +2091,16 @@ def apply_player_role_filter(
         raise ValueError(f"Missing required columns for role filter: {missing}")
 
     roles = load_player_game_starter_roles_for_seasons(seasons, season_type)
-    if roles.empty:
-        return df.copy(), build_role_filter_coverage_note(role_normalized)
+    coverage_failure = exact_coverage_failure(
+        df,
+        roles,
+        dataset="player_game_starter_roles",
+        key_columns=required_join_cols,
+        trust_column="role_source_trusted",
+        reason_column="role_validation_reason",
+    )
+    if coverage_failure:
+        return df.copy(), build_role_filter_coverage_note(role_normalized, detail=coverage_failure)
 
     join_cols = required_join_cols
     role_cols = join_cols + ["starter_flag", "role_source_trusted"]
@@ -1853,10 +2116,6 @@ def apply_player_role_filter(
         how="left",
         validate="one_to_one",
     )
-
-    trusted_mask = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
-    if not trusted_mask.all():
-        return df.copy(), build_role_filter_coverage_note(role_normalized)
 
     expected_flag = 1 if role_normalized == "starter" else 0
     filtered = work.loc[

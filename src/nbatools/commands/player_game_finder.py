@@ -13,6 +13,8 @@ from nbatools.commands.data_utils import (
     filter_without_player,
     load_player_game_period_stats_for_seasons,
     load_player_games_for_seasons,
+    period_coverage_failure,
+    period_window_label,
 )
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.player_occurrence_leaders import _flag_special_event
@@ -201,20 +203,32 @@ def build_result(
     period_filter_requested = quarter is not None or half is not None
 
     try:
-        if period_filter_requested:
-            try:
-                df = load_player_game_period_stats_for_seasons(seasons, season_type)
-                df = filter_period_rows(df, quarter=quarter, half=half)
-            except FileNotFoundError:
-                df = load_player_games_for_seasons(seasons, season_type)
-                if period_note := build_period_filter_coverage_note(quarter=quarter, half=half):
-                    notes.append(period_note)
-        else:
-            df = load_player_games_for_seasons(seasons, season_type)
+        base_df = load_player_games_for_seasons(seasons, season_type)
     except FileNotFoundError:
         if clutch:
             notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
         return NoResult(query_class="finder", reason="no_data", notes=notes)
+
+    if period_filter_requested:
+        try:
+            period_df = load_player_game_period_stats_for_seasons(seasons, season_type)
+        except FileNotFoundError:
+            coverage_note = build_period_filter_coverage_note(
+                quarter=quarter,
+                half=half,
+                reason=(
+                    "missing player_game_period_stats dataset for requested slice; "
+                    f"window={period_window_label(quarter=quarter, half=half)}"
+                ),
+            )
+            return NoResult(
+                query_class="finder",
+                reason="filter_not_supported",
+                notes=[coverage_note] if coverage_note else [],
+            )
+        df = filter_period_rows(period_df, quarter=quarter, half=half)
+    else:
+        df = base_df
 
     required = [
         "game_id",
@@ -236,6 +250,66 @@ def build_result(
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
+
+    if period_filter_requested:
+        coverage_base = _apply_filters(
+            df=base_df,
+            player=player,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        coverage_period = _apply_filters(
+            df=df,
+            player=player,
+            team=team,
+            opponent=opponent,
+            home_only=home_only,
+            away_only=away_only,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        if opponent_player and not coverage_base.empty:
+            coverage_base = filter_by_opponent_player(
+                coverage_base, opponent_player, seasons, season_type
+            )
+            coverage_period = filter_by_opponent_player(
+                coverage_period, opponent_player, seasons, season_type
+            )
+        if without_player and not coverage_base.empty:
+            coverage_base = filter_without_player(
+                coverage_base, without_player, seasons, season_type, team=team
+            )
+            coverage_period = filter_without_player(
+                coverage_period, without_player, seasons, season_type, team=team
+            )
+        if special_event and not coverage_base.empty:
+            coverage_base = coverage_base[_flag_special_event(coverage_base, special_event)].copy()
+            coverage_period = coverage_period[
+                _flag_special_event(coverage_period, special_event)
+            ].copy()
+        coverage_failure = period_coverage_failure(
+            coverage_base,
+            coverage_period,
+            dataset="player_game_period_stats",
+            entity_key_columns=["team_id", "player_id"],
+            quarter=quarter,
+            half=half,
+        )
+        if coverage_failure:
+            coverage_note = build_period_filter_coverage_note(
+                quarter=quarter,
+                half=half,
+                reason=coverage_failure,
+            )
+            return NoResult(
+                query_class="finder",
+                reason="filter_not_supported",
+                notes=[coverage_note] if coverage_note else [],
+            )
 
     df = _apply_filters(
         df=df,
@@ -276,7 +350,11 @@ def build_result(
 
     df, role_note = apply_player_role_filter(df, seasons, season_type, role)
     if role_note:
-        notes.append(role_note)
+        return NoResult(
+            query_class="finder",
+            reason="filter_not_supported",
+            notes=[role_note],
+        )
 
     if df.empty:
         return NoResult(query_class="finder", notes=notes)

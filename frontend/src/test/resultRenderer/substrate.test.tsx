@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ResultRenderer from "../../components/results/ResultRenderer";
 import { makeResponse } from "./helpers";
@@ -31,6 +31,34 @@ describe("ResultRenderer substrate and empty states", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/^0$/)).not.toBeInTheDocument();
+  });
+
+  it("preserves exact downstream coverage details in the no-result UI", () => {
+    const detail =
+      "play_by_play_events coverage incomplete; requested_keys=2; covered_keys=1; missing_keys=[game_id=G2]";
+    const data = makeResponse({
+      ok: false,
+      query: "Tatum clutch stats",
+      route: "player_game_summary",
+      result_status: "no_result",
+      result_reason: "filter_not_supported",
+      notes: [detail],
+      result: {
+        query_class: "summary",
+        result_status: "no_result",
+        result_reason: "filter_not_supported",
+        metadata: { clutch: true },
+        notes: [detail],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Details"));
+    expect(screen.getByText(detail)).toBeInTheDocument();
   });
 
   it("routes every result through the fallback table by default", () => {

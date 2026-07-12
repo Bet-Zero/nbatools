@@ -253,6 +253,8 @@ def _write_period_query_fixture(
     *,
     include_player_period_file: bool = True,
     include_team_period_file: bool = True,
+    missing_player_period_game_id: int | None = None,
+    missing_team_period_game_id: int | None = None,
 ) -> None:
     monkeypatch.chdir(tmp_path)
 
@@ -394,42 +396,48 @@ def _write_period_query_fixture(
             tmp_path / "data/raw/player_game_period_stats/2099-00_regular_season.csv"
         )
         player_period_path.parent.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(
-            [
-                _player_period_row(
-                    game_id=1,
-                    game_date="2099-10-01",
-                    player_id=10,
-                    player_name="Period Star",
-                    pts=12,
-                ),
-                _player_period_row(
-                    game_id=2,
-                    game_date="2099-10-03",
-                    player_id=10,
-                    player_name="Period Star",
-                    pts=4,
-                ),
-                _player_period_row(
-                    game_id=3,
-                    game_date="2099-10-05",
-                    player_id=10,
-                    player_name="Period Star",
-                    pts=9,
-                ),
+        player_period_rows = [
+            _player_period_row(
+                game_id=1,
+                game_date="2099-10-01",
+                player_id=10,
+                player_name="Period Star",
+                pts=12,
+            ),
+            _player_period_row(
+                game_id=2,
+                game_date="2099-10-03",
+                player_id=10,
+                player_name="Period Star",
+                pts=4,
+            ),
+            _player_period_row(
+                game_id=3,
+                game_date="2099-10-05",
+                player_id=10,
+                player_name="Period Star",
+                pts=9,
+            ),
+        ]
+        if missing_player_period_game_id is not None:
+            player_period_rows = [
+                row for row in player_period_rows if row["game_id"] != missing_player_period_game_id
             ]
-        ).to_csv(player_period_path, index=False)
+        pd.DataFrame(player_period_rows).to_csv(player_period_path, index=False)
 
     if include_team_period_file:
         team_period_path = tmp_path / "data/raw/team_game_period_stats/2099-00_regular_season.csv"
         team_period_path.parent.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(
-            [
-                _team_period_row(game_id=1, game_date="2099-10-01", pts=55, wl="W", plus_minus=5),
-                _team_period_row(game_id=2, game_date="2099-10-03", pts=50, wl="T", plus_minus=0),
-                _team_period_row(game_id=3, game_date="2099-10-05", pts=48, wl="L", plus_minus=-3),
+        team_period_rows = [
+            _team_period_row(game_id=1, game_date="2099-10-01", pts=55, wl="W", plus_minus=5),
+            _team_period_row(game_id=2, game_date="2099-10-03", pts=50, wl="T", plus_minus=0),
+            _team_period_row(game_id=3, game_date="2099-10-05", pts=48, wl="L", plus_minus=-3),
+        ]
+        if missing_team_period_game_id is not None:
+            team_period_rows = [
+                row for row in team_period_rows if row["game_id"] != missing_team_period_game_id
             ]
-        ).to_csv(team_period_path, index=False)
+        pd.DataFrame(team_period_rows).to_csv(team_period_path, index=False)
 
 
 def _write_period_builder_fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -661,7 +669,31 @@ def test_player_finder_period_filter_uses_period_dataset(tmp_path, monkeypatch):
     assert result.notes == []
 
 
-def test_player_finder_period_filter_falls_back_when_dataset_missing(tmp_path, monkeypatch):
+def test_player_finder_period_filter_refuses_one_missing_requested_window(tmp_path, monkeypatch):
+    _write_period_query_fixture(
+        tmp_path,
+        monkeypatch,
+        missing_player_period_game_id=3,
+    )
+
+    result = build_player_finder_result(
+        season="2099-00",
+        season_type="Regular Season",
+        player="Period Star",
+        quarter="4",
+    )
+
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(
+        "player_game_period_stats coverage incomplete" in note
+        and "window=quarter:4" in note
+        and "game_id=3" in note
+        for note in result.notes
+    )
+
+
+def test_player_finder_period_filter_refuses_when_dataset_missing(tmp_path, monkeypatch):
     _write_period_query_fixture(
         tmp_path,
         monkeypatch,
@@ -675,10 +707,12 @@ def test_player_finder_period_filter_falls_back_when_dataset_missing(tmp_path, m
         quarter="4",
     )
 
-    assert list(result.games["pts"]) == [18, 24, 30]
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
     assert any(
         "quarter filter is not supported with current data" in note
-        and "try removing this filter" in note
+        and "missing player_game_period_stats dataset" in note
+        and "window=quarter:4" in note
         for note in result.notes
     )
 
@@ -701,7 +735,31 @@ def test_team_record_period_filter_uses_period_dataset_and_excludes_ties(tmp_pat
     assert any("tied period windows excluded" in caveat for caveat in result.caveats)
 
 
-def test_team_record_period_filter_falls_back_when_dataset_missing(tmp_path, monkeypatch):
+def test_team_record_period_filter_refuses_one_missing_requested_window(tmp_path, monkeypatch):
+    _write_period_query_fixture(
+        tmp_path,
+        monkeypatch,
+        missing_team_period_game_id=2,
+    )
+
+    result = build_team_record_result(
+        season="2099-00",
+        season_type="Regular Season",
+        team="AAA",
+        half="first",
+    )
+
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(
+        "team_game_period_stats coverage incomplete" in note
+        and "window=half:first" in note
+        and "game_id=2" in note
+        for note in result.notes
+    )
+
+
+def test_team_record_period_filter_refuses_when_dataset_missing(tmp_path, monkeypatch):
     _write_period_query_fixture(
         tmp_path,
         monkeypatch,
@@ -715,11 +773,12 @@ def test_team_record_period_filter_falls_back_when_dataset_missing(tmp_path, mon
         half="first",
     )
 
-    row = result.summary.iloc[0]
-    assert int(row["games"]) == 3
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
     assert any(
         "half filter is not supported with current data" in note
-        and "try removing this filter" in note
+        and "missing team_game_period_stats dataset" in note
+        and "window=half:first" in note
         for note in result.notes
     )
 

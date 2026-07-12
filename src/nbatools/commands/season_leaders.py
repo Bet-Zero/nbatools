@@ -6,12 +6,11 @@ import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
-    build_clutch_filter_coverage_note,
     build_role_filter_coverage_note,
-    load_player_game_clutch_stats_for_seasons,
+    exact_coverage_failure,
     load_player_game_starter_roles_for_seasons,
     safe_divide,
-    select_trusted_clutch_stats,
+    select_player_clutch_stats_for_base,
 )
 from nbatools.commands.freshness import compute_current_through, compute_current_through_for_seasons
 from nbatools.commands.structured_results import LeaderboardResult, NoResult
@@ -896,20 +895,25 @@ def build_result(
         if basic.empty:
             return NoResult(query_class="leaderboard", reason="no_match")
 
-    # Starter/bench role filtering: trusted per-game starter flags only.
-    # Seasons without role coverage refuse honestly; a trivial trust gap
-    # (under 2% of player-games) proceeds with an explicit exclusion
-    # caveat — an unfiltered leaderboard wearing a "bench" label would be
-    # a wrong answer.
+    # Starter/bench role filtering: every requested player-game must have a
+    # trusted starter assignment. Partial leaderboards are wrong answers.
     role_caveat: str | None = None
     if role is not None:
         roles = load_player_game_starter_roles_for_seasons(seasons, season_type)
         join_cols = ["game_id", "team_id", "player_id"]
         if roles.empty or not set(join_cols).issubset(basic.columns):
+            detail = exact_coverage_failure(
+                basic,
+                roles,
+                dataset="player_game_starter_roles",
+                key_columns=join_cols,
+                trust_column="role_source_trusted",
+                reason_column="role_validation_reason",
+            )
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                notes=[build_role_filter_coverage_note(role)],
+                notes=[build_role_filter_coverage_note(role, detail=detail)],
             )
         # The game logs carry an untrusted native starter_flag; rename the
         # trusted dataset's columns so the merge can't collide with it.
@@ -923,14 +927,21 @@ def build_result(
             }
         )
         work = basic.merge(lookup, on=join_cols, how="left")
-        trusted = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
-        untrusted_rows = int((~trusted).sum())
-        if untrusted_rows > 0.02 * len(work):
+        coverage_failure = exact_coverage_failure(
+            basic,
+            roles,
+            dataset="player_game_starter_roles",
+            key_columns=join_cols,
+            trust_column="role_source_trusted",
+            reason_column="role_validation_reason",
+        )
+        if coverage_failure:
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                notes=[build_role_filter_coverage_note(role)],
+                notes=[build_role_filter_coverage_note(role, detail=coverage_failure)],
             )
+        trusted = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
         expected_flag = 1 if role == "starter" else 0
         flags = pd.to_numeric(work["_role_starter_flag"], errors="coerce").fillna(-1)
         basic = (
@@ -939,10 +950,6 @@ def build_result(
             .copy()
         )
         role_caveat = f"filtered to {role} games using trusted starter-role data"
-        if untrusted_rows:
-            role_caveat += (
-                f"; {untrusted_rows} player-games lacked trusted role data and were excluded"
-            )
         if basic.empty:
             return NoResult(
                 query_class="leaderboard",
@@ -985,34 +992,17 @@ def build_result(
 
     clutch_executed = False
     if clutch:
-        try:
-            clutch_rows = load_player_game_clutch_stats_for_seasons(seasons, season_type)
-        except FileNotFoundError:
-            # Data unavailable — honest no-result instead of unfiltered fallback.
+        clutch_rows, clutch_note = select_player_clutch_stats_for_base(basic, seasons, season_type)
+        if clutch_note:
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                notes=[build_clutch_filter_coverage_note("missing player clutch dataset")],
+                notes=[clutch_note],
             )
-        else:
-            keys = ["season", "season_type", "game_id", "team_id", "player_id"]
-            basic_keys = basic[keys].drop_duplicates().copy()
-            basic_keys["game_id"] = basic_keys["game_id"].astype(str)
-            clutch_rows = clutch_rows.copy()
-            clutch_rows["game_id"] = clutch_rows["game_id"].astype(str)
-            scoped = clutch_rows.merge(basic_keys, on=keys, how="inner")
-            trusted, failures = select_trusted_clutch_stats(scoped)
-            if failures:
-                return NoResult(
-                    query_class="leaderboard",
-                    reason="filter_not_supported",
-                    notes=[build_clutch_filter_coverage_note("; ".join(failures))],
-                )
-            elif trusted.empty:
-                return NoResult(query_class="leaderboard", reason="no_match")
-            else:
-                df = _build_from_clutch_rows(trusted)
-                clutch_executed = True
+        if clutch_rows.empty:
+            return NoResult(query_class="leaderboard", reason="no_match")
+        df = _build_from_clutch_rows(clutch_rows)
+        clutch_executed = True
 
     if not clutch_executed:
         df = _build_from_game_logs(basic)

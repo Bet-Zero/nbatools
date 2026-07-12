@@ -204,7 +204,10 @@ Contract rules:
 - rows may only be used for execution when `role_source_trusted=1`
 - at minimum, trust requires exactly 5 starter-marked players in the row's `(game_id, team_id)` group
 - if trust fails, `role_validation_reason` must explain why, such as `starter_count_not_five`
-- if a requested role-filtered slice depends on rows that are missing or untrusted in this dataset, commands must keep the current honest fallback note instead of partially filtering or fabricating bench assignments
+- if a requested role-filtered slice depends on even one row that is missing or
+  untrusted in this dataset, commands must return `filter_not_supported` with
+  the exact missing/untrusted player-game keys instead of partially filtering
+  or fabricating bench assignments
 - refreshed seasons treat this dataset as part of the required raw pipeline contract alongside `player_game_stats`
 
 ---
@@ -323,9 +326,10 @@ Contract rules:
     overtime activity
 - this contract is period-only; it does not define `clutch`, and no consumer may treat these
   rows as a clutch-capable substitute
-- commands should treat missing or incomplete season files for this dataset as a coverage
-  failure and fall back to the current honest unfiltered-results note instead of partially
-  mixing whole-game and period-window rows
+- commands must compare the requested base entity-game key set with this
+  dataset's exact requested window; one missing key returns
+  `filter_not_supported` with the missing game/entity/window detail instead of
+  partially mixing whole-game and period-window rows
 
 ---
 
@@ -402,8 +406,13 @@ Contract rules:
   substitutes
 - route execution may only use derived clutch rows when source trust and
   score-state validation pass for the requested slice
-- missing or untrusted coverage must keep the current honest
-  unfiltered-results note rather than partially filtering results
+- raw play-by-play must cover every requested base game before derived clutch
+  rows may execute
+- every qualifying play-by-play entity-game key must have a trusted derived row
+  for the exact `clutch_window=1`, `clutch_time_remaining_start=300`, and
+  `clutch_score_margin_max=5` window
+- one missing/untrusted PBP game or derived clutch key returns
+  `filter_not_supported` with exact coverage detail rather than partial results
 - rate and efficiency metrics may only ship after their sample denominators are
   validated against the play-by-play derivation
 
@@ -787,9 +796,10 @@ Contract rules:
 - `team_record` owns the downstream handling of `T`; the raw dataset must preserve that state
   instead of collapsing tied period windows into whole-game semantics
 - this contract is period-only; it does not power `clutch`
-- commands should treat missing or incomplete season files for this dataset as a coverage
-  failure and fall back to the current honest unfiltered-results note instead of partially
-  mixing whole-game and period-window rows
+- commands must compare the requested base team-game key set with this
+  dataset's exact requested window; one missing key returns
+  `filter_not_supported` with the missing game/team/window detail instead of
+  partially mixing whole-game and period-window rows
 
 ---
 
@@ -1222,8 +1232,9 @@ When adding a new core dataset, add it here before making it an implicit depende
 - `clutch` uses official `PlayByPlayV3` plus local score-state derivation. The
   raw `play_by_play_events` dataset path and processed
   `player_game_clutch_stats` / `team_game_clutch_stats` derivations exist with
-  validation, loaders, and coverage-gated route execution. Missing or untrusted
-  coverage keeps the explicit unfiltered-results note. Whole-game logs and
+  validation, loaders, and exact coverage-gated route execution. Missing or
+  untrusted PBP/clutch keys return `filter_not_supported` with exact game/key
+  detail. Whole-game logs and
   period-only box-score windows remain rejected as clutch substitutes.
 - `player_on_off` now has an approved future source path: upstream
   `teamplayeronoffsummary` via

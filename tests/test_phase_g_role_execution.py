@@ -17,6 +17,7 @@ from nbatools.commands.pipeline.pull_player_game_starter_roles import (
 )
 from nbatools.commands.player_game_finder import build_result as build_player_finder_result
 from nbatools.commands.player_game_summary import build_result as build_player_summary_result
+from nbatools.commands.season_leaders import build_result as build_season_leaders_result
 
 pytestmark = [pytest.mark.engine, pytest.mark.query]
 
@@ -170,6 +171,7 @@ def _write_role_query_fixture(
     *,
     include_role_file: bool = True,
     trusted: bool = True,
+    missing_role_game_id: int | None = None,
 ) -> None:
     monkeypatch.chdir(tmp_path)
 
@@ -216,7 +218,10 @@ def _write_role_query_fixture(
     if include_role_file:
         role_path = tmp_path / "data/raw/player_game_starter_roles/2099-00_regular_season.csv"
         role_path.parent.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(_role_rows(trusted=trusted)).to_csv(role_path, index=False)
+        role_rows = _role_rows(trusted=trusted)
+        if missing_role_game_id is not None:
+            role_rows = [row for row in role_rows if row["game_id"] != missing_role_game_id]
+        pd.DataFrame(role_rows).to_csv(role_path, index=False)
 
 
 def _boxscore_player_rows(*, game_id: str, starter_positions: list[str]) -> pd.DataFrame:
@@ -264,6 +269,68 @@ def test_finder_role_filter_uses_trusted_starter_roles(tmp_path, monkeypatch):
     assert result.notes == []
 
 
+@pytest.mark.parametrize(
+    ("builder", "role"),
+    [
+        (build_player_summary_result, "starter"),
+        (build_player_finder_result, "bench"),
+    ],
+)
+def test_role_filter_refuses_one_missing_requested_player_game(
+    tmp_path, monkeypatch, builder, role
+):
+    _write_role_query_fixture(
+        tmp_path,
+        monkeypatch,
+        include_role_file=True,
+        trusted=True,
+        missing_role_game_id=2,
+    )
+
+    result = builder(
+        season="2099-00",
+        season_type="Regular Season",
+        player="Role Star",
+        role=role,
+    )
+
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(
+        "player_game_starter_roles coverage incomplete" in note
+        and "game_id=2" in note
+        and "player_id=10" in note
+        for note in result.notes
+    )
+
+
+def test_role_leaderboard_refuses_one_missing_requested_player_game(tmp_path, monkeypatch):
+    _write_role_query_fixture(
+        tmp_path,
+        monkeypatch,
+        include_role_file=True,
+        trusted=True,
+        missing_role_game_id=2,
+    )
+
+    result = build_season_leaders_result(
+        season="2099-00",
+        season_type="Regular Season",
+        stat="pts",
+        role="starter",
+        min_games=1,
+    )
+
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
+    assert any(
+        "player_game_starter_roles coverage incomplete" in note
+        and "game_id=2" in note
+        and "player_id=10" in note
+        for note in result.notes
+    )
+
+
 def test_summary_role_filter_falls_back_when_role_dataset_is_missing(tmp_path, monkeypatch):
     _write_role_query_fixture(tmp_path, monkeypatch, include_role_file=False)
 
@@ -281,7 +348,7 @@ def test_summary_role_filter_falls_back_when_role_dataset_is_missing(tmp_path, m
     assert result.result_status == "no_result"
 
 
-def test_finder_role_filter_falls_back_when_coverage_is_untrusted(tmp_path, monkeypatch):
+def test_finder_role_filter_refuses_when_coverage_is_untrusted(tmp_path, monkeypatch):
     _write_role_query_fixture(tmp_path, monkeypatch, include_role_file=True, trusted=False)
 
     result = build_player_finder_result(
@@ -291,10 +358,12 @@ def test_finder_role_filter_falls_back_when_coverage_is_untrusted(tmp_path, monk
         role="bench",
     )
 
-    assert list(result.games["game_id"]) == [3, 2, 1]
+    assert result.result_status == "no_result"
+    assert result.result_reason == "filter_not_supported"
     assert any(
         "role filter (bench) is not supported with current data" in note
-        and "try removing this filter" in note
+        and "untrusted_keys=" in note
+        and "starter_count_not_five" in note
         for note in result.notes
     )
 

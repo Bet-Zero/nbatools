@@ -403,6 +403,38 @@ class TestCountNegativeFinalization:
         assert "filter_not_supported" in output
         assert "\nCOUNT\n" not in output
 
+    def test_exact_coverage_failure_survives_shared_cli_envelope(self, monkeypatch):
+        from nbatools.commands.natural_query import render_query_result
+
+        detail = (
+            "player_game_period_stats coverage incomplete; requested_keys=3; "
+            "covered_keys=2; window=quarter:4; "
+            "missing_keys=[game_id=3, team_id=1, player_id=10]"
+        )
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: NoResult(
+                query_class="finder",
+                reason="filter_not_supported",
+                notes=[detail],
+            ),
+        )
+
+        qr = execute_structured_query(
+            "player_game_finder",
+            season="2099-00",
+            player="Period Star",
+            quarter="4",
+        )
+        output = _capture(render_query_result, qr, qr.query, pretty=False)
+
+        assert qr.result_status == "no_result"
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.result.notes == [detail]
+        assert detail in output
+        assert "NO_RESULT" in output
+
 
 class TestLeaderboardCountEntityGrain:
     def _parsed_player_appearance_query(self):
