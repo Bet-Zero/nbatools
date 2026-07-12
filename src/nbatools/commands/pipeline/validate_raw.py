@@ -10,6 +10,7 @@ from nbatools.commands.data_utils import (
     TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
     TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS,
 )
+from nbatools.commands.validation_control import validate_raw_coverage
 
 PERIOD_WINDOW_LOOKUP = {
     ("quarter", "1"): (1, 1),
@@ -645,5 +646,18 @@ def run(season: str, season_type: str):
 
     if ((player_adv["ts_pct"] < 0) | (player_adv["ts_pct"] > 2)).any():
         raise ValueError("ts_pct out of bounds")
+
+    raw_frames = {
+        "games": games,
+        "schedule": schedule,
+        "team_game_stats": team,
+        "player_game_stats": player,
+        "player_game_starter_roles": player_roles,
+        "player_game_period_stats": player_period,
+        "team_game_period_stats": team_period,
+    }
+    if schedule_context is not None:
+        raw_frames["schedule_context_features"] = schedule_context
+    validate_raw_coverage(raw_frames)
 
     print("FULL VALIDATION PASSED")

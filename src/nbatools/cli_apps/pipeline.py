@@ -170,6 +170,8 @@ def status(
     print(f"Current through: {info['current_through'] or '(unknown)'}")
     print(f"Raw complete: {info['raw_complete']}")
     print(f"Processed complete: {info['processed_complete']}")
+    print(f"Validation state: {info['validation_state']}")
+    print(f"Generation: {info['generation_id'] or '(none)'}")
 
     if info["manifest"]:
         m = info["manifest"]
@@ -195,7 +197,18 @@ def status(
             print(f"  {p}")
 
     if not missing_raw and not missing_proc:
-        print("\nAll expected files present.")
+        if info["validation_state"] == "passed":
+            print("\nAll expected files present and validated.")
+        else:
+            print("\nAll expected files are present, but validation has not passed.")
+
+    if info["validation_errors"]:
+        print("\nValidation errors:")
+        for error in info["validation_errors"]:
+            print(f"  {error}")
+
+    if info["validation_state"] != "passed":
+        raise typer.Exit(code=1)
 
 
 @app.command("sync-r2")

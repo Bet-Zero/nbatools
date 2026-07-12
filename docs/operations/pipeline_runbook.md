@@ -18,7 +18,7 @@ The standard season pipeline is:
 1. pull raw tables
 2. validate raw tables
 3. build processed tables
-4. update manifest
+4. write and inspect the versioned validation receipt
 
 This is automated by `backfill-season`.
 
@@ -27,22 +27,30 @@ This is automated by `backfill-season`.
 # 2. Core Commands
 
 ## Backfill one season
-`nbatools-cli backfill-season --season 2024-25 --season-type "Regular Season"`
+`nbatools-cli ops backfill-season --season 2024-25 --season-type "Regular Season"`
 
 ## Backfill one season and skip already-built outputs
-`nbatools-cli backfill-season --season 2024-25 --season-type "Regular Season" --skip-existing`
+`nbatools-cli ops backfill-season --season 2024-25 --season-type "Regular Season" --skip-existing`
 
 ## Backfill a range
-`nbatools-cli backfill-range --start-season 2018-19 --end-season 2020-21 --include-playoffs`
+`nbatools-cli ops backfill-range --start-season 2018-19 --end-season 2020-21 --include-playoffs`
 
 ## Backfill a range and skip existing outputs
-`nbatools-cli backfill-range --start-season 2018-19 --end-season 2020-21 --include-playoffs --skip-existing`
+`nbatools-cli ops backfill-range --start-season 2018-19 --end-season 2020-21 --include-playoffs --skip-existing`
 
 ## Inventory
-`nbatools-cli inventory`
+`nbatools-cli ops inventory`
 
 ## Show manifest
-`nbatools-cli show-manifest`
+`nbatools-cli ops show-manifest`
+
+## Validate one slice and show status
+
+```bash
+nbatools-cli processing validate-raw --season 2024-25 --season-type "Regular Season"
+nbatools-cli ops update-manifest --season 2024-25 --season-type "Regular Season"
+nbatools-cli pipeline status --season 2024-25 --season-type "Regular Season"
+```
 
 ---
 
@@ -99,10 +107,14 @@ Example:
 Avoid rerunning already-complete seasons.
 
 ## Rule
-If all processed output files already exist for a season/type, and `--skip-existing` is used:
+If all processed output files exist and the versioned validation receipt still
+passes checksum/content inspection, and `--skip-existing` is used:
 - the season/type is skipped
 - no new API calls are made
 - this is safe for incremental reruns
+
+Missing, failed, corrupt, checksum-drifted, or legacy-only receipts do not
+qualify for skipping merely because files exist.
 
 ---
 
@@ -117,7 +129,7 @@ Instead:
 3. if needed, resume later range runs with `--skip-existing`
 
 Example:
-`nbatools-cli backfill-season --season 2009-10 --season-type "Regular Season"`
+`nbatools-cli ops backfill-season --season 2009-10 --season-type "Regular Season"`
 
 ## Common causes of failure
 - transient NBA API timeouts
@@ -129,7 +141,19 @@ Example:
 
 # 7. Manifest Meaning
 
-`backfill_manifest.csv` tracks whether a season/type is complete.
+`data/metadata/dataset_manifests/<season>_<season_type>.json` is the
+authoritative validation receipt. Schema version 1 records a shared generation,
+source, grain, row count, key-set and file checksums, exact coverage, trust, and
+validation state for each applicable dataset.
+
+A green receipt proves that required files, schema columns, and keys are
+present, standard period windows are covered, cross-dataset key sets agree,
+trust fields pass, checksums match, and all records belong to the receipt generation. Optional
+capability files may be absent; if present, they must pass the same integrity
+and trust checks.
+
+`backfill_manifest.csv` is retained as a legacy compatibility index. Its
+completeness flags do not independently establish validity.
 
 ## `raw_complete = 1`
 All expected raw files exist for that season/type.
@@ -155,7 +179,9 @@ It shows:
 - raw season-type labels
 - processed season-type labels
 
-If `raw vs manifest aligned` and `processed vs manifest aligned` are both `True`, the warehouse is internally aligned.
+Label alignment is informational. `all validation receipts passed: True` is the
+content-validation signal; `pipeline status` also exits nonzero for failed,
+unknown, or `legacy_unverified` validation.
 
 ---
 
@@ -163,16 +189,17 @@ If `raw vs manifest aligned` and `processed vs manifest aligned` are both `True`
 
 ## For new historical chunks
 Use:
-`nbatools-cli backfill-range --start-season XXXX-YY --end-season YYYY-ZZ --include-playoffs --skip-existing`
+`nbatools-cli ops backfill-range --start-season XXXX-YY --end-season YYYY-ZZ --include-playoffs --skip-existing`
 
 ## For current season refreshes
 Use:
-`nbatools-cli backfill-season --season 2025-26 --season-type "Regular Season"`
+`nbatools-cli ops backfill-season --season 2025-26 --season-type "Regular Season"`
 
 ## After major runs
 Check:
-- `nbatools-cli inventory`
-- `nbatools-cli show-manifest`
+- `nbatools-cli ops inventory`
+- `nbatools-cli ops show-manifest`
+- `nbatools-cli pipeline status --season <season> --season-type <type>`
 - `du -sh data`
 
 ---

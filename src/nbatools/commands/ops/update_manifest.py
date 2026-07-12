@@ -1,70 +1,47 @@
+"""Write legacy completeness metadata and the authoritative validation receipt."""
+
+from __future__ import annotations
+
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
-RAW_REQUIRED = [
-    "games",
-    "schedule",
-    "team_game_stats",
-    "player_game_stats",
-    "player_game_starter_roles",
-    "player_game_period_stats",
-    "team_game_period_stats",
-    "team_season_advanced",
-    "player_season_advanced",
-]
-
-PROCESSED_REQUIRED = [
-    "team_game_features",
-    "game_features",
-    "schedule_context_features",
-    "player_game_features",
-    "league_season_stats",
-]
+from nbatools.commands.validation_control import (
+    DATASET_SPECS,
+    build_slice_manifest,
+    dataset_path,
+    write_slice_manifest,
+)
 
 
 def raw_paths(season: str, season_type: str) -> list[Path]:
-    safe = season_type.lower().replace(" ", "_")
-    paths = [
-        Path(f"data/raw/games/{season}_{safe}.csv"),
-        Path(f"data/raw/schedule/{season}_{safe}.csv"),
-        Path(f"data/raw/team_game_stats/{season}_{safe}.csv"),
-        Path(f"data/raw/player_game_stats/{season}_{safe}.csv"),
-        Path(f"data/raw/player_game_starter_roles/{season}_{safe}.csv"),
-        Path(f"data/raw/player_game_period_stats/{season}_{safe}.csv"),
-        Path(f"data/raw/team_game_period_stats/{season}_{safe}.csv"),
-        Path(f"data/raw/team_season_advanced/{season}_{safe}.csv"),
-        Path(f"data/raw/player_season_advanced/{season}_{safe}.csv"),
-        Path(f"data/raw/rosters/{season}.csv"),
+    return [
+        dataset_path(Path("data"), spec, season, season_type)
+        for spec in DATASET_SPECS
+        if spec.required and spec.layer == "raw" and spec.applies(season_type)
     ]
-
-    if season_type != "Playoffs":
-        paths.append(Path(f"data/raw/standings_snapshots/{season}_{safe}.csv"))
-
-    return paths
 
 
 def processed_paths(season: str, season_type: str) -> list[Path]:
-    safe = season_type.lower().replace(" ", "_")
     return [
-        Path(f"data/processed/team_game_features/{season}_{safe}.csv"),
-        Path(f"data/processed/game_features/{season}_{safe}.csv"),
-        Path(f"data/processed/schedule_context_features/{season}_{safe}.csv"),
-        Path(f"data/processed/player_game_features/{season}_{safe}.csv"),
-        Path(f"data/processed/league_season_stats/{season}_{safe}.csv"),
+        dataset_path(Path("data"), spec, season, season_type)
+        for spec in DATASET_SPECS
+        if spec.required and spec.layer == "processed" and spec.applies(season_type)
     ]
 
 
-def run(season: str, season_type: str) -> None:
+def _write_legacy_manifest(
+    season: str,
+    season_type: str,
+    *,
+    raw_complete: bool,
+    processed_complete: bool,
+    loaded_at: str,
+) -> Path:
     metadata_dir = Path("data/metadata")
     metadata_dir.mkdir(parents=True, exist_ok=True)
-
-    manifest_path = metadata_dir / "backfill_manifest.csv"
-
-    raw_complete = all(p.exists() for p in raw_paths(season, season_type))
-    processed_complete = all(p.exists() for p in processed_paths(season, season_type))
-
+    path = metadata_dir / "backfill_manifest.csv"
     new_row = pd.DataFrame(
         [
             {
@@ -72,19 +49,47 @@ def run(season: str, season_type: str) -> None:
                 "season_type": season_type,
                 "raw_complete": int(raw_complete),
                 "processed_complete": int(processed_complete),
-                "loaded_at": datetime.now().isoformat(timespec="seconds"),
+                "loaded_at": loaded_at,
             }
         ]
     )
+    if path.exists():
+        existing = pd.read_csv(path)
+        existing = existing[
+            ~((existing["season"] == season) & (existing["season_type"] == season_type))
+        ].copy()
+        new_row = pd.concat([existing, new_row], ignore_index=True)
+    new_row.sort_values(["season", "season_type"]).reset_index(drop=True).to_csv(path, index=False)
+    return path
 
-    if manifest_path.exists():
-        df = pd.read_csv(manifest_path)
-        df = df[~((df["season"] == season) & (df["season_type"] == season_type))].copy()
-        df = pd.concat([df, new_row], ignore_index=True)
-    else:
-        df = new_row
 
-    df = df.sort_values(["season", "season_type"]).reset_index(drop=True)
-    df.to_csv(manifest_path, index=False)
-
-    print(f"Updated {manifest_path}")
+def run(season: str, season_type: str) -> None:
+    generated_at = datetime.now().isoformat(timespec="seconds")
+    document = build_slice_manifest(
+        season,
+        season_type,
+        generated_at=generated_at,
+    )
+    receipt_path = write_slice_manifest(document)
+    records = document["datasets"]
+    raw_ok = all(
+        record["validation"]["state"] in {"passed", "unavailable"}
+        for record in records
+        if record["layer"] == "raw"
+    )
+    processed_ok = all(
+        record["validation"]["state"] in {"passed", "unavailable"}
+        for record in records
+        if record["layer"] == "processed"
+    )
+    legacy_path = _write_legacy_manifest(
+        season,
+        season_type,
+        raw_complete=raw_ok,
+        processed_complete=processed_ok,
+        loaded_at=generated_at,
+    )
+    print(f"Updated {legacy_path}")
+    print(f"Wrote validation receipt {receipt_path}")
+    if document["validation_state"] != "passed":
+        raise ValueError("Dataset validation failed: " + "; ".join(document["validation_errors"]))

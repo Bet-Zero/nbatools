@@ -27,6 +27,9 @@ function makeFreshnessData(
         raw_complete: true,
         processed_complete: true,
         loaded_at: "2026-04-14T09:00:00",
+        validation_state: "passed",
+        generation_id: "generation-test",
+        validation_errors: [],
       },
     ],
     last_refresh_ok: true,
@@ -159,6 +162,7 @@ describe("FreshnessStatus", () => {
 
     await waitFor(() => {
       expect(screen.getByText("2025-26 Regular Season")).toBeInTheDocument();
+      expect(screen.getByText("validation passed · generati")).toBeInTheDocument();
     });
   });
 

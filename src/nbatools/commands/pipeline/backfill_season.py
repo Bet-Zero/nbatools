@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+from nbatools.commands.validation_control import inspect_slice_manifest
+
 
 def outputs_exist(season: str, season_type: str) -> bool:
     safe = season_type.lower().replace(" ", "_")
@@ -13,7 +15,10 @@ def outputs_exist(season: str, season_type: str) -> bool:
         Path(f"data/processed/league_season_stats/{season}_{safe}.csv"),
     ]
 
-    return all(p.exists() for p in paths)
+    if not all(p.exists() for p in paths):
+        return False
+    inspection = inspect_slice_manifest(season, season_type)
+    return inspection["validation_state"] == "passed"
 
 
 def run(season: str, season_type: str, skip_existing: bool = False):

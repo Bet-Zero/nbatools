@@ -7,17 +7,17 @@ This follows the freshness contract documented in
 ``docs/reference/current_state_guide.md``:
 
     current through = the latest game_date in the games CSV where
-    is_final = 1, provided the backfill manifest reports both
-    raw_complete = 1 and processed_complete = 1 for that season/type.
+    is_final = 1, provided the versioned dataset validation receipt passes
+    checksum, coverage, trust, and generation inspection for that season/type.
 
 Status semantics
 ----------------
 ``FreshnessStatus`` captures four explicit states:
 
-- **fresh**: manifest complete, current_through is recent (within threshold).
-- **stale**: manifest complete, but current_through is older than threshold.
-- **unknown**: manifest or games data missing — cannot determine freshness.
-- **failed**: last refresh attempt recorded a failure.
+- **fresh**: validation passes and current_through is recent (within threshold).
+- **stale**: validation passes, but current_through is older than threshold.
+- **unknown**: validation receipt or games data missing — cannot determine freshness.
+- **failed**: validation inspection or the last refresh attempt failed.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands import validation_control
 from nbatools.commands.data_utils import normalize_season_type
 from nbatools.data_source import data_exists, data_read_csv, data_read_text
 
@@ -60,6 +61,9 @@ class SeasonFreshness:
     raw_complete: bool = False
     processed_complete: bool = False
     loaded_at: str | None = None
+    validation_state: str = "unknown"
+    generation_id: str | None = None
+    validation_errors: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -88,6 +92,9 @@ class FreshnessInfo:
                     "raw_complete": s.raw_complete,
                     "processed_complete": s.processed_complete,
                     "loaded_at": s.loaded_at,
+                    "validation_state": s.validation_state,
+                    "generation_id": s.generation_id,
+                    "validation_errors": list(s.validation_errors),
                 }
                 for s in self.seasons
             ],
@@ -141,6 +148,14 @@ def _manifest_complete(
     data_root: Path = _DATA_ROOT,
 ) -> bool:
     """Return True when the backfill manifest says this season/type is fully loaded."""
+    versioned_path = validation_control.manifest_path(data_root, season, season_type)
+    if data_exists(versioned_path):
+        return (
+            validation_control.inspect_slice_manifest(season, season_type, data_root=data_root)[
+                "validation_state"
+            ]
+            == "passed"
+        )
     manifest_path = data_root / "metadata" / "backfill_manifest.csv"
     if not data_exists(manifest_path):
         return False
@@ -235,6 +250,33 @@ def manifest_entry(
     data_root: Path = _DATA_ROOT,
 ) -> dict | None:
     """Return the manifest row for a season/type as a dict, or None."""
+    versioned_path = validation_control.manifest_path(data_root, season, season_type)
+    if data_exists(versioned_path):
+        inspection = validation_control.inspect_slice_manifest(
+            season, season_type, data_root=data_root
+        )
+        document = inspection.get("manifest") or {}
+        records = document.get("datasets") or []
+        validation_passed = inspection["validation_state"] == "passed"
+        raw_required = [r for r in records if r.get("required") and r.get("layer") == "raw"]
+        processed_required = [
+            r for r in records if r.get("required") and r.get("layer") == "processed"
+        ]
+        return {
+            "season": season,
+            "season_type": season_type,
+            "raw_complete": validation_passed
+            and bool(raw_required)
+            and all(r.get("validation", {}).get("state") == "passed" for r in raw_required),
+            "processed_complete": validation_passed
+            and bool(processed_required)
+            and all(r.get("validation", {}).get("state") == "passed" for r in processed_required),
+            "loaded_at": str(document.get("generated_at", "")),
+            "validation_state": inspection["validation_state"],
+            "generation_id": inspection.get("generation_id"),
+            "validation_errors": inspection.get("errors", []),
+        }
+
     manifest_path = data_root / "metadata" / "backfill_manifest.csv"
     if not data_exists(manifest_path):
         return None
@@ -253,6 +295,9 @@ def manifest_entry(
         "raw_complete": bool(row.get("raw_complete") == 1),
         "processed_complete": bool(row.get("processed_complete") == 1),
         "loaded_at": str(row.get("loaded_at", "")),
+        "validation_state": "legacy_unverified",
+        "generation_id": None,
+        "validation_errors": ["versioned dataset manifest missing"],
     }
 
 
@@ -361,14 +406,26 @@ def build_freshness_info(
         entry = manifest_entry(season, stype, data_root)
         raw_ok = bool(entry and entry.get("raw_complete"))
         proc_ok = bool(entry and entry.get("processed_complete"))
+        validation_state = str(entry.get("validation_state", "unknown")) if entry else "unknown"
+        if validation_state == "failed":
+            status = FreshnessStatus.FAILED
+        else:
+            status = classify_freshness(
+                ct,
+                raw_ok and proc_ok and validation_state == "passed",
+                reference_date=reference_date,
+            )
         return SeasonFreshness(
             season=season,
             season_type=stype,
-            status=classify_freshness(ct, raw_ok and proc_ok, reference_date=reference_date),
+            status=status,
             current_through=ct,
             raw_complete=raw_ok,
             processed_complete=proc_ok,
             loaded_at=entry.get("loaded_at") if entry else None,
+            validation_state=validation_state,
+            generation_id=entry.get("generation_id") if entry else None,
+            validation_errors=list(entry.get("validation_errors", [])) if entry else [],
         )
 
     for season in seasons:

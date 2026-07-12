@@ -682,7 +682,8 @@ League-wide seasonal environment context.
 One row per season and season_type
 
 ### Purpose
-Control-layer record of backfill completeness.
+Legacy compatibility index of backfill completeness. These flags alone do not
+prove dataset validity and are not authoritative for freshness or readiness.
 
 ### Important columns
 - `season`
@@ -690,6 +691,22 @@ Control-layer record of backfill completeness.
 - `raw_complete`
 - `processed_complete`
 - `loaded_at`
+
+## dataset_manifests
+
+### Path
+`data/metadata/dataset_manifests/<season>_<season_type>.json`
+
+### Grain
+One versioned validation receipt per season and season type, containing one
+record per applicable raw or processed dataset.
+
+### Purpose
+Authoritative control-plane evidence for a coherent validated slice. The
+receipt records schema version, generation, source, grain, row and key counts,
+required schema columns, file and key-set checksums, exact cross-dataset
+coverage, trust, and validation state. Required gaps fail the receipt. Optional capability datasets may be
+absent, but a present corrupt, incomplete, or untrusted optional dataset fails.
 
 ---
 

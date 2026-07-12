@@ -240,7 +240,7 @@ def _setup_games(data_root: Path, season: str, season_type: str, game_date: str)
 
 
 class TestBuildFreshnessInfo:
-    def test_fresh_status(self, tmp_path):
+    def test_legacy_complete_manifest_is_not_treated_as_fresh(self, tmp_path):
         _setup_manifest(tmp_path, "2025-26", "Regular Season")
         _setup_games(tmp_path, "2025-26", "Regular Season", "2026-04-13")
 
@@ -249,12 +249,13 @@ class TestBuildFreshnessInfo:
             data_root=tmp_path,
             reference_date=date(2026, 4, 14),
         )
-        assert info.status == FreshnessStatus.FRESH
+        assert info.status == FreshnessStatus.UNKNOWN
         assert info.current_through == "2026-04-13"
         assert len(info.seasons) == 1
-        assert info.seasons[0].status == FreshnessStatus.FRESH
+        assert info.seasons[0].status == FreshnessStatus.UNKNOWN
+        assert info.seasons[0].validation_state == "legacy_unverified"
 
-    def test_stale_status(self, tmp_path):
+    def test_legacy_complete_manifest_is_not_treated_as_validated_stale(self, tmp_path):
         _setup_manifest(tmp_path, "2025-26", "Regular Season")
         _setup_games(tmp_path, "2025-26", "Regular Season", "2026-04-01")
 
@@ -263,7 +264,8 @@ class TestBuildFreshnessInfo:
             data_root=tmp_path,
             reference_date=date(2026, 4, 14),
         )
-        assert info.status == FreshnessStatus.STALE
+        assert info.status == FreshnessStatus.UNKNOWN
+        assert info.seasons[0].validation_state == "legacy_unverified"
 
     def test_unknown_when_manifest_missing(self, tmp_path):
         info = build_freshness_info(
@@ -332,5 +334,6 @@ class TestBuildFreshnessInfo:
         # Verify JSON-serializable
         json_str = json.dumps(d)
         parsed = json.loads(json_str)
-        assert parsed["status"] == "fresh"
+        assert parsed["status"] == "unknown"
         assert parsed["current_through"] == "2026-04-13"
+        assert parsed["seasons"][0]["validation_state"] == "legacy_unverified"

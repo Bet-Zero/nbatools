@@ -126,7 +126,9 @@ diffs, create committed image baselines, or add a CI gate.
   keeps the route/status/query-class badges and full metadata context visible.
 - **First-run freshness** — before a query result exists, freshness renders as
   a top banner with fresh/stale/unknown/failed state guidance. Result-level
-  freshness remains in the result envelope after a query returns.
+  freshness remains in the result envelope after a query returns. Expanded
+  season details expose the validation state and abbreviated receipt generation;
+  failed receipt details remain available through the API response.
 - **Player summaries** — `player_game_summary` responses use a dedicated renderer with player identity, hero stats, record/secondary stats, a scoring trend and recent-game strip when `game_log` is present, plus full summary and by-season detail.
 - **Stat help** — compact stat labels such as PTS, REB, AST, eFG%, TS%, USG%, 3PM, and +/- expose nonintrusive title/accessibility help through the shared Stat primitive.
 - **Motion polish** — empty, loading, error, and result surfaces use restrained token-driven entry transitions; hero stat values can opt into reduced-motion-aware settling motion through the shared Stat primitive.

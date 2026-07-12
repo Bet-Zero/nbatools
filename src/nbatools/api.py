@@ -145,6 +145,9 @@ class SeasonFreshnessResponse(BaseModel):
     raw_complete: bool = False
     processed_complete: bool = False
     loaded_at: str | None = None
+    validation_state: str = "unknown"
+    generation_id: str | None = None
+    validation_errors: list[str] = Field(default_factory=list)
 
 
 class FreshnessResponse(BaseModel):
