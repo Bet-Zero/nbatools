@@ -202,6 +202,98 @@ class TestCountNegativeFinalization:
         assert "\nCOUNT\n" not in output
 
 
+class TestLeaderboardCountEntityGrain:
+    def _parsed_player_appearance_query(self):
+        from nbatools.commands.natural_query import parse_query
+
+        parsed = parse_query("How many Finals appearances does LeBron have?")
+        parsed["route_kwargs"].pop("unsupported_filters", None)
+        return parsed
+
+    def test_player_appearance_boundary_refuses_before_execution(self):
+        qr = execute_natural_query("How many Finals appearances does LeBron have?")
+
+        assert qr.route == "playoff_appearances"
+        assert isinstance(qr.result, NoResult)
+        assert qr.result.query_class == "count"
+        assert qr.result_status == "no_result"
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.to_dict()["sections"] == {}
+        assert qr.metadata["unsupported_filters"] == ["player_playoff_appearances"]
+        assert "primary_count" not in qr.metadata
+        assert "count_phrase" not in qr.metadata
+
+    def test_player_appearance_raw_cli_has_no_count_or_leaderboard(self):
+        from nbatools.commands.natural_query import render_query_result
+
+        query = "How many Finals appearances does LeBron have?"
+        qr = execute_natural_query(query)
+        output = _capture(render_query_result, qr, query, pretty=False)
+
+        assert "NO_RESULT" in output
+        assert "filter_not_supported" in output
+        assert "\nCOUNT\n" not in output
+        assert "\nLEADERBOARD\n" not in output
+
+    def test_wrong_grain_leaderboard_cannot_become_player_zero(self, monkeypatch):
+        parsed = self._parsed_player_appearance_query()
+        monkeypatch.setattr(query_service, "parse_query", lambda _query: parsed)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: LeaderboardResult(
+                leaders=pd.DataFrame(
+                    [{"rank": 1, "team_abbr": "LAL", "team_name": "Lakers", "appearances": 10}]
+                )
+            ),
+        )
+
+        qr = execute_natural_query("How many Finals appearances does LeBron have?")
+
+        assert isinstance(qr.result, NoResult)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.to_dict()["sections"] == {}
+        assert "primary_count" not in qr.metadata
+
+    def test_missing_player_row_remains_no_match(self, monkeypatch):
+        parsed = self._parsed_player_appearance_query()
+        monkeypatch.setattr(query_service, "parse_query", lambda _query: parsed)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: LeaderboardResult(
+                leaders=pd.DataFrame(
+                    [{"rank": 1, "player_name": "Stephen Curry", "appearances": 6}]
+                )
+            ),
+        )
+
+        qr = execute_natural_query("How many Finals appearances does LeBron have?")
+
+        assert isinstance(qr.result, NoResult)
+        assert qr.result_reason == "no_match"
+        assert qr.to_dict()["sections"] == {}
+
+    def test_matching_player_grain_preserves_real_count(self, monkeypatch):
+        parsed = self._parsed_player_appearance_query()
+        monkeypatch.setattr(query_service, "parse_query", lambda _query: parsed)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: LeaderboardResult(
+                leaders=pd.DataFrame(
+                    [{"rank": 1, "player_name": "LeBron James", "appearances": 10}]
+                )
+            ),
+        )
+
+        qr = execute_natural_query("How many Finals appearances does LeBron have?")
+
+        assert isinstance(qr.result, CountResult)
+        assert qr.result.count == 10
+        assert qr.metadata["primary_count"] == 10
+
+
 # ===================================================================
 # Natural query execution through the service layer
 # ===================================================================

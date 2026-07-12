@@ -223,6 +223,31 @@ describe("NoResultDisplay", () => {
     expect(screen.queryByText(/Pf is not available/)).not.toBeInTheDocument();
   });
 
+  it("explains the player playoff-appearance grain boundary", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        route="playoff_appearances"
+        queryClass="count"
+        metadata={{
+          route: "playoff_appearances",
+          player: "LeBron James",
+          unsupported_filters: ["player_playoff_appearances"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Player playoff-appearance counts are not supported yet. Try asking about a team or the league leaderboard.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/0 appearances/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("filter_not_supported")).not.toBeInTheDocument();
+  });
+
   it("keeps raw unsupported diagnostics out of the public no-result message", () => {
     render(
       <NoResultDisplay

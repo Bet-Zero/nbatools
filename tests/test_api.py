@@ -209,6 +209,23 @@ class TestNaturalQuery:
         assert body["result"]["sections"] == {}
         assert body["result"]["metadata"]["unsupported_filters"] == ["unsupported_concept"]
 
+    def test_player_playoff_appearance_count_refuses_team_grain_route(self):
+        resp = client.post(
+            "/query",
+            json={"query": "How many Finals appearances does LeBron have?"},
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["ok"] is False
+        assert body["route"] == "playoff_appearances"
+        assert body["result_status"] == "no_result"
+        assert body["result_reason"] == "filter_not_supported"
+        assert body["result"]["query_class"] == "count"
+        assert body["result"]["sections"] == {}
+        assert body["result"]["metadata"]["unsupported_filters"] == ["player_playoff_appearances"]
+        assert "primary_count" not in body["result"]["metadata"]
+
     def test_natural_query_wrong_content_type(self):
         resp = client.post("/query", content="plain text")
         assert resp.status_code == 422
@@ -283,6 +300,28 @@ class TestStructuredQuery:
         assert body["ok"] is False
         assert body["result_status"] == "no_result"
         assert body["result_reason"] == "unsupported"
+
+    def test_structured_player_playoff_appearances_refuse_team_grain(self):
+        resp = client.post(
+            "/structured-query",
+            json={
+                "route": "playoff_appearances",
+                "kwargs": {
+                    "player": "LeBron James",
+                    "start_season": "2001-02",
+                    "end_season": "2024-25",
+                    "playoff_round": "04",
+                },
+            },
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["ok"] is False
+        assert body["route"] == "playoff_appearances"
+        assert body["result_status"] == "no_result"
+        assert body["result_reason"] == "filter_not_supported"
+        assert body["result"]["sections"] == {}
 
     def test_structured_query_missing_route(self):
         resp = client.post("/structured-query", json={"kwargs": {}})

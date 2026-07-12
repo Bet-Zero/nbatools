@@ -2159,6 +2159,39 @@ cases:
       - by_season
     review_notes: "Single-team playoff round appearances surface."
 
+  - id: a03_player_finals_appearances_boundary
+    query: "How many Finals appearances does LeBron have?"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: playoff_history
+      variant: nearby_unsupported
+      concept: player_round_appearances_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: playoff_appearances
+      qualifier_model:
+        - player_scope
+        - finals
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: playoff_appearances
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: player_playoff_appearances
+    review_notes: "Player-scoped playoff appearances must refuse instead of converting team-grain rows to zero."
+    manual_review:
+      status: unreviewed
+      tags:
+        - entity_grain_boundary
+        - no_broad_fallback
+      notes: "Review the typed refusal and absence of leaderboard/count answer rows."
+
   - id: most_finals_appearances_since_1980
     query: "most Finals appearances since 1980"
     category: playoff_history

@@ -561,6 +561,7 @@ def build_matchup_by_decade_result(
 
 def build_playoff_appearances_result(
     *,
+    player: str | None = None,
     team: str | None = None,
     season: str | None = None,
     start_season: str | None = None,
@@ -571,12 +572,24 @@ def build_playoff_appearances_result(
 ) -> LeaderboardResult | SummaryResult | NoResult:
     """Count playoff appearances, optionally filtered by round stage.
 
-    If *team* is given, returns a SummaryResult for that team.
+    If *player* is given, returns an explicit unsupported result because the
+    dataset and calculation are team-grain. If *team* is given, returns a
+    SummaryResult for that team.
     If no team, returns a LeaderboardResult ranking all teams.
 
     An "appearance" = the team played at least one game in that
     season at the specified round (or any playoff game if no round).
     """
+    if player:
+        return NoResult(
+            query_class="leaderboard",
+            reason="filter_not_supported",
+            notes=[
+                "player playoff-appearance counts are not supported because "
+                "the current route has team-grain data only"
+            ],
+        )
+
     seasons = resolve_seasons(season, start_season, end_season)
 
     try:
