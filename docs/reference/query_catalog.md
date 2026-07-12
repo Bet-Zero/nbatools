@@ -736,6 +736,12 @@ Examples:
 - `best second round record`
 - `best second-round record since 2010`
 
+Playoff appearances are currently team-grain only: named-team questions return
+a team summary and unscoped questions return a team leaderboard. Player-scoped
+appearance questions such as `How many Finals appearances does LeBron have?`
+return `no_result` / `filter_not_supported`; the product does not substitute a
+team leaderboard or infer a player count from team participation.
+
 ### By-decade / era-bucket queries
 
 Examples:
@@ -756,7 +762,7 @@ Examples outside the shipped playoff/era-history surface:
 
 Finals- or conference-finals-specific team/player records require an approved
 playoff-round record data contract for the requested entity grain. Current
-shipped support covers single-team playoff history, playoff appearances,
+shipped support covers single-team playoff history, team playoff appearances,
 playoff matchup history, and league-wide playoff-round record leaderboards; it
 does not claim entity-specific Finals or conference-finals record splits.
 Single-team round-record phrasing returns `no_result` /

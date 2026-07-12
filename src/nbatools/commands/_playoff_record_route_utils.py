@@ -199,7 +199,7 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
         pa_season, pa_start, pa_end = _resolve_season_defaults(
             season, start_season, end_season, "Playoffs"
         )
-        return "playoff_appearances", {
+        route_kwargs = {
             "team": team,
             "season": pa_season,
             "start_season": pa_start,
@@ -208,6 +208,9 @@ def try_playoff_record_route(parsed: dict) -> tuple[str, dict] | None:
             "limit": top_n or 10,
             "ascending": False,
         }
+        if player:
+            route_kwargs["unsupported_filters"] = ["player_playoff_appearances"]
+        return "playoff_appearances", route_kwargs
 
     # -- Playoff matchup history: team_a vs team_b --
     if (

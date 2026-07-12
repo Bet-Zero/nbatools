@@ -238,6 +238,9 @@ export function unsupportedBoundaryTitle(
   if (filters.includes("unsupported_concept")) {
     return "Unsupported Question";
   }
+  if (filters.includes("player_playoff_appearances")) {
+    return "Unsupported Question";
+  }
   if (filters.includes("opponent_conference")) {
     return "Unavailable Filter";
   }
@@ -262,6 +265,9 @@ function unsupportedBoundaryMessage(
   }
   if (filters.includes("unsupported_concept")) {
     return "That concept is not supported yet. Try asking for a specific player, team, game, or stat.";
+  }
+  if (filters.includes("player_playoff_appearances")) {
+    return "Player playoff-appearance counts are not supported yet. Try asking about a team or the league leaderboard.";
   }
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";
