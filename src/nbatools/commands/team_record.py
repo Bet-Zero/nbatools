@@ -18,6 +18,10 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.aggregate_metrics import (
+    add_aggregate_metric_fields,
+    compute_grouped_rate_metrics,
+)
 from nbatools.commands.data_utils import (
     apply_schedule_context_filters,
     apply_team_clutch_filter,
@@ -178,10 +182,7 @@ def _stat_averages(df: pd.DataFrame) -> dict:
     for col in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov", "plus_minus"):
         if col in df.columns:
             avgs[f"{col}_avg"] = round(df[col].mean(), 3)
-    for col in ("efg_pct", "ts_pct"):
-        if col in df.columns:
-            avgs[f"{col}_avg"] = round(df[col].mean(), 3)
-    return avgs
+    return add_aggregate_metric_fields(avgs, df, ["efg_pct", "ts_pct"])
 
 
 def _empty_sample_result(query_class: str, *, notes: list[str] | None = None) -> NoResult:
@@ -375,7 +376,7 @@ def build_team_record_result(
         "wins": ("wl", lambda s: int((s == "W").sum())),
         "losses": ("wl", lambda s: int((s == "L").sum())),
     }
-    for col in ("pts", "reb", "ast", "fg3m", "tov", "plus_minus", "efg_pct", "ts_pct"):
+    for col in ("pts", "reb", "ast", "fg3m", "tov", "plus_minus"):
         if col in df.columns:
             agg_map[f"{col}_avg"] = (col, "mean")
 
@@ -386,6 +387,8 @@ def build_team_record_result(
         .sort_values("season")
         .reset_index(drop=True)
     )
+    season_rates = compute_grouped_rate_metrics(df, "season", ["efg_pct", "ts_pct"])
+    by_season = by_season.merge(season_rates, on="season", how="left")
     if not by_season.empty:
         by_season["win_pct"] = (by_season["wins"] / by_season["games"]).round(3)
 

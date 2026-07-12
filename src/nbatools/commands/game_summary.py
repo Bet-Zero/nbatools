@@ -3,6 +3,11 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.aggregate_metrics import (
+    add_aggregate_metric_fields,
+    additive_metric_names,
+    compute_grouped_rate_metrics,
+)
 from nbatools.commands.data_utils import (
     build_opponent_mask,
     describe_opponent_filter,
@@ -383,7 +388,8 @@ def build_result(
         "efg_pct",
         "ts_pct",
     ]
-    numeric_cols = [c for c in numeric_cols if c in df.columns]
+    rate_metrics = {"efg_pct", "ts_pct"}
+    numeric_cols = [c for c in numeric_cols if c in df.columns or c in rate_metrics]
 
     wins = int((df["wl"] == "W").sum())
     losses = int((df["wl"] == "L").sum())
@@ -405,9 +411,12 @@ def build_result(
         "win_pct": win_pct,
     }
 
-    for col in numeric_cols:
-        summary_row[f"{col}_avg"] = round(df[col].mean(), 3)
-        summary_row[f"{col}_sum"] = round(df[col].sum(), 3)
+    summary_row = add_aggregate_metric_fields(
+        summary_row,
+        df,
+        numeric_cols,
+        sum_metrics=additive_metric_names(numeric_cols),
+    )
 
     summary = pd.DataFrame([summary_row])
     include_game_log = (
@@ -433,7 +442,7 @@ def build_result(
         "wins": ("wl", lambda s: int((s == "W").sum())),
         "losses": ("wl", lambda s: int((s == "L").sum())),
     }
-    for col in ["pts", "reb", "ast", "fg3m", "tov", "plus_minus", "efg_pct", "ts_pct"]:
+    for col in ["pts", "reb", "ast", "fg3m", "tov", "plus_minus"]:
         if col in df.columns:
             agg_map[f"{col}_avg"] = (col, "mean")
 
@@ -444,6 +453,9 @@ def build_result(
         .sort_values("season")
         .reset_index(drop=True)
     )
+
+    season_rates = compute_grouped_rate_metrics(df, "season", ["efg_pct", "ts_pct"])
+    by_season = by_season.merge(season_rates, on="season", how="left")
 
     current_through = compute_current_through_for_seasons(seasons, season_type)
 

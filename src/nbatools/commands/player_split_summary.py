@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
 )
@@ -124,7 +125,7 @@ def _summarize_bucket(df: pd.DataFrame, bucket_name: str) -> dict:
     losses = int((df["wl"] == "L").sum())
     games = int(len(df))
 
-    return {
+    summary_row = {
         "bucket": bucket_name,
         "games": games,
         "wins": wins,
@@ -137,10 +138,9 @@ def _summarize_bucket(df: pd.DataFrame, bucket_name: str) -> dict:
         "stl_avg": round(df["stl"].mean(), 3) if "stl" in df.columns else None,
         "blk_avg": round(df["blk"].mean(), 3) if "blk" in df.columns else None,
         "fg3m_avg": round(df["fg3m"].mean(), 3) if "fg3m" in df.columns else None,
-        "efg_pct_avg": round(df["efg_pct"].mean(), 3) if "efg_pct" in df.columns else None,
-        "ts_pct_avg": round(df["ts_pct"].mean(), 3) if "ts_pct" in df.columns else None,
         "plus_minus_avg": round(df["plus_minus"].mean(), 3) if "plus_minus" in df.columns else None,
     }
+    return add_aggregate_metric_fields(summary_row, df, ["efg_pct", "ts_pct"])
 
 
 def build_result(

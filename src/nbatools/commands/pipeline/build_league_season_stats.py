@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands.aggregate_metrics import aggregate_metric_value
+
 
 def run(season: str, season_type: str) -> None:
     safe = season_type.lower().replace(" ", "_")
@@ -29,7 +31,7 @@ def run(season: str, season_type: str) -> None:
     summary["avg_pts"] = df["pts"].mean()
     summary["avg_fg3m"] = df["fg3m"].mean()
     summary["avg_fg3a"] = df["fg3a"].mean()
-    summary["avg_fg3_pct"] = df["fg3_pct"].mean()
+    summary["avg_fg3_pct"] = aggregate_metric_value(df, "fg3_pct")
     summary["avg_reb"] = df["reb"].mean()
     summary["avg_tov"] = df["tov"].mean()
 

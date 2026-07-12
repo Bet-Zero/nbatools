@@ -455,6 +455,10 @@ The query service exposes 30 structured routes:
 ### Advanced shooting metrics
 
 - eFG%, TS%
+- filtered-sample FG%, 3P%, FT%, eFG%, and TS% are recomputed as rates of
+  summed makes/attempts rather than arithmetic means of per-game percentages
+- percentage/rate fields expose `*_avg` values only; meaningless `*_pct_sum`
+  fields are not part of summary, comparison, split, or record outputs
 
 ### Advanced player metrics
 

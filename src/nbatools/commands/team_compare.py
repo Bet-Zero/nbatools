@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import load_team_games_for_seasons
 from nbatools.commands.freshness import compute_current_through_for_seasons
 from nbatools.commands.structured_results import ComparisonResult, NoResult
@@ -105,7 +106,7 @@ def summarize_team(df: pd.DataFrame, team_name: str) -> dict:
     losses = int((df["wl"] == "L").sum())
     games = int(len(df))
 
-    return {
+    summary_row = {
         "team_name": team_name,
         "games": games,
         "wins": wins,
@@ -119,12 +120,11 @@ def summarize_team(df: pd.DataFrame, team_name: str) -> dict:
         "fg3m_avg": round(df["fg3m"].mean(), 3) if "fg3m" in df.columns else None,
         "tov_avg": round(df["tov"].mean(), 3) if "tov" in df.columns else None,
         "plus_minus_avg": round(df["plus_minus"].mean(), 3) if "plus_minus" in df.columns else None,
-        "efg_pct_avg": round(df["efg_pct"].mean(), 3) if "efg_pct" in df.columns else None,
-        "ts_pct_avg": round(df["ts_pct"].mean(), 3) if "ts_pct" in df.columns else None,
         "pts_sum": round(df["pts"].sum(), 3) if "pts" in df.columns else 0,
         "reb_sum": round(df["reb"].sum(), 3) if "reb" in df.columns else 0,
         "ast_sum": round(df["ast"].sum(), 3) if "ast" in df.columns else 0,
     }
+    return add_aggregate_metric_fields(summary_row, df, ["efg_pct", "ts_pct"])
 
 
 def _build_team_head_to_head_frames(

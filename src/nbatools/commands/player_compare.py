@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._seasons import resolve_seasons
+from nbatools.commands.aggregate_metrics import add_aggregate_metric_fields
 from nbatools.commands.data_utils import (
     load_player_games_for_seasons,
 )
@@ -135,17 +136,20 @@ def summarize_player(df: pd.DataFrame, context_df: pd.DataFrame, player_name: st
         "fg3m_avg": round(df["fg3m"].mean(), 3) if "fg3m" in df.columns else None,
         "tov_avg": round(df["tov"].mean(), 3) if "tov" in df.columns else None,
         "plus_minus_avg": round(df["plus_minus"].mean(), 3) if "plus_minus" in df.columns else None,
-        "efg_pct_avg": round(df["efg_pct"].mean(), 3) if "efg_pct" in df.columns else None,
-        "ts_pct_avg": round(df["ts_pct"].mean(), 3) if "ts_pct" in df.columns else None,
         "pts_sum": round(df["pts"].sum(), 3) if "pts" in df.columns else 0,
         "reb_sum": round(df["reb"].sum(), 3) if "reb" in df.columns else 0,
         "ast_sum": round(df["ast"].sum(), 3) if "ast" in df.columns else 0,
     }
 
+    summary_row = add_aggregate_metric_fields(
+        summary_row,
+        df,
+        ["efg_pct", "ts_pct"],
+    )
+
     return add_sample_advanced_metrics_to_summary_row(
         context_df,
         summary_row,
-        include_sum_fields=False,
     )
 
 
