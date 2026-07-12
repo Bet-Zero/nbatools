@@ -67,6 +67,20 @@ export type PatternConfig =
   | { type: "fallback_table" };
 
 export function routeToPattern(data: QueryResponse): PatternConfig[] {
+  if (isCountResult(data)) {
+    return [
+      {
+        type: "game_log",
+        sectionKey: "finder",
+        mode: countResultMode(data),
+        rawDetailTitle:
+          countResultMode(data) === "player"
+            ? "Player Game Detail"
+            : "Game Detail",
+      },
+    ];
+  }
+
   switch (data.route ?? data.result?.metadata?.route) {
     case "player_game_summary":
       return shouldShowPlayerSummaryGameLog(data)
@@ -241,6 +255,18 @@ export function routeToPattern(data: QueryResponse): PatternConfig[] {
     default:
       return [{ type: "fallback_table" }];
   }
+}
+
+function isCountResult(data: QueryResponse): boolean {
+  return (
+    data.result?.query_class === "count" ||
+    Array.isArray(data.result?.sections?.count)
+  );
+}
+
+function countResultMode(data: QueryResponse): "player" | "team" {
+  const metadata = data.result?.metadata;
+  return metadata?.player || metadata?.player_context ? "player" : "team";
 }
 
 function shouldShowPlayerSummaryGameLog(data: QueryResponse): boolean {

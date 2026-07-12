@@ -82,6 +82,24 @@ function expectPattern(route: string, expected: PatternConfig[]) {
 }
 
 describe("routeToPattern", () => {
+  it("prioritizes count result shape over the underlying route", () => {
+    expect(
+      routeToPattern(
+        makeResponse("playoff_appearances", {
+          metadata: { player: "LeBron James" },
+          sections: { count: [{ count: 0 }] },
+        }),
+      ),
+    ).toEqual([
+      {
+        type: "game_log",
+        sectionKey: "finder",
+        mode: "player",
+        rawDetailTitle: "Player Game Detail",
+      },
+    ]);
+  });
+
   it("guards every backend-valid route from falling through to fallback_table", () => {
     for (const route of BACKEND_VALID_ROUTES) {
       const patterns = routeToPattern(makeResponse(route));

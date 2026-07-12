@@ -460,9 +460,10 @@ Streak/count/occurrence edge-case fallbacks:
 - Long player/team names, long streak conditions, and long date values wrap
   inside cards. At mobile widths, identity, status, answer, and span/context
   regions stack.
-- Count results can be zero and may have no finder detail. The count answer and
-  count detail table still render; optional finder or custom detail sections
-  appear only when supplied by the response.
+- Count results can be zero and may have no finder detail. The count answer
+  still renders; optional finder or custom detail sections appear only when
+  supplied by the response. Count result shape takes priority over the
+  underlying finder or leaderboard route when selecting a renderer.
 - Long count query text, route labels, and context chips wrap inside the count
   card without widening the result region.
 - Occurrence leaderboard rows without identity render a text-only "Occurrence

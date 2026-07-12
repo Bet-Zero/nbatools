@@ -78,7 +78,7 @@ describe("ResultRenderer game-log patterns", () => {
       query: "how many Jokic 30 point games this season",
       route: "player_game_finder",
       result: {
-        query_class: "finder",
+        query_class: "count",
         result_status: "ok",
         metadata: {
           query_text: "how many Jokic 30 point games this season",
@@ -98,6 +98,7 @@ describe("ResultRenderer game-log patterns", () => {
         notes: [],
         caveats: [],
         sections: {
+          count: [{ count: 2 }],
           finder: [
             {
               game_id: 1,
@@ -124,6 +125,65 @@ describe("ResultRenderer game-log patterns", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Game log" })).toBeInTheDocument();
+  });
+
+  it("renders a zero-count hero without finder rows", () => {
+    const data = makeResponse({
+      query: "How many 100 point games did LeBron have in 2024-25?",
+      route: "player_game_finder",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          query_text: "How many 100 point games did LeBron have in 2024-25?",
+          route: "player_game_finder",
+          player: "LeBron James",
+          primary_count: 0,
+          count_phrase:
+            "LeBron James has had 0 games with at least 100 points in 2024-25.",
+        },
+        notes: [],
+        caveats: [],
+        sections: { count: [{ count: 0 }] },
+        current_through: "2025-04-13",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "LeBron James has had 0 games with at least 100 points in 2024-25.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Game log result" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No Displayable Rows")).not.toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "Game log" })).not.toBeInTheDocument();
+  });
+
+  it("renders a count-only fallback when backend prose is absent", () => {
+    const data = makeResponse({
+      query: "How many matching games?",
+      route: "game_finder",
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: { route: "game_finder", primary_count: 0 },
+        notes: [],
+        caveats: [],
+        sections: { count: [{ count: 0 }] },
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(screen.getByText("0 matching games.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Game log result" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No Displayable Rows")).not.toBeInTheDocument();
   });
 
 
