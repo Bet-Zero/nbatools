@@ -583,6 +583,7 @@ class TestServiceCompatibility:
             assert d["query_class"] == "count"
             assert "count" in d["sections"]
 
+    @pytest.mark.needs_data
     def test_distinct_player_count_natural(self):
         qr = execute_natural_query("how many players scored 40 points this season")
         assert qr.route == "player_occurrence_leaders"
