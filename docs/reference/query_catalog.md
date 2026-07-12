@@ -284,6 +284,16 @@ Examples:
 - `count Lakers home wins vs Warriors since 2021`
 - `how often have the Lakers held opponents under 100 points this year`
 
+### Boolean count
+
+Top-level and parenthesized boolean finder conditions preserve count intent and
+return the same count envelope for equivalent expressions.
+
+Examples:
+
+- `how many LeBron games over 20 points or over 10 assists in 2024-25`
+- `how many LeBron games (over 20 points or over 10 assists) in 2024-25`
+
 ### Count intent phrases
 
 Common triggers:

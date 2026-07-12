@@ -24,6 +24,7 @@ def normalize_stat_conditions(conditions: Any) -> list[dict[str, Any]]:
         return []
 
     normalized: list[dict[str, Any]] = []
+    seen: set[tuple[str, Any, Any]] = set()
     for raw in conditions:
         if hasattr(raw, "to_dict"):
             raw = raw.to_dict()
@@ -41,6 +42,10 @@ def normalize_stat_conditions(conditions: Any) -> list[dict[str, Any]]:
         }
         if "text" in raw:
             cond["text"] = raw.get("text")
+        signature = stat_condition_signature(cond)
+        if signature in seen:
+            continue
+        seen.add(signature)
         normalized.append(cond)
 
     return normalized

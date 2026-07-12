@@ -364,7 +364,7 @@ def test_public_query_acceptance_slice_loads_with_validated_metadata() -> None:
         explicit_selection=True,
     )
 
-    assert len(selected) == 132
+    assert len(selected) == 134
     assert {case["acceptance"]["family"] for case in selected} == set(registry["families_by_id"])
 
 

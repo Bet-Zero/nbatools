@@ -296,6 +296,14 @@ def _special_event_filter_label(value: Any) -> str | None:
     return labels.get(text, text.replace("_", " ").title())
 
 
+def _threshold_filter_value(value: int | float, *, minimum: bool) -> str:
+    phrase = _minimum_threshold_phrase(value) if minimum else _maximum_threshold_phrase(value)
+    strict_prefix = "over " if minimum else "under "
+    if phrase.startswith(strict_prefix):
+        return f"{phrase.removeprefix(strict_prefix)} (exclusive)"
+    return str(value)
+
+
 def _build_applied_filters(
     source: dict[str, Any],
     *,
@@ -406,12 +414,20 @@ def _build_applied_filters(
             if cond.get("min_value") is not None:
                 label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
                 applied_filters.append(
-                    {"label": label, "value": str(cond["min_value"]), "kind": "threshold"}
+                    {
+                        "label": label,
+                        "value": _threshold_filter_value(cond["min_value"], minimum=True),
+                        "kind": "threshold",
+                    }
                 )
             if cond.get("max_value") is not None:
                 label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
                 applied_filters.append(
-                    {"label": label, "value": str(cond["max_value"]), "kind": "threshold"}
+                    {
+                        "label": label,
+                        "value": _threshold_filter_value(cond["max_value"], minimum=False),
+                        "kind": "threshold",
+                    }
                 )
     else:
         stat = source.get("stat") or route_kwargs.get("stat")
@@ -427,10 +443,22 @@ def _build_applied_filters(
         )
         if stat and min_value is not None:
             label = "OPP PTS min" if stat == "opponent_pts" else f"{stat} min"
-            applied_filters.append({"label": label, "value": str(min_value), "kind": "threshold"})
+            applied_filters.append(
+                {
+                    "label": label,
+                    "value": _threshold_filter_value(min_value, minimum=True),
+                    "kind": "threshold",
+                }
+            )
         if stat and max_value is not None:
             label = "OPP PTS max" if stat == "opponent_pts" else f"{stat} max"
-            applied_filters.append({"label": label, "value": str(max_value), "kind": "threshold"})
+            applied_filters.append(
+                {
+                    "label": label,
+                    "value": _threshold_filter_value(max_value, minimum=False),
+                    "kind": "threshold",
+                }
+            )
     if source.get("start_season") and source.get("end_season"):
         applied_filters.append(
             {
@@ -575,7 +603,7 @@ def _build_query_metadata(
             or parsed.get("season_high_intent")
             or parsed.get("top_n")
         ),
-        "threshold_conditions": parsed.get("threshold_conditions"),
+        "threshold_conditions": normalize_stat_conditions(parsed.get("threshold_conditions")),
         "extra_conditions": parsed.get("extra_conditions"),
         "conditions": route_kwargs.get("conditions") or parsed.get("conditions"),
         "occurrence_event": parsed.get("occurrence_event"),
@@ -740,6 +768,15 @@ def _build_count_phrase(
     """
     player = metadata.get("player")
     team = metadata.get("team")
+    entity = player or _team_subject(metadata) or "Result"
+    team_subject = bool(team and not player)
+
+    if parsed.get("boolean_query_used"):
+        game_word = "matching game" if count == 1 else "matching games"
+        verb = "have had" if team_subject else "has had"
+        context = _count_context(metadata, player=bool(player))
+        return f"{entity} {verb} {count} {game_word} {context}."
+
     if metadata.get("stat") == "opponent_pts" and team:
         threshold = _count_threshold_text(metadata.get("max_value"))
         entity = _team_subject(metadata)
@@ -751,8 +788,6 @@ def _build_count_phrase(
             f"{count} {times} {context}{record}."
         )
 
-    entity = player or _team_subject(metadata) or "Result"
-
     # Stat totals read as the stat itself ("has made 247 threes"), not as
     # a count of games.
     if parsed.get("count_kind") == "stat_total":
@@ -760,20 +795,34 @@ def _build_count_phrase(
         stat_name = stat_phrase_label(stat)
         if count == 1 and stat_name.endswith("s"):
             stat_name = stat_name[:-1]
-        verb = {"fg3m": "has made", "fgm": "has made", "ftm": "has made", "pts": "has scored"}.get(
-            stat, "has recorded"
-        )
+        singular_verb = {
+            "fg3m": "has made",
+            "fgm": "has made",
+            "ftm": "has made",
+            "pts": "has scored",
+        }.get(stat, "has recorded")
+        verb = singular_verb.replace("has ", "have ", 1) if team_subject else singular_verb
         context = _count_context(metadata, player=bool(player))
         return f"{entity} {verb} {count} {stat_name} {context}."
 
-    conditions = normalize_stat_conditions(metadata.get("conditions") or parsed.get("conditions"))
-    if len(conditions) >= 2:
+    conditions = normalize_stat_conditions(
+        metadata.get("conditions")
+        or metadata.get("threshold_conditions")
+        or parsed.get("conditions")
+        or parsed.get("threshold_conditions")
+    )
+    if len(conditions) == 1:
+        occurrence = _occurrence_label(conditions[0])
+    elif len(conditions) >= 2:
         occurrence = _compound_occurrence_label(conditions)
     else:
         occurrence = _occurrence_label(parsed.get("occurrence_event") or parsed.get("stat"))
     count_noun = occurrence if count == 1 else pluralize_occurrence(occurrence)
     context = _count_context(metadata, player=bool(player))
-    verb = "has had" if count_noun.startswith("games with ") else "has recorded"
+    if count_noun.startswith("games with "):
+        verb = "have had" if team_subject else "has had"
+    else:
+        verb = "have recorded" if team_subject else "has recorded"
     return f"{entity} {verb} {count} {count_noun} {context}."
 
 
@@ -945,9 +994,9 @@ def _occurrence_label(occurrence: Any) -> str:
         if isinstance(stat, str):
             stat_name = stat_phrase_label(stat)
             if isinstance(min_value, (int, float)):
-                return f"games with {compact_number(min_value)}+ {stat_name}"
+                return f"games with {_minimum_threshold_phrase(min_value)} {stat_name}"
             if isinstance(max_value, (int, float)):
-                return f"games with <= {compact_number(max_value)} {stat_name}"
+                return f"games with {_maximum_threshold_phrase(max_value)} {stat_name}"
             return f"games with {stat_name}"
 
     if isinstance(occurrence, str) and occurrence:
@@ -965,14 +1014,30 @@ def _compound_occurrence_label(conditions: list[dict[str, Any]]) -> str:
         min_value = cond.get("min_value")
         max_value = cond.get("max_value")
         if isinstance(min_value, (int, float)):
-            parts.append(f"{compact_number(min_value)}+ {stat_name}")
+            parts.append(f"{_minimum_threshold_phrase(min_value)} {stat_name}")
         elif isinstance(max_value, (int, float)):
-            parts.append(f"under {compact_number(max_value)} {stat_name}")
+            parts.append(f"{_maximum_threshold_phrase(max_value)} {stat_name}")
         else:
             parts.append(stat_name)
     if not parts:
         return "game"
     return "games with " + " and ".join(parts)
+
+
+def _minimum_threshold_phrase(value: int | float) -> str:
+    numeric = float(value)
+    rounded = round(numeric)
+    if abs(numeric - (rounded + _COUNT_THRESHOLD_EPSILON)) < 0.000001:
+        return f"over {compact_number(rounded)}"
+    return f"{compact_number(value)}+"
+
+
+def _maximum_threshold_phrase(value: int | float) -> str:
+    numeric = float(value)
+    rounded = round(numeric)
+    if abs(numeric - (rounded - _COUNT_THRESHOLD_EPSILON)) < 0.000001:
+        return f"under {compact_number(rounded)}"
+    return f"at most {compact_number(value)}"
 
 
 def pluralize_occurrence(label: str) -> str:
@@ -1132,6 +1197,199 @@ class QueryResult:
         return result_dict
 
 
+def _apply_count_intent(
+    result: Any,
+    parsed: dict[str, Any],
+    *,
+    allow_stat_total: bool,
+) -> Any:
+    """Convert an executed result to the trusted count contract when requested."""
+    if not parsed.get("count_intent", False):
+        return result
+
+    if getattr(result, "result_status", None) != ResultStatus.OK:
+        if _is_trusted_empty_count_result(result):
+            return CountResult(
+                count=0,
+                result_status=ResultStatus.OK,
+                current_through=result.current_through,
+                metadata=result.metadata,
+                notes=result.notes,
+                caveats=result.caveats,
+            )
+        return _count_no_result(result)
+
+    if isinstance(result, FinderResult):
+        stat_total = _stat_total_count(parsed, result.games) if allow_stat_total else None
+        if stat_total is not None:
+            parsed["count_kind"] = "stat_total"
+        return CountResult(
+            count=stat_total if stat_total is not None else len(result.games),
+            games=result.games,
+            result_status=result.result_status,
+            result_reason=result.result_reason,
+            current_through=result.current_through,
+            metadata=result.metadata,
+            notes=result.notes,
+            caveats=result.caveats,
+        )
+
+    if not isinstance(result, LeaderboardResult):
+        return result
+
+    route_kwargs = parsed.get("route_kwargs")
+    if not isinstance(route_kwargs, dict):
+        route_kwargs = {}
+
+    player_name = parsed.get("player")
+    team_name = route_kwargs.get("team")
+    entity_count: int | None = None
+    missing_entity_reason: str | None = None
+
+    if parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
+        entity_count = len(result.leaders)
+    elif player_name:
+        if "player_name" not in result.leaders.columns:
+            missing_entity_reason = "filter_not_supported"
+        else:
+            match = result.leaders[
+                result.leaders["player_name"].astype(str).str.upper() == player_name.upper()
+            ]
+            if match.empty:
+                missing_entity_reason = "no_match"
+            else:
+                skip_cols = {
+                    "rank",
+                    "player_name",
+                    "player_id",
+                    "team_abbr",
+                    "games_played",
+                    "season",
+                    "seasons",
+                    "season_type",
+                }
+                event_cols = [column for column in match.columns if column not in skip_cols]
+                if event_cols:
+                    entity_count = int(match.iloc[0][event_cols[0]])
+                else:
+                    missing_entity_reason = "filter_not_supported"
+    elif team_name:
+        team_upper = team_name.upper()
+        team_match = None
+        for column in ["team_abbr", "team_name"]:
+            if column in result.leaders.columns:
+                candidate = result.leaders[
+                    result.leaders[column].astype(str).str.upper() == team_upper
+                ]
+                if not candidate.empty:
+                    team_match = candidate
+                    break
+        if team_match is None:
+            if any(column in result.leaders.columns for column in ["team_abbr", "team_name"]):
+                missing_entity_reason = "no_match"
+            else:
+                missing_entity_reason = "filter_not_supported"
+        else:
+            skip_cols = {
+                "rank",
+                "team_abbr",
+                "team_name",
+                "games_played",
+                "season",
+                "seasons",
+                "season_type",
+            }
+            event_cols = [column for column in team_match.columns if column not in skip_cols]
+            if event_cols:
+                entity_count = int(team_match.iloc[0][event_cols[0]])
+            else:
+                missing_entity_reason = "filter_not_supported"
+    elif len(result.leaders) == 1:
+        skip_cols = {
+            "rank",
+            "player_name",
+            "player_id",
+            "team_abbr",
+            "team_name",
+            "games_played",
+            "season",
+            "seasons",
+            "season_type",
+        }
+        event_cols = [column for column in result.leaders.columns if column not in skip_cols]
+        if event_cols:
+            entity_count = int(result.leaders.iloc[0][event_cols[0]])
+
+    if entity_count is None:
+        if missing_entity_reason is None:
+            entity_count = 0
+        else:
+            return NoResult(
+                query_class="count",
+                reason=missing_entity_reason,
+                result_status="no_result",
+                result_reason=missing_entity_reason,
+                current_through=result.current_through,
+                metadata=result.metadata,
+                notes=result.notes,
+                caveats=result.caveats,
+            )
+
+    return CountResult(
+        count=entity_count,
+        result_status=result.result_status,
+        result_reason=result.result_reason,
+        current_through=result.current_through,
+        metadata=result.metadata,
+        notes=result.notes,
+        caveats=result.caveats,
+    )
+
+
+def _finalize_natural_query_result(
+    result: Any,
+    parsed: dict[str, Any],
+    query: str,
+    *,
+    grouped_boolean_used: bool,
+    boolean_query_used: bool = False,
+) -> QueryResult:
+    """Apply shared result overlays and metadata after every execution path."""
+    count_intent = bool(parsed.get("count_intent", False))
+    result = _apply_count_intent(
+        result,
+        parsed,
+        allow_stat_total=not boolean_query_used,
+    )
+    metadata = _build_query_metadata(
+        parsed,
+        query,
+        grouped_boolean_used=grouped_boolean_used,
+    )
+    if count_intent:
+        metadata["query_class"] = "count"
+    if count_intent and isinstance(result, CountResult):
+        metadata["primary_count"] = result.count
+        phrase_state = dict(parsed)
+        phrase_state["boolean_query_used"] = boolean_query_used
+        metadata["count_phrase"] = _build_count_phrase(
+            result.count,
+            phrase_state,
+            metadata,
+            result.games,
+        )
+    _add_game_summary_answer_metadata(metadata, result)
+    _add_team_advanced_scalar_answer_metadata(metadata, result)
+    if getattr(result, "notes", None):
+        _merge_metadata_notes(metadata, list(result.notes))
+    return QueryResult(
+        result=result,
+        metadata=metadata,
+        query=query,
+        route=parsed.get("route"),
+    )
+
+
 # ---------------------------------------------------------------------------
 # Natural query entry point
 # ---------------------------------------------------------------------------
@@ -1166,7 +1424,6 @@ def execute_natural_query(query: str) -> QueryResult:
         parsed: dict,
         grouped_boolean_used: bool,
     ) -> QueryResult:
-        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=grouped_boolean_used)
         route = parsed.get("route")
         if isinstance(exc, FileNotFoundError):
             reason = "no_data"
@@ -1183,11 +1440,12 @@ def execute_natural_query(query: str) -> QueryResult:
             result_status=reason_to_status(reason),
             notes=notes,
         )
-        return QueryResult(
-            result=result,
-            metadata=metadata,
-            query=query,
-            route=route,
+        return _finalize_natural_query_result(
+            result,
+            parsed,
+            query,
+            grouped_boolean_used=grouped_boolean_used,
+            boolean_query_used=True,
         )
 
     # -- Grouped boolean path --
@@ -1198,18 +1456,22 @@ def execute_natural_query(query: str) -> QueryResult:
             parsed = parse_query(query)
         except ValueError:
             pass  # keep _build_parse_state result
-        condition_text = _extract_grouped_condition_text(query)
+        condition_text = _extract_grouped_condition_text(
+            query,
+            player=parsed.get("player"),
+            team=parsed.get("team"),
+        )
         try:
             result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
 
-        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=True)
-        return QueryResult(
-            result=result,
-            metadata=metadata,
-            query=query,
-            route=parsed.get("route"),
+        return _finalize_natural_query_result(
+            result,
+            parsed,
+            query,
+            grouped_boolean_used=True,
+            boolean_query_used=True,
         )
 
     # -- OR query path --
@@ -1223,12 +1485,12 @@ def execute_natural_query(query: str) -> QueryResult:
                 parsed = _build_parse_state(query)
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=False)
 
-        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
-        return QueryResult(
-            result=result,
-            metadata=metadata,
-            query=query,
-            route=parsed.get("route"),
+        return _finalize_natural_query_result(
+            result,
+            parsed,
+            query,
+            grouped_boolean_used=False,
+            boolean_query_used=True,
         )
 
     # -- Standard query path --
@@ -1248,7 +1510,6 @@ def execute_natural_query(query: str) -> QueryResult:
     route = parsed["route"]
     kwargs = parsed["route_kwargs"]
     extra_conditions = parsed.get("extra_conditions", [])
-    count_intent = parsed.get("count_intent", False)
 
     unsupported_filters = kwargs.get("unsupported_filters")
     if route is None and unsupported_filters:
@@ -1328,7 +1589,6 @@ def execute_natural_query(query: str) -> QueryResult:
     try:
         result = _execute_build_result(route, kwargs, extra_conditions)
     except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
-        metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         if isinstance(exc, FileNotFoundError):
             reason = "no_data"
         elif isinstance(exc, ValueError):
@@ -1346,175 +1606,18 @@ def execute_natural_query(query: str) -> QueryResult:
             result_status=reason_to_status(reason),
             notes=notes,
         )
-        return QueryResult(
-            result=result,
-            metadata=metadata,
-            query=query,
-            route=route,
-        )
-
-    # Post-process count intent without converting unavailable or unsupported
-    # execution into a definitive zero.  Only an explicit, fully evaluated
-    # no-match proves that the requested count is zero.
-    if count_intent and getattr(result, "result_status", None) != ResultStatus.OK:
-        if _is_trusted_empty_count_result(result):
-            result = CountResult(
-                count=0,
-                result_status=ResultStatus.OK,
-                current_through=result.current_through,
-                metadata=result.metadata,
-                notes=result.notes,
-                caveats=result.caveats,
-            )
-        else:
-            result = _count_no_result(result)
-    elif count_intent and isinstance(result, FinderResult):
-        stat_total = _stat_total_count(parsed, result.games)
-        if stat_total is not None:
-            parsed["count_kind"] = "stat_total"
-        result = CountResult(
-            count=stat_total if stat_total is not None else len(result.games),
-            games=result.games,
-            result_status=result.result_status,
-            result_reason=result.result_reason,
-            current_through=result.current_through,
-            metadata=result.metadata,
-            notes=result.notes,
-            caveats=result.caveats,
-        )
-    elif count_intent and isinstance(result, LeaderboardResult):
-        # Occurrence count for a specific player or team routed through
-        # player_occurrence_leaders or team_occurrence_leaders.
-        # Extract the entity's row and return the occurrence count.
-        player_name = parsed.get("player")
-        team_name = kwargs.get("team")  # Team filter passed to occurrence_leaders
-        entity_count: int | None = None
-        missing_entity_reason: str | None = None
-
-        if parsed.get("distinct_player_count") or parsed.get("distinct_team_count"):
-            entity_count = len(result.leaders)
-        # Try player first. A player request cannot consume team-grain rows.
-        elif player_name:
-            if "player_name" not in result.leaders.columns:
-                missing_entity_reason = "filter_not_supported"
-            else:
-                match = result.leaders[
-                    result.leaders["player_name"].astype(str).str.upper() == player_name.upper()
-                ]
-                if match.empty:
-                    missing_entity_reason = "no_match"
-                else:
-                    skip_cols = {
-                        "rank",
-                        "player_name",
-                        "player_id",
-                        "team_abbr",
-                        "games_played",
-                        "season",
-                        "seasons",
-                        "season_type",
-                    }
-                    event_cols = [c for c in match.columns if c not in skip_cols]
-                    if event_cols:
-                        entity_count = int(match.iloc[0][event_cols[0]])
-                    else:
-                        missing_entity_reason = "filter_not_supported"
-        # Try team (for team occurrence counts).
-        elif team_name:
-            team_upper = team_name.upper()
-            team_match = None
-            for col in ["team_abbr", "team_name"]:
-                if col in result.leaders.columns:
-                    candidate = result.leaders[
-                        result.leaders[col].astype(str).str.upper() == team_upper
-                    ]
-                    if not candidate.empty:
-                        team_match = candidate
-                        break
-            if team_match is None:
-                if any(col in result.leaders.columns for col in ["team_abbr", "team_name"]):
-                    missing_entity_reason = "no_match"
-                else:
-                    missing_entity_reason = "filter_not_supported"
-            else:
-                skip_cols = {
-                    "rank",
-                    "team_abbr",
-                    "team_name",
-                    "games_played",
-                    "season",
-                    "seasons",
-                    "season_type",
-                }
-                event_cols = [c for c in team_match.columns if c not in skip_cols]
-                if event_cols:
-                    entity_count = int(team_match.iloc[0][event_cols[0]])
-                else:
-                    missing_entity_reason = "filter_not_supported"
-        # Fallback: if there's exactly one row, use it (single entity filter worked).
-        elif len(result.leaders) == 1:
-            skip_cols = {
-                "rank",
-                "player_name",
-                "player_id",
-                "team_abbr",
-                "team_name",
-                "games_played",
-                "season",
-                "seasons",
-                "season_type",
-            }
-            event_cols = [c for c in result.leaders.columns if c not in skip_cols]
-            if event_cols:
-                entity_count = int(result.leaders.iloc[0][event_cols[0]])
-
-        if entity_count is None:
-            if missing_entity_reason is None:
-                entity_count = 0
-            else:
-                result = NoResult(
-                    query_class="count",
-                    reason=missing_entity_reason,
-                    result_status="no_result",
-                    result_reason=missing_entity_reason,
-                    current_through=result.current_through,
-                    metadata=result.metadata,
-                    notes=result.notes,
-                    caveats=result.caveats,
-                )
-
-        if entity_count is not None:
-            result = CountResult(
-                count=entity_count,
-                result_status=result.result_status,
-                result_reason=result.result_reason,
-                current_through=result.current_through,
-                metadata=result.metadata,
-                notes=result.notes,
-                caveats=result.caveats,
-            )
-    metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
-    # Override query_class in metadata when count intent is active
-    if count_intent:
-        metadata["query_class"] = "count"
-    # Pattern 3: expose primary_count and count_phrase for count-flavored queries.
-    if count_intent and isinstance(result, CountResult):
-        metadata["primary_count"] = result.count
-        metadata["count_phrase"] = _build_count_phrase(
-            result.count,
+        return _finalize_natural_query_result(
+            result,
             parsed,
-            metadata,
-            result.games,
+            query,
+            grouped_boolean_used=False,
         )
-    _add_game_summary_answer_metadata(metadata, result)
-    _add_team_advanced_scalar_answer_metadata(metadata, result)
-    if getattr(result, "notes", None):
-        _merge_metadata_notes(metadata, list(result.notes))
-    return QueryResult(
-        result=result,
-        metadata=metadata,
-        query=query,
-        route=route,
+
+    return _finalize_natural_query_result(
+        result,
+        parsed,
+        query,
+        grouped_boolean_used=False,
     )
 
 

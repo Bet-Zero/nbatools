@@ -53,6 +53,8 @@ case_ids:
   - a01_multi_player_both_play_count_boundary
   - a02_team_clutch_count_coverage_boundary
   - a02_player_clutch_count_coverage_boundary
+  - a06_boolean_count_top_level_or
+  - a06_boolean_count_grouped_or
   - pqa_streak_typo_jok_longest
   - hottest_3_game_scoring_stretch
   - pqa_stretch_sentence_game_score
