@@ -179,12 +179,22 @@ Canonical game-level truth table for played games.
 - `game_datetime`
 - `status`
 - `is_final`
+- `team_a_id`
+- `team_b_id`
+- `team_a_abbr`
+- `team_b_abbr`
+- `team_a_name`
+- `team_b_name`
 - `home_team_id`
 - `away_team_id`
 - `home_team_abbr`
 - `away_team_abbr`
 - `home_team_name`
 - `away_team_name`
+- `site_type`
+- `neutral_site`
+- `home_away_designation_trusted`
+- `home_away_source`
 - `arena`
 - `city`
 - `attendance`
@@ -196,6 +206,13 @@ Canonical game-level truth table for played games.
 
 ### Notes
 This is the canonical source of truth for game identity and played-game metadata.
+`team_a_*` and `team_b_*` are the complete, deterministically ordered game
+participants and do not depend on venue-role markers. `home_*` and `away_*` are
+nullable: they are populated only when the source matchup rows provide one
+unambiguous home designation and one unambiguous away designation. Neutral-site
+source rows remain one canonical game with both participants, `site_type` set to
+`neutral`, and `home_away_designation_trusted` set to `0`; the pipeline does not
+invent a designated home team.
 
 ---
 
@@ -217,18 +234,29 @@ Calendar / schedule layer.
 - `game_date`
 - `game_datetime`
 - `status`
+- `team_a_id`
+- `team_b_id`
+- `team_a_abbr`
+- `team_b_abbr`
+- `team_a_name`
+- `team_b_name`
 - `home_team_id`
 - `away_team_id`
 - `home_team_abbr`
 - `away_team_abbr`
 - `home_team_name`
 - `away_team_name`
+- `site_type`
+- `neutral_site`
+- `home_away_designation_trusted`
+- `home_away_source`
 - `arena`
 - `city`
 - `national_tv`
 
 ### Notes
-If `games` and `schedule` disagree, `games` wins.
+If `games` and `schedule` disagree, `games` wins. Schedule identity follows the
+same participant-complete, nullable home/away contract documented for `games`.
 
 ---
 

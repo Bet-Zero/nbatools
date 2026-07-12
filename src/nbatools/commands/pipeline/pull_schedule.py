@@ -4,6 +4,8 @@ from pathlib import Path
 import pandas as pd
 from nba_api.stats.endpoints import LeagueGameFinder
 
+from nbatools.commands.pipeline.game_identity import build_canonical_game_identity
+
 REQUEST_TIMEOUT = 30
 MAX_RETRIES = 3
 RETRY_SLEEP_SECONDS = 2.0
@@ -63,32 +65,7 @@ def run(season: str, season_type: str) -> None:
     if missing:
         raise ValueError(f"Missing required columns after rename: {missing}")
 
-    raw["is_home"] = raw["matchup"].str.contains(" vs. ", na=False).astype(int)
-    raw["is_away"] = raw["matchup"].str.contains(" @ ", na=False).astype(int)
-
-    home = raw[raw["is_home"] == 1].copy()
-    away = raw[raw["is_away"] == 1].copy()
-
-    home = home.rename(
-        columns={
-            "team_id": "home_team_id",
-            "team_abbr": "home_team_abbr",
-            "team_name": "home_team_name",
-        }
-    )
-    away = away.rename(
-        columns={
-            "team_id": "away_team_id",
-            "team_abbr": "away_team_abbr",
-            "team_name": "away_team_name",
-        }
-    )
-
-    schedule = home.merge(
-        away[["game_id", "away_team_id", "away_team_abbr", "away_team_name"]],
-        on="game_id",
-        how="inner",
-    )
+    schedule = build_canonical_game_identity(raw)
 
     schedule["season"] = season
     schedule["season_type"] = season_type
@@ -111,12 +88,22 @@ def run(season: str, season_type: str) -> None:
         "game_date",
         "game_datetime",
         "status",
+        "team_a_id",
+        "team_b_id",
+        "team_a_abbr",
+        "team_b_abbr",
+        "team_a_name",
+        "team_b_name",
         "home_team_id",
         "away_team_id",
         "home_team_abbr",
         "away_team_abbr",
         "home_team_name",
         "away_team_name",
+        "site_type",
+        "neutral_site",
+        "home_away_designation_trusted",
+        "home_away_source",
         "arena",
         "city",
         "national_tv",
