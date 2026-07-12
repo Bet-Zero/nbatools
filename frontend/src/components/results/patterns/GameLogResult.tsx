@@ -142,7 +142,8 @@ export default function GameLogResult({
   const rawRows = sectionRows(data, sectionKey, fallbackSectionKey);
   const rows = orderedRows(rawRows, preserveOrder);
   const summary = data.result?.sections?.[summaryKey]?.[0];
-  if (rows.length === 0 && !summary) return null;
+  const countSentence = countHeadline(data);
+  if (rows.length === 0 && !summary && !countSentence) return null;
 
   const resolvedMode = gameLogMode(rows, mode);
   const metrics = metricColumns(rows, data.result?.metadata, metricKey);
@@ -168,7 +169,6 @@ export default function GameLogResult({
           resolvedMode === "team",
       })
     : contextItems(data, rows);
-  const countSentence = countHeadline(data.result?.metadata);
   const answerSentence = answerHeadline(data.result?.metadata);
   const finderSentence = finderCountHeadline(data, rows, resolvedMode);
   const heroSentence = proseHeadline(
@@ -245,10 +245,16 @@ export default function GameLogResult({
   );
 }
 
-function countHeadline(metadata: ResultMetadata | undefined): string | null {
-  if (typeof metadata?.primary_count !== "number") return null;
-  const phrase = metadata.count_phrase;
-  return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
+function countHeadline(data: QueryResponse): string | null {
+  const metadata = data.result?.metadata;
+  if (typeof metadata?.primary_count === "number") {
+    const phrase = metadata.count_phrase;
+    if (typeof phrase === "string" && phrase.trim()) return phrase.trim();
+  }
+
+  const count = data.result?.sections?.count?.[0]?.count;
+  if (typeof count !== "number") return null;
+  return `${count} matching ${count === 1 ? "game" : "games"}.`;
 }
 
 function answerHeadline(metadata: ResultMetadata | undefined): string | null {
