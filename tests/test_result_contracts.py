@@ -154,6 +154,12 @@ class TestParseLabeledSections:
         sections = parse_labeled_sections(text)
         assert "STREAK" in sections
 
+    def test_count_and_finder_labels(self):
+        text = "COUNT\ncount\n125\n\nFINDER\ngame_id,fg3m\n1,3\n2,4\n"
+        sections = parse_labeled_sections(text)
+        assert pd.read_csv(StringIO(sections["COUNT"])).iloc[0]["count"] == 125
+        assert len(pd.read_csv(StringIO(sections["FINDER"]))) == 2
+
 
 class TestParseMetadataBlock:
     def test_parse_basic(self):
@@ -187,6 +193,14 @@ class TestWrapRawOutput:
         metadata = {"query_text": "test", "route": "player_streak_finder"}
         result = wrap_raw_output(csv, metadata, "streak")
         assert "\nSTREAK\n" in result
+
+    def test_count_is_not_nested_under_route_derived_finder(self):
+        raw = "COUNT\ncount\n0\n"
+        metadata = {"query_text": "test", "route": "player_game_finder"}
+        result = wrap_raw_output(raw, metadata, "finder")
+        sections = parse_labeled_sections(result)
+        assert set(sections) == {"METADATA", "COUNT"}
+        assert sections["COUNT"] == "count\n0"
 
     def test_wrap_summary_not_double_labeled(self):
         raw = "SUMMARY\nplayer,pts\nJokic,30\n"

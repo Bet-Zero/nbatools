@@ -18,6 +18,7 @@ RESULT_SECTION_LABELS = (
     "TOP_PERFORMERS",
     "COMPARISON",
     "SPLIT_COMPARISON",
+    "COUNT",
     "FINDER",
     "LEADERBOARD",
     "STREAK",
@@ -1075,13 +1076,10 @@ def write_csv_from_result(result: StructuredResult, path_str: str) -> None:
 
     sections = result.to_sections_dict()
 
-    # Count results: write the games as flat CSV (count is in metadata/headers)
+    # Count results project to their primary scalar. Raw text and JSON retain
+    # optional finder detail; a single-table CSV cannot represent both grains.
     if isinstance(result, CountResult):
-        if "FINDER" in sections:
-            csv_text = sections["FINDER"].strip()
-            Path(path_str).write_text(csv_text + "\n", encoding="utf-8")
-        else:
-            Path(path_str).write_text(f"count\n{result.count}\n", encoding="utf-8")
+        Path(path_str).write_text(f"count\n{result.count}\n", encoding="utf-8")
         return
 
     # Single-table results: write flat CSV
