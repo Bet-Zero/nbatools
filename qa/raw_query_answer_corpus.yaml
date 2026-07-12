@@ -855,6 +855,93 @@ cases:
         - no_broad_fallback
       notes: "Review the preserved reason and absence of broad count/finder answer rows."
 
+  - id: a06_boolean_count_top_level_or
+    query: "How many LeBron games over 20 points or over 10 assists in 2024-25?"
+    category: player_game_log_count
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: sentence
+      concept: boolean_or_count
+      public_surface: true
+      review_required: true
+      review_role: representative
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - points_threshold
+        - assists_threshold
+        - boolean_or
+        - explicit_season
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_sections:
+      - count
+      - finder
+    expected_row_counts:
+      count: 1
+      finder: 52
+    hard_assertions:
+      - path: result.metadata.player
+        equals: LeBron James
+      - path: result.metadata.season
+        equals: 2024-25
+      - path: result.sections.count.0.count
+        equals: 52
+    review_notes: "Top-level OR must preserve one season across both clauses and return the count overlay."
+    manual_review:
+      status: unreviewed
+      tags:
+        - boolean_count
+        - syntax_equivalence
+      notes: "Review the matching-games count phrase and representative finder rows."
+
+  - id: a06_boolean_count_grouped_or
+    query: "How many LeBron games (over 20 points or over 10 assists) in 2024-25?"
+    category: player_game_log_count
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: synonym
+      concept: boolean_or_count
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      sibling_of: a06_boolean_count_top_level_or
+      intent_model: player_game_finder
+      qualifier_model:
+        - points_threshold
+        - assists_threshold
+        - grouped_boolean_or
+        - explicit_season
+    answer_text_policy: requires_backend_answer_text
+    expected_status: ok
+    expected_route: player_game_finder
+    expected_shape: count_with_finder
+    expected_sections:
+      - count
+      - finder
+    expected_row_counts:
+      count: 1
+      finder: 52
+    hard_assertions:
+      - path: result.metadata.player
+        equals: LeBron James
+      - path: result.metadata.season
+        equals: 2024-25
+      - path: result.sections.count.0.count
+        equals: 52
+    review_notes: "Parenthesized OR must match the top-level OR count and finder set."
+    manual_review:
+      status: unreviewed
+      tags:
+        - boolean_count
+        - syntax_equivalence
+      notes: "Review parity with the top-level OR representative case."
+
   - id: assist_leaders_this_season
     query: "Who leads the NBA in assists this season?"
     category: leaderboard

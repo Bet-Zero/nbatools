@@ -1117,7 +1117,7 @@ class TestWithoutPlayer:
         assert qr.result.result_status == "ok"
         assert {
             "label": "OPP PTS max",
-            "value": "99.9999",
+            "value": "100 (exclusive)",
             "kind": "threshold",
         } in qr.metadata["applied_filters"]
 
@@ -1147,7 +1147,7 @@ class TestWithoutPlayer:
         assert held_teams.metadata["stat"] == "opponent_pts"
         assert {
             "label": "OPP PTS max",
-            "value": "99.9999",
+            "value": "100 (exclusive)",
             "kind": "threshold",
         } in held_teams.metadata["applied_filters"]
 
@@ -1167,7 +1167,7 @@ class TestWithoutPlayer:
         assert qr.result.result_status == "ok"
         assert {
             "label": "OPP PTS max",
-            "value": "109.9999",
+            "value": "110 (exclusive)",
             "kind": "threshold",
         } in qr.metadata["applied_filters"]
 

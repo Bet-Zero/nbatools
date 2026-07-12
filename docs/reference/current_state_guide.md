@@ -83,6 +83,10 @@ Count of games or occurrences matching conditions. Generated from finder results
 
 - explicit count intent triggers: "how many", "count", "total", "number of"
 - returns a single count value over the matched set
+- top-level and parenthesized boolean finder conditions preserve the count
+  contract; equivalent OR expressions return the same count and detail rows
+- strict thresholds are displayed in human terms (for example, `over 30`) and
+  parser epsilon values never appear in answer copy
 - raw and TXT output expose the answer in a top-level `COUNT` section, JSON
   exposes a `count` section, and CSV projects the primary scalar as one `count` row
 

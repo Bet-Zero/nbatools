@@ -967,9 +967,16 @@ def _execute_or_query_build_result(query: str) -> tuple:
         return result, parsed
 
     base = _build_parse_state(query)
-    clause_parsed = [
-        _merge_inherited_context(base, _build_parse_state(clause)) for clause in clauses
-    ]
+    explicit_season_pattern = re.compile(r"\b(?:19|20)\d{2}-\d{2}\b")
+    full_query_has_explicit_season = bool(explicit_season_pattern.search(normalize_text(query)))
+    clause_parsed = []
+    for clause in clauses:
+        clause_state = _build_parse_state(clause)
+        if full_query_has_explicit_season and not explicit_season_pattern.search(clause):
+            clause_state["season"] = None
+            clause_state["start_season"] = None
+            clause_state["end_season"] = None
+        clause_parsed.append(_merge_inherited_context(base, clause_state))
 
     allowed_routes = {"player_game_finder", "game_finder"}
     routes = {item["route"] for item in clause_parsed}
@@ -988,7 +995,17 @@ def _execute_or_query_build_result(query: str) -> tuple:
             )
         )
 
-    return _combine_or_results(results), clause_parsed[0] if clause_parsed else base
+    parsed = dict(base)
+    if clause_parsed:
+        first = clause_parsed[0]
+        parsed["route"] = first["route"]
+        parsed["route_kwargs"] = dict(first["route_kwargs"])
+        boolean_conditions = normalize_stat_conditions(base.get("threshold_conditions"))
+        if boolean_conditions:
+            parsed["conditions"] = boolean_conditions
+            parsed["route_kwargs"]["conditions"] = boolean_conditions
+
+    return _combine_or_results(results), parsed
 
 
 def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
@@ -1125,6 +1142,7 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
     base_kwargs["stat"] = None
     base_kwargs["min_value"] = None
     base_kwargs["max_value"] = None
+    base_kwargs["conditions"] = None
     base_kwargs["sort_by"] = "game_date"
     base_kwargs["ascending"] = False
 
@@ -1164,9 +1182,18 @@ def _execute_grouped_boolean_build_result(condition_text: str, parsed: dict):
 # ---------------------------------------------------------------------------
 
 
-def _extract_grouped_condition_text(query: str) -> str:
+def _extract_grouped_condition_text(
+    query: str,
+    *,
+    player: str | None = None,
+    team: str | None = None,
+) -> str:
     normalized = normalize_text(query)
     condition_text = normalized
+
+    for entity in (player, team):
+        if entity:
+            condition_text = re.sub(rf"\b{re.escape(normalize_text(entity))}\b", "", condition_text)
 
     for name in _SORTED_PLAYER_ALIAS_NAMES:
         condition_text = re.sub(rf"\b{re.escape(name)}\b", "", condition_text)
@@ -1185,13 +1212,16 @@ def _extract_grouped_condition_text(query: str) -> str:
     condition_text = re.sub(r"\bwins?\s+vs\.?\s+loss(?:es)?\b", "", condition_text)
     condition_text = re.sub(
         r"\b(summary|summarize|average|averages|avg|record|split|form|where|games|game"
-        r"|show\s+me|list|find|give\s+me|how\s+many|count|number\s+of)\b",
+        r"|show\s+me|list|find|give\s+me|how\s+many|count|number\s+of"
+        r"|did|have|has|had)\b",
         "",
         condition_text,
     )
     condition_text = re.sub(r"\b(home|away|road|wins?|loss(?:es)?|won|lost)\b", "", condition_text)
     condition_text = re.sub(r"\b(vs\.?|versus|against)\s+[a-z0-9 .&'\-]+\b", "", condition_text)
     condition_text = re.sub(r"^(vs\.?|versus)\s+", "", condition_text)
+    condition_text = re.sub(r"\b(?:in|during)\s*[?!.]*\s*$", "", condition_text)
+    condition_text = condition_text.strip(" ?!.")
 
     return normalize_text(condition_text)
 

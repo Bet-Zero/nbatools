@@ -16,6 +16,7 @@ from io import StringIO
 import pandas as pd
 import pytest
 
+import nbatools.commands._natural_query_execution as natural_execution
 import nbatools.query_service as query_service
 from nbatools.commands.data_utils import get_teams_by_conference, get_teams_by_division
 from nbatools.commands.structured_results import (
@@ -68,6 +69,207 @@ def _patch_identity_contexts(monkeypatch) -> None:
         "_resolve_team_context",
         lambda value: team_contexts.get(value),
     )
+
+
+@pytest.mark.query
+class TestCountFinalizerParity:
+    def test_strict_threshold_copy_is_deduplicated_and_human_readable(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        games = pd.DataFrame(
+            [
+                {"game_id": 1, "player_name": "Nikola Jokić", "pts": 31},
+                {"game_id": 2, "player_name": "Nikola Jokić", "pts": 40},
+            ]
+        )
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: FinderResult(games=games),
+        )
+
+        qr = execute_natural_query("How many games did Jokic score over 30 points in 2024-25?")
+
+        assert isinstance(qr.result, CountResult)
+        assert qr.metadata["count_phrase"] == (
+            "Nikola Jokić has had 2 games with over 30 points in the 2024-25 regular season."
+        )
+        assert qr.metadata["threshold_conditions"] == [
+            {
+                "stat": "pts",
+                "min_value": 30.0001,
+                "max_value": None,
+                "text": "score over 30",
+            }
+        ]
+        assert qr.metadata["applied_filters"] == [
+            {"label": "pts min", "value": "30 (exclusive)", "kind": "threshold"}
+        ]
+
+    def test_strict_under_threshold_copy_hides_storage_epsilon(self):
+        phrase = query_service._build_count_phrase(
+            3,
+            {
+                "conditions": [
+                    {"stat": "ast", "min_value": None, "max_value": 9.9999},
+                ]
+            },
+            {
+                "player": "Nikola Jokić",
+                "season": "2024-25",
+                "season_type": "Regular Season",
+            },
+        )
+        assert "3 games with under 10 assists" in phrase
+        assert "9.9999" not in phrase
+
+    def test_team_count_phrase_uses_plural_verb(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        games = pd.DataFrame([{"game_id": 1, "team_abbr": "BOS", "wl": "W"}])
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: FinderResult(games=games),
+        )
+
+        qr = execute_natural_query("How many Celtics wins this season")
+
+        assert qr.metadata["count_phrase"] == "The Celtics have recorded 1 game this season."
+
+    def test_standard_or_and_grouped_paths_share_the_count_overlay(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        games = pd.DataFrame(
+            [
+                {"game_id": 1, "player_id": 2544, "pts": 25, "ast": 5},
+                {"game_id": 2, "player_id": 2544, "pts": 18, "ast": 12},
+            ]
+        )
+
+        def finder_result():
+            return FinderResult(games=games.copy())
+
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: finder_result(),
+        )
+        monkeypatch.setattr(
+            query_service,
+            "_execute_or_query_build_result",
+            lambda query: (finder_result(), query_service.parse_query(query)),
+        )
+        monkeypatch.setattr(
+            query_service,
+            "_execute_grouped_boolean_build_result",
+            lambda condition_text, parsed: finder_result(),
+        )
+
+        queries = [
+            "How many LeBron games over 20 points in 2024-25?",
+            "How many LeBron games over 20 points or over 10 assists in 2024-25?",
+            "How many LeBron games (over 20 points or over 10 assists) in 2024-25?",
+        ]
+        results = [execute_natural_query(query) for query in queries]
+
+        for qr in results:
+            assert isinstance(qr.result, CountResult)
+            assert qr.result.count == 2
+            assert qr.metadata["query_class"] == "count"
+            assert qr.metadata["primary_count"] == 2
+            assert qr.metadata["count_phrase"]
+            assert qr.to_dict()["sections"]["count"] == [{"count": 2}]
+
+    @pytest.mark.parametrize("path", ["or", "grouped"])
+    def test_boolean_count_paths_preserve_negative_reasons(self, monkeypatch, path):
+        negative = NoResult(
+            query_class="finder",
+            reason="no_data",
+            result_status="no_result",
+            result_reason="no_data",
+            notes=["coverage unavailable"],
+        )
+        if path == "or":
+            query = "How many LeBron games over 20 points or over 10 assists in 2024-25?"
+            monkeypatch.setattr(
+                query_service,
+                "_execute_or_query_build_result",
+                lambda raw_query: (negative, query_service.parse_query(raw_query)),
+            )
+        else:
+            query = "How many LeBron games (over 20 points or over 10 assists) in 2024-25?"
+            monkeypatch.setattr(
+                query_service,
+                "_execute_grouped_boolean_build_result",
+                lambda condition_text, parsed: negative,
+            )
+
+        qr = execute_natural_query(query)
+
+        assert isinstance(qr.result, NoResult)
+        assert qr.result.query_class == "count"
+        assert qr.result_reason == "no_data"
+        assert qr.metadata["query_class"] == "count"
+        assert "primary_count" not in qr.metadata
+        assert "count_phrase" not in qr.metadata
+
+    def test_or_clauses_inherit_the_full_query_season(self, monkeypatch):
+        seen_seasons = []
+
+        def fake_execute(route, kwargs, extra_conditions=None):
+            seen_seasons.append(kwargs["season"])
+            return FinderResult(
+                games=pd.DataFrame([{"game_id": len(seen_seasons), "player_id": 2544}])
+            )
+
+        monkeypatch.setattr(natural_execution, "_execute_build_result", fake_execute)
+
+        result, parsed = query_service._execute_or_query_build_result(
+            "How many LeBron games over 20 points or over 10 assists in 2024-25?"
+        )
+
+        assert seen_seasons == ["2024-25", "2024-25"]
+        assert parsed["season"] == "2024-25"
+        assert len(result.games) == 2
+
+    def test_grouped_or_evaluates_against_an_unfiltered_base(self, monkeypatch):
+        parsed = query_service.parse_query(
+            "How many LeBron games (over 20 points or over 10 assists) in 2024-25?"
+        )
+        condition_text = query_service._extract_grouped_condition_text(
+            parsed["normalized_query"],
+            player=parsed["player"],
+        )
+        games = pd.DataFrame(
+            [
+                {"game_id": 1, "player_id": 2544, "pts": 25, "ast": 5},
+                {"game_id": 2, "player_id": 2544, "pts": 18, "ast": 12},
+                {"game_id": 3, "player_id": 2544, "pts": 18, "ast": 5},
+            ]
+        )
+
+        def fake_execute(route, kwargs, extra_conditions=None):
+            assert kwargs["conditions"] is None
+            return FinderResult(games=games)
+
+        monkeypatch.setattr(natural_execution, "_execute_build_result", fake_execute)
+
+        result = query_service._execute_grouped_boolean_build_result(condition_text, parsed)
+
+        assert result.games["game_id"].tolist() == [1, 2]
+
+    @pytest.mark.needs_data
+    def test_top_level_and_grouped_or_are_result_equivalent(self):
+        top_level = execute_natural_query(
+            "How many games did LeBron James have over 20 points or over 10 assists in 2024-25?"
+        )
+        grouped = execute_natural_query(
+            "How many games did LeBron James have (over 20 points or over 10 assists) in 2024-25?"
+        )
+
+        assert isinstance(top_level.result, CountResult)
+        assert isinstance(grouped.result, CountResult)
+        assert top_level.result.count == grouped.result.count
+        assert set(top_level.result.games["game_id"]) == set(grouped.result.games["game_id"])
+        assert top_level.metadata["count_phrase"] == grouped.metadata["count_phrase"]
 
 
 class TestCountNegativeFinalization:
