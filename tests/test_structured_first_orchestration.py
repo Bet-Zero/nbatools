@@ -9,6 +9,7 @@ result objects.
 import json
 from contextlib import redirect_stdout
 from io import StringIO
+from types import SimpleNamespace
 
 import pandas as pd
 import pytest
@@ -19,6 +20,7 @@ from nbatools.commands._natural_query_execution import (
     _combine_or_results,
     _execute_build_result,
     _get_build_result_map,
+    render_query_result,
 )
 from nbatools.commands.format_output import (
     METADATA_LABEL,
@@ -33,6 +35,7 @@ from nbatools.commands.natural_query import (
 )
 from nbatools.commands.structured_results import (
     ComparisonResult,
+    CountResult,
     FinderResult,
     LeaderboardResult,
     NoResult,
@@ -460,6 +463,30 @@ class TestWriteCsvFromResult:
         assert "SUMMARY" in text
         assert "COMPARISON" in text
 
+    @pytest.mark.output
+    @pytest.mark.parametrize(
+        ("count", "games"),
+        [
+            pytest.param(0, pd.DataFrame(), id="zero"),
+            pytest.param(
+                2,
+                pd.DataFrame({"game_id": [1, 2], "fg3m": [1, 1]}),
+                id="matching-games",
+            ),
+            pytest.param(
+                125,
+                pd.DataFrame({"game_id": [1, 2], "fg3m": [60, 65]}),
+                id="stat-total",
+            ),
+        ],
+    )
+    def test_count_csv_projects_the_count_scalar(self, tmp_path, count, games):
+        result = CountResult(count=count, games=games)
+        path = tmp_path / "count.csv"
+        write_csv_from_result(result, str(path))
+        exported = pd.read_csv(path)
+        assert exported.to_dict(orient="records") == [{"count": count}]
+
 
 # ---------------------------------------------------------------------------
 # write_json_from_result
@@ -512,6 +539,60 @@ class TestWriteJsonFromResult:
         write_json_from_result(result, str(path))
         payload = json.loads(path.read_text(encoding="utf-8"))
         assert "finder" in payload
+
+
+class TestCountTransportParity:
+    """Count answers survive the CLI raw/TXT/CSV/JSON projections."""
+
+    @pytest.mark.output
+    @pytest.mark.parametrize(
+        ("count", "games"),
+        [
+            pytest.param(0, pd.DataFrame(), id="zero"),
+            pytest.param(
+                2,
+                pd.DataFrame({"game_id": [1, 2], "fg3m": [1, 1]}),
+                id="matching-games",
+            ),
+            pytest.param(125, pd.DataFrame({"game_id": [1, 2], "fg3m": [60, 65]}), id="stat-total"),
+        ],
+    )
+    def test_count_round_trips_across_transports(self, tmp_path, count, games):
+        result = CountResult(count=count, games=games)
+        query_result = SimpleNamespace(
+            result=result,
+            metadata={
+                "query_text": "how many threes did Curry hit",
+                "route": "player_game_finder",
+                "query_class": "count",
+                "result_status": "ok",
+            },
+            query="how many threes did Curry hit",
+            route="player_game_finder",
+        )
+        csv_path = tmp_path / "count.csv"
+        txt_path = tmp_path / "count.txt"
+        json_path = tmp_path / "count.json"
+
+        raw = _capture_output(
+            render_query_result,
+            query_result,
+            query_result.query,
+            pretty=False,
+            export_csv_path=str(csv_path),
+            export_txt_path=str(txt_path),
+            export_json_path=str(json_path),
+        )
+
+        for labeled_text in (raw, txt_path.read_text(encoding="utf-8")):
+            sections = parse_labeled_sections(labeled_text)
+            assert pd.read_csv(StringIO(sections["COUNT"])).iloc[0]["count"] == count
+            assert ("FINDER" in sections) is (not games.empty)
+
+        assert pd.read_csv(csv_path).to_dict(orient="records") == [{"count": count}]
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
+        assert payload["count"] == [{"count": count}]
+        assert ("finder" in payload) is (not games.empty)
 
 
 # ---------------------------------------------------------------------------

@@ -257,6 +257,7 @@ The following section labels are already established as machine-readable output 
 - `BY_SEASON`
 - `COMPARISON`
 - `SPLIT_COMPARISON`
+- `COUNT`
 
 These labels should be understood as **the current naming for sections within specific result classes**, not as a replacement for result classes. In the target contracts:
 
@@ -264,6 +265,8 @@ These labels should be understood as **the current naming for sections within sp
 - `BY_SEASON` corresponds to the optional per-season breakdown inside a **summary** result
 - `COMPARISON` corresponds to the main table inside a **comparison** result
 - `SPLIT_COMPARISON` corresponds to the main table inside a **split summary** result
+- `COUNT` corresponds to the primary scalar table inside a **count** result;
+  optional finder detail remains a separate `FINDER` section
 
 Rules:
 

@@ -296,6 +296,7 @@ Examples:
 - `BY_SEASON`
 - `COMPARISON`
 - `SPLIT_COMPARISON`
+- `COUNT`
 
 Do not rename output sections casually, because they may be consumed downstream.
 
