@@ -20,6 +20,7 @@ import nbatools.query_service as query_service
 from nbatools.commands.data_utils import get_teams_by_conference, get_teams_by_division
 from nbatools.commands.structured_results import (
     ComparisonResult,
+    CountResult,
     FinderResult,
     LeaderboardResult,
     NoResult,
@@ -67,6 +68,138 @@ def _patch_identity_contexts(monkeypatch) -> None:
         "_resolve_team_context",
         lambda value: team_contexts.get(value),
     )
+
+
+class TestCountNegativeFinalization:
+    @pytest.mark.parametrize(
+        ("reason", "status"),
+        [
+            ("filter_not_supported", "no_result"),
+            ("no_data", "no_result"),
+            ("unsupported", "no_result"),
+            ("ambiguous", "no_result"),
+            ("unrouted", "error"),
+            ("error", "error"),
+        ],
+    )
+    def test_negative_reasons_never_become_zero(self, monkeypatch, reason, status):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: NoResult(
+                query_class="finder",
+                reason=reason,
+                result_status=status,
+                result_reason=reason,
+                current_through="2025-04-10",
+                metadata={"coverage": "missing"},
+                notes=["requested filter was not executed"],
+                caveats=["coverage caveat"],
+            ),
+        )
+
+        qr = execute_natural_query("how many 30 point games has Jokic had 2024-25")
+        payload = qr.to_dict()
+
+        assert isinstance(qr.result, NoResult)
+        assert qr.result.query_class == "count"
+        assert qr.result_status == status
+        assert qr.result_reason == reason
+        assert qr.result.current_through == "2025-04-10"
+        assert qr.result.metadata == {"coverage": "missing"}
+        assert qr.result.notes == ["requested filter was not executed"]
+        assert qr.result.caveats == ["coverage caveat"]
+        assert payload["sections"] == {}
+        assert qr.metadata["query_class"] == "count"
+        assert "primary_count" not in qr.metadata
+        assert "count_phrase" not in qr.metadata
+
+    def test_explicit_no_match_becomes_trusted_zero(self, monkeypatch):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: NoResult(
+                query_class="finder",
+                reason="no_match",
+                current_through="2025-04-10",
+                metadata={"coverage": "complete"},
+                notes=["fully evaluated"],
+                caveats=["sample caveat"],
+            ),
+        )
+
+        qr = execute_natural_query("how many 100 point games has Jokic had 2024-25")
+        payload = qr.to_dict()
+
+        assert isinstance(qr.result, CountResult)
+        assert qr.result.count == 0
+        assert qr.result_status == "ok"
+        assert qr.result.current_through == "2025-04-10"
+        assert qr.result.metadata == {"coverage": "complete"}
+        assert qr.result.notes == ["fully evaluated"]
+        assert qr.result.caveats == ["sample caveat"]
+        assert payload["sections"]["count"] == [{"count": 0}]
+        assert qr.metadata["primary_count"] == 0
+        assert "count_phrase" in qr.metadata
+
+    @pytest.mark.parametrize(
+        "result",
+        [
+            FinderResult(
+                games=pd.DataFrame([{"player_name": "Nikola Jokić"}]),
+                result_status="no_result",
+                result_reason="filter_not_supported",
+            ),
+            LeaderboardResult(
+                leaders=pd.DataFrame([{"player_name": "Nikola Jokić", "games": 25}]),
+                result_status="no_result",
+                result_reason="filter_not_supported",
+            ),
+            CountResult(
+                count=25,
+                result_status="no_result",
+                result_reason="filter_not_supported",
+            ),
+        ],
+    )
+    def test_negative_row_bearing_results_do_not_expose_broad_counts(self, monkeypatch, result):
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: result,
+        )
+
+        qr = execute_natural_query("how many 30 point games has Jokic had 2024-25")
+
+        assert isinstance(qr.result, NoResult)
+        assert qr.result_reason == "filter_not_supported"
+        assert qr.to_dict()["sections"] == {}
+        assert "primary_count" not in qr.metadata
+
+    def test_negative_count_raw_cli_has_no_count_section(self, monkeypatch):
+        from nbatools.commands.natural_query import render_query_result
+
+        _patch_identity_contexts(monkeypatch)
+        monkeypatch.setattr(
+            query_service,
+            "_execute_build_result",
+            lambda route, kwargs, extra_conditions=None: NoResult(
+                query_class="finder",
+                reason="filter_not_supported",
+                notes=["clutch coverage is unavailable"],
+            ),
+        )
+
+        query = "how many clutch games has Jokic had 2024-25"
+        qr = execute_natural_query(query)
+        output = _capture(render_query_result, qr, query, pretty=False)
+
+        assert "NO_RESULT" in output
+        assert "filter_not_supported" in output
+        assert "\nCOUNT\n" not in output
 
 
 # ===================================================================

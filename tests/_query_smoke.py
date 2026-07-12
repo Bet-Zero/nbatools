@@ -143,6 +143,7 @@ PHASE_E_QUERY_SMOKE_CASES = (
         query="late-game Brunson scoring",
         expected_routes=("player_game_finder",),
         expected_query_class="finder",
+        expected_statuses=("no_result",),
         expected_intents=("finder",),
         expected_note_substrings=CLUTCH_NOTE_SUBSTRINGS,
     ),

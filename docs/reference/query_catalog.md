@@ -120,9 +120,11 @@ If a feature is not reflected here, it should not be assumed shipped.
 - home / away: `home`, `away`, `road`
 - wins / losses: `wins`, `losses`, `won`, `lost`
 - clutch context: `clutch`, `in the clutch`, `clutch time`, `late-game`
-  (parser-recognized and route-propagated; current query engine returns unfiltered
-  results with an explicit note. A future `PlayByPlayV3` plus score-state source
-  path is approved, but execution is not shipped yet.)
+  (parser-recognized and route-propagated; supported player finder/summary and
+  team-record routes execute only against trusted play-by-play-derived clutch
+  coverage. Missing coverage returns `no_result` / `filter_not_supported`
+  rather than unfiltered rows. Other routes remain explicit unsupported
+  boundaries.)
 - period context: `1st quarter`, `4th quarter`, `first half`, `second half`, `overtime`, `OT`
   (parser-recognized and engine-accepted; `player_game_finder` and `team_record`
   execute these filters when `player_game_period_stats` / `team_game_period_stats`
@@ -291,6 +293,13 @@ Common triggers:
 - `count`
 - `number of`
 - `total games`
+
+A count of zero is returned only after the requested route and filters were
+fully evaluated and produced an explicit `no_match`. Missing data, unavailable
+filter coverage, unsupported concepts, ambiguity, routing failures, and engine
+errors remain non-success results with their original reason and no count
+section. In particular, adding count phrasing never turns an unsupported
+clutch filter into zero or into a broad unfiltered count.
 
 ### Distinct player/team count
 

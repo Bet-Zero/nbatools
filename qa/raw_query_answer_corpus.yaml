@@ -795,6 +795,66 @@ cases:
         - no_broad_fallback
       notes: "Review the typed refusal and absence of count/finder answer rows."
 
+  - id: a02_team_clutch_count_coverage_boundary
+    query: "How many Lakers games were clutch in 1996-97?"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: nearby_unsupported
+      concept: team_clutch_count_coverage_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: game_finder
+      qualifier_model:
+        - clutch
+        - historical_season
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: game_finder
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Unavailable team clutch coverage must remain a typed negative result, not a successful zero."
+    manual_review:
+      status: unreviewed
+      tags:
+        - coverage_boundary
+        - no_broad_fallback
+      notes: "Review the preserved reason and absence of count/finder answer rows."
+
+  - id: a02_player_clutch_count_coverage_boundary
+    query: "How many Jokic games were clutch in 2025-26?"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: nearby_unsupported
+      concept: player_clutch_count_coverage_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - clutch
+        - current_season
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    review_notes: "Unavailable player clutch coverage must refuse instead of counting unfiltered game rows."
+    manual_review:
+      status: unreviewed
+      tags:
+        - coverage_boundary
+        - no_broad_fallback
+      notes: "Review the preserved reason and absence of broad count/finder answer rows."
+
   - id: assist_leaders_this_season
     query: "Who leads the NBA in assists this season?"
     category: leaderboard
