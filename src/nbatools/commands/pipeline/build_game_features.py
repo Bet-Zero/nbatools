@@ -21,8 +21,11 @@ def run(season: str, season_type: str) -> None:
     games = pd.read_csv(games_path)
     tf = pd.read_csv(tf_path)
 
+    if "is_away" not in tf.columns:
+        raise ValueError("team_game_features missing required column: is_away")
+
     home = tf[tf["is_home"] == 1].copy()
-    away = tf[tf["is_home"] == 0].copy()
+    away = tf[tf["is_away"] == 1].copy()
 
     def prefix(df, p):
         cols = {}
@@ -34,10 +37,23 @@ def run(season: str, season_type: str) -> None:
     home = prefix(home, "home")
     away = prefix(away, "away")
 
-    merged = home.merge(away, on="game_id", how="inner")
+    paired = home.merge(away, on="game_id", how="inner", validate="one_to_one")
+    paired = paired.drop(columns=["home_team_id", "away_team_id"])
 
-    merged = merged.merge(
-        games[["game_id", "game_date", "season", "season_type"]], on="game_id", how="left"
+    merged = games[
+        [
+            "game_id",
+            "game_date",
+            "season",
+            "season_type",
+            "home_team_id",
+            "away_team_id",
+        ]
+    ].merge(
+        paired,
+        on="game_id",
+        how="left",
+        validate="one_to_one",
     )
 
     # --- REST FEATURES ---

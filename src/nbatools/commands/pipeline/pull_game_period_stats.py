@@ -8,7 +8,11 @@ from pathlib import Path
 import pandas as pd
 from nba_api.stats.endpoints import BoxScoreAdvancedV3, BoxScoreTraditionalV3
 
-from nbatools.commands.data_utils import add_advanced_pct_columns, normalize_season_type
+from nbatools.commands.data_utils import (
+    OVERTIME_TEAM_MINUTES_THRESHOLD,
+    add_advanced_pct_columns,
+    normalize_season_type,
+)
 
 REQUEST_TIMEOUT = 30
 MAX_RETRIES = 5
@@ -16,6 +20,8 @@ RETRY_SLEEP_SECONDS = 3.0
 MAX_WINDOW_PASSES = 3
 WINDOW_PASS_SLEEP_SECONDS = 20.0
 OT_END_PERIOD = 14
+PERIOD_RANGE_TYPE = 1
+PERIOD_END_RANGE = 28800
 
 
 @dataclass(frozen=True)
@@ -126,6 +132,34 @@ TEAM_PERIOD_OUTPUT_COLUMNS = (
     "tov",
     "pf",
     "plus_minus",
+    "efg_pct",
+    "ts_pct",
+)
+PLAYER_PERIOD_ZERO_COLUMNS = (
+    "minutes",
+    "pts",
+    "fgm",
+    "fga",
+    "fg_pct",
+    "fg3m",
+    "fg3a",
+    "fg3_pct",
+    "ftm",
+    "fta",
+    "ft_pct",
+    "oreb",
+    "dreb",
+    "reb",
+    "ast",
+    "stl",
+    "blk",
+    "tov",
+    "pf",
+    "plus_minus",
+    "usg_pct",
+    "ast_pct",
+    "reb_pct",
+    "tov_pct",
     "efg_pct",
     "ts_pct",
 )
@@ -276,8 +310,8 @@ def _fetch_with_retries(endpoint_cls, game_id: int | str, start_period: int, end
                 start_period=start_period,
                 end_period=end_period,
                 start_range=0,
-                end_range=0,
-                range_type=0,
+                end_range=PERIOD_END_RANGE,
+                range_type=PERIOD_RANGE_TYPE,
                 timeout=REQUEST_TIMEOUT,
             )
         except Exception as exc:
@@ -492,6 +526,25 @@ def normalize_boxscore_player_advanced_rows(df: pd.DataFrame) -> pd.DataFrame:
     for col in PLAYER_RATE_COLUMNS:
         out[col] = _normalize_fraction_series(out[col]).fillna(0.0)
 
+    key_columns = ["game_id", "team_id", "player_id"]
+    if out.duplicated(subset=key_columns).any():
+        source_minutes = (
+            out["minutes"].map(_parse_minutes_value)
+            if "minutes" in out.columns
+            else pd.Series(0.0, index=out.index)
+        )
+        out = out.assign(_source_minutes=source_minutes)
+        selected_indexes: list[int] = []
+        for key, group in out.groupby(key_columns, sort=False):
+            most_active = group[group["_source_minutes"].eq(group["_source_minutes"].max())]
+            if len(most_active[list(PLAYER_RATE_COLUMNS)].drop_duplicates()) > 1:
+                raise ValueError(
+                    "Conflicting duplicate advanced player rows for "
+                    f"game_id={key[0]}, team_id={key[1]}, player_id={key[2]}"
+                )
+            selected_indexes.append(int(most_active.index[0]))
+        out = out.loc[selected_indexes].copy()
+
     return out[["game_id", "team_id", "player_id", *PLAYER_RATE_COLUMNS]].copy()
 
 
@@ -625,10 +678,62 @@ def _period_window_has_activity(team_df: pd.DataFrame) -> bool:
     )
 
 
+def _complete_player_standard_window_keys(
+    player_rows: pd.DataFrame,
+    player_context: pd.DataFrame,
+) -> pd.DataFrame:
+    """Materialize authoritative zero-participation standard-window rows."""
+    context_columns = [
+        "game_id",
+        "game_date",
+        "team_id",
+        "team_abbr",
+        "team_name",
+        "opponent_team_id",
+        "opponent_team_abbr",
+        "opponent_team_name",
+        "is_home",
+        "is_away",
+        "wl",
+        "player_id",
+        "player_name",
+    ]
+    context = player_context[context_columns].drop_duplicates(
+        subset=["game_id", "team_id", "player_id"]
+    )
+    standard_windows = pd.DataFrame(
+        [
+            {
+                "period_family": window.period_family,
+                "period_value": window.period_value,
+                "source_start_period": window.start_period,
+                "source_end_period": window.end_period,
+            }
+            for window in PERIOD_WINDOWS
+            if window.period_family != "overtime"
+        ]
+    )
+    expected = context.merge(standard_windows, how="cross")
+    key_columns = list(PLAYER_PERIOD_KEY_COLUMNS)
+    observed = player_rows[key_columns].drop_duplicates()
+    missing = expected.merge(observed, on=key_columns, how="left", indicator=True)
+    missing = missing[missing["_merge"].eq("left_only")].drop(columns=["_merge"])
+    if missing.empty:
+        return player_rows
+
+    missing["season"] = player_rows["season"].iloc[0]
+    missing["season_type"] = player_rows["season_type"].iloc[0]
+    missing["comment"] = ""
+    for column in PLAYER_PERIOD_ZERO_COLUMNS:
+        missing[column] = 0.0
+    missing = missing[list(PLAYER_PERIOD_OUTPUT_COLUMNS)]
+    return pd.concat([player_rows, missing], ignore_index=True)
+
+
 def _load_context_frames(
     season: str,
     season_type: str,
-) -> tuple[list[int], pd.DataFrame, pd.DataFrame]:
+) -> tuple[list[int], set[int], pd.DataFrame, pd.DataFrame]:
     safe = normalize_season_type(season_type)
 
     games_path = Path(f"data/raw/games/{season}_{safe}.csv")
@@ -658,6 +763,15 @@ def _load_context_frames(
 
     if "wl" not in team_context.columns:
         raise ValueError("team_game_stats missing required column: ['wl']")
+    if "minutes" not in team_context.columns:
+        raise ValueError("team_game_stats missing required column: ['minutes']")
+
+    team_minutes = pd.to_numeric(team_context["minutes"], errors="coerce")
+    if team_minutes.isna().any():
+        raise ValueError("team_game_stats minutes contains invalid values")
+    overtime_game_ids = set(
+        team_context.loc[team_minutes.ge(OVERTIME_TEAM_MINUTES_THRESHOLD), "game_id"].tolist()
+    )
 
     team_wl = team_context[["game_id", "team_id", "wl"]].drop_duplicates()
     player_context = player_context.merge(
@@ -681,7 +795,7 @@ def _load_context_frames(
     if not game_ids:
         raise ValueError(f"No game_id values found in {games_path}")
 
-    return game_ids, player_context, team_context
+    return game_ids, overtime_game_ids, player_context, team_context
 
 
 def build_period_backfill(
@@ -696,7 +810,9 @@ def build_period_backfill(
     team_checkpoint_path: Path | None = None,
     progress_checkpoint_path: Path | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    game_ids, player_context, team_context = _load_context_frames(season, season_type)
+    game_ids, overtime_game_ids, player_context, team_context = _load_context_frames(
+        season, season_type
+    )
 
     game_id_set = set(game_ids)
 
@@ -763,6 +879,7 @@ def build_period_backfill(
         (game_id, period_window)
         for game_id in remaining_game_ids
         for period_window in PERIOD_WINDOWS
+        if period_window.period_family != "overtime" or game_id in overtime_game_ids
         if (game_id, period_window.period_family, period_window.period_value) not in cached_windows
     ]
 
@@ -917,6 +1034,7 @@ def build_period_backfill(
 
     player_out = player_out.drop_duplicates(subset=list(PLAYER_PERIOD_KEY_COLUMNS), keep="last")
     team_out = team_out.drop_duplicates(subset=list(TEAM_PERIOD_KEY_COLUMNS), keep="last")
+    player_out = _complete_player_standard_window_keys(player_out, player_context)
 
     player_out = player_out.sort_values(
         ["game_date", "game_id", "period_family", "period_value", "team_id", "player_id"]

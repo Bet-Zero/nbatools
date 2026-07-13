@@ -84,3 +84,34 @@ def build_canonical_game_identity(raw: pd.DataFrame) -> pd.DataFrame:
         rows.append(row)
 
     return pd.DataFrame(rows)
+
+
+def apply_canonical_home_away_flags(raw: pd.DataFrame) -> pd.DataFrame:
+    """Apply trusted relative venue flags without labeling neutral teams away."""
+    identity_source = raw[["game_id", "game_date", "matchup", *PARTICIPANT_FIELDS]].drop_duplicates(
+        subset=["game_id", "team_id"]
+    )
+    identity = build_canonical_game_identity(identity_source)[
+        [
+            "game_id",
+            "home_team_id",
+            "away_team_id",
+            "home_away_designation_trusted",
+        ]
+    ]
+
+    out = raw.drop(columns=["is_home", "is_away"], errors="ignore").merge(
+        identity,
+        on="game_id",
+        how="left",
+        validate="many_to_one",
+    )
+    trusted = out["home_away_designation_trusted"].eq(1)
+    team_ids = pd.to_numeric(out["team_id"], errors="coerce")
+    home_ids = pd.to_numeric(out["home_team_id"], errors="coerce").fillna(-1)
+    away_ids = pd.to_numeric(out["away_team_id"], errors="coerce").fillna(-1)
+    is_home = team_ids.eq(home_ids)
+    is_away = team_ids.eq(away_ids)
+    out["is_home"] = (trusted & is_home).astype(int)
+    out["is_away"] = (trusted & is_away).astype(int)
+    return out.drop(columns=["home_team_id", "away_team_id", "home_away_designation_trusted"])

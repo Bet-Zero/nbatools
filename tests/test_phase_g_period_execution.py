@@ -9,8 +9,14 @@ import pytest
 from nbatools.commands.data_utils import (
     load_player_game_period_stats_for_seasons,
     load_team_game_period_stats_for_seasons,
+    period_coverage_failure,
 )
-from nbatools.commands.pipeline.pull_game_period_stats import build_period_backfill
+from nbatools.commands.pipeline.pull_game_period_stats import (
+    PLAYER_PERIOD_ZERO_COLUMNS,
+    _fetch_with_retries,
+    build_period_backfill,
+    normalize_boxscore_player_advanced_rows,
+)
 from nbatools.commands.pipeline.pull_game_period_stats import run as pull_game_period_stats_run
 from nbatools.commands.pipeline.validate_raw import (
     validate_player_game_period_stats_df,
@@ -383,7 +389,6 @@ def _write_period_query_fixture(
             plus_minus=6,
         ),
     ]
-
     player_path = tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv"
     team_path = tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv"
     player_path.parent.mkdir(parents=True, exist_ok=True)
@@ -505,6 +510,8 @@ def _write_period_builder_fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
             plus_minus=-8,
         ),
     ]
+    for row in team_rows:
+        row["minutes"] = 265
 
     player_path = tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv"
     team_path = tmp_path / "data/raw/team_game_stats/2099-00_regular_season.csv"
@@ -655,6 +662,80 @@ def _advanced_player_rows(*, game_id: int, usg_pct: float) -> pd.DataFrame:
     )
 
 
+def test_period_fetch_uses_execution_backed_range_parameters():
+    captured: dict = {}
+
+    class FakeEndpoint:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+
+    _fetch_with_retries(FakeEndpoint, game_id=22400061, start_period=1, end_period=2)
+
+    assert captured == {
+        "game_id": "0022400061",
+        "start_period": 1,
+        "end_period": 2,
+        "start_range": 0,
+        "end_range": 28800,
+        "range_type": 1,
+        "timeout": 30,
+    }
+
+
+def test_advanced_player_normalization_prefers_active_duplicate_alias_row():
+    rows = pd.DataFrame(
+        [
+            {
+                "gameId": "0022400066",
+                "teamId": 1610612749,
+                "personId": 1626171,
+                "minutes": "",
+                "usagePercentage": 0.0,
+                "assistPercentage": 0.0,
+                "reboundPercentage": 0.0,
+                "turnoverRatio": 0.0,
+            },
+            {
+                "gameId": "0022400066",
+                "teamId": 1610612749,
+                "personId": 1626171,
+                "minutes": "25:51",
+                "usagePercentage": 0.226,
+                "assistPercentage": 0.167,
+                "reboundPercentage": 0.056,
+                "turnoverRatio": 23.5,
+            },
+        ]
+    )
+
+    normalized = normalize_boxscore_player_advanced_rows(rows)
+
+    assert len(normalized) == 1
+    assert normalized.iloc[0]["usg_pct"] == pytest.approx(0.226)
+    assert normalized.iloc[0]["ast_pct"] == pytest.approx(0.167)
+
+
+def test_advanced_player_normalization_rejects_conflicting_equally_active_duplicates():
+    rows = pd.DataFrame(
+        [
+            {
+                "gameId": "0022400066",
+                "teamId": 1610612749,
+                "personId": 1626171,
+                "minutes": "25:51",
+                "usagePercentage": usage,
+                "assistPercentage": 0.167,
+                "reboundPercentage": 0.056,
+                "turnoverRatio": 23.5,
+            }
+            for usage in (0.226, 0.300)
+        ]
+    )
+
+    with pytest.raises(ValueError, match="Conflicting duplicate advanced player rows"):
+        normalize_boxscore_player_advanced_rows(rows)
+
+
 def test_player_finder_period_filter_uses_period_dataset(tmp_path, monkeypatch):
     _write_period_query_fixture(tmp_path, monkeypatch)
 
@@ -759,6 +840,48 @@ def test_team_record_period_filter_refuses_one_missing_requested_window(tmp_path
     )
 
 
+def test_team_overtime_coverage_requires_only_games_that_reached_overtime():
+    base = pd.DataFrame(
+        [
+            {"game_id": 1, "team_id": 10, "minutes": 240},
+            {"game_id": 2, "team_id": 10, "minutes": 265},
+        ]
+    )
+    overtime = pd.DataFrame(
+        [
+            {
+                "game_id": 2,
+                "team_id": 10,
+                "period_family": "overtime",
+                "period_value": "OT",
+            }
+        ]
+    )
+
+    assert (
+        period_coverage_failure(
+            base,
+            overtime,
+            dataset="team_game_period_stats",
+            entity_key_columns=["team_id"],
+            quarter="OT",
+        )
+        is None
+    )
+
+    missing = period_coverage_failure(
+        base,
+        overtime.iloc[0:0],
+        dataset="team_game_period_stats",
+        entity_key_columns=["team_id"],
+        quarter="OT",
+    )
+    assert missing is not None
+    assert "requested_keys=1" in missing
+    assert "game_id=2" in missing
+    assert "game_id=1" not in missing
+
+
 def test_team_record_period_filter_refuses_when_dataset_missing(tmp_path, monkeypatch):
     _write_period_query_fixture(
         tmp_path,
@@ -836,6 +959,38 @@ def test_validate_team_period_stats_rejects_wl_mismatch():
         validate_team_game_period_stats_df(df)
 
 
+def test_validate_player_period_stats_rejects_full_game_minutes_as_quarter():
+    row = _player_period_row(
+        game_id=1,
+        game_date="2099-10-01",
+        player_id=10,
+        player_name="Period Star",
+        pts=12,
+    )
+    row["minutes"] = 32
+
+    with pytest.raises(ValueError, match="quarter minutes exceed window"):
+        validate_player_game_period_stats_df(pd.DataFrame([row]))
+
+
+def test_validate_team_period_stats_rejects_full_game_minutes_as_quarter():
+    row = _team_period_row(
+        game_id=1,
+        game_date="2099-10-01",
+        pts=108,
+        wl="W",
+        plus_minus=8,
+        period_family="quarter",
+        period_value="1",
+        source_start_period=1,
+        source_end_period=1,
+    )
+    row["minutes"] = 240
+
+    with pytest.raises(ValueError, match="quarter minutes exceed window"):
+        validate_team_game_period_stats_df(pd.DataFrame([row]))
+
+
 def test_build_period_backfill_merges_player_advanced_fields(tmp_path, monkeypatch):
     _write_period_builder_fixture(tmp_path, monkeypatch)
 
@@ -866,6 +1021,43 @@ def test_build_period_backfill_merges_player_advanced_fields(tmp_path, monkeypat
     assert {"quarter", "half", "overtime"} == set(team_df["period_family"])
     assert player_df.loc[player_df["player_id"] == 10, "usg_pct"].eq(0.25).all()
     assert player_df["ts_pct"].notna().all()
+
+
+def test_build_period_backfill_materializes_omitted_zero_participation_windows(
+    tmp_path, monkeypatch
+):
+    _write_period_builder_fixture(tmp_path, monkeypatch)
+
+    def fake_traditional(game_id, *, start_period, end_period):
+        del start_period, end_period
+        players = _traditional_player_rows(game_id=game_id, pts=12)
+        return players[players["personId"].eq(10)].copy(), _traditional_team_rows(
+            game_id=game_id,
+            pts=55,
+        )
+
+    def fake_advanced(game_id, *, start_period, end_period):
+        del start_period, end_period
+        players = _advanced_player_rows(game_id=game_id, usg_pct=0.25)
+        return players[players["personId"].eq(10)].copy()
+
+    with (
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_traditional_period_rows_for_game",
+            side_effect=fake_traditional,
+        ),
+        patch(
+            "nbatools.commands.pipeline.pull_game_period_stats.fetch_advanced_period_rows_for_game",
+            side_effect=fake_advanced,
+        ),
+    ):
+        player_df, _team_df = build_period_backfill("2099-00", "Regular Season")
+
+    standard = player_df[player_df["period_family"].ne("overtime")]
+    omitted_player = standard[standard["player_id"].eq(20)]
+    assert len(standard) == 12
+    assert len(omitted_player) == 6
+    assert omitted_player[list(PLAYER_PERIOD_ZERO_COLUMNS)].eq(0).all().all()
 
 
 def test_build_period_backfill_derives_player_wl_from_team_context_when_missing(

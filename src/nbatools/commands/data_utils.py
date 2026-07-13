@@ -14,6 +14,7 @@ from nbatools.data_source import data_exists, data_read_csv, data_source_cache_k
 CLUTCH_TIME_REMAINING_START = 300
 CLUTCH_SCORE_MARGIN_MAX = 5
 CLUTCH_WINDOW_LABEL = "clutch:last_5m_score_within_5"
+OVERTIME_TEAM_MINUTES_THRESHOLD = 250.0
 _COVERAGE_DETAIL_KEY_LIMIT = 25
 
 PLAYER_GAME_STARTER_ROLE_REQUIRED_COLUMNS = [
@@ -465,8 +466,16 @@ def period_coverage_failure(
     if descriptor is None:
         return None
     period_family, period_value = descriptor
+    coverage_base = base
+    if period_family == "overtime" and entity_key_columns == ["team_id"]:
+        if "minutes" not in coverage_base.columns:
+            raise ValueError("team overtime coverage requires whole-game team minutes")
+        team_minutes = pd.to_numeric(coverage_base["minutes"], errors="coerce")
+        if team_minutes.isna().any():
+            raise ValueError("team overtime coverage contains invalid whole-game team minutes")
+        coverage_base = coverage_base.loc[team_minutes.ge(OVERTIME_TEAM_MINUTES_THRESHOLD)].copy()
     return exact_coverage_failure(
-        base,
+        coverage_base,
         period_rows,
         dataset=dataset,
         key_columns=["game_id", *entity_key_columns],

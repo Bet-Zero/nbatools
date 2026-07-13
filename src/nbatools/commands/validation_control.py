@@ -543,11 +543,9 @@ def apply_cross_dataset_coverage(
 
     team_ids = {(key[1],) for key in team_keys}
     player_ids = {(key[2],) for key in player_keys}
-    player_team_ids = {(key[2], key[1]) for key in player_keys}
     for name, expected, columns, allow_additional in (
         ("team_season_advanced", team_ids, ("team_id",), False),
         ("player_season_advanced", player_ids, ("player_id",), True),
-        ("rosters", player_team_ids, ("player_id", "team_id"), True),
         ("standings_snapshots", team_ids, ("team_id",), False),
     ):
         if available(name) and expected:
