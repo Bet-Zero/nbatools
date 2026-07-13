@@ -203,6 +203,57 @@ def test_cross_dataset_extra_game_key_fails_manifest(tmp_path):
     assert record["coverage"]["unexpected_keys"] == ["game_id=3"]
 
 
+def test_roster_snapshot_is_not_claimed_as_player_game_coverage(tmp_path):
+    specs = (
+        DatasetSpec(
+            "team_game_stats",
+            "raw",
+            "team-game",
+            ("game_id", "team_id"),
+            "team-games",
+        ),
+        DatasetSpec(
+            "player_game_stats",
+            "raw",
+            "player-game",
+            ("game_id", "team_id", "player_id"),
+            "player-games",
+        ),
+        DatasetSpec(
+            "rosters",
+            "raw",
+            "player-team-season stint",
+            ("player_id", "team_id", "season", "stint"),
+            "common-team-roster",
+            season_only=True,
+        ),
+    )
+    _write(
+        tmp_path / "raw/team_game_stats/2099-00_regular_season.csv",
+        [{"game_id": 1, "team_id": 10}],
+    )
+    _write(
+        tmp_path / "raw/player_game_stats/2099-00_regular_season.csv",
+        [{"game_id": 1, "team_id": 10, "player_id": 100}],
+    )
+    _write(
+        tmp_path / "raw/rosters/2099-00.csv",
+        [{"player_id": 200, "team_id": 10, "season": "2099-00", "stint": 1}],
+    )
+
+    document = build_slice_manifest(
+        "2099-00",
+        "Regular Season",
+        data_root=tmp_path,
+        specs=specs,
+        generation_id="generation-test",
+    )
+
+    assert document["validation_state"] == "passed"
+    assert _record(document, "rosters")["coverage"]["state"] == "present"
+    assert _record(document, "rosters")["coverage"]["expected_keys"] is None
+
+
 def test_one_missing_requested_window_fails_raw_validation(tmp_path):
     _fixture(tmp_path)
     frames = {

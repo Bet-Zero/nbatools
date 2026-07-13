@@ -5,8 +5,11 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from nbatools.commands.pipeline import pull_games, pull_schedule
-from nbatools.commands.pipeline.game_identity import build_canonical_game_identity
+from nbatools.commands.pipeline import build_game_features, pull_games, pull_schedule
+from nbatools.commands.pipeline.game_identity import (
+    apply_canonical_home_away_flags,
+    build_canonical_game_identity,
+)
 
 pytestmark = pytest.mark.engine
 
@@ -76,6 +79,100 @@ def test_canonical_identity_requires_two_distinct_participants(
 ) -> None:
     with pytest.raises(ValueError, match="exactly two distinct team rows"):
         build_canonical_game_identity(normalized_game_rows.iloc[[0]])
+
+
+def test_relative_flags_do_not_label_neutral_participants_away(
+    normalized_game_rows: pd.DataFrame,
+) -> None:
+    flagged = apply_canonical_home_away_flags(normalized_game_rows)
+
+    assert flagged.loc[flagged["game_id"].eq(1), "is_home"].tolist() == [1, 0]
+    assert flagged.loc[flagged["game_id"].eq(1), "is_away"].tolist() == [0, 1]
+    assert flagged.loc[flagged["game_id"].eq(2), "is_home"].eq(0).all()
+    assert flagged.loc[flagged["game_id"].eq(2), "is_away"].eq(0).all()
+
+
+def test_player_rows_share_neutral_relative_flag_contract(
+    normalized_game_rows: pd.DataFrame,
+) -> None:
+    players = pd.concat(
+        [
+            normalized_game_rows.assign(player_id=lambda frame: frame["team_id"] + 1),
+            normalized_game_rows.assign(player_id=lambda frame: frame["team_id"] + 2),
+        ],
+        ignore_index=True,
+    )
+
+    flagged = apply_canonical_home_away_flags(players)
+
+    assert flagged.loc[flagged["game_id"].eq(2), "is_home"].eq(0).all()
+    assert flagged.loc[flagged["game_id"].eq(2), "is_away"].eq(0).all()
+
+
+def test_game_features_preserve_neutral_game_key_without_inventing_roles(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    games_path = tmp_path / "data/raw/games/2025-26_regular_season.csv"
+    features_path = tmp_path / "data/processed/team_game_features/2025-26_regular_season.csv"
+    games_path.parent.mkdir(parents=True, exist_ok=True)
+    features_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        [
+            {
+                "game_id": 1,
+                "game_date": "2026-01-01",
+                "season": "2025-26",
+                "season_type": "Regular Season",
+                "home_team_id": 100,
+                "away_team_id": 200,
+            },
+            {
+                "game_id": 2,
+                "game_date": "2026-01-02",
+                "season": "2025-26",
+                "season_type": "Regular Season",
+                "home_team_id": pd.NA,
+                "away_team_id": pd.NA,
+            },
+        ]
+    ).to_csv(games_path, index=False)
+    rows = []
+    for game_id, teams, flags in (
+        (1, (100, 200), ((1, 0), (0, 1))),
+        (2, (300, 400), ((0, 0), (0, 0))),
+    ):
+        for team_id, (is_home, is_away) in zip(teams, flags):
+            rows.append(
+                {
+                    "game_id": game_id,
+                    "team_id": team_id,
+                    "is_home": is_home,
+                    "is_away": is_away,
+                    "days_rest": 2,
+                    "is_back_to_back": 0,
+                    "pts_last_5": 110,
+                    "fg3m_last_5": 12,
+                    "fg3_pct_last_5": 0.36,
+                    "reb_last_5": 44,
+                    "tov_last_5": 13,
+                }
+            )
+    pd.DataFrame(rows).to_csv(features_path, index=False)
+
+    build_game_features.run("2025-26", "Regular Season")
+
+    output = pd.read_csv(
+        tmp_path / "data/processed/game_features/2025-26_regular_season.csv"
+    ).set_index("game_id")
+    assert list(output.index) == [1, 2]
+    assert output.loc[1, "home_team_id"] == 100
+    assert output.loc[1, "away_team_id"] == 200
+    assert pd.isna(output.loc[2, "home_team_id"])
+    assert pd.isna(output.loc[2, "away_team_id"])
+    assert pd.isna(output.loc[2, "home_pts_last_5"])
+    assert pd.isna(output.loc[2, "away_pts_last_5"])
 
 
 @pytest.mark.parametrize(

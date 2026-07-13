@@ -412,12 +412,49 @@ def test_build_starter_role_backfill_marks_untrusted_rows_when_count_is_not_five
     assert df["role_validation_reason"].eq("starter_count_not_five").all()
 
 
+def test_build_starter_role_backfill_matches_required_player_game_keys(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    games_path = tmp_path / "data/raw/games/2099-00_regular_season.csv"
+    games_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"game_id": 1}]).to_csv(games_path, index=False)
+    required = {(1, 1, player_id) for player_id in range(1, 7)}
+
+    with patch(
+        "nbatools.commands.pipeline.pull_player_game_starter_roles.fetch_starter_role_rows_for_game",
+        return_value=_boxscore_player_rows(
+            game_id="0000000001",
+            starter_positions=["G", "G", "F", "F", "C", "", "", ""],
+        ),
+    ):
+        df = build_starter_role_backfill(
+            "2099-00",
+            "Regular Season",
+            required_player_keys=required,
+        )
+
+    assert (
+        set(df[["game_id", "team_id", "player_id"]].itertuples(index=False, name=None)) == required
+    )
+    assert df["role_source_trusted"].eq(1).all()
+
+
 def test_pull_player_game_starter_roles_run_resumes_from_partial_cache(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     games_path = tmp_path / "data/raw/games/2099-00_regular_season.csv"
     games_path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame([{"game_id": 1}, {"game_id": 2}]).to_csv(games_path, index=False)
+
+    player_path = tmp_path / "data/raw/player_game_stats/2099-00_regular_season.csv"
+    player_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        [
+            {"game_id": game_id, "team_id": 1, "player_id": player_id}
+            for game_id in (1, 2)
+            for player_id in range(1, 9)
+        ]
+    ).to_csv(player_path, index=False)
 
     partial_path = (
         tmp_path / "data/raw/player_game_starter_roles/2099-00_regular_season.partial.csv"

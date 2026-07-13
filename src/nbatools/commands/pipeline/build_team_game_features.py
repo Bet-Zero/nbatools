@@ -89,6 +89,7 @@ def run(season: str, season_type: str) -> None:
         "season_type",
         "opponent_team_id",
         "is_home",
+        "is_away",
         # NEW
         "days_rest",
         "is_back_to_back",

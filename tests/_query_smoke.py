@@ -254,13 +254,7 @@ PHASE_G_QUERY_SMOKE_CASES = (
         query="Knicks OT record",
         expected_routes=("team_record",),
         expected_query_class="summary",
-        expected_statuses=("no_result",),
         expected_intents=("summary",),
-        expected_note_substrings=(
-            "team_game_period_stats coverage incomplete",
-            "window=overtime:ot",
-            "game_id=22501229",
-        ),
     ),
     QuerySmokeCase(
         query="Lakers on back-to-backs record",

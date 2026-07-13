@@ -126,6 +126,11 @@ This is one of the most important datasets in the repo.
 
 Legacy `start_position` and `starter_flag` columns may appear in the current raw file because the historical `LeagueGameFinder` pull shape exposed a `START_POSITION` column name. They are not authoritative for starter / bench execution and must not be treated as a role contract.
 
+For a neutral game whose canonical `games` row has no trusted home/away
+designation, both participant rows use `is_home=0` and `is_away=0`. Neutral
+participants must not be mislabeled as two away teams; trusted venue-relative
+filtering remains owned by the canonical game identity contract.
+
 Player sample-aware metrics such as:
 
 - USG%
@@ -324,6 +329,17 @@ Contract rules:
   - halves: `1-2`, `3-4`
   - overtime: `5-14`, aggregated into one `OT` row only when the returned window shows real
     overtime activity
+- upstream box-score requests use `RangeType=1`, `StartRange=0`, and
+  `EndRange=28800`; `RangeType=0` returns full-game totals even when period
+  bounds are supplied and is not valid for this dataset
+- validation rejects player minutes above 12.5 for a quarter or 24.5 for a
+  half, preventing full-game rows from being mislabeled as period windows
+- the upstream period response may omit a whole-game participant who logged
+  zero minutes in a selected quarter or half; the producer materializes that
+  authoritative absence as a zero-stat row for the required player-game/window
+  key so exact coverage does not confuse non-participation with missing data
+- zero completion applies only to the six standard quarter/half windows;
+  overtime rows are never invented for games or players without OT activity
 - this contract is period-only; it does not define `clutch`, and no consumer may treat these
   rows as a clutch-capable substitute
 - commands must compare the requested base entity-game key set with this
@@ -697,6 +713,11 @@ Recommended uniqueness expectation:
 
 This is the core team query dataset. Team summary, split, and streak behaviors should be designed around this contract.
 
+For a neutral game whose canonical `games` row has no trusted home/away
+designation, both participant rows use `is_home=0` and `is_away=0`. This keeps
+neutral games in whole-game samples without inventing venue roles or presenting
+two away teams.
+
 ---
 
 ## 2A. `team_game_period_stats`
@@ -790,6 +811,11 @@ Contract rules:
 - `BoxScoreTraditionalV3` is the source of record for team-grain period windows
 - supported period semantics are represented with the same `period_family` / `period_value`
   vocabulary as `player_game_period_stats`
+- team window validation rejects more than 75 team minutes for a quarter or
+  150 for a half, preventing full-game totals from passing as period data
+- exact overtime coverage compares period rows only with whole-game team rows
+  whose team minutes prove that the game reached overtime; regulation games do
+  not require fabricated OT rows
 - `wl` is a period-window outcome derived from the period point differential:
   `W` when `plus_minus > 0`, `L` when `plus_minus < 0`, and `T` when the selected period
   ends tied
@@ -1046,6 +1072,12 @@ Typically one row per **player-team-season roster entry**.
 ### Notes
 
 This dataset is primarily used as an enrichment table, not a primary query surface.
+`CommonTeamRoster` is a season/team roster snapshot source, not an authoritative
+ledger of every historical player-team game appearance. Receipt validation
+therefore enforces this table's schema, grain, slice labels, and checksum, but
+does not claim exact coverage of all `player_game_stats` player-team keys.
+Role and period execution use their dedicated exact player-game coverage
+contracts instead.
 
 ---
 

@@ -153,6 +153,13 @@ def validate_player_game_period_stats_df(df: pd.DataFrame) -> pd.DataFrame:
         if ((values < 0) | (values > 1)).any():
             raise ValueError(f"player_game_period_stats {pct_col} out of bounds")
 
+    quarter = validated["period_family"].eq("quarter")
+    half = validated["period_family"].eq("half")
+    if validated.loc[quarter, "minutes"].gt(12.5).any():
+        raise ValueError("player_game_period_stats quarter minutes exceed window")
+    if validated.loc[half, "minutes"].gt(24.5).any():
+        raise ValueError("player_game_period_stats half minutes exceed window")
+
     return validated
 
 
@@ -170,6 +177,13 @@ def validate_team_game_period_stats_df(df: pd.DataFrame) -> pd.DataFrame:
     )
     if not validated["wl"].fillna("").eq(wl_expected).all():
         raise ValueError("team_game_period_stats wl mismatch")
+
+    quarter = validated["period_family"].eq("quarter")
+    half = validated["period_family"].eq("half")
+    if validated.loc[quarter, "minutes"].gt(75.0).any():
+        raise ValueError("team_game_period_stats quarter minutes exceed window")
+    if validated.loc[half, "minutes"].gt(150.0).any():
+        raise ValueError("team_game_period_stats half minutes exceed window")
 
     return validated
 

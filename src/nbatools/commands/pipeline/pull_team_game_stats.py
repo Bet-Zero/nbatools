@@ -4,6 +4,8 @@ from pathlib import Path
 import pandas as pd
 from nba_api.stats.endpoints import LeagueGameFinder
 
+from nbatools.commands.pipeline.game_identity import apply_canonical_home_away_flags
+
 REQUEST_TIMEOUT = 30
 MAX_RETRIES = 3
 RETRY_SLEEP_SECONDS = 2.0
@@ -76,10 +78,7 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     if missing:
         raise ValueError(f"Missing required columns after rename: {missing}")
 
-    df["is_home"] = df["matchup"].str.contains(" vs. ", na=False).astype(int)
-    df["is_away"] = df["matchup"].str.contains(" @ ", na=False).astype(int)
-
-    return df
+    return apply_canonical_home_away_flags(df)
 
 
 def add_opponent_info(df: pd.DataFrame) -> pd.DataFrame:

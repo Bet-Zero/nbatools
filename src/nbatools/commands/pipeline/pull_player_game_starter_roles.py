@@ -145,6 +145,41 @@ def _append_checkpoint_rows(path: Path, df: pd.DataFrame) -> None:
     df.to_csv(path, mode="a", header=header, index=False)
 
 
+def _load_required_player_keys(season: str, season_type: str) -> set[tuple[int, int, int]]:
+    safe = season_type.lower().replace(" ", "_")
+    path = Path(f"data/raw/player_game_stats/{season}_{safe}.csv")
+    if not path.exists():
+        raise FileNotFoundError(f"Missing player-game file: {path}")
+    frame = pd.read_csv(path, usecols=["game_id", "team_id", "player_id"])
+    for column in ("game_id", "team_id", "player_id"):
+        frame[column] = pd.to_numeric(frame[column], errors="raise").astype(int)
+    if frame.duplicated(subset=["game_id", "team_id", "player_id"]).any():
+        raise ValueError("Duplicate player-game keys in player_game_stats")
+    return set(frame.itertuples(index=False, name=None))
+
+
+def _restrict_to_required_player_keys(
+    frame: pd.DataFrame,
+    required_keys: set[tuple[int, int, int]],
+) -> pd.DataFrame:
+    keys = list(zip(frame["game_id"], frame["team_id"], frame["player_id"]))
+    restricted = frame.loc[pd.Series(keys, index=frame.index).isin(required_keys)].copy()
+    observed = set(
+        restricted[["game_id", "team_id", "player_id"]].itertuples(index=False, name=None)
+    )
+    missing = sorted(required_keys - observed)
+    if missing:
+        raise ValueError(
+            "starter-role source missing required player-game keys: "
+            + "; ".join(
+                f"game_id={game_id}, team_id={team_id}, player_id={player_id}"
+                for game_id, team_id, player_id in missing[:20]
+            )
+            + (f"; plus {len(missing) - 20} more" if len(missing) > 20 else "")
+        )
+    return restricted
+
+
 def fetch_starter_role_rows_for_game(game_id: int | str) -> pd.DataFrame:
     last_err = None
 
@@ -185,6 +220,7 @@ def build_starter_role_backfill(
     *,
     existing_rows: pd.DataFrame | None = None,
     checkpoint_path: Path | None = None,
+    required_player_keys: set[tuple[int, int, int]] | None = None,
 ) -> pd.DataFrame:
     safe = season_type.lower().replace(" ", "_")
     games_path = Path(f"data/raw/games/{season}_{safe}.csv")
@@ -238,6 +274,8 @@ def build_starter_role_backfill(
     out["game_id"] = pd.to_numeric(out["game_id"], errors="raise").astype(int)
     out["team_id"] = pd.to_numeric(out["team_id"], errors="raise").astype(int)
     out["player_id"] = pd.to_numeric(out["player_id"], errors="raise").astype(int)
+    if required_player_keys is not None:
+        out = _restrict_to_required_player_keys(out, required_player_keys)
     out = add_trust_validation(out)
     out = out.sort_values(["game_id", "team_id", "player_id"]).reset_index(drop=True)
     return out
@@ -258,6 +296,7 @@ def run(season: str, season_type: str) -> None:
         season_type=season_type,
         existing_rows=cached_rows,
         checkpoint_path=checkpoint_path,
+        required_player_keys=_load_required_player_keys(season, season_type),
     )
     tmp_path = out_path.with_suffix(".tmp.csv")
     df.to_csv(tmp_path, index=False)

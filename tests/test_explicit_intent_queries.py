@@ -692,13 +692,14 @@ class TestCountResult:
         assert any("rookies" in c for c in qr.result.caveats)
 
     @pytest.mark.needs_data
-    def test_bench_leaderboard_refuses_incomplete_live_role_coverage(self):
+    def test_bench_leaderboard_executes_with_complete_live_role_coverage(self):
         qr = execute_natural_query("most points off the bench")
-        assert qr.result.result_status == "no_result"
-        assert qr.result.result_reason == "filter_not_supported"
+        assert isinstance(qr.result, LeaderboardResult)
+        assert qr.result.result_status == "ok"
+        assert not qr.result.leaders.empty
         assert any(
-            "player_game_starter_roles coverage incomplete" in note and "missing_keys=" in note
-            for note in qr.result.notes
+            "filtered to bench games using trusted starter-role data" in note
+            for note in qr.metadata["notes"]
         )
 
     @pytest.mark.needs_data
