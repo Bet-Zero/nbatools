@@ -123,13 +123,15 @@ export async function postQuery(
 export async function postStructuredQuery(
   route: string,
   kwargs: Record<string, unknown>,
+  options?: { signal?: AbortSignal; sourcePage?: string },
 ): Promise<QueryResponse> {
   return request<QueryResponse>("/structured-query", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-NBATools-Source-Page": currentSourcePage(),
+      "X-NBATools-Source-Page": options?.sourcePage ?? currentSourcePage(),
     },
+    signal: options?.signal,
     body: JSON.stringify({ route, kwargs }),
   });
 }

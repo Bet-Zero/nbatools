@@ -1,22 +1,13 @@
 import { useEffect, useState } from "react";
-import { fetchRoutes, postStructuredQuery } from "../api/client";
-import type { QueryResponse } from "../api/types";
+import { fetchRoutes } from "../api/client";
 import { Badge, Button, Card } from "../design-system";
 import styles from "./DevTools.module.css";
 
 interface Props {
-  onResult: (data: QueryResponse) => void;
-  onError: (msg: string, options?: { retryable?: boolean }) => void;
-  onLoading: (loading: boolean) => void;
-  onQueryStart?: (route: string, kwargs: string) => void;
+  onRun: (route: string, kwargs: string) => void;
 }
 
-export default function DevTools({
-  onResult,
-  onError,
-  onLoading,
-  onQueryStart,
-}: Props) {
+export default function DevTools({ onRun }: Props) {
   const [routes, setRoutes] = useState<string[]>([]);
   const [selectedRoute, setSelectedRoute] = useState("");
   const [kwargs, setKwargs] = useState("{}");
@@ -27,27 +18,9 @@ export default function DevTools({
       .catch(() => setRoutes([]));
   }, []);
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!selectedRoute) return;
-    let parsed: Record<string, unknown>;
-    try {
-      parsed = JSON.parse(kwargs || "{}");
-    } catch (err) {
-      onError("Invalid JSON in kwargs: " + (err as Error).message, {
-        retryable: false,
-      });
-      return;
-    }
-    onQueryStart?.(selectedRoute, kwargs);
-    onLoading(true);
-    try {
-      const data = await postStructuredQuery(selectedRoute, parsed);
-      onResult(data);
-    } catch (err) {
-      onError((err as Error).message, { retryable: true });
-    } finally {
-      onLoading(false);
-    }
+    onRun(selectedRoute, kwargs);
   }
 
   return (

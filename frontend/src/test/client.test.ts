@@ -180,16 +180,20 @@ describe("postStructuredQuery", () => {
     };
     mockFetch.mockResolvedValueOnce(jsonResponse(mockResponse));
 
-    const result = await postStructuredQuery("season_leaders", {
-      stat: "pts",
-    });
+    const controller = new AbortController();
+    const result = await postStructuredQuery(
+      "season_leaders",
+      { stat: "pts" },
+      { signal: controller.signal, sourcePage: "/structured-source" },
+    );
     expect(result.route).toBe("season_leaders");
     expect(mockFetch).toHaveBeenCalledWith("/structured-query", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-NBATools-Source-Page": "/",
+        "X-NBATools-Source-Page": "/structured-source",
       },
+      signal: controller.signal,
       body: JSON.stringify({
         route: "season_leaders",
         kwargs: { stat: "pts" },
