@@ -68,6 +68,26 @@ Both entry points return a `QueryResult` dataclass:
 
 Returns a JSON-serializable dict combining the result's sections and metadata.
 
+## Request-scoped data generation
+
+Both public entry points resolve the active data generation before parsing or
+execution and pin it for the full request. Natural parsing, structured
+execution, file reads, DataFrame loaders, and data-backed entity indexes
+therefore use one immutable generation even if the active pointer changes
+while the request is running. A later request observes the new pointer and
+uses different file, frame, and entity cache keys.
+
+The runtime reads `data/metadata/active_generation.json` locally or
+`metadata/active_generation.json` in R2. Its `generation_id` selects logical
+data beneath `data/generations/<generation_id>/` locally or
+`generations/<generation_id>/` in R2. When no pointer exists, the source uses
+the legacy canonical paths for backward compatibility. An invalid or
+unreadable pointer fails closed rather than combining generations.
+
+`NBATOOLS_DATA_GENERATION` is an explicit generation override for controlled
+tests and operations. It selects the same immutable directory/prefix layout;
+it is not a substitute for publishing and switching the active pointer.
+
 ## What calls the service
 
 | Caller                   | Entry point                                                | Notes                                                                |

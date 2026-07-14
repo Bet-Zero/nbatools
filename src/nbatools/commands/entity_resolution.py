@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from nbatools.data_source import data_glob, data_read_csv
+from nbatools.data_source import data_glob, data_read_csv, data_source_cache_key
 
 # ---------------------------------------------------------------------------
 # Resolution result types
@@ -582,6 +582,8 @@ _FALLBACK_PLAYER_NAMES: set[str] = {
 def _read_player_names(data_dir: Path | None = None) -> set[str]:
     """Read canonical player names from player game stats CSVs."""
     global _player_names_cache
+    if data_dir is None:
+        _ensure_player_index_generation()
     if data_dir is None and _player_names_cache is not None:
         return set(_player_names_cache)
 
@@ -646,11 +648,23 @@ _player_full_name_index: dict[str, str] | None = None
 _player_full_name_keys: tuple[str, ...] | None = None
 _player_first_name_index: dict[str, list[str]] | None = None
 _player_names_cache: set[str] | None = None
+_player_index_generation_key: str | None = None
+
+
+def _ensure_player_index_generation() -> None:
+    """Invalidate data-backed entity indexes when the source generation changes."""
+    global _player_index_generation_key
+    generation_key = data_source_cache_key()
+    if _player_index_generation_key == generation_key:
+        return
+    reset_player_index()
+    _player_index_generation_key = generation_key
 
 
 def _get_player_index() -> dict[str, list[str]]:
     """Get (or build) the cached player last-name index."""
     global _player_last_name_index
+    _ensure_player_index_generation()
     if _player_last_name_index is None:
         _player_last_name_index = _build_player_index()
     return _player_last_name_index
@@ -664,6 +678,7 @@ def _build_player_full_name_index(data_dir: Path | None = None) -> dict[str, str
 def _get_player_full_name_index() -> dict[str, str]:
     """Get (or build) the cached player full-name index."""
     global _player_full_name_index
+    _ensure_player_index_generation()
     if _player_full_name_index is None:
         _player_full_name_index = _build_player_full_name_index()
     return _player_full_name_index
@@ -696,6 +711,7 @@ def _build_player_first_name_index(data_dir: Path | None = None) -> dict[str, li
 def _get_player_first_name_index() -> dict[str, list[str]]:
     """Get (or build) the cached player first-name index."""
     global _player_first_name_index
+    _ensure_player_index_generation()
     if _player_first_name_index is None:
         _player_first_name_index = _build_player_first_name_index()
     return _player_first_name_index
@@ -704,6 +720,7 @@ def _get_player_first_name_index() -> dict[str, list[str]]:
 def _get_player_full_name_keys() -> tuple[str, ...]:
     """Return data-backed full names sorted longest-first for query scanning."""
     global _player_full_name_keys
+    _ensure_player_index_generation()
     if _player_full_name_keys is None:
         _player_full_name_keys = tuple(
             sorted(_get_player_full_name_index().keys(), key=len, reverse=True)
@@ -714,12 +731,13 @@ def _get_player_full_name_keys() -> tuple[str, ...]:
 def reset_player_index() -> None:
     """Force rebuild of the player index (for testing)."""
     global _player_last_name_index, _player_full_name_index, _player_full_name_keys
-    global _player_names_cache, _player_first_name_index
+    global _player_names_cache, _player_first_name_index, _player_index_generation_key
     _player_last_name_index = None
     _player_full_name_index = None
     _player_full_name_keys = None
     _player_names_cache = None
     _player_first_name_index = None
+    _player_index_generation_key = None
 
 
 # ---------------------------------------------------------------------------
