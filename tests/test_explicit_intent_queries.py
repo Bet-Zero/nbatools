@@ -750,6 +750,7 @@ class TestExplicitIntentExecution:
         assert qr.is_ok
         assert qr.route == "player_game_finder"
 
+    @pytest.mark.needs_data
     def test_count_intent_returns_count_result(self):
         qr = execute_natural_query("how many games did Jokic have 25 points 2024-25")
         assert isinstance(qr, QueryResult)
@@ -758,6 +759,7 @@ class TestExplicitIntentExecution:
         assert qr.result.count >= 0
         assert qr.metadata.get("query_class") == "count"
 
+    @pytest.mark.needs_data
     def test_count_result_has_accurate_count(self):
         """Count result should report the total matching games, not a limited subset."""
         qr = execute_natural_query("how many games did Jokic have 10 points 2024-25")
@@ -779,6 +781,7 @@ class TestExplicitIntentExecution:
         if isinstance(qr.result, CountResult):
             assert qr.result.count >= 0
 
+    @pytest.mark.needs_data
     def test_count_zero_returns_ok(self):
         """A count of zero should return status ok with count=0, not an error."""
         qr = execute_natural_query("how many 100 point games has Jokic had 2024-25")
@@ -842,6 +845,7 @@ class TestExplicitIntentExecution:
         if qr.current_through:
             assert isinstance(qr.current_through, str)
 
+    @pytest.mark.needs_data
     def test_result_status_for_count(self):
         qr = execute_natural_query("how many games did Jokic have 25 points 2024-25")
         assert qr.result_status == "ok"
