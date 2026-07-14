@@ -543,6 +543,28 @@ nbatools-cli pipeline auto-refresh --interval 30m --include-playoffs
 
 The auto-refresh runner executes `pipeline refresh` on a repeating schedule, writes a `last_refresh.json` log after each attempt, and exits cleanly on Ctrl-C.
 
+### Pipeline CLI — generation publication and rollback
+
+Validated canonical data is published as one immutable runtime generation;
+the active pointer changes only after every staged file and dataset receipt
+passes checksum validation.
+
+```bash
+# Local publication and rollback
+nbatools-cli pipeline publish-generation --generation-id <unique-id> --target local
+nbatools-cli pipeline rollback-generation --target local
+
+# R2 publication and rollback (remote mutation; requires explicit operational approval)
+nbatools-cli pipeline publish-generation --generation-id <unique-id> --target r2
+nbatools-cli pipeline rollback-generation --target r2
+```
+
+`pipeline sync-r2 --dry-run` is retained only as a read-only comparison with
+legacy canonical keys. Non-dry direct sync is disabled because sequential
+canonical writes can expose a mixed snapshot. Publication writes immutable
+`generations/<id>/` content first, verifies it, conditionally switches the
+single active pointer, and retains the previous generation for rollback.
+
 ### Freshness API
 
 `GET /freshness` returns a structured report:

@@ -167,7 +167,8 @@ If the promotion is data-backed or otherwise touches deployed runtime
 behavior, deployment smoke is a required gate.
 
 - Confirm required R2 object keys are listed.
-- Confirm the data is synced to R2.
+- Confirm a validated immutable generation is published to R2 and the active
+  pointer names it.
 - Run deployment smoke against preview / production, targeting the new
   family.
 - Confirm missing-data behavior returns the clean unsupported shape (no
@@ -175,7 +176,7 @@ behavior, deployment smoke is a required gate.
 
 The full data/R2 promotion checklist lives in
 `docs/operations/deployment.md` under "Data-backed Feature Promotion
-Checklist". Its rules 1–5 (required runtime data key list, R2 sync
+Checklist". Its rules 1–5 (required runtime data key list, R2 generation
 verification with `head_object` evidence, deployment smoke pointed at the
 feature, missing-data clean unsupported behavior, no broad fallback) are
 the deployment-side gates for this stage.

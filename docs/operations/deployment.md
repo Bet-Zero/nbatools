@@ -103,38 +103,52 @@ https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com
 Jurisdiction-specific buckets require jurisdiction-specific endpoints. The
 current `nbatools-data` bucket uses the default endpoint pattern above.
 
-## Verification
+## Read-only legacy comparison
 
-Phase N1 verifies the bucket through the real sync path:
+The legacy comparison command never writes:
 
 ```bash
 nbatools-cli pipeline sync-r2 --dry-run
-nbatools-cli pipeline sync-r2
 ```
 
-The one-off manual upload/download test from the original setup checklist was
-intentionally skipped. The `pipeline sync-r2` command is the production path
-and is the meaningful verification.
+Direct non-dry `pipeline sync-r2` is disabled because sequential canonical-key
+writes are not generation-atomic. Use the publication workflow below for any
+approved data promotion.
 
-## Data Sync Before Preview Smoke
+## Generation Publication Before Preview Smoke
 
 Vercel preview/runtime functions use `DATA_SOURCE=r2` and do not include
-`data/**` in the function bundle. After adding or changing any data file that
-runtime queries need, run the R2 dry-run and sync before preview smoke:
+`data/**` in the function bundle. After adding or changing runtime data, first
+complete local validation, choose a new unique generation ID, and obtain the
+required approval for remote mutation. Then publish the immutable R2
+generation:
 
 ```bash
 .venv/bin/nbatools-cli pipeline sync-r2 --dry-run
-.venv/bin/nbatools-cli pipeline sync-r2
+.venv/bin/nbatools-cli pipeline publish-generation \
+  --generation-id <unique-release-id> \
+  --target r2
 ```
 
-Treat missing required R2 data as a deploy blocker. A local file existing under
-`data/` is not enough for preview or production if the deployed runtime reads
-from R2.
+Publication stages and validates the full snapshot, uploads immutable
+`generations/<id>/` objects, verifies size and `nbatools-sha256`, and only then
+conditionally switches `metadata/active_generation.json`. A partial upload or
+pointer conflict leaves the last-good generation active. Treat failed
+publication or missing required generation objects as a deploy blocker.
+[Cloudflare documents `If-Match` and `If-None-Match` as supported conditional
+operations for S3-compatible `PutObject`](https://developers.cloudflare.com/r2/api/s3/api/);
+the publisher uses those preconditions for immutable objects and pointer
+compare-and-swap ownership.
+
+For the first migration from legacy canonical R2 keys, publish the currently
+trusted snapshot as a baseline generation before making further data changes.
+Automated rollback to unmanifested legacy R2 keys is refused; after this
+bootstrap, rollback always targets a verified immutable generation.
 
 For opponent-conference support, the required object is:
 
 ```text
-raw/teams/team_conference_membership.csv
+generations/<active-id>/raw/teams/team_conference_membership.csv
 ```
 
 Verify it exists in R2 with a read-only head-object check before running
@@ -142,24 +156,34 @@ opponent-conference preview smoke:
 
 ```bash
 .venv/bin/python - <<'PY'
+import json
+
 from nbatools.commands.pipeline.sync_r2 import create_r2_client, load_r2_config
 
 config = load_r2_config()
-response = create_r2_client(config).head_object(
+client = create_r2_client(config)
+pointer = json.loads(
+    client.get_object(
+        Bucket=config.bucket_name,
+        Key="metadata/active_generation.json",
+    )["Body"].read()
+)
+generation = pointer["generation_id"]
+response = client.head_object(
     Bucket=config.bucket_name,
-    Key="raw/teams/team_conference_membership.csv",
+    Key=f"generations/{generation}/raw/teams/team_conference_membership.csv",
 )
 print(
     response["ContentLength"],
     response.get("LastModified"),
-    response.get("Metadata", {}).get("nbatools-md5"),
+    response.get("Metadata", {}).get("nbatools-sha256"),
 )
 PY
 ```
 
-Expected current evidence for the release candidate is
-`ContentLength=4999`, `LastModified=2026-05-17T09:03:29+00:00`, and
-`nbatools-md5=f9cc9a60c8f659651723a55640966d73`.
+Do not reuse legacy canonical-key evidence as generation proof. Capture the
+current generation-prefixed length, modification time, and SHA-256 metadata
+after an explicitly approved publication.
 
 ## Vercel Frontend Build
 
@@ -240,7 +264,7 @@ Working principle:
 No data-backed feature is promoted until:
   1. the local data contract exists
   2. required R2 object keys are documented
-  3. the data is synced to R2
+  3. a validated immutable generation is published to R2
   4. deployment smoke checks the feature against preview/prod data access
   5. missing data returns clean no_data/unsupported behavior, not broad fallback
 ```
@@ -254,24 +278,27 @@ deployed runtime needs for the feature to answer correctly.
   [`feature_promotion_rules.md`](feature_promotion_rules.md)
   §4) and is reproduced in the task-scoped active-work handoff receipt while the
   task is active.
-- Keys are written as full bucket-relative paths
-  (`raw/teams/team_conference_membership.csv`), not as glob patterns or
-  shorthand.
+- Keys are written as full generation-relative paths
+  (`raw/teams/team_conference_membership.csv`) and evidence records the active
+  generation prefix, not a legacy canonical key, glob pattern, or shorthand.
 - "No new R2 objects required" is a valid list entry and must be stated
   explicitly when true. Implicit "nothing changed" is not acceptable.
 - If the feature depends on existing keys, those keys are still listed so
   the smoke step has a complete set to assert against.
 
-### 2. R2 sync verification rule (head_object evidence)
+### 2. R2 generation verification rule (head_object evidence)
 
 Every key listed under rule 1 must be confirmed present in R2 before the
 feature's deployment smoke is run.
 
-- Run `nbatools-cli pipeline sync-r2 --dry-run` to surface missing or stale
-  keys, then `nbatools-cli pipeline sync-r2` to upload.
+- Run `nbatools-cli pipeline sync-r2 --dry-run` only for legacy comparison.
+  After explicit remote-publication approval, use
+  `pipeline publish-generation --generation-id <unique-id> --target r2`.
 - For each required key, capture `head_object` evidence and record it in
-  the task-scoped active-work handoff receipt: `Bucket`, `Key`, `ContentLength`,
-  `LastModified`, and the `nbatools-md5` metadata value.
+  the task-scoped active-work handoff receipt: `Bucket`, generation-prefixed
+  `Key`, `ContentLength`, `LastModified`, and the `nbatools-sha256` metadata
+  value. Also record the active pointer generation and generation-manifest
+  checksum.
 - A missing or unreachable key is a deploy blocker. Do not proceed to the
   deployment smoke step until every required key returns a clean
   `head_object` response.
@@ -291,7 +318,7 @@ case that exercises the feature against the deployed runtime.
   metadata keys, scope filters present in the payload).
 - The smoke report is captured in `outputs/deployment_smoke/` and
   referenced from the task-scoped active-work handoff receipt.
-- The smoke step runs after R2 sync verification (rule 2) and before the
+- The smoke step runs after R2 generation verification (rule 2) and before the
   feature is treated as shipped. A smoke pass without rule-2 evidence is
   not sufficient: a transient R2 cache hit can hide a missing object.
 
@@ -357,18 +384,20 @@ That is the only new R2 object the opponent-conference filter requires.
 All other inputs (team metadata, season game logs) already shipped under
 existing keys.
 
-#### 6.2 R2 sync verification (head_object evidence)
+#### 6.2 R2 generation verification (head_object evidence)
 
 Use the head-object snippet from
-[Data Sync Before Preview Smoke](#data-sync-before-preview-smoke) above.
-Current release-candidate evidence:
+[Generation Publication Before Preview Smoke](#generation-publication-before-preview-smoke)
+above. Capture evidence for the currently active immutable generation:
 
 ```text
 Bucket=nbatools-data
-Key=raw/teams/team_conference_membership.csv
-ContentLength=4999
-LastModified=2026-05-17T09:03:29+00:00
-nbatools-md5=f9cc9a60c8f659651723a55640966d73
+ActiveGeneration=<generation-id>
+GenerationManifestSha256=<sha256>
+Key=generations/<generation-id>/raw/teams/team_conference_membership.csv
+ContentLength=<bytes>
+LastModified=<timestamp>
+nbatools-sha256=<sha256>
 ```
 
 Any new opponent-conference promotion (new season, new mapping) must

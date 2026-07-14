@@ -19,6 +19,7 @@ The standard season pipeline is:
 2. validate raw tables
 3. build processed tables
 4. write and inspect the versioned validation receipt
+5. publish a validated immutable runtime generation when promotion is approved
 
 This is automated by `backfill-season`.
 
@@ -51,6 +52,31 @@ nbatools-cli processing validate-raw --season 2024-25 --season-type "Regular Sea
 nbatools-cli ops update-manifest --season 2024-25 --season-type "Regular Season"
 nbatools-cli pipeline status --season 2024-25 --season-type "Regular Season"
 ```
+
+## Publish or roll back a runtime generation
+
+```bash
+# Local-only activation
+nbatools-cli pipeline publish-generation --generation-id <unique-id> --target local
+nbatools-cli pipeline rollback-generation --target local
+
+# R2 mutation: run only with explicit publication approval
+nbatools-cli pipeline publish-generation --generation-id <unique-id> --target r2
+nbatools-cli pipeline rollback-generation --target r2
+```
+
+Never reuse a generation ID for changed content. Publication validates all
+staged dataset receipts and file checksums, writes immutable generation paths,
+then atomically switches the active pointer. A partial upload, validation
+failure, or pointer conflict leaves the last-good pointer unchanged.
+
+`pipeline sync-r2 --dry-run` may be used for read-only legacy-key diagnostics.
+Direct non-dry `sync-r2` is disabled and is not a publication path.
+
+For the initial R2 migration, first publish the currently trusted last-good
+snapshot as a baseline generation. Only then stage and publish a changed
+candidate. Automated rollback to unmanifested legacy R2 keys is intentionally
+refused; subsequent rollback targets are immutable and manifest-verified.
 
 ---
 
@@ -201,6 +227,11 @@ Check:
 - `nbatools-cli ops show-manifest`
 - `nbatools-cli pipeline status --season <season> --season-type <type>`
 - `du -sh data`
+
+After the checks pass and promotion is approved, choose a new immutable
+generation ID and run `pipeline publish-generation` for the intended target.
+Do not deploy merely to prove publication logic; local fixtures/fakes are the
+verification boundary during development.
 
 ---
 
