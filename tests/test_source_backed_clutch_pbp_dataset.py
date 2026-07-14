@@ -26,6 +26,10 @@ from nbatools.commands.pipeline.validate_raw import (
 from nbatools.commands.player_game_finder import build_result as build_player_finder
 from nbatools.commands.player_game_summary import build_result as build_player_summary
 from nbatools.commands.season_leaders import build_result as build_season_leaders
+from nbatools.commands.source_invariants import (
+    ExpectedGameTerminalState,
+    apply_play_by_play_trust_decisions,
+)
 from nbatools.commands.team_record import build_team_record_result
 
 pytestmark = pytest.mark.engine
@@ -43,6 +47,8 @@ def _source_row(
     player_name: str = "Jayson Tatum",
     score_home: int = 100,
     score_away: int = 98,
+    action_type: str = "2pt",
+    sub_type: str = "Jump Shot",
 ) -> dict:
     return {
         "gameId": game_id,
@@ -53,82 +59,185 @@ def _source_row(
         "teamTricode": team_abbr,
         "personId": player_id,
         "playerName": player_name,
-        "actionType": "2pt",
-        "subType": "Jump Shot",
+        "actionType": action_type,
+        "subType": sub_type,
         "description": "Tatum 15' pullup jump shot",
         "scoreHome": score_home,
         "scoreAway": score_away,
     }
 
 
-def _normalized_pbp_df() -> pd.DataFrame:
-    return normalize_play_by_play_events(
-        pd.DataFrame(
-            [
-                _source_row(action_number=1, clock="PT05M00.00S"),
-                _source_row(action_number=2, clock="PT04M45.00S", score_home=102),
-            ]
-        ),
+def _trusted_normalized_events(rows: list[dict]) -> pd.DataFrame:
+    normalized = normalize_play_by_play_events(
+        pd.DataFrame(rows),
         season="2099-00",
         season_type="Regular Season",
         source_pull_date="2099-01-01",
+    )
+    states: dict[str, ExpectedGameTerminalState] = {}
+    for game_id, group in normalized.groupby("game_id", sort=False):
+        terminal = group.sort_values("action_number").iloc[-1]
+        states[str(game_id)] = ExpectedGameTerminalState(
+            final_scores=tuple(sorted((int(terminal["score_home"]), int(terminal["score_away"])))),
+            final_period=int(terminal["period"]),
+        )
+    trusted, decisions = apply_play_by_play_trust_decisions(normalized, states)
+    assert not [reasons for reasons in decisions.values() if reasons]
+    return trusted
+
+
+def _paired_team_rows(
+    game_id: str,
+    *,
+    home_team_id: int = 1610612738,
+    home_team_abbr: str = "BOS",
+    away_team_id: int = 1610612743,
+    away_team_abbr: str = "DEN",
+    home_pts: int = 102,
+    away_pts: int = 98,
+    minutes: int = 240,
+) -> list[dict]:
+    margin = home_pts - away_pts
+    return [
+        {
+            "season": "2099-00",
+            "season_type": "Regular Season",
+            "game_id": game_id,
+            "team_id": home_team_id,
+            "team_abbr": home_team_abbr,
+            "team_name": home_team_abbr,
+            "opponent_team_id": away_team_id,
+            "opponent_team_abbr": away_team_abbr,
+            "opponent_team_name": away_team_abbr,
+            "is_home": 1,
+            "is_away": 0,
+            "wl": "W" if margin > 0 else "L",
+            "minutes": minutes,
+            "pts": home_pts,
+            "plus_minus": margin,
+        },
+        {
+            "season": "2099-00",
+            "season_type": "Regular Season",
+            "game_id": game_id,
+            "team_id": away_team_id,
+            "team_abbr": away_team_abbr,
+            "team_name": away_team_abbr,
+            "opponent_team_id": home_team_id,
+            "opponent_team_abbr": home_team_abbr,
+            "opponent_team_name": home_team_abbr,
+            "is_home": 0,
+            "is_away": 1,
+            "wl": "L" if margin > 0 else "W",
+            "minutes": minutes,
+            "pts": away_pts,
+            "plus_minus": -margin,
+        },
+    ]
+
+
+def _normalized_pbp_df() -> pd.DataFrame:
+    return _trusted_normalized_events(
+        [
+            _source_row(action_number=1, clock="PT05M00.00S"),
+            _source_row(action_number=2, clock="PT04M45.00S", score_home=102),
+            _source_row(
+                action_number=3,
+                clock="PT00M00.00S",
+                team_id=0,
+                team_abbr="",
+                player_id=0,
+                player_name="",
+                score_home=102,
+                action_type="period",
+                sub_type="end",
+            ),
+        ]
     )
 
 
 def _clutch_source_events_df() -> pd.DataFrame:
-    return normalize_play_by_play_events(
-        pd.DataFrame(
-            [
-                _source_row(action_number=1, clock="PT05M10.00S", score_home=100, score_away=98),
-                _source_row(action_number=2, clock="PT04M59.00S", score_home=102, score_away=98),
-                _source_row(
-                    action_number=3,
-                    clock="PT04M30.00S",
-                    team_id=1610612743,
-                    team_abbr="DEN",
-                    player_id=203999,
-                    player_name="Nikola Jokic",
-                    score_home=102,
-                    score_away=101,
-                ),
-            ]
-        ),
-        season="2099-00",
-        season_type="Regular Season",
-        source_pull_date="2099-01-01",
+    return _trusted_normalized_events(
+        [
+            _source_row(action_number=1, clock="PT05M10.00S", score_home=100, score_away=98),
+            _source_row(action_number=2, clock="PT04M59.00S", score_home=102, score_away=98),
+            _source_row(
+                action_number=3,
+                clock="PT04M30.00S",
+                team_id=1610612743,
+                team_abbr="DEN",
+                player_id=203999,
+                player_name="Nikola Jokic",
+                score_home=102,
+                score_away=101,
+            ),
+            _source_row(
+                action_number=4,
+                clock="PT00M00.00S",
+                team_id=0,
+                team_abbr="",
+                player_id=0,
+                player_name="",
+                score_home=102,
+                score_away=101,
+                action_type="period",
+                sub_type="end",
+            ),
+        ]
     )
 
 
 def _route_source_events_df() -> pd.DataFrame:
-    return normalize_play_by_play_events(
-        pd.DataFrame(
-            [
-                _source_row(
-                    game_id="G1",
-                    action_number=1,
-                    clock="PT04M59.00S",
-                    score_home=100,
-                    score_away=98,
-                ),
-                _source_row(
-                    game_id="G1",
-                    action_number=2,
-                    clock="PT04M30.00S",
-                    score_home=102,
-                    score_away=98,
-                ),
-                _source_row(
-                    game_id="G2",
-                    action_number=1,
-                    clock="PT04M59.00S",
-                    score_home=110,
-                    score_away=103,
-                ),
-            ]
-        ),
-        season="2099-00",
-        season_type="Regular Season",
-        source_pull_date="2099-01-01",
+    return _trusted_normalized_events(
+        [
+            _source_row(
+                game_id="G1",
+                action_number=1,
+                clock="PT04M59.00S",
+                score_home=100,
+                score_away=98,
+            ),
+            _source_row(
+                game_id="G1",
+                action_number=2,
+                clock="PT04M30.00S",
+                score_home=102,
+                score_away=98,
+            ),
+            _source_row(
+                game_id="G1",
+                action_number=3,
+                clock="PT00M00.00S",
+                team_id=0,
+                team_abbr="",
+                player_id=0,
+                player_name="",
+                score_home=102,
+                score_away=98,
+                action_type="period",
+                sub_type="end",
+            ),
+            _source_row(
+                game_id="G2",
+                action_number=1,
+                clock="PT04M59.00S",
+                score_home=110,
+                score_away=103,
+            ),
+            _source_row(
+                game_id="G2",
+                action_number=2,
+                clock="PT00M00.00S",
+                team_id=0,
+                team_abbr="",
+                player_id=0,
+                player_name="",
+                score_home=110,
+                score_away=103,
+                action_type="period",
+                sub_type="end",
+            ),
+        ]
     )
 
 
@@ -201,12 +310,9 @@ def _write_route_source_files(
             "pts": 31,
         },
     ]
-    common_team = {
+    common_team_stats = {
         "season": "2099-00",
         "season_type": "Regular Season",
-        "team_id": 1610612738,
-        "team_abbr": "BOS",
-        "team_name": "Boston Celtics",
         "minutes": 240,
         "fgm": 44,
         "fga": 90,
@@ -222,33 +328,23 @@ def _write_route_source_files(
         "blk": 5,
         "tov": 11,
         "pf": 18,
-        "plus_minus": 5,
     }
+    paired_team_rows = [
+        *_paired_team_rows("G1", home_pts=102, away_pts=98),
+        *_paired_team_rows(
+            "G2",
+            home_team_id=1610612747,
+            home_team_abbr="LAL",
+            away_team_id=1610612738,
+            away_team_abbr="BOS",
+            home_pts=110,
+            away_pts=103,
+        ),
+    ]
+    game_dates = {"G1": "2099-01-01", "G2": "2099-01-03"}
     team_rows = [
-        {
-            **common_team,
-            "game_id": "G1",
-            "game_date": "2099-01-01",
-            "opponent_team_id": 1610612743,
-            "opponent_team_abbr": "DEN",
-            "opponent_team_name": "Denver Nuggets",
-            "is_home": 1,
-            "is_away": 0,
-            "wl": "W",
-            "pts": 118,
-        },
-        {
-            **common_team,
-            "game_id": "G2",
-            "game_date": "2099-01-03",
-            "opponent_team_id": 1610612747,
-            "opponent_team_abbr": "LAL",
-            "opponent_team_name": "Los Angeles Lakers",
-            "is_home": 0,
-            "is_away": 1,
-            "wl": "L",
-            "pts": 110,
-        },
+        {**common_team_stats, **row, "game_date": game_dates[row["game_id"]]}
+        for row in paired_team_rows
     ]
     pd.DataFrame(player_rows).to_csv(player_dir / "2099-00_regular_season.csv", index=False)
     pd.DataFrame(team_rows).to_csv(team_dir / "2099-00_regular_season.csv", index=False)
@@ -276,14 +372,23 @@ def test_parse_clock_seconds_remaining_accepts_iso_and_scoreboard_formats():
     assert parse_clock_seconds_remaining("4:59") == 299.0
 
 
-def test_normalize_play_by_play_events_marks_trusted_and_parses_score_state():
+def test_normalize_play_by_play_events_requires_terminal_reconciliation_for_trust():
+    pending = normalize_play_by_play_events(
+        pd.DataFrame([_source_row()]),
+        season="2099-00",
+        season_type="Regular Season",
+        source_pull_date="2099-01-01",
+    )
+    assert pending["pbp_source_trusted"].eq(0).all()
+    assert pending["pbp_validation_reason"].eq("expected_final_score_not_validated").all()
+
     df = _normalized_pbp_df()
 
     assert df["pbp_source_trusted"].eq(1).all()
     assert df["pbp_validation_reason"].fillna("").eq("").all()
-    assert df["clock_seconds_remaining"].tolist() == [300.0, 285.0]
-    assert df["score_home"].tolist() == [100, 102]
-    assert df["score_away"].tolist() == [98, 98]
+    assert df["clock_seconds_remaining"].tolist() == [300.0, 285.0, 0.0]
+    assert df["score_home"].tolist() == [100, 102, 102]
+    assert df["score_away"].tolist() == [98, 98, 98]
 
 
 def test_normalize_play_by_play_events_rejects_unparseable_clock():
@@ -320,12 +425,17 @@ def test_load_play_by_play_events_for_seasons_requires_all_files(tmp_path, monke
 def test_load_play_by_play_events_for_seasons_accepts_valid_dataset(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     out_dir = tmp_path / "data/raw/play_by_play_events"
+    team_dir = tmp_path / "data/raw/team_game_stats"
     out_dir.mkdir(parents=True)
+    team_dir.mkdir(parents=True)
     _normalized_pbp_df().to_csv(out_dir / "2099-00_regular_season.csv", index=False)
+    pd.DataFrame(_paired_team_rows("0029900001")).to_csv(
+        team_dir / "2099-00_regular_season.csv", index=False
+    )
 
     loaded = load_play_by_play_events_for_seasons(["2099-00"], "Regular Season")
 
-    assert len(loaded) == 2
+    assert len(loaded) == 3
     assert loaded["game_id"].astype(str).unique().tolist() == ["0029900001"]
 
 
@@ -365,8 +475,15 @@ def test_build_play_by_play_events_backfill_uses_game_sources(monkeypatch):
     monkeypatch.setattr(puller, "game_ids_for_season", lambda season, season_type: ["0029900001"])
     monkeypatch.setattr(
         puller,
+        "expected_terminal_states_for_season",
+        lambda season, season_type: {
+            "29900001": ExpectedGameTerminalState(final_scores=(98, 100), final_period=4)
+        },
+    )
+    monkeypatch.setattr(
+        puller,
         "fetch_play_by_play_events_for_game",
-        lambda game_id: pd.DataFrame([_source_row(game_id=game_id)]),
+        lambda game_id: pd.DataFrame([_source_row(game_id=game_id, clock="PT00M00.00S")]),
     )
 
     df = build_play_by_play_events_backfill("2099-00", "Regular Season")
@@ -419,8 +536,13 @@ def test_load_clutch_stats_for_seasons_accepts_valid_processed_datasets(tmp_path
 def test_build_clutch_stats_for_season_uses_trusted_raw_events(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     raw_dir = tmp_path / "data/raw/play_by_play_events"
+    team_dir = tmp_path / "data/raw/team_game_stats"
     raw_dir.mkdir(parents=True)
+    team_dir.mkdir(parents=True)
     _clutch_source_events_df().to_csv(raw_dir / "2099-00_regular_season.csv", index=False)
+    pd.DataFrame(_paired_team_rows("0029900001", home_pts=102, away_pts=101)).to_csv(
+        team_dir / "2099-00_regular_season.csv", index=False
+    )
 
     player, team = build_clutch_stats_for_season("2099-00", "Regular Season")
 

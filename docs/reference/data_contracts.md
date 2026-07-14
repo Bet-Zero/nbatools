@@ -418,6 +418,16 @@ Contract rules:
   score within five points
 - raw play-by-play rows must have parseable clocks, parseable home/away score
   state, unique event keys, and trusted event ordering
+- normalization alone leaves rows untrusted; a game becomes trusted only after
+  the validator reconciles it with an expected game and the paired whole-game
+  team final scores
+- trusted play-by-play coverage must contain every expected base game, and each
+  game's final action must reach `clock_seconds_remaining=0`, the expected
+  regulation/overtime period, and the same unordered final-score pair as
+  `team_game_stats`
+- missing games, truncated terminal actions, terminal-period drift, or final
+  score disagreement must remain explicitly missing/untrusted; row-local
+  `pbp_source_trusted=1` values are recomputed and cannot override these checks
 - whole-game logs and period-only box-score windows must not be used as clutch
   substitutes
 - route execution may only use derived clutch rows when source trust and
@@ -431,6 +441,10 @@ Contract rules:
   `filter_not_supported` with exact coverage detail rather than partial results
 - rate and efficiency metrics may only ship after their sample denominators are
   validated against the play-by-play derivation
+
+`clutch_seconds` is the span between the maximum and minimum qualifying event
+clock values for that entity-game sample. It is an event-window span, not
+player time-on-court or possession time, and must not be labeled as either.
 
 ---
 
@@ -712,6 +726,17 @@ Recommended uniqueness expectation:
 ### Notes
 
 This is the core team query dataset. Team summary, split, and streak behaviors should be designed around this contract.
+
+Each game must have exactly two reciprocal participant rows. Their team and
+opponent identities must agree with each other and with the canonical `games`
+participants. Final `wl` is derived from the paired points, and canonical team
+`plus_minus` is exactly `pts - opponent_pts`; paired plus-minus values must be
+opposites. The ingestion normalizer replaces upstream fractional or otherwise
+inconsistent team `PLUS_MINUS` values with this score-derived value, while raw
+validation rejects any stored score/WL/plus-minus/identity drift.
+
+Trusted standard-site games have exactly one home and one away row matching the
+canonical designation.
 
 For a neutral game whose canonical `games` row has no trusted home/away
 designation, both participant rows use `is_home=0` and `is_away=0`. This keeps

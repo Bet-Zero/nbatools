@@ -23,6 +23,12 @@ from nbatools.commands.data_utils import (
     TEAM_GAME_PERIOD_REQUIRED_COLUMNS,
     TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS,
 )
+from nbatools.commands.source_invariants import (
+    PLAY_BY_PLAY_COMPLETENESS_REQUIRED_COLUMNS,
+    TEAM_PAIR_REQUIRED_COLUMNS,
+    validate_play_by_play_trust_decisions,
+    validate_team_game_pair_invariants,
+)
 from nbatools.data_source import data_exists, data_path
 
 MANIFEST_SCHEMA_VERSION = 1
@@ -468,6 +474,13 @@ def apply_cross_dataset_coverage(
 
     if not available("team_game_stats"):
         return
+    team_frame = frames["team_game_stats"]
+    if TEAM_PAIR_REQUIRED_COLUMNS.issubset(team_frame.columns):
+        games_frame = frames.get("games") if available("games") else None
+        try:
+            validate_team_game_pair_invariants(team_frame, games=games_frame)
+        except ValueError as exc:
+            _fail(records["team_game_stats"], str(exc))
     team_games = _keys(frames["team_game_stats"], ("game_id",))
     team_keys = _keys(frames["team_game_stats"], ("game_id", "team_id"))
     player_keys = (
@@ -566,9 +579,19 @@ def apply_cross_dataset_coverage(
         )
 
     if available("play_by_play_events"):
+        pbp_frame = frames["play_by_play_events"]
+        if PLAY_BY_PLAY_COMPLETENESS_REQUIRED_COLUMNS.issubset(
+            pbp_frame.columns
+        ) and TEAM_PAIR_REQUIRED_COLUMNS.issubset(team_frame.columns):
+            try:
+                trust_errors = validate_play_by_play_trust_decisions(pbp_frame, team_frame)
+            except ValueError as exc:
+                trust_errors = [str(exc)]
+            for error in trust_errors:
+                _fail(records["play_by_play_events"], error)
         _apply_expected_coverage(
             records["play_by_play_events"],
-            _keys(frames["play_by_play_events"], ("game_id",)),
+            _keys(pbp_frame, ("game_id",)),
             team_games,
             ("game_id",),
         )
