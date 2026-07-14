@@ -88,7 +88,7 @@ beforeEach(() => {
 });
 
 describe("VisualQaPage", () => {
-  it("loads the visual QA corpus even though raw corpus text is not valid JSON", async () => {
+  it("mounts the visual QA corpus without sending queries until a deliberate run", async () => {
     expect(() => JSON.parse(visualQaCorpusRawText)).toThrow();
 
     vi.mocked(postQuery).mockImplementation((query) =>
@@ -97,9 +97,8 @@ describe("VisualQaPage", () => {
 
     render(<VisualQaPage />);
 
-    expect(
-      await screen.findByText("20 / 20 cases completed"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("0 / 20 cases completed")).toBeInTheDocument();
+    expect(postQuery).not.toHaveBeenCalled();
     expect(document.querySelectorAll("[data-visual-case-id]").length).toBe(
       VISUAL_QA_CASES.length,
     );
@@ -118,6 +117,13 @@ describe("VisualQaPage", () => {
         "Position guards chip stays visually tied to the generic leaderboard hero",
       ),
     ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Run live cases" }));
+
+    expect(
+      await screen.findByText("20 / 20 cases completed"),
+    ).toBeInTheDocument();
+    expect(postQuery).toHaveBeenCalledTimes(VISUAL_QA_CASES.length);
   });
 
   it("does not crash when some cases are loading and others hit request errors", async () => {
@@ -138,6 +144,8 @@ describe("VisualQaPage", () => {
     render(<VisualQaPage />);
 
     await screen.findByText("guards_fg_percentage_leaders");
+    expect(postQuery).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Run live cases" }));
 
     const loadingCard = document.querySelector(
       '[data-visual-case-id="guards_fg_percentage_leaders"]',
@@ -178,6 +186,7 @@ describe("VisualQaPage", () => {
 
     render(<VisualQaPage />);
 
+    fireEvent.click(screen.getByRole("button", { name: "Run live cases" }));
     await screen.findByText("20 / 20 cases completed");
 
     const button = screen.getByRole("button", {
@@ -201,6 +210,7 @@ describe("VisualQaPage", () => {
 
     render(<VisualQaPage />);
 
+    fireEvent.click(screen.getByRole("button", { name: "Run live cases" }));
     await screen.findByText("20 / 20 cases completed");
 
     const page = document.querySelector("main");
@@ -229,5 +239,6 @@ describe("VisualQaPage", () => {
         name: "Frontend Visual QA Wave 1",
       }),
     ).toBeInTheDocument();
+    expect(postQuery).not.toHaveBeenCalled();
   });
 });

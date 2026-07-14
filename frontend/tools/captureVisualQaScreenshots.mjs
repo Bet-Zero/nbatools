@@ -407,6 +407,7 @@ async function captureViewport(browser, options, runDirectory, viewport) {
       throw new Error(`${viewport.label} could not load /visual-qa: ${status}.`);
     }
 
+    await page.getByRole("button", { name: "Run live cases" }).click();
     await waitForCompletedRun(page);
     await waitForCaptureAssets(page);
 

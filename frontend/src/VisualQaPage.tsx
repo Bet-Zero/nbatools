@@ -153,14 +153,12 @@ export default function VisualQaPage() {
   useEffect(() => {
     const abortControllers = abortControllersRef.current;
 
-    void runCases();
-
     return () => {
       runTokenRef.current += 1;
       abortControllers.forEach((controller) => controller.abort());
       abortControllers.clear();
     };
-  }, [runCases]);
+  }, []);
 
   const statusCounts = useMemo(() => {
     return VISUAL_QA_CASES.reduce(
@@ -198,6 +196,11 @@ export default function VisualQaPage() {
   const captureButtonLabel = captureProgress
     ? `Capturing ${captureProgress.current}/${captureProgress.total}...`
     : "Download current viewport screenshots ZIP";
+  const runButtonLabel = runProgress.isRunning
+    ? "Running live cases..."
+    : runProgress.completed > 0
+      ? "Reload live cases"
+      : "Run live cases";
 
   function registerCaptureTarget(caseId: string, element: HTMLElement | null) {
     if (element) {
@@ -258,9 +261,7 @@ export default function VisualQaPage() {
               onClick={() => void runCases()}
               disabled={runProgress.isRunning}
             >
-              {runProgress.isRunning
-                ? "Refreshing live cases..."
-                : "Reload live cases"}
+              {runButtonLabel}
             </button>
             <button
               className={`${styles.button} ${styles.buttonSecondary}`}
