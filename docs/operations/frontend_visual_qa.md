@@ -49,13 +49,15 @@ have document-level horizontal overflow.
 2. Start the local API shell that serves `/query` and the built frontend.
 3. Open `http://127.0.0.1:8000/visual-qa`, or use the frontend dev server during
    active UI iteration.
-4. Wait for all requested cases to finish loading through the live query path.
-5. Review the desktop pass at approximately `1280px`.
-6. Review the mobile pass at approximately `390px`.
-7. Record pass/fail notes, blocking findings, and deferred polish with the
+4. Confirm that opening the route has sent no query requests, then choose
+   **Run live cases** to start the deliberate corpus run.
+5. Wait for all requested cases to finish loading through the live query path.
+6. Review the desktop pass at approximately `1280px`.
+7. Review the mobile pass at approximately `390px`.
+8. Record pass/fail notes, blocking findings, and deferred polish with the
    active task materials according to
    [`working_and_archive_policy.md`](working_and_archive_policy.md).
-8. Promote durable conclusions into `docs/` when the review changes a
+9. Promote durable conclusions into `docs/` when the review changes a
    long-lived runbook, contract, or verified current-state statement.
 
 Use the `/visual-qa` page's in-browser ZIP capture as a manual fallback when a
@@ -96,6 +98,10 @@ outputs/visual_qa_screenshots/<run_id>/
     cards/
       <case_id>.png
 ```
+
+The capture command opens the route and deliberately activates **Run live
+cases** before waiting for completion. Merely mounting `/visual-qa` must issue
+zero `POST /query` requests.
 
 The manifest is the run checklist: use it to confirm the run ID, base URL,
 capture timestamp, viewport dimensions, observed case IDs, capture order, and
