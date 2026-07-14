@@ -88,6 +88,29 @@ unreadable pointer fails closed rather than combining generations.
 tests and operations. It selects the same immutable directory/prefix layout;
 it is not a substitute for publishing and switching the active pointer.
 
+## Bounded DataFrame loader cache
+
+Data-backed command loaders share one process-local, thread-safe LRU cache.
+Entries are keyed by dataset, pinned generation, normalized slice parameters,
+and one season; a multi-season query concatenates those season frames for its
+caller without retaining another full-range entry. This keeps overlapping
+queries reusable without allowing arbitrary season-range tuples to accumulate.
+
+The cache is bounded by both retained entry count and the deep pandas memory
+size of its frames. The defaults are 16 entries and 128 MiB. Operators may set
+`NBATOOLS_FRAME_CACHE_MAX_ENTRIES` and `NBATOOLS_FRAME_CACHE_MAX_BYTES` before
+process startup to use tighter deployment-specific budgets. A zero value
+disables retention for that dimension, and any frame larger than the byte
+budget is returned without being cached.
+
+Concurrent misses for the same key are coalesced into one load. Command
+loaders return caller-owned results, so downstream mutations cannot alter a
+retained season frame. `frame_cache_info()` exposes hit, miss, coalescing,
+eviction, oversize-skip, entry, and byte counters for runtime diagnostics;
+`clear_frame_cache()` is available for controlled tests and operations. The
+cache is an optimization only: immutable generation keys remain the
+correctness boundary for data refreshes.
+
 ## What calls the service
 
 | Caller                   | Entry point                                                | Notes                                                                |

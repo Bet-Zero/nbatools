@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import unicodedata
 from collections.abc import Callable
-from functools import cache
 from typing import Any
 
 import pandas as pd
 
 from nbatools.commands.source_invariants import validate_play_by_play_trust_decisions
 from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
+from nbatools.dataframe_cache import FRAME_CACHE
 
 CLUTCH_TIME_REMAINING_START = 300
 CLUTCH_SCORE_MARGIN_MAX = 5
@@ -566,38 +566,85 @@ def describe_opponent_filter(
     return f"{len(values)} opponents ({preview}, ...)"
 
 
-@cache
+def _combine_cached_frames(
+    frames: list[pd.DataFrame],
+    *,
+    empty_factory: Callable[[], pd.DataFrame] | None = None,
+) -> pd.DataFrame:
+    """Return caller-owned results without retaining a combined range frame."""
+    if not frames:
+        if empty_factory is None:
+            raise ValueError("At least one cached season frame is required")
+        return empty_factory()
+    if len(frames) == 1:
+        return frames[0].copy()
+    return pd.concat(frames, ignore_index=True)
+
+
+def _season_frame_cache_key(
+    dataset: str,
+    data_root: str,
+    season_type: str,
+    season: str,
+) -> tuple[str, str, str, str]:
+    return (dataset, data_root, normalize_season_type(season_type), season)
+
+
+def _require_season_files(
+    seasons: list[str],
+    season_type: str,
+    *,
+    directory: str,
+    dataset: str,
+) -> None:
+    safe = normalize_season_type(season_type)
+    missing_paths = [
+        f"{directory}/{season}_{safe}.csv"
+        for season in seasons
+        if not data_exists(f"{directory}/{season}_{safe}.csv")
+    ]
+    if missing_paths:
+        raise FileNotFoundError(
+            f"Missing {dataset} files for requested slice: " + ", ".join(missing_paths)
+        )
+
+
 def _load_latest_standings_snapshot_cached(season: str, data_root: str) -> pd.DataFrame:
-    path = f"data/raw/standings_snapshots/{season}_regular_season.csv"
-    if not data_exists(path):
-        raise FileNotFoundError(f"Missing standings snapshot file: {path}")
-    df = data_read_csv(path)
-    if "snapshot_date" in df.columns:
-        df["_snapshot_date"] = pd.to_datetime(df["snapshot_date"], errors="coerce")
-        latest = df["_snapshot_date"].max()
-        if pd.notna(latest):
-            df = df[df["_snapshot_date"] == latest].copy()
-        df = df.drop(columns=["_snapshot_date"])
-    return df
+    def load() -> pd.DataFrame:
+        path = f"data/raw/standings_snapshots/{season}_regular_season.csv"
+        if not data_exists(path):
+            raise FileNotFoundError(f"Missing standings snapshot file: {path}")
+        df = data_read_csv(path)
+        if "snapshot_date" in df.columns:
+            df["_snapshot_date"] = pd.to_datetime(df["snapshot_date"], errors="coerce")
+            latest = df["_snapshot_date"].max()
+            if pd.notna(latest):
+                df = df[df["_snapshot_date"] == latest].copy()
+            df = df.drop(columns=["_snapshot_date"])
+        return df
+
+    return FRAME_CACHE.get_or_load(("latest_standings", data_root, season), load)
 
 
 def load_latest_standings_snapshot(season: str) -> pd.DataFrame:
     return _load_latest_standings_snapshot_cached(season, data_source_cache_key()).copy()
 
 
-@cache
 def _load_latest_team_advanced_cached(season: str, data_root: str) -> pd.DataFrame:
-    path = f"data/raw/team_season_advanced/{season}_regular_season.csv"
-    if not data_exists(path):
-        raise FileNotFoundError(f"Missing team season advanced file: {path}")
-    df = data_read_csv(path)
-    if "as_of_date" in df.columns:
-        df["_as_of_date"] = pd.to_datetime(df["as_of_date"], errors="coerce")
-        latest = df["_as_of_date"].max()
-        if pd.notna(latest):
-            df = df[df["_as_of_date"] == latest].copy()
-        df = df.drop(columns=["_as_of_date"])
-    return df
+    def load() -> pd.DataFrame:
+        path = f"data/raw/team_season_advanced/{season}_regular_season.csv"
+        if not data_exists(path):
+            raise FileNotFoundError(f"Missing team season advanced file: {path}")
+        df = data_read_csv(path)
+        if "as_of_date" in df.columns:
+            df["_as_of_date"] = pd.to_datetime(df["as_of_date"], errors="coerce")
+            latest = df["_as_of_date"].max()
+            if pd.notna(latest):
+                df = df[df["_as_of_date"] == latest].copy()
+            df = df.drop(columns=["_as_of_date"])
+        return df
+
+    return FRAME_CACHE.get_or_load(("latest_team_advanced", data_root, season), load)
 
 
 def load_latest_team_advanced(season: str) -> pd.DataFrame:
@@ -621,35 +668,41 @@ def _normalize_team_conference_trust_flags(series: pd.Series) -> pd.Series:
     return normalized.astype(int)
 
 
-@cache
 def _load_team_conference_membership_cached(data_root: str) -> pd.DataFrame:
-    path = "data/raw/teams/team_conference_membership.csv"
-    if not data_exists(path):
-        raise FileNotFoundError(f"Missing team conference membership file: {path}")
-    df = data_read_csv(path)
-    missing = [col for col in TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS if col not in df.columns]
-    if missing:
-        raise ValueError(f"team_conference_membership missing required columns: {missing}")
+    def load() -> pd.DataFrame:
+        path = "data/raw/teams/team_conference_membership.csv"
+        if not data_exists(path):
+            raise FileNotFoundError(f"Missing team conference membership file: {path}")
+        df = data_read_csv(path)
+        missing = [
+            col for col in TEAM_CONFERENCE_MEMBERSHIP_REQUIRED_COLUMNS if col not in df.columns
+        ]
+        if missing:
+            raise ValueError(f"team_conference_membership missing required columns: {missing}")
 
-    df = df.copy()
-    for col in ("season", "team_abbr", "conference", "division", "source"):
-        df[col] = df[col].fillna("").astype(str).str.strip()
-    df["team_abbr"] = df["team_abbr"].str.upper()
-    df["team_id"] = pd.to_numeric(df["team_id"], errors="coerce").astype("Int64")
-    df["coverage_trusted"] = _normalize_team_conference_trust_flags(df["coverage_trusted"])
+        df = df.copy()
+        for col in ("season", "team_abbr", "conference", "division", "source"):
+            df[col] = df[col].fillna("").astype(str).str.strip()
+        df["team_abbr"] = df["team_abbr"].str.upper()
+        df["team_id"] = pd.to_numeric(df["team_id"], errors="coerce").astype("Int64")
+        df["coverage_trusted"] = _normalize_team_conference_trust_flags(df["coverage_trusted"])
 
-    if df.duplicated(subset=["season", "team_abbr"]).any():
-        raise ValueError("Duplicate (season, team_abbr) in team_conference_membership")
-    if df[["season", "team_abbr", "conference", "division", "source"]].eq("").any().any():
-        raise ValueError("team_conference_membership has blank required text fields")
-    if df["team_id"].isna().any():
-        raise ValueError("team_conference_membership team_id must be present")
-    if not df["conference"].isin(["East", "West"]).all():
-        raise ValueError("team_conference_membership conference must be East or West")
-    if not df["division"].isin(NBA_DIVISIONS).all():
-        raise ValueError("team_conference_membership division must be a recognized NBA division")
+        if df.duplicated(subset=["season", "team_abbr"]).any():
+            raise ValueError("Duplicate (season, team_abbr) in team_conference_membership")
+        if df[["season", "team_abbr", "conference", "division", "source"]].eq("").any().any():
+            raise ValueError("team_conference_membership has blank required text fields")
+        if df["team_id"].isna().any():
+            raise ValueError("team_conference_membership team_id must be present")
+        if not df["conference"].isin(["East", "West"]).all():
+            raise ValueError("team_conference_membership conference must be East or West")
+        if not df["division"].isin(NBA_DIVISIONS).all():
+            raise ValueError(
+                "team_conference_membership division must be a recognized NBA division"
+            )
 
-    return df
+        return df
+
+    return FRAME_CACHE.get_or_load(("team_conference_membership", data_root), load)
 
 
 def load_team_conference_membership() -> pd.DataFrame:
@@ -808,45 +861,37 @@ def resolve_opponent_quality_teams(
     return sorted(resolved)
 
 
-@cache
-def _load_team_games_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
-) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-
-    for season in seasons:
+def _load_team_games_cached(season: str, season_type: str, data_root: str) -> pd.DataFrame:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/team_game_stats/{season}_{safe}.csv"
-        if not data_exists(path):
-            continue
         df = data_read_csv(path)
-        df = add_advanced_pct_columns(df)
-        frames.append(df)
+        return add_advanced_pct_columns(df)
 
-    if not frames:
-        joined = ", ".join(seasons)
-        raise FileNotFoundError(f"No team_game_stats files found for seasons: {joined}")
-
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("team_games", data_root, season_type, season), load
+    )
 
 
 def load_team_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load and concatenate team_game_stats CSVs for the given seasons."""
-    return _load_team_games_cached(tuple(seasons), season_type, data_source_cache_key()).copy()
-
-
-@cache
-def _load_player_games_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
-) -> pd.DataFrame:
+    data_root = data_source_cache_key()
     safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
+    frames = [
+        _load_team_games_cached(season, season_type, data_root)
+        for season in seasons
+        if data_exists(f"data/raw/team_game_stats/{season}_{safe}.csv")
+    ]
+    if not frames:
+        joined = ", ".join(seasons)
+        raise FileNotFoundError(f"No team_game_stats files found for seasons: {joined}")
+    return _combine_cached_frames(frames)
 
-    for season in seasons:
+
+def _load_player_games_cached(season: str, season_type: str, data_root: str) -> pd.DataFrame:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/player_game_stats/{season}_{safe}.csv"
-        if not data_exists(path):
-            continue
-
         df = data_read_csv(path)
 
         team_stats_path = f"data/raw/team_game_stats/{season}_{safe}.csv"
@@ -864,22 +909,26 @@ def _load_player_games_cached(
             df = df.drop(columns=["wl_team"])
 
         df = add_advanced_pct_columns(df)
-        frames.append(df)
+        return add_usage_ast_reb_rate_columns(df, seasons=[season], season_type=season_type)
 
-    if not frames:
-        joined = ", ".join(seasons)
-        raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")
-
-    out = pd.concat(frames, ignore_index=True)
-    out = add_usage_ast_reb_rate_columns(
-        out, seasons=seasons, season_type=season_type, data_root=data_root
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("player_games", data_root, season_type, season), load
     )
-    return out
 
 
 def load_player_games_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load player_game_stats CSVs, merge win/loss from team stats, add pct columns."""
-    return _load_player_games_cached(tuple(seasons), season_type, data_source_cache_key()).copy()
+    data_root = data_source_cache_key()
+    safe = normalize_season_type(season_type)
+    frames = [
+        _load_player_games_cached(season, season_type, data_root)
+        for season in seasons
+        if data_exists(f"data/raw/player_game_stats/{season}_{safe}.csv")
+    ]
+    if not frames:
+        joined = ", ".join(seasons)
+        raise FileNotFoundError(f"No player_game_stats files found for seasons: {joined}")
+    return _combine_cached_frames(frames)
 
 
 def _empty_player_game_period_df() -> pd.DataFrame:
@@ -891,20 +940,12 @@ def _empty_player_game_period_df() -> pd.DataFrame:
     )
 
 
-@cache
 def _load_player_game_period_stats_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
-
-    for season in seasons:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/player_game_period_stats/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
-
         df = data_read_csv(path)
         missing = [col for col in PLAYER_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
@@ -966,22 +1007,26 @@ def _load_player_game_period_stats_cached(
             raise ValueError("player_game_period_stats source_end_period mismatch")
 
         df = add_advanced_pct_columns(df)
-        frames.append(df)
+        return df
 
-    if missing_paths:
-        raise FileNotFoundError(
-            "Missing player_game_period_stats files for requested slice: "
-            + ", ".join(missing_paths)
-        )
-    if not frames:
-        return _empty_player_game_period_df()
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("player_game_period_stats", data_root, season_type, season),
+        load,
+    )
 
 
 def load_player_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    return _load_player_game_period_stats_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/raw/player_game_period_stats",
+        dataset="player_game_period_stats",
+    )
+    frames = [
+        _load_player_game_period_stats_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_player_game_period_df)
 
 
 def _empty_team_game_period_df() -> pd.DataFrame:
@@ -993,20 +1038,12 @@ def _empty_team_game_period_df() -> pd.DataFrame:
     )
 
 
-@cache
 def _load_team_game_period_stats_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
-
-    for season in seasons:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/team_game_period_stats/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
-
         df = data_read_csv(path)
         missing = [col for col in TEAM_GAME_PERIOD_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
@@ -1063,41 +1100,38 @@ def _load_team_game_period_stats_cached(
             raise ValueError("team_game_period_stats source_end_period mismatch")
 
         df = add_advanced_pct_columns(df)
-        frames.append(df)
+        return df
 
-    if missing_paths:
-        raise FileNotFoundError(
-            "Missing team_game_period_stats files for requested slice: " + ", ".join(missing_paths)
-        )
-    if not frames:
-        return _empty_team_game_period_df()
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("team_game_period_stats", data_root, season_type, season),
+        load,
+    )
 
 
 def load_team_game_period_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
-    return _load_team_game_period_stats_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/raw/team_game_period_stats",
+        dataset="team_game_period_stats",
+    )
+    frames = [
+        _load_team_game_period_stats_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_team_game_period_df)
 
 
 def _empty_schedule_context_features_df() -> pd.DataFrame:
     return pd.DataFrame(columns=SCHEDULE_CONTEXT_REQUIRED_COLUMNS)
 
 
-@cache
 def _load_schedule_context_features_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
-
-    for season in seasons:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/processed/schedule_context_features/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
-
         df = data_read_csv(path)
         missing = [col for col in SCHEDULE_CONTEXT_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
@@ -1137,45 +1171,41 @@ def _load_schedule_context_features_cached(
         if not df["rest_advantage"].fillna("unknown").isin(rest_states).all():
             raise ValueError("schedule_context_features rest_advantage has unsupported values")
 
-        frames.append(df)
+        return df
 
-    if missing_paths:
-        raise FileNotFoundError(
-            "Missing schedule_context_features files for requested slice: "
-            + ", ".join(missing_paths)
-        )
-    if not frames:
-        return _empty_schedule_context_features_df()
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("schedule_context_features", data_root, season_type, season),
+        load,
+    )
 
 
 def load_schedule_context_features_for_seasons(
     seasons: list[str], season_type: str
 ) -> pd.DataFrame:
     """Load validated team-game schedule-context features for the given seasons."""
-    return _load_schedule_context_features_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/processed/schedule_context_features",
+        dataset="schedule_context_features",
+    )
+    frames = [
+        _load_schedule_context_features_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_schedule_context_features_df)
 
 
 def _empty_team_player_on_off_summary_df() -> pd.DataFrame:
     return pd.DataFrame(columns=TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS)
 
 
-@cache
 def _load_team_player_on_off_summary_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
-
-    for season in seasons:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/team_player_on_off_summary/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
-
         df = data_read_csv(path)
         missing = [col for col in TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
@@ -1209,25 +1239,30 @@ def _load_team_player_on_off_summary_cached(
         if not df["coverage_trusted"].dropna().isin([0, 1]).all():
             raise ValueError("team_player_on_off_summary coverage_trusted must be 0/1")
 
-        frames.append(df)
+        return df
 
-    if missing_paths:
-        raise FileNotFoundError(
-            "Missing team_player_on_off_summary files for requested slice: "
-            + ", ".join(missing_paths)
-        )
-    if not frames:
-        return _empty_team_player_on_off_summary_df()
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("team_player_on_off_summary", data_root, season_type, season),
+        load,
+    )
 
 
 def load_team_player_on_off_summary_for_seasons(
     seasons: list[str], season_type: str
 ) -> pd.DataFrame:
     """Load validated team/player on-off summary rows for the given seasons."""
-    return _load_team_player_on_off_summary_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/raw/team_player_on_off_summary",
+        dataset="team_player_on_off_summary",
+    )
+    frames = [
+        _load_team_player_on_off_summary_cached(season, season_type, data_root)
+        for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_team_player_on_off_summary_df)
 
 
 def _empty_league_lineup_viz_df() -> pd.DataFrame:
@@ -1245,20 +1280,10 @@ def _normalize_lineup_member(value: object) -> str:
     )
 
 
-@cache
-def _load_league_lineup_viz_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
-) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
-
-    for season in seasons:
+def _load_league_lineup_viz_cached(season: str, season_type: str, data_root: str) -> pd.DataFrame:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/league_lineup_viz/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
-
         df = data_read_csv(path)
         missing = [col for col in LEAGUE_LINEUP_VIZ_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
@@ -1303,22 +1328,25 @@ def _load_league_lineup_viz_cached(
         if not df.loc[~trusted, "coverage_validation_reason"].fillna("").ne("").all():
             raise ValueError("Untrusted lineup rows must explain coverage_validation_reason")
 
-        frames.append(df)
+        return df
 
-    if missing_paths:
-        raise FileNotFoundError(
-            "Missing league_lineup_viz files for requested slice: " + ", ".join(missing_paths)
-        )
-    if not frames:
-        return _empty_league_lineup_viz_df()
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("league_lineup_viz", data_root, season_type, season),
+        load,
+    )
 
 
 def load_league_lineup_viz_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated lineup-unit rows for the given seasons."""
-    return _load_league_lineup_viz_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/raw/league_lineup_viz",
+        dataset="league_lineup_viz",
+    )
+    frames = [_load_league_lineup_viz_cached(season, season_type, data_root) for season in seasons]
+    return _combine_cached_frames(frames, empty_factory=_empty_league_lineup_viz_df)
 
 
 def select_trusted_league_lineup_viz_rows(
@@ -1382,20 +1410,10 @@ def _empty_play_by_play_events_df() -> pd.DataFrame:
     return pd.DataFrame(columns=PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS)
 
 
-@cache
-def _load_play_by_play_events_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
-) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
-
-    for season in seasons:
+def _load_play_by_play_events_cached(season: str, season_type: str, data_root: str) -> pd.DataFrame:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/play_by_play_events/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
-
         df = data_read_csv(path, dtype={"game_id": str})
         missing = [col for col in PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS if col not in df.columns]
         if missing:
@@ -1452,22 +1470,27 @@ def _load_play_by_play_events_cached(
                 + "; ".join(decision_mismatches)
             )
 
-        frames.append(df)
+        return df
 
-    if missing_paths:
-        raise FileNotFoundError(
-            "Missing play_by_play_events files for requested slice: " + ", ".join(missing_paths)
-        )
-    if not frames:
-        return _empty_play_by_play_events_df()
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("play_by_play_events", data_root, season_type, season),
+        load,
+    )
 
 
 def load_play_by_play_events_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated play-by-play event rows for the given seasons."""
-    return _load_play_by_play_events_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/raw/play_by_play_events",
+        dataset="play_by_play_events",
+    )
+    frames = [
+        _load_play_by_play_events_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_play_by_play_events_df)
 
 
 def select_trusted_play_by_play_events(
@@ -1516,104 +1539,105 @@ def _empty_team_game_clutch_stats_df() -> pd.DataFrame:
 
 def _load_clutch_stats_files(
     *,
-    seasons: tuple[str, ...],
+    season: str,
     season_type: str,
-    data_root: str,
     dataset: str,
     required_columns: list[str],
     key_columns: list[str],
 ) -> pd.DataFrame:
     safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-    missing_paths: list[str] = []
+    path = f"data/processed/{dataset}/{season}_{safe}.csv"
+    df = data_read_csv(path, dtype={"game_id": str})
+    missing = [col for col in required_columns if col not in df.columns]
+    if missing:
+        raise ValueError(f"{dataset} missing required columns: {missing}")
+    if df.duplicated(subset=key_columns).any():
+        raise ValueError(f"Duplicate {tuple(key_columns)} in {dataset}")
 
-    for season in seasons:
-        path = f"data/processed/{dataset}/{season}_{safe}.csv"
-        if not data_exists(path):
-            missing_paths.append(str(path))
-            continue
+    numeric_cols = [
+        "team_id",
+        "clutch_window",
+        "clutch_time_remaining_start",
+        "clutch_score_margin_max",
+        "clutch_events",
+        "clutch_seconds",
+        "pts",
+        "clutch_source_trusted",
+    ]
+    if "player_id" in df.columns:
+        numeric_cols.append("player_id")
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        df = data_read_csv(path, dtype={"game_id": str})
-        missing = [col for col in required_columns if col not in df.columns]
-        if missing:
-            raise ValueError(f"{dataset} missing required columns: {missing}")
-        if df.duplicated(subset=key_columns).any():
-            raise ValueError(f"Duplicate {tuple(key_columns)} in {dataset}")
+    if not df["clutch_source_trusted"].dropna().isin([0, 1]).all():
+        raise ValueError(f"{dataset} clutch_source_trusted must be 0/1")
+    trusted = df["clutch_source_trusted"].eq(1)
+    if not df.loc[trusted, "clutch_validation_reason"].fillna("").eq("").all():
+        raise ValueError(f"Trusted {dataset} rows must have blank clutch_validation_reason")
+    if not df.loc[~trusted, "clutch_validation_reason"].fillna("").ne("").all():
+        raise ValueError(f"Untrusted {dataset} rows must explain clutch_validation_reason")
 
-        numeric_cols = [
-            "team_id",
-            "clutch_window",
-            "clutch_time_remaining_start",
-            "clutch_score_margin_max",
-            "clutch_events",
-            "clutch_seconds",
-            "pts",
-            "clutch_source_trusted",
-        ]
-        if "player_id" in df.columns:
-            numeric_cols.append("player_id")
-        for col in numeric_cols:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-
-        if not df["clutch_source_trusted"].dropna().isin([0, 1]).all():
-            raise ValueError(f"{dataset} clutch_source_trusted must be 0/1")
-        trusted = df["clutch_source_trusted"].eq(1)
-        if not df.loc[trusted, "clutch_validation_reason"].fillna("").eq("").all():
-            raise ValueError(f"Trusted {dataset} rows must have blank clutch_validation_reason")
-        if not df.loc[~trusted, "clutch_validation_reason"].fillna("").ne("").all():
-            raise ValueError(f"Untrusted {dataset} rows must explain clutch_validation_reason")
-
-        frames.append(df)
-
-    if missing_paths:
-        raise FileNotFoundError(
-            f"Missing {dataset} files for requested slice: " + ", ".join(missing_paths)
-        )
-    return (
-        pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=required_columns)
-    )
+    return df
 
 
-@cache
 def _load_player_game_clutch_stats_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    return _load_clutch_stats_files(
-        seasons=seasons,
-        season_type=season_type,
-        data_root=data_root,
-        dataset="player_game_clutch_stats",
-        required_columns=PLAYER_GAME_CLUTCH_REQUIRED_COLUMNS,
-        key_columns=["season", "season_type", "game_id", "team_id", "player_id"],
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("player_game_clutch_stats", data_root, season_type, season),
+        lambda: _load_clutch_stats_files(
+            season=season,
+            season_type=season_type,
+            dataset="player_game_clutch_stats",
+            required_columns=PLAYER_GAME_CLUTCH_REQUIRED_COLUMNS,
+            key_columns=["season", "season_type", "game_id", "team_id", "player_id"],
+        ),
     )
 
 
 def load_player_game_clutch_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated player-game clutch stats for the given seasons."""
-    return _load_player_game_clutch_stats_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/processed/player_game_clutch_stats",
+        dataset="player_game_clutch_stats",
+    )
+    frames = [
+        _load_player_game_clutch_stats_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_player_game_clutch_stats_df)
 
 
-@cache
 def _load_team_game_clutch_stats_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    return _load_clutch_stats_files(
-        seasons=seasons,
-        season_type=season_type,
-        data_root=data_root,
-        dataset="team_game_clutch_stats",
-        required_columns=TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
-        key_columns=["season", "season_type", "game_id", "team_id"],
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("team_game_clutch_stats", data_root, season_type, season),
+        lambda: _load_clutch_stats_files(
+            season=season,
+            season_type=season_type,
+            dataset="team_game_clutch_stats",
+            required_columns=TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
+            key_columns=["season", "season_type", "game_id", "team_id"],
+        ),
     )
 
 
 def load_team_game_clutch_stats_for_seasons(seasons: list[str], season_type: str) -> pd.DataFrame:
     """Load validated team-game clutch stats for the given seasons."""
-    return _load_team_game_clutch_stats_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    _require_season_files(
+        seasons,
+        season_type,
+        directory="data/processed/team_game_clutch_stats",
+        dataset="team_game_clutch_stats",
+    )
+    frames = [
+        _load_team_game_clutch_stats_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_team_game_clutch_stats_df)
 
 
 def build_clutch_filter_coverage_note(reason: str | None = None) -> str:
@@ -2050,17 +2074,14 @@ def _empty_player_game_starter_roles_df() -> pd.DataFrame:
     )
 
 
-@cache
 def _load_player_game_starter_roles_cached(
-    seasons: tuple[str, ...], season_type: str, data_root: str
+    season: str, season_type: str, data_root: str
 ) -> pd.DataFrame:
-    safe = normalize_season_type(season_type)
-    frames: list[pd.DataFrame] = []
-
-    for season in seasons:
+    def load() -> pd.DataFrame:
+        safe = normalize_season_type(season_type)
         path = f"data/raw/player_game_starter_roles/{season}_{safe}.csv"
         if not data_exists(path):
-            continue
+            return _empty_player_game_starter_roles_df()
 
         df = data_read_csv(path)
         missing = [
@@ -2081,21 +2102,23 @@ def _load_player_game_starter_roles_cached(
         ):
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
-        frames.append(df)
+        return df
 
-    if not frames:
-        return _empty_player_game_starter_roles_df()
-
-    return pd.concat(frames, ignore_index=True)
+    return FRAME_CACHE.get_or_load(
+        _season_frame_cache_key("player_game_starter_roles", data_root, season_type, season),
+        load,
+    )
 
 
 def load_player_game_starter_roles_for_seasons(
     seasons: list[str], season_type: str
 ) -> pd.DataFrame:
     """Load the optional starter-role dataset for the given seasons."""
-    return _load_player_game_starter_roles_cached(
-        tuple(seasons), season_type, data_source_cache_key()
-    ).copy()
+    data_root = data_source_cache_key()
+    frames = [
+        _load_player_game_starter_roles_cached(season, season_type, data_root) for season in seasons
+    ]
+    return _combine_cached_frames(frames, empty_factory=_empty_player_game_starter_roles_df)
 
 
 def apply_player_role_filter(
@@ -2252,7 +2275,9 @@ def filter_with_player(
 
 
 def add_usage_ast_reb_rate_columns(
-    df: pd.DataFrame, seasons: list[str] | tuple[str, ...], season_type: str, data_root: str = ""
+    df: pd.DataFrame,
+    seasons: list[str] | tuple[str, ...],
+    season_type: str,
 ) -> pd.DataFrame:
     """Merge usage/ast/reb rate columns from player_season_advanced files."""
     out = df.copy()
