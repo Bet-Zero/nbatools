@@ -1278,6 +1278,34 @@ existence or a legacy completeness bit is not authoritative validation.
 Receipt creation is the final validation step after raw validation and
 processed builds. It does not rebuild, refresh, upload, or promote datasets.
 
+### Runtime generation-selection contract
+
+Validation-receipt generation IDs describe one season/type slice. Runtime
+publication uses a separate active generation that identifies a coherent
+whole-data snapshot. The active pointer is a JSON object at
+`data/metadata/active_generation.json` for local data or
+`metadata/active_generation.json` in R2:
+
+```json
+{"generation_id": "<immutable-generation-id>"}
+```
+
+When the pointer is present, every logical runtime path is resolved beneath
+`data/generations/<generation_id>/` locally or
+`generations/<generation_id>/` in R2. The generation ID may contain letters,
+digits, `.`, `_`, and `-`; path separators are rejected. A missing pointer
+selects legacy canonical paths so existing unpublished local data remains
+readable. A malformed or unreadable pointer is an error and must not fall back
+to a potentially mixed snapshot.
+
+Natural and structured query entry points pin the selected generation for the
+entire request. File downloads, DataFrame loader caches, query-result identity
+lookups, and parser entity indexes all include that pinned source generation
+in their cache identity. A pointer switch affects only later requests; an
+in-flight request continues reading its original immutable directory or
+prefix. Publication and pointer-switch requirements are operational concerns
+and do not change the per-slice validation receipt contract above.
+
 ## 9. Command-to-dataset mapping summary
 
 ### Player query surface

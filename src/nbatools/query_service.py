@@ -66,7 +66,12 @@ from nbatools.commands.structured_results import (  # noqa: F401
     StreakResult,
     SummaryResult,
 )
-from nbatools.data_source import data_glob, data_read_csv_dicts
+from nbatools.data_source import (
+    data_generation_context,
+    data_glob,
+    data_read_csv_dicts,
+    data_source_cache_key,
+)
 
 _COUNT_THRESHOLD_EPSILON = 0.0001
 
@@ -137,7 +142,7 @@ def _read_csv_dicts(path: Path) -> list[dict[str, str]]:
 
 
 @lru_cache(maxsize=1)
-def _player_identity_lookup() -> dict[str, dict[str, Any]]:
+def _player_identity_lookup(generation_key: str) -> dict[str, dict[str, Any]]:
     lookup: dict[str, dict[str, Any]] = {}
     for csv_path in data_glob("raw/rosters/*.csv"):
         for row in _read_csv_dicts(csv_path):
@@ -153,7 +158,7 @@ def _player_identity_lookup() -> dict[str, dict[str, Any]]:
 
 
 @lru_cache(maxsize=1)
-def _team_identity_lookup() -> dict[str, dict[str, Any]]:
+def _team_identity_lookup(generation_key: str) -> dict[str, dict[str, Any]]:
     lookup: dict[str, dict[str, Any]] = {}
 
     def add_row(row: dict[str, Any]) -> None:
@@ -198,10 +203,11 @@ def _resolve_player_context(player_name: Any) -> dict[str, Any] | None:
     key = _identity_key(player_name)
     if not key:
         return None
-    context = _player_identity_lookup().get(key)
+    generation_key = data_source_cache_key()
+    context = _player_identity_lookup(generation_key).get(key)
     if context is None:
         _player_identity_lookup.cache_clear()
-        context = _player_identity_lookup().get(key)
+        context = _player_identity_lookup(generation_key).get(key)
     return dict(context) if context else None
 
 
@@ -210,7 +216,8 @@ def _resolve_team_context(team_value: Any) -> dict[str, Any] | None:
     if text is None:
         return None
 
-    lookup = _team_identity_lookup()
+    generation_key = data_source_cache_key()
+    lookup = _team_identity_lookup(generation_key)
     resolved = resolve_team(text)
     candidates: list[str] = []
     if resolved.is_confident and resolved.resolved:
@@ -222,7 +229,7 @@ def _resolve_team_context(team_value: Any) -> dict[str, Any] | None:
         if context:
             return dict(context)
     _team_identity_lookup.cache_clear()
-    lookup = _team_identity_lookup()
+    lookup = _team_identity_lookup(generation_key)
     for candidate in candidates:
         context = lookup.get(_identity_key(candidate))
         if context:
@@ -1396,6 +1403,12 @@ def _finalize_natural_query_result(
 
 
 def execute_natural_query(query: str) -> QueryResult:
+    """Execute a natural query against one request-pinned data generation."""
+    with data_generation_context():
+        return _execute_natural_query_in_generation(query)
+
+
+def _execute_natural_query_in_generation(query: str) -> QueryResult:
     """Execute a natural-language NBA query and return a structured result.
 
     This is the primary entry point for natural queries.  It parses the
@@ -1663,6 +1676,12 @@ VALID_ROUTES = frozenset(
 
 
 def execute_structured_query(route: str, **kwargs: Any) -> QueryResult:
+    """Execute a structured query against one request-pinned data generation."""
+    with data_generation_context():
+        return _execute_structured_query_in_generation(route, **kwargs)
+
+
+def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryResult:
     """Execute a structured (route-based) query and return a result.
 
     This is the primary entry point for programmatic / structured queries.

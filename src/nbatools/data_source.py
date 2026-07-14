@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import csv
 import fnmatch
+import json
 import os
+import re
 import tempfile
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Iterator, Mapping
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -16,11 +20,20 @@ import pandas as pd
 DATA_SOURCE_ENV = "DATA_SOURCE"
 LOCAL_DATA_ROOT_ENV = "NBATOOLS_DATA_ROOT"
 R2_CACHE_DIR_ENV = "NBATOOLS_R2_CACHE_DIR"
+DATA_GENERATION_ENV = "NBATOOLS_DATA_GENERATION"
+ACTIVE_GENERATION_PATH = Path("metadata/active_generation.json")
+GENERATIONS_DIR = "generations"
+LEGACY_GENERATION = "legacy"
 REQUIRED_R2_ENV_VARS = (
     "R2_ACCOUNT_ID",
     "R2_ACCESS_KEY_ID",
     "R2_SECRET_ACCESS_KEY",
     "R2_BUCKET_NAME",
+)
+
+_GENERATION_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+_REQUEST_GENERATION: ContextVar[str | None] = ContextVar(
+    "nbatools_request_data_generation", default=None
 )
 
 
@@ -56,7 +69,36 @@ def data_source_mode(env: Mapping[str, str] | None = None) -> str:
 
 
 def data_source_cache_key() -> str:
-    """Return a cache key that changes when source mode changes."""
+    """Return a cache key for the source and the request-pinned generation."""
+    return f"{_data_source_config_key()}:{current_data_generation()}"
+
+
+def current_data_generation() -> str:
+    """Return the request-pinned generation or resolve the current active one."""
+    pinned = _REQUEST_GENERATION.get()
+    if pinned is not None:
+        return pinned
+    return _resolve_active_data_generation()
+
+
+@contextmanager
+def data_generation_context() -> Iterator[str]:
+    """Pin one immutable data generation for the duration of a request."""
+    pinned = _REQUEST_GENERATION.get()
+    if pinned is not None:
+        yield pinned
+        return
+
+    generation = _resolve_active_data_generation()
+    token = _REQUEST_GENERATION.set(generation)
+    try:
+        yield generation
+    finally:
+        _REQUEST_GENERATION.reset(token)
+
+
+def _data_source_config_key() -> str:
+    """Return a cache key for source configuration, excluding generation."""
     mode = data_source_mode()
     if mode == "local":
         root = os.environ.get(LOCAL_DATA_ROOT_ENV, os.getcwd())
@@ -161,19 +203,31 @@ class _LocalDataSource:
         if candidate.is_absolute():
             return candidate
         rel = _logical_relative_path(candidate)
-        if self.root == Path() and candidate.parts[:1] == ("data",):
-            return candidate
-        if self.root == Path():
-            return Path("data") / rel
-        return self.root / "data" / rel
+        generation = current_data_generation()
+        base = self._data_root()
+        if generation != LEGACY_GENERATION:
+            base = base / GENERATIONS_DIR / generation
+        return base / rel
 
     def glob(self, pattern: str | Path) -> list[Path]:
         rel = _logical_relative_path(pattern)
-        if self.root == Path():
-            base = Path("data")
-        else:
-            base = self.root / "data"
-        return sorted(base.glob(rel.as_posix()))
+        generation = current_data_generation()
+        base = self._data_root()
+        if generation != LEGACY_GENERATION:
+            base = base / GENERATIONS_DIR / generation
+        return [Path("data") / path.relative_to(base) for path in sorted(base.glob(rel.as_posix()))]
+
+    def active_generation(self) -> str:
+        pointer_path = self._data_root() / ACTIVE_GENERATION_PATH
+        if not pointer_path.exists():
+            return LEGACY_GENERATION
+        try:
+            return _parse_generation_pointer(pointer_path.read_text(encoding="utf-8"))
+        except OSError as exc:
+            raise DataSourceError(f"Could not read active generation pointer: {exc}") from exc
+
+    def _data_root(self) -> Path:
+        return Path("data") if self.root == Path() else self.root / "data"
 
 
 class _R2DataSource:
@@ -184,7 +238,7 @@ class _R2DataSource:
         self._downloaded_keys: set[str] = set()
 
     def exists(self, path: str | Path) -> bool:
-        key = _logical_relative_path(path).as_posix()
+        key = self._generation_key(path)
         try:
             self.client.head_object(Bucket=self.config.bucket_name, Key=key)
             return True
@@ -195,8 +249,9 @@ class _R2DataSource:
 
     def resolve_path(self, path: str | Path) -> Path:
         rel_path = _logical_relative_path(path)
-        key = rel_path.as_posix()
-        cache_path = self.cache_root / rel_path
+        generation = current_data_generation()
+        key = self._generation_key(rel_path, generation=generation)
+        cache_path = self.cache_root / generation / rel_path
         if key in self._downloaded_keys and cache_path.exists():
             return cache_path
 
@@ -215,7 +270,10 @@ class _R2DataSource:
 
     def glob(self, pattern: str | Path) -> list[Path]:
         rel_pattern = _logical_relative_path(pattern).as_posix()
-        prefix = _glob_prefix(rel_pattern)
+        generation = current_data_generation()
+        generation_prefix = self._generation_prefix(generation)
+        object_pattern = f"{generation_prefix}{rel_pattern}"
+        prefix = _glob_prefix(object_pattern)
         keys: list[str] = []
         continuation_token: str | None = None
 
@@ -232,7 +290,7 @@ class _R2DataSource:
 
             for item in response.get("Contents", []):
                 key = item.get("Key", "")
-                if key and fnmatch.fnmatch(key, rel_pattern):
+                if key and fnmatch.fnmatch(key, object_pattern):
                     keys.append(key)
 
             if not response.get("IsTruncated"):
@@ -241,7 +299,31 @@ class _R2DataSource:
             if not continuation_token:
                 break
 
-        return [Path("data") / key for key in sorted(keys)]
+        return [Path("data") / key.removeprefix(generation_prefix) for key in sorted(keys)]
+
+    def active_generation(self) -> str:
+        key = ACTIVE_GENERATION_PATH.as_posix()
+        try:
+            response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
+            payload = response["Body"].read().decode("utf-8")
+        except Exception as exc:
+            if _is_not_found(exc):
+                return LEGACY_GENERATION
+            raise DataSourceError(
+                f"Could not read active generation pointer {key}: {_format_client_error(exc)}"
+            ) from exc
+        return _parse_generation_pointer(payload)
+
+    @staticmethod
+    def _generation_prefix(generation: str) -> str:
+        if generation == LEGACY_GENERATION:
+            return ""
+        return f"{GENERATIONS_DIR}/{generation}/"
+
+    def _generation_key(self, path: str | Path, *, generation: str | None = None) -> str:
+        resolved_generation = generation or current_data_generation()
+        rel_path = _logical_relative_path(path).as_posix()
+        return f"{self._generation_prefix(resolved_generation)}{rel_path}"
 
 
 _DATA_SOURCE: _LocalDataSource | _R2DataSource | None = None
@@ -251,7 +333,7 @@ _DATA_SOURCE_KEY: str | None = None
 def _get_data_source() -> _LocalDataSource | _R2DataSource:
     global _DATA_SOURCE, _DATA_SOURCE_KEY
 
-    key = data_source_cache_key()
+    key = _data_source_config_key()
     if _DATA_SOURCE is not None and _DATA_SOURCE_KEY == key:
         return _DATA_SOURCE
 
@@ -264,6 +346,32 @@ def _get_data_source() -> _LocalDataSource | _R2DataSource:
     _DATA_SOURCE = source
     _DATA_SOURCE_KEY = key
     return source
+
+
+def _resolve_active_data_generation() -> str:
+    configured = os.environ.get(DATA_GENERATION_ENV, "").strip()
+    if configured:
+        return _validate_generation(configured)
+    return _get_data_source().active_generation()
+
+
+def _parse_generation_pointer(payload: str) -> str:
+    try:
+        document = json.loads(payload)
+    except json.JSONDecodeError as exc:
+        raise DataSourceError(f"Active generation pointer is not valid JSON: {exc}") from exc
+    if not isinstance(document, dict):
+        raise DataSourceError("Active generation pointer must be a JSON object")
+    generation = document.get("generation_id")
+    if not isinstance(generation, str) or not generation.strip():
+        raise DataSourceError("Active generation pointer is missing generation_id")
+    return _validate_generation(generation.strip())
+
+
+def _validate_generation(generation: str) -> str:
+    if not _GENERATION_PATTERN.fullmatch(generation):
+        raise DataSourceError(f"Invalid data generation identifier: {generation!r}")
+    return generation
 
 
 def _logical_relative_path(path: str | Path) -> Path:
