@@ -47,6 +47,16 @@ type RetryRequest =
   | { kind: "natural"; query: string }
   | { kind: "structured"; route: string; kwargs: string };
 
+interface ActiveRequest {
+  generation: number;
+  controller: AbortController;
+}
+
+interface RunRequestOptions {
+  onStart?: () => void;
+  invalidStructuredMessage?: string;
+}
+
 function safeErrorMessage(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err ?? "");
   const firstLine = raw.split(/\r?\n/)[0]?.trim();
@@ -113,6 +123,9 @@ export default function App() {
   const initialUrlHandled = useRef(false);
   const historyRecallIndexRef = useRef<number | null>(null);
   const historyDraftRef = useRef("");
+  const requestGenerationRef = useRef(0);
+  const activeRequestRef = useRef<ActiveRequest | null>(null);
+  const requestOwnerMountedRef = useRef(true);
 
   const resetHistoryRecall = useCallback(() => {
     historyRecallIndexRef.current = null;
@@ -164,17 +177,61 @@ export default function App() {
 
   /* ---- query execution ---- */
 
-  const runQuery = useCallback(
-    async (query: string) => {
-      setLastRetryableRequest({ kind: "natural", query });
+  const supersedeActiveRequest = useCallback(() => {
+    requestGenerationRef.current += 1;
+    activeRequestRef.current?.controller.abort();
+    activeRequestRef.current = null;
+  }, []);
+
+  const beginRequest = useCallback(
+    (retryableRequest: RetryRequest): ActiveRequest => {
+      supersedeActiveRequest();
+      const activeRequest = {
+        generation: requestGenerationRef.current,
+        controller: new AbortController(),
+      };
+      activeRequestRef.current = activeRequest;
+      setLastRetryableRequest(retryableRequest);
       setLoading(true);
       setError(null);
       setResult(null);
+      return activeRequest;
+    },
+    [supersedeActiveRequest],
+  );
+
+  const ownsRequest = useCallback((generation: number): boolean => {
+    return (
+      requestOwnerMountedRef.current &&
+      requestGenerationRef.current === generation &&
+      activeRequestRef.current?.generation === generation
+    );
+  }, []);
+
+  const failBeforeRequest = useCallback(
+    (message: string) => {
+      supersedeActiveRequest();
+      setLastRetryableRequest(null);
+      setLoading(false);
+      setResult(null);
+      setError(message);
+    },
+    [supersedeActiveRequest],
+  );
+
+  const runQuery = useCallback(
+    async (query: string, options?: RunRequestOptions) => {
+      const request = beginRequest({ kind: "natural", query });
+      options?.onStart?.();
       try {
-        const data = await postQuery(query);
+        const data = await postQuery(query, {
+          signal: request.controller.signal,
+        });
+        if (!ownsRequest(request.generation)) return;
         setResult(data);
         addEntry(query, data);
       } catch (err) {
+        if (!ownsRequest(request.generation)) return;
         const message = safeErrorMessage(err);
         setError(message);
         void postQueryFeedback(
@@ -187,41 +244,54 @@ export default function App() {
           // Feedback logging must not change query UX.
         });
       } finally {
-        setLoading(false);
+        if (ownsRequest(request.generation)) {
+          activeRequestRef.current = null;
+          setLoading(false);
+        }
       }
     },
-    [addEntry],
+    [addEntry, beginRequest, ownsRequest],
   );
 
   const runStructuredQuery = useCallback(
-    async (route: string, kwargsStr: string | null) => {
+    async (
+      route: string,
+      kwargsStr: string | null,
+      options?: RunRequestOptions,
+    ) => {
       let parsed: Record<string, unknown>;
       try {
         parsed = JSON.parse(kwargsStr || "{}");
       } catch {
-        setLastRetryableRequest(null);
-        setError("Invalid kwargs in URL");
+        failBeforeRequest(
+          options?.invalidStructuredMessage ?? "Invalid kwargs in URL",
+        );
         return;
       }
-      setLastRetryableRequest({
+      const request = beginRequest({
         kind: "structured",
         route,
         kwargs: kwargsStr || "{}",
       });
-      setLoading(true);
-      setError(null);
-      setResult(null);
+      options?.onStart?.();
       try {
-        const data = await postStructuredQuery(route, parsed);
+        const data = await postStructuredQuery(route, parsed, {
+          signal: request.controller.signal,
+        });
+        if (!ownsRequest(request.generation)) return;
         setResult(data);
         addEntry(data.query ?? route, data);
       } catch (err) {
+        if (!ownsRequest(request.generation)) return;
         setError(safeErrorMessage(err));
       } finally {
-        setLoading(false);
+        if (ownsRequest(request.generation)) {
+          activeRequestRef.current = null;
+          setLoading(false);
+        }
       }
     },
-    [addEntry],
+    [addEntry, beginRequest, failBeforeRequest, ownsRequest],
   );
 
   /* ---- URL state ---- */
@@ -233,19 +303,26 @@ export default function App() {
   const runStructuredRef = useRef(runStructuredQuery);
   runStructuredRef.current = runStructuredQuery;
 
-  const handleNavigate = useCallback((nav: UrlParams) => {
-    resetHistoryRecall();
-    if (nav.q) {
-      setQueryText(nav.q);
-      runQueryRef.current(nav.q);
-    } else if (nav.route) {
-      runStructuredRef.current(nav.route, nav.kwargs);
-    } else {
-      setQueryText("");
-      setResult(null);
-      setError(null);
-    }
-  }, [resetHistoryRecall]);
+  const handleNavigate = useCallback(
+    (nav: UrlParams) => {
+      resetHistoryRecall();
+      if (nav.q) {
+        setQueryText(nav.q);
+        void runQueryRef.current(nav.q);
+      } else if (nav.route) {
+        setQueryText("");
+        void runStructuredRef.current(nav.route, nav.kwargs);
+      } else {
+        supersedeActiveRequest();
+        setQueryText("");
+        setLastRetryableRequest(null);
+        setLoading(false);
+        setResult(null);
+        setError(null);
+      }
+    },
+    [resetHistoryRecall, supersedeActiveRequest],
+  );
 
   const {
     params: urlParams,
@@ -255,6 +332,15 @@ export default function App() {
   } = useUrlState(handleNavigate);
 
   /* ---- lifecycle ---- */
+
+  useEffect(() => {
+    requestOwnerMountedRef.current = true;
+    return () => {
+      requestOwnerMountedRef.current = false;
+      initialUrlHandled.current = false;
+      supersedeActiveRequest();
+    };
+  }, [supersedeActiveRequest]);
 
   useEffect(() => {
     fetchHealth()
@@ -296,34 +382,32 @@ export default function App() {
     initialUrlHandled.current = true;
     if (urlParams.q) {
       setQueryText(urlParams.q);
-      runQuery(urlParams.q);
+      void runQuery(urlParams.q);
     } else if (urlParams.route) {
-      runStructuredQuery(urlParams.route, urlParams.kwargs);
+      setQueryText("");
+      void runStructuredQuery(urlParams.route, urlParams.kwargs);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once on mount
   }, []);
 
   /* ---- handlers ---- */
 
-  function handleSubmit(query: string) {
+  function launchNaturalQuery(query: string) {
     resetHistoryRecall();
     setQueryText(query);
-    pushQuery(query);
-    runQuery(query);
+    void runQuery(query, { onStart: () => pushQuery(query) });
+  }
+
+  function handleSubmit(query: string) {
+    launchNaturalQuery(query);
   }
 
   function handleSampleSelect(query: string) {
-    resetHistoryRecall();
-    setQueryText(query);
-    pushQuery(query);
-    runQuery(query);
+    launchNaturalQuery(query);
   }
 
   function handleHistorySelect(query: string) {
-    resetHistoryRecall();
-    setQueryText(query);
-    pushQuery(query);
-    runQuery(query);
+    launchNaturalQuery(query);
   }
 
   function handleHistoryEdit(query: string) {
@@ -332,26 +416,15 @@ export default function App() {
     inputRef.current?.focus();
   }
 
-  function handleStructuredResult(data: QueryResponse) {
-    setError(null);
-    setResult(data);
-    addEntry(data.query ?? "(structured query)", data);
-  }
-
-  function handleStructuredError(
-    msg: string,
-    options?: { retryable?: boolean },
-  ) {
-    setResult(null);
-    if (options?.retryable === false) {
-      setLastRetryableRequest(null);
-    }
-    setError(safeErrorMessage(msg));
-  }
-
-  function handleStructuredQueryStart(route: string, kwargs: string) {
-    setLastRetryableRequest({ kind: "structured", route, kwargs });
-    pushStructured(route, kwargs);
+  function handleStructuredQueryRun(route: string, kwargs: string) {
+    resetHistoryRecall();
+    void runStructuredQuery(route, kwargs, {
+      invalidStructuredMessage: "Invalid JSON in kwargs",
+      onStart: () => {
+        setQueryText("");
+        pushStructured(route, kwargs);
+      },
+    });
   }
 
   function handleRetryError() {
@@ -359,10 +432,14 @@ export default function App() {
     if (!lastRetryableRequest) return;
     if (lastRetryableRequest.kind === "natural") {
       setQueryText(lastRetryableRequest.query);
-      runQuery(lastRetryableRequest.query);
+      void runQuery(lastRetryableRequest.query);
       return;
     }
-    runStructuredQuery(lastRetryableRequest.route, lastRetryableRequest.kwargs);
+    setQueryText("");
+    void runStructuredQuery(
+      lastRetryableRequest.route,
+      lastRetryableRequest.kwargs,
+    );
   }
 
   /* ---- saved queries ---- */
@@ -373,10 +450,7 @@ export default function App() {
   }
 
   function handleSavedQueryRun(query: string) {
-    resetHistoryRecall();
-    setQueryText(query);
-    pushQuery(query);
-    runQuery(query);
+    launchNaturalQuery(query);
   }
 
   function handleSavedQueryEdit(query: string) {
@@ -514,14 +588,7 @@ export default function App() {
         onSave={handleSaveFromHistory}
         displayMode={displayMode}
       />
-      {isDebugMode && (
-        <DevTools
-          onResult={handleStructuredResult}
-          onError={handleStructuredError}
-          onLoading={setLoading}
-          onQueryStart={handleStructuredQueryStart}
-        />
-      )}
+      {isDebugMode && <DevTools onRun={handleStructuredQueryRun} />}
     </>
   );
 

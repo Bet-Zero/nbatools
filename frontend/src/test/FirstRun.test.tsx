@@ -149,12 +149,22 @@ describe("first-run starter queries", () => {
     await user.clear(input);
     await user.type(input, "first query");
     await user.keyboard("{Enter}");
-    await waitFor(() => expect(postQuery).toHaveBeenCalledWith("first query"));
+    await waitFor(() =>
+      expect(postQuery).toHaveBeenCalledWith(
+        "first query",
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      ),
+    );
 
     await user.clear(input);
     await user.type(input, "second query");
     await user.keyboard("{Enter}");
-    await waitFor(() => expect(postQuery).toHaveBeenCalledWith("second query"));
+    await waitFor(() =>
+      expect(postQuery).toHaveBeenCalledWith(
+        "second query",
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      ),
+    );
 
     await user.clear(input);
     await user.type(input, "draft query");
@@ -170,7 +180,10 @@ describe("first-run starter queries", () => {
 
     await user.keyboard("{Enter}");
     await waitFor(() =>
-      expect(postQuery).toHaveBeenLastCalledWith("second query"),
+      expect(postQuery).toHaveBeenLastCalledWith(
+        "second query",
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      ),
     );
   }, 10_000);
 
@@ -247,7 +260,10 @@ describe("first-run starter queries", () => {
     );
 
     await waitFor(() =>
-      expect(postQuery).toHaveBeenCalledWith("Jokic last 10 games"),
+      expect(postQuery).toHaveBeenCalledWith(
+        "Jokic last 10 games",
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      ),
     );
     expect(new URLSearchParams(window.location.search).get("q")).toBe(
       "Jokic last 10 games",
@@ -405,9 +421,11 @@ describe("first-run starter queries", () => {
       screen.getByRole("button", { name: "Run Structured Query" }),
     );
 
-    expect(postStructuredQuery).toHaveBeenCalledWith("season_leaders", {
-      stat: "pts",
-    });
+    expect(postStructuredQuery).toHaveBeenCalledWith(
+      "season_leaders",
+      { stat: "pts" },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
     expect(screen.getByRole("status")).toHaveTextContent("Searching NBA data");
     expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
 
@@ -488,9 +506,11 @@ describe("first-run starter queries", () => {
     );
 
     await waitFor(() => expect(postStructuredQuery).toHaveBeenCalledTimes(2));
-    expect(postStructuredQuery).toHaveBeenLastCalledWith("season_leaders", {
-      stat: "pts",
-    });
+    expect(postStructuredQuery).toHaveBeenLastCalledWith(
+      "season_leaders",
+      { stat: "pts" },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
     await waitFor(() =>
       expect(screen.getByText("Query output")).toBeInTheDocument(),
     );
