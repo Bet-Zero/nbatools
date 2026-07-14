@@ -48,6 +48,14 @@ SLOW_QUERY_WARNING_MS = 8000
 QUERY_FEEDBACK_STORE_ENV = "QUERY_FEEDBACK_STORE"
 QUERY_FEEDBACK_BUCKET_ENV = "QUERY_FEEDBACK_BUCKET_NAME"
 QUERY_FEEDBACK_PREFIX_ENV = "QUERY_FEEDBACK_PREFIX"
+QUERY_FEEDBACK_R2_ACCOUNT_ID_ENV = "QUERY_FEEDBACK_R2_ACCOUNT_ID"
+QUERY_FEEDBACK_R2_ACCESS_KEY_ID_ENV = "QUERY_FEEDBACK_R2_ACCESS_KEY_ID"
+QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY_ENV = "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY"
+REQUIRED_QUERY_FEEDBACK_R2_ENV_VARS = (
+    QUERY_FEEDBACK_R2_ACCOUNT_ID_ENV,
+    QUERY_FEEDBACK_R2_ACCESS_KEY_ID_ENV,
+    QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY_ENV,
+)
 DEFAULT_QUERY_FEEDBACK_PREFIX = "query_feedback"
 
 SUPPRESSED_SOURCE_PAGES = {"/review", "/visual-qa"}
@@ -309,32 +317,61 @@ def load_feedback_store_config(
 
     bucket_name = values.get(QUERY_FEEDBACK_BUCKET_ENV, "").strip()
     if not bucket_name:
-        return None
-
-    r2_values = dict(values)
-    r2_values["R2_BUCKET_NAME"] = bucket_name
-    missing = [
-        key
-        for key in ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY")
-        if not r2_values.get(key)
-    ]
-    if missing:
-        return None
+        raise FeedbackStorageError(
+            "QUERY_FEEDBACK_BUCKET_NAME is required when QUERY_FEEDBACK_STORE=r2"
+        )
 
     prefix = values.get(QUERY_FEEDBACK_PREFIX_ENV, DEFAULT_QUERY_FEEDBACK_PREFIX).strip("/ ")
     if not prefix:
         prefix = DEFAULT_QUERY_FEEDBACK_PREFIX
 
+    r2_config = load_feedback_r2_config(
+        env=values,
+        bucket_name=bucket_name,
+        env_file=None,
+    )
+
     return FeedbackStoreConfig(
         store=store,
         bucket_name=bucket_name,
         prefix=prefix,
-        r2=R2Config(
-            account_id=r2_values["R2_ACCOUNT_ID"],
-            access_key_id=r2_values["R2_ACCESS_KEY_ID"],
-            secret_access_key=r2_values["R2_SECRET_ACCESS_KEY"],
-            bucket_name=bucket_name,
-        ),
+        r2=r2_config,
+    )
+
+
+def load_feedback_r2_config(
+    *,
+    env: dict[str, str] | None = None,
+    bucket_name: str | None = None,
+    env_file: Path | None = Path(".env"),
+) -> R2Config:
+    """Load the dedicated feedback R2 credential tuple without data fallback."""
+    values = _merged_env(env, env_file)
+    resolved_bucket = (bucket_name or values.get(QUERY_FEEDBACK_BUCKET_ENV, "")).strip()
+    if not resolved_bucket:
+        raise FeedbackStorageError("QUERY_FEEDBACK_BUCKET_NAME is required")
+
+    missing = [key for key in REQUIRED_QUERY_FEEDBACK_R2_ENV_VARS if not values.get(key)]
+    if missing:
+        raise FeedbackStorageError(
+            "Dedicated query-feedback R2 credentials are incomplete; set: " + ", ".join(missing)
+        )
+
+    feedback_access_key = values[QUERY_FEEDBACK_R2_ACCESS_KEY_ID_ENV]
+    feedback_secret_key = values[QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY_ENV]
+    if (
+        values.get("R2_ACCESS_KEY_ID") == feedback_access_key
+        and values.get("R2_SECRET_ACCESS_KEY") == feedback_secret_key
+    ):
+        raise FeedbackStorageError(
+            "Query feedback credentials must not reuse canonical-data R2 credentials"
+        )
+
+    return R2Config(
+        account_id=values[QUERY_FEEDBACK_R2_ACCOUNT_ID_ENV],
+        access_key_id=feedback_access_key,
+        secret_access_key=feedback_secret_key,
+        bucket_name=resolved_bucket,
     )
 
 

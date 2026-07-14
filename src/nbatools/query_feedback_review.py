@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import re
 from dataclasses import dataclass
 from datetime import UTC, datetime, time
@@ -22,6 +21,8 @@ from nbatools.query_feedback import (
     DISALLOWED_FIELD_NAMES,
     METADATA_ALLOWLIST,
     SLOW_QUERY_WARNING_MS,
+    FeedbackStorageError,
+    load_feedback_r2_config,
     load_feedback_store_config,
 )
 
@@ -81,6 +82,16 @@ class FeedbackReviewError(RuntimeError):
 
 class TriageOverlayValidationError(ValueError):
     """Raised when a mutable triage overlay payload is invalid."""
+
+
+def _require_feedback_store_config(env: dict[str, str] | None):
+    try:
+        config = load_feedback_store_config(env=env)
+    except FeedbackStorageError as exc:
+        raise FeedbackReviewError(str(exc)) from exc
+    if config is None:
+        raise FeedbackReviewError("Query feedback store is not configured")
+    return config
 
 
 @dataclass(frozen=True)
@@ -158,12 +169,11 @@ def load_r2_records(
     *,
     bucket: str,
     prefix: str,
+    env: dict[str, str] | None = None,
     client: Any | None = None,
 ) -> list[LoadedFeedbackRecord]:
     if client is None:
-        env = dict(os.environ)
-        env["R2_BUCKET_NAME"] = bucket
-        config = data_source.load_r2_config(env=env)
+        config = load_feedback_r2_config(env=env, bucket_name=bucket)
         r2_client = data_source.create_r2_client(config)
     else:
         r2_client = client
@@ -444,9 +454,7 @@ def read_triage_overlay(
     env: dict[str, str] | None = None,
     client: Any | None = None,
 ) -> dict[str, Any]:
-    config = load_feedback_store_config(env=env)
-    if config is None:
-        raise FeedbackReviewError("Query feedback store is not configured")
+    config = _require_feedback_store_config(env)
     r2_client = client or data_source.create_r2_client(config.r2)
     key = triage_overlay_key(config.prefix, group_id)
     try:
@@ -469,9 +477,7 @@ def write_triage_overlay(
     env: dict[str, str] | None = None,
     client: Any | None = None,
 ) -> dict[str, Any]:
-    config = load_feedback_store_config(env=env)
-    if config is None:
-        raise FeedbackReviewError("Query feedback store is not configured")
+    config = _require_feedback_store_config(env)
     overlay = validate_triage_overlay_payload(group_id, payload, existing_group=existing_group)
     key = triage_overlay_key(config.prefix, group_id)
     body = json.dumps(overlay, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -524,9 +530,7 @@ def list_feedback_groups(
     env: dict[str, str] | None = None,
     client: Any | None = None,
 ) -> dict[str, Any]:
-    config = load_feedback_store_config(env=env)
-    if config is None:
-        raise FeedbackReviewError("Query feedback store is not configured")
+    config = _require_feedback_store_config(env)
     r2_client = client or data_source.create_r2_client(config.r2)
     filters = filters or FeedbackReviewFilters()
     loaded_records = load_r2_records(
@@ -566,9 +570,7 @@ def get_feedback_group_detail(
     if group is None:
         return None
     record_ids = set(group.get("record_ids", []))
-    config = load_feedback_store_config(env=env)
-    if config is None:
-        raise FeedbackReviewError("Query feedback store is not configured")
+    config = _require_feedback_store_config(env)
     r2_client = client or data_source.create_r2_client(config.r2)
     loaded_records = load_r2_records(
         bucket=config.bucket_name,
