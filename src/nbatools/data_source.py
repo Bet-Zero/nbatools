@@ -17,6 +17,8 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.r2_errors import format_client_error, is_not_found
+
 DATA_SOURCE_ENV = "DATA_SOURCE"
 LOCAL_DATA_ROOT_ENV = "NBATOOLS_DATA_ROOT"
 R2_CACHE_DIR_ENV = "NBATOOLS_R2_CACHE_DIR"
@@ -243,9 +245,9 @@ class _R2DataSource:
             self.client.head_object(Bucket=self.config.bucket_name, Key=key)
             return True
         except Exception as exc:
-            if _is_not_found(exc):
+            if is_not_found(exc):
                 return False
-            raise DataSourceError(f"Could not inspect R2 object {key}: {_format_client_error(exc)}")
+            raise DataSourceError(f"Could not inspect R2 object {key}: {format_client_error(exc)}")
 
     def resolve_path(self, path: str | Path) -> Path:
         rel_path = _logical_relative_path(path)
@@ -259,9 +261,9 @@ class _R2DataSource:
             response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
             body = response["Body"].read()
         except Exception as exc:
-            if _is_not_found(exc):
+            if is_not_found(exc):
                 raise FileNotFoundError(f"Missing R2 data object: {key}") from exc
-            raise DataSourceError(f"Could not read R2 object {key}: {_format_client_error(exc)}")
+            raise DataSourceError(f"Could not read R2 object {key}: {format_client_error(exc)}")
 
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_bytes(body)
@@ -285,7 +287,7 @@ class _R2DataSource:
                 response = self.client.list_objects_v2(**kwargs)
             except Exception as exc:
                 raise DataSourceError(
-                    f"Could not list R2 objects for {rel_pattern}: {_format_client_error(exc)}"
+                    f"Could not list R2 objects for {rel_pattern}: {format_client_error(exc)}"
                 )
 
             for item in response.get("Contents", []):
@@ -307,10 +309,10 @@ class _R2DataSource:
             response = self.client.get_object(Bucket=self.config.bucket_name, Key=key)
             payload = response["Body"].read().decode("utf-8")
         except Exception as exc:
-            if _is_not_found(exc):
+            if is_not_found(exc):
                 return LEGACY_GENERATION
             raise DataSourceError(
-                f"Could not read active generation pointer {key}: {_format_client_error(exc)}"
+                f"Could not read active generation pointer {key}: {format_client_error(exc)}"
             ) from exc
         return _parse_generation_pointer(payload)
 
@@ -351,7 +353,7 @@ def _get_data_source() -> _LocalDataSource | _R2DataSource:
 def _resolve_active_data_generation() -> str:
     configured = os.environ.get(DATA_GENERATION_ENV, "").strip()
     if configured:
-        return _validate_generation(configured)
+        return validate_data_generation_id(configured)
     return _get_data_source().active_generation()
 
 
@@ -365,10 +367,11 @@ def _parse_generation_pointer(payload: str) -> str:
     generation = document.get("generation_id")
     if not isinstance(generation, str) or not generation.strip():
         raise DataSourceError("Active generation pointer is missing generation_id")
-    return _validate_generation(generation.strip())
+    return validate_data_generation_id(generation.strip())
 
 
-def _validate_generation(generation: str) -> str:
+def validate_data_generation_id(generation: str) -> str:
+    """Validate one runtime generation identifier and return it unchanged."""
     if not _GENERATION_PATTERN.fullmatch(generation):
         raise DataSourceError(f"Invalid data generation identifier: {generation!r}")
     return generation
@@ -417,33 +420,3 @@ def _read_env_file(path: Path) -> dict[str, str]:
         if key:
             values[key] = value
     return values
-
-
-def _is_not_found(exc: Exception) -> bool:
-    code, status = _client_error_code_and_status(exc)
-    return status == 404 or code in {"404", "NoSuchKey", "NotFound", "NoSuchBucket"}
-
-
-def _client_error_code_and_status(exc: Exception) -> tuple[str | None, int | None]:
-    response = getattr(exc, "response", None)
-    if not isinstance(response, dict):
-        return None, None
-
-    error = response.get("Error") or {}
-    metadata = response.get("ResponseMetadata") or {}
-    code = str(error.get("Code")) if error.get("Code") is not None else None
-    status = metadata.get("HTTPStatusCode")
-    return code, int(status) if status is not None else None
-
-
-def _format_client_error(exc: Exception) -> str:
-    response = getattr(exc, "response", None)
-    if isinstance(response, dict):
-        error = response.get("Error") or {}
-        code = error.get("Code")
-        message = error.get("Message")
-        if code and message:
-            return f"{code}: {message}"
-        if code:
-            return str(code)
-    return f"{type(exc).__name__}: {exc}"

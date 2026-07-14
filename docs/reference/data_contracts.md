@@ -1303,8 +1303,53 @@ entire request. File downloads, DataFrame loader caches, query-result identity
 lookups, and parser entity indexes all include that pinned source generation
 in their cache identity. A pointer switch affects only later requests; an
 in-flight request continues reading its original immutable directory or
-prefix. Publication and pointer-switch requirements are operational concerns
-and do not change the per-slice validation receipt contract above.
+prefix.
+
+### Generation publication contract
+
+The canonical `data/` tree is a staging workspace, not a live mutable runtime
+snapshot. Publication copies its non-hidden files into an immutable generation
+and writes `metadata/generation_manifest.json` inside that generation. The
+manifest binds the runtime generation ID to the exact relative path, byte size,
+and SHA-256 of every staged file. Publication refuses an empty snapshot,
+symlinks, unsafe paths, a missing/failed dataset validation receipt, receipt
+generation mismatch, missing manifested data, or any checksum mismatch.
+
+Local generations are staged on the same filesystem beneath
+`data/generations/.staging-*`, validated, and atomically renamed to
+`data/generations/<generation_id>/`. R2 generations are uploaded beneath
+`generations/<generation_id>/`; every object is verified by byte length and
+`nbatools-sha256` metadata. An existing generation ID is reusable only when
+its immutable content matches exactly. A collision with different content
+fails closed.
+
+Only after the complete generation validates does publication switch
+`metadata/active_generation.json`. Local switching uses an atomic file replace
+with compare-and-swap ownership of the prior pointer. R2 switching is a single
+conditional object write using the prior pointer ETag (or an absent-object
+precondition for the first publication). Concurrent publishers therefore
+cannot silently overwrite each other. A partial copy/upload or failed pointer
+write leaves the prior generation active; inactive immutable files may remain
+for an idempotent retry but cannot become runtime-visible.
+
+The pointer retains `previous_generation_id`, `manifest_sha256`, and
+`published_at` in addition to the runtime-required `generation_id`. The
+rollback command first validates that retained target, then conditionally
+switches the same pointer and retains the generation it rolled back from.
+Readers already pinned to either generation remain coherent throughout a
+publish or rollback.
+
+Before the first R2 migration, publish the current last-good snapshot as a
+baseline generation before staging a new candidate. Automated R2 rollback to
+the unmanifested `legacy` namespace is refused; after bootstrap, every rollback
+target is immutable and manifest-verified. Local legacy rollback remains
+available only when the canonical dataset receipts still validate.
+
+`pipeline publish-generation` is the only repository-supported mutable data
+publication path. Direct canonical-key writes through `pipeline sync-r2` are
+disabled; `sync-r2 --dry-run` remains read-only legacy-difference diagnostics.
+These publication rules do not change the per-slice validation receipt
+contract above.
 
 ## 9. Command-to-dataset mapping summary
 

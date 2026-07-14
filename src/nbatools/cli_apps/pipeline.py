@@ -4,10 +4,19 @@ Exposes deterministic refresh, rebuild, backfill, status, and auto-refresh
 commands that orchestrate the full pull → validate → build → manifest pipeline.
 """
 
+from enum import StrEnum
 from pathlib import Path
 
 import typer
 
+from nbatools.commands.pipeline.generation_publication import (
+    GenerationPublicationError,
+    GenerationPublicationResult,
+    publish_local_generation,
+    publish_r2_generation,
+    rollback_local_generation,
+    rollback_r2_generation,
+)
 from nbatools.commands.pipeline.orchestrator import (
     PipelineResult,
     backfill_seasons,
@@ -20,6 +29,11 @@ from nbatools.commands.pipeline.orchestrator import (
 from nbatools.commands.pipeline.sync_r2 import R2SyncError, SyncProgress, run_sync_r2
 
 app = typer.Typer()
+
+
+class PublicationTarget(StrEnum):
+    LOCAL = "local"
+    R2 = "r2"
 
 
 def _print_result(result: PipelineResult) -> None:
@@ -40,6 +54,15 @@ def _print_sync_progress(progress: SyncProgress) -> None:
         f"[{progress.processed_files}/{progress.total_files}] "
         f"{progress.action} {progress.key} ({progress.size_bytes} bytes)"
     )
+
+
+def _print_publication_result(result: GenerationPublicationResult) -> None:
+    print(f"Generation {result.action}: {result.generation_id}")
+    print(f"Previous generation: {result.previous_generation_id}")
+    print(f"Target: {result.target}")
+    print(f"Files: {result.file_count}")
+    print(f"Bytes: {result.total_bytes}")
+    print(f"Pointer: {result.pointer}")
 
 
 @app.command("refresh")
@@ -229,7 +252,7 @@ def sync_r2(
         help="Optional object-key prefix inside the R2 bucket.",
     ),
 ):
-    """Sync the local data directory to Cloudflare R2."""
+    """Preview legacy canonical-key differences without writing to R2."""
     try:
         result = run_sync_r2(
             data_dir=data_dir,
@@ -246,6 +269,65 @@ def sync_r2(
 
     if not result.success:
         raise typer.Exit(code=1)
+
+
+@app.command("publish-generation")
+def publish_generation(
+    generation_id: str = typer.Option(
+        ...,
+        "--generation-id",
+        help="Unique immutable runtime generation identifier.",
+    ),
+    data_dir: Path = typer.Option(
+        Path("data"),
+        "--data-dir",
+        help="Validated canonical data staging directory.",
+    ),
+    target: PublicationTarget = typer.Option(
+        PublicationTarget.LOCAL,
+        "--target",
+        help="Publication target: local or r2.",
+    ),
+):
+    """Validate, publish, and atomically activate one immutable generation."""
+    try:
+        if target is PublicationTarget.LOCAL:
+            result = publish_local_generation(
+                generation_id,
+                source_dir=data_dir,
+                data_root=data_dir,
+            )
+        else:
+            result = publish_r2_generation(generation_id, source_dir=data_dir)
+    except GenerationPublicationError as exc:
+        print(f"Generation publication failed: {exc}")
+        raise typer.Exit(code=1)
+    _print_publication_result(result)
+
+
+@app.command("rollback-generation")
+def rollback_generation(
+    data_dir: Path = typer.Option(
+        Path("data"),
+        "--data-dir",
+        help="Local data root when target is local.",
+    ),
+    target: PublicationTarget = typer.Option(
+        PublicationTarget.LOCAL,
+        "--target",
+        help="Rollback target: local or r2.",
+    ),
+):
+    """Atomically reactivate the retained previous generation."""
+    try:
+        if target is PublicationTarget.LOCAL:
+            result = rollback_local_generation(data_root=data_dir)
+        else:
+            result = rollback_r2_generation()
+    except GenerationPublicationError as exc:
+        print(f"Generation rollback failed: {exc}")
+        raise typer.Exit(code=1)
+    _print_publication_result(result)
 
 
 @app.command("auto-refresh")

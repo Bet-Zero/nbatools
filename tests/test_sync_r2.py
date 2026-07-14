@@ -8,6 +8,7 @@ from typer.testing import CliRunner
 
 from nbatools.commands.pipeline.sync_r2 import (
     R2CredentialError,
+    R2SyncError,
     load_r2_config,
     run_sync_r2,
 )
@@ -71,7 +72,7 @@ class FakeR2Client:
         self.remote_md5[Key] = Metadata["nbatools-md5"]
 
 
-def test_sync_r2_uploads_changed_files_and_skips_matching_files(tmp_path: Path):
+def test_sync_r2_rejects_direct_mutable_upload_mode(tmp_path: Path):
     data_dir = tmp_path / "data"
     unchanged = data_dir / "raw" / "unchanged.csv"
     changed = data_dir / "processed" / "changed.csv"
@@ -84,14 +85,10 @@ def test_sync_r2_uploads_changed_files_and_skips_matching_files(tmp_path: Path):
 
     client = FakeR2Client(remote_md5={"raw/unchanged.csv": _md5(unchanged)})
 
-    result = run_sync_r2(data_dir=data_dir, client=client, env=VALID_ENV, env_file=None)
+    with pytest.raises(R2SyncError, match="Direct mutable R2 sync is disabled"):
+        run_sync_r2(data_dir=data_dir, client=client, env=VALID_ENV, env_file=None)
 
-    assert result.success
-    assert result.total_files == 2
-    assert result.synced_files == 1
-    assert result.skipped_files == 1
-    assert result.bytes_uploaded == changed.stat().st_size
-    assert client.uploaded == {"processed/changed.csv": b"new data\n"}
+    assert client.uploaded == {}
 
 
 def test_sync_r2_dry_run_reports_uploads_without_writing(tmp_path: Path):
@@ -116,25 +113,6 @@ def test_sync_r2_dry_run_reports_uploads_without_writing(tmp_path: Path):
     assert client.uploaded == {}
 
 
-def test_sync_r2_records_partial_upload_failures(tmp_path: Path):
-    data_dir = tmp_path / "data"
-    ok_path = data_dir / "raw" / "ok.csv"
-    fail_path = data_dir / "raw" / "fail.csv"
-    ok_path.parent.mkdir(parents=True)
-    ok_path.write_text("ok\n")
-    fail_path.write_text("fail\n")
-    client = FakeR2Client(fail_upload_keys={"raw/fail.csv"})
-
-    result = run_sync_r2(data_dir=data_dir, client=client, env=VALID_ENV, env_file=None)
-
-    assert not result.success
-    assert result.synced_files == 2
-    assert result.failed_files == 1
-    assert result.failures[0].key == "raw/fail.csv"
-    assert "Could not upload object" in result.failures[0].error
-    assert client.uploaded == {"raw/ok.csv": b"ok\n"}
-
-
 def test_load_r2_config_reports_missing_credentials():
     with pytest.raises(R2CredentialError) as excinfo:
         load_r2_config(env={}, env_file=None)
@@ -145,7 +123,7 @@ def test_load_r2_config_reports_missing_credentials():
     assert "R2_SECRET_ACCESS_KEY" in message
 
 
-def test_pipeline_sync_r2_cli_reports_missing_credentials_without_traceback(
+def test_pipeline_sync_r2_cli_rejects_mutable_upload_without_traceback(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ):
@@ -163,7 +141,7 @@ def test_pipeline_sync_r2_cli_reports_missing_credentials_without_traceback(
     )
 
     assert result.exit_code == 1
-    assert "R2 sync failed: Missing R2 environment variables" in result.output
+    assert "R2 sync failed: Direct mutable R2 sync is disabled" in result.output
     assert "Traceback" not in result.output
 
 

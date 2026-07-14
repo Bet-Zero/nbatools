@@ -1,8 +1,9 @@
-"""Sync the local data warehouse to Cloudflare R2.
+"""Read-only comparison of local data with legacy canonical R2 keys.
 
 The command implementation lives here so CLI wrappers can stay thin.  R2 is
-S3-compatible, so the runtime client is a boto3 S3 client configured with the
-Cloudflare endpoint.
+S3-compatible, so the client is a boto3 S3 client configured with the
+Cloudflare endpoint. Mutable publication lives in ``generation_publication``;
+this module deliberately rejects non-dry operation.
 """
 
 from __future__ import annotations
@@ -13,6 +14,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+from nbatools.r2_errors import format_client_error, is_auth_error, is_not_found
 
 REQUIRED_ENV_VARS = (
     "R2_ACCOUNT_ID",
@@ -142,10 +145,15 @@ def run_sync_r2(
     env_file: Path | None = Path(".env"),
     progress: Callable[[SyncProgress], None] | None = None,
 ) -> R2SyncResult:
-    """Sync ``data_dir`` to the configured R2 bucket."""
+    """Preview legacy canonical-key differences without mutating R2."""
     data_dir = data_dir.expanduser()
     if not data_dir.is_dir():
         raise R2SyncError(f"Data directory not found: {data_dir}")
+    if not dry_run:
+        raise R2SyncError(
+            "Direct mutable R2 sync is disabled; use pipeline publish-generation "
+            "for validated generation-atomic publication."
+        )
 
     config = load_r2_config(env=env, env_file=env_file)
     s3_client = client or create_r2_client(config)
@@ -183,23 +191,14 @@ def run_sync_r2(
         result.synced_files += 1
         result.bytes_uploaded += size_bytes
 
-        if dry_run:
-            _emit_progress(
-                progress,
-                index,
-                result.total_files,
-                key,
-                "would-upload",
-                size_bytes,
-            )
-            continue
-
-        try:
-            _upload_file(s3_client, config.bucket_name, key, path, local_md5, size_bytes)
-            _emit_progress(progress, index, result.total_files, key, "upload", size_bytes)
-        except R2SyncError as exc:
-            result.failures.append(SyncFailure(key=key, path=path, error=str(exc)))
-            _emit_progress(progress, index, result.total_files, key, "failed", size_bytes)
+        _emit_progress(
+            progress,
+            index,
+            result.total_files,
+            key,
+            "would-upload",
+            size_bytes,
+        )
 
     return result
 
@@ -267,12 +266,12 @@ def _remote_matches(client: Any, bucket_name: str, key: str, local_md5: str) -> 
     try:
         response = client.head_object(Bucket=bucket_name, Key=key)
     except Exception as exc:
-        if _is_not_found(exc):
+        if is_not_found(exc):
             return False
-        if _is_auth_error(exc):
+        if is_auth_error(exc):
             message = "R2 authentication failed. Check credentials and bucket scope."
             raise R2SyncError(message) from exc
-        raise R2SyncError(f"Could not inspect remote object: {_format_client_error(exc)}") from exc
+        raise R2SyncError(f"Could not inspect remote object: {format_client_error(exc)}") from exc
 
     metadata = response.get("Metadata") or {}
     remote_md5 = metadata.get(MD5_METADATA_KEY)
@@ -281,65 +280,6 @@ def _remote_matches(client: Any, bucket_name: str, key: str, local_md5: str) -> 
 
     etag = str(response.get("ETag", "")).strip('"').lower()
     return etag == local_md5
-
-
-def _upload_file(
-    client: Any,
-    bucket_name: str,
-    key: str,
-    path: Path,
-    local_md5: str,
-    size_bytes: int,
-) -> None:
-    try:
-        with path.open("rb") as handle:
-            client.put_object(
-                Bucket=bucket_name,
-                Key=key,
-                Body=handle,
-                ContentLength=size_bytes,
-                Metadata={MD5_METADATA_KEY: local_md5},
-            )
-    except Exception as exc:
-        if _is_auth_error(exc):
-            message = "R2 authentication failed. Check credentials and bucket scope."
-            raise R2SyncError(message) from exc
-        raise R2SyncError(f"Could not upload object: {_format_client_error(exc)}") from exc
-
-
-def _is_not_found(exc: Exception) -> bool:
-    code, status = _client_error_code_and_status(exc)
-    return status == 404 or code in {"404", "NoSuchKey", "NotFound", "NoSuchBucket"}
-
-
-def _is_auth_error(exc: Exception) -> bool:
-    code, status = _client_error_code_and_status(exc)
-    return status in {401, 403} or code in {"401", "403", "AccessDenied", "InvalidAccessKeyId"}
-
-
-def _client_error_code_and_status(exc: Exception) -> tuple[str | None, int | None]:
-    response = getattr(exc, "response", None)
-    if not isinstance(response, dict):
-        return None, None
-
-    error = response.get("Error") or {}
-    metadata = response.get("ResponseMetadata") or {}
-    code = str(error.get("Code")) if error.get("Code") is not None else None
-    status = metadata.get("HTTPStatusCode")
-    return code, int(status) if status is not None else None
-
-
-def _format_client_error(exc: Exception) -> str:
-    response = getattr(exc, "response", None)
-    if isinstance(response, dict):
-        error = response.get("Error") or {}
-        code = error.get("Code")
-        message = error.get("Message")
-        if code and message:
-            return f"{code}: {message}"
-        if code:
-            return str(code)
-    return f"{type(exc).__name__}: {exc}"
 
 
 def _emit_progress(
