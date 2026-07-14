@@ -10,6 +10,7 @@ from nbatools.commands.data_utils import (
     TEAM_GAME_CLUTCH_REQUIRED_COLUMNS,
     TEAM_PLAYER_ON_OFF_REQUIRED_COLUMNS,
 )
+from nbatools.commands.source_invariants import validate_team_game_pair_invariants
 from nbatools.commands.validation_control import validate_raw_coverage
 
 PERIOD_WINDOW_LOOKUP = {
@@ -107,6 +108,44 @@ def require_columns(df, required, name):
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise ValueError(f"{name} missing columns: {missing}")
+
+
+def validate_team_game_stats_df(
+    df: pd.DataFrame,
+    *,
+    games: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    """Validate whole-game box-score math and paired source identity."""
+    require_columns(
+        df,
+        [
+            "game_id",
+            "team_id",
+            "opponent_team_id",
+            "wl",
+            "pts",
+            "fgm",
+            "fga",
+            "fg3m",
+            "fg3a",
+            "ftm",
+            "fta",
+            "plus_minus",
+        ],
+        "team_game_stats",
+    )
+    validated = df.copy()
+    if validated.duplicated(subset=["game_id", "team_id"]).any():
+        raise ValueError("Duplicate (game_id, team_id) in team_game_stats")
+    for made, attempted in (("fgm", "fga"), ("fg3m", "fg3a"), ("ftm", "fta")):
+        made_values = pd.to_numeric(validated[made], errors="coerce")
+        attempted_values = pd.to_numeric(validated[attempted], errors="coerce")
+        if made_values.isna().any() or attempted_values.isna().any():
+            raise ValueError(f"team_game_stats invalid numeric {made}/{attempted} values")
+        if made_values.gt(attempted_values).any():
+            raise ValueError(f"team_game_stats invalid {made} > {attempted}")
+    validate_team_game_pair_invariants(validated, games=games)
+    return validated
 
 
 def _validate_period_window_columns(df: pd.DataFrame, name: str) -> pd.DataFrame:
@@ -518,6 +557,8 @@ def run(season: str, season_type: str):
         standings = pd.read_csv(paths["standings"])
     team_adv = pd.read_csv(paths["team_adv"])
     player_adv = pd.read_csv(paths["player_adv"])
+    pbp_path = Path(f"data/raw/play_by_play_events/{season}_{safe}.csv")
+    play_by_play = pd.read_csv(pbp_path, dtype={"game_id": str}) if pbp_path.exists() else None
 
     # --- GAMES ---
     require_columns(games, ["game_id", "game_date", "home_team_id"], "games")
@@ -533,20 +574,7 @@ def run(season: str, season_type: str):
         raise ValueError("Mismatch between schedule and games game_id sets")
 
     # --- TEAM GAME ---
-    require_columns(team, ["game_id", "team_id", "pts", "fgm", "fga"], "team_game_stats")
-    if team.duplicated(subset=["game_id", "team_id"]).any():
-        raise ValueError("Duplicate (game_id, team_id) in team_game_stats")
-
-    counts = team.groupby("game_id").size()
-    if not (counts == 2).all():
-        raise ValueError("Each game must have exactly 2 team rows")
-
-    if (team["fgm"] > team["fga"]).any():
-        raise ValueError("team_game_stats invalid fgm > fga")
-    if (team["fg3m"] > team["fg3a"]).any():
-        raise ValueError("team_game_stats invalid fg3m > fg3a")
-    if (team["ftm"] > team["fta"]).any():
-        raise ValueError("team_game_stats invalid ftm > fta")
+    team = validate_team_game_stats_df(team, games=games)
 
     # --- PLAYER GAME ---
     require_columns(player, ["game_id", "player_id", "fgm", "fga"], "player_game_stats")
@@ -670,6 +698,8 @@ def run(season: str, season_type: str):
         "player_game_period_stats": player_period,
         "team_game_period_stats": team_period,
     }
+    if play_by_play is not None:
+        raw_frames["play_by_play_events"] = validate_play_by_play_events_df(play_by_play)
     if schedule_context is not None:
         raw_frames["schedule_context_features"] = schedule_context
     validate_raw_coverage(raw_frames)

@@ -5,6 +5,7 @@ import pandas as pd
 from nba_api.stats.endpoints import LeagueGameFinder
 
 from nbatools.commands.pipeline.game_identity import apply_canonical_home_away_flags
+from nbatools.commands.source_invariants import canonicalize_team_game_pairs
 
 REQUEST_TIMEOUT = 30
 MAX_RETRIES = 3
@@ -144,6 +145,9 @@ def run(season: str, season_type: str) -> None:
     raw = fetch_team_game_logs(season=season, season_type=season_type)
     df = normalize_columns(raw)
     df = add_opponent_info(df)
+    # LeagueGameFinder has emitted fractional team PLUS_MINUS anomalies. Final
+    # paired scores are authoritative for the canonical team-game contract.
+    df = canonicalize_team_game_pairs(df)
 
     df["season"] = season
     df["season_type"] = season_type

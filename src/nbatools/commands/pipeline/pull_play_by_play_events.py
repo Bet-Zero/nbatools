@@ -10,6 +10,12 @@ from nba_api.stats.endpoints import PlayByPlayV3
 
 from nbatools.commands.data_utils import PLAY_BY_PLAY_EVENT_REQUIRED_COLUMNS, normalize_season_type
 from nbatools.commands.pipeline.validate_raw import validate_play_by_play_events_df
+from nbatools.commands.source_invariants import (
+    ExpectedGameTerminalState,
+    apply_play_by_play_trust_decisions,
+    expected_game_terminal_states,
+    validate_team_game_pair_invariants,
+)
 
 REQUEST_TIMEOUT = 30
 MAX_RETRIES = 5
@@ -71,8 +77,11 @@ def normalize_play_by_play_events(
     out["season"] = season
     out["season_type"] = season_type
     out["pbp_source"] = PBP_SOURCE
-    out["pbp_source_trusted"] = 1
-    out["pbp_validation_reason"] = ""
+    # Row normalization alone cannot prove whole-game completeness. The season
+    # backfill stamps trust only after reconciling every terminal state with the
+    # paired team final scores.
+    out["pbp_source_trusted"] = 0
+    out["pbp_validation_reason"] = "expected_final_score_not_validated"
     out["pbp_source_pull_date"] = pull_date
     out["pbp_source_schema_version"] = PBP_SCHEMA_VERSION
 
@@ -142,11 +151,35 @@ def game_ids_for_season(season: str, season_type: str) -> list[str]:
     return sorted(games["game_id"].dropna().astype(str).unique().tolist())
 
 
+def expected_terminal_states_for_season(
+    season: str, season_type: str
+) -> dict[str, ExpectedGameTerminalState]:
+    safe = normalize_season_type(season_type)
+    games_path = Path(f"data/raw/games/{season}_{safe}.csv")
+    team_path = Path(f"data/raw/team_game_stats/{season}_{safe}.csv")
+    if not games_path.exists() or not team_path.exists():
+        raise FileNotFoundError(
+            "Play-by-play trust requires matching games and team_game_stats files: "
+            f"{games_path}, {team_path}"
+        )
+    games = pd.read_csv(games_path, dtype={"game_id": str})
+    team = pd.read_csv(team_path, dtype={"game_id": str})
+    validate_team_game_pair_invariants(team, games=games)
+    return expected_game_terminal_states(team)
+
+
 def build_play_by_play_events_backfill(season: str, season_type: str) -> pd.DataFrame:
     pull_date = date.today().isoformat()
     frames: list[pd.DataFrame] = []
+    game_ids = game_ids_for_season(season, season_type)
+    expected_states = expected_terminal_states_for_season(season, season_type)
+    normalized_game_ids = {str(int(game_id)) for game_id in game_ids}
+    if normalized_game_ids != set(expected_states):
+        raise ValueError(
+            "Play-by-play expected-game set does not match paired team final-score coverage"
+        )
 
-    for game_id in game_ids_for_season(season, season_type):
+    for game_id in game_ids:
         raw = fetch_play_by_play_events_for_game(game_id)
         frames.append(
             normalize_play_by_play_events(
@@ -163,6 +196,14 @@ def build_play_by_play_events_backfill(season: str, season_type: str) -> pd.Data
         )
 
     out = pd.concat(frames, ignore_index=True)
+    out, decisions = apply_play_by_play_trust_decisions(out, expected_states)
+    failures = [
+        f"game_id={game_id}: {';'.join(reasons)}"
+        for game_id, reasons in decisions.items()
+        if reasons
+    ]
+    if failures:
+        raise ValueError("Play-by-play whole-game trust failed: " + "; ".join(failures))
     return validate_play_by_play_events_df(out).reset_index(drop=True)
 
 

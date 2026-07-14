@@ -9,6 +9,7 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands.source_invariants import validate_play_by_play_trust_decisions
 from nbatools.data_source import data_exists, data_read_csv, data_source_cache_key
 
 CLUTCH_TIME_REMAINING_START = 300
@@ -1434,6 +1435,22 @@ def _load_play_by_play_events_cached(
             raise ValueError("Trusted play-by-play rows must have blank pbp_validation_reason")
         if not df.loc[~trusted, "pbp_validation_reason"].fillna("").ne("").all():
             raise ValueError("Untrusted play-by-play rows must explain pbp_validation_reason")
+
+        team_path = f"data/raw/team_game_stats/{season}_{safe}.csv"
+        if not data_exists(team_path):
+            raise FileNotFoundError(
+                "play_by_play_events trust requires matching team_game_stats file: " + team_path
+            )
+        team = data_read_csv(team_path, dtype={"game_id": str})
+        trust_errors = validate_play_by_play_trust_decisions(df, team)
+        decision_mismatches = [
+            error for error in trust_errors if "trust decision mismatch" in error
+        ]
+        if decision_mismatches:
+            raise ValueError(
+                "play_by_play_events whole-game trust flags are invalid: "
+                + "; ".join(decision_mismatches)
+            )
 
         frames.append(df)
 
