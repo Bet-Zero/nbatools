@@ -71,7 +71,10 @@ describe("QueryFeedbackButton", () => {
         name: "Report an issue with this answer",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Do not include personal information.")).toBeInTheDocument();
+    expect(
+      screen.getByText(/stored raw feedback expires within 90 days/),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Do not include personal information/)).toBeInTheDocument();
   });
 
   it("submits successful-answer feedback through the API client", async () => {
@@ -113,7 +116,7 @@ describe("QueryFeedbackButton", () => {
       }),
     );
     expect(
-      await screen.findByText("Thanks. This query was saved for review."),
+      await screen.findByText(/Receipt: qfb_test/),
     ).toBeInTheDocument();
   });
 
@@ -243,7 +246,7 @@ describe("QueryFeedbackButton", () => {
       "Could not submit the report. Your query result is unchanged.",
     );
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    await screen.findByText("Thanks. This query was saved for review.");
+    await screen.findByText(/Receipt: qfb_retry/);
 
     const first = vi.mocked(postQueryFeedback).mock.calls[0][0].submission_id;
     const second = vi.mocked(postQueryFeedback).mock.calls[1][0].submission_id;

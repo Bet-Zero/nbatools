@@ -84,7 +84,6 @@ export function QueryFeedbackButton({
       : buildQueryErrorFeedbackPayload({
           query: query ?? "",
           errorMessage,
-          feedbackSource: "user_submitted",
           feedbackType,
           note,
         });
@@ -92,7 +91,7 @@ export function QueryFeedbackButton({
 
     try {
       const response = await postQueryFeedback(payload);
-      if (!response.stored) {
+      if (!response.stored || !response.feedback_id) {
         throw new Error("Feedback storage is disabled.");
       }
       setOpen(false);
@@ -100,7 +99,9 @@ export function QueryFeedbackButton({
       setFeedbackType(defaultFeedbackType);
       submissionIdRef.current = null;
       setStatusKind("success");
-      setStatusMessage("Thanks. This query was saved for review.");
+      setStatusMessage(
+        `Thanks. This query was saved for review. Receipt: ${response.feedback_id}. Keep this ID for a deletion request.`,
+      );
     } catch {
       setStatusKind("error");
       setStatusMessage(
@@ -195,7 +196,11 @@ export function QueryFeedbackButton({
               </label>
 
               <div className={styles.privacy}>
-                Do not include personal information.
+                Submitting sends this query, the report category, your optional
+                note, and limited result metadata for review. Sensitive patterns
+                are redacted server-side, and stored raw feedback expires within
+                90 days. Do not include personal information. A receipt ID is
+                returned for deletion requests.
               </div>
 
               <div className={styles.actions}>

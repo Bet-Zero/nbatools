@@ -60,7 +60,9 @@ def test_feedback_payload_validation_success_sanitizes_record():
         env={},
     )
 
-    assert record["schema_version"] == 1
+    assert record["schema_version"] == 2
+    assert record["retention_days"] == 90
+    assert record["expires_at"] == "2026-08-16T12:00:00.000Z"
     assert record["feedback_source"] == "user_submitted"
     assert record["feedback_type"] == "wrong_answer"
     assert record["query_normalized_hash"]
@@ -149,12 +151,17 @@ def test_r2_store_write_with_mock_client():
 
     assert result.stored is True
     assert result.key
-    assert result.key.startswith("query_feedback/2026/05/18/")
+    assert result.key == f"query_feedback/receipts/{record['id']}.json"
     assert calls[0]["Bucket"] == "nbatools-feedback"
     assert calls[0]["ContentType"] == "application/json"
+    assert calls[0]["Metadata"] == {
+        "expires-at": "2026-08-16T12:00:00.000Z",
+        "retention-days": "90",
+    }
     stored = json.loads(calls[0]["Body"].decode("utf-8"))
     assert stored["id"] == record["id"]
     assert "result" not in stored
+    assert calls[0]["IfNoneMatch"] == "*"
 
 
 def test_feedback_submission_id_uses_one_conditional_object_and_stable_receipt():
@@ -430,6 +437,7 @@ def test_automatic_logging_suppressed_for_internal_pages(monkeypatch):
         "result": {"metadata": {}, "sections": {}},
     }
 
-    assert maybe_log_query_diagnostic(payload, source_page="/review") is False
-    assert maybe_log_query_diagnostic(payload, source_page="/visual-qa") is False
+    env = {"QUERY_AUTOMATIC_DIAGNOSTICS_ENABLED": "true"}
+    assert maybe_log_query_diagnostic(payload, source_page="/review", env=env) is False
+    assert maybe_log_query_diagnostic(payload, source_page="/visual-qa", env=env) is False
     assert calls == []

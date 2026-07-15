@@ -243,6 +243,8 @@ def normalize_record(loaded: LoadedFeedbackRecord) -> dict[str, Any]:
     normalized: dict[str, Any] = {
         "id": clean_text(record.get("id")),
         "created_at": clean_text(record.get("created_at")),
+        "expires_at": clean_text(record.get("expires_at")),
+        "retention_days": number_or_none(record.get("retention_days")),
         "schema_version": record.get("schema_version"),
         "feedback_source": clean_text(record.get("feedback_source")),
         "feedback_type": clean_text(record.get("feedback_type")),

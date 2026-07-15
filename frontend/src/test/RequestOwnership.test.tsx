@@ -272,6 +272,16 @@ describe("latest request ownership", () => {
     );
   });
 
+  it("does not submit automatic feedback for the current query error", async () => {
+    vi.mocked(postQuery).mockRejectedValueOnce(new Error("current request failed"));
+
+    render(<App />);
+    fireEvent.click(starterButton("Jokic last 10 games"));
+
+    expect(await screen.findByText("current request failed")).toBeInTheDocument();
+    expect(postQueryFeedback).not.toHaveBeenCalled();
+  });
+
   it("prevents a superseded retry from replacing a newer starter-query result", async () => {
     const retry = deferred<QueryResponse>();
     const latest = deferred<QueryResponse>();

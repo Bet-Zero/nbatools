@@ -117,9 +117,12 @@ make raw-query-answer-qa
 - **Visual QA** (`make visual-qa-screenshots`, plus the `/visual-qa` page)
   — screenshots of rendered answers, for checking the page looks right.
 
-**And one intake valve for later:** the query-feedback endpoint
-(`POST /query-feedback` and `make query-feedback-export`) captures bad
-answers reported by real users, so they can enter the funnel at Stage 1.
+**And one intake valve for later:** the manual query-feedback endpoint
+(`POST /query-feedback` and `make query-feedback-export`) can capture bad
+answers explicitly reported by real users, so they can enter the funnel at
+Stage 1. Automatic public query diagnostics do not persist. Deployed manual
+feedback storage remains disabled until the privacy activation gates in
+[`query_feedback_privacy.md`](../operations/query_feedback_privacy.md) are met.
 
 The funnel, end to end:
 

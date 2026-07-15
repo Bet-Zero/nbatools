@@ -5,12 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  fetchHealth,
-  postQuery,
-  postQueryFeedback,
-  postStructuredQuery,
-} from "./api/client";
+import { fetchHealth, postQuery, postStructuredQuery } from "./api/client";
 import type { SavedQueryInput } from "./api/savedQueryTypes";
 import type { QueryResponse } from "./api/types";
 import AppShell from "./components/AppShell";
@@ -22,10 +17,7 @@ import FreshnessStatus from "./components/FreshnessStatus";
 import Loading from "./components/Loading";
 import QueryBar from "./components/QueryBar";
 import { QueryFeedbackButton } from "./components/QueryFeedback";
-import {
-  buildQueryErrorFeedbackPayload,
-  defaultFeedbackTypeForResult,
-} from "./components/queryFeedbackPayload";
+import { defaultFeedbackTypeForResult } from "./components/queryFeedbackPayload";
 import QueryHistory from "./components/QueryHistory";
 import RawJsonToggle from "./components/RawJsonToggle";
 import ResultEnvelope, {
@@ -234,15 +226,6 @@ export default function App() {
         if (!ownsRequest(request.generation)) return;
         const message = safeErrorMessage(err);
         setError(message);
-        void postQueryFeedback(
-          buildQueryErrorFeedbackPayload({
-            query,
-            errorMessage: message,
-            feedbackSource: "automatic",
-          }),
-        ).catch(() => {
-          // Feedback logging must not change query UX.
-        });
       } finally {
         if (ownsRequest(request.generation)) {
           activeRequestRef.current = null;

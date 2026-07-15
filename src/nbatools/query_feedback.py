@@ -8,6 +8,7 @@ query behavior.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import os
 import re
@@ -15,7 +16,7 @@ import secrets
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
@@ -23,7 +24,8 @@ from typing import Any
 from nbatools.data_source import R2Config, create_r2_client
 from nbatools.r2_errors import is_precondition_failed
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+FEEDBACK_RETENTION_DAYS = 90
 
 ALLOWED_FEEDBACK_SOURCES = {"automatic", "user_submitted"}
 ALLOWED_FEEDBACK_TYPES = {
@@ -53,12 +55,45 @@ QUERY_FEEDBACK_PREFIX_ENV = "QUERY_FEEDBACK_PREFIX"
 QUERY_FEEDBACK_R2_ACCOUNT_ID_ENV = "QUERY_FEEDBACK_R2_ACCOUNT_ID"
 QUERY_FEEDBACK_R2_ACCESS_KEY_ID_ENV = "QUERY_FEEDBACK_R2_ACCESS_KEY_ID"
 QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY_ENV = "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY"
+QUERY_FEEDBACK_PUBLIC_PERSISTENCE_ENV = "QUERY_FEEDBACK_PUBLIC_PERSISTENCE_ENABLED"
+QUERY_FEEDBACK_LEGAL_BASIS_ENV = "QUERY_FEEDBACK_LEGAL_BASIS_APPROVED"
+QUERY_FEEDBACK_PUBLIC_NOTICE_ENV = "QUERY_FEEDBACK_PUBLIC_NOTICE_APPROVED"
+QUERY_FEEDBACK_DELETION_CONTACT_ENV = "QUERY_FEEDBACK_DELETION_CONTACT"
+QUERY_FEEDBACK_LIFECYCLE_VERIFIED_ENV = "QUERY_FEEDBACK_LIFECYCLE_VERIFIED"
+QUERY_AUTOMATIC_DIAGNOSTICS_ENV = "QUERY_AUTOMATIC_DIAGNOSTICS_ENABLED"
 REQUIRED_QUERY_FEEDBACK_R2_ENV_VARS = (
     QUERY_FEEDBACK_R2_ACCOUNT_ID_ENV,
     QUERY_FEEDBACK_R2_ACCESS_KEY_ID_ENV,
     QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY_ENV,
 )
 DEFAULT_QUERY_FEEDBACK_PREFIX = "query_feedback"
+
+PUBLIC_PERSISTENCE_REQUIREMENTS = (
+    QUERY_FEEDBACK_PUBLIC_PERSISTENCE_ENV,
+    QUERY_FEEDBACK_LEGAL_BASIS_ENV,
+    QUERY_FEEDBACK_PUBLIC_NOTICE_ENV,
+    QUERY_FEEDBACK_DELETION_CONTACT_ENV,
+    QUERY_FEEDBACK_LIFECYCLE_VERIFIED_ENV,
+)
+
+_EMAIL_PATTERN = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])")
+_IPV4_PATTERN = re.compile(
+    r"(?<!\d)(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}"
+    r"(?:25[0-5]|2[0-4]\d|1?\d?\d)(?!\d)"
+)
+_IPV6_CANDIDATE_PATTERN = re.compile(
+    r"(?i)(?<![0-9a-f:])(?:[0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}(?![0-9a-f:])"
+)
+_PHONE_PATTERN = re.compile(r"(?<!\w)(?:\+?1[ .-]?)?(?:\(?\d{3}\)?[ .-]?)\d{3}[ .-]?\d{4}(?!\w)")
+_LONG_NUMBER_PATTERN = re.compile(r"(?<!\d)(?:\d[ -]?){13,19}(?!\d)")
+_BEARER_PATTERN = re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/=-]{8,}")
+_SECRET_ASSIGNMENT_PATTERN = re.compile(
+    r"(?i)\b(api[ _-]?key|access[ _-]?token|auth[ _-]?token|password|passwd|secret)"
+    r"\s*[:=]\s*[^\s,;]{4,}"
+)
+_SENSITIVE_QUERY_PARAMETER_PATTERN = re.compile(
+    r"(?i)([?&](?:access_token|api_key|key|password|secret|token)=)[^&#\s]+"
+)
 
 SUPPRESSED_SOURCE_PAGES = {"/review", "/visual-qa"}
 AUTOMATIC_DIAGNOSTIC_REASONS = {
@@ -140,6 +175,15 @@ class FeedbackStorageError(RuntimeError):
 
 
 @dataclass(frozen=True)
+class FeedbackPersistenceGate:
+    """Fail-closed result for manual feedback persistence configuration."""
+
+    enabled: bool
+    reason: str | None = None
+    missing_requirements: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
 class FeedbackStoreConfig:
     """R2-backed query feedback store configuration."""
 
@@ -184,6 +228,7 @@ def build_feedback_record(
 
     created_at_dt = now.astimezone(UTC) if now else datetime.now(UTC)
     created_at = _isoformat_z(created_at_dt)
+    expires_at = _isoformat_z(created_at_dt + timedelta(days=FEEDBACK_RETENTION_DAYS))
     submission_id = _submission_id(payload.get("submission_id"))
     record_id = _feedback_id(created_at_dt, submission_id=submission_id)
     status = _optional_text(payload, "status", METADATA_TEXT_MAX_LENGTH)
@@ -194,6 +239,8 @@ def build_feedback_record(
     record: dict[str, Any] = {
         "id": record_id,
         "created_at": created_at,
+        "expires_at": expires_at,
+        "retention_days": FEEDBACK_RETENTION_DAYS,
         "schema_version": SCHEMA_VERSION,
         "feedback_source": feedback_source,
         "feedback_type": feedback_type,
@@ -283,7 +330,15 @@ def store_feedback_record(
     client: Any | None = None,
 ) -> FeedbackStoreResult:
     """Persist a sanitized feedback record to the configured store."""
-    config = load_feedback_store_config(env=env)
+    env_file = None if env is not None else Path(".env")
+    gate = feedback_persistence_gate(env=env, env_file=env_file)
+    if not gate.enabled:
+        return FeedbackStoreResult(
+            stored=False,
+            disabled=True,
+            reason=gate.reason,
+        )
+    config = load_feedback_store_config(env=env, env_file=env_file)
     if config is None:
         return FeedbackStoreResult(
             stored=False,
@@ -300,9 +355,12 @@ def store_feedback_record(
         "Key": key,
         "Body": body,
         "ContentType": "application/json",
+        "Metadata": {
+            "expires-at": str(record["expires_at"]),
+            "retention-days": str(FEEDBACK_RETENTION_DAYS),
+        },
     }
-    if record.get("submission_id"):
-        put_kwargs["IfNoneMatch"] = "*"
+    put_kwargs["IfNoneMatch"] = "*"
     try:
         r2_client.put_object(
             **put_kwargs,
@@ -352,6 +410,37 @@ def load_feedback_store_config(
     )
 
 
+def feedback_persistence_gate(
+    *,
+    env: dict[str, str] | None = None,
+    env_file: Path | None = Path(".env"),
+) -> FeedbackPersistenceGate:
+    """Return whether feedback may persist under the approved public policy."""
+    values = _merged_env(env, env_file)
+    store = values.get(QUERY_FEEDBACK_STORE_ENV, "").strip().lower()
+    if not store:
+        return FeedbackPersistenceGate(
+            enabled=False,
+            reason="QUERY_FEEDBACK_STORE is not configured",
+        )
+
+    if not _is_deployed_environment(values):
+        return FeedbackPersistenceGate(enabled=True)
+
+    missing = tuple(
+        key
+        for key in PUBLIC_PERSISTENCE_REQUIREMENTS
+        if not _public_requirement_satisfied(key, values)
+    )
+    if missing:
+        return FeedbackPersistenceGate(
+            enabled=False,
+            reason="Deployed feedback persistence privacy gates are incomplete",
+            missing_requirements=missing,
+        )
+    return FeedbackPersistenceGate(enabled=True)
+
+
 def load_feedback_r2_config(
     *,
     env: dict[str, str] | None = None,
@@ -390,14 +479,12 @@ def load_feedback_r2_config(
 
 def feedback_object_key(record: dict[str, Any], *, prefix: str) -> str:
     """Return the immutable R2 object key for a feedback record."""
+    clean_prefix = prefix.strip("/")
     submission_id = record.get("submission_id")
     if isinstance(submission_id, str) and submission_id:
-        return f"{prefix.strip('/')}/submissions/{_safe_key_token(submission_id, 40)}.json"
-    created_at = str(record.get("created_at") or _isoformat_z(datetime.now(UTC)))
-    dt = _parse_created_at(created_at)
-    created_at_ms = int(dt.timestamp() * 1000)
-    short_id = str(record.get("id") or secrets.token_hex(4))[-8:]
-    return f"{prefix.strip('/')}/{dt:%Y/%m/%d}/{created_at_ms}_{_safe_key_token(short_id)}.json"
+        return f"{clean_prefix}/submissions/{_safe_key_token(submission_id, 40)}.json"
+    record_id = str(record.get("id") or _feedback_id(datetime.now(UTC)))
+    return f"{clean_prefix}/receipts/{_safe_key_token(record_id, 80)}.json"
 
 
 def handle_feedback_submission(
@@ -409,6 +496,12 @@ def handle_feedback_submission(
     idempotency_key: str | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate, store, and format an API response for a feedback submission."""
+    if not isinstance(payload, dict) or payload.get("feedback_source") != "user_submitted":
+        return HTTPStatus.UNPROCESSABLE_ENTITY, {
+            "ok": False,
+            "error": "validation_error",
+            "detail": "Public feedback submissions must be explicitly user_submitted",
+        }
     if source_page and isinstance(payload, dict):
         payload = {**payload, "source_page": payload.get("source_page") or source_page}
     if idempotency_key and isinstance(payload, dict):
@@ -457,6 +550,8 @@ def maybe_log_query_diagnostic(
     env: dict[str, str] | None = None,
 ) -> bool:
     """Best-effort automatic diagnostic logging for negative query outcomes."""
+    if not automatic_diagnostics_enabled(env=env):
+        return False
     if not should_log_query_diagnostic(
         query_payload,
         elapsed_ms=elapsed_ms,
@@ -473,10 +568,18 @@ def maybe_log_query_diagnostic(
             ),
             env=env,
         )
-        store_feedback_record(record, env=env)
+        result = store_feedback_record(record, env=env)
     except Exception:
         return False
-    return True
+    return result.stored
+
+
+def automatic_diagnostics_enabled(*, env: dict[str, str] | None = None) -> bool:
+    """Allow explicit local diagnostics while keeping every deployment disabled."""
+    values = _merged_env(env, None if env is not None else Path(".env"))
+    if _is_deployed_environment(values):
+        return False
+    return _is_true(values.get(QUERY_AUTOMATIC_DIAGNOSTICS_ENV))
 
 
 def should_log_query_diagnostic(
@@ -553,7 +656,35 @@ def normalize_source_page(value: Any) -> str:
     text = value.strip()
     if not text.startswith("/"):
         text = f"/{text}"
+    text = text.split("?", 1)[0].split("#", 1)[0]
     return _clean_text(text, METADATA_TEXT_MAX_LENGTH) or "/"
+
+
+def redact_sensitive_text(value: str) -> str:
+    """Redact common sensitive patterns before any free text is retained."""
+    text = _BEARER_PATTERN.sub("[redacted-secret]", value)
+    text = _SECRET_ASSIGNMENT_PATTERN.sub(
+        lambda match: f"{match.group(1)}=[redacted-secret]",
+        text,
+    )
+    text = _SENSITIVE_QUERY_PARAMETER_PATTERN.sub(
+        lambda match: f"{match.group(1)}[redacted-secret]",
+        text,
+    )
+    text = _EMAIL_PATTERN.sub("[redacted-email]", text)
+    text = _IPV4_PATTERN.sub("[redacted-ip]", text)
+    text = _IPV6_CANDIDATE_PATTERN.sub(_redact_ipv6_candidate, text)
+    text = _PHONE_PATTERN.sub("[redacted-phone]", text)
+    return _LONG_NUMBER_PATTERN.sub("[redacted-number]", text)
+
+
+def _redact_ipv6_candidate(match: re.Match[str]) -> str:
+    candidate = match.group(0)
+    try:
+        address = ipaddress.ip_address(candidate)
+    except ValueError:
+        return candidate
+    return "[redacted-ip]" if address.version == 6 else candidate
 
 
 def _required_text(payload: dict[str, Any], key: str, max_length: int) -> str:
@@ -582,7 +713,7 @@ def _clean_text(value: Any, max_length: int) -> str | None:
     text = re.sub(r"\s+", " ", str(value)).strip()
     if not text:
         return None
-    return text[:max_length]
+    return redact_sensitive_text(text)[:max_length]
 
 
 def _sanitize_text_list(value: Any, max_items: int) -> list[str]:
@@ -690,13 +821,6 @@ def _isoformat_z(value: datetime) -> str:
     return value.astimezone(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
-def _parse_created_at(value: str) -> datetime:
-    try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
-    except ValueError:
-        return datetime.now(UTC)
-
-
 def _safe_key_token(value: str, max_length: int = 24) -> str:
     return re.sub(r"[^A-Za-z0-9_-]", "", value)[:max_length] or secrets.token_hex(4)
 
@@ -765,6 +889,26 @@ def _environment_name(env: dict[str, str] | None) -> str:
         or values.get("ENVIRONMENT")
         or "local"
     )
+
+
+def _is_deployed_environment(values: dict[str, str]) -> bool:
+    if _is_true(values.get("VERCEL")) or values.get("VERCEL_ENV"):
+        return True
+    return values.get("NBATOOLS_ENV", values.get("ENVIRONMENT", "")).strip().lower() in {
+        "preview",
+        "production",
+        "prod",
+    }
+
+
+def _public_requirement_satisfied(key: str, values: dict[str, str]) -> bool:
+    if key == QUERY_FEEDBACK_DELETION_CONTACT_ENV:
+        return bool(values.get(key, "").strip())
+    return _is_true(values.get(key))
+
+
+def _is_true(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _deployment_context(env: dict[str, str] | None) -> dict[str, str]:

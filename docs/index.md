@@ -63,6 +63,7 @@ Runbooks and durable workflow policies.
 
 - [`operations/pipeline_runbook.md`](operations/pipeline_runbook.md) - data pipeline operations
 - [`operations/deployment.md`](operations/deployment.md) - Cloudflare R2 and Vercel deployment
+- [`operations/query_feedback_privacy.md`](operations/query_feedback_privacy.md) - manual feedback privacy, retention, activation, and deletion boundary
 - [`operations/query_feedback_review.md`](operations/query_feedback_review.md) - query feedback review workflow
 - [`operations/exploratory_query_review.md`](operations/exploratory_query_review.md) - input-only natural-query review workflow
 - [`operations/query_smoke_workflow.md`](operations/query_smoke_workflow.md) - natural-query smoke workflow

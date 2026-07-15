@@ -37,13 +37,23 @@ Optional query feedback variables:
 - `QUERY_FEEDBACK_R2_ACCOUNT_ID`
 - `QUERY_FEEDBACK_R2_ACCESS_KEY_ID`
 - `QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY`
+- `QUERY_FEEDBACK_PUBLIC_PERSISTENCE_ENABLED`
+- `QUERY_FEEDBACK_LEGAL_BASIS_APPROVED`
+- `QUERY_FEEDBACK_PUBLIC_NOTICE_APPROVED`
+- `QUERY_FEEDBACK_DELETION_CONTACT`
+- `QUERY_FEEDBACK_LIFECYCLE_VERIFIED`
 - `NBATOOLS_ADMIN_FEEDBACK_ENABLED`
 - `NBATOOLS_ADMIN_TOKEN`
 
-Set `QUERY_FEEDBACK_STORE=r2` to enable query feedback and diagnostic logging.
-Leave it unset or empty to keep `/query-feedback` in disabled mode. Disabled
-mode returns JSON with `ok: true`, `stored: false`, and `disabled: true`; normal
-query UX and `/query` responses continue unchanged.
+`QUERY_FEEDBACK_STORE=r2` selects the store but does not by itself enable
+deployed persistence. Deployed storage fails closed unless all five public
+privacy gates above are also satisfied. They are currently unsatisfied: no
+approved legal basis/notice or dedicated monitored public deletion channel
+exists. Leave them unset and keep deployed feedback disabled. Disabled mode
+returns JSON with `ok: true`, `stored: false`, and `disabled: true`; normal query
+UX and `/query` responses continue unchanged. Automatic diagnostics are forced
+off in all deployments and the public endpoint accepts only explicit
+`user_submitted` feedback.
 
 For deployed feedback storage, use `QUERY_FEEDBACK_BUCKET_NAME=nbatools-feedback`
 or another dedicated bucket and keep `QUERY_FEEDBACK_PREFIX=query_feedback`.
@@ -131,11 +141,14 @@ Configure that token through `QUERY_FEEDBACK_R2_ACCOUNT_ID`,
 `QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY`. Do not copy the canonical-data access key
 and secret into those variables.
 
-Feedback records are compact JSON diagnostics and user reports. They do not
-intentionally collect names, emails, IP addresses, user accounts, phone
-numbers, precise device fingerprints, or session replay. Retain raw feedback
-for 90 days unless a record is converted into a QA case, data issue, or product
-planning artifact.
+Feedback records are minimized user reports. Common sensitive patterns are
+redacted server-side; full results, accounts, client IP addresses, precise
+device fingerprints, and session replay are not retained. Every raw record has
+a fixed 90-day expiry and must be covered by a verified provider lifecycle rule
+of 90 days or less. Conversion into a QA case, issue, or planning artifact does
+not extend raw retention. See
+[`query_feedback_privacy.md`](query_feedback_privacy.md). No real lifecycle or
+deployed privacy configuration is currently verified.
 
 ## Endpoint Construction
 
