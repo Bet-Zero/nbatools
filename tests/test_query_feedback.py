@@ -14,6 +14,7 @@ from nbatools.query_feedback import (
     FeedbackStoreResult,
     FeedbackValidationError,
     build_feedback_record,
+    handle_feedback_submission,
     load_feedback_store_config,
     maybe_log_query_diagnostic,
     sanitize_metadata,
@@ -154,6 +155,81 @@ def test_r2_store_write_with_mock_client():
     stored = json.loads(calls[0]["Body"].decode("utf-8"))
     assert stored["id"] == record["id"]
     assert "result" not in stored
+
+
+def test_feedback_submission_id_uses_one_conditional_object_and_stable_receipt():
+    submission_id = "00000000-0000-4000-8000-000000000001"
+    record = build_feedback_record(
+        base_payload(submission_id=submission_id),
+        now=datetime(2026, 5, 18, 12, 0, tzinfo=UTC),
+        env={},
+    )
+    calls = []
+
+    class FakeClient:
+        def put_object(self, **kwargs):
+            calls.append(kwargs)
+
+    result = store_feedback_record(
+        record,
+        env={
+            "QUERY_FEEDBACK_STORE": "r2",
+            "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
+            "QUERY_FEEDBACK_PREFIX": "query_feedback",
+            "QUERY_FEEDBACK_R2_ACCOUNT_ID": "acct",
+            "QUERY_FEEDBACK_R2_ACCESS_KEY_ID": "feedback-key",
+            "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY": "feedback-secret",
+        },
+        client=FakeClient(),
+    )
+
+    assert record["id"] == "qfb_00000000000040008000000000000001"
+    assert result.key == f"query_feedback/submissions/{submission_id}.json"
+    assert calls[0]["IfNoneMatch"] == "*"
+
+
+def test_feedback_submission_retry_returns_same_receipt_without_new_write():
+    submission_id = "00000000-0000-4000-8000-000000000001"
+
+    class PreconditionFailed(Exception):
+        response = {
+            "Error": {"Code": "PreconditionFailed"},
+            "ResponseMetadata": {"HTTPStatusCode": 412},
+        }
+
+    class FakeClient:
+        def put_object(self, **_kwargs):
+            raise PreconditionFailed("already stored")
+
+    status, payload = handle_feedback_submission(
+        base_payload(submission_id=submission_id),
+        idempotency_key=submission_id,
+        env={
+            "QUERY_FEEDBACK_STORE": "r2",
+            "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
+            "QUERY_FEEDBACK_PREFIX": "query_feedback",
+            "QUERY_FEEDBACK_R2_ACCOUNT_ID": "acct",
+            "QUERY_FEEDBACK_R2_ACCESS_KEY_ID": "feedback-key",
+            "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY": "feedback-secret",
+        },
+        client=FakeClient(),
+    )
+
+    assert status == 200
+    assert payload["feedback_id"] == "qfb_00000000000040008000000000000001"
+    assert payload["idempotent_replay"] is True
+
+
+def test_feedback_idempotency_header_must_match_payload():
+    status, payload = handle_feedback_submission(
+        base_payload(submission_id="00000000-0000-4000-8000-000000000001"),
+        idempotency_key="00000000-0000-4000-8000-000000000002",
+        env={},
+    )
+
+    assert status == 422
+    assert payload["error"] == "validation_error"
+    assert "must match" in payload["detail"]
 
 
 def test_feedback_store_uses_dedicated_credentials_and_preserves_read_only_data_client(

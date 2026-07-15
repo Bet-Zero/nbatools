@@ -23,6 +23,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from nbatools import __version__, api_ui
+from nbatools.admission_control import (
+    ADMISSION_CONTROLLER,
+    AdmissionRejected,
+    RequestBodyBudgetMiddleware,
+    admission_controls_enabled,
+    client_identifier,
+)
 from nbatools.api_contracts import (
     NaturalQueryRequest,
     StructuredQueryRequest,
@@ -80,6 +87,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RequestBodyBudgetMiddleware)
 
 # ---------------------------------------------------------------------------
 # Request / response models
@@ -189,6 +197,15 @@ class ReadinessResponse(BaseModel):
 def _query_result_to_response(qr: QueryResult) -> QueryResponse:
     """Convert a QueryResult envelope into a JSON-friendly response."""
     return QueryResponse(**query_result_to_payload(qr))
+
+
+def _admission_response(exc: AdmissionRejected) -> JSONResponse:
+    return JSONResponse(status_code=exc.status, content=exc.payload(), headers=exc.headers())
+
+
+def _client_id(request: Request) -> str:
+    fallback = request.client.host if request.client else None
+    return client_identifier(request.headers, fallback)
 
 
 def _load_ui_html() -> str:
@@ -343,14 +360,24 @@ def dev_fixtures() -> DevFixturesResponse:
 
 
 @app.post("/query", response_model=QueryResponse)
-def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse:
+def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse | JSONResponse:
     """Execute a natural-language NBA query.
 
     Calls ``execute_natural_query`` from the query service and returns
     the structured result as JSON.
     """
     start_time = time.monotonic()
-    qr = execute_natural_query(body.query)
+    try:
+        qr = (
+            ADMISSION_CONTROLLER.run_query(
+                _client_id(request),
+                lambda: execute_natural_query(body.query),
+            )
+            if admission_controls_enabled()
+            else execute_natural_query(body.query)
+        )
+    except AdmissionRejected as exc:
+        return _admission_response(exc)
     payload = query_result_to_payload(qr)
     maybe_log_query_diagnostic(
         payload,
@@ -363,10 +390,26 @@ def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse:
 @app.post("/query-feedback")
 def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
     """Accept user-submitted or automatic query feedback."""
-    status, payload = handle_feedback_submission(
-        body,
-        source_page=request.headers.get("X-NBATools-Source-Page"),
-    )
+    reservation = None
+    try:
+        if admission_controls_enabled():
+            reservation = ADMISSION_CONTROLLER.reserve_feedback(_client_id(request))
+        status, payload = handle_feedback_submission(
+            body,
+            source_page=request.headers.get("X-NBATools-Source-Page"),
+            idempotency_key=request.headers.get("X-NBATools-Idempotency-Key"),
+        )
+    except AdmissionRejected as exc:
+        return _admission_response(exc)
+    except Exception:
+        if reservation is not None:
+            reservation.rollback()
+        raise
+    if reservation is not None:
+        if payload.get("stored") and not payload.get("idempotent_replay"):
+            reservation.commit()
+        else:
+            reservation.rollback()
     return JSONResponse(status_code=status, content=payload)
 
 
@@ -460,11 +503,24 @@ def admin_feedback_group_triage_update(
 
 
 @app.post("/structured-query", response_model=QueryResponse)
-def structured_query(body: StructuredQueryRequest) -> QueryResponse:
+def structured_query(
+    body: StructuredQueryRequest,
+    request: Request,
+) -> QueryResponse | JSONResponse:
     """Execute a structured (route-based) query.
 
     Calls ``execute_structured_query`` from the query service and returns
     the structured result as JSON.
     """
-    qr = execute_structured_query(body.route, **body.kwargs)
+    try:
+        qr = (
+            ADMISSION_CONTROLLER.run_query(
+                _client_id(request),
+                lambda: execute_structured_query(body.route, **body.kwargs),
+            )
+            if admission_controls_enabled()
+            else execute_structured_query(body.route, **body.kwargs)
+        )
+    except AdmissionRejected as exc:
+        return _admission_response(exc)
     return _query_result_to_response(qr)

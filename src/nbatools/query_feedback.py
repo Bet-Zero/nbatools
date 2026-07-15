@@ -13,6 +13,7 @@ import os
 import re
 import secrets
 import time
+import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from http import HTTPStatus
@@ -20,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from nbatools.data_source import R2Config, create_r2_client
+from nbatools.r2_errors import is_precondition_failed
 
 SCHEMA_VERSION = 1
 
@@ -155,6 +157,7 @@ class FeedbackStoreResult:
     disabled: bool = False
     key: str | None = None
     reason: str | None = None
+    replayed: bool = False
 
 
 def build_feedback_record(
@@ -181,7 +184,8 @@ def build_feedback_record(
 
     created_at_dt = now.astimezone(UTC) if now else datetime.now(UTC)
     created_at = _isoformat_z(created_at_dt)
-    record_id = _feedback_id(created_at_dt)
+    submission_id = _submission_id(payload.get("submission_id"))
+    record_id = _feedback_id(created_at_dt, submission_id=submission_id)
     status = _optional_text(payload, "status", METADATA_TEXT_MAX_LENGTH)
     reason = _optional_text(payload, "reason", METADATA_TEXT_MAX_LENGTH)
     route = _optional_text(payload, "route", METADATA_TEXT_MAX_LENGTH)
@@ -219,6 +223,8 @@ def build_feedback_record(
         "review_status": "new",
         "triage_decision": None,
     }
+    if submission_id is not None:
+        record["submission_id"] = submission_id
 
     deployment = _deployment_context(env)
     if deployment:
@@ -289,14 +295,21 @@ def store_feedback_record(
     body = json.dumps(record, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
     r2_client = client or create_r2_client(config.r2)
 
+    put_kwargs = {
+        "Bucket": config.bucket_name,
+        "Key": key,
+        "Body": body,
+        "ContentType": "application/json",
+    }
+    if record.get("submission_id"):
+        put_kwargs["IfNoneMatch"] = "*"
     try:
         r2_client.put_object(
-            Bucket=config.bucket_name,
-            Key=key,
-            Body=body,
-            ContentType="application/json",
+            **put_kwargs,
         )
     except Exception as exc:  # pragma: no cover - exact boto error shape varies
+        if record.get("submission_id") and is_precondition_failed(exc):
+            return FeedbackStoreResult(stored=True, disabled=False, key=key, replayed=True)
         raise FeedbackStorageError(f"Could not store query feedback record: {exc}") from exc
 
     return FeedbackStoreResult(stored=True, disabled=False, key=key)
@@ -377,6 +390,9 @@ def load_feedback_r2_config(
 
 def feedback_object_key(record: dict[str, Any], *, prefix: str) -> str:
     """Return the immutable R2 object key for a feedback record."""
+    submission_id = record.get("submission_id")
+    if isinstance(submission_id, str) and submission_id:
+        return f"{prefix.strip('/')}/submissions/{_safe_key_token(submission_id, 40)}.json"
     created_at = str(record.get("created_at") or _isoformat_z(datetime.now(UTC)))
     dt = _parse_created_at(created_at)
     created_at_ms = int(dt.timestamp() * 1000)
@@ -390,10 +406,20 @@ def handle_feedback_submission(
     source_page: str | None = None,
     env: dict[str, str] | None = None,
     client: Any | None = None,
+    idempotency_key: str | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate, store, and format an API response for a feedback submission."""
     if source_page and isinstance(payload, dict):
         payload = {**payload, "source_page": payload.get("source_page") or source_page}
+    if idempotency_key and isinstance(payload, dict):
+        supplied = payload.get("submission_id")
+        if supplied and supplied != idempotency_key:
+            return HTTPStatus.UNPROCESSABLE_ENTITY, {
+                "ok": False,
+                "error": "validation_error",
+                "detail": "submission_id must match X-NBATools-Idempotency-Key",
+            }
+        payload = {**payload, "submission_id": idempotency_key}
 
     try:
         record = build_feedback_record(payload, env=env)
@@ -416,8 +442,10 @@ def handle_feedback_submission(
     return HTTPStatus.OK, {
         "ok": True,
         "feedback_id": record["id"],
+        "submission_id": record.get("submission_id"),
         "stored": result.stored,
         "disabled": result.disabled,
+        "idempotent_replay": result.replayed,
     }
 
 
@@ -640,9 +668,22 @@ def _query_hash(
     return hashlib.sha256(digest_input.encode("utf-8")).hexdigest()
 
 
-def _feedback_id(created_at: datetime) -> str:
+def _feedback_id(created_at: datetime, *, submission_id: str | None = None) -> str:
+    if submission_id is not None:
+        return f"qfb_{submission_id.replace('-', '')}"
     stamp = created_at.strftime("%Y%m%dT%H%M%S%fZ")
     return f"qfb_{stamp}_{secrets.token_hex(4)}"
+
+
+def _submission_id(value: Any) -> str | None:
+    if value is None or value == "":
+        return None
+    if not isinstance(value, str):
+        raise FeedbackValidationError("submission_id must be a UUID string")
+    try:
+        return str(uuid.UUID(value))
+    except ValueError as exc:
+        raise FeedbackValidationError("submission_id must be a UUID string") from exc
 
 
 def _isoformat_z(value: datetime) -> str:
@@ -656,8 +697,8 @@ def _parse_created_at(value: str) -> datetime:
         return datetime.now(UTC)
 
 
-def _safe_key_token(value: str) -> str:
-    return re.sub(r"[^A-Za-z0-9_-]", "", value)[:24] or secrets.token_hex(4)
+def _safe_key_token(value: str, max_length: int = 24) -> str:
+    return re.sub(r"[^A-Za-z0-9_-]", "", value)[:max_length] or secrets.token_hex(4)
 
 
 def _response_metadata(query_payload: dict[str, Any]) -> dict[str, Any]:

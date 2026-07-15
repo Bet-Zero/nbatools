@@ -93,6 +93,7 @@ def query_response(
     body: Any,
     *,
     source_page: str | None = None,
+    client_id: str | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate and execute a natural query request body."""
     try:
@@ -100,7 +101,15 @@ def query_response(
     except ValidationError as exc:
         return HTTPStatus.UNPROCESSABLE_ENTITY, validation_error_payload(exc)
     start_time = time.monotonic()
-    payload = natural_query_payload(request.query)
+    if client_id is not None:
+        from nbatools.admission_control import ADMISSION_CONTROLLER
+
+        payload = ADMISSION_CONTROLLER.run_query(
+            client_id,
+            lambda: natural_query_payload(request.query),
+        )
+    else:
+        payload = natural_query_payload(request.query)
     maybe_log_query_diagnostic(
         payload,
         elapsed_ms=elapsed_ms_since(start_time),
@@ -113,15 +122,47 @@ def query_feedback_response(
     body: dict[str, Any],
     *,
     source_page: str | None = None,
+    idempotency_key: str | None = None,
+    client_id: str | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Validate and persist a query feedback request body."""
-    return handle_feedback_submission(body, source_page=source_page)
+    from nbatools.admission_control import ADMISSION_CONTROLLER
+
+    reservation = ADMISSION_CONTROLLER.reserve_feedback(client_id) if client_id else None
+    feedback_kwargs: dict[str, Any] = {"source_page": source_page}
+    if idempotency_key is not None:
+        feedback_kwargs["idempotency_key"] = idempotency_key
+    try:
+        status, payload = handle_feedback_submission(body, **feedback_kwargs)
+    except Exception:
+        if reservation is not None:
+            reservation.rollback()
+        raise
+    if reservation is not None:
+        if payload.get("stored") and not payload.get("idempotent_replay"):
+            reservation.commit()
+        else:
+            reservation.rollback()
+    return status, payload
 
 
-def structured_query_response(body: Any) -> tuple[int, dict[str, Any]]:
+def structured_query_response(
+    body: Any,
+    *,
+    client_id: str | None = None,
+) -> tuple[int, dict[str, Any]]:
     """Validate and execute a structured query request body."""
     try:
         request = StructuredQueryRequest.model_validate(body)
     except ValidationError as exc:
         return HTTPStatus.UNPROCESSABLE_ENTITY, validation_error_payload(exc)
-    return HTTPStatus.OK, structured_query_payload(request.route, request.kwargs)
+    if client_id is not None:
+        from nbatools.admission_control import ADMISSION_CONTROLLER
+
+        payload = ADMISSION_CONTROLLER.run_query(
+            client_id,
+            lambda: structured_query_payload(request.route, request.kwargs),
+        )
+    else:
+        payload = structured_query_payload(request.route, request.kwargs)
+    return HTTPStatus.OK, payload

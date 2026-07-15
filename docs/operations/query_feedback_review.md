@@ -230,6 +230,13 @@ runs after the worksheet is complete.
 - Default prefix: `query_feedback`
 - Object key shape:
   `query_feedback/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json`
+- Idempotent user-submission key shape:
+  `query_feedback/submissions/<submission_uuid>.json`; the write uses an
+  absent-object precondition, so retrying the same receipt cannot create a
+  second accepted record
+- Admission quota: at most 20 newly stored submissions per client/IP per rolling
+  24 hours; HTTP 429 includes `Retry-After`, while a conditional replay returns
+  the original deterministic feedback receipt without consuming another slot
 
 The May 18, 2026 preview inspection verified historical records in bucket
 `nbatools-data` under isolated prefix `query_feedback/preview` because the
