@@ -1,15 +1,8 @@
 version: 1
 surface: public_query_acceptance
 review_closure:
-  state: human_review_complete
-  scope: public_query_acceptance
-  reviewed_run_id: 20260608T040000Z_top_single_game_performances_007
-  completed_on: "2026-06-08"
-  case_count: 127
-  ui_spot_check:
-    status: not_applicable
-    notes: Slice 007 promotion reuses existing top-performance and leaderboard UI renderers; no frontend layout change was introduced.
-  notes: Public acceptance representative outputs and the promoted slice 007 top single-game performance boundary cases were reviewed after rendered exploratory review; machine passing, coverage, human review, and UI spot checks remain separate validation layers.
+  state: human_review_pending
+  notes: The prior 127-case June 8 closure predated the current corpus and was not commit, content, output, generation, or reviewer bound. A new complete closure requires an exact retained review artifact and human certification.
 
 variant_grid: &public_variant_grid
   - canonical

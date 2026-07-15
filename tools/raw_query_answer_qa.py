@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
 import shutil
+import subprocess
 import sys
 import time
 from collections import Counter
@@ -26,6 +28,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from nbatools.api_handlers import query_result_to_payload  # noqa: E402
+from nbatools.data_source import data_generation_context  # noqa: E402
 from nbatools.query_output_snapshot import (  # noqa: E402
     build_query_ui_snapshot,
     snapshot_for_exception,
@@ -70,6 +73,8 @@ REVIEW_CLOSURE_STATES = {
     "human_review_complete",
     "human_review_complete_with_followup",
 }
+SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+GIT_COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40}$")
 PRODUCT_DECISION_STATUSES = {
     "open",
     "resolved",
@@ -225,6 +230,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-rows", type=int, default=3)
     parser.add_argument("--verified-outliers", default=str(DEFAULT_VERIFIED_OUTLIERS_PATH))
     parser.add_argument("--acceptance-families", default=str(DEFAULT_ACCEPTANCE_FAMILIES_PATH))
+    parser.add_argument(
+        "--review-closure",
+        default=None,
+        help="Optional exact review-closure receipt (mapping or review_closure wrapper).",
+    )
     parser.add_argument("--fail-on-expectation-failure", action="store_true")
     return parser.parse_args()
 
@@ -460,7 +470,18 @@ def normalize_review_closure(value: Any, *, label: str) -> dict[str, Any]:
         raise ValueError(f"{label}.state must be one of: {allowed}")
 
     closure: dict[str, Any] = {"state": state}
-    for key in ("scope", "reviewed_run_id", "completed_on", "notes"):
+    for key in (
+        "scope",
+        "reviewed_run_id",
+        "completed_on",
+        "reviewer",
+        "source_commit",
+        "corpus_sha256",
+        "selected_cases_sha256",
+        "output_sha256",
+        "data_generation",
+        "notes",
+    ):
         if key in value:
             closure[key] = require_nonempty_string(value[key], label=f"{label}.{key}")
     if "case_count" in value:
@@ -468,6 +489,13 @@ def normalize_review_closure(value: Any, *, label: str) -> dict[str, Any]:
         if not isinstance(case_count, int) or case_count <= 0:
             raise ValueError(f"{label}.case_count must be a positive integer")
         closure["case_count"] = case_count
+
+    for key in ("case_ids", "reviewed_representative_case_ids"):
+        if key in value:
+            entries = normalize_string_list(value[key], label=f"{label}.{key}")
+            if len(entries) != len(set(entries)):
+                raise ValueError(f"{label}.{key} must not contain duplicates")
+            closure[key] = entries
 
     raw_ui_spot_check = value.get("ui_spot_check")
     if raw_ui_spot_check is not None:
@@ -485,7 +513,47 @@ def normalize_review_closure(value: Any, *, label: str) -> dict[str, Any]:
             )
         closure["ui_spot_check"] = ui_spot_check
 
+    if state != "human_review_pending":
+        required_fields = {
+            "scope",
+            "reviewed_run_id",
+            "completed_on",
+            "reviewer",
+            "source_commit",
+            "corpus_sha256",
+            "case_count",
+            "case_ids",
+            "selected_cases_sha256",
+            "output_sha256",
+            "data_generation",
+            "reviewed_representative_case_ids",
+            "ui_spot_check",
+        }
+        missing = sorted(required_fields - closure.keys())
+        if missing:
+            raise ValueError(f"{label} complete state is missing fields: {missing}")
+        if not GIT_COMMIT_PATTERN.fullmatch(closure["source_commit"]):
+            raise ValueError(f"{label}.source_commit must be a full lowercase Git commit SHA")
+        for key in ("corpus_sha256", "selected_cases_sha256", "output_sha256"):
+            if not SHA256_PATTERN.fullmatch(closure[key]):
+                raise ValueError(f"{label}.{key} must be a lowercase SHA-256 digest")
+        if len(closure["case_ids"]) != closure["case_count"]:
+            raise ValueError(f"{label}.case_ids length must match {label}.case_count")
+        if closure["ui_spot_check"]["status"] not in {"passed", "not_applicable"}:
+            raise ValueError(
+                f"{label}.ui_spot_check.status must be passed or not_applicable "
+                "for a complete review"
+            )
+
     return closure
+
+
+def load_review_closure(path: Path) -> dict[str, Any]:
+    data = read_yaml_or_json(path)
+    if not isinstance(data, dict):
+        raise ValueError(f"Review closure receipt must be a mapping: {path}")
+    value = data.get("review_closure", data)
+    return normalize_review_closure(value, label=f"Review closure receipt {display_path(path)}")
 
 
 def load_acceptance_family_registry(path: Path) -> dict[str, Any]:
@@ -1932,6 +2000,53 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
             f.write(json.dumps(json_ready(row), ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def canonical_sha256(value: Any) -> str:
+    payload = json.dumps(
+        json_ready(value),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def selected_cases_sha256(cases: list[dict[str, Any]]) -> str:
+    return canonical_sha256(cases)
+
+
+def review_output_sha256(rows: list[dict[str, Any]]) -> str:
+    stable_rows = [
+        {key: value for key, value in row.items() if key != "duration_seconds"} for row in rows
+    ]
+    return canonical_sha256(stable_rows)
+
+
+def git_source_state(root: Path = ROOT) -> tuple[str, bool]:
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"],
+        cwd=root,
+        text=True,
+    ).strip()
+    status = subprocess.check_output(
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        cwd=root,
+        text=True,
+    )
+    return commit, not bool(status.strip())
+
+
+def exact_run_scope(args: argparse.Namespace) -> str:
+    if len(args.slice) == 1 and not args.case and not args.failed_from and args.limit is None:
+        return str(args.slice[0])
+    if not args.slice and not args.case and not args.failed_from and args.limit is None:
+        return "full_corpus"
+    return "custom_selection"
+
+
 def build_slowest_cases(rows: list[dict[str, Any]], *, limit: int = 10) -> list[dict[str, Any]]:
     timed_rows: list[dict[str, Any]] = []
     for row in rows:
@@ -2434,12 +2549,8 @@ def build_product_review(
     families = family_registry["families"]
     review_closure = family_registry.get("review_closure") or {"state": "human_review_pending"}
     closure_state = review_closure.get("state", "human_review_pending")
-    closure_case_count = review_closure.get("case_count")
-    closure_matches_scope = (
-        closure_state != "human_review_pending"
-        and not summary["failed_case_ids"]
-        and (closure_case_count is None or closure_case_count == summary["case_count"])
-    )
+    closure_integrity = evaluate_review_closure(rows, review_closure, summary)
+    closure_matches_scope = closure_integrity["state"] == "pass"
     rows_by_family: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         family = (row.get("acceptance") or {}).get("family")
@@ -2560,12 +2671,21 @@ def build_product_review(
 
     return {
         "run_id": summary["run_id"],
+        "scope": summary.get("scope"),
         "corpus_path": summary["corpus_path"],
         "case_count": summary["case_count"],
+        "source_commit": summary.get("source_commit"),
+        "source_tree_clean": summary.get("source_tree_clean"),
+        "corpus_sha256": summary.get("corpus_sha256"),
+        "case_ids": summary.get("case_ids") or [],
+        "selected_cases_sha256": summary.get("selected_cases_sha256"),
+        "output_sha256": summary.get("output_sha256"),
+        "data_generation": summary.get("data_generation"),
         "machine_regression": "fail" if summary["failed_case_ids"] else "pass",
         "coverage_declaration": coverage_declaration,
         "review_declaration": review_declaration,
         "review_closure": review_closure,
+        "closure_integrity": closure_integrity,
         "family_registry_surface": family_registry["surface"],
         "family_summary": family_summary,
         "variant_checklist": checklist,
@@ -2574,6 +2694,63 @@ def build_product_review(
         "product_decisions": decisions,
         "suspicious_rows": suspicious_rows,
     }
+
+
+def evaluate_review_closure(
+    rows: list[dict[str, Any]],
+    review_closure: dict[str, Any],
+    summary: dict[str, Any],
+) -> dict[str, Any]:
+    if review_closure.get("state", "human_review_pending") == "human_review_pending":
+        return {"state": "not_declared", "errors": []}
+
+    errors: list[str] = []
+    exact_fields = {
+        "scope": summary.get("scope"),
+        "reviewed_run_id": summary.get("run_id"),
+        "source_commit": summary.get("source_commit"),
+        "corpus_sha256": summary.get("corpus_sha256"),
+        "case_count": summary.get("case_count"),
+        "case_ids": summary.get("case_ids"),
+        "selected_cases_sha256": summary.get("selected_cases_sha256"),
+        "output_sha256": summary.get("output_sha256"),
+        "data_generation": summary.get("data_generation"),
+    }
+    for field, actual in exact_fields.items():
+        expected = review_closure.get(field)
+        if expected != actual:
+            errors.append(f"{field} mismatch: closure={expected!r}, generated={actual!r}")
+
+    if not summary.get("source_tree_clean"):
+        errors.append("source tree was not clean when the QA run started")
+    if summary.get("data_generation") == "legacy":
+        errors.append("legacy data is mutable and cannot support a complete review closure")
+    if summary.get("failed_case_ids"):
+        errors.append("machine expectation failures remain")
+    if summary.get("suspicious_flag_case_ids"):
+        errors.append("suspicious output rows remain")
+
+    representative_case_ids = [
+        str(row.get("id")) for row in rows if (row.get("acceptance") or {}).get("review_required")
+    ]
+    reviewed_representatives = review_closure.get("reviewed_representative_case_ids") or []
+    if reviewed_representatives != representative_case_ids:
+        missing = [
+            case_id
+            for case_id in representative_case_ids
+            if case_id not in reviewed_representatives
+        ]
+        extra = [
+            case_id
+            for case_id in reviewed_representatives
+            if case_id not in representative_case_ids
+        ]
+        errors.append(
+            "reviewed representative case IDs do not match generated review rows: "
+            f"missing={missing!r}, extra={extra!r}"
+        )
+
+    return {"state": "fail" if errors else "pass", "errors": errors}
 
 
 def format_case_ids(case_ids: list[str]) -> str:
@@ -2589,12 +2766,20 @@ def write_product_review_markdown(path: Path, product_review: dict[str, Any]) ->
         "## Run Metadata And Review Status",
         "",
         f"- Run ID: {md_code(product_review['run_id'])}",
+        f"- Scope: {md_code(product_review['scope'])}",
         f"- Corpus: {md_code(product_review['corpus_path'])}",
         f"- Cases run: {md_code(product_review['case_count'])}",
+        f"- Source commit: {md_code(product_review['source_commit'])}",
+        f"- Source tree clean: {md_code(product_review['source_tree_clean'])}",
+        f"- Corpus SHA-256: {md_code(product_review['corpus_sha256'])}",
+        f"- Selected-case content SHA-256: {md_code(product_review['selected_cases_sha256'])}",
+        f"- Review-output SHA-256: {md_code(product_review['output_sha256'])}",
+        f"- Data generation: {md_code(product_review['data_generation'])}",
         f"- Family registry surface: {md_code(product_review['family_registry_surface'])}",
         f"- Machine regression: {md_code(product_review['machine_regression'])}",
         f"- Coverage review: {md_code(product_review['coverage_declaration'])}",
         f"- Human review declaration: {md_code(product_review['review_declaration'])}",
+        f"- Closure integrity: {md_code(product_review['closure_integrity']['state'])}",
     ]
     review_closure = product_review.get("review_closure") or {}
     if review_closure.get("state") != "human_review_pending":
@@ -2605,6 +2790,7 @@ def write_product_review_markdown(path: Path, product_review: dict[str, Any]) ->
                 f"- Reviewed scope: {md_code(review_closure.get('scope'))}",
                 f"- Reviewed run ID: {md_code(review_closure.get('reviewed_run_id'))}",
                 f"- Review completed on: {md_code(review_closure.get('completed_on'))}",
+                f"- Reviewer: {md_code(review_closure.get('reviewer'))}",
             ]
         )
         ui_spot_check = review_closure.get("ui_spot_check") or {}
@@ -2612,6 +2798,8 @@ def write_product_review_markdown(path: Path, product_review: dict[str, Any]) ->
             lines.append(f"- UI spot check: {md_code(ui_spot_check.get('status'))}")
         if review_closure.get("notes"):
             lines.append(f"- Review closure notes: {md_escape(review_closure['notes'])}")
+        for error in product_review["closure_integrity"]["errors"]:
+            lines.append(f"- Closure mismatch: {md_escape(error)}")
     lines.extend(
         [
             "",
@@ -3243,6 +3431,8 @@ def main() -> int:
     product_review_json_path = run_dir / "product_review.json"
 
     family_registry = load_acceptance_family_registry(resolve_path(args.acceptance_families))
+    if args.review_closure:
+        family_registry["review_closure"] = load_review_closure(resolve_path(args.review_closure))
     version, cases = load_corpus(corpus_path)
     del version
     validate_corpus_acceptance(cases, family_registry)
@@ -3258,12 +3448,14 @@ def main() -> int:
         limit=args.limit,
         explicit_selection=explicit_selection,
     )
+    source_commit, source_tree_clean = git_source_state()
 
     started_at = datetime.now(UTC).isoformat()
-    rows = [
-        run_case_with_timing(case, top_rows=args.top_rows, verified_outliers=verified_outliers)
-        for case in selected
-    ]
+    with data_generation_context() as data_generation:
+        rows = [
+            run_case_with_timing(case, top_rows=args.top_rows, verified_outliers=verified_outliers)
+            for case in selected
+        ]
     completed_at = datetime.now(UTC).isoformat()
 
     prepare_run_directory(run_dir, overwrite_run_id=args.overwrite_run_id)
@@ -3282,6 +3474,18 @@ def main() -> int:
         corpus_path=corpus_path,
         output_paths=output_paths,
         slice_values=args.slice,
+    )
+    summary.update(
+        {
+            "scope": exact_run_scope(args),
+            "source_commit": source_commit,
+            "source_tree_clean": source_tree_clean,
+            "data_generation": data_generation,
+            "corpus_sha256": sha256_file(corpus_path),
+            "case_ids": [str(case["id"]) for case in selected],
+            "selected_cases_sha256": selected_cases_sha256(selected),
+            "output_sha256": review_output_sha256(rows),
+        }
     )
     if args.compare_to:
         summary["comparison"] = build_run_comparison(rows, resolve_path(args.compare_to))
@@ -3309,11 +3513,14 @@ def main() -> int:
     print(f"Suspicious flag cases: {summary['suspicious_flag_case_count']}")
     print(f"Informational flag cases: {summary['informational_flag_case_count']}")
     print(f"Verified outlier cases: {summary['verified_outlier_case_count']}")
+    print(f"Closure integrity: {product_review['closure_integrity']['state']}")
     if failed_case_ids:
         print(f"Failed case IDs: {', '.join(failed_case_ids)}")
     else:
         print("Failed case IDs: none")
 
+    if product_review["closure_integrity"]["state"] == "fail":
+        return 1
     if failed_case_ids and args.fail_on_expectation_failure:
         return 1
     return 0

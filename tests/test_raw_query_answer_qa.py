@@ -325,9 +325,8 @@ def test_acceptance_family_registry_loads_current_public_families() -> None:
     registry = qa.load_acceptance_family_registry(qa.DEFAULT_ACCEPTANCE_FAMILIES_PATH)
 
     assert registry["surface"] == "public_query_acceptance"
-    assert registry["review_closure"]["state"] == "human_review_complete"
-    assert registry["review_closure"]["case_count"] == 127
-    assert registry["review_closure"]["ui_spot_check"]["status"] == "not_applicable"
+    assert registry["review_closure"]["state"] == "human_review_pending"
+    assert "prior 127-case" in registry["review_closure"]["notes"]
     assert len(registry["families"]) == 16
     assert "player_comparisons" not in registry["families_by_id"]
     availability = registry["families_by_id"]["team_record_availability"]
@@ -581,15 +580,23 @@ def test_product_review_markdown_includes_family_matrix_and_handoff(tmp_path) ->
     assert not availability["public_accepted"]
 
 
-def test_product_review_uses_registry_review_closure_for_matching_clean_scope() -> None:
+def _closure_bound_review_fixture() -> tuple[dict, list[dict], dict]:
     registry = {
         "surface": "public_query_acceptance",
         "review_closure": {
             "state": "human_review_complete",
             "scope": "public_query_acceptance",
-            "reviewed_run_id": "reviewed_run",
+            "reviewed_run_id": "latest_public_query_acceptance",
             "completed_on": "2026-06-03",
+            "reviewer": "product-owner@example.com",
+            "source_commit": "1" * 40,
+            "corpus_sha256": "2" * 64,
             "case_count": 1,
+            "case_ids": ["player_stats"],
+            "selected_cases_sha256": "3" * 64,
+            "output_sha256": "4" * 64,
+            "data_generation": "generation-reviewed",
+            "reviewed_representative_case_ids": ["player_stats"],
             "ui_spot_check": {"status": "passed"},
         },
         "families": [
@@ -632,17 +639,135 @@ def test_product_review_uses_registry_review_closure_for_matching_clean_scope() 
         "corpus_path": "qa/raw_query_answer_corpus.yaml",
         "case_count": 1,
         "failed_case_ids": [],
+        "suspicious_flag_case_ids": [],
+        "scope": "public_query_acceptance",
+        "source_commit": "1" * 40,
+        "source_tree_clean": True,
+        "corpus_sha256": "2" * 64,
+        "case_ids": ["player_stats"],
+        "selected_cases_sha256": "3" * 64,
+        "output_sha256": "4" * 64,
+        "data_generation": "generation-reviewed",
     }
+    return registry, rows, summary
+
+
+def test_product_review_uses_registry_review_closure_for_matching_clean_scope() -> None:
+    registry, rows, summary = _closure_bound_review_fixture()
 
     review = qa.build_product_review(rows, family_registry=registry, summary=summary)
     family = review["family_summary"][0]
 
+    assert review["closure_integrity"] == {"state": "pass", "errors": []}
     assert review["machine_regression"] == "pass"
     assert review["coverage_declaration"] == "complete"
     assert review["review_declaration"] == "human_review_complete"
     assert family["human_review"] == "reviewed_pass"
     assert family["human_review_source"] == "registry_closure"
     assert family["public_accepted"]
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("reviewed_run_id", "stale_alias"),
+        ("source_commit", "9" * 40),
+        ("corpus_sha256", "8" * 64),
+        ("case_ids", ["different_case"]),
+        ("selected_cases_sha256", "7" * 64),
+        ("output_sha256", "6" * 64),
+        ("data_generation", "different-generation"),
+    ],
+)
+def test_product_review_rejects_stale_or_mismatched_closure(field, replacement) -> None:
+    registry, rows, summary = _closure_bound_review_fixture()
+    registry["review_closure"][field] = replacement
+
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+
+    assert review["closure_integrity"]["state"] == "fail"
+    assert any(field in error for error in review["closure_integrity"]["errors"])
+    assert review["review_declaration"] == "human_review_pending"
+    assert not review["family_summary"][0]["public_accepted"]
+
+
+def test_changed_same_count_case_content_fails_closure() -> None:
+    registry, rows, summary = _closure_bound_review_fixture()
+    summary["selected_cases_sha256"] = qa.selected_cases_sha256(
+        [{"id": "player_stats", "query": "changed content"}]
+    )
+
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+
+    assert review["closure_integrity"]["state"] == "fail"
+    assert any(
+        "selected_cases_sha256 mismatch" in error for error in review["closure_integrity"]["errors"]
+    )
+
+
+def test_unreviewed_representative_row_fails_closure() -> None:
+    registry, rows, summary = _closure_bound_review_fixture()
+    registry["review_closure"]["reviewed_representative_case_ids"] = []
+
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+
+    assert review["closure_integrity"]["state"] == "fail"
+    assert any(
+        "reviewed representative case IDs" in error
+        for error in review["closure_integrity"]["errors"]
+    )
+
+
+def test_dirty_source_tree_fails_closure() -> None:
+    registry, rows, summary = _closure_bound_review_fixture()
+    summary["source_tree_clean"] = False
+
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+
+    assert review["closure_integrity"]["state"] == "fail"
+    assert any(
+        "source tree was not clean" in error for error in review["closure_integrity"]["errors"]
+    )
+
+
+def test_mutable_legacy_data_generation_fails_closure() -> None:
+    registry, rows, summary = _closure_bound_review_fixture()
+    registry["review_closure"]["data_generation"] = "legacy"
+    summary["data_generation"] = "legacy"
+
+    review = qa.build_product_review(rows, family_registry=registry, summary=summary)
+
+    assert review["closure_integrity"]["state"] == "fail"
+    assert any("legacy data is mutable" in error for error in review["closure_integrity"]["errors"])
+
+
+def test_review_output_hash_ignores_timing_but_binds_answer_content() -> None:
+    first = [{"id": "case", "answer": "one", "duration_seconds": 0.1}]
+    rerun = [{"id": "case", "answer": "one", "duration_seconds": 9.9}]
+    changed = [{"id": "case", "answer": "two", "duration_seconds": 0.1}]
+
+    assert qa.review_output_sha256(first) == qa.review_output_sha256(rerun)
+    assert qa.review_output_sha256(first) != qa.review_output_sha256(changed)
+
+
+def test_complete_review_closure_requires_exact_binding_fields() -> None:
+    with pytest.raises(ValueError, match="complete state is missing fields"):
+        qa.normalize_review_closure(
+            {"state": "human_review_complete", "case_count": 1},
+            label="closure",
+        )
+
+
+def test_review_closure_receipt_loads_wrapped_exact_binding(tmp_path) -> None:
+    registry, _rows, _summary = _closure_bound_review_fixture()
+    receipt_path = tmp_path / "review_closure.json"
+    receipt_path.write_text(json.dumps({"review_closure": registry["review_closure"]}))
+
+    closure = qa.load_review_closure(receipt_path)
+
+    assert closure["state"] == "human_review_complete"
+    assert closure["source_commit"] == "1" * 40
+    assert closure["reviewed_representative_case_ids"] == ["player_stats"]
 
 
 def test_slice_loading_by_direct_path(tmp_path) -> None:
