@@ -461,8 +461,8 @@ describe("migrated result envelope", () => {
         metadata: {
           boolean_filter_mode: "any",
           applied_filters: [
-            { label: "pts min", value: "20.0001", kind: "threshold" },
-            { label: "ast min", value: "10.0001", kind: "threshold" },
+            { label: "pts min", value: "20 (exclusive)", kind: "threshold" },
+            { label: "ast min", value: "10 (exclusive)", kind: "threshold" },
           ],
         },
         notes: [],
@@ -475,8 +475,8 @@ describe("migrated result envelope", () => {
 
     const contextStrip = screen.getByLabelText("Result context");
     expect(contextStrip).toHaveTextContent("LogicAny filter (OR)");
-    expect(contextStrip).toHaveTextContent("20+ PTS");
-    expect(contextStrip).toHaveTextContent("10+ AST");
+    expect(contextStrip).toHaveTextContent("> 20 PTS");
+    expect(contextStrip).toHaveTextContent("> 10 AST");
   });
 
   it("renders public context chips and material caveats for placement near the answer", () => {
