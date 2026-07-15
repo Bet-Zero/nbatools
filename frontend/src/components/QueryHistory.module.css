@@ -87,7 +87,6 @@
 .time {
   font-size: var(--font-micro);
   color: var(--text-secondary);
-  opacity: 0.7;
   overflow-wrap: anywhere;
 }
 

@@ -62,6 +62,7 @@ export function Avatar({
 
   return (
     <span
+      role="img"
       aria-label={unavailable ? `${name} avatar unavailable` : `${name} avatar`}
       className={joinClassNames(
         styles.avatar,

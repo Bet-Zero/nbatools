@@ -231,6 +231,24 @@ The UI is designed to remain usable from phone widths through desktop:
 - Raw JSON and structured-query kwargs stay inside their panels. Long JSON keys
   and values can wrap, while the panel itself also supports internal scrolling.
 
+## Accessibility behavior
+
+- Completed query results are owned by a polite live region so screen readers
+  announce result replacement without moving keyboard focus away from the
+  user's current control.
+- Save-query and feedback dialogs use the shared modal-dialog hook. Opening a
+  dialog moves focus to its first task control; Tab and Shift+Tab wrap inside
+  the dialog; Escape closes when submission is not pending; closing restores
+  the control that opened it.
+- Shared text and accent tokens meet the WCAG AA normal-text contrast threshold
+  on the public dark surfaces exercised by the browser release review.
+- When `prefers-reduced-motion: reduce` is active, public transitions,
+  animations, and smooth scrolling are disabled.
+- `make browser-release-review` is the release evidence gate for axe scans,
+  modal keyboard/focus behavior, result announcements, reduced motion, and the
+  retained desktop/mobile state screenshots. A green component test or build
+  does not substitute for that browser receipt.
+
 Remaining UI polish should focus on first-run onboarding, starter-query
 curation, freshness/banner presentation, keyboard shortcuts, transitions,
 loading/error copy, broader unsupported-copy refinement, and a browser

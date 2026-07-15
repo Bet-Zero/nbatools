@@ -77,6 +77,37 @@ describe("QueryFeedbackButton", () => {
     expect(screen.getByText(/Do not include personal information/)).toBeInTheDocument();
   });
 
+  it("traps focus, closes on Escape, and restores the trigger", async () => {
+    render(
+      <QueryFeedbackButton
+        data={makeResponse()}
+        defaultFeedbackType="wrong_answer"
+        triggerLabel="Report issue"
+        title="Report an issue with this answer"
+      />,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Report issue" });
+    fireEvent.click(trigger);
+
+    const firstOption = screen.getByRole("radio", {
+      name: "This answer looks wrong",
+    });
+    await waitFor(() => expect(firstOption).toHaveFocus());
+
+    const submit = screen.getByRole("button", { name: "Submit" });
+    submit.focus();
+    fireEvent.keyDown(submit, { key: "Tab" });
+    expect(firstOption).toHaveFocus();
+
+    fireEvent.keyDown(firstOption, { key: "Tab", shiftKey: true });
+    expect(submit).toHaveFocus();
+
+    fireEvent.keyDown(submit, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(trigger).toHaveFocus();
+  });
+
   it("submits successful-answer feedback through the API client", async () => {
     render(
       <QueryFeedbackButton

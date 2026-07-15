@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import type { SavedQuery, SavedQueryInput } from "../api/savedQueryTypes";
+import { useModalDialog } from "../hooks/useModalDialog";
 import styles from "./SaveQueryDialog.module.css";
 
 interface Props {
@@ -29,11 +30,9 @@ export default function SaveQueryDialog({
   const [query, setQuery] = useState(editing?.query ?? defaultQuery);
   const [tagsStr, setTagsStr] = useState(editing?.tags.join(", ") ?? "");
   const [pinned, setPinned] = useState(editing?.pinned ?? false);
-  const labelRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    labelRef.current?.focus();
-  }, []);
+  useModalDialog({ open: true, dialogRef, onClose: onCancel });
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -68,6 +67,7 @@ export default function SaveQueryDialog({
   return (
     <div className={styles.overlay} onClick={onCancel}>
       <form
+        ref={dialogRef}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
@@ -83,7 +83,7 @@ export default function SaveQueryDialog({
           Label
         </label>
         <input
-          ref={labelRef}
+          data-dialog-initial-focus="true"
           id="sq-label"
           className={styles.input}
           type="text"
