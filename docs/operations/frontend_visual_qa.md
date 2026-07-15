@@ -154,6 +154,22 @@ states; the freshness, loading, success, and idle internal route use the live
 local API shell. Run the canonical visual corpus separately for live result
 coverage.
 
+### Retained Release Audit Snapshots
+
+Generated browser artifacts remain under `outputs/` by default. When an
+explicit release-review task requires evidence to survive generated-output
+cleanup, retain only the curated receipt and representative images under a
+dated `docs/audits/` folder. The audit summary must record the exact source
+commit and clean-tree state, browser, viewports, live-versus-fixture boundary,
+artifact integrity, acceptance status, human-review status, and blocking
+findings. A retained snapshot must not become a runtime fixture, screenshot
+baseline, or substitute for a current review.
+
+The current retained example is the
+[2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md).
+Its execution completed, but its acceptance is blocked and human review remains
+pending.
+
 ## Text Snapshots And Render Review Outputs
 
 Use text snapshots or rendered-review notes when a reviewer needs compact
@@ -202,7 +218,8 @@ Record:
   under `outputs/`.
 
 Generated screenshots and output artifacts are not durable source of truth
-unless their relevant conclusions are summarized in `docs/`.
+unless an explicit release-review task curates the bounded evidence into a
+dated audit snapshot and summarizes its relevant conclusions in `docs/`.
 
 ## Deferred Decisions
 

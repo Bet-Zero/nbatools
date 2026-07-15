@@ -1,0 +1,2017 @@
+{
+  "version": 1,
+  "runId": "public_states_090022f",
+  "capturedAt": "2026-07-15T01:09:08.889Z",
+  "baseUrl": "http://127.0.0.1:8015",
+  "browser": {
+    "name": "chromium",
+    "version": "148.0.7778.96"
+  },
+  "sourceCommit": "090022f978ddf9097c1cda8daa21977ec9ee5a9b",
+  "sourceTreeClean": true,
+  "visualCorpusSha256": "500e235b74206bd55cbde5f96dab8da58b9ae8f0201040414f2d5e6442797683",
+  "executionStatus": "complete",
+  "acceptanceStatus": "blocked",
+  "humanReview": "pending",
+  "fixtureBoundary": {
+    "liveStates": [
+      "freshness_expanded",
+      "loading",
+      "success",
+      "visual_qa_idle"
+    ],
+    "syntheticStates": [
+      "zero_result",
+      "no_result",
+      "backend_error",
+      "transport_error"
+    ]
+  },
+  "blockingFindings": [
+    "desktop_1280: 13 serious/critical axe state-rule results (color-contrast, aria-prohibited-attr)",
+    "desktop_1280: completed result has no live announcement owner",
+    "desktop_1280: save dialog does not close on Escape",
+    "desktop_1280: save dialog does not wrap Tab focus",
+    "desktop_1280: save dialog does not restore trigger focus",
+    "desktop_1280: feedback dialog lacks initial focus",
+    "desktop_1280: feedback dialog does not close on Escape",
+    "desktop_1280: feedback dialog does not wrap Tab focus",
+    "desktop_1280: feedback dialog does not restore trigger focus",
+    "desktop_1280: 21 animations remain with reduced motion",
+    "mobile_390: 13 serious/critical axe state-rule results (color-contrast, aria-prohibited-attr)",
+    "mobile_390: completed result has no live announcement owner",
+    "mobile_390: save dialog does not close on Escape",
+    "mobile_390: save dialog does not wrap Tab focus",
+    "mobile_390: save dialog does not restore trigger focus",
+    "mobile_390: feedback dialog lacks initial focus",
+    "mobile_390: feedback dialog does not close on Escape",
+    "mobile_390: feedback dialog does not wrap Tab focus",
+    "mobile_390: feedback dialog does not restore trigger focus",
+    "mobile_390: 21 animations remain with reduced motion"
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "label": "desktop_1280",
+        "width": 1280,
+        "height": 900
+      },
+      "screenshots": [
+        {
+          "state": "freshness_expanded",
+          "path": "desktop_1280/freshness_expanded.jpg"
+        },
+        {
+          "state": "loading",
+          "path": "desktop_1280/loading.jpg"
+        },
+        {
+          "state": "success",
+          "path": "desktop_1280/success.jpg"
+        },
+        {
+          "state": "save_dialog",
+          "path": "desktop_1280/save_dialog.jpg"
+        },
+        {
+          "state": "feedback_dialog",
+          "path": "desktop_1280/feedback_dialog.jpg"
+        },
+        {
+          "state": "zero_result",
+          "path": "desktop_1280/zero_result.jpg"
+        },
+        {
+          "state": "no_result",
+          "path": "desktop_1280/no_result.jpg"
+        },
+        {
+          "state": "backend_error",
+          "path": "desktop_1280/backend_error.jpg"
+        },
+        {
+          "state": "transport_error",
+          "path": "desktop_1280/transport_error.jpg"
+        },
+        {
+          "state": "visual_qa_idle",
+          "path": "desktop_1280/visual_qa_idle.jpg"
+        }
+      ],
+      "axeScans": [
+        {
+          "state": "freshness_expanded",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "loading",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._text_wtv48_33"
+                  ],
+                  "html": "<div class=\"_text_wtv48_33 _previewMeta_r6az0_83\" aria-label=\"Loading result metadata\">",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+                },
+                {
+                  "target": [
+                    "._summaryPreview_r6az0_95"
+                  ],
+                  "html": "<div class=\"_summaryPreview_r6az0_95\" aria-label=\"Loading summary preview\">",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+                },
+                {
+                  "target": [
+                    "._block_wtv48_38"
+                  ],
+                  "html": "<div class=\"_block_wtv48_38 _tablePreview_r6az0_96\" aria-label=\"Loading result rows\">",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._accent_1ult6_34"
+                  ],
+                  "html": "<span class=\"_badge_1ult6_1 _accent_1ult6_34 _sm_1ult6_13 _uppercase_1ult6_23\">Running</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #f97316, background color: #433229, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._context_r6az0_43"
+                  ],
+                  "html": "<span class=\"_context_r6az0_43\">Query request</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "success",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._avatar_1klg5_1"
+                  ],
+                  "html": "<span aria-label=\"Nikola Jokić avatar\" class=\"_avatar_1klg5_1 _md_1klg5_22 _mark_rzuf5_11\"><span aria-hidden=\"true\">NJ</span></span>",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">1 query</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "save_dialog",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._avatar_1klg5_1"
+                  ],
+                  "html": "<span aria-label=\"Nikola Jokić avatar\" class=\"_avatar_1klg5_1 _md_1klg5_22 _mark_rzuf5_11\"><span aria-hidden=\"true\">NJ</span></span>",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">1 query</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._hint_1yizz_43"
+                  ],
+                  "html": "<span class=\"_hint_1yizz_43\">(comma-separated, optional)</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "feedback_dialog",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._avatar_1klg5_1"
+                  ],
+                  "html": "<span aria-label=\"Nikola Jokić avatar\" class=\"_avatar_1klg5_1 _md_1klg5_22 _mark_rzuf5_11\"><span aria-hidden=\"true\">NJ</span></span>",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._eyebrow_hshqg_58"
+                  ],
+                  "html": "<div class=\"_eyebrow_hshqg_58\">Query feedback</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "legend"
+                  ],
+                  "html": "<legend class=\"_legend_hshqg_59\">Feedback type</legend>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._noteField_hshqg_60 > span"
+                  ],
+                  "html": "<span>Optional note</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">1 query</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "zero_result",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">2 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "no_result",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">3 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(3) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "backend_error",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">4 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(3) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(4) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "transport_error",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._detailsTitle_2fw1a_42"
+                  ],
+                  "html": "<div class=\"_detailsTitle_2fw1a_42\">Details</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #737373, background color: #131315, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-splits"
+                  ],
+                  "html": "<h3 id=\"starter-group-splits\" class=\"_groupTitle_k0xnw_53\">Splits &amp; On/Off</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">4 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(3) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(4) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "visual_qa_idle",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        }
+      ],
+      "queryRequestCount": 5,
+      "resultAnnouncement": {
+        "hasLiveOwner": false,
+        "liveMode": null,
+        "role": null,
+        "activeElement": "BODY",
+        "activeElementId": ""
+      },
+      "dialogs": {
+        "save": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "sq-label",
+            "text": ""
+          },
+          "escapeClosed": false,
+          "focusableCount": 5,
+          "tabWrapped": false,
+          "focusRestored": false
+        },
+        "feedback": {
+          "initialFocus": {
+            "insideDialog": false,
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Report issue"
+          },
+          "escapeClosed": false,
+          "focusableCount": 7,
+          "tabWrapped": false,
+          "focusRestored": false
+        }
+      },
+      "reducedMotion": {
+        "prefersReducedMotion": true,
+        "animatedElementCount": 21,
+        "offenders": [
+          {
+            "tag": "DIV",
+            "className": "_spinner_r6az0_16",
+            "animationName": "_spin_r6az0_16",
+            "animationDuration": "0.96s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _md_wtv48_21",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _md_wtv48_21",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _lg_wtv48_25",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _lg_wtv48_25",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _lg_wtv48_25",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _md_wtv48_21",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          }
+        ]
+      },
+      "visualQaMountQueryCount": 0
+    },
+    {
+      "viewport": {
+        "label": "mobile_390",
+        "width": 390,
+        "height": 844
+      },
+      "screenshots": [
+        {
+          "state": "freshness_expanded",
+          "path": "mobile_390/freshness_expanded.jpg"
+        },
+        {
+          "state": "loading",
+          "path": "mobile_390/loading.jpg"
+        },
+        {
+          "state": "success",
+          "path": "mobile_390/success.jpg"
+        },
+        {
+          "state": "save_dialog",
+          "path": "mobile_390/save_dialog.jpg"
+        },
+        {
+          "state": "feedback_dialog",
+          "path": "mobile_390/feedback_dialog.jpg"
+        },
+        {
+          "state": "zero_result",
+          "path": "mobile_390/zero_result.jpg"
+        },
+        {
+          "state": "no_result",
+          "path": "mobile_390/no_result.jpg"
+        },
+        {
+          "state": "backend_error",
+          "path": "mobile_390/backend_error.jpg"
+        },
+        {
+          "state": "transport_error",
+          "path": "mobile_390/transport_error.jpg"
+        },
+        {
+          "state": "visual_qa_idle",
+          "path": "mobile_390/visual_qa_idle.jpg"
+        }
+      ],
+      "axeScans": [
+        {
+          "state": "freshness_expanded",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "loading",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._text_wtv48_33"
+                  ],
+                  "html": "<div class=\"_text_wtv48_33 _previewMeta_r6az0_83\" aria-label=\"Loading result metadata\">",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+                },
+                {
+                  "target": [
+                    "._summaryPreview_r6az0_95"
+                  ],
+                  "html": "<div class=\"_summaryPreview_r6az0_95\" aria-label=\"Loading summary preview\">",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+                },
+                {
+                  "target": [
+                    "._block_wtv48_38"
+                  ],
+                  "html": "<div class=\"_block_wtv48_38 _tablePreview_r6az0_96\" aria-label=\"Loading result rows\">",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a div with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._accent_1ult6_34"
+                  ],
+                  "html": "<span class=\"_badge_1ult6_1 _accent_1ult6_34 _sm_1ult6_13 _uppercase_1ult6_23\">Running</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #f97316, background color: #433229, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._context_r6az0_43"
+                  ],
+                  "html": "<span class=\"_context_r6az0_43\">Query request</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "success",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._avatar_1klg5_1"
+                  ],
+                  "html": "<span aria-label=\"Nikola Jokić avatar\" class=\"_avatar_1klg5_1 _md_1klg5_22 _mark_rzuf5_11\"><span aria-hidden=\"true\">NJ</span></span>",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">1 query</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "save_dialog",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._avatar_1klg5_1"
+                  ],
+                  "html": "<span aria-label=\"Nikola Jokić avatar\" class=\"_avatar_1klg5_1 _md_1klg5_22 _mark_rzuf5_11\"><span aria-hidden=\"true\">NJ</span></span>",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">1 query</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._hint_1yizz_43"
+                  ],
+                  "html": "<span class=\"_hint_1yizz_43\">(comma-separated, optional)</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "feedback_dialog",
+          "violationCount": 2,
+          "seriousOrCriticalCount": 2,
+          "violations": [
+            {
+              "id": "aria-prohibited-attr",
+              "impact": "serious",
+              "help": "Elements must only use permitted ARIA attributes",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._avatar_1klg5_1"
+                  ],
+                  "html": "<span aria-label=\"Nikola Jokić avatar\" class=\"_avatar_1klg5_1 _md_1klg5_22 _mark_rzuf5_11\"><span aria-hidden=\"true\">NJ</span></span>",
+                  "failureSummary": "Fix all of the following:\n  aria-label attribute cannot be used on a span with no valid role attribute."
+                }
+              ]
+            },
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._eyebrow_hshqg_58"
+                  ],
+                  "html": "<div class=\"_eyebrow_hshqg_58\">Query feedback</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "legend"
+                  ],
+                  "html": "<legend class=\"_legend_hshqg_59\">Feedback type</legend>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._noteField_hshqg_60 > span"
+                  ],
+                  "html": "<span>Optional note</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._privacy_hshqg_140"
+                  ],
+                  "html": "<div class=\"_privacy_hshqg_140\">Do not include personal information.</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.42 (foreground color: #737373, background color: #202023, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">1 query</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "zero_result",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">2 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "no_result",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">3 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(3) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "backend_error",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">4 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(3) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(4) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "transport_error",
+          "violationCount": 1,
+          "seriousOrCriticalCount": 1,
+          "violations": [
+            {
+              "id": "color-contrast",
+              "impact": "serious",
+              "help": "Elements must meet minimum color contrast ratio thresholds",
+              "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=playwright",
+              "nodes": [
+                {
+                  "target": [
+                    "._detailsLabel_cg33d_150"
+                  ],
+                  "html": "<div class=\"_detailsLabel_cg33d_150\">Season coverage</div>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-players"
+                  ],
+                  "html": "<h3 id=\"starter-group-players\" class=\"_groupTitle_k0xnw_53\">Players</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "#starter-group-teams"
+                  ],
+                  "html": "<h3 id=\"starter-group-teams\" class=\"_groupTitle_k0xnw_53\">Teams</h3>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.09 (foreground color: #737373, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._savedQueries_g5g7p_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">0 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._queryHistory_qaz8m_1 > ._header_1nj0b_1 > ._titleGroup_1nj0b_12 > ._count_1nj0b_41"
+                  ],
+                  "html": "<span class=\"_count_1nj0b_41\">4 queries</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #7d7d7e, background color: #28282c, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(1) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(2) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(3) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                },
+                {
+                  "target": [
+                    "._item_qaz8m_16:nth-child(4) > ._meta_qaz8m_77 > ._time_qaz8m_87"
+                  ],
+                  "html": "<span class=\"_time_qaz8m_87\">just now</span>",
+                  "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #767677, background color: #131315, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "state": "visual_qa_idle",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        }
+      ],
+      "queryRequestCount": 5,
+      "resultAnnouncement": {
+        "hasLiveOwner": false,
+        "liveMode": null,
+        "role": null,
+        "activeElement": "BODY",
+        "activeElementId": ""
+      },
+      "dialogs": {
+        "save": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "sq-label",
+            "text": ""
+          },
+          "escapeClosed": false,
+          "focusableCount": 5,
+          "tabWrapped": false,
+          "focusRestored": false
+        },
+        "feedback": {
+          "initialFocus": {
+            "insideDialog": false,
+            "tag": "BUTTON",
+            "id": "",
+            "text": "Report issue"
+          },
+          "escapeClosed": false,
+          "focusableCount": 7,
+          "tabWrapped": false,
+          "focusRestored": false
+        }
+      },
+      "reducedMotion": {
+        "prefersReducedMotion": true,
+        "animatedElementCount": 21,
+        "offenders": [
+          {
+            "tag": "DIV",
+            "className": "_spinner_r6az0_16",
+            "animationName": "_spin_r6az0_16",
+            "animationDuration": "0.96s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _md_wtv48_21",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _md_wtv48_21",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _lg_wtv48_25",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _lg_wtv48_25",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _lg_wtv48_25",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _md_wtv48_21",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          },
+          {
+            "tag": "DIV",
+            "className": "_skeleton_wtv48_1 _sm_wtv48_17",
+            "animationName": "_skeletonPulse_wtv48_1",
+            "animationDuration": "1.2s",
+            "animationIterationCount": "infinite"
+          }
+        ]
+      },
+      "visualQaMountQueryCount": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "desktop_1280/freshness_expanded.jpg",
+      "sha256": "c46413be92cdddddb6bcbb79c8d14d1520e40f6c557c93618404f72fbae831a1"
+    },
+    {
+      "path": "desktop_1280/loading.jpg",
+      "sha256": "32ad067402bd1a62c1791621500008b3e92cad3df139afd0fa0da72a09d52588"
+    },
+    {
+      "path": "desktop_1280/success.jpg",
+      "sha256": "0c104fca7ffd66ba36c4783452a6fab9285813d59d2c3612342c13d1948e0187"
+    },
+    {
+      "path": "desktop_1280/save_dialog.jpg",
+      "sha256": "fb89043b239017902f197c51b11fa19baac174dfb1801babde558aa4ba2aa523"
+    },
+    {
+      "path": "desktop_1280/feedback_dialog.jpg",
+      "sha256": "063a69e2c2e5aca8f392b3563abbf915b04a5ba1804c0fcb5e1dc11e41009cc6"
+    },
+    {
+      "path": "desktop_1280/zero_result.jpg",
+      "sha256": "ffb705a172c78fa46b0039b2b1f2b714f5a8269db5acafcea6dd46532f0840dd"
+    },
+    {
+      "path": "desktop_1280/no_result.jpg",
+      "sha256": "54303a7aacf23fd540e858d96f5b1caf1a17ede2dd2d2b28d17f8e809c7afb33"
+    },
+    {
+      "path": "desktop_1280/backend_error.jpg",
+      "sha256": "7daf3664cfa85d088c4af987828de4817cd58c1cd47e5c45350626576e280668"
+    },
+    {
+      "path": "desktop_1280/transport_error.jpg",
+      "sha256": "4f60b005bed137a145ddb1a7b1ee6e380d0d90fa9903b5c6e2afadae4142714b"
+    },
+    {
+      "path": "desktop_1280/visual_qa_idle.jpg",
+      "sha256": "fa6b1c83d03afb77bfdb0df5449ec83c09dbbf3b5c2a90c43c92b0645e751bd9"
+    },
+    {
+      "path": "mobile_390/freshness_expanded.jpg",
+      "sha256": "9264e9a91fe9b4a0d61947af5311e5d4405e05e40a06469f5a00447ac25227eb"
+    },
+    {
+      "path": "mobile_390/loading.jpg",
+      "sha256": "3586cfbff8e37935ac7aa5186919cd83257f9d5fc00ab6d919e89deae31cfca7"
+    },
+    {
+      "path": "mobile_390/success.jpg",
+      "sha256": "900f01b25c071c873814234cb895d29a7e88b3832c26c55ce9dd306eb0f60d22"
+    },
+    {
+      "path": "mobile_390/save_dialog.jpg",
+      "sha256": "07428018992005b78ab80b2fe3d7d2494298b74bf281b92b56a63b01ec71812a"
+    },
+    {
+      "path": "mobile_390/feedback_dialog.jpg",
+      "sha256": "e905329621181b8ef0b6f34b83828da465a92d7b695df7b17aca0b79f9d638c4"
+    },
+    {
+      "path": "mobile_390/zero_result.jpg",
+      "sha256": "5f87996bb1e33eb5a19d11d0124779bf6225ab0f33d725785e023d5b2a68f23a"
+    },
+    {
+      "path": "mobile_390/no_result.jpg",
+      "sha256": "6e40281d3988d1f7ca953bbaecb07648c5ea79ab92f873f4d47522a462b65640"
+    },
+    {
+      "path": "mobile_390/backend_error.jpg",
+      "sha256": "b82726613f3910b044653ff86359b573c4085788c7f7918830fa009f11bfd484"
+    },
+    {
+      "path": "mobile_390/transport_error.jpg",
+      "sha256": "717f8a7ea72a27649a0754009e130342f38e0eb1fdd73ca717bd97ef1cdd1bd0"
+    },
+    {
+      "path": "mobile_390/visual_qa_idle.jpg",
+      "sha256": "0107367ec5e874869396c5f8595ec428b140c3f270c11dec8e19b7ee0f57fee9"
+    }
+  ]
+}
