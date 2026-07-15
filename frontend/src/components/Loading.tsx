@@ -32,10 +32,15 @@ export default function Loading() {
           </div>
         </div>
       </div>
-      <div className={styles.preview} aria-label="Loading result preview">
+      <div
+        className={styles.preview}
+        role="group"
+        aria-label="Loading result preview"
+      >
         <div className={styles.previewHeader}>
           <Skeleton width="34%" height="var(--space-5)" />
           <SkeletonText
+            role="group"
             aria-label="Loading result metadata"
             className={styles.previewMeta}
             lines={2}
@@ -45,6 +50,7 @@ export default function Loading() {
         <div className={styles.previewGrid}>
           <div
             className={styles.summaryPreview}
+            role="group"
             aria-label="Loading summary preview"
           >
             <Skeleton width="48%" height="var(--space-4)" />
@@ -55,6 +61,7 @@ export default function Loading() {
             </div>
           </div>
           <SkeletonBlock
+            role="group"
             aria-label="Loading result rows"
             className={styles.tablePreview}
             rows={4}

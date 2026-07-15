@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { postQueryFeedback } from "../api/client";
 import type { FeedbackType, QueryResponse } from "../api/types";
 import { Button, type ButtonVariant } from "../design-system";
+import { useModalDialog } from "../hooks/useModalDialog";
 import {
   buildQueryErrorFeedbackPayload,
   buildQueryFeedbackPayload,
@@ -61,6 +62,8 @@ export function QueryFeedbackButton({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusKind, setStatusKind] = useState<"success" | "error" | null>(null);
   const submissionIdRef = useRef<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const options = useMemo(
     () => optionSet(defaultFeedbackType),
@@ -120,9 +123,18 @@ export function QueryFeedbackButton({
     submissionIdRef.current = null;
   }
 
+  useModalDialog({
+    open,
+    dialogRef,
+    returnFocusRef: triggerRef,
+    onClose: handleCancel,
+    closeBlocked: pending,
+  });
+
   return (
     <div className={styles.feedback}>
       <Button
+        ref={triggerRef}
         type="button"
         variant={variant}
         size="sm"
@@ -153,6 +165,7 @@ export function QueryFeedbackButton({
       {open && (
         <div className={styles.backdrop}>
           <div
+            ref={dialogRef}
             className={styles.dialog}
             role="dialog"
             aria-modal="true"
@@ -178,6 +191,9 @@ export function QueryFeedbackButton({
                       name="feedback_type"
                       value={option.value}
                       checked={feedbackType === option.value}
+                      data-dialog-initial-focus={
+                        feedbackType === option.value ? "true" : undefined
+                      }
                       onChange={() => setFeedbackType(option.value)}
                     />
                     <span>{option.label}</span>

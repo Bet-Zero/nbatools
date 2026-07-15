@@ -654,6 +654,8 @@ export default function App() {
               .filter(Boolean)
               .join(" ")}
             data-state-surface="result"
+            aria-live="polite"
+            aria-label="Query result"
             data-team-theme={teamTheme?.team.teamAbbr ?? undefined}
             style={teamThemeStyle}
           >
