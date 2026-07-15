@@ -9,13 +9,15 @@
 .PHONY: test-parser test-query test-engine test-api test-output
 .PHONY: test-smoke-queries test-phase-smoke test-smoke-all
 .PHONY: parser-examples-sweep raw-query-answer-qa exploratory-query-review query-feedback-export
-.PHONY: visual-qa-screenshots
+.PHONY: browser-release-review visual-qa-screenshots
 .PHONY: docs-governance
 
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then printf '%s' .venv/bin/python; elif command -v python3 >/dev/null 2>&1; then command -v python3; elif command -v python >/dev/null 2>&1; then command -v python; else printf '%s' python3; fi)
 PYTEST ?= $(PYTHON) -m pytest
 VISUAL_QA_BASE_URL ?= http://127.0.0.1:8000
 VISUAL_QA_RUN_ID ?=
+BROWSER_REVIEW_BASE_URL ?= http://127.0.0.1:8000
+BROWSER_REVIEW_RUN_ID ?=
 
 ## Lightweight local setup check. Does not run tests.
 doctor:
@@ -165,6 +167,9 @@ query-feedback-export:
 ## Build the frontend and start the local API shell before running this target.
 visual-qa-screenshots:
 	npm --prefix frontend run qa:visual-screenshots -- --base-url "$(VISUAL_QA_BASE_URL)" $(if $(VISUAL_QA_RUN_ID),--run-id "$(VISUAL_QA_RUN_ID)")
+
+browser-release-review:
+	npm --prefix frontend run qa:browser-release-review -- --base-url "$(BROWSER_REVIEW_BASE_URL)" $(if $(BROWSER_REVIEW_RUN_ID),--run-id "$(BROWSER_REVIEW_RUN_ID)")
 
 ## Durable-doc path and relative-link governance check.
 docs-governance:

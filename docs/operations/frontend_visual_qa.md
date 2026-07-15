@@ -104,8 +104,9 @@ cases** before waiting for completion. Merely mounting `/visual-qa` must issue
 zero `POST /query` requests.
 
 The manifest is the run checklist: use it to confirm the run ID, base URL,
-capture timestamp, viewport dimensions, observed case IDs, capture order, and
-output files. Use each viewport's `metrics.json` to confirm completion, loaded
+capture timestamp, exact source commit and clean-tree state, browser version,
+visual-corpus hash, viewport dimensions, observed case IDs, capture order,
+artifact SHA-256 values, and output files. Use each viewport's `metrics.json` to confirm completion, loaded
 response count, request error count, backend status counts, viewport and page
 widths, and document-level overflow verdict.
 
@@ -116,6 +117,42 @@ capture fails.
 
 Repeated case filters are appropriate for local iteration. They are not a
 replacement for a canonical full-corpus review.
+
+## Browser Release Review Receipt
+
+For one desktop/mobile receipt covering public loading, success, zero-result,
+unsupported no-result, backend-error, transport-error, freshness, save-dialog,
+feedback-dialog, and idle internal-route states, run:
+
+```bash
+make browser-release-review \
+  BROWSER_REVIEW_BASE_URL=http://127.0.0.1:8000 \
+  BROWSER_REVIEW_RUN_ID=<run_id>
+```
+
+Equivalent frontend command:
+
+```bash
+npm --prefix frontend run qa:browser-release-review -- \
+  --base-url http://127.0.0.1:8000 \
+  --run-id <run_id>
+```
+
+The receipt is written to
+`outputs/browser_release_review/<run_id>/receipt.json`. It records the exact
+source commit and clean-tree state, browser version, corpus hash, screenshot
+hashes, axe results, dialog keyboard/focus probes, result-announcement probe,
+reduced-motion probe, and `/visual-qa` mount request count at `1280x900` and
+`390x844`.
+
+The runner separates `executionStatus` from `acceptanceStatus`. A complete
+capture may legitimately report blocked acceptance when axe, keyboard, focus,
+announcement, contrast, or reduced-motion checks expose a release issue.
+`humanReview` stays `pending` until a person inspects and certifies the retained
+images. The deterministic zero/no-result/error fixtures test presentation
+states; the freshness, loading, success, and idle internal route use the live
+local API shell. Run the canonical visual corpus separately for live result
+coverage.
 
 ## Text Snapshots And Render Review Outputs
 

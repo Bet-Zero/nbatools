@@ -74,6 +74,7 @@ OUTPUT_REFERENCE_ALLOWLIST = {
     ),
     Path("docs/operations/frontend_visual_qa.md"): (
         "outputs/",
+        "outputs/browser_release_review/<run_id>/receipt.json",
         "outputs/frontend_visual_qa/<run_id>/",
         "outputs/public_ui_render_review/",
         "outputs/public_ui_render_review/<run_id>/",
