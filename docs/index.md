@@ -1,8 +1,8 @@
 # NBA Tools Documentation
 
-This index lists durable source-of-truth documentation only. Task plans,
-preflights, review notes, generated evidence, and historical receipts do not
-belong in the durable documentation map.
+This index lists durable source-of-truth documentation and curated audit
+snapshots. Task plans, preflights, active review notes, and unpromoted generated
+evidence do not belong in the durable documentation map.
 
 ## Start Here
 
@@ -74,6 +74,13 @@ Runbooks and durable workflow policies.
 - [`operations/parser_routing_growth_guardrails.md`](operations/parser_routing_growth_guardrails.md) - parser/routing growth guardrails
 - [`operations/parser_examples_full_sweep_protocol.md`](operations/parser_examples_full_sweep_protocol.md) - parser example sweep protocol
 - [`operations/ui_guide.md`](operations/ui_guide.md) - web UI setup and component reference
+
+## Audits
+
+Curated audit snapshots preserve bounded historical evidence. They do not
+replace current-state references, release decisions, or repeatable runbooks.
+
+- [`audits/2026-07-15-browser-release-review/README.md`](audits/2026-07-15-browser-release-review/README.md) - retained desktop/mobile browser release review; execution complete, acceptance blocked, human review pending
 
 ## Documentation Rules
 

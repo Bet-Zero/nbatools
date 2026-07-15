@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
@@ -13,6 +15,12 @@ const CASE_SELECTOR = "[data-visual-case-id]";
 const FRONTEND_DIRECTORY = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
+);
+const REPOSITORY_ROOT = path.resolve(FRONTEND_DIRECTORY, "..");
+const VISUAL_CORPUS_PATH = path.join(
+  REPOSITORY_ROOT,
+  "qa",
+  "frontend_visual_qa_corpus.json",
 );
 const VIEWPORTS = [
   { label: "desktop_1280", width: 1280, height: 900 },
@@ -66,8 +74,7 @@ function parseArgs(argv) {
     runId: process.env.VISUAL_QA_RUN_ID ?? timestampRunId(),
     outputRoot: path.resolve(
       FRONTEND_DIRECTORY,
-      process.env.VISUAL_QA_OUTPUT_ROOT ??
-        "../outputs/visual_qa_screenshots",
+      process.env.VISUAL_QA_OUTPUT_ROOT ?? "../outputs/visual_qa_screenshots",
     ),
     caseIds: [],
   };
@@ -196,6 +203,25 @@ function relativeArtifactPath(runDirectory, artifactPath) {
 async function writeJson(filePath, value) {
   await mkdir(path.dirname(filePath), { recursive: true });
   await writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+async function sha256File(filePath) {
+  return createHash("sha256")
+    .update(await readFile(filePath))
+    .digest("hex");
+}
+
+function repositoryState() {
+  const sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], {
+    cwd: REPOSITORY_ROOT,
+    encoding: "utf8",
+  }).trim();
+  const trackedStatus = execFileSync(
+    "git",
+    ["status", "--porcelain", "--untracked-files=no"],
+    { cwd: REPOSITORY_ROOT, encoding: "utf8" },
+  ).trim();
+  return { sourceCommit, sourceTreeClean: trackedStatus.length === 0 };
 }
 
 async function waitForCompletedRun(page) {
@@ -404,7 +430,9 @@ async function captureViewport(browser, options, runDirectory, viewport) {
 
     if (!response?.ok()) {
       const status = response ? response.status() : "no response";
-      throw new Error(`${viewport.label} could not load /visual-qa: ${status}.`);
+      throw new Error(
+        `${viewport.label} could not load /visual-qa: ${status}.`,
+      );
     }
 
     await page.getByRole("button", { name: "Run live cases" }).click();
@@ -463,6 +491,7 @@ async function main() {
 
   const browser = await chromium.launch({ headless: true });
   const capturedAt = new Date().toISOString();
+  const provenance = repositoryState();
 
   try {
     const viewportRuns = [];
@@ -476,12 +505,27 @@ async function main() {
     }
 
     const manifestPath = path.join(runDirectory, "manifest.json");
+    const artifactPaths = viewportRuns.flatMap((viewportRun) => [
+      viewportRun.pageScreenshot,
+      viewportRun.metricsPath,
+      ...viewportRun.cardScreenshots.map((card) => card.path),
+    ]);
+    const artifacts = await Promise.all(
+      artifactPaths.map(async (artifactPath) => ({
+        path: artifactPath,
+        sha256: await sha256File(path.join(runDirectory, artifactPath)),
+      })),
+    );
     const manifest = {
-      version: 1,
+      version: 2,
       runId: options.runId,
       capturedAt,
       baseUrl: options.baseUrl,
       route: "/visual-qa",
+      browser: { name: "chromium", version: browser.version() },
+      sourceCommit: provenance.sourceCommit,
+      sourceTreeClean: provenance.sourceTreeClean,
+      visualCorpusSha256: await sha256File(VISUAL_CORPUS_PATH),
       canonicalRun: options.caseIds.length === 0,
       canonicalCaseCount: CANONICAL_CASE_COUNT,
       caseFilters: options.caseIds,
@@ -493,6 +537,7 @@ async function main() {
         pageScreenshot: viewportRun.pageScreenshot,
         cardScreenshots: viewportRun.cardScreenshots,
       })),
+      artifacts,
     };
     await writeJson(manifestPath, manifest);
 

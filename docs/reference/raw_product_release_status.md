@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Snapshot: 2026-06-08.
+Snapshot: 2026-07-15.
 
 Raw Product QA is machine-clean for the current corpus and the current public
 acceptance slice. The current public-acceptance human product review is closed
@@ -15,7 +15,7 @@ from one another.
 | Full Raw QA corpus | Current inventory is 349 cases; a current machine run is required | The retained 314/314 run predates the current corpus and is historical only. [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the boundary. |
 | `public_query_acceptance` slice | Current inventory is 134 cases; a current machine run is required | The retained 127/127 run predates the current slice and is historical only. [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the boundary. |
 | Human product review | `human_review_pending` | The historical closure was not bound to the current commit, corpus content, output, data generation, reviewer, and representative rows. |
-| Representative rendered UI review | Selected representative rendered-output queries passed; the slice 007 promotion reused existing top-performance and leaderboard renderers and required no new frontend layout spot check | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the current rendered-review summary and slice evidence. |
+| Representative rendered UI review | `acceptance_blocked`; the retained desktop/mobile receipt completed, the canonical 20-case visual corpus completed at both viewports, and human review remains pending | The [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md) records the exact boundary and accessibility blockers. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed
@@ -25,6 +25,7 @@ below.
 
 The following product-launch items remain open:
 
+- browser accessibility acceptance and owner human-review certification
 - branding and final product name
 - final production domain
 - custom-domain production cutover
