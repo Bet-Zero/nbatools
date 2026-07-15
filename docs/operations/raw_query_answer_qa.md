@@ -235,10 +235,41 @@ These statuses are independent. Do not infer `human_reviewed` or
 The public acceptance family registry
 (`qa/raw_query_answer_acceptance_families.yaml`) may include top-level
 `review_closure` metadata for an approved run or slice. The Raw QA harness uses
-that tracked metadata only when the generated run is machine-clean and the case
-count matches any recorded closure count. This lets generated
-`product_review.md` artifacts preserve the distinction between machine passing,
-coverage complete, human-review complete, and UI spot-check status.
+that tracked metadata only when the generated run matches every closure binding:
+
+- exact run ID and scope
+- full source commit with a clean tracked worktree
+- corpus SHA-256, ordered case IDs, and selected-case-content SHA-256
+- deterministic review-output SHA-256
+- one request-pinned immutable data generation (`legacy` cannot close review)
+- named reviewer and the exact reviewed representative-case IDs
+- a passed or explicitly not-applicable UI spot check
+
+A complete closure with any mismatch fails the harness even when machine
+expectations pass. Changed same-count corpora and overwritten mutable run aliases
+therefore cannot inherit an older closure. `human_review_pending` is the only
+valid state when no exact artifact has been certified. This preserves the
+distinction between machine passing, coverage complete, human-review complete,
+and UI-review status.
+
+Because adding a tracked closure changes the repository commit, validate a newly
+reviewed clean artifact with a separate receipt rather than editing the source
+tree before rerunning it:
+
+```bash
+.venv/bin/python tools/raw_query_answer_qa.py \
+  --corpus qa/raw_query_answer_corpus.yaml \
+  --slice public_query_acceptance \
+  --run-id <reviewed_run_id> \
+  --out <separate_validation_output_root> \
+  --review-closure <review_closure_receipt.yaml> \
+  --fail-on-expectation-failure
+```
+
+The receipt may be the closure mapping itself or wrap it under
+`review_closure:`. Keep the reviewed artifact immutable. The validation rerun
+must use the same clean commit, run ID, corpus, case selection, data generation,
+and deterministic answers; otherwise closure integrity fails.
 
 ## Human + ChatGPT Review
 
