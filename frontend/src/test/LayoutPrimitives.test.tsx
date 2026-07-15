@@ -453,6 +453,32 @@ describe("migrated result envelope", () => {
     expect(screen.queryByText(/2026-04-01/)).not.toBeInTheDocument();
   });
 
+  it("shows the explicit boolean join mode before applied filter chips", () => {
+    const data = makeResponse({
+      result: {
+        query_class: "count",
+        result_status: "ok",
+        metadata: {
+          boolean_filter_mode: "any",
+          applied_filters: [
+            { label: "pts min", value: "20.0001", kind: "threshold" },
+            { label: "ast min", value: "10.0001", kind: "threshold" },
+          ],
+        },
+        notes: [],
+        caveats: [],
+        sections: {},
+      },
+    });
+
+    render(<ResultContextSummary data={data} />);
+
+    const contextStrip = screen.getByLabelText("Result context");
+    expect(contextStrip).toHaveTextContent("LogicAny filter (OR)");
+    expect(contextStrip).toHaveTextContent("20+ PTS");
+    expect(contextStrip).toHaveTextContent("10+ AST");
+  });
+
   it("renders public context chips and material caveats for placement near the answer", () => {
     const data = makeResponse({
       caveats: ["playoff round data not available before 2001-02"],

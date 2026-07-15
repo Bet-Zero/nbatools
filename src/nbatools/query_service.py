@@ -51,7 +51,10 @@ from nbatools.commands.natural_query import (
     normalize_text,
     parse_query,
 )
-from nbatools.commands.query_boolean_parser import expression_contains_boolean_ops
+from nbatools.commands.query_boolean_parser import (
+    boolean_filter_mode,
+    expression_contains_boolean_ops,
+)
 
 # Re-export result types so callers can import everything from one place.
 from nbatools.commands.structured_results import (  # noqa: F401
@@ -625,6 +628,7 @@ def _build_query_metadata(
         "half": parsed.get("half"),
         "position_filter": parsed.get("position_filter"),
         "grouped_boolean_used": grouped_boolean_used,
+        "boolean_filter_mode": parsed.get("boolean_filter_mode"),
         "head_to_head_used": bool(parsed.get("head_to_head")),
     }
 
@@ -1475,6 +1479,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             team=parsed.get("team"),
         )
         try:
+            parsed["boolean_filter_mode"] = boolean_filter_mode(condition_text)
             result = _execute_grouped_boolean_build_result(condition_text, parsed)
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=True)
@@ -1491,11 +1496,13 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
     if contains_boolean_or(normalized):
         try:
             result, parsed = _execute_or_query_build_result(query)
+            parsed["boolean_filter_mode"] = "any"
         except (FileNotFoundError, KeyError, TypeError, ValueError) as exc:
             try:
                 parsed = parse_query(query)
             except ValueError:
                 parsed = _build_parse_state(query)
+            parsed["boolean_filter_mode"] = "any"
             return _build_special_path_error_result(exc, parsed, grouped_boolean_used=False)
 
         return _finalize_natural_query_result(

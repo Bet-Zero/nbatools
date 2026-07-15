@@ -55,6 +55,7 @@ METADATA_FIELD_ORDER = (
     "stretch_metric",
     "split_type",
     "grouped_boolean_used",
+    "boolean_filter_mode",
     "head_to_head_used",
     "notes",
     "caveats",

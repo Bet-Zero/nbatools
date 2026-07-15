@@ -612,10 +612,12 @@ class TestNaturalQueryExecution:
         qr = execute_natural_query("Jokic over 30 points or over 10 assists 2024-25")
         assert isinstance(qr.result, FinderResult)
         assert qr.is_ok
+        assert qr.metadata["boolean_filter_mode"] == "any"
 
     def test_grouped_boolean_returns_result(self):
         qr = execute_natural_query("Jokic summary (over 25 points and over 10 rebounds) 2024-25")
         assert isinstance(qr, QueryResult)
+        assert qr.metadata["boolean_filter_mode"] == "all"
         # Should return a SummaryResult or NoResult depending on data
         assert isinstance(qr.result, (SummaryResult, NoResult))
 
