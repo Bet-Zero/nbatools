@@ -229,7 +229,7 @@ runs after the worksheet is complete.
 - Default bucket: `nbatools-feedback`
 - Default prefix: `query_feedback`
 - Object key shape:
-  `query_feedback/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json`
+  schema-v2 server receipt `query_feedback/receipts/<feedback_id>.json`
 - Idempotent user-submission key shape:
   `query_feedback/submissions/<submission_uuid>.json`; the write uses an
   absent-object precondition, so retrying the same receipt cannot create a
@@ -265,6 +265,11 @@ token only to the feedback bucket.
 If `QUERY_FEEDBACK_STORE` is unset or empty, feedback storage is disabled. The
 endpoint returns JSON with `ok: true`, `stored: false`, and `disabled: true` so
 the product UI can fail softly without changing query behavior.
+
+Deployed persistence also requires every privacy activation gate in
+[`query_feedback_privacy.md`](query_feedback_privacy.md). Automatic public
+diagnostics are disabled; `automatic` records in historical exports predate the
+current boundary or come from an explicitly opted-in local workflow.
 
 ## Mutable Triage Overlay
 
@@ -640,5 +645,8 @@ Do not add names, emails, user accounts, IP addresses, phone numbers, precise
 device fingerprints, or session replay to feedback records. User notes are
 capped and the UI asks users not to include personal information.
 
-Recommended retention is 90 days for raw feedback records unless a record has
-been converted into a QA case, data issue, or product planning artifact.
+Raw feedback has a hard 90-day maximum. Conversion into a QA case, data issue,
+or product planning artifact does not extend raw retention; copy only minimized
+facts and allow the raw record to expire. Lifecycle verification and
+receipt-addressed deletion are defined in
+[`query_feedback_privacy.md`](query_feedback_privacy.md).

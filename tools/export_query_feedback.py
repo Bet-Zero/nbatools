@@ -36,6 +36,8 @@ DEFAULT_OUTPUT_DIR = "outputs/query_feedback_exports"
 NORMALIZED_FIELDS = [
     "id",
     "created_at",
+    "expires_at",
+    "retention_days",
     "schema_version",
     "feedback_source",
     "feedback_type",

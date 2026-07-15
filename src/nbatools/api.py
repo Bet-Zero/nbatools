@@ -389,7 +389,7 @@ def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse 
 
 @app.post("/query-feedback")
 def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
-    """Accept user-submitted or automatic query feedback."""
+    """Accept an explicit user-submitted feedback report."""
     reservation = None
     try:
         if admission_controls_enabled():

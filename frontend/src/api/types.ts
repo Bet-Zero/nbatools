@@ -181,7 +181,7 @@ export interface ErrorResponse {
 
 // --- Query feedback ---
 
-export type FeedbackSource = "automatic" | "user_submitted";
+export type FeedbackSource = "user_submitted";
 
 export type FeedbackType =
   | "wrong_answer"

@@ -1,5 +1,4 @@
 import type {
-  FeedbackSource,
   FeedbackType,
   QueryFeedbackPayload,
   QueryResponse,
@@ -53,19 +52,17 @@ export function buildQueryFeedbackPayload(
 export function buildQueryErrorFeedbackPayload({
   query,
   errorMessage,
-  feedbackSource,
   feedbackType = "error",
   note = "",
 }: {
   query: string;
   errorMessage?: string | null;
-  feedbackSource: FeedbackSource;
   feedbackType?: FeedbackType;
   note?: string;
 }): QueryFeedbackPayload {
   return {
     query,
-    feedback_source: feedbackSource,
+    feedback_source: "user_submitted",
     feedback_type: feedbackType,
     source_page: currentSourcePage(),
     status: "error",
