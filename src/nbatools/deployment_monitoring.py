@@ -97,6 +97,11 @@ def default_smoke_cases() -> list[SmokeCase]:
             path="/freshness",
         ),
         SmokeCase(
+            slug="readiness",
+            path="/readiness",
+            expected_json_fields={"ready": True, "status": "ready"},
+        ),
+        SmokeCase(
             slug="query_jokic_last_10",
             path="/query",
             method="POST",
@@ -299,10 +304,16 @@ def _summarize_payload(
         "query_class",
         "result_status",
         "confidence",
+        "ready",
+        "season_state",
+        "active_generation",
+        "immutable_generation",
     )
     summary = {key: payload[key] for key in fields if key in payload}
     if slug == "freshness" and isinstance(payload.get("seasons"), list):
         summary["season_count"] = len(payload["seasons"])
+    if slug == "readiness" and isinstance(payload.get("blockers"), list):
+        summary["blocker_count"] = len(payload["blockers"])
     result = payload.get("result")
     if isinstance(result, dict):
         metadata = result.get("metadata")

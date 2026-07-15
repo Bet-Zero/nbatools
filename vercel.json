@@ -37,6 +37,11 @@
       "maxDuration": 60,
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
     },
+    "api/readiness.py": {
+      "memory": 1024,
+      "maxDuration": 60,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
     "api/query.py": {
       "memory": 1024,
       "maxDuration": 60,
@@ -89,6 +94,10 @@
     {
       "source": "/freshness",
       "destination": "/api/freshness"
+    },
+    {
+      "source": "/readiness",
+      "destination": "/api/readiness"
     },
     {
       "source": "/routes",

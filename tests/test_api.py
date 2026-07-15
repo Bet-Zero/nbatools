@@ -752,3 +752,32 @@ class TestFreshness:
             "last_refresh_error",
         }
         assert required.issubset(body.keys())
+
+
+class TestReadiness:
+    @patch("nbatools.api.build_readiness_info")
+    def test_ready_response_is_200(self, mock_build):
+        mock_build.return_value.ready = True
+        mock_build.return_value.to_dict.return_value = {
+            "ready": True,
+            "status": "ready",
+        }
+
+        response = client.get("/readiness")
+
+        assert response.status_code == 200
+        assert response.json()["ready"] is True
+
+    @patch("nbatools.api.build_readiness_info")
+    def test_not_ready_response_is_503(self, mock_build):
+        mock_build.return_value.ready = False
+        mock_build.return_value.to_dict.return_value = {
+            "ready": False,
+            "status": "not_ready",
+            "blockers": [{"code": "immutable_generation_required", "detail": "missing"}],
+        }
+
+        response = client.get("/readiness")
+
+        assert response.status_code == 503
+        assert response.json()["status"] == "not_ready"
