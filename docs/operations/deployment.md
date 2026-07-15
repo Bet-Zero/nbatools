@@ -24,12 +24,19 @@ Required variables:
 - `R2_BUCKET_NAME`
 
 For the current deployment bucket, `R2_BUCKET_NAME` is `nbatools-data`.
+The deployed runtime uses these credentials only for canonical-data reads, so
+its token must be bucket-scoped read-only. Approved publication is an operator
+workflow that uses separately controlled write authority; do not give the
+deployed query runtime write access merely so an operator command can publish.
 
 Optional query feedback variables:
 
 - `QUERY_FEEDBACK_STORE`
 - `QUERY_FEEDBACK_BUCKET_NAME`
 - `QUERY_FEEDBACK_PREFIX`
+- `QUERY_FEEDBACK_R2_ACCOUNT_ID`
+- `QUERY_FEEDBACK_R2_ACCESS_KEY_ID`
+- `QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY`
 - `NBATOOLS_ADMIN_FEEDBACK_ENABLED`
 - `NBATOOLS_ADMIN_TOKEN`
 
@@ -40,16 +47,16 @@ query UX and `/query` responses continue unchanged.
 
 For deployed feedback storage, use `QUERY_FEEDBACK_BUCKET_NAME=nbatools-feedback`
 or another dedicated bucket and keep `QUERY_FEEDBACK_PREFIX=query_feedback`.
-The feedback store uses the same S3 endpoint pattern and credential variable
-names as runtime R2 data access, but the recommended production setup is a
-separate feedback bucket and a separate R2 token scoped only to that bucket.
+Set the three `QUERY_FEEDBACK_R2_*` variables to a separate token scoped only to
+that feedback bucket. The feedback store fails closed when those variables are
+missing or when they alias the canonical-data access-key/secret pair; it never
+falls back to `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`.
 
-Current preview feedback status as of the May 18, 2026 R2 record inspection is
-`FEEDBACK_READY_WITH_NOTES`. The dedicated feedback bucket was unavailable for
-that preview, so records were verified in the existing `nbatools-data` bucket
-under isolated prefix `query_feedback/preview`. That fallback is acceptable for
-the current release candidate with notes; provision a dedicated feedback bucket
-and token later if this prefix is not kept.
+The May 18, 2026 preview inspection used the canonical data bucket under the
+isolated `query_feedback/preview` prefix. That evidence is historical and does
+not satisfy the current least-privilege contract. Keep deployed feedback
+disabled until a dedicated feedback credential tuple is configured; no
+canonical-data credential fallback is accepted.
 
 Set `NBATOOLS_ADMIN_FEEDBACK_ENABLED=true` only when the backend admin feedback
 review endpoints should be available. In deployed preview or production
@@ -67,7 +74,7 @@ Use this process when recreating the storage setup for a future operator.
 2. Open **Storage & databases > R2** in the Cloudflare dashboard.
 3. Create an R2 bucket named `nbatools-data`.
 4. In the R2 account details area, create an R2 API token.
-5. Choose `Object Read & Write`.
+5. Choose bucket-scoped object-read permission for the deployed query runtime.
 6. Scope the token to the specific `nbatools-data` bucket only.
 7. Copy the generated Access Key ID and Secret Access Key immediately.
 8. Store the credentials in the operator's password manager.
@@ -75,8 +82,12 @@ Use this process when recreating the storage setup for a future operator.
 10. Add the same variables to Vercel project environment variables before
     enabling deployed `DATA_SOURCE=r2` reads.
 
-The token should not have account-wide R2 admin permissions. It only needs to
-read, write, and list objects in the one deployment bucket.
+The deployed runtime token should not have account-wide R2 admin or object-write
+permissions. It needs only the canonical-data reads used by query execution.
+Keep approved publication credentials operator-controlled and outside the
+deployed runtime. For an approved publication, inject the operator's
+write-scoped `R2_*` values only into that local command process; do not copy
+them into Vercel runtime configuration.
 
 For query feedback, create a separate bucket such as `nbatools-feedback` and a
 separate R2 token scoped to that bucket when possible. Feedback writes need
@@ -85,6 +96,11 @@ mutable triage overlay review needs list/read/write permission under the
 feedback prefix. Do not expose these credentials to the frontend. The browser
 submits feedback only through the backend-owned `POST /query-feedback`
 endpoint.
+
+Configure that token through `QUERY_FEEDBACK_R2_ACCOUNT_ID`,
+`QUERY_FEEDBACK_R2_ACCESS_KEY_ID`, and
+`QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY`. Do not copy the canonical-data access key
+and secret into those variables.
 
 Feedback records are compact JSON diagnostics and user reports. They do not
 intentionally collect names, emails, IP addresses, user accounts, phone

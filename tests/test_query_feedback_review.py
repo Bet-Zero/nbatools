@@ -7,11 +7,13 @@ from typing import Any
 import pytest
 
 from nbatools.query_feedback_review import (
+    FeedbackReviewError,
     FeedbackReviewFilters,
     TriageOverlayValidationError,
     join_triage_overlays,
     list_feedback_groups,
     load_local_records,
+    load_r2_records,
     normalize_records,
     prepare_review_records,
     read_triage_overlay,
@@ -154,6 +156,67 @@ def test_list_feedback_groups_joins_overlays_and_supports_overlay_filters():
     assert payload["groups"][0]["triage_overlay"]["triage_decision"] == "bug"
 
 
+def test_r2_review_loader_uses_dedicated_feedback_credentials(monkeypatch):
+    source_record = feedback_record("source")
+    source_key = "query_feedback/preview/2026/05/18/source.json"
+    created_configs = []
+
+    class BucketScopedReviewClient(FakeR2Client):
+        def _require_feedback_bucket(self, kwargs):
+            if kwargs["Bucket"] != "nbatools-feedback":
+                raise PermissionError("cross-bucket operation denied")
+
+        def list_objects_v2(self, **kwargs):
+            self._require_feedback_bucket(kwargs)
+            return super().list_objects_v2(**kwargs)
+
+        def get_object(self, **kwargs):
+            self._require_feedback_bucket(kwargs)
+            return super().get_object(**kwargs)
+
+    client = BucketScopedReviewClient({source_key: json.dumps(source_record).encode("utf-8")})
+
+    def fake_create_r2_client(config):
+        created_configs.append(config)
+        return client
+
+    monkeypatch.setattr(
+        "nbatools.query_feedback_review.data_source.create_r2_client",
+        fake_create_r2_client,
+    )
+
+    records = load_r2_records(
+        bucket="nbatools-feedback",
+        prefix="query_feedback/preview",
+        env={
+            **feedback_env(),
+            "R2_ACCOUNT_ID": "acct",
+            "R2_ACCESS_KEY_ID": "data-read-only-key",
+            "R2_SECRET_ACCESS_KEY": "data-read-only-secret",
+            "R2_BUCKET_NAME": "nbatools-data",
+        },
+    )
+
+    assert [record.record["id"] for record in records] == ["source"]
+    assert created_configs[0].access_key_id == "feedback-key"
+    assert created_configs[0].bucket_name == "nbatools-feedback"
+    with pytest.raises(PermissionError, match="cross-bucket"):
+        client.get_object(Bucket="nbatools-data", Key=source_key)
+
+
+def test_feedback_review_fails_closed_without_dedicated_credentials():
+    with pytest.raises(FeedbackReviewError, match="QUERY_FEEDBACK_R2_ACCOUNT_ID"):
+        list_feedback_groups(
+            env={
+                "QUERY_FEEDBACK_STORE": "r2",
+                "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
+                "R2_ACCOUNT_ID": "acct",
+                "R2_ACCESS_KEY_ID": "data-read-only-key",
+                "R2_SECRET_ACCESS_KEY": "data-read-only-secret",
+            }
+        )
+
+
 def test_join_triage_overlays_defaults_missing_overlay():
     groups = [{"group_id": "qfg_test", "count": 1}]
 
@@ -169,9 +232,9 @@ def feedback_env() -> dict[str, str]:
         "QUERY_FEEDBACK_STORE": "r2",
         "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
         "QUERY_FEEDBACK_PREFIX": "query_feedback/preview",
-        "R2_ACCOUNT_ID": "acct",
-        "R2_ACCESS_KEY_ID": "key",
-        "R2_SECRET_ACCESS_KEY": "secret",
+        "QUERY_FEEDBACK_R2_ACCOUNT_ID": "acct",
+        "QUERY_FEEDBACK_R2_ACCESS_KEY_ID": "feedback-key",
+        "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY": "feedback-secret",
     }
 
 

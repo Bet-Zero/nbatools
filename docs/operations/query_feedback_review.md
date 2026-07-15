@@ -44,7 +44,7 @@ cadence calls for them.
 
    This is the canonical command. It invokes the read-only exporter
    (`tools/export_query_feedback.py`) with the runbook's default source
-   (bucket `nbatools-data`, prefix `query_feedback/preview`) and writes the
+   (bucket `nbatools-feedback`, prefix `query_feedback`) and writes the
    review artifacts under `outputs/query_feedback_exports/<run_id>/`. The
    raw `python tools/export_query_feedback.py …` invocation shown in the
    [Export Workflow](#export-workflow) section is the underlying form and
@@ -231,10 +231,12 @@ runs after the worksheet is complete.
 - Object key shape:
   `query_feedback/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json`
 
-Current preview status as of the May 18, 2026 R2 inspection is
-`FEEDBACK_READY_WITH_NOTES`. Preview records were verified in bucket
+The May 18, 2026 preview inspection verified historical records in bucket
 `nbatools-data` under isolated prefix `query_feedback/preview` because the
-dedicated feedback bucket was unavailable. The verified preview key shape is:
+dedicated feedback bucket was unavailable. That evidence does not satisfy the
+current least-privilege contract; deployed feedback stays disabled until the
+dedicated feedback credential tuple is configured. The historical key shape
+was:
 
 ```text
 query_feedback/preview/YYYY/MM/DD/<created_at_ms>_<short_random_id>.json
@@ -245,6 +247,13 @@ Generated QA evidence and current scoreboard terminology are documented in
 
 The endpoint is backend-owned. The frontend never receives R2 credentials and
 does not write directly to storage.
+
+Backend collection, export, and admin review use the dedicated
+`QUERY_FEEDBACK_R2_ACCOUNT_ID`, `QUERY_FEEDBACK_R2_ACCESS_KEY_ID`, and
+`QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY` tuple. They do not fall back to the
+canonical-data `R2_*` credentials, and exact access-key/secret aliasing fails
+closed. Keep canonical runtime data credentials read-only and scope the feedback
+token only to the feedback bucket.
 
 If `QUERY_FEEDBACK_STORE` is unset or empty, feedback storage is disabled. The
 endpoint returns JSON with `ok: true`, `stored: false`, and `disabled: true` so
@@ -379,8 +388,8 @@ immutable feedback records into review artifacts:
 
 ```bash
 .venv/bin/python tools/export_query_feedback.py \
-  --bucket nbatools-data \
-  --prefix query_feedback/preview \
+  --bucket nbatools-feedback \
+  --prefix query_feedback \
   --since 2026-05-18
 ```
 
@@ -399,10 +408,10 @@ The exporter only lists and reads records. It must not call `put_object`,
 It also does not edit QA corpora, query behavior, parser behavior, frontend
 rendering, or feedback collection.
 
-Default export source for the current preview workflow:
+Default export source under the least-privilege contract:
 
-- bucket: `nbatools-data`
-- prefix: `query_feedback/preview`
+- bucket: `nbatools-feedback`
+- prefix: `query_feedback`
 - output base: `outputs/query_feedback_exports`
 - smoke/test records: excluded unless `--include-smoke` is passed
 

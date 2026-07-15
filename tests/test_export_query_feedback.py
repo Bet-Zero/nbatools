@@ -14,6 +14,13 @@ from tools import export_query_feedback
 pytestmark = pytest.mark.output
 
 
+def test_remote_export_defaults_to_dedicated_feedback_bucket():
+    args = export_query_feedback.parse_args([])
+
+    assert args.bucket == "nbatools-feedback"
+    assert args.prefix == "query_feedback"
+
+
 def test_local_fixture_export_creates_outputs_and_normalized_contract(tmp_path: Path):
     local_dir = tmp_path / "feedback"
     records = [
@@ -329,15 +336,19 @@ def test_mocked_r2_mode_uses_only_read_operations(tmp_path: Path, monkeypatch: p
         {"query_feedback/preview/2026/05/18/r2_record.json": json.dumps(record).encode("utf-8")}
     )
 
-    def fake_load_r2_config(env=None):
+    def fake_load_feedback_r2_config(*, env=None, bucket_name=None, env_file=None):
         return R2Config(
             account_id="account",
-            access_key_id="key",
-            secret_access_key="secret",
-            bucket_name=(env or {})["R2_BUCKET_NAME"],
+            access_key_id="feedback-read-key",
+            secret_access_key="feedback-read-secret",
+            bucket_name=bucket_name,
         )
 
-    monkeypatch.setattr(query_feedback_review.data_source, "load_r2_config", fake_load_r2_config)
+    monkeypatch.setattr(
+        query_feedback_review,
+        "load_feedback_r2_config",
+        fake_load_feedback_r2_config,
+    )
     monkeypatch.setattr(
         query_feedback_review.data_source, "create_r2_client", lambda config: client
     )
@@ -346,7 +357,7 @@ def test_mocked_r2_mode_uses_only_read_operations(tmp_path: Path, monkeypatch: p
     exit_code = export_query_feedback.main(
         [
             "--bucket",
-            "nbatools-data",
+            "nbatools-feedback",
             "--prefix",
             "query_feedback/preview",
             "--output-dir",
@@ -358,9 +369,14 @@ def test_mocked_r2_mode_uses_only_read_operations(tmp_path: Path, monkeypatch: p
 
     assert exit_code == 0
     assert (run_dir / "feedback_records.jsonl").exists()
-    assert client.list_calls == [{"Bucket": "nbatools-data", "Prefix": "query_feedback/preview"}]
+    assert client.list_calls == [
+        {"Bucket": "nbatools-feedback", "Prefix": "query_feedback/preview"}
+    ]
     assert client.get_calls == [
-        {"Bucket": "nbatools-data", "Key": "query_feedback/preview/2026/05/18/r2_record.json"}
+        {
+            "Bucket": "nbatools-feedback",
+            "Key": "query_feedback/preview/2026/05/18/r2_record.json",
+        }
     ]
     assert client.mutation_calls == []
 

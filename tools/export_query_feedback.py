@@ -29,8 +29,8 @@ from nbatools.query_feedback_review import (  # noqa: E402
 )
 
 
-DEFAULT_BUCKET = "nbatools-data"
-DEFAULT_PREFIX = "query_feedback/preview"
+DEFAULT_BUCKET = "nbatools-feedback"
+DEFAULT_PREFIX = "query_feedback"
 DEFAULT_OUTPUT_DIR = "outputs/query_feedback_exports"
 
 NORMALIZED_FIELDS = [

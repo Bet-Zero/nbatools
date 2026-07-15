@@ -14,6 +14,7 @@ from nbatools.query_feedback import (
     FeedbackStoreResult,
     FeedbackValidationError,
     build_feedback_record,
+    load_feedback_store_config,
     maybe_log_query_diagnostic,
     sanitize_metadata,
     store_feedback_record,
@@ -138,9 +139,9 @@ def test_r2_store_write_with_mock_client():
             "QUERY_FEEDBACK_STORE": "r2",
             "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
             "QUERY_FEEDBACK_PREFIX": "query_feedback",
-            "R2_ACCOUNT_ID": "acct",
-            "R2_ACCESS_KEY_ID": "key",
-            "R2_SECRET_ACCESS_KEY": "secret",
+            "QUERY_FEEDBACK_R2_ACCOUNT_ID": "acct",
+            "QUERY_FEEDBACK_R2_ACCESS_KEY_ID": "feedback-key",
+            "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY": "feedback-secret",
         },
         client=FakeClient(),
     )
@@ -153,6 +154,90 @@ def test_r2_store_write_with_mock_client():
     stored = json.loads(calls[0]["Body"].decode("utf-8"))
     assert stored["id"] == record["id"]
     assert "result" not in stored
+
+
+def test_feedback_store_uses_dedicated_credentials_and_preserves_read_only_data_client(
+    monkeypatch,
+):
+    record = build_feedback_record(base_payload(), env={})
+    created_configs = []
+
+    class ReadOnlyDataClient:
+        def put_object(self, **kwargs):
+            raise AssertionError(f"canonical data client cannot write: {kwargs['Bucket']}")
+
+    class BucketScopedFeedbackClient:
+        def __init__(self):
+            self.put_calls = []
+
+        def put_object(self, **kwargs):
+            if kwargs["Bucket"] != "nbatools-feedback":
+                raise PermissionError("cross-bucket operation denied")
+            self.put_calls.append(kwargs)
+
+    data_client = ReadOnlyDataClient()
+    feedback_client = BucketScopedFeedbackClient()
+
+    def fake_create_r2_client(config):
+        created_configs.append(config)
+        if config.access_key_id == "data-read-only-key":
+            return data_client
+        return feedback_client
+
+    monkeypatch.setattr("nbatools.query_feedback.create_r2_client", fake_create_r2_client)
+
+    result = store_feedback_record(
+        record,
+        env={
+            "QUERY_FEEDBACK_STORE": "r2",
+            "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
+            "QUERY_FEEDBACK_R2_ACCOUNT_ID": "acct",
+            "QUERY_FEEDBACK_R2_ACCESS_KEY_ID": "feedback-write-key",
+            "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY": "feedback-write-secret",
+            "R2_ACCOUNT_ID": "acct",
+            "R2_ACCESS_KEY_ID": "data-read-only-key",
+            "R2_SECRET_ACCESS_KEY": "data-read-only-secret",
+            "R2_BUCKET_NAME": "nbatools-data",
+        },
+    )
+
+    assert result.stored is True
+    assert created_configs[0].access_key_id == "feedback-write-key"
+    assert created_configs[0].bucket_name == "nbatools-feedback"
+    assert len(feedback_client.put_calls) == 1
+    with pytest.raises(PermissionError, match="cross-bucket"):
+        feedback_client.put_object(Bucket="nbatools-data", Key="forbidden", Body=b"")
+
+
+def test_feedback_store_fails_closed_without_dedicated_credentials():
+    with pytest.raises(FeedbackStorageError, match="QUERY_FEEDBACK_R2_ACCOUNT_ID"):
+        load_feedback_store_config(
+            env={
+                "QUERY_FEEDBACK_STORE": "r2",
+                "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
+                "R2_ACCOUNT_ID": "acct",
+                "R2_ACCESS_KEY_ID": "data-key",
+                "R2_SECRET_ACCESS_KEY": "data-secret",
+            },
+            env_file=None,
+        )
+
+
+def test_feedback_store_fails_closed_when_credentials_alias_data_tuple():
+    with pytest.raises(FeedbackStorageError, match="must not reuse"):
+        load_feedback_store_config(
+            env={
+                "QUERY_FEEDBACK_STORE": "r2",
+                "QUERY_FEEDBACK_BUCKET_NAME": "nbatools-feedback",
+                "QUERY_FEEDBACK_R2_ACCOUNT_ID": "acct",
+                "QUERY_FEEDBACK_R2_ACCESS_KEY_ID": "shared-key",
+                "QUERY_FEEDBACK_R2_SECRET_ACCESS_KEY": "shared-secret",
+                "R2_ACCOUNT_ID": "acct",
+                "R2_ACCESS_KEY_ID": "shared-key",
+                "R2_SECRET_ACCESS_KEY": "shared-secret",
+            },
+            env_file=None,
+        )
 
 
 def test_query_feedback_endpoint_success_and_validation_failure(monkeypatch):
