@@ -109,6 +109,8 @@ OUTPUT_REFERENCE_ALLOWLIST = {
         "outputs/raw_query_answer_qa/20260608T041500Z_full_top_single_game_performances_007/",
         "outputs/raw_query_answer_qa/latest_public_query_acceptance/",
         "outputs/raw_query_answer_qa/<run_id>/product_review.md",
+        "outputs/raw_query_answer_qa_closure_validation/d10_final_83889c6/",
+        "outputs/raw_query_answer_qa_closure_validation/d10_final_83889c6/product_review.md",
     ),
     Path("docs/operations/raw_query_answer_qa.md"): (
         "outputs/raw_query_answer_qa/",

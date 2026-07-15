@@ -168,10 +168,13 @@ artifact integrity, acceptance status, human-review status, and blocking
 findings. A retained snapshot must not become a runtime fixture, screenshot
 baseline, or substitute for a current review.
 
-The current retained example is the
+The retained pre-remediation example is the
 [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md).
-Its execution completed, but its acceptance is blocked and human review remains
-pending.
+Its execution completed and accurately preserved the original blockers. PR
+#269 subsequently merged the E-05 fixes, and a real exact-worktree candidate
+rerun passed at both viewports with zero blockers. A clean current-commit
+retained rerun and owner UI decision are still required; do not promote the
+candidate run into release acceptance.
 
 ## Text Snapshots And Render Review Outputs
 
