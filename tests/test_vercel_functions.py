@@ -24,6 +24,7 @@ def test_vercel_entrypoints_export_handlers():
         "api.health",
         "api.routes",
         "api.freshness",
+        "api.readiness",
         "api.query",
         "api.query_feedback",
         "api.structured_query",

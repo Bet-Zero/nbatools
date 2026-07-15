@@ -61,6 +61,14 @@ def freshness_response() -> tuple[int, dict[str, Any]]:
     return HTTPStatus.OK, freshness_payload()
 
 
+def readiness_response() -> tuple[int, dict[str, Any]]:
+    """Return strict deployment readiness with a fail-closed status code."""
+    from nbatools.readiness import build_readiness_info
+
+    info = build_readiness_info()
+    return (HTTPStatus.OK if info.ready else HTTPStatus.SERVICE_UNAVAILABLE), info.to_dict()
+
+
 def dev_fixtures_response() -> tuple[int, dict[str, Any]]:
     """Return the parser example fixture list for the internal review UI."""
     return HTTPStatus.OK, dev_fixtures_payload()

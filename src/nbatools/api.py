@@ -52,6 +52,7 @@ from nbatools.query_service import (
     execute_natural_query,
     execute_structured_query,
 )
+from nbatools.readiness import build_readiness_info
 
 _UI_DIR = api_ui.UI_DIR
 _UI_INDEX = api_ui.UI_INDEX
@@ -160,6 +161,23 @@ class FreshnessResponse(BaseModel):
     last_refresh_ok: bool | None = None
     last_refresh_at: str | None = None
     last_refresh_error: str | None = None
+
+
+class ReadinessResponse(BaseModel):
+    """Fail-closed deployment readiness response."""
+
+    ready: bool
+    status: str
+    checked_at: str
+    season: str
+    season_state: str
+    max_active_lag_hours: int
+    active_generation: str
+    immutable_generation: bool
+    release_exception_owner: str
+    slices: list[dict[str, Any]] = Field(default_factory=list)
+    blockers: list[dict[str, str]] = Field(default_factory=list)
+    exception: dict[str, Any] = Field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -292,6 +310,13 @@ def freshness() -> FreshnessResponse:
     """
     info = build_freshness_info()
     return FreshnessResponse(**info.to_dict())
+
+
+@app.get("/readiness", response_model=ReadinessResponse)
+def readiness() -> JSONResponse:
+    """Return release readiness; non-ready states use HTTP 503."""
+    info = build_readiness_info()
+    return JSONResponse(status_code=200 if info.ready else 503, content=info.to_dict())
 
 
 @app.get("/routes", response_model=RoutesResponse)

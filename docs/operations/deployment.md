@@ -237,6 +237,8 @@ The JSON report records:
 - `GET /`
 - `GET /health`
 - `GET /freshness`
+- `GET /readiness`, which must return HTTP `200`, `ready=true`, and
+  `status=ready`
 - `POST /query` for the canonical N3 smoke queries
 - `POST /query` for `Celtics record against the East this season`, including
   the R2-backed `team_conference_membership.csv` data-path check that expects
@@ -245,6 +247,29 @@ The JSON report records:
 Each case captures status, latency, selected deployment headers, a short body
 preview, and a compact payload summary so Phase N3 and the later custom-domain
 wrap-up can compare like-for-like evidence.
+
+`/health` remains a cheap liveness check and `/freshness` remains descriptive.
+Neither substitutes for `/readiness`. The default deployment smoke fails before
+release acceptance when readiness returns `503`, reports any blocker, or cannot
+prove an immutable active generation.
+
+### Readiness exception record
+
+Only the named release owner, **John Matthew, project owner**, may authorize a
+temporary active-season lag exception. Set all three values together:
+
+```text
+NBATOOLS_READINESS_EXCEPTION_REASON=<specific reason>
+NBATOOLS_READINESS_EXCEPTION_CREATED_AT=<ISO-8601 UTC timestamp>
+NBATOOLS_READINESS_EXCEPTION_EXPIRES_AT=<ISO-8601 UTC timestamp>
+```
+
+The expiry must be no more than 24 hours after creation. The application ignores
+partial, malformed, future-dated, expired, or overlong records. The exception
+can remove only the `active_season_lag` blocker; it cannot make failed/unknown
+coverage, an untrusted playoff slice, a failed refresh, or mutable/legacy data
+ready. Remove the three variables after the next successful coherent refresh or
+at expiry, whichever comes first.
 
 If the opponent-conference smoke case returns `no_data`, lacks
 `metadata.opponent_team_abbrs`, or resolves fewer than 15 East teams, stop the

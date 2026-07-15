@@ -588,6 +588,37 @@ single active pointer, and retains the previous generation for rollback.
 }
 ```
 
+### Schedule-aware readiness API
+
+`GET /readiness` is the release/deployment gate; it is intentionally stricter
+than the descriptive `/freshness` panel. It returns HTTP `200` only when
+`ready=true`, and HTTP `503` for every non-ready or unknown state.
+
+The current-season contract has three established states plus `unknown`:
+
+- `active_season` compares trusted final-game coverage with the latest trusted
+  scheduled game outside a 24-hour grace window;
+- `postseason_complete` requires passed regular-season and playoff receipts, no
+  unresolved scheduled playoff games, complete final-game coverage, and a
+  Finals series with four recorded wins;
+- `offseason` requires completed-postseason evidence plus a validated immutable
+  runtime generation; completed seasons do not become stale merely because
+  their final game ages;
+- `unknown` fails closed when trusted schedule or slice evidence cannot establish
+  one of those states.
+
+Readiness also fails closed for a legacy/mutable runtime namespace, a missing or
+invalid active generation manifest, failed or unknown required slice validation,
+or a failed last refresh. Optional capability datasets may remain unavailable,
+but their query families must continue to return scoped unsupported/no-data
+responses rather than broad fallback.
+
+The release/exception owner is **John Matthew, project owner**. A release
+exception may waive only `active_season_lag`, must record a reason plus creation
+and expiry timestamps, and cannot last more than 24 hours. It cannot waive
+unknown/failed coverage, missing required data, playoff validation, a mutable
+runtime generation, or refresh failure.
+
 ### UI freshness indicator
 
 The web UI displays a collapsible freshness panel with:

@@ -139,6 +139,13 @@ Returns structured data freshness status — current_through, manifest state, pe
 - **unknown**: manifest or games data missing — cannot determine freshness.
 - **failed**: last refresh attempt recorded a failure.
 
+### `GET /readiness`
+
+Returns the strict schedule-aware deployment gate. Ready responses use HTTP
+`200`; every blocker or unknown state uses HTTP `503`. The payload names the
+season state, pinned runtime generation, required-slice evidence, the 24-hour
+active-season lag budget, any blockers, and any narrowly scoped owner exception.
+
 ## Response envelope
 
 Every query response has the same top-level shape:
@@ -227,6 +234,7 @@ The API layer contains no business logic. It validates input, calls the query se
 - Route discovery
 - Health checks
 - **Data freshness status** (`/freshness` endpoint — status, current_through, per-season details, last refresh outcome)
+- **Release readiness status** (`/readiness` endpoint — schedule state, immutable generation, blockers, exception receipt)
 
 ## What remains outside the API
 

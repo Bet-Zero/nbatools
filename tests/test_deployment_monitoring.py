@@ -21,15 +21,17 @@ def test_default_smoke_cases_cover_expected_routes() -> None:
         "root",
         "health",
         "freshness",
+        "readiness",
         "query_jokic_last_10",
         "query_top_10_scorers_2025_26",
         "query_jokic_multi_filter",
         "query_celtics_record_against_east_current",
     ]
-    assert cases[3].expected_json_fields["route"] == "player_game_summary"
-    assert cases[4].expected_json_fields["route"] == "season_leaders"
-    assert cases[6].expected_json_fields["result.metadata.opponent_conference"] == "East"
-    assert cases[6].expected_json_fields["result.metadata.opponent_team_abbrs.__len__"] == 15
+    assert cases[3].expected_json_fields == {"ready": True, "status": "ready"}
+    assert cases[4].expected_json_fields["route"] == "player_game_summary"
+    assert cases[5].expected_json_fields["route"] == "season_leaders"
+    assert cases[7].expected_json_fields["result.metadata.opponent_conference"] == "East"
+    assert cases[7].expected_json_fields["result.metadata.opponent_team_abbrs.__len__"] == 15
 
 
 def test_run_deployment_smoke_reports_successful_cases() -> None:
@@ -48,6 +50,11 @@ def test_run_deployment_smoke_reports_successful_cases() -> None:
             200,
             {"content-type": "application/json", "x-vercel-cache": "MISS"},
             b'{"status":"stale","current_through":"2026-04-04","seasons":[{"season":"2025-26"}]}',
+        ),
+        ("GET", "https://deploy.example/readiness"): (
+            200,
+            {"content-type": "application/json", "x-vercel-cache": "MISS"},
+            b'{"ready":true,"status":"ready","season_state":"offseason","active_generation":"release-1","immutable_generation":true,"blockers":[]}',
         ),
         ("POST", "https://deploy.example/query", "Jokic last 10"): (
             200,
@@ -120,11 +127,12 @@ def test_run_deployment_smoke_reports_successful_cases() -> None:
     assert report.ok is True
     assert report.failure_count == 0
     assert report.failures == []
-    assert report.case_count == 7
+    assert report.case_count == 8
     assert report.cases[0].summary["title"] == "nbatools"
     assert report.cases[2].summary["season_count"] == 1
-    assert report.cases[6].summary["opponent_conference"] == "East"
-    assert report.cases[6].summary["opponent_team_abbrs_count"] == 15
+    assert report.cases[3].summary["blocker_count"] == 0
+    assert report.cases[7].summary["opponent_conference"] == "East"
+    assert report.cases[7].summary["opponent_team_abbrs_count"] == 15
 
 
 def test_run_deployment_smoke_flags_route_mismatches() -> None:
@@ -143,6 +151,11 @@ def test_run_deployment_smoke_flags_route_mismatches() -> None:
             200,
             {"content-type": "application/json"},
             b'{"status":"stale","current_through":"2026-04-04","seasons":[]}',
+        ),
+        ("GET", "https://deploy.example/readiness"): (
+            200,
+            {"content-type": "application/json"},
+            b'{"ready":true,"status":"ready","blockers":[]}',
         ),
         ("POST", "https://deploy.example/query", "Jokic last 10"): (
             200,
@@ -214,4 +227,4 @@ def test_run_deployment_smoke_flags_route_mismatches() -> None:
     assert report.ok is False
     assert report.failure_count == 1
     assert report.failures == ["query_jokic_last_10"]
-    assert report.cases[3].error == "route='wrong_route' (expected 'player_game_summary')"
+    assert report.cases[4].error == "route='wrong_route' (expected 'player_game_summary')"
