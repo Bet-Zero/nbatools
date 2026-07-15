@@ -47,6 +47,10 @@ The public `/` app remains in the eager entry path. Internal `/review`,
 chunks under `/assets/...`; they still use the same HTML shell and
 FastAPI/Vercel asset serving boundary as the public app.
 
+`/visual-qa` is a local/preview-only operator surface. FastAPI and Vercel return
+`404 internal_route_unavailable` for that route in public production; a public
+deployment must not expose or automatically run the visual corpus.
+
 ### Development (two terminals, hot reload)
 
 ```bash

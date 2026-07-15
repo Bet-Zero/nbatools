@@ -30,6 +30,7 @@ from nbatools.api_contracts import (
 )
 from nbatools.api_handlers import dev_fixtures_payload, query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
+from nbatools.internal_routes import visual_qa_route_available
 from nbatools.query_feedback import (
     elapsed_ms_since,
     handle_feedback_submission,
@@ -273,10 +274,20 @@ def ui() -> HTMLResponse:
 
 
 @app.get("/review", response_class=HTMLResponse, include_in_schema=False)
-@app.get("/visual-qa", response_class=HTMLResponse, include_in_schema=False)
 @app.get("/admin/feedback", response_class=HTMLResponse, include_in_schema=False)
 def internal_ui() -> HTMLResponse:
     """Serve internal UI shells."""
+    return HTMLResponse(content=_load_ui_html())
+
+
+@app.get("/visual-qa", include_in_schema=False)
+def visual_qa_ui() -> Response:
+    """Serve visual QA locally/preview and fail closed in production."""
+    if not visual_qa_route_available():
+        return JSONResponse(
+            status_code=404,
+            content={"ok": False, "error": "internal_route_unavailable", "detail": None},
+        )
     return HTMLResponse(content=_load_ui_html())
 
 

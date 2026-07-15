@@ -17,6 +17,11 @@
       "maxDuration": 10,
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
     },
+    "api/visual_qa.py": {
+      "memory": 1024,
+      "maxDuration": 10,
+      "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
+    },
     "api/assets.py": {
       "memory": 1024,
       "maxDuration": 10,
@@ -69,7 +74,7 @@
     },
     {
       "source": "/visual-qa",
-      "destination": "/api/review"
+      "destination": "/api/visual_qa"
     },
     {
       "source": "/assets/index-fallback.js",

@@ -27,6 +27,8 @@ review evidence.
 ## Review Surface And Viewports
 
 - Internal review route: `/visual-qa`
+- Availability boundary: local development and Vercel preview only; public
+  production returns `404 internal_route_unavailable`
 - Live render path: `POST /query` through the public result composition
 - Stable card selector: `data-visual-case-id="<case_id>"`
 - Desktop viewport: approximately `1280px` wide
@@ -47,8 +49,9 @@ have document-level horizontal overflow.
    ```
 
 2. Start the local API shell that serves `/query` and the built frontend.
-3. Open `http://127.0.0.1:8000/visual-qa`, or use the frontend dev server during
-   active UI iteration.
+3. Open `http://127.0.0.1:8000/visual-qa`, or use an explicitly identified
+   Vercel preview during active UI iteration. Never use the public production
+   deployment for this internal corpus surface.
 4. Confirm that opening the route has sent no query requests, then choose
    **Run live cases** to start the deliberate corpus run.
 5. Wait for all requested cases to finish loading through the live query path.

@@ -34,6 +34,21 @@ def ui_response() -> tuple[int, str, str]:
     return HTTPStatus.OK, load_ui_html(), "text/html; charset=utf-8"
 
 
+def visual_qa_response(
+    env: dict[str, str] | None = None,
+) -> tuple[int, str | dict[str, Any], str]:
+    """Serve the visual-QA shell only for explicit preview environments."""
+    from nbatools.internal_routes import visual_qa_route_available
+
+    if not visual_qa_route_available(env):
+        return (
+            HTTPStatus.NOT_FOUND,
+            {"ok": False, "error": "internal_route_unavailable", "detail": None},
+            "application/json",
+        )
+    return ui_response()
+
+
 def ui_fallback_asset_response() -> tuple[int, str, str]:
     """Return the fallback UI JavaScript asset response."""
     return HTTPStatus.OK, UI_FALLBACK_SCRIPT, "application/javascript"

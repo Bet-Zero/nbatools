@@ -12,6 +12,7 @@ Validates that:
 - bad request bodies are rejected
 """
 
+import os
 from unittest.mock import patch
 
 import pandas as pd
@@ -579,12 +580,36 @@ class TestUI:
         assert "text/html" in resp.headers["content-type"]
         assert "<title>nbatools</title>" in resp.text
 
-    @pytest.mark.parametrize("path", ["/review", "/visual-qa", "/admin/feedback"])
+    @pytest.mark.parametrize("path", ["/review", "/admin/feedback"])
     def test_internal_ui_serves_html(self, path):
         resp = client.get(path)
         assert resp.status_code == 200
         assert "text/html" in resp.headers["content-type"]
         assert "<title>nbatools</title>" in resp.text
+
+    def test_visual_qa_serves_html_locally(self):
+        with patch.dict(os.environ, {}, clear=True):
+            resp = client.get("/visual-qa")
+
+        assert resp.status_code == 200
+        assert "text/html" in resp.headers["content-type"]
+
+    def test_visual_qa_serves_html_in_preview(self):
+        with patch.dict(os.environ, {"VERCEL_ENV": "preview"}, clear=True):
+            resp = client.get("/visual-qa")
+
+        assert resp.status_code == 200
+
+    def test_visual_qa_is_absent_in_production(self):
+        with patch.dict(os.environ, {"VERCEL": "1", "VERCEL_ENV": "production"}, clear=True):
+            resp = client.get("/visual-qa")
+
+        assert resp.status_code == 404
+        assert resp.json() == {
+            "ok": False,
+            "error": "internal_route_unavailable",
+            "detail": None,
+        }
 
     def test_ui_contains_react_root(self):
         resp = client.get("/")

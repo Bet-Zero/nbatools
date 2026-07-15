@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import importlib
+import json
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -20,6 +22,7 @@ def test_vercel_entrypoints_export_handlers():
         "api.index",
         "api.review",
         "api.ui_fallback_asset",
+        "api.visual_qa",
         "api.assets",
         "api.health",
         "api.routes",
@@ -98,6 +101,33 @@ def test_ui_fallback_asset_response_serves_javascript():
     assert status == HTTPStatus.OK
     assert "UI bundle not built" in content
     assert content_type == "application/javascript"
+
+
+def test_visual_qa_response_is_preview_only():
+    preview_status, preview_content, preview_type = vercel_functions.visual_qa_response(
+        {"VERCEL": "1", "VERCEL_ENV": "preview"}
+    )
+    production_status, production_content, production_type = vercel_functions.visual_qa_response(
+        {"VERCEL": "1", "VERCEL_ENV": "production"}
+    )
+
+    assert preview_status == HTTPStatus.OK
+    assert isinstance(preview_content, str)
+    assert preview_type == "text/html; charset=utf-8"
+    assert production_status == HTTPStatus.NOT_FOUND
+    assert production_content == {
+        "ok": False,
+        "error": "internal_route_unavailable",
+        "detail": None,
+    }
+    assert production_type == "application/json"
+
+
+def test_vercel_visual_qa_rewrite_uses_isolated_handler():
+    config = json.loads(Path("vercel.json").read_text())
+    rewrite = next(item for item in config["rewrites"] if item["source"] == "/visual-qa")
+
+    assert rewrite["destination"] == "/api/visual_qa"
 
 
 def test_ui_asset_response_serves_built_asset(tmp_path):
