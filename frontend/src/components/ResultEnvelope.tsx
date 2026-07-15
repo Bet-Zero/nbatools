@@ -1064,21 +1064,29 @@ function thresholdFilterValue(label: string, value: string): string | null {
   if (!match) return null;
 
   const [, stat, direction] = match;
+  const isExclusive = /\(exclusive\)/i.test(value);
   const threshold = compactThresholdValue(value);
   if (stat.trim().toLowerCase() === "opp pts") {
-    return direction.toLowerCase() === "min"
-      ? `Opp PTS >= ${threshold}`
+    if (direction.toLowerCase() === "min") {
+      return isExclusive
+        ? `Opp PTS > ${threshold}`
+        : `Opp PTS >= ${threshold}`;
+    }
+    return isExclusive
+      ? `Opp PTS < ${threshold}`
       : `Opp PTS <= ${threshold}`;
   }
   const suffix = statLabel(stat);
-  return direction.toLowerCase() === "min"
-    ? `${threshold}+ ${suffix}`
-    : `<= ${threshold} ${suffix}`;
+  if (direction.toLowerCase() === "min") {
+    return isExclusive ? `> ${threshold} ${suffix}` : `${threshold}+ ${suffix}`;
+  }
+  return isExclusive ? `< ${threshold} ${suffix}` : `<= ${threshold} ${suffix}`;
 }
 
 function compactThresholdValue(value: string): string {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) return value;
+  const normalized = value.replace(/\s*\(exclusive\)\s*/gi, "").trim();
+  const numeric = Number(normalized);
+  if (!Number.isFinite(numeric)) return normalized;
   const rounded = Math.round(numeric);
   if (
     Math.abs(numeric - rounded) < 0.001 ||
