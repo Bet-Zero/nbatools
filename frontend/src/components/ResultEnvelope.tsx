@@ -491,6 +491,30 @@ function buildContextChips(
   const chips: ContextChip[] = [];
 
   if (metadata) {
+    const booleanFilterMode = metadata.boolean_filter_mode;
+    if (booleanFilterMode === "any") {
+      chips.push({
+        key: "boolean-logic",
+        label: "Logic",
+        value: "Any filter (OR)",
+        variant: "accent",
+      });
+    } else if (booleanFilterMode === "all") {
+      chips.push({
+        key: "boolean-logic",
+        label: "Logic",
+        value: "All filters (AND)",
+        variant: "accent",
+      });
+    } else if (booleanFilterMode === "grouped") {
+      chips.push({
+        key: "boolean-logic",
+        label: "Logic",
+        value: "Grouped AND/OR",
+        variant: "accent",
+      });
+    }
+
     if (typeof metadata.player === "string") {
       const playerIdentity = resolvePlayerIdentity({
         playerId: metadata.player_context?.player_id,

@@ -344,6 +344,20 @@ def expression_contains_boolean_ops(text: str) -> bool:
     )
 
 
+def boolean_filter_mode(text: str) -> str | None:
+    """Describe how parsed threshold filters are combined for consumers."""
+    operator_kinds = {
+        token.kind for token in tokenize_condition_expression(text) if token.kind in {"AND", "OR"}
+    }
+    if operator_kinds == {"OR"}:
+        return "any"
+    if operator_kinds == {"AND"}:
+        return "all"
+    if operator_kinds == {"AND", "OR"}:
+        return "grouped"
+    return None
+
+
 def tree_to_dict(node: Node) -> dict:
     if isinstance(node, ConditionNode):
         return {

@@ -223,6 +223,8 @@ Future result objects should carry:
 - **sort_by / ascending** — the executed sort metric and direction for ranked
   results when applicable
 - **grouped_boolean_used** — whether a grouped boolean expression was parsed and applied
+- **boolean_filter_mode** — how threshold filters combine: `any` (OR), `all`
+  (AND), or `grouped` (mixed AND/OR)
 - **head_to_head_used** — whether a head-to-head restriction was applied
 - **current_through** — freshness marker for the underlying data: the latest covered game date for the relevant result scope. The durable freshness states and API behavior are documented in [current_state_guide.md](current_state_guide.md#data-freshness). Future-ready — not all results carry this today.
 - **notes / caveats** — short, machine-readable notes when the engine applied a semantic fallback. Examples:

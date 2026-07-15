@@ -6,6 +6,7 @@ from nbatools.commands.query_boolean_parser import (
     BooleanQueryParseError,
     ConditionNode,
     OrNode,
+    boolean_filter_mode,
     condition_node_to_mask,
     evaluate_condition_tree,
     expression_contains_boolean_ops,
@@ -23,6 +24,19 @@ def test_expression_contains_boolean_ops_detects_and_or_parens():
     assert expression_contains_boolean_ops("(over 25 points)") is True
     assert expression_contains_boolean_ops("over 25 points") is False
     assert expression_contains_boolean_ops("5 or more threes") is False
+
+
+@pytest.mark.parametrize(
+    ("expression", "expected"),
+    [
+        ("over 20 points or over 10 assists", "any"),
+        ("over 20 points and over 10 assists", "all"),
+        ("(over 20 points and over 10 rebounds) or over 10 assists", "grouped"),
+        ("over 20 points", None),
+    ],
+)
+def test_boolean_filter_mode(expression, expected):
+    assert boolean_filter_mode(expression) == expected
 
 
 def test_tokenize_single_condition():

@@ -116,6 +116,7 @@ export interface ResultMetadata {
   opponent?: string | null;
   split_type?: string | null;
   grouped_boolean_used?: boolean;
+  boolean_filter_mode?: "any" | "all" | "grouped" | null;
   head_to_head_used?: boolean;
   current_through?: string | null;
   scope_kind?: string | null;
