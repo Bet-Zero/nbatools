@@ -66,6 +66,12 @@ environments, also set `NBATOOLS_ADMIN_TOKEN`; requests to
 `404` response. The token gates API access only; the frontend never receives R2
 credentials.
 
+`/visual-qa` is not a production surface. The dedicated FastAPI/Vercel route
+serves it only for local development or an explicitly identified preview
+environment and returns `404 internal_route_unavailable` in production or an
+ambiguous deployed environment. Do not add a production rewrite to the general
+review shell and do not use production for visual-corpus execution.
+
 ## Cloudflare R2 Setup
 
 Use this process when recreating the storage setup for a future operator.
