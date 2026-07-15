@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { postQueryFeedback } from "../api/client";
 import type { FeedbackType, QueryResponse } from "../api/types";
 import { Button, type ButtonVariant } from "../design-system";
@@ -60,6 +60,7 @@ export function QueryFeedbackButton({
   const [pending, setPending] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusKind, setStatusKind] = useState<"success" | "error" | null>(null);
+  const submissionIdRef = useRef<string | null>(null);
 
   const options = useMemo(
     () => optionSet(defaultFeedbackType),
@@ -76,7 +77,9 @@ export function QueryFeedbackButton({
     setStatusMessage(null);
     setStatusKind(null);
 
-    const payload = data
+    const submissionId = submissionIdRef.current ?? crypto.randomUUID();
+    submissionIdRef.current = submissionId;
+    const basePayload = data
       ? buildQueryFeedbackPayload(data, feedbackType, note)
       : buildQueryErrorFeedbackPayload({
           query: query ?? "",
@@ -85,6 +88,7 @@ export function QueryFeedbackButton({
           feedbackType,
           note,
         });
+    const payload = { ...basePayload, submission_id: submissionId };
 
     try {
       const response = await postQueryFeedback(payload);
@@ -94,6 +98,7 @@ export function QueryFeedbackButton({
       setOpen(false);
       setNote("");
       setFeedbackType(defaultFeedbackType);
+      submissionIdRef.current = null;
       setStatusKind("success");
       setStatusMessage("Thanks. This query was saved for review.");
     } catch {
@@ -111,6 +116,7 @@ export function QueryFeedbackButton({
     setOpen(false);
     setNote("");
     setFeedbackType(defaultFeedbackType);
+    submissionIdRef.current = null;
   }
 
   return (
@@ -122,6 +128,7 @@ export function QueryFeedbackButton({
         onClick={() => {
           setStatusMessage(null);
           setStatusKind(null);
+          submissionIdRef.current = null;
           setOpen(true);
         }}
       >

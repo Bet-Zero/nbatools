@@ -12,6 +12,7 @@ from unittest.mock import patch
 import pytest
 
 from nbatools import api_ui, vercel_functions
+from nbatools.admission_control import AdmissionController, AdmissionRejected
 from nbatools.vercel_http import JsonHandler
 
 pytestmark = pytest.mark.api
@@ -57,6 +58,24 @@ def test_query_response_executes_shared_payload():
     mock.assert_called_once_with("Jokic last 10")
 
 
+def test_query_response_enforces_vercel_rate_limit(monkeypatch):
+    controller = AdmissionController(query_limit=1, query_window_seconds=60)
+    monkeypatch.setattr(
+        "nbatools.admission_control.ADMISSION_CONTROLLER",
+        controller,
+    )
+    with patch(
+        "nbatools.vercel_functions.natural_query_payload",
+        return_value={"ok": True},
+    ):
+        status, _ = vercel_functions.query_response({"query": "Jokic"}, client_id="client")
+        with pytest.raises(AdmissionRejected, match="rate_limited") as caught:
+            vercel_functions.query_response({"query": "Jokic"}, client_id="client")
+
+    assert status == HTTPStatus.OK
+    assert caught.value.headers() == {"Retry-After": "60"}
+
+
 def test_query_feedback_response_delegates_to_feedback_handler():
     expected = {"ok": True, "feedback_id": "qfb_test", "stored": True, "disabled": False}
     with patch(
@@ -74,6 +93,24 @@ def test_query_feedback_response_delegates_to_feedback_handler():
         {"query": "Jokic", "feedback_source": "user_submitted"},
         source_page="/",
     )
+
+
+def test_query_feedback_response_rolls_back_quota_when_handler_raises(monkeypatch):
+    controller = AdmissionController(feedback_limit=1)
+    monkeypatch.setattr(
+        "nbatools.admission_control.ADMISSION_CONTROLLER",
+        controller,
+    )
+    with (
+        patch(
+            "nbatools.vercel_functions.handle_feedback_submission",
+            side_effect=RuntimeError("write failed"),
+        ),
+        pytest.raises(RuntimeError, match="write failed"),
+    ):
+        vercel_functions.query_feedback_response({}, client_id="client")
+
+    assert controller.feedback_count("client") == 0
 
 
 def test_structured_query_response_defaults_kwargs():

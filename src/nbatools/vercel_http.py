@@ -7,6 +7,8 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
 from typing import Any
 
+from nbatools.admission_control import parse_and_validate_json_body
+
 
 class JsonHandler(BaseHTTPRequestHandler):
     """Base handler with JSON/text response helpers and CORS headers."""
@@ -18,12 +20,20 @@ class JsonHandler(BaseHTTPRequestHandler):
         self._send_cors_headers()
         self.end_headers()
 
-    def send_json(self, payload: dict[str, Any], status: int = HTTPStatus.OK) -> None:
+    def send_json(
+        self,
+        payload: dict[str, Any],
+        status: int = HTTPStatus.OK,
+        *,
+        headers: dict[str, str] | None = None,
+    ) -> None:
         body = json.dumps(payload, separators=(",", ":"), default=str).encode("utf-8")
         self.send_response(status)
         self._send_cors_headers()
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
+        for key, value in (headers or {}).items():
+            self.send_header(key, value)
         self.end_headers()
         self.wfile.write(body)
 
@@ -67,7 +77,7 @@ class JsonHandler(BaseHTTPRequestHandler):
             payload["detail"] = detail
         self.send_json(payload, status=status)
 
-    def read_json_body(self) -> dict[str, Any]:
+    def read_json_body(self, path: str | None = None) -> dict[str, Any]:
         try:
             length = int(self.headers.get("Content-Length", "0"))
         except ValueError as exc:
@@ -76,6 +86,8 @@ class JsonHandler(BaseHTTPRequestHandler):
             raise ValueError("Request body must be a JSON object")
 
         raw_body = self.rfile.read(length)
+        if path is not None:
+            return parse_and_validate_json_body(raw_body, path)
         try:
             body = json.loads(raw_body.decode("utf-8"))
         except json.JSONDecodeError as exc:
@@ -83,6 +95,12 @@ class JsonHandler(BaseHTTPRequestHandler):
         if not isinstance(body, dict):
             raise ValueError("Request body must be a JSON object")
         return body
+
+    def client_identifier(self) -> str:
+        from nbatools.admission_control import client_identifier
+
+        fallback = self.client_address[0] if self.client_address else None
+        return client_identifier(self.headers, fallback)
 
     def method_not_allowed(self, allowed: str) -> None:
         self.send_response(HTTPStatus.METHOD_NOT_ALLOWED)
@@ -95,5 +113,5 @@ class JsonHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header(
             "Access-Control-Allow-Headers",
-            "Content-Type, X-NBATools-Source-Page",
+            "Content-Type, X-NBATools-Source-Page, X-NBATools-Idempotency-Key",
         )

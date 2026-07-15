@@ -156,6 +156,18 @@ describe("postQuery", () => {
       }),
     );
   });
+
+  it("does not automatically retry a 429 response", async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse(
+        { error: "rate_limited", detail: "Retry later." },
+        { ok: false, status: 429 },
+      ),
+    );
+
+    await expect(postQuery("Jokic last 10")).rejects.toThrow("Retry later.");
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("postStructuredQuery", () => {
@@ -215,6 +227,7 @@ describe("postQueryFeedback", () => {
     );
 
     const result = await postQueryFeedback({
+      submission_id: "00000000-0000-4000-8000-000000000001",
       query: "Jokic last 10",
       feedback_source: "user_submitted",
       feedback_type: "wrong_answer",
@@ -229,8 +242,10 @@ describe("postQueryFeedback", () => {
       headers: {
         "Content-Type": "application/json",
         "X-NBATools-Source-Page": "/",
+        "X-NBATools-Idempotency-Key": "00000000-0000-4000-8000-000000000001",
       },
       body: JSON.stringify({
+        submission_id: "00000000-0000-4000-8000-000000000001",
         query: "Jokic last 10",
         feedback_source: "user_submitted",
         feedback_type: "wrong_answer",

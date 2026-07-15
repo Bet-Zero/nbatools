@@ -49,7 +49,7 @@
     },
     "api/query.py": {
       "memory": 1024,
-      "maxDuration": 60,
+      "maxDuration": 20,
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
     },
     "api/query_feedback.py": {
@@ -59,7 +59,7 @@
     },
     "api/structured_query.py": {
       "memory": 1024,
-      "maxDuration": 60,
+      "maxDuration": 20,
       "excludeFiles": "{data/**,frontend/**,tests/**,docs/**,plans/**,.git/**,.pytest_cache/**,.ruff_cache/**,.testmondata*,**/__pycache__/**}"
     }
   },

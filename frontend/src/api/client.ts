@@ -139,12 +139,16 @@ export async function postStructuredQuery(
 export async function postQueryFeedback(
   payload: QueryFeedbackPayload,
 ): Promise<QueryFeedbackResponse> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "X-NBATools-Source-Page": payload.source_page ?? currentSourcePage(),
+  };
+  if (payload.submission_id) {
+    headers["X-NBATools-Idempotency-Key"] = payload.submission_id;
+  }
   return request<QueryFeedbackResponse>("/query-feedback", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-NBATools-Source-Page": payload.source_page ?? currentSourcePage(),
-    },
+    headers,
     body: JSON.stringify({
       ...payload,
       source_page: payload.source_page ?? currentSourcePage(),

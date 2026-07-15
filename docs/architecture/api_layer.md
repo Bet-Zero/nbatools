@@ -100,9 +100,23 @@ contract in both FastAPI and the Vercel functions:
 - validation failures return HTTP 422 with
   `{ "ok": false, "error": "validation_error", "detail": "..." }`
 
-Whole-body byte limits, nested-value budgets, season-span budgets, rate limits,
-and quotas are separate admission-control policy and are not implied by this
-structural request contract.
+The public admission contract is enforced before execution in both transports:
+
+- whole-body limits: 4 KiB `/query`; 8 KiB `/structured-query`; 8 KiB
+  `/query-feedback`
+- aggregate JSON limits: depth 4 below the root request object, 64 object
+  members, and 20 array elements
+- season span: at most 30 resolved seasons; the complete supported 1996-97
+  through 2025-26 range remains valid
+- natural and structured queries share three execution slots, ten admitted
+  requests per client/IP per rolling minute, and a 20-second response budget
+- feedback accepts at most 20 newly stored submissions per client/IP per rolling
+  24 hours; user retries reuse a UUID submission receipt and conditional write
+
+Rate and concurrency rejections use HTTP `429` JSON plus `Retry-After`; timeout
+uses HTTP `504`. Query clients do not retry automatically. These application
+counters are per running process/serverless instance and are defense-in-depth,
+not a substitute for equivalent global edge enforcement.
 
 ### `GET /freshness`
 

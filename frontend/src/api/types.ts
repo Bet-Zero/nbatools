@@ -200,6 +200,7 @@ export interface QueryFeedbackResultShape {
 }
 
 export interface QueryFeedbackPayload {
+  submission_id?: string;
   query: string;
   feedback_source: FeedbackSource;
   feedback_type: FeedbackType;
@@ -220,8 +221,10 @@ export interface QueryFeedbackPayload {
 export interface QueryFeedbackResponse {
   ok: boolean;
   feedback_id?: string;
+  submission_id?: string | null;
   stored: boolean;
   disabled: boolean;
+  idempotent_replay?: boolean;
   error?: string;
   detail?: string | null;
 }

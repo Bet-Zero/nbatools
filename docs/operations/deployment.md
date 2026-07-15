@@ -72,6 +72,29 @@ environment and returns `404 internal_route_unavailable` in production or an
 ambiguous deployed environment. Do not add a production rewrite to the general
 review shell and do not use production for visual-corpus execution.
 
+## Public admission and cost gate
+
+Repository handlers enforce the approved application budgets:
+
+- 4 KiB `/query`; 8 KiB `/structured-query`; 8 KiB `/query-feedback`
+- JSON depth 4, 64 aggregate object members, 20 aggregate array elements
+- the full 30-season supported range, with requests above 30 rejected
+- three shared query execution slots, ten query/structured admissions per
+  client/IP per rolling minute, and a 20-second response/platform duration
+- 20 newly stored feedback submissions per client/IP per rolling 24 hours;
+  idempotent replays do not consume another accepted slot
+
+`429` responses are JSON and include `Retry-After`. The public query client does
+not retry them automatically. Feedback retries are user-triggered and reuse one
+UUID submission receipt.
+
+The in-process counters above are not a global serverless quota. Before release,
+configure equivalent request/rate/concurrency/cost controls at the Vercel edge
+and verify them from outside the deployment. The approved project ceiling is the
+current fixed plan cost with **$0 permitted metered overage**. If Vercel cannot
+enforce that exact ceiling, leave this external gate unresolved and report the
+closest enforceable alternatives to the owner; do not select one implicitly.
+
 ## Cloudflare R2 Setup
 
 Use this process when recreating the storage setup for a future operator.

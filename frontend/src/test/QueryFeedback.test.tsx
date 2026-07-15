@@ -218,4 +218,36 @@ describe("QueryFeedbackButton", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
+
+  it("reuses one submission ID for a user-triggered retry", async () => {
+    vi.mocked(postQueryFeedback)
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce({
+        ok: true,
+        feedback_id: "qfb_retry",
+        stored: true,
+        disabled: false,
+      });
+    render(
+      <QueryFeedbackButton
+        data={makeResponse()}
+        defaultFeedbackType="wrong_answer"
+        triggerLabel="Report issue"
+        title="Report an issue with this answer"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Report issue" }));
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await screen.findByText(
+      "Could not submit the report. Your query result is unchanged.",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    await screen.findByText("Thanks. This query was saved for review.");
+
+    const first = vi.mocked(postQueryFeedback).mock.calls[0][0].submission_id;
+    const second = vi.mocked(postQueryFeedback).mock.calls[1][0].submission_id;
+    expect(first).toMatch(/^[0-9a-f-]{36}$/);
+    expect(second).toBe(first);
+  });
 });
