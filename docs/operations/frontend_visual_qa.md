@@ -172,9 +172,11 @@ The retained pre-remediation example is the
 [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md).
 Its execution completed and accurately preserved the original blockers. PR
 #269 subsequently merged the E-05 fixes, and a real exact-worktree candidate
-rerun passed at both viewports with zero blockers. A clean current-commit
-retained rerun and owner UI decision are still required; do not promote the
-candidate run into release acceptance.
+rerun passed at both viewports with zero blockers. Clean current-main rerun
+`d11_clean_306cbb9_20260716` now retains the same zero-blocker result, exact
+commit/tree binding, 20 artifact hashes, and all accessibility probes in that
+audit. The owner UI decision is still required; do not infer human or release
+acceptance from either machine run.
 
 ## Text Snapshots And Render Review Outputs
 

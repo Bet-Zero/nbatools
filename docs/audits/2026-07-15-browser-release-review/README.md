@@ -2,8 +2,9 @@
 
 ## Review State
 
-This retained Queue D review is the pre-remediation evidence snapshot, not a
-release approval.
+This audit retains both the exact pre-remediation baseline and the clean
+post-remediation Queue D evidence. Neither snapshot is itself a release
+approval.
 
 | Field | Value |
 | --- | --- |
@@ -51,10 +52,31 @@ zero blocking findings, zero remaining animations under reduced motion, passing
 save/feedback dialog probes, and a live result owner. The full frontend suite
 also passed 395 tests. The candidate correctly records `sourceTreeClean: false`
 because it ran immediately before the implementation commit. The duplicate
-clean-commit receipt could not be executed after commit because the local
-browser-execution service reached its usage limit. Therefore this candidate is
-implementation proof, not the final retained commit-bound receipt. Owner UI
-review and actual release acceptance remain pending.
+clean-commit receipt was initially delayed when the local browser-execution
+service reached its usage limit.
+
+The clean rerun `d11_clean_306cbb9_20260716` then completed against current
+main commit `306cbb9eb180b2b158713a2dc03dbf6a8fc81bd7` with a clean tracked
+tree. Its retained [receipt](post_e05_306cbb9/receipt.json) binds Chromium
+`148.0.7778.96`, the unchanged visual-corpus hash, 20 unique screenshot hashes,
+both viewports, and these results:
+
+- `executionStatus: complete`
+- `acceptanceStatus: pass`
+- zero blocking findings and zero serious/critical axe results
+- passing initial-focus, Escape, Tab-wrap, and focus-restore probes for both
+  dialogs at both viewports
+- a polite live result owner, zero animated elements under reduced motion, and
+  zero `/visual-qa` mount query requests at both viewports
+- receipt SHA-256
+  `d23531eb80d9c6a7caa1c71653d708b6b7b40180dae9ac6bd9fe2dc66936b2c6`
+
+An agent inspected the retained desktop/mobile success, loading, unsupported
+no-result, save-dialog, and feedback-dialog images without finding a new
+release blocker. The full-page fixed-dialog captures remain evidence artifacts,
+not a request that the owner review every image. The receipt correctly keeps
+`humanReview: pending`; one small package-level owner UI decision and actual
+release acceptance remain open.
 
 ## Blocking Findings
 
@@ -83,7 +105,7 @@ mobile full-page feedback capture also has a heavily darkened, segmented
 backdrop, so a human reviewer must distinguish capture composition from actual
 viewport behavior before certifying the dialog presentation.
 
-This representative inspection does not change `humanReview` from `pending`.
-The accessibility primitives are now remediated in the repository. Release
-acceptance remains blocked until a clean current-commit receipt reproduces the
-zero-blocker result and an owner records the one-step UI review decision.
+This baseline inspection does not change `humanReview` from `pending`. The
+accessibility primitives are remediated and the clean current-main receipt now
+reproduces the zero-blocker result. Release acceptance still requires the
+one-step owner UI package decision and the other open release gates.
