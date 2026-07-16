@@ -206,6 +206,10 @@ describe("layout primitives", () => {
     expect(screen.getByLabelText("Denver Nuggets (DEN)")).toHaveTextContent(
       "DEN",
     );
+    expect(screen.getByLabelText("Denver Nuggets (DEN)")).toHaveAttribute(
+      "role",
+      "img",
+    );
   });
 
   it("falls back to initials when an avatar image cannot load", () => {

@@ -171,7 +171,14 @@ export default function ResultTable<Row>({
 
   return (
     <div className={joinClassNames(styles.tableFrame, className)}>
-      <div className={styles.tableScroll}>
+      <div
+        role="region"
+        aria-label={
+          ariaLabel ? `${ariaLabel} scroll area` : "Scrollable results table"
+        }
+        tabIndex={0}
+        className={styles.tableScroll}
+      >
         <table className={styles.table} aria-label={ariaLabel}>
           <thead>
             <tr>
