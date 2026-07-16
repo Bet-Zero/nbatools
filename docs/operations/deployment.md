@@ -261,6 +261,13 @@ bundles; only the generated `ui/dist` output is needed at runtime. If the
 bundle is unavailable locally, the root route intentionally falls back to the
 API-only "UI bundle not built" shell.
 
+Vercel installs the core dependency list from `pyproject.toml`; it does not
+select the repository's optional `api` extra. Any distribution imported by a
+Vercel entrypoint or its shared handler path must therefore be declared as a
+direct core dependency. In particular, `pydantic>=2.0` is direct because the
+request contracts use Pydantic v2 APIs before any handler can run. The Vercel
+function tests retain this packaging contract.
+
 ## Deployment Smoke Monitoring
 
 Phase N3 adds a reusable smoke-report tool for deployed URLs. It is designed to

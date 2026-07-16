@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import tomllib
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
@@ -36,6 +37,12 @@ def test_vercel_entrypoints_export_handlers():
         module = importlib.import_module(module_name)
         assert issubclass(module.handler, JsonHandler)
         assert issubclass(module.handler, BaseHTTPRequestHandler)
+
+
+def test_vercel_runtime_imports_are_direct_project_dependencies():
+    project = tomllib.loads(Path("pyproject.toml").read_text())["project"]
+
+    assert "pydantic>=2.0" in project["dependencies"]
 
 
 def test_vercel_package_stays_within_hobby_function_budget():
