@@ -182,6 +182,11 @@ complete local validation, choose a new unique generation ID, and obtain the
 required approval for remote mutation. Then publish the immutable R2
 generation:
 
+The tracked `.vercelignore` also excludes `data/`, generated evidence, local
+audit workspaces, and analysis output from manual CLI source uploads. Do not
+remove those exclusions or use a manual deploy that uploads local data; the
+runtime reads the active immutable R2 generation instead.
+
 ```bash
 .venv/bin/nbatools-cli pipeline sync-r2 --dry-run
 .venv/bin/nbatools-cli pipeline publish-generation \

@@ -63,6 +63,16 @@ def test_internal_browser_routes_are_absent_from_vercel_package():
     assert not Path("api/dev/fixtures.py").exists()
 
 
+def test_vercel_source_upload_excludes_local_data_and_evidence():
+    ignored = {
+        line.strip()
+        for line in Path(".vercelignore").read_text().splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+
+    assert {"data/", "working/", "archive/", "graphify-out/"} <= ignored
+
+
 def test_query_response_validates_body():
     status, payload = vercel_functions.query_response({})
 
