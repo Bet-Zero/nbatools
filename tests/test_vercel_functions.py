@@ -21,9 +21,7 @@ pytestmark = pytest.mark.api
 def test_vercel_entrypoints_export_handlers():
     modules = [
         "api.index",
-        "api.review",
         "api.ui_fallback_asset",
-        "api.visual_qa",
         "api.assets",
         "api.health",
         "api.routes",
@@ -38,6 +36,24 @@ def test_vercel_entrypoints_export_handlers():
         module = importlib.import_module(module_name)
         assert issubclass(module.handler, JsonHandler)
         assert issubclass(module.handler, BaseHTTPRequestHandler)
+
+
+def test_vercel_package_stays_within_hobby_function_budget():
+    config = json.loads(Path("vercel.json").read_text())
+    packaged_functions = sorted(path.as_posix() for path in Path("api").rglob("*.py"))
+
+    assert len(packaged_functions) <= 12
+    assert packaged_functions == sorted(config["functions"])
+
+
+def test_internal_browser_routes_are_absent_from_vercel_package():
+    config = json.loads(Path("vercel.json").read_text())
+    rewrite_sources = {rewrite["source"] for rewrite in config["rewrites"]}
+
+    assert not {"/review", "/visual-qa", "/api/dev/fixtures"} & rewrite_sources
+    assert not Path("api/review.py").exists()
+    assert not Path("api/visual_qa.py").exists()
+    assert not Path("api/dev/fixtures.py").exists()
 
 
 def test_query_response_validates_body():
@@ -138,33 +154,6 @@ def test_ui_fallback_asset_response_serves_javascript():
     assert status == HTTPStatus.OK
     assert "UI bundle not built" in content
     assert content_type == "application/javascript"
-
-
-def test_visual_qa_response_is_preview_only():
-    preview_status, preview_content, preview_type = vercel_functions.visual_qa_response(
-        {"VERCEL": "1", "VERCEL_ENV": "preview"}
-    )
-    production_status, production_content, production_type = vercel_functions.visual_qa_response(
-        {"VERCEL": "1", "VERCEL_ENV": "production"}
-    )
-
-    assert preview_status == HTTPStatus.OK
-    assert isinstance(preview_content, str)
-    assert preview_type == "text/html; charset=utf-8"
-    assert production_status == HTTPStatus.NOT_FOUND
-    assert production_content == {
-        "ok": False,
-        "error": "internal_route_unavailable",
-        "detail": None,
-    }
-    assert production_type == "application/json"
-
-
-def test_vercel_visual_qa_rewrite_uses_isolated_handler():
-    config = json.loads(Path("vercel.json").read_text())
-    rewrite = next(item for item in config["rewrites"] if item["source"] == "/visual-qa")
-
-    assert rewrite["destination"] == "/api/visual_qa"
 
 
 def test_ui_asset_response_serves_built_asset(tmp_path):

@@ -76,11 +76,12 @@ environments, also set `NBATOOLS_ADMIN_TOKEN`; requests to
 `404` response. The token gates API access only; the frontend never receives R2
 credentials.
 
-`/visual-qa` is not a production surface. The dedicated FastAPI/Vercel route
-serves it only for local development or an explicitly identified preview
-environment and returns `404 internal_route_unavailable` in production or an
-ambiguous deployed environment. Do not add a production rewrite to the general
-review shell and do not use production for visual-corpus execution.
+`/review`, `/visual-qa`, and `/api/dev/fixtures` are not deployed surfaces.
+They remain available through the local FastAPI development server, but their
+Vercel function entrypoints and rewrites are intentionally absent. This keeps
+the internal review tooling out of every public deployment and keeps the Hobby
+deployment package below its 12-function ceiling. Do not restore those Vercel
+entrypoints or use a public deployment for visual-corpus execution.
 
 ## Public admission and cost gate
 
