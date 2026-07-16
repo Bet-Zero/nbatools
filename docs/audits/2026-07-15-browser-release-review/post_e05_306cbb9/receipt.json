@@ -1,0 +1,417 @@
+{
+  "version": 1,
+  "runId": "d11_clean_306cbb9_20260716",
+  "capturedAt": "2026-07-16T09:42:29.048Z",
+  "baseUrl": "http://127.0.0.1:8023",
+  "browser": {
+    "name": "chromium",
+    "version": "148.0.7778.96"
+  },
+  "sourceCommit": "306cbb9eb180b2b158713a2dc03dbf6a8fc81bd7",
+  "sourceTreeClean": true,
+  "visualCorpusSha256": "500e235b74206bd55cbde5f96dab8da58b9ae8f0201040414f2d5e6442797683",
+  "executionStatus": "complete",
+  "acceptanceStatus": "pass",
+  "humanReview": "pending",
+  "fixtureBoundary": {
+    "liveStates": [
+      "freshness_expanded",
+      "loading",
+      "success",
+      "visual_qa_idle"
+    ],
+    "syntheticStates": [
+      "zero_result",
+      "no_result",
+      "backend_error",
+      "transport_error"
+    ]
+  },
+  "blockingFindings": [],
+  "viewports": [
+    {
+      "viewport": {
+        "label": "desktop_1280",
+        "width": 1280,
+        "height": 900
+      },
+      "screenshots": [
+        {
+          "state": "freshness_expanded",
+          "path": "desktop_1280/freshness_expanded.jpg"
+        },
+        {
+          "state": "loading",
+          "path": "desktop_1280/loading.jpg"
+        },
+        {
+          "state": "success",
+          "path": "desktop_1280/success.jpg"
+        },
+        {
+          "state": "save_dialog",
+          "path": "desktop_1280/save_dialog.jpg"
+        },
+        {
+          "state": "feedback_dialog",
+          "path": "desktop_1280/feedback_dialog.jpg"
+        },
+        {
+          "state": "zero_result",
+          "path": "desktop_1280/zero_result.jpg"
+        },
+        {
+          "state": "no_result",
+          "path": "desktop_1280/no_result.jpg"
+        },
+        {
+          "state": "backend_error",
+          "path": "desktop_1280/backend_error.jpg"
+        },
+        {
+          "state": "transport_error",
+          "path": "desktop_1280/transport_error.jpg"
+        },
+        {
+          "state": "visual_qa_idle",
+          "path": "desktop_1280/visual_qa_idle.jpg"
+        }
+      ],
+      "axeScans": [
+        {
+          "state": "freshness_expanded",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "loading",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "success",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "save_dialog",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "feedback_dialog",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "zero_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "no_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "backend_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "transport_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "visual_qa_idle",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        }
+      ],
+      "queryRequestCount": 5,
+      "resultAnnouncement": {
+        "hasLiveOwner": true,
+        "liveMode": "polite",
+        "role": null,
+        "activeElement": "BODY",
+        "activeElementId": ""
+      },
+      "dialogs": {
+        "save": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "sq-label",
+            "text": ""
+          },
+          "escapeClosed": true,
+          "focusableCount": 5,
+          "tabWrapped": true,
+          "focusRestored": true
+        },
+        "feedback": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "",
+            "text": ""
+          },
+          "escapeClosed": true,
+          "focusableCount": 7,
+          "tabWrapped": true,
+          "focusRestored": true
+        }
+      },
+      "reducedMotion": {
+        "prefersReducedMotion": true,
+        "animatedElementCount": 0,
+        "offenders": []
+      },
+      "visualQaMountQueryCount": 0
+    },
+    {
+      "viewport": {
+        "label": "mobile_390",
+        "width": 390,
+        "height": 844
+      },
+      "screenshots": [
+        {
+          "state": "freshness_expanded",
+          "path": "mobile_390/freshness_expanded.jpg"
+        },
+        {
+          "state": "loading",
+          "path": "mobile_390/loading.jpg"
+        },
+        {
+          "state": "success",
+          "path": "mobile_390/success.jpg"
+        },
+        {
+          "state": "save_dialog",
+          "path": "mobile_390/save_dialog.jpg"
+        },
+        {
+          "state": "feedback_dialog",
+          "path": "mobile_390/feedback_dialog.jpg"
+        },
+        {
+          "state": "zero_result",
+          "path": "mobile_390/zero_result.jpg"
+        },
+        {
+          "state": "no_result",
+          "path": "mobile_390/no_result.jpg"
+        },
+        {
+          "state": "backend_error",
+          "path": "mobile_390/backend_error.jpg"
+        },
+        {
+          "state": "transport_error",
+          "path": "mobile_390/transport_error.jpg"
+        },
+        {
+          "state": "visual_qa_idle",
+          "path": "mobile_390/visual_qa_idle.jpg"
+        }
+      ],
+      "axeScans": [
+        {
+          "state": "freshness_expanded",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "loading",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "success",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "save_dialog",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "feedback_dialog",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "zero_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "no_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "backend_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "transport_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "visual_qa_idle",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        }
+      ],
+      "queryRequestCount": 5,
+      "resultAnnouncement": {
+        "hasLiveOwner": true,
+        "liveMode": "polite",
+        "role": null,
+        "activeElement": "BODY",
+        "activeElementId": ""
+      },
+      "dialogs": {
+        "save": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "sq-label",
+            "text": ""
+          },
+          "escapeClosed": true,
+          "focusableCount": 5,
+          "tabWrapped": true,
+          "focusRestored": true
+        },
+        "feedback": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "",
+            "text": ""
+          },
+          "escapeClosed": true,
+          "focusableCount": 7,
+          "tabWrapped": true,
+          "focusRestored": true
+        }
+      },
+      "reducedMotion": {
+        "prefersReducedMotion": true,
+        "animatedElementCount": 0,
+        "offenders": []
+      },
+      "visualQaMountQueryCount": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "desktop_1280/freshness_expanded.jpg",
+      "sha256": "9a4d846a5bc1980a6467dc2ccf89550167ad5d03557c9c0e8a4ecd5b5ac9baad"
+    },
+    {
+      "path": "desktop_1280/loading.jpg",
+      "sha256": "42fa927b7609064bc2b2e188b8bd4bb9cc2630b486651aa879a351a5cb4cac73"
+    },
+    {
+      "path": "desktop_1280/success.jpg",
+      "sha256": "b2dbf750855b6293ca6929bb076769ca162e90f2f0cf6b3091eb49c58e6940ee"
+    },
+    {
+      "path": "desktop_1280/save_dialog.jpg",
+      "sha256": "9e876599e77ebda3b28a036309f88541cad2be13c5d8ab8674d51859bd08c77f"
+    },
+    {
+      "path": "desktop_1280/feedback_dialog.jpg",
+      "sha256": "8db0f91efa74ecc6386a160636a8fd10395a7e84a37d937e517cf18dc93f6b03"
+    },
+    {
+      "path": "desktop_1280/zero_result.jpg",
+      "sha256": "a93f5ebc64c7f4e8dc684b3a0e7af95710ef03206c9e08e369e7244db4050d1b"
+    },
+    {
+      "path": "desktop_1280/no_result.jpg",
+      "sha256": "e59031b8547b76dd12f558688f353f1d4731d24fd25e8edfaa6551cf5939de16"
+    },
+    {
+      "path": "desktop_1280/backend_error.jpg",
+      "sha256": "b09886f070daa8124ed6cd814d75b2bf06ef568fddd9f4eb252c42956d441b80"
+    },
+    {
+      "path": "desktop_1280/transport_error.jpg",
+      "sha256": "9e1bc27fdc047cbb79c8b49da1bd333699be0bd3af7092bf5e4ec861bbe42b8a"
+    },
+    {
+      "path": "desktop_1280/visual_qa_idle.jpg",
+      "sha256": "fa6b1c83d03afb77bfdb0df5449ec83c09dbbf3b5c2a90c43c92b0645e751bd9"
+    },
+    {
+      "path": "mobile_390/freshness_expanded.jpg",
+      "sha256": "71c2bbd789f5d2ee8875f97ca39eeea1bf75aefd5d7a5f4f259d1474d1e210c4"
+    },
+    {
+      "path": "mobile_390/loading.jpg",
+      "sha256": "403e21aee2536e0d5bc68e5b9046997de126ab1fe6423cc3539516997b264e7e"
+    },
+    {
+      "path": "mobile_390/success.jpg",
+      "sha256": "47dd8bd7539f0acfc678e2ccae71c78b40954528e22691675fed154c6ee1b386"
+    },
+    {
+      "path": "mobile_390/save_dialog.jpg",
+      "sha256": "2790400f0395ce51bb943fc57a32a0cb5ef1a849e6a399108c58f8507430a351"
+    },
+    {
+      "path": "mobile_390/feedback_dialog.jpg",
+      "sha256": "f2f67b75147126d42eb67e94a36bfe41e6de260f885c6f6c664c9419c405d9a1"
+    },
+    {
+      "path": "mobile_390/zero_result.jpg",
+      "sha256": "5445d568abe2b6dab1afe6c8923fff61fc8aaeb74fa531114fa5c4e9db8a684f"
+    },
+    {
+      "path": "mobile_390/no_result.jpg",
+      "sha256": "6bb96b4a4114256ad891d0724ebd5069de9ddf822f3cbf403d2bb0e8b8c3ce80"
+    },
+    {
+      "path": "mobile_390/backend_error.jpg",
+      "sha256": "83c87f091ef62dab33d6b3bb9a188335a8f6a6e93c651deab2d418d0c5338e65"
+    },
+    {
+      "path": "mobile_390/transport_error.jpg",
+      "sha256": "b5450b622a636235e683a2cd265b35a0e121a09e90f7f697c776fc64f52d8b3e"
+    },
+    {
+      "path": "mobile_390/visual_qa_idle.jpg",
+      "sha256": "0107367ec5e874869396c5f8595ec428b140c3f270c11dec8e19b7ee0f57fee9"
+    }
+  ]
+}

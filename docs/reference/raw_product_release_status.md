@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Snapshot: 2026-07-15.
+Snapshot: 2026-07-16.
 
 The current public-acceptance slice is machine-clean and its human product
 review is closed for the exact run recorded in the validation map. The broader
@@ -15,7 +15,7 @@ inferred from one another.
 | Full Raw QA corpus | Current inventory is 349 cases; a current machine run is required | The retained 314/314 run predates the current corpus and is historical only. [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the boundary. |
 | `public_query_acceptance` slice | Current 134/134 machine run passed with zero failed or suspicious cases | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the exact commit, generation, and generated closure-validation path. |
 | Human product review | `human_review_complete` for `d10_final_83889c6` | John Matthew approved the package-level 37-representative-row review on 2026-07-15; exact closure-integrity validation passed with zero errors. |
-| Representative rendered UI review | E-05 accessibility remediation is merged in PR #269 and an exact-worktree desktop/mobile candidate rerun passed with zero blockers; the clean-commit retained receipt and owner UI decision remain pending | The [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md) preserves the blocked baseline and current supersession boundary. |
+| Representative rendered UI review | E-05 accessibility remediation is merged in PR #269; clean current-main desktop/mobile run `d11_clean_306cbb9_20260716` passed with zero blockers and agent visual inspection found no new blocker; one package-level owner UI decision remains pending | The [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md) preserves both the blocked baseline and clean post-remediation receipt. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed
@@ -25,9 +25,11 @@ below.
 
 The following product-launch items remain open:
 
-- clean-commit browser accessibility receipt and one owner UI-review decision
-- coherent production data upload/promotion, deployment, and deployed readiness
-  smoke; the rollback-protected local generation already returns readiness 200
+- one owner UI-review decision for the clean retained accessibility package
+- coherent production data upload/promotion and deployed readiness/query smoke;
+  current production code health is 200 and internal review routes are true
+  platform 404s, but readiness correctly remains 503 on the legacy mutable
+  runtime while the rollback-protected local generation returns readiness 200
   in the correct offseason state
 - approved privacy legal basis/public notice, monitored deletion channel, and
   deletion SLA before feedback persistence can be externally enabled
