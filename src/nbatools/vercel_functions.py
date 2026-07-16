@@ -14,7 +14,6 @@ from nbatools.api_contracts import (
     validation_error_payload,
 )
 from nbatools.api_handlers import (
-    dev_fixtures_payload,
     freshness_payload,
     health_payload,
     natural_query_payload,
@@ -32,21 +31,6 @@ from nbatools.query_feedback import (
 def ui_response() -> tuple[int, str, str]:
     """Return the fallback/local UI shell response."""
     return HTTPStatus.OK, load_ui_html(), "text/html; charset=utf-8"
-
-
-def visual_qa_response(
-    env: dict[str, str] | None = None,
-) -> tuple[int, str | dict[str, Any], str]:
-    """Serve the visual-QA shell only for explicit preview environments."""
-    from nbatools.internal_routes import visual_qa_route_available
-
-    if not visual_qa_route_available(env):
-        return (
-            HTTPStatus.NOT_FOUND,
-            {"ok": False, "error": "internal_route_unavailable", "detail": None},
-            "application/json",
-        )
-    return ui_response()
 
 
 def ui_fallback_asset_response() -> tuple[int, str, str]:
@@ -82,11 +66,6 @@ def readiness_response() -> tuple[int, dict[str, Any]]:
 
     info = build_readiness_info()
     return (HTTPStatus.OK if info.ready else HTTPStatus.SERVICE_UNAVAILABLE), info.to_dict()
-
-
-def dev_fixtures_response() -> tuple[int, dict[str, Any]]:
-    """Return the parser example fixture list for the internal review UI."""
-    return HTTPStatus.OK, dev_fixtures_payload()
 
 
 def query_response(
