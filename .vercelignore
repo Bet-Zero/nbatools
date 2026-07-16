@@ -1,0 +1,18 @@
+# Runtime data is served from the active immutable R2 generation.
+data/
+
+# Local evidence, audit workspaces, and generated repo analysis are never part
+# of a Vercel source upload.
+outputs/
+working/
+archive/
+graphify-out/
+
+# Local environments and caches.
+.venv/
+node_modules/
+frontend/node_modules/
+.pytest_cache/
+.ruff_cache/
+.testmondata*
+**/__pycache__/
