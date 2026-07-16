@@ -73,6 +73,7 @@ export function TeamBadge({
 
   return (
     <span
+      role="img"
       aria-label={label}
       className={joinClassNames(styles.badge, styles[size], className)}
       {...props}

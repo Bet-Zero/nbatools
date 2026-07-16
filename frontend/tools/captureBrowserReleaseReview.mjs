@@ -24,6 +24,7 @@ const VIEWPORTS = [
 ];
 const NAVIGATION_TIMEOUT_MS = 30_000;
 const QUERY_TIMEOUT_MS = 90_000;
+const NBA_ASSET_PATTERN = "https://cdn.nba.com/**";
 
 function timestampRunId(now = new Date()) {
   return now
@@ -172,6 +173,100 @@ async function waitForAppState(page, state) {
     state: "attached",
     timeout: QUERY_TIMEOUT_MS,
   });
+}
+
+async function installNbaAssetProxy(page, probe) {
+  await page.route(NBA_ASSET_PATTERN, async (route) => {
+    probe.requested += 1;
+    try {
+      const response = await fetch(route.request().url());
+      if (!response.ok) {
+        throw new Error(`upstream returned ${response.status}`);
+      }
+      const body = Buffer.from(await response.arrayBuffer());
+      await route.fulfill({
+        status: response.status,
+        headers: {
+          "cache-control": "no-store",
+          "content-type":
+            response.headers.get("content-type") ??
+            "application/octet-stream",
+        },
+        body,
+      });
+      probe.fulfilled += 1;
+    } catch (error) {
+      probe.failed.push(
+        error instanceof Error ? error.message : String(error),
+      );
+      await route.abort("failed");
+    }
+  });
+}
+
+async function resultImageProbe(page) {
+  const image = page.locator('[data-state-surface="result"] img').first();
+  try {
+    await image.waitFor({ state: "visible", timeout: NAVIGATION_TIMEOUT_MS });
+    await page.waitForFunction(
+      () => {
+        const candidate = document.querySelector(
+          '[data-state-surface="result"] img',
+        );
+        return Boolean(
+          candidate instanceof HTMLImageElement &&
+            candidate.complete &&
+            candidate.naturalWidth > 0 &&
+            candidate.naturalHeight > 0,
+        );
+      },
+      undefined,
+      { timeout: NAVIGATION_TIMEOUT_MS },
+    );
+    return await image.evaluate((element) => ({
+      loaded: element.complete && element.naturalWidth > 0,
+      src: element.currentSrc || element.src,
+      naturalWidth: element.naturalWidth,
+      naturalHeight: element.naturalHeight,
+    }));
+  } catch (error) {
+    return {
+      loaded: false,
+      src: null,
+      naturalWidth: 0,
+      naturalHeight: 0,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+async function tableResultProbe(page) {
+  const table = page.locator('[data-state-surface="result"] table').first();
+  try {
+    await table.waitFor({ state: "visible", timeout: QUERY_TIMEOUT_MS });
+    const rowCount = await table.locator("tbody tr").count();
+    const layout = await table.evaluate((element) => {
+      const scrollOwner = element.parentElement;
+      return {
+        tableScrollWidth: element.scrollWidth,
+        tableClientWidth: element.clientWidth,
+        scrollOwnerWidth: scrollOwner?.clientWidth ?? null,
+        documentOverflow:
+          document.documentElement.scrollWidth > window.innerWidth + 1,
+      };
+    });
+    return { visible: true, rowCount, ...layout };
+  } catch (error) {
+    return {
+      visible: false,
+      rowCount: 0,
+      tableScrollWidth: 0,
+      tableClientWidth: 0,
+      scrollOwnerWidth: null,
+      documentOverflow: null,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
 
 async function dialogProbe(page, trigger, dialogName, cancelName) {
@@ -351,6 +446,7 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
   const page = await context.newPage();
   const scans = [];
   const screenshots = [];
+  const nbaAssetProxy = { requested: 0, fulfilled: 0, failed: [] };
   let queryRequestCount = 0;
   page.on("request", (request) => {
     const url = new URL(request.url());
@@ -360,6 +456,7 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
   });
 
   try {
+    await installNbaAssetProxy(page, nbaAssetProxy);
     await page.route(
       "**/query",
       async (route) => {
@@ -404,6 +501,7 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
       ),
     });
     await waitForAppState(page, "result");
+    const summaryImage = await resultImageProbe(page);
     screenshots.push({
       state: "success",
       path: await captureState(
@@ -461,6 +559,20 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
       "Report an issue with this answer",
       "Cancel",
     );
+
+    await submitQuery(page, "Jokic last 10 games");
+    await waitForAppState(page, "result");
+    const tableResult = await tableResultProbe(page);
+    screenshots.push({
+      state: "table_success",
+      path: await captureState(
+        page,
+        runDirectory,
+        viewport.label,
+        "table_success",
+        scans,
+      ),
+    });
 
     await fulfillNextQuery(
       page,
@@ -572,6 +684,9 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
       queryRequestCount,
       resultAnnouncement,
       dialogs: { save: saveDialog, feedback: feedbackDialog },
+      summaryImage,
+      tableResult,
+      nbaAssetProxy,
       reducedMotion,
       visualQaMountQueryCount: visualMountQueryCount,
     };
@@ -600,6 +715,24 @@ function blockingFindings(viewportRuns) {
     if (!run.resultAnnouncement.hasLiveOwner) {
       findings.push(
         `${label}: completed result has no live announcement owner`,
+      );
+    }
+    if (!run.summaryImage.loaded) {
+      findings.push(`${label}: summary player image did not load`);
+    }
+    if (run.nbaAssetProxy.failed.length > 0) {
+      findings.push(
+        `${label}: ${run.nbaAssetProxy.failed.length} NBA visual assets failed in the review proxy`,
+      );
+    }
+    if (!run.tableResult.visible || run.tableResult.rowCount < 10) {
+      findings.push(
+        `${label}: representative game table did not render all ten rows`,
+      );
+    }
+    if (run.tableResult.documentOverflow) {
+      findings.push(
+        `${label}: representative game table caused document-level horizontal overflow`,
       );
     }
     for (const [name, dialog] of Object.entries(run.dialogs)) {
@@ -669,6 +802,7 @@ async function main() {
           "freshness_expanded",
           "loading",
           "success",
+          "table_success",
           "visual_qa_idle",
         ],
         syntheticStates: [

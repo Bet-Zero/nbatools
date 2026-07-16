@@ -191,4 +191,25 @@ describe("DataTable", () => {
     expect(screen.getByText("0.523")).toBeInTheDocument();
     expect(screen.queryByText("52.3%")).not.toBeInTheDocument();
   });
+
+  it("makes the scroll region keyboard focusable and accessible", () => {
+    render(
+      <PrimitiveDataTable
+        ariaLabel="Player game log"
+        rows={[{ points: 31 }]}
+        columns={[
+          {
+            key: "points",
+            header: "PTS",
+            render: (row) => row.points,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("region", { name: "Player game log" })).toHaveAttribute(
+      "tabindex",
+      "0",
+    );
+  });
 });

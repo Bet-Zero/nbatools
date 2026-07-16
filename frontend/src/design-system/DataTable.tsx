@@ -17,6 +17,7 @@ export interface DataTableColumn<Row> {
 export interface DataTableProps<Row> {
   columns: DataTableColumn<Row>[];
   rows: Row[];
+  ariaLabel?: string;
   getRowKey?: (row: Row, rowIndex: number) => Key;
   highlight?: boolean;
   emptyState?: ReactNode;
@@ -36,6 +37,7 @@ const ALIGN_CLASS: Record<DataTableAlignment, string> = {
 export function DataTable<Row>({
   columns,
   rows,
+  ariaLabel = "Scrollable data table",
   getRowKey,
   highlight = false,
   emptyState = null,
@@ -46,7 +48,12 @@ export function DataTable<Row>({
   }
 
   return (
-    <div className={joinClassNames(styles.tableScroll, className)}>
+    <div
+      role="region"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      className={joinClassNames(styles.tableScroll, className)}
+    >
       <table
         className={joinClassNames(styles.table, highlight && styles.highlight)}
       >

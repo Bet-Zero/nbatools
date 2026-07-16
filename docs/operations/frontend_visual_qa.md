@@ -123,9 +123,10 @@ replacement for a canonical full-corpus review.
 
 ## Browser Release Review Receipt
 
-For one desktop/mobile receipt covering public loading, success, zero-result,
-unsupported no-result, backend-error, transport-error, freshness, save-dialog,
-feedback-dialog, and idle internal-route states, run:
+For one desktop/mobile receipt covering public loading, summary success,
+representative game-table success, zero-result, unsupported no-result,
+backend-error, transport-error, freshness, save-dialog, feedback-dialog, and
+idle internal-route states, run:
 
 ```bash
 make browser-release-review \
@@ -153,9 +154,13 @@ capture may legitimately report blocked acceptance when axe, keyboard, focus,
 announcement, contrast, or reduced-motion checks expose a release issue.
 `humanReview` stays `pending` until a person inspects and certifies the retained
 images. The deterministic zero/no-result/error fixtures test presentation
-states; the freshness, loading, success, and idle internal route use the live
-local API shell. Run the canonical visual corpus separately for live result
-coverage.
+states; the freshness, loading, summary success, representative table success,
+and idle internal route use the live local API shell. The receipt requires the
+summary player image to load, requires all ten representative game rows, and
+records document-overflow and NBA-asset-proxy evidence. The Node-side asset
+proxy works around headless Chromium's CDN HTTP/2 transport failure without
+changing application behavior; upstream asset failures still block the run.
+Run the canonical visual corpus separately for broader live result coverage.
 
 ### Retained Release Audit Snapshots
 
