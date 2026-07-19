@@ -120,9 +120,11 @@ make raw-query-answer-qa
 **And one intake valve for later:** the manual query-feedback endpoint
 (`POST /query-feedback` and `make query-feedback-export`) can capture bad
 answers explicitly reported by real users, so they can enter the funnel at
-Stage 1. Automatic public query diagnostics do not persist. Deployed manual
-feedback storage remains disabled until the privacy activation gates in
-[`query_feedback_privacy.md`](../operations/query_feedback_privacy.md) are met.
+Stage 1 after a future feature-promotion decision. It is not part of the
+current public release: no submission control is shown, automatic public query
+diagnostics do not persist, and deployed manual feedback storage remains
+disabled. The future activation gates are in
+[`query_feedback_privacy.md`](../operations/query_feedback_privacy.md).
 
 The funnel, end to end:
 

@@ -45,18 +45,24 @@ Optional query feedback variables:
 - `NBATOOLS_ADMIN_FEEDBACK_ENABLED`
 - `NBATOOLS_ADMIN_TOKEN`
 
+Query feedback persistence is a deferred optional capability, not a current
+release dependency. Leave all query-feedback and admin-feedback variables
+unset. Do not create a feedback bucket, token, lifecycle, legal/notice process,
+or deletion channel for the current release. The public UI does not expose a
+feedback submission control, and no automatic public diagnostics persist.
+
 `QUERY_FEEDBACK_STORE=r2` selects the store but does not by itself enable
 deployed persistence. Deployed storage fails closed unless all five public
-privacy gates above are also satisfied. They are currently unsatisfied: no
-approved legal basis/notice or dedicated monitored public deletion channel
-exists. Leave them unset and keep deployed feedback disabled. Disabled mode
+privacy gates above are also satisfied. The current release intentionally
+leaves them unset and keeps deployed feedback disabled. Disabled mode
 returns JSON with `ok: true`, `stored: false`, and `disabled: true`; normal query
 UX and `/query` responses continue unchanged. Automatic diagnostics are forced
 off in all deployments and the public endpoint accepts only explicit
 `user_submitted` feedback.
 
-For deployed feedback storage, use `QUERY_FEEDBACK_BUCKET_NAME=nbatools-feedback`
-or another dedicated bucket and keep `QUERY_FEEDBACK_PREFIX=query_feedback`.
+For a future separately approved deployment of feedback storage, use
+`QUERY_FEEDBACK_BUCKET_NAME=nbatools-feedback` or another dedicated bucket and
+keep `QUERY_FEEDBACK_PREFIX=query_feedback`.
 Set the three `QUERY_FEEDBACK_R2_*` variables to a separate token scoped only to
 that feedback bucket. The feedback store fails closed when those variables are
 missing or when they alias the canonical-data access-key/secret pair; it never
@@ -64,9 +70,9 @@ falls back to `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`.
 
 The May 18, 2026 preview inspection used the canonical data bucket under the
 isolated `query_feedback/preview` prefix. That evidence is historical and does
-not satisfy the current least-privilege contract. Keep deployed feedback
-disabled until a dedicated feedback credential tuple is configured; no
-canonical-data credential fallback is accepted.
+not authorize current collection. If feedback is promoted later, deployed
+storage stays disabled until a dedicated feedback credential tuple is
+configured; no canonical-data credential fallback is accepted.
 
 Set `NBATOOLS_ADMIN_FEEDBACK_ENABLED=true` only when the backend admin feedback
 review endpoints should be available. In deployed preview or production
@@ -129,8 +135,9 @@ deployed runtime. For an approved publication, inject the operator's
 write-scoped `R2_*` values only into that local command process; do not copy
 them into Vercel runtime configuration.
 
-For query feedback, create a separate bucket such as `nbatools-feedback` and a
-separate R2 token scoped to that bucket when possible. Feedback writes need
+If a future owner-approved promotion enables query feedback, create a separate
+bucket such as `nbatools-feedback` and a separate R2 token scoped to that
+bucket. Feedback writes need
 object write permission; review/export workflows need list/read permission;
 mutable triage overlay review needs list/read/write permission under the
 feedback prefix. Do not expose these credentials to the frontend. The browser

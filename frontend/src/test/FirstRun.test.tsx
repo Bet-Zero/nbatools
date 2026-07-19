@@ -297,9 +297,7 @@ describe("first-run starter queries", () => {
     expect(screen.queryByRole("button", { name: "Copy JSON" })).toBeNull();
     expect(screen.queryByText("Raw response")).not.toBeInTheDocument();
     expect(screen.queryByText("player game summary")).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Report issue" }),
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Report issue" })).toBeNull();
     expect(screen.getByLabelText("Result context")).toHaveTextContent(
       "Last 5 games",
     );

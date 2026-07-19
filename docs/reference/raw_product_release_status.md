@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Snapshot: 2026-07-16.
+Snapshot: 2026-07-19.
 
 The current public-acceptance slice is machine-clean and its human product
 review is closed for the exact run recorded in the validation map. The broader
@@ -15,7 +15,7 @@ inferred from one another.
 | Full Raw QA corpus | Current inventory is 349 cases; a current machine run is required | The retained 314/314 run predates the current corpus and is historical only. [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the boundary. |
 | `public_query_acceptance` slice | Current 134/134 machine run passed with zero failed or suspicious cases | [`query_validation_map.md`](../operations/query_validation_map.md#current-evidence) records the exact commit, generation, and generated closure-validation path. |
 | Human product review | `human_review_complete` for `d10_final_83889c6` | John Matthew approved the package-level 37-representative-row review on 2026-07-15; exact closure-integrity validation passed with zero errors. |
-| Representative rendered UI review | E-05 accessibility remediation is merged in PR #269; clean current-main desktop/mobile run `d11_clean_306cbb9_20260716` passed with zero blockers and agent visual inspection found no new blocker; one package-level owner UI decision remains pending | The [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md) preserves both the blocked baseline and clean post-remediation receipt. |
+| Representative rendered UI review | The prior clean desktop/mobile run `d11_final_7a0a469_20260716` passed with zero blockers, a loaded player image, and a real ten-row table. The feedback-deferral change removes the dormant public control, so a clean post-change receipt must replace that package before the one owner UI decision. | The [2026-07-15 browser release review](../audits/2026-07-15-browser-release-review/README.md) preserves the blocked baseline and remediation history; the Queue D evidence tracks the current refresh. |
 
 The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed
@@ -23,16 +23,19 @@ below.
 
 ## Remaining Release Work
 
-The following product-launch items remain open:
+The following Queue D item remains open:
 
-- one owner UI-review decision for the clean retained accessibility package
-- coherent production data upload/promotion and deployed readiness/query smoke;
-  current production code health is 200 and internal review routes are true
-  platform 404s, but readiness correctly remains 503 on the legacy mutable
-  runtime while the rollback-protected local generation returns readiness 200
-  in the correct offseason state
-- approved privacy legal basis/public notice, monitored deletion channel, and
-  deletion SLA before feedback persistence can be externally enabled
+- one clean current-main desktop/mobile receipt after the feedback-deferral
+  change, followed by one owner UI-review decision for that exact package
+
+Production data publication, readiness/query smoke, internal-route isolation,
+and edge admission proof are complete. Manual feedback persistence is an
+optional future capability and remains disabled; its bucket, credentials,
+lifecycle, legal/notice process, deletion channel, and SLA are not current
+release requirements.
+
+The following broader product-launch work is outside Queue D:
+
 - branding and final product name
 - final production domain
 - custom-domain production cutover

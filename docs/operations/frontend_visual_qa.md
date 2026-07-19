@@ -125,8 +125,8 @@ replacement for a canonical full-corpus review.
 
 For one desktop/mobile receipt covering public loading, summary success,
 representative game-table success, zero-result, unsupported no-result,
-backend-error, transport-error, freshness, save-dialog, feedback-dialog, and
-idle internal-route states, run:
+backend-error, transport-error, freshness, save-dialog, and idle internal-route
+states, run:
 
 ```bash
 make browser-release-review \
@@ -161,6 +161,9 @@ records document-overflow and NBA-asset-proxy evidence. The Node-side asset
 proxy works around headless Chromium's CDN HTTP/2 transport failure without
 changing application behavior; upstream asset failures still block the run.
 Run the canonical visual corpus separately for broader live result coverage.
+Historical receipts may include the formerly public feedback dialog. The
+current release runner omits that state because manual feedback persistence and
+its public controls are deferred.
 
 ### Retained Release Audit Snapshots
 

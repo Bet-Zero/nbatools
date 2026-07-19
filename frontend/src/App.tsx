@@ -16,8 +16,6 @@ import ErrorBox from "./components/ErrorBox";
 import FreshnessStatus from "./components/FreshnessStatus";
 import Loading from "./components/Loading";
 import QueryBar from "./components/QueryBar";
-import { QueryFeedbackButton } from "./components/QueryFeedback";
-import { defaultFeedbackTypeForResult } from "./components/queryFeedbackPayload";
 import QueryHistory from "./components/QueryHistory";
 import RawJsonToggle from "./components/RawJsonToggle";
 import ResultEnvelope, {
@@ -471,32 +469,6 @@ export default function App() {
   const teamThemedSurfaceClass = teamTheme ? styles.teamThemedSurface : "";
   const displayMode: DisplayMode = urlParams.debug ? "debug" : "public";
   const isDebugMode = displayMode === "debug";
-  const negativeFeedbackAction =
-    result && result.result_status !== "ok" ? (
-      <QueryFeedbackButton
-        data={result}
-        defaultFeedbackType={defaultFeedbackTypeForResult(result)}
-        triggerLabel={
-          result.result_status === "error" ? "Report error" : "Submit for review"
-        }
-        title={
-          result.result_status === "error"
-            ? "Report this query error"
-            : "Expected this to work?"
-        }
-        variant="secondary"
-      />
-    ) : undefined;
-  const successfulFeedbackAction =
-    result && result.result_status === "ok" ? (
-      <QueryFeedbackButton
-        data={result}
-        defaultFeedbackType="wrong_answer"
-        triggerLabel="Report issue"
-        title="Report an issue with this answer"
-      />
-    ) : null;
-
   const headerStatus =
     isDebugMode || apiOnline === false ? (
       <div className={styles.statusStack} aria-label="API status">
@@ -606,7 +578,6 @@ export default function App() {
       >
         Save Query
       </Button>
-      {successfulFeedbackAction}
     </div>
   ) : null;
 
@@ -689,11 +660,7 @@ export default function App() {
                     teamThemedSurfaceClass,
                   ].join(" ")}
                 >
-                  <ResultRenderer
-                    data={result}
-                    feedbackAction={negativeFeedbackAction}
-                    displayMode={displayMode}
-                  />
+                  <ResultRenderer data={result} displayMode={displayMode} />
                 </div>
 
                 <RawJsonToggle data={result} />
@@ -708,7 +675,6 @@ export default function App() {
                 >
                   <ResultRenderer
                     data={result}
-                    feedbackAction={negativeFeedbackAction}
                     displayMode={displayMode}
                     resultContext={
                       result.result_status === "ok" ? (

@@ -199,7 +199,10 @@ Player summaries, comparisons, and splits also show sample-aware USG%, AST%, REB
 
 ## QA and release status
 
-Current release status: `RELEASE_CANDIDATE_WITH_NOTES` / `PREVIEW_READY_WITH_NOTES` / `FEEDBACK_READY_WITH_NOTES` / `PUBLIC_UI_READY_WITH_NOTES`.
+Queue D repository and production behavior are implemented. Manual feedback
+persistence is deferred and disabled; final Queue D acceptance awaits a clean
+post-change desktop/mobile receipt, one owner UI-package decision, and the final
+combined evidence check.
 
 Pointers:
 
@@ -208,7 +211,7 @@ Pointers:
 - Generated QA evidence scoreboard: [docs/operations/query_validation_map.md](docs/operations/query_validation_map.md).
 - Parser/routing growth guardrails: [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 - Feature promotion rules: [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md).
-- Query feedback review runbook (weekly beta cadence): [docs/operations/query_feedback_review.md](docs/operations/query_feedback_review.md).
+- Deferred query-feedback review and activation runbook: [docs/operations/query_feedback_review.md](docs/operations/query_feedback_review.md).
 - Docs index and category rules: [docs/index.md](docs/index.md).
 
 ### Current tested state

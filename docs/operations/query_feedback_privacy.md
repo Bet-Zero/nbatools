@@ -1,9 +1,30 @@
 # Query Feedback Privacy and Deletion
 
-This runbook is the durable repository contract for manual query feedback. It
-does not approve a legal basis, public notice, credential, bucket lifecycle, or
-deployment. Those external gates must be proven separately before deployed
-feedback persistence is enabled.
+This runbook is the durable repository contract for the optional manual query
+feedback capability. Persistence is deferred and out of scope for the current
+public release: the public UI exposes no feedback submission control, deployed
+storage is disabled, and no feedback bucket, credential, lifecycle, legal
+basis, notice, deletion channel, or SLA is required for current release
+acceptance. The implementation remains fail-closed and tested so a later
+owner-approved feature-promotion decision can use this runbook.
+
+## Current release classification
+
+“Feedback persistence” means the optional server-side write of one minimized,
+redacted, explicitly submitted manual-feedback record to R2. It does not refer
+to query execution, local saved queries, ordinary application logs, or the
+machine/human QA evidence used to accept supported answers.
+
+No current owner-approved release requirement says this storage must be
+activated. The D-02 decision approved the safeguards required *if* manual
+records are retained and expressly kept deployed persistence disabled. The
+deployment variables have always been optional, and the owner guide describes
+the capability as an intake valve for later. Historical release-candidate
+planning included a feedback experiment but classified its missing dedicated
+bucket as a non-blocking follow-up; it is not a locked current-release
+contract. D-08's least-privilege proof and D-09's external privacy operations
+therefore become future activation prerequisites rather than Queue D release
+gates.
 
 ## Approved collection boundary
 
@@ -11,9 +32,10 @@ feedback persistence is enabled.
   diagnostics require explicit local `QUERY_AUTOMATIC_DIAGNOSTICS_ENABLED=true`
   and are forced off in every deployed environment. The public feedback endpoint
   rejects `feedback_source=automatic`.
-- Manual feedback begins only when the user opens the feedback dialog and
-  submits it. The dialog discloses the retained categories, server redaction,
-  90-day maximum, and receipt-based deletion support before submission.
+- If the capability is promoted later, manual feedback begins only when the
+  user opens the feedback dialog and submits it. The dialog must disclose the
+  retained categories, server redaction, 90-day maximum, and receipt-based
+  deletion support before submission.
 - A manual record retains the redacted query, selected report category, optional
   redacted note, route/status/reason, compact allowlisted result metadata,
   result shape, and limited redacted answer/error context. Full result rows,
@@ -24,9 +46,9 @@ feedback persistence is enabled.
   free-text field is stored. Pattern redaction is defense in depth; users are
   still told not to submit personal information.
 
-Privacy/deletion ownership and incident ownership are assigned to **John
-Matthew, project owner**. Legal basis remains an owner/legal decision; this
-repository does not invent or approve one.
+For any future activation, privacy/deletion ownership and incident ownership
+are assigned to **John Matthew, project owner**. Legal basis remains an
+owner/legal decision; this repository does not invent or approve one.
 
 ## Fail-closed deployed activation
 
@@ -39,12 +61,14 @@ these gates is also required:
 - `QUERY_FEEDBACK_DELETION_CONTACT=<dedicated monitored public channel>`
 - `QUERY_FEEDBACK_LIFECYCLE_VERIFIED=true`
 
-The current legal basis/notice and deletion-contact gates are not satisfied, so
-these variables must not be set and deployed feedback persistence must remain
-disabled. Before future activation, the owner must approve the notice, create
-and monitor the contact, disclose it publicly, configure the bucket lifecycle,
-run the read-only verification below, and retain browser proof of the final
-notice/contact. Actual environment changes require separate authorization.
+The current release intentionally does not activate this optional capability.
+These variables remain unset and deployed feedback persistence remains
+disabled. This is the accepted current product boundary, not an open release
+gate. Before a future feature-promotion decision can activate persistence, the
+owner must approve the legal basis and notice, create and disclose a monitored
+contact, configure the bucket lifecycle, run the read-only verification below,
+and retain browser proof of the final notice/contact. Actual environment
+changes require separate authorization.
 
 ## Fixed 90-day lifecycle
 
@@ -71,9 +95,10 @@ exists.
 
 ## Deletion request procedure
 
-The public deletion channel does not yet exist, so intake and its public SLA
-are not operational. Persistence stays disabled until the owner creates and
-publishes the monitored channel. Once enabled, the process is:
+The current release stores no public feedback, so it needs no deletion intake
+channel or deletion SLA. If persistence is promoted and enabled later, the
+owner must first create and publish the monitored channel and SLA. The process
+is then:
 
 1. The requester supplies the `qfb_...` receipt shown after submission.
 2. John Matthew records the request without copying query text into the request

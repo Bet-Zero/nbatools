@@ -1,6 +1,11 @@
 # Query Feedback Review Runbook
 
-This runbook covers v1 query feedback and diagnostic logging review.
+This runbook covers review of the optional query-feedback capability. The
+current public release does not expose feedback submission controls and keeps
+deployed persistence disabled, so there is no weekly production-feedback
+cadence to run today. The workflow below becomes operational only after a
+separate owner-approved feature promotion satisfies the privacy and deployment
+activation contract.
 
 ## Weekly Beta Feedback Review Cadence
 
