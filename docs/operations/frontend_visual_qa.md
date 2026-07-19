@@ -183,8 +183,17 @@ Its execution completed and accurately preserved the original blockers. PR
 rerun passed at both viewports with zero blockers. Clean current-main rerun
 `d11_clean_306cbb9_20260716` now retains the same zero-blocker result, exact
 commit/tree binding, 20 artifact hashes, and all accessibility probes in that
-audit. The owner UI decision is still required; do not infer human or release
-acceptance from either machine run.
+audit. That historical receipt remained human-review pending and did not imply
+human or release acceptance.
+
+The superseding [2026-07-19 browser release
+review](../audits/2026-07-19-browser-release-review/README.md) retains the clean
+post-feedback-deferral machine receipt and all 20 hashed state images. John
+Matthew approved the exact four-image desktop/mobile summary-and-table package
+on 2026-07-19. The generated receipt remains unmodified; a separate owner
+receipt binds the explicit decision to the machine-receipt and image hashes.
+That closes D-11 human UI review only. It does not imply final Queue D or
+broader release acceptance.
 
 ## Text Snapshots And Render Review Outputs
 
