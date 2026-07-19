@@ -537,29 +537,6 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
       "Cancel",
     );
 
-    const feedbackTrigger = page.getByRole("button", {
-      name: "Report issue",
-      exact: true,
-    });
-    await feedbackTrigger.click();
-    screenshots.push({
-      state: "feedback_dialog",
-      path: await captureState(
-        page,
-        runDirectory,
-        viewport.label,
-        "feedback_dialog",
-        scans,
-      ),
-    });
-    await page.getByRole("button", { name: "Cancel", exact: true }).click();
-    const feedbackDialog = await dialogProbe(
-      page,
-      feedbackTrigger,
-      "Report an issue with this answer",
-      "Cancel",
-    );
-
     await submitQuery(page, "Jokic last 10 games");
     await waitForAppState(page, "result");
     const tableResult = await tableResultProbe(page);
@@ -683,7 +660,7 @@ async function reviewViewport(browser, options, runDirectory, viewport) {
       axeScans: scans,
       queryRequestCount,
       resultAnnouncement,
-      dialogs: { save: saveDialog, feedback: feedbackDialog },
+      dialogs: { save: saveDialog },
       summaryImage,
       tableResult,
       nbaAssetProxy,

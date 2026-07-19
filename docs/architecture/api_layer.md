@@ -111,12 +111,19 @@ The public admission contract is enforced before execution in both transports:
 - natural and structured queries share three execution slots, ten admitted
   requests per client/IP per rolling minute, and a 20-second response budget
 - feedback accepts at most 20 newly stored submissions per client/IP per rolling
-  24 hours; user retries reuse a UUID submission receipt and conditional write
+  24 hours if the deferred capability is activated; user retries reuse a UUID
+  submission receipt and conditional write
 
 Rate and concurrency rejections use HTTP `429` JSON plus `Retry-After`; timeout
 uses HTTP `504`. Query clients do not retry automatically. These application
 counters are per running process/serverless instance and are defense-in-depth,
 not a substitute for equivalent global edge enforcement.
+
+`POST /query-feedback` remains a fail-closed compatibility surface, but the
+current public UI exposes no submission control and deployed persistence is
+disabled. No automatic public query diagnostics are stored. Future activation
+requires the separate privacy and deployment contract; it is not a current
+release requirement.
 
 ### `GET /freshness`
 

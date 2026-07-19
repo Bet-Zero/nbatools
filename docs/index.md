@@ -22,7 +22,7 @@ evidence do not belong in the durable documentation map.
 | Frontend render change | [`operations/ui_guide.md`](operations/ui_guide.md) | `frontend/src/`, `frontend/src/api/`, `src/nbatools/ui/dist/` | `npm --prefix frontend run build`; `npm --prefix frontend run lint`; `npm --prefix frontend test` | [`operations/frontend_visual_qa.md`](operations/frontend_visual_qa.md) |
 | Corpus-only change | [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) | `qa/`, tracked fixtures under `qa/fixtures/` | Run the named corpus/QA slice; inspect generated product review when public acceptance is involved | `make docs-governance` if docs changed |
 | Exploratory query review | [`operations/exploratory_query_review.md`](operations/exploratory_query_review.md) | `qa/exploratory/slices/`, `qa/exploratory_query_samples.yaml`, generated review snapshots | Run a 10-query slice with `make exploratory-query-review-slice SLICE=<slice_id>`; inspect `review.md` manually | Promote reviewed cases into Raw QA before treating them as regression coverage |
-| Feedback-derived bug fix | [`operations/query_feedback_review.md`](operations/query_feedback_review.md) | feedback export/review artifacts, parser/route/engine area that owns the bug, QA cases | Follow triage/fix/closure workflow; run tests for touched subsystem | `make query-feedback-export`; Raw QA regression slice |
+| Feedback-derived bug fix after future activation | [`operations/query_feedback_review.md`](operations/query_feedback_review.md) | feedback export/review artifacts, parser/route/engine area that owns the bug, QA cases | Follow triage/fix/closure workflow; run tests for touched subsystem | `make query-feedback-export`; Raw QA regression slice |
 | New feature/query family promotion | [`operations/feature_promotion_rules.md`](operations/feature_promotion_rules.md) | data contract, route/result contract, parser, Raw QA, frontend when rendered, release docs | Complete promotion gates; run subsystem tests plus required QA and docs checks | `make doctor`; deployment smoke when data-backed |
 | Route metadata/CLI diagnostic change | [`architecture/query_service_layer.md`](architecture/query_service_layer.md) | `src/nbatools/route_input_metadata.py`, `src/nbatools/cli_apps/queries.py`, `/routes` docs | Route metadata/CLI tests for touched path; `make test-api` if route list/API behavior changes | `make test-output` |
 | Deployment/data-backed change | [`operations/deployment.md`](operations/deployment.md) | data contract docs, R2 sync path, deployment smoke, Vercel/R2 settings | `make doctor`; R2 dry-run/sync or documented head-object evidence; deployment smoke; `make docs-governance` | `make test-preflight` for runtime behavior changes |
@@ -63,8 +63,8 @@ Runbooks and durable workflow policies.
 
 - [`operations/pipeline_runbook.md`](operations/pipeline_runbook.md) - data pipeline operations
 - [`operations/deployment.md`](operations/deployment.md) - Cloudflare R2 and Vercel deployment
-- [`operations/query_feedback_privacy.md`](operations/query_feedback_privacy.md) - manual feedback privacy, retention, activation, and deletion boundary
-- [`operations/query_feedback_review.md`](operations/query_feedback_review.md) - query feedback review workflow
+- [`operations/query_feedback_privacy.md`](operations/query_feedback_privacy.md) - deferred manual-feedback release boundary and future privacy, retention, activation, and deletion contract
+- [`operations/query_feedback_review.md`](operations/query_feedback_review.md) - dormant query-feedback review workflow for a future approved activation
 - [`operations/exploratory_query_review.md`](operations/exploratory_query_review.md) - input-only natural-query review workflow
 - [`operations/query_smoke_workflow.md`](operations/query_smoke_workflow.md) - natural-query smoke workflow
 - [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) - Raw QA operations

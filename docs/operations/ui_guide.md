@@ -145,10 +145,14 @@ diffs, create committed image baselines, or add a CI gate.
 - **Counts** — `count` query-class responses render the supplied count as the primary answer, then keep count rows and any underlying finder/leaderboard/detail sections visible below.
 - **Occurrence leaderboards** — `player_occurrence_leaders` and `team_occurrence_leaders` leaderboard responses use event-count rankings that promote the supplied occurrence metric while preserving full leaderboard detail.
 - **Data tables** — renders generic result payloads as readable tables. Layout adapts to the result type (generic summary, comparison, finder, streak, split, and fallback sections). Entity columns (player names, teams) are bolded; rank columns are highlighted.
-- **Copy buttons** — public successful results keep Copy Link, Save Query, and
-  feedback actions available in a secondary action row after the answer. Copy
+- **Copy buttons** — public successful results keep Copy Link and Save Query
+  available in a secondary action row after the answer. Copy
   Query, Copy JSON, and Raw JSON remain available in Details and in
   debug/review surfaces.
+- **Deferred feedback control** — the current public release does not render
+  manual query-feedback buttons. The tested component and fail-closed backend
+  remain dormant for a future owner-approved feature promotion; storage is not
+  a current release dependency.
 - **Copy Link** — copies the current URL with query state, so the result can be shared or bookmarked.
 - **Raw JSON** — toggle to inspect the full API response from Details or debug
   mode.
