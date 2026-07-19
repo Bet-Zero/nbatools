@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "reviewId": "d11_owner_approval_20260719",
+  "recordedAt": "2026-07-19T06:07:11Z",
+  "reviewer": {
+    "name": "John Matthew",
+    "role": "project owner"
+  },
+  "decision": "approve",
+  "approvalStatement": "APPROVE D-11 UI PACKAGE",
+  "scope": {
+    "runId": "d11_final_4b894e6_20260719",
+    "sourceCommit": "4b894e6f35368b1cef5157faf1104de7c6251631",
+    "sourceTreeClean": true,
+    "machineReceipt": "receipt.json",
+    "machineReceiptSha256": "fea1fa2a59be1fb6d815e3a47c579bde670bca37d3a271b6bf7d7800c3d72e73",
+    "browser": "Chromium 148.0.7778.96",
+    "viewports": [
+      "1280x900",
+      "390x844"
+    ],
+    "reviewedImages": [
+      {
+        "path": "desktop_1280/success.jpg",
+        "sha256": "16d778e595882aaef0352aed5b3a6d0224bd498ef0f0576e7e4c72161b110a23"
+      },
+      {
+        "path": "desktop_1280/table_success.jpg",
+        "sha256": "ff26413dbed91cd5adb2c4d688a3d4e41bf88ff3cd896e402b548f929a90348c"
+      },
+      {
+        "path": "mobile_390/success.jpg",
+        "sha256": "a57779b113babf7ecb4dba44e225cf2d7072c924003291ee8d650c68383ee75b"
+      },
+      {
+        "path": "mobile_390/table_success.jpg",
+        "sha256": "455eaf51d377aeb3f1fa10f4ecefcc24de032b17b6d728364656ffc0dab1812b"
+      }
+    ]
+  },
+  "acceptedCriteria": [
+    "desktop and mobile readability",
+    "desktop and mobile usability",
+    "responsive layout",
+    "overall visual result"
+  ],
+  "exceptions": [
+    "The local freshness presentation is not production readiness evidence."
+  ],
+  "notApprovedByThisDecision": [
+    "basketball-answer correctness",
+    "external production configuration",
+    "optional feedback persistence activation",
+    "final Queue D acceptance",
+    "broader product release readiness"
+  ]
+}

@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "runId": "d11_final_4b894e6_20260719",
+  "capturedAt": "2026-07-19T05:51:43.169Z",
+  "baseUrl": "http://127.0.0.1:8025",
+  "browser": {
+    "name": "chromium",
+    "version": "148.0.7778.96"
+  },
+  "sourceCommit": "4b894e6f35368b1cef5157faf1104de7c6251631",
+  "sourceTreeClean": true,
+  "visualCorpusSha256": "500e235b74206bd55cbde5f96dab8da58b9ae8f0201040414f2d5e6442797683",
+  "executionStatus": "complete",
+  "acceptanceStatus": "pass",
+  "humanReview": "pending",
+  "fixtureBoundary": {
+    "liveStates": [
+      "freshness_expanded",
+      "loading",
+      "success",
+      "table_success",
+      "visual_qa_idle"
+    ],
+    "syntheticStates": [
+      "zero_result",
+      "no_result",
+      "backend_error",
+      "transport_error"
+    ]
+  },
+  "blockingFindings": [],
+  "viewports": [
+    {
+      "viewport": {
+        "label": "desktop_1280",
+        "width": 1280,
+        "height": 900
+      },
+      "screenshots": [
+        {
+          "state": "freshness_expanded",
+          "path": "desktop_1280/freshness_expanded.jpg"
+        },
+        {
+          "state": "loading",
+          "path": "desktop_1280/loading.jpg"
+        },
+        {
+          "state": "success",
+          "path": "desktop_1280/success.jpg"
+        },
+        {
+          "state": "save_dialog",
+          "path": "desktop_1280/save_dialog.jpg"
+        },
+        {
+          "state": "table_success",
+          "path": "desktop_1280/table_success.jpg"
+        },
+        {
+          "state": "zero_result",
+          "path": "desktop_1280/zero_result.jpg"
+        },
+        {
+          "state": "no_result",
+          "path": "desktop_1280/no_result.jpg"
+        },
+        {
+          "state": "backend_error",
+          "path": "desktop_1280/backend_error.jpg"
+        },
+        {
+          "state": "transport_error",
+          "path": "desktop_1280/transport_error.jpg"
+        },
+        {
+          "state": "visual_qa_idle",
+          "path": "desktop_1280/visual_qa_idle.jpg"
+        }
+      ],
+      "axeScans": [
+        {
+          "state": "freshness_expanded",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "loading",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "success",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "save_dialog",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "table_success",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "zero_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "no_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "backend_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "transport_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "visual_qa_idle",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        }
+      ],
+      "queryRequestCount": 6,
+      "resultAnnouncement": {
+        "hasLiveOwner": true,
+        "liveMode": "polite",
+        "role": null,
+        "activeElement": "BODY",
+        "activeElementId": ""
+      },
+      "dialogs": {
+        "save": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "sq-label",
+            "text": ""
+          },
+          "escapeClosed": true,
+          "focusableCount": 5,
+          "tabWrapped": true,
+          "focusRestored": true
+        }
+      },
+      "summaryImage": {
+        "loaded": true,
+        "src": "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+        "naturalWidth": 1040,
+        "naturalHeight": 760
+      },
+      "tableResult": {
+        "visible": true,
+        "rowCount": 10,
+        "tableScrollWidth": 1708,
+        "tableClientWidth": 1708,
+        "scrollOwnerWidth": 759,
+        "documentOverflow": false
+      },
+      "nbaAssetProxy": {
+        "requested": 10,
+        "fulfilled": 10,
+        "failed": []
+      },
+      "reducedMotion": {
+        "prefersReducedMotion": true,
+        "animatedElementCount": 0,
+        "offenders": []
+      },
+      "visualQaMountQueryCount": 0
+    },
+    {
+      "viewport": {
+        "label": "mobile_390",
+        "width": 390,
+        "height": 844
+      },
+      "screenshots": [
+        {
+          "state": "freshness_expanded",
+          "path": "mobile_390/freshness_expanded.jpg"
+        },
+        {
+          "state": "loading",
+          "path": "mobile_390/loading.jpg"
+        },
+        {
+          "state": "success",
+          "path": "mobile_390/success.jpg"
+        },
+        {
+          "state": "save_dialog",
+          "path": "mobile_390/save_dialog.jpg"
+        },
+        {
+          "state": "table_success",
+          "path": "mobile_390/table_success.jpg"
+        },
+        {
+          "state": "zero_result",
+          "path": "mobile_390/zero_result.jpg"
+        },
+        {
+          "state": "no_result",
+          "path": "mobile_390/no_result.jpg"
+        },
+        {
+          "state": "backend_error",
+          "path": "mobile_390/backend_error.jpg"
+        },
+        {
+          "state": "transport_error",
+          "path": "mobile_390/transport_error.jpg"
+        },
+        {
+          "state": "visual_qa_idle",
+          "path": "mobile_390/visual_qa_idle.jpg"
+        }
+      ],
+      "axeScans": [
+        {
+          "state": "freshness_expanded",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "loading",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "success",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "save_dialog",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "table_success",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "zero_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "no_result",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "backend_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "transport_error",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        },
+        {
+          "state": "visual_qa_idle",
+          "violationCount": 0,
+          "seriousOrCriticalCount": 0,
+          "violations": []
+        }
+      ],
+      "queryRequestCount": 6,
+      "resultAnnouncement": {
+        "hasLiveOwner": true,
+        "liveMode": "polite",
+        "role": null,
+        "activeElement": "BODY",
+        "activeElementId": ""
+      },
+      "dialogs": {
+        "save": {
+          "initialFocus": {
+            "insideDialog": true,
+            "tag": "INPUT",
+            "id": "sq-label",
+            "text": ""
+          },
+          "escapeClosed": true,
+          "focusableCount": 5,
+          "tabWrapped": true,
+          "focusRestored": true
+        }
+      },
+      "summaryImage": {
+        "loaded": true,
+        "src": "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
+        "naturalWidth": 1040,
+        "naturalHeight": 760
+      },
+      "tableResult": {
+        "visible": true,
+        "rowCount": 10,
+        "tableScrollWidth": 485,
+        "tableClientWidth": 485,
+        "scrollOwnerWidth": 364,
+        "documentOverflow": false
+      },
+      "nbaAssetProxy": {
+        "requested": 10,
+        "fulfilled": 10,
+        "failed": []
+      },
+      "reducedMotion": {
+        "prefersReducedMotion": true,
+        "animatedElementCount": 0,
+        "offenders": []
+      },
+      "visualQaMountQueryCount": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "desktop_1280/freshness_expanded.jpg",
+      "sha256": "ca4e10167c46858f7da61ea6261940e64ab97c3d08ea971f79a64cfaeaa36ef0"
+    },
+    {
+      "path": "desktop_1280/loading.jpg",
+      "sha256": "d298171626bf7460035b04833b529e4d2cacd800fefa47ffbcbdfe811c3063e7"
+    },
+    {
+      "path": "desktop_1280/success.jpg",
+      "sha256": "16d778e595882aaef0352aed5b3a6d0224bd498ef0f0576e7e4c72161b110a23"
+    },
+    {
+      "path": "desktop_1280/save_dialog.jpg",
+      "sha256": "687d041fb2000e0a12fc1c35e82bd406baedbf028fd824730a8d417909d45fba"
+    },
+    {
+      "path": "desktop_1280/table_success.jpg",
+      "sha256": "ff26413dbed91cd5adb2c4d688a3d4e41bf88ff3cd896e402b548f929a90348c"
+    },
+    {
+      "path": "desktop_1280/zero_result.jpg",
+      "sha256": "7043150b904daaa7c24dbb4f2a0cfbb740f515c91751ec6eb71cd035d0c3040e"
+    },
+    {
+      "path": "desktop_1280/no_result.jpg",
+      "sha256": "36c2c67c99c25dbfbd9f320c94ae177f525508162afa0eea317d5e2ff23fc2b6"
+    },
+    {
+      "path": "desktop_1280/backend_error.jpg",
+      "sha256": "f18656fb0831fbc209d1654381bab3f144280d765576ed7ba04ac624caf26e22"
+    },
+    {
+      "path": "desktop_1280/transport_error.jpg",
+      "sha256": "7bb1e6032dd846b2a7b73f6da030140a0d01122e0ef0d1d1d196a5b667f962e9"
+    },
+    {
+      "path": "desktop_1280/visual_qa_idle.jpg",
+      "sha256": "fa6b1c83d03afb77bfdb0df5449ec83c09dbbf3b5c2a90c43c92b0645e751bd9"
+    },
+    {
+      "path": "mobile_390/freshness_expanded.jpg",
+      "sha256": "71c2bbd789f5d2ee8875f97ca39eeea1bf75aefd5d7a5f4f259d1474d1e210c4"
+    },
+    {
+      "path": "mobile_390/loading.jpg",
+      "sha256": "3ebd8c2d509bc392ee31efbcb8e4784e1d25f018fa8c08437db2476d61136218"
+    },
+    {
+      "path": "mobile_390/success.jpg",
+      "sha256": "a57779b113babf7ecb4dba44e225cf2d7072c924003291ee8d650c68383ee75b"
+    },
+    {
+      "path": "mobile_390/save_dialog.jpg",
+      "sha256": "0217923d6714693432ba3c58d297cf010bd98a7ee2000d58016325cdc3f3c4d5"
+    },
+    {
+      "path": "mobile_390/table_success.jpg",
+      "sha256": "455eaf51d377aeb3f1fa10f4ecefcc24de032b17b6d728364656ffc0dab1812b"
+    },
+    {
+      "path": "mobile_390/zero_result.jpg",
+      "sha256": "d1216c117a30abfd933db2f1d5cfeef354358a8e92bf70fbdc809d3a8cd38ccd"
+    },
+    {
+      "path": "mobile_390/no_result.jpg",
+      "sha256": "f076c50fb102f7e91a0894350fb2eae831f12453d8f277e2ff0dbfd31ffaca81"
+    },
+    {
+      "path": "mobile_390/backend_error.jpg",
+      "sha256": "f4660ca15311572463de9e9eb7e98980cd5b7f5fee837634e3f78996804e9a08"
+    },
+    {
+      "path": "mobile_390/transport_error.jpg",
+      "sha256": "6e06ab5bc6e293d1707b05d100a31abc1dc8c2dacb5f55da261e7f1c11edb514"
+    },
+    {
+      "path": "mobile_390/visual_qa_idle.jpg",
+      "sha256": "0107367ec5e874869396c5f8595ec428b140c3f270c11dec8e19b7ee0f57fee9"
+    }
+  ]
+}

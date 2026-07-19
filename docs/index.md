@@ -82,6 +82,7 @@ Curated audit snapshots preserve bounded historical evidence. They do not
 replace current-state references, release decisions, or repeatable runbooks.
 
 - [`audits/2026-07-15-browser-release-review/README.md`](audits/2026-07-15-browser-release-review/README.md) - retained desktop/mobile browser release review; execution complete, acceptance blocked, human review pending
+- [`audits/2026-07-19-browser-release-review/README.md`](audits/2026-07-19-browser-release-review/README.md) - exact clean-current-main D-11 browser package; machine pass and explicit owner UI approval, with final Queue D acceptance still separate
 
 ## Documentation Rules
 
