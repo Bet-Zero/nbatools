@@ -11,6 +11,8 @@ from uuid import uuid4
 REQUEST_ID_HEADER = "X-Request-ID"
 PUBLIC_INTERNAL_ERROR_CODE = "internal_error"
 PUBLIC_INTERNAL_ERROR_DETAIL = "The request could not be completed. Try again later."
+PUBLIC_METHOD_NOT_ALLOWED_CODE = "method_not_allowed"
+PUBLIC_METHOD_NOT_ALLOWED_DETAIL = "The requested method is not allowed for this endpoint."
 
 _SAFE_LABEL = re.compile(r"^[a-zA-Z0-9_./{}:-]{1,120}$")
 _LOGGER = logging.getLogger("nbatools.public_errors")

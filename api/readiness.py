@@ -9,6 +9,8 @@ from nbatools.vercel_http import JsonHandler
 class handler(JsonHandler):
     """Return strict data and release readiness."""
 
+    allowed_method = "GET"
+
     def do_GET(self) -> None:
         try:
             status, payload = readiness_response()

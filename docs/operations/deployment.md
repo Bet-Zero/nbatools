@@ -74,12 +74,12 @@ not authorize current collection. If feedback is promoted later, deployed
 storage stays disabled until a dedicated feedback credential tuple is
 configured; no canonical-data credential fallback is accepted.
 
-Set `NBATOOLS_ADMIN_FEEDBACK_ENABLED=true` only when the backend admin feedback
-review endpoints should be available. In deployed preview or production
-environments, also set `NBATOOLS_ADMIN_TOKEN`; requests to
-`/api/admin/feedback/*` must include that value in
-`X-NBATools-Admin-Token`. If the endpoints are disabled, they return a disabled
-`404` response. The token gates API access only; the frontend never receives R2
+`NBATOOLS_ADMIN_FEEDBACK_ENABLED` and `NBATOOLS_ADMIN_TOKEN` apply only to the
+local FastAPI operator surface. They must not be added to Vercel: the deployed
+package has no `/api/admin/feedback/*` functions or rewrites. When the local
+endpoints are enabled, requests must include the token in
+`X-NBATools-Admin-Token`; otherwise they return a disabled `404` response. The
+token gates local API access only and the frontend never receives R2
 credentials.
 
 `/review`, `/visual-qa`, and `/api/dev/fixtures` are not deployed surfaces.

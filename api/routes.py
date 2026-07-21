@@ -9,8 +9,14 @@ from nbatools.vercel_http import JsonHandler
 class handler(JsonHandler):
     """Return supported structured routes."""
 
+    allowed_method = "GET"
+
     def do_GET(self) -> None:
-        status, payload = routes_response()
+        try:
+            status, payload = routes_response()
+        except Exception as exc:
+            self.send_unexpected_error(exc, endpoint="/routes")
+            return
         self.send_json(payload, status=status)
 
     def do_POST(self) -> None:

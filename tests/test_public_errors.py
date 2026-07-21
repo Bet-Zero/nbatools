@@ -80,13 +80,18 @@ def test_vercel_json_errors_include_matching_request_id_header() -> None:
 def test_vercel_method_rejections_include_request_id_header() -> None:
     handler = object.__new__(JsonHandler)
     handler._nbatools_request_id = "req_test"
+    handler._nbatools_request_started_at = 0.0
+    handler.command = "GET"
+    handler.path = "/query"
     handler.send_response = Mock()
     handler.send_header = Mock()
     handler.end_headers = Mock()
+    handler.wfile = BytesIO()
 
     handler.method_not_allowed("POST, OPTIONS")
 
     handler.send_header.assert_any_call(REQUEST_ID_HEADER, "req_test")
+    assert json.loads(handler.wfile.getvalue())["error"] == "method_not_allowed"
 
 
 @pytest.mark.parametrize(
@@ -95,8 +100,13 @@ def test_vercel_method_rejections_include_request_id_header() -> None:
         ("api.query", "query_response", "do_POST", 500),
         ("api.structured_query", "structured_query_response", "do_POST", 500),
         ("api.query_feedback", "query_feedback_response", "do_POST", 500),
+        ("api.health", "health_response", "do_GET", 500),
+        ("api.routes", "routes_response", "do_GET", 500),
         ("api.freshness", "freshness_response", "do_GET", 500),
         ("api.readiness", "readiness_response", "do_GET", 503),
+        ("api.index", "ui_response", "do_GET", 500),
+        ("api.assets", "ui_asset_response", "do_GET", 500),
+        ("api.ui_fallback_asset", "ui_fallback_asset_response", "do_GET", 500),
     ],
 )
 def test_vercel_handlers_never_return_raw_unexpected_exception_text(
@@ -109,6 +119,7 @@ def test_vercel_handlers_never_return_raw_unexpected_exception_text(
     module = importlib.import_module(module_name)
     handler = object.__new__(module.handler)
     handler._nbatools_request_id = "req_test"
+    handler.path = "/assets/test.js"
     handler.headers = {}
     handler.read_json_body = lambda _path: {"query": "test", "route": "season_leaders"}
     handler.client_identifier = lambda: "test-client"
@@ -150,6 +161,25 @@ def test_fastapi_unexpected_error_is_redacted_and_correlated(
     event = json.loads(caplog.records[-1].message)
     assert event["endpoint"] == "/freshness"
     assert event["request_id"] == payload["request_id"]
+
+
+def test_fastapi_readiness_exception_fails_closed_at_503(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    client = TestClient(app, raise_server_exceptions=False)
+    caplog.set_level(logging.ERROR, logger="nbatools.public_errors")
+
+    with patch(
+        "nbatools.api.build_readiness_info",
+        side_effect=RuntimeError(SECRET_EXCEPTION),
+    ):
+        response = client.get("/readiness")
+
+    assert response.status_code == 503
+    assert response.json()["error"] == PUBLIC_INTERNAL_ERROR_CODE
+    assert response.headers[REQUEST_ID_HEADER] == response.json()["request_id"]
+    assert SECRET_EXCEPTION not in response.text
+    assert SECRET_EXCEPTION not in caplog.text
 
 
 def test_fastapi_success_response_has_request_id_header() -> None:

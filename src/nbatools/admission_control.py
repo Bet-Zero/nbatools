@@ -23,6 +23,7 @@ from http import HTTPStatus
 from typing import Any, TypeVar
 
 from nbatools.commands._seasons import LATEST_REGULAR_SEASON, season_to_int
+from nbatools.public_errors import REQUEST_ID_HEADER, new_request_id
 
 NATURAL_QUERY_BODY_MAX_BYTES = 4 * 1024
 STRUCTURED_QUERY_BODY_MAX_BYTES = 8 * 1024
@@ -326,6 +327,7 @@ class RequestBodyBudgetMiddleware:
             return
 
         limit = BODY_LIMITS[path]
+        request_id = _scope_request_id(scope)
         content_length = _content_length(scope)
         if content_length is not None and content_length > limit:
             await _send_asgi_rejection(
@@ -335,6 +337,7 @@ class RequestBodyBudgetMiddleware:
                     "payload_too_large",
                     f"Request body exceeds the {limit}-byte limit for {path}.",
                 ),
+                request_id=request_id,
             )
             return
 
@@ -354,16 +357,26 @@ class RequestBodyBudgetMiddleware:
                         "payload_too_large",
                         f"Request body exceeds the {limit}-byte limit for {path}.",
                     ),
+                    request_id=request_id,
                 )
                 return
 
         try:
             parse_and_validate_json_body(bytes(body), path)
         except AdmissionRejected as exc:
-            await _send_asgi_rejection(send, exc)
+            await _send_asgi_rejection(send, exc, request_id=request_id)
             return
-        except ValueError:
-            pass  # Preserve each transport's existing malformed-JSON envelope.
+        except ValueError as exc:
+            await _send_asgi_rejection(
+                send,
+                AdmissionRejected(
+                    HTTPStatus.UNPROCESSABLE_ENTITY,
+                    "validation_error",
+                    str(exc),
+                ),
+                request_id=request_id,
+            )
+            return
 
         sent = False
 
@@ -428,11 +441,28 @@ def _content_length(scope: Mapping[str, Any]) -> int | None:
     return None
 
 
-async def _send_asgi_rejection(send: Any, rejection: AdmissionRejected) -> None:
-    body = json.dumps(rejection.payload(), separators=(",", ":")).encode("utf-8")
+def _scope_request_id(scope: dict[str, Any]) -> str:
+    state = scope.setdefault("state", {})
+    request_id = state.get("request_id")
+    if not isinstance(request_id, str) or not request_id:
+        request_id = new_request_id()
+        state["request_id"] = request_id
+    return request_id
+
+
+async def _send_asgi_rejection(
+    send: Any,
+    rejection: AdmissionRejected,
+    *,
+    request_id: str,
+) -> None:
+    payload = rejection.payload()
+    payload["request_id"] = request_id
+    body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
     headers = [
         (b"content-type", b"application/json"),
         (b"content-length", str(len(body)).encode("ascii")),
+        (REQUEST_ID_HEADER.lower().encode("ascii"), request_id.encode("ascii")),
     ]
     headers.extend(
         (key.lower().encode("ascii"), value.encode("ascii"))

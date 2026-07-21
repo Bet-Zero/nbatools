@@ -11,9 +11,15 @@ from nbatools.vercel_http import JsonHandler
 class handler(JsonHandler):
     """Serve Vite-built UI assets from the generated dist bundle."""
 
+    allowed_method = "GET"
+
     def do_GET(self) -> None:
-        asset_path = _asset_path_from_request(self.path)
-        status, content, content_type = ui_asset_response(asset_path)
+        try:
+            asset_path = _asset_path_from_request(self.path)
+            status, content, content_type = ui_asset_response(asset_path)
+        except Exception as exc:
+            self.send_unexpected_error(exc, endpoint="/assets/{path}")
+            return
         self.send_bytes(content, content_type=content_type, status=status)
 
     def do_POST(self) -> None:

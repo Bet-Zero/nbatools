@@ -9,8 +9,14 @@ from nbatools.vercel_http import JsonHandler
 class handler(JsonHandler):
     """Serve the local fallback UI shell in Vercel preview."""
 
+    allowed_method = "GET"
+
     def do_GET(self) -> None:
-        status, content, content_type = ui_response()
+        try:
+            status, content, content_type = ui_response()
+        except Exception as exc:
+            self.send_unexpected_error(exc, endpoint="/")
+            return
         self.send_text(content, content_type=content_type, status=status)
 
     def do_POST(self) -> None:

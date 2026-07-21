@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "public_routes": [
+    { "path": "/health", "method": "GET", "body_max_bytes": null },
+    { "path": "/freshness", "method": "GET", "body_max_bytes": null },
+    { "path": "/readiness", "method": "GET", "body_max_bytes": null },
+    { "path": "/routes", "method": "GET", "body_max_bytes": null },
+    { "path": "/query-feedback", "method": "POST", "body_max_bytes": 8192 },
+    { "path": "/structured-query", "method": "POST", "body_max_bytes": 8192 },
+    { "path": "/query", "method": "POST", "body_max_bytes": 4096 }
+  ],
+  "cors": {
+    "allow_origin": "*",
+    "required_methods": ["GET", "POST", "OPTIONS"],
+    "required_request_headers": [
+      "Content-Type",
+      "X-NBATools-Source-Page",
+      "X-NBATools-Idempotency-Key"
+    ],
+    "required_exposed_headers": ["X-Request-ID"]
+  },
+  "errors": {
+    "method_not_allowed": {
+      "status": 405,
+      "code": "method_not_allowed",
+      "content_type": "application/json"
+    },
+    "validation_error": {
+      "status": 422,
+      "code": "validation_error",
+      "content_type": "application/json"
+    },
+    "unexpected_error": {
+      "status": 500,
+      "code": "internal_error",
+      "content_type": "application/json"
+    },
+    "readiness_unavailable": {
+      "status": 503,
+      "code": "internal_error",
+      "content_type": "application/json"
+    }
+  },
+  "intentional_differences": {
+    "fastapi_options_status": 200,
+    "vercel_options_status": 204,
+    "fastapi_local_only_routes": [
+      "/review",
+      "/visual-qa",
+      "/admin/feedback",
+      "/api/dev/fixtures",
+      "/api/admin/feedback/*"
+    ],
+    "production_absent_routes": [
+      "/visual-qa",
+      "/review",
+      "/admin/feedback",
+      "/api/dev/fixtures",
+      "/api/admin/feedback/*"
+    ],
+    "fastapi_local_cors_extensions": {
+      "methods": ["PUT"],
+      "request_headers": ["X-NBATools-Admin-Token"]
+    }
+  }
+}

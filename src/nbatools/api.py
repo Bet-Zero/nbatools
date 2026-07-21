@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 import time
+from http import HTTPStatus
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -21,6 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from nbatools import __version__, api_ui
 from nbatools.admission_control import (
@@ -45,6 +47,8 @@ from nbatools.operational_observability import (
 )
 from nbatools.public_errors import (
     PUBLIC_INTERNAL_ERROR_CODE,
+    PUBLIC_METHOD_NOT_ALLOWED_CODE,
+    PUBLIC_METHOD_NOT_ALLOWED_DETAIL,
     REQUEST_ID_HEADER,
     log_public_error,
     new_request_id,
@@ -92,15 +96,21 @@ app = FastAPI(
     description="Local-first NBA analytics API — thin layer over the nbatools query service.",
 )
 
-# Allow local dev clients (file://, localhost variants) to call the API.
+# Body budgets sit inside CORS so even early admission rejections retain the
+# public cross-origin contract. Starlette applies later-added middleware first.
+app.add_middleware(RequestBodyBudgetMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # local-only; no auth, no deployment
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+    allow_headers=[
+        "Content-Type",
+        "X-NBATools-Source-Page",
+        "X-NBATools-Idempotency-Key",
+        "X-NBATools-Admin-Token",
+    ],
     expose_headers=[REQUEST_ID_HEADER],
 )
-app.add_middleware(RequestBodyBudgetMiddleware)
 
 
 @app.middleware("http")
@@ -109,18 +119,20 @@ async def request_correlation(request: Request, call_next: Any) -> Response:
     request_id = new_request_id()
     request.state.request_id = request_id
     started_at = time.monotonic()
+    request.state.request_started_at = started_at
     response = await call_next(request)
     response.headers[REQUEST_ID_HEADER] = request_id
     route = request.scope.get("route")
-    endpoint = normalize_endpoint(getattr(route, "path", "unknown"))
-    log_request_complete(
-        request_id=request_id,
-        endpoint=endpoint,
-        method=request.method,
-        status=response.status_code,
-        duration_ms=(time.monotonic() - started_at) * 1000,
-        outcome=getattr(request.state, "operational_outcome", None),
-    )
+    endpoint = normalize_endpoint(getattr(route, "path", request.url.path))
+    if not getattr(request.state, "completion_logged", False):
+        log_request_complete(
+            request_id=request_id,
+            endpoint=endpoint,
+            method=request.method,
+            status=response.status_code,
+            duration_ms=(time.monotonic() - started_at) * 1000,
+            outcome=getattr(request.state, "operational_outcome", None),
+        )
     return response
 
 
@@ -157,30 +169,99 @@ class ErrorResponse(BaseModel):
 
 @app.exception_handler(RequestValidationError)
 async def request_validation_error(
-    _request: Request,
+    request: Request,
     exc: RequestValidationError,
 ) -> JSONResponse:
     """Keep FastAPI request failures aligned with the Vercel envelope."""
-    return JSONResponse(status_code=422, content=validation_error_payload(exc))
+    request_id = getattr(request.state, "request_id", None) or new_request_id()
+    payload = validation_error_payload(exc)
+    payload["request_id"] = request_id
+    return JSONResponse(
+        status_code=422,
+        content=payload,
+        headers={REQUEST_ID_HEADER: request_id},
+    )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def public_http_error(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    """Keep method failures JSON and preserve ordinary framework errors."""
+    if exc.status_code != HTTPStatus.METHOD_NOT_ALLOWED:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+            headers=exc.headers,
+        )
+    request_id = getattr(request.state, "request_id", None) or new_request_id()
+    headers = dict(exc.headers or {})
+    allowed = [method.strip() for method in headers.get("Allow", "").split(",") if method.strip()]
+    if "OPTIONS" not in allowed:
+        allowed.append("OPTIONS")
+    headers["Allow"] = ", ".join(allowed)
+    headers[REQUEST_ID_HEADER] = request_id
+    return JSONResponse(
+        status_code=HTTPStatus.METHOD_NOT_ALLOWED,
+        content=public_error_payload(
+            request_id,
+            error=PUBLIC_METHOD_NOT_ALLOWED_CODE,
+            detail=PUBLIC_METHOD_NOT_ALLOWED_DETAIL,
+        ),
+        headers=headers,
+    )
 
 
 @app.exception_handler(Exception)
 async def unexpected_request_error(request: Request, exc: Exception) -> JSONResponse:
     """Return a stable envelope without exposing internal exception text."""
+    return _unexpected_response(
+        request,
+        exc,
+        endpoint=None,
+        status=500,
+        log_completion=True,
+    )
+
+
+def _unexpected_response(
+    request: Request,
+    exc: Exception,
+    *,
+    endpoint: str | None,
+    status: int,
+    log_completion: bool = False,
+) -> JSONResponse:
+    """Build one safe unexpected-error response with an explicit endpoint/status."""
     request_id = getattr(request.state, "request_id", None) or new_request_id()
     route = request.scope.get("route")
-    endpoint = getattr(route, "path", "unknown")
+    normalized_endpoint = endpoint or getattr(route, "path", "unknown")
     log_public_error(
         request_id=request_id,
-        endpoint=endpoint,
-        status=500,
+        endpoint=normalized_endpoint,
+        status=status,
         error=PUBLIC_INTERNAL_ERROR_CODE,
         exc=exc,
     )
+    if log_completion:
+        started_at = getattr(request.state, "request_started_at", None)
+        duration_ms = (
+            (time.monotonic() - started_at) * 1000 if isinstance(started_at, int | float) else 0.0
+        )
+        log_request_complete(
+            request_id=request_id,
+            endpoint=normalized_endpoint,
+            method=request.method,
+            status=status,
+            duration_ms=duration_ms,
+        )
+        request.state.completion_logged = True
     return JSONResponse(
-        status_code=500,
+        status_code=status,
         content=public_error_payload(request_id),
-        headers={REQUEST_ID_HEADER: request_id},
+        headers={
+            REQUEST_ID_HEADER: request_id,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": REQUEST_ID_HEADER,
+        },
     )
 
 
@@ -255,8 +336,22 @@ def _query_result_to_response(qr: QueryResult) -> QueryResponse:
     return QueryResponse(**query_result_to_payload(qr))
 
 
-def _admission_response(exc: AdmissionRejected) -> JSONResponse:
-    return JSONResponse(status_code=exc.status, content=exc.payload(), headers=exc.headers())
+def _correlated_error_payload(request: Request, payload: dict[str, Any]) -> dict[str, Any]:
+    response_payload = dict(payload)
+    if response_payload.get("ok") is False:
+        response_payload.setdefault(
+            "request_id",
+            getattr(request.state, "request_id", None) or new_request_id(),
+        )
+    return response_payload
+
+
+def _admission_response(request: Request, exc: AdmissionRejected) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status,
+        content=_correlated_error_payload(request, exc.payload()),
+        headers=exc.headers(),
+    )
 
 
 def _client_id(request: Request) -> str:
@@ -411,7 +506,10 @@ def freshness(request: Request) -> FreshnessResponse:
 @app.get("/readiness", response_model=ReadinessResponse)
 def readiness(request: Request) -> JSONResponse:
     """Return release readiness; non-ready states use HTTP 503."""
-    info = build_readiness_info()
+    try:
+        info = build_readiness_info()
+    except Exception as exc:
+        return _unexpected_response(request, exc, endpoint="/readiness", status=503)
     payload = info.to_dict()
     _set_operational_outcome(request, "/readiness", payload)
     return JSONResponse(status_code=200 if info.ready else 503, content=payload)
@@ -447,7 +545,7 @@ def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse 
             else execute_natural_query(body.query)
         )
     except AdmissionRejected as exc:
-        return _admission_response(exc)
+        return _admission_response(request, exc)
     payload = query_result_to_payload(qr)
     _set_operational_outcome(request, "/query", payload)
     maybe_log_query_diagnostic(
@@ -471,7 +569,7 @@ def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
             idempotency_key=request.headers.get("X-NBATools-Idempotency-Key"),
         )
     except AdmissionRejected as exc:
-        return _admission_response(exc)
+        return _admission_response(request, exc)
     except Exception:
         if reservation is not None:
             reservation.rollback()
@@ -482,7 +580,10 @@ def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
         else:
             reservation.rollback()
     _set_operational_outcome(request, "/query-feedback", payload)
-    return JSONResponse(status_code=status, content=payload)
+    return JSONResponse(
+        status_code=status,
+        content=_correlated_error_payload(request, payload),
+    )
 
 
 @app.get("/api/admin/feedback/groups")
@@ -594,7 +695,7 @@ def structured_query(
             else execute_structured_query(body.route, **body.kwargs)
         )
     except AdmissionRejected as exc:
-        return _admission_response(exc)
+        return _admission_response(request, exc)
     response = _query_result_to_response(qr)
     _set_operational_outcome(request, "/structured-query", response.model_dump())
     return response
