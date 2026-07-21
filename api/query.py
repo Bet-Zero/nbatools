@@ -28,6 +28,6 @@ class handler(JsonHandler):
             self.send_api_error(422, "validation_error", str(exc))
             return
         except Exception as exc:
-            self.send_api_error(500, "query_error", str(exc))
+            self.send_unexpected_error(exc, endpoint="/query")
             return
         self.send_json(payload, status=status)

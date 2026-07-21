@@ -38,6 +38,13 @@ from nbatools.api_contracts import (
 from nbatools.api_handlers import dev_fixtures_payload, query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
 from nbatools.internal_routes import visual_qa_route_available
+from nbatools.public_errors import (
+    PUBLIC_INTERNAL_ERROR_CODE,
+    REQUEST_ID_HEADER,
+    log_public_error,
+    new_request_id,
+    public_error_payload,
+)
 from nbatools.query_feedback import (
     elapsed_ms_since,
     handle_feedback_submission,
@@ -86,8 +93,20 @@ app.add_middleware(
     allow_origins=["*"],  # local-only; no auth, no deployment
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=[REQUEST_ID_HEADER],
 )
 app.add_middleware(RequestBodyBudgetMiddleware)
+
+
+@app.middleware("http")
+async def request_correlation(request: Request, call_next: Any) -> Response:
+    """Give every HTTP response an opaque server-generated correlation ID."""
+    request_id = new_request_id()
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers[REQUEST_ID_HEADER] = request_id
+    return response
+
 
 # ---------------------------------------------------------------------------
 # Request / response models
@@ -117,6 +136,7 @@ class ErrorResponse(BaseModel):
     ok: bool = False
     error: str
     detail: str | None = None
+    request_id: str | None = None
 
 
 @app.exception_handler(RequestValidationError)
@@ -126,6 +146,26 @@ async def request_validation_error(
 ) -> JSONResponse:
     """Keep FastAPI request failures aligned with the Vercel envelope."""
     return JSONResponse(status_code=422, content=validation_error_payload(exc))
+
+
+@app.exception_handler(Exception)
+async def unexpected_request_error(request: Request, exc: Exception) -> JSONResponse:
+    """Return a stable envelope without exposing internal exception text."""
+    request_id = getattr(request.state, "request_id", None) or new_request_id()
+    route = request.scope.get("route")
+    endpoint = getattr(route, "path", "unknown")
+    log_public_error(
+        request_id=request_id,
+        endpoint=endpoint,
+        status=500,
+        error=PUBLIC_INTERNAL_ERROR_CODE,
+        exc=exc,
+    )
+    return JSONResponse(
+        status_code=500,
+        content=public_error_payload(request_id),
+        headers={REQUEST_ID_HEADER: request_id},
+    )
 
 
 class HealthResponse(BaseModel):
