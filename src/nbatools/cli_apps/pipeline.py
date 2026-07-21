@@ -4,6 +4,7 @@ Exposes deterministic refresh, rebuild, backfill, status, and auto-refresh
 commands that orchestrate the full pull → validate → build → manifest pipeline.
 """
 
+import json
 from enum import StrEnum
 from pathlib import Path
 
@@ -27,6 +28,7 @@ from nbatools.commands.pipeline.orchestrator import (
     rebuild_season as rebuild_season_fn,
 )
 from nbatools.commands.pipeline.sync_r2 import R2SyncError, SyncProgress, run_sync_r2
+from nbatools.recovery_drill import RecoveryDrillError, run_safe_recovery_drill
 
 app = typer.Typer()
 
@@ -328,6 +330,27 @@ def rollback_generation(
         print(f"Generation rollback failed: {exc}")
         raise typer.Exit(code=1)
     _print_publication_result(result)
+
+
+@app.command("recovery-drill")
+def recovery_drill(
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        help="Optional JSON receipt path. The drill itself uses temporary data only.",
+    ),
+):
+    """Run the network-free local and in-memory R2 recovery drill."""
+    try:
+        receipt = run_safe_recovery_drill()
+    except RecoveryDrillError as exc:
+        print(f"Recovery drill failed: {exc}")
+        raise typer.Exit(code=1)
+    rendered = json.dumps(receipt.to_dict(), indent=2, sort_keys=True)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered + "\n")
+    print(rendered)
 
 
 @app.command("auto-refresh")
