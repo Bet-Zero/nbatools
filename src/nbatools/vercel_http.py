@@ -5,9 +5,15 @@ from __future__ import annotations
 import json
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
+from time import perf_counter
 from typing import Any
 
 from nbatools.admission_control import parse_and_validate_json_body
+from nbatools.operational_observability import (
+    extract_request_outcome,
+    log_request_complete,
+    normalize_endpoint,
+)
 from nbatools.public_errors import (
     PUBLIC_INTERNAL_ERROR_CODE,
     PUBLIC_INTERNAL_ERROR_DETAIL,
@@ -21,6 +27,10 @@ class JsonHandler(BaseHTTPRequestHandler):
     """Base handler with JSON/text response helpers and CORS headers."""
 
     server_version = "nbatools-vercel"
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self._nbatools_request_started_at = perf_counter()
+        super().__init__(*args, **kwargs)
 
     @property
     def request_id(self) -> str:
@@ -56,6 +66,18 @@ class JsonHandler(BaseHTTPRequestHandler):
             self.send_header(key, value)
         self.end_headers()
         self.wfile.write(body)
+        endpoint = normalize_endpoint(getattr(self, "path", ""))
+        log_request_complete(
+            request_id=self.request_id,
+            endpoint=endpoint,
+            method=getattr(self, "command", ""),
+            status=status,
+            duration_ms=(
+                perf_counter() - getattr(self, "_nbatools_request_started_at", perf_counter())
+            )
+            * 1000,
+            outcome=extract_request_outcome(endpoint, response_payload),
+        )
 
     def send_text(
         self,

@@ -38,6 +38,11 @@ from nbatools.api_contracts import (
 from nbatools.api_handlers import dev_fixtures_payload, query_result_to_payload
 from nbatools.commands.freshness import build_freshness_info
 from nbatools.internal_routes import visual_qa_route_available
+from nbatools.operational_observability import (
+    extract_request_outcome,
+    log_request_complete,
+    normalize_endpoint,
+)
 from nbatools.public_errors import (
     PUBLIC_INTERNAL_ERROR_CODE,
     REQUEST_ID_HEADER,
@@ -103,8 +108,19 @@ async def request_correlation(request: Request, call_next: Any) -> Response:
     """Give every HTTP response an opaque server-generated correlation ID."""
     request_id = new_request_id()
     request.state.request_id = request_id
+    started_at = time.monotonic()
     response = await call_next(request)
     response.headers[REQUEST_ID_HEADER] = request_id
+    route = request.scope.get("route")
+    endpoint = normalize_endpoint(getattr(route, "path", "unknown"))
+    log_request_complete(
+        request_id=request_id,
+        endpoint=endpoint,
+        method=request.method,
+        status=response.status_code,
+        duration_ms=(time.monotonic() - started_at) * 1000,
+        outcome=getattr(request.state, "operational_outcome", None),
+    )
     return response
 
 
@@ -248,6 +264,14 @@ def _client_id(request: Request) -> str:
     return client_identifier(request.headers, fallback)
 
 
+def _set_operational_outcome(
+    request: Request,
+    endpoint: str,
+    payload: dict[str, Any],
+) -> None:
+    request.state.operational_outcome = extract_request_outcome(endpoint, payload)
+
+
 def _load_ui_html() -> str:
     """Return bundled UI HTML when present, else a minimal fallback shell."""
     return api_ui.load_ui_html(_UI_INDEX)
@@ -363,13 +387,15 @@ if _UI_DIR.is_dir():
 
 
 @app.get("/health", response_model=HealthResponse)
-def health() -> HealthResponse:
+def health(request: Request) -> HealthResponse:
     """Lightweight health / status check."""
-    return HealthResponse(status="ok", version=__version__)
+    response = HealthResponse(status="ok", version=__version__)
+    _set_operational_outcome(request, "/health", response.model_dump())
+    return response
 
 
 @app.get("/freshness", response_model=FreshnessResponse)
-def freshness() -> FreshnessResponse:
+def freshness(request: Request) -> FreshnessResponse:
     """Return structured data freshness status.
 
     Reports current_through, manifest state, per-season freshness
@@ -377,14 +403,18 @@ def freshness() -> FreshnessResponse:
     refresh outcome.
     """
     info = build_freshness_info()
-    return FreshnessResponse(**info.to_dict())
+    response = FreshnessResponse(**info.to_dict())
+    _set_operational_outcome(request, "/freshness", response.model_dump())
+    return response
 
 
 @app.get("/readiness", response_model=ReadinessResponse)
-def readiness() -> JSONResponse:
+def readiness(request: Request) -> JSONResponse:
     """Return release readiness; non-ready states use HTTP 503."""
     info = build_readiness_info()
-    return JSONResponse(status_code=200 if info.ready else 503, content=info.to_dict())
+    payload = info.to_dict()
+    _set_operational_outcome(request, "/readiness", payload)
+    return JSONResponse(status_code=200 if info.ready else 503, content=payload)
 
 
 @app.get("/routes", response_model=RoutesResponse)
@@ -419,6 +449,7 @@ def natural_query(body: NaturalQueryRequest, request: Request) -> QueryResponse 
     except AdmissionRejected as exc:
         return _admission_response(exc)
     payload = query_result_to_payload(qr)
+    _set_operational_outcome(request, "/query", payload)
     maybe_log_query_diagnostic(
         payload,
         elapsed_ms=elapsed_ms_since(start_time),
@@ -450,6 +481,7 @@ def query_feedback(body: dict[str, Any], request: Request) -> JSONResponse:
             reservation.commit()
         else:
             reservation.rollback()
+    _set_operational_outcome(request, "/query-feedback", payload)
     return JSONResponse(status_code=status, content=payload)
 
 
@@ -563,4 +595,6 @@ def structured_query(
         )
     except AdmissionRejected as exc:
         return _admission_response(exc)
-    return _query_result_to_response(qr)
+    response = _query_result_to_response(qr)
+    _set_operational_outcome(request, "/structured-query", response.model_dump())
+    return response
