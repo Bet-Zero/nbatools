@@ -18,6 +18,7 @@ INTERESTING_HEADERS = (
     "content-length",
     "x-vercel-cache",
     "x-vercel-id",
+    "x-request-id",
 )
 
 

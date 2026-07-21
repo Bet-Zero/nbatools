@@ -43,7 +43,11 @@ def test_run_deployment_smoke_reports_successful_cases() -> None:
         ),
         ("GET", "https://deploy.example/health"): (
             200,
-            {"content-type": "application/json", "x-vercel-cache": "MISS"},
+            {
+                "content-type": "application/json",
+                "x-vercel-cache": "MISS",
+                "x-request-id": "req_health",
+            },
             b'{"status":"ok","version":"0.7.0"}',
         ),
         ("GET", "https://deploy.example/freshness"): (
@@ -129,6 +133,7 @@ def test_run_deployment_smoke_reports_successful_cases() -> None:
     assert report.failures == []
     assert report.case_count == 8
     assert report.cases[0].summary["title"] == "nbatools"
+    assert report.cases[1].headers["x-request-id"] == "req_health"
     assert report.cases[2].summary["season_count"] == 1
     assert report.cases[3].summary["blocker_count"] == 0
     assert report.cases[7].summary["opponent_conference"] == "East"
