@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "acceptanceId": "queue_d_final_acceptance_20260721",
+  "recordedAt": "2026-07-21T07:02:25Z",
+  "reviewer": {
+    "name": "John Matthew",
+    "role": "project owner"
+  },
+  "decision": "approve",
+  "approvalStatement": "APPROVE QUEUE D FINAL ACCEPTANCE",
+  "scope": {
+    "queue": "D",
+    "productBoundary": "current documented product boundary",
+    "acceptedItems": [
+      "D-01",
+      "D-02",
+      "D-03",
+      "D-04",
+      "D-05",
+      "D-06",
+      "D-07",
+      "D-08",
+      "D-09",
+      "D-10",
+      "D-11"
+    ],
+    "packageSourceCommit": "be140789055d3148e4460bd85ec0c72807f30987",
+    "packageSourceTreeClean": true,
+    "d11ApprovalPr": 277,
+    "finalMainCiRunId": "29676180893",
+    "preAcceptanceCombinedEvidence": "pre_acceptance_combined_evidence.json",
+    "preAcceptanceCombinedEvidenceSha256": "347b60bef8f4a94f33a5472ef8d363bc263ebb4ad1e7797074aba0d702aee1c9",
+    "deploymentSmoke": "deployment_smoke.json",
+    "deploymentSmokeSha256": "81d2c37b53cfbab07ffb5122b281efe37ae980b616f304e8de6445703e97f895",
+    "d11OwnerReviewSha256": "7e4b63b960a7241c45d9a54802d7f6d52900481e80c517405282ededd8ef537d",
+    "productionDeploymentId": "dpl_88b3q5ze53HGhUogifzSriYZXj81",
+    "productionDeploymentUrl": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app",
+    "immutableDataGeneration": "queue-d-production-0574735-20260716"
+  },
+  "acceptedMeaning": [
+    "D-01 through D-11 meet their Queue D requirements for the current documented product boundary.",
+    "Repository implementation is complete for Queue D.",
+    "Owner, external, and human gates are satisfied for the current Queue D boundary.",
+    "Actual Queue D acceptance is approved."
+  ],
+  "notApprovedByThisDecision": [
+    "activation of optional feedback persistence",
+    "future commercial use or a future Vercel plan/cost boundary",
+    "Queue E work beyond the already authorized E-05 remediation",
+    "branding, final domain, or custom-domain production cutover",
+    "broader product release readiness"
+  ]
+}

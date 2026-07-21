@@ -30,7 +30,7 @@ without rewriting or invalidating the generated evidence.
 | Blocking findings | 0 |
 | Serious/critical axe findings | 0 across 20 state/viewport scans |
 | Human D-11 UI review | `approved` |
-| Queue D final acceptance | pending a separate final owner decision |
+| Queue D final acceptance | approved separately on 2026-07-21 |
 
 The run loaded the summary player image at both viewports, rendered all ten
 representative table rows without document overflow, fulfilled all ten NBA
@@ -56,6 +56,12 @@ waive:
 - final Queue D acceptance; or
 - broader product-launch and release readiness outside Queue D.
 
+John Matthew later approved the separate final Queue D package on 2026-07-21.
+That decision is retained in the [Queue D final acceptance
+audit](../2026-07-21-queue-d-final-acceptance/README.md). The separation above
+remains important: the D-11 decision alone did not imply Queue D acceptance,
+and Queue D acceptance still does not imply broader release readiness.
+
 All 20 hashed browser images are retained with the machine receipt so the
 accessibility and state evidence remains reproducible. The four images reviewed
 for the owner decision are:
@@ -64,4 +70,3 @@ for the owner decision are:
 - [desktop table](desktop_1280/table_success.jpg)
 - [mobile summary](mobile_390/success.jpg)
 - [mobile table](mobile_390/table_success.jpg)
-

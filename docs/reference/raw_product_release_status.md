@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Snapshot: 2026-07-19.
+Snapshot: 2026-07-21.
 
 The current public-acceptance slice is machine-clean and its human product
 review is closed for the exact run recorded in the validation map. The broader
@@ -21,11 +21,12 @@ The generated artifacts linked from the validation map are evidence snapshots.
 They do not replace the durable workflow and support-boundary docs listed
 below.
 
-## Remaining Release Work
+## Queue D Acceptance And Remaining Release Work
 
-The D-11 rendered UI review is closed. Final Queue D acceptance remains a
-separate owner decision and must follow a green current-main CI run plus the
-combined Queue D evidence check.
+Queue D was accepted by John Matthew on 2026-07-21 for the current documented
+product boundary after final current-main CI and the 17-check combined evidence
+run passed. The exact decision and evidence binding are retained in the
+[Queue D final acceptance audit](../audits/2026-07-21-queue-d-final-acceptance/README.md).
 
 Production data publication, readiness/query smoke, internal-route isolation,
 and edge admission proof are complete. Manual feedback persistence is an
@@ -35,6 +36,7 @@ release requirements.
 
 The following broader product-launch work is outside Queue D:
 
+- a current full run of the 349-case Raw QA corpus
 - branding and final product name
 - final production domain
 - custom-domain production cutover
