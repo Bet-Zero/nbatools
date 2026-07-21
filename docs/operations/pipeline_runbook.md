@@ -73,6 +73,17 @@ failure, or pointer conflict leaves the last-good pointer unchanged.
 `pipeline sync-r2 --dry-run` may be used for read-only legacy-key diagnostics.
 Direct non-dry `sync-r2` is disabled and is not a publication path.
 
+Before an authorized live recovery, run the production-isolated recovery drill
+and retain its JSON receipt:
+
+```bash
+nbatools-cli pipeline recovery-drill --output <evidence-path>.json
+```
+
+The drill uses temporary local data and an in-memory R2 simulator only. See
+[`recovery.md`](recovery.md) for code rollback, restore, backup, credential-loss,
+incident-escalation, and live-evidence requirements.
+
 For the initial R2 migration, first publish the currently trusted last-good
 snapshot as a baseline generation. Only then stage and publish a changed
 candidate. Automated rollback to unmanifested legacy R2 keys is intentionally
