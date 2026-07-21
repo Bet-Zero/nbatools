@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "runId": "queue_d_final_be14078_20260719",
+  "checkedAt": "2026-07-19T06:29:44Z",
+  "sourceCommit": "be140789055d3148e4460bd85ec0c72807f30987",
+  "ciRunId": "29676180893",
+  "productionBaseUrl": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app",
+  "status": "pass",
+  "checkCount": 17,
+  "failureCount": 0,
+  "checks": [
+    {
+      "name": "git.branch",
+      "status": "pass",
+      "detail": "main"
+    },
+    {
+      "name": "git.current_main",
+      "status": "pass",
+      "detail": {
+        "head": "be140789055d3148e4460bd85ec0c72807f30987",
+        "origin": "be140789055d3148e4460bd85ec0c72807f30987"
+      }
+    },
+    {
+      "name": "git.protected_workspace_only",
+      "status": "pass",
+      "detail": [
+        "?? working/full-system-review-2026-07-11/"
+      ]
+    },
+    {
+      "name": "ci.current_main",
+      "status": "pass",
+      "detail": {
+        "headSha": "be140789055d3148e4460bd85ec0c72807f30987",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/Bet-Zero/nbatools/actions/runs/29676180893"
+      }
+    },
+    {
+      "name": "ci.required_jobs",
+      "status": "pass",
+      "detail": {
+        "jobs": {
+          "test-full (3.12)": "success",
+          "frontend": "success",
+          "docs-governance": "success",
+          "test-full (3.11)": "success",
+          "test-fast (3.13)": "success",
+          "test-fast (3.11)": "success",
+          "test-full (3.13)": "success",
+          "test-fast (3.12)": "success",
+          "lint": "success"
+        },
+        "errors": {}
+      }
+    },
+    {
+      "name": "d10.product_review_hash",
+      "status": "pass",
+      "detail": "e8fe2040cc4fb37879ba0513a6e53f77cdbd2e65ad521c1b0ff60a20d7183137"
+    },
+    {
+      "name": "d10.owner_receipt_hash",
+      "status": "pass",
+      "detail": "1114caec65aca9ac05b5f15b6c979fa4df62e5141a458a81495986782d493a33"
+    },
+    {
+      "name": "d10.machine_human_closure",
+      "status": "pass",
+      "detail": {
+        "cases": 134,
+        "review": "human_review_complete",
+        "closure": {
+          "state": "pass",
+          "errors": []
+        },
+        "failed": [],
+        "suspicious": []
+      }
+    },
+    {
+      "name": "d11.machine_receipt",
+      "status": "pass",
+      "detail": {
+        "receipt_sha256": "fea1fa2a59be1fb6d815e3a47c579bde670bca37d3a271b6bf7d7800c3d72e73",
+        "artifact_errors": []
+      }
+    },
+    {
+      "name": "d11.owner_approval",
+      "status": "pass",
+      "detail": {
+        "reviewer": {
+          "name": "John Matthew",
+          "role": "project owner"
+        },
+        "image_errors": []
+      }
+    },
+    {
+      "name": "production.deployment_smoke",
+      "status": "pass",
+      "detail": {
+        "base_url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app",
+        "checked_at": "2026-07-19T06:29:33Z",
+        "cases": 8,
+        "failures": [],
+        "readiness": {
+          "status": "ready",
+          "checked_at": "2026-07-19T06:29:17Z",
+          "ready": true,
+          "season_state": "offseason",
+          "active_generation": "queue-d-production-0574735-20260716",
+          "immutable_generation": true,
+          "blocker_count": 0
+        }
+      }
+    },
+    {
+      "name": "production.current_main_deployment",
+      "status": "pass",
+      "detail": {
+        "deployment_id": "dpl_88b3q5ze53HGhUogifzSriYZXj81",
+        "git_source": {
+          "ref": "main",
+          "repoId": 1206758648,
+          "sha": "be140789055d3148e4460bd85ec0c72807f30987",
+          "type": "github",
+          "prId": null
+        },
+        "ready_state": "READY",
+        "target": "production",
+        "plan": "hobby",
+        "function_count": 10
+      }
+    },
+    {
+      "name": "production.immutable_readiness",
+      "status": "pass",
+      "detail": {
+        "status": 200,
+        "payload": {
+          "ready": true,
+          "status": "ready",
+          "checked_at": "2026-07-19T06:29:41Z",
+          "season": "2025-26",
+          "season_state": "offseason",
+          "max_active_lag_hours": 24,
+          "active_generation": "queue-d-production-0574735-20260716",
+          "immutable_generation": true,
+          "release_exception_owner": "John Matthew, project owner",
+          "slices": [
+            {
+              "season": "2025-26",
+              "season_type": "Regular Season",
+              "trusted": true,
+              "validation_state": "passed",
+              "generation_id": "f49e2864076b4bdf8743a7a4da2e3962",
+              "current_through": "2026-04-12",
+              "expected_current_through": "2026-04-12",
+              "schedule_complete": true,
+              "postseason_complete": false,
+              "errors": []
+            },
+            {
+              "season": "2025-26",
+              "season_type": "Playoffs",
+              "trusted": true,
+              "validation_state": "passed",
+              "generation_id": "5cb10d4b44754ebd9300d99007e44179",
+              "current_through": "2026-06-13",
+              "expected_current_through": "2026-06-13",
+              "schedule_complete": true,
+              "postseason_complete": true,
+              "errors": []
+            }
+          ],
+          "blockers": [],
+          "exception": {
+            "applied": false,
+            "owner": "John Matthew, project owner",
+            "reason": null,
+            "created_at": null,
+            "expires_at": null,
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "production.internal_route_isolation",
+      "status": "pass",
+      "detail": {
+        "/review": 404,
+        "/visual-qa": 404,
+        "/api/dev/fixtures": 404
+      }
+    },
+    {
+      "name": "production.feedback_disabled",
+      "status": "pass",
+      "detail": {
+        "status": 200,
+        "payload": {
+          "ok": true,
+          "feedback_id": "qfb_46bba7cd1abc4d5f8156837b33a28f2e",
+          "submission_id": "46bba7cd-1abc-4d5f-8156-837b33a28f2e",
+          "stored": false,
+          "disabled": true,
+          "idempotent_replay": false
+        }
+      }
+    },
+    {
+      "name": "production.edge_rate_rule",
+      "status": "pass",
+      "detail": {
+        "rule_id": "rule_nbatools_public_query_rate_limit_c4XaxJ",
+        "missing": []
+      }
+    },
+    {
+      "name": "policy.feedback_deferred_boundary",
+      "status": "pass",
+      "detail": "disabled current boundary; activation prerequisites retained"
+    }
+  ],
+  "statuses": {
+    "repositoryImplementation": "complete",
+    "ownerExternalHumanGates": "complete_for_queue_d",
+    "queueDFinalAcceptance": "pending_owner_decision",
+    "broaderReleaseAcceptance": "not_claimed"
+  }
+}

@@ -195,6 +195,12 @@ receipt binds the explicit decision to the machine-receipt and image hashes.
 That closes D-11 human UI review only. It does not imply final Queue D or
 broader release acceptance.
 
+The project owner subsequently approved the separate final Queue D package on
+2026-07-21. The [Queue D final acceptance
+audit](../audits/2026-07-21-queue-d-final-acceptance/README.md) preserves that
+decision and its evidence binding. Broader release acceptance remains outside
+the D-11 and Queue D receipts.
+
 ## Text Snapshots And Render Review Outputs
 
 Use text snapshots or rendered-review notes when a reviewer needs compact

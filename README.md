@@ -199,10 +199,10 @@ Player summaries, comparisons, and splits also show sample-aware USG%, AST%, REB
 
 ## QA and release status
 
-Queue D repository and production behavior are implemented. Manual feedback
-persistence is deferred and disabled; final Queue D acceptance awaits a clean
-post-change desktop/mobile receipt, one owner UI-package decision, and the final
-combined evidence check.
+Queue D was owner-accepted on 2026-07-21 for the current documented product
+boundary after the clean desktop/mobile review and the final 17-check combined
+evidence run passed. Manual feedback persistence remains deferred and disabled.
+This Queue D decision does not claim broader product release readiness.
 
 Pointers:
 
@@ -212,6 +212,7 @@ Pointers:
 - Parser/routing growth guardrails: [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 - Feature promotion rules: [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md).
 - Deferred query-feedback review and activation runbook: [docs/operations/query_feedback_review.md](docs/operations/query_feedback_review.md).
+- Queue D final acceptance receipt: [docs/audits/2026-07-21-queue-d-final-acceptance/README.md](docs/audits/2026-07-21-queue-d-final-acceptance/README.md).
 - Docs index and category rules: [docs/index.md](docs/index.md).
 
 ### Current tested state

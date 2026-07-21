@@ -1,0 +1,209 @@
+{
+  "base_url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app",
+  "checked_at": "2026-07-19T06:29:33Z",
+  "ok": true,
+  "case_count": 8,
+  "failure_count": 0,
+  "failures": [],
+  "cases": [
+    {
+      "slug": "root",
+      "method": "GET",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 220.651,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "1100",
+        "x-vercel-cache": "HIT",
+        "x-vercel-id": "cle1::92l2x-1784442547344-990534c77fc1"
+      },
+      "summary": {
+        "title": "nbatools",
+        "fallback_shell_detected": false,
+        "contains_assets_reference": true
+      },
+      "error": null,
+      "body_preview": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\" />\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />\n    <link rel=\"preconnect\" href=\"https"
+    },
+    {
+      "slug": "health",
+      "method": "GET",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/health",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 131.208,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "33",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::t78gg-1784442547450-167476a8ad76"
+      },
+      "summary": {
+        "status": "ok",
+        "version": "0.7.0"
+      },
+      "error": null,
+      "body_preview": "{\"status\":\"ok\",\"version\":\"0.7.0\"}"
+    },
+    {
+      "slug": "freshness",
+      "method": "GET",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/freshness",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 9866.846,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "743",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::hsvwr-1784442547591-434539716c1d"
+      },
+      "summary": {
+        "status": "stale",
+        "current_through": "2026-06-13",
+        "checked_at": "2026-07-19T06:29:17",
+        "last_refresh_ok": true,
+        "season_count": 2
+      },
+      "error": null,
+      "body_preview": "{\"status\":\"stale\",\"current_through\":\"2026-06-13\",\"checked_at\":\"2026-07-19T06:29:17\",\"seasons\":[{\"season\":\"2025-26\",\"season_type\":\"Regular Season\",\"status\":\"stale\",\"current_through\":\"2026-04-12\",\"raw_complete\":true,\"processed_complete\":true,"
+    },
+    {
+      "slug": "readiness",
+      "method": "GET",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/readiness",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 2615.73,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "994",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::sms8r-1784442557453-e31661d665f2"
+      },
+      "summary": {
+        "status": "ready",
+        "checked_at": "2026-07-19T06:29:17Z",
+        "ready": true,
+        "season_state": "offseason",
+        "active_generation": "queue-d-production-0574735-20260716",
+        "immutable_generation": true,
+        "blocker_count": 0
+      },
+      "error": null,
+      "body_preview": "{\"ready\":true,\"status\":\"ready\",\"checked_at\":\"2026-07-19T06:29:17Z\",\"season\":\"2025-26\",\"season_state\":\"offseason\",\"max_active_lag_hours\":24,\"active_generation\":\"queue-d-production-0574735-20260716\",\"immutable_generation\":true,\"release_except"
+    },
+    {
+      "slug": "query_jokic_last_10",
+      "method": "POST",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/query",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 3633.247,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "8722",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::4ffk9-1784442560064-8f56332b7ac1"
+      },
+      "summary": {
+        "current_through": "2026-04-12",
+        "ok": true,
+        "route": "player_game_summary",
+        "result_status": "ok",
+        "confidence": 0.72
+      },
+      "error": null,
+      "body_preview": "{\"ok\":true,\"query\":\"Jokic last 10\",\"route\":\"player_game_summary\",\"result_status\":\"ok\",\"result_reason\":null,\"current_through\":\"2026-04-12\",\"confidence\":0.72,\"intent\":\"summary\",\"alternates\":[],\"notes\":[],\"caveats\":[],\"result\":{\"query_class\":\""
+    },
+    {
+      "slug": "query_top_10_scorers_2025_26",
+      "method": "POST",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/query",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 3993.156,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "3524",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::pl8m4-1784442563705-17638cd53258"
+      },
+      "summary": {
+        "current_through": "2026-04-12",
+        "ok": true,
+        "route": "season_leaders",
+        "result_status": "ok",
+        "confidence": 0.82
+      },
+      "error": null,
+      "body_preview": "{\"ok\":true,\"query\":\"top 10 scorers 2025-26\",\"route\":\"season_leaders\",\"result_status\":\"ok\",\"result_reason\":null,\"current_through\":\"2026-04-12\",\"confidence\":0.82,\"intent\":\"leaderboard\",\"alternates\":[],\"notes\":[],\"caveats\":[],\"result\":{\"query_"
+    },
+    {
+      "slug": "query_jokic_multi_filter",
+      "method": "POST",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/query",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 4670.074,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "17780",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::9mc5q-1784442567693-326f694b2112"
+      },
+      "summary": {
+        "current_through": "2026-04-12",
+        "ok": true,
+        "route": "player_game_summary",
+        "result_status": "ok",
+        "confidence": 1.0
+      },
+      "error": null,
+      "body_preview": "{\"ok\":true,\"query\":\"Jokic summary (over 25 points and over 10 rebounds) 2025-26\",\"route\":\"player_game_summary\",\"result_status\":\"ok\",\"result_reason\":null,\"current_through\":\"2026-04-12\",\"confidence\":1.0,\"intent\":\"summary\",\"alternates\":[],\"not"
+    },
+    {
+      "slug": "query_celtics_record_against_east_current",
+      "method": "POST",
+      "url": "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app/query",
+      "ok": true,
+      "status_code": 200,
+      "duration_ms": 3040.563,
+      "headers": {
+        "server": "Vercel",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "content-length": "2835",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "cle1::iad1::t78gg-1784442572369-4857c0e2254e"
+      },
+      "summary": {
+        "current_through": "2026-04-12",
+        "ok": true,
+        "route": "team_record",
+        "result_status": "ok",
+        "confidence": 0.9,
+        "opponent_conference": "East",
+        "opponent_team_abbrs_count": 15
+      },
+      "error": null,
+      "body_preview": "{\"ok\":true,\"query\":\"Celtics record against the East this season\",\"route\":\"team_record\",\"result_status\":\"ok\",\"result_reason\":null,\"current_through\":\"2026-04-12\",\"confidence\":0.9,\"intent\":\"summary\",\"alternates\":[],\"notes\":[\"opponent conferenc"
+    }
+  ]
+}
