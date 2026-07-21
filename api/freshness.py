@@ -13,7 +13,7 @@ class handler(JsonHandler):
         try:
             status, payload = freshness_response()
         except Exception as exc:
-            self.send_api_error(500, "freshness_error", str(exc))
+            self.send_unexpected_error(exc, endpoint="/freshness")
             return
         self.send_json(payload, status=status)
 

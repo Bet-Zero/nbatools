@@ -227,6 +227,26 @@ Unsupported filter combinations (e.g. both `home_only` and `away_only`) also ret
 
 Unrouted natural queries return a normal envelope with `ok: false` and `result_status: "error"`.
 
+Unexpected HTTP-layer failures use the same fail-closed public contract in
+FastAPI and the Vercel adapters:
+
+```json
+{
+  "ok": false,
+  "error": "internal_error",
+  "detail": "The request could not be completed. Try again later.",
+  "request_id": "req_<opaque-id>"
+}
+```
+
+The response also carries the same opaque ID in `X-Request-ID`. Internal
+exception messages, paths, provider details, object keys, request bodies, and
+raw query text are never copied into that public response. Server-side error
+events contain only allowlisted correlation fields: event name, request ID,
+route template, HTTP status, stable error code, and exception class. Validation
+failures may retain the repository-owned actionable validation detail; raw
+unexpected exception text may not.
+
 ## Architecture
 
 ```

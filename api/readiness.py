@@ -13,7 +13,7 @@ class handler(JsonHandler):
         try:
             status, payload = readiness_response()
         except Exception as exc:
-            self.send_api_error(503, "readiness_error", str(exc))
+            self.send_unexpected_error(exc, endpoint="/readiness", status=503)
             return
         self.send_json(payload, status=status)
 
