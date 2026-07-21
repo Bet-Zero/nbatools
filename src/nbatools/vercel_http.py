@@ -17,6 +17,8 @@ from nbatools.operational_observability import (
 from nbatools.public_errors import (
     PUBLIC_INTERNAL_ERROR_CODE,
     PUBLIC_INTERNAL_ERROR_DETAIL,
+    PUBLIC_METHOD_NOT_ALLOWED_CODE,
+    PUBLIC_METHOD_NOT_ALLOWED_DETAIL,
     REQUEST_ID_HEADER,
     log_public_error,
     new_request_id,
@@ -27,6 +29,7 @@ class JsonHandler(BaseHTTPRequestHandler):
     """Base handler with JSON/text response helpers and CORS headers."""
 
     server_version = "nbatools-vercel"
+    allowed_method: str | None = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._nbatools_request_started_at = perf_counter()
@@ -65,7 +68,8 @@ class JsonHandler(BaseHTTPRequestHandler):
         for key, value in (headers or {}).items():
             self.send_header(key, value)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", "") != "HEAD":
+            self.wfile.write(body)
         endpoint = normalize_endpoint(getattr(self, "path", ""))
         log_request_complete(
             request_id=self.request_id,
@@ -115,11 +119,13 @@ class JsonHandler(BaseHTTPRequestHandler):
         status: int,
         error: str,
         detail: str | None = None,
+        *,
+        headers: dict[str, str] | None = None,
     ) -> None:
         payload: dict[str, Any] = {"ok": False, "error": error}
         if detail:
             payload["detail"] = detail
-        self.send_json(payload, status=status)
+        self.send_json(payload, status=status, headers=headers)
 
     def send_unexpected_error(
         self,
@@ -167,12 +173,31 @@ class JsonHandler(BaseHTTPRequestHandler):
         fallback = self.client_address[0] if self.client_address else None
         return client_identifier(self.headers, fallback)
 
-    def method_not_allowed(self, allowed: str) -> None:
-        self.send_response(HTTPStatus.METHOD_NOT_ALLOWED)
-        self._send_cors_headers()
-        self.send_header("Allow", allowed)
-        self.send_header(REQUEST_ID_HEADER, self.request_id)
-        self.end_headers()
+    def method_not_allowed(self, allowed: str | None = None) -> None:
+        allowed_methods = allowed or self._allowed_methods()
+        self.send_api_error(
+            HTTPStatus.METHOD_NOT_ALLOWED,
+            PUBLIC_METHOD_NOT_ALLOWED_CODE,
+            PUBLIC_METHOD_NOT_ALLOWED_DETAIL,
+            headers={"Allow": allowed_methods},
+        )
+
+    def _allowed_methods(self) -> str:
+        if self.allowed_method is not None:
+            return f"{self.allowed_method}, OPTIONS"
+        return "GET, POST, OPTIONS"
+
+    def do_HEAD(self) -> None:
+        self.method_not_allowed()
+
+    def do_PUT(self) -> None:
+        self.method_not_allowed()
+
+    def do_PATCH(self) -> None:
+        self.method_not_allowed()
+
+    def do_DELETE(self) -> None:
+        self.method_not_allowed()
 
     def _send_cors_headers(self) -> None:
         self.send_header("Access-Control-Allow-Origin", "*")

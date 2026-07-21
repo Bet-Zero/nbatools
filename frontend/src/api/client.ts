@@ -2,8 +2,8 @@
  * Typed API client for the nbatools local API.
  *
  * All calls go to the same origin by default (API served on same host).
- * In Vite dev mode, the proxy in vite.config.ts forwards /api/* to the
- * FastAPI backend.
+ * In Vite dev mode, the proxy in vite.config.ts forwards every contracted
+ * public route plus the explicit local-only operator routes to FastAPI.
  */
 
 import type {

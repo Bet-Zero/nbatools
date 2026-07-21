@@ -88,6 +88,14 @@ Execute a structured (route-based) query.
 
 ### Query request validation
 
+The machine-readable route/method/body/CORS/error inventory is
+`contracts/public_http_routes.json`. FastAPI, the Vercel function package, and
+the Vite development proxy are checked against that one contract. Wrong-method
+and malformed-body responses are correlated JSON errors in both HTTP
+transports. CORS preflight success is HTTP 200 in FastAPI and HTTP 204 in the
+Vercel adapters; that explicit status difference does not change the allowed
+public surface.
+
 `POST /query` and `POST /structured-query` use one shared strict request
 contract in both FastAPI and the Vercel functions:
 
@@ -98,7 +106,8 @@ contract in both FastAPI and the Vercel functions:
 - known structured routes reject missing, unknown, internal-only, and
   wrong-type kwargs before command execution; values are not type-coerced
 - validation failures return HTTP 422 with
-  `{ "ok": false, "error": "validation_error", "detail": "..." }`
+  `{ "ok": false, "error": "validation_error", "detail": "...", "request_id": "req_<opaque-id>" }`;
+  the same ID is returned in `X-Request-ID`
 
 The public admission contract is enforced before execution in both transports:
 

@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
+import { VITE_API_PROXY } from "./config/httpProxy";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,15 +11,9 @@ export default defineConfig({
       allow: [fileURLToPath(new URL("..", import.meta.url))],
     },
     port: 5173,
-    proxy: {
-      // Proxy API calls to the FastAPI backend during development
-      "/health": "http://127.0.0.1:8000",
-      "/routes": "http://127.0.0.1:8000",
-      "/api/dev/fixtures": "http://127.0.0.1:8000",
-      "/api/admin/feedback": "http://127.0.0.1:8000",
-      "/query": "http://127.0.0.1:8000",
-      "/structured-query": "http://127.0.0.1:8000",
-    },
+    // Public routes come from the cross-transport contract. Two operator
+    // routes remain explicit local-development extensions in this exact map.
+    proxy: VITE_API_PROXY,
   },
   build: {
     // Output built assets to src/nbatools/ui/dist for FastAPI to serve

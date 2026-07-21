@@ -10,6 +10,8 @@ from nbatools.vercel_http import JsonHandler
 class handler(JsonHandler):
     """Execute a natural-language NBA query."""
 
+    allowed_method = "POST"
+
     def do_GET(self) -> None:
         self.method_not_allowed("POST, OPTIONS")
 

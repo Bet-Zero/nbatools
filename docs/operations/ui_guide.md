@@ -44,12 +44,13 @@ respond.
 
 The public `/` app remains in the eager entry path. Internal `/review`,
 `/visual-qa`, and `/admin/feedback` pages are lazy-loaded as generated route
-chunks under `/assets/...`; they still use the same HTML shell and
-FastAPI/Vercel asset serving boundary as the public app.
+chunks for local operator use. They use the local FastAPI HTML shell and are
+not Vercel routes.
 
-`/visual-qa` is a local/preview-only operator surface. FastAPI and Vercel return
-`404 internal_route_unavailable` for that route in public production; a public
-deployment must not expose or automatically run the visual corpus.
+`/visual-qa` is a local/preview-only operator surface. FastAPI returns
+`404 internal_route_unavailable` when run in production mode; Vercel omits the
+route entirely. A public deployment must not expose or automatically run the
+visual corpus.
 
 ### Development (two terminals, hot reload)
 
@@ -61,10 +62,13 @@ uvicorn nbatools.api:app --reload
 cd frontend && npm run dev
 ```
 
-The Vite dev server proxies `/health`, `/routes`, `/api/dev/fixtures`,
-`/api/admin/feedback`, `/query`, and `/structured-query` to the API at
-`http://127.0.0.1:8000`. Open **http://localhost:5173** for hot module
-replacement during frontend development.
+The Vite dev server reads `contracts/public_http_routes.json` and proxies every
+public API route — `/health`, `/freshness`, `/readiness`, `/routes`, `/query`,
+`/structured-query`, and `/query-feedback` — to the API at
+`http://127.0.0.1:8000`. `/api/dev/fixtures` and `/api/admin/feedback` are
+separate local-only proxy extensions and remain absent from the Vercel package.
+Open **http://localhost:5173** for hot module replacement during frontend
+development.
 
 ### Visual QA screenshot artifacts
 
@@ -265,13 +269,18 @@ Browser (index.html)
   │
   ├─ GET  /           → serves the HTML page (same origin)
   ├─ GET  /health     → version badge
+  ├─ GET  /freshness  → visible data-trust status
+  ├─ GET  /readiness  → strict release-readiness diagnostics
   ├─ GET  /routes     → populates the Dev Tools route dropdown
   ├─ POST /query      → natural-language queries
-  └─ POST /structured-query → structured/route-based queries
+  ├─ POST /structured-query → structured/route-based queries
+  └─ POST /query-feedback   → fail-closed deferred feedback surface
 ```
 
-All communication is same-origin fetch calls — no CORS issues, no proxy needed.
-CORS middleware is enabled for flexibility if someone wants to open the HTML file separately.
+The deployed UI uses same-origin fetch calls. During Vite hot-reload
+development, the generated proxy inventory supplies that same-origin behavior.
+FastAPI and Vercel also implement the contract's explicit CORS preflight
+boundary for separately hosted development clients.
 
 ## Result types rendered
 

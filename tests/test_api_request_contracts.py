@@ -122,9 +122,12 @@ def _vercel_response(endpoint: str, body: Any) -> tuple[int, dict[str, Any]]:
 def test_fastapi_and_vercel_share_validation_contract(endpoint: str, body: Any) -> None:
     fastapi_response = client.post(endpoint, json=body)
     vercel_status, vercel_payload = _vercel_response(endpoint, body)
+    fastapi_payload = fastapi_response.json()
+    request_id = fastapi_payload.pop("request_id")
 
     assert fastapi_response.status_code == vercel_status == 422
-    assert fastapi_response.json() == vercel_payload
+    assert fastapi_payload == vercel_payload
+    assert fastapi_response.headers["X-Request-ID"] == request_id
     assert vercel_payload["ok"] is False
     assert vercel_payload["error"] == "validation_error"
     assert vercel_payload["detail"]
