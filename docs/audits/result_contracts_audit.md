@@ -27,8 +27,8 @@ Scope notes:
 - No code changes in this pass.
 - No refactors, feature expansion, or docs rewrites outside this file.
 - "Raw output" here means the stdout text each command currently produces, which `natural_query._execute` and `cli_apps/queries._run_and_handle_exports` capture with `redirect_stdout`. That stdout blob is the engine's current transport. There is no in-memory result object being returned from any `run()` function.
-- "Pretty output" means the transformed text produced by [format_output.py](../src/nbatools/commands/format_output.py) from that same raw blob.
-- Exports (`--csv`, `--txt`, `--json`) are derived post-hoc from the same raw blob by `_write_csv_from_raw_output` / `_write_json_from_raw_output` in [natural_query.py](../src/nbatools/commands/natural_query.py) and [queries.py](../src/nbatools/cli_apps/queries.py). JSON export re-parses the CSV blocks back into dataframes.
+- "Pretty output" means the transformed text produced by [format_output.py](../../src/nbatools/commands/format_output.py) from that same raw blob.
+- Exports (`--csv`, `--txt`, `--json`) are derived post-hoc from the same raw blob by `_write_csv_from_raw_output` / `_write_json_from_raw_output` in [natural_query.py](../../src/nbatools/commands/natural_query.py) and [queries.py](../../src/nbatools/cli_apps/queries.py). JSON export re-parses the CSV blocks back into dataframes.
 
 Baseline observations that apply to every class below, and that are not repeated in each section:
 
@@ -41,11 +41,11 @@ Baseline observations that apply to every class below, and that are not repeated
 
 ## 1. Finder
 
-Covers [player_game_finder.py](../src/nbatools/commands/player_game_finder.py), [game_finder.py](../src/nbatools/commands/game_finder.py), and the natural-query finder routes.
+Covers [player_game_finder.py](../../src/nbatools/commands/player_game_finder.py), [game_finder.py](../../src/nbatools/commands/game_finder.py), and the natural-query finder routes.
 
-**Raw output shape today.** A bare CSV table written to stdout, with no leading section label. The column set for player finders is `rank, game_date, game_id, season, season_type, player_name, player_id, team_name, team_abbr, opponent_team_name, opponent_team_abbr, is_home, is_away, wl, minutes, pts, reb, ast, stl, blk, fg3m, fg3a, tov, plus_minus, efg_pct, ts_pct, usg_pct, ast_pct, reb_pct` (see [player_game_finder.py:224-257](../src/nbatools/commands/player_game_finder.py#L224-L257)). Empty result writes `no matching games` with no header.
+**Raw output shape today.** A bare CSV table written to stdout, with no leading section label. The column set for player finders is `rank, game_date, game_id, season, season_type, player_name, player_id, team_name, team_abbr, opponent_team_name, opponent_team_abbr, is_home, is_away, wl, minutes, pts, reb, ast, stl, blk, fg3m, fg3a, tov, plus_minus, efg_pct, ts_pct, usg_pct, ast_pct, reb_pct` (see [player_game_finder.py:224-257](../../src/nbatools/commands/player_game_finder.py#L224-L257)). Empty result writes `no matching games` with no header.
 
-**Stable section labels that already exist.** None. There is no `FINDER` label. The pretty formatter in [format_output.py:48-49](../src/nbatools/commands/format_output.py#L48-L49) identifies finder output by falling through to the `TABLE` default branch, and then uses the presence of a `rank` column to decide whether to render it as a ranked table.
+**Stable section labels that already exist.** None. There is no `FINDER` label. The pretty formatter in [format_output.py:48-49](../../src/nbatools/commands/format_output.py#L48-L49) identifies finder output by falling through to the `TABLE` default branch, and then uses the presence of a `rank` column to decide whether to render it as a ranked table.
 
 **Metadata already present.** Per-row only: `game_date`, `season`, `season_type`, player/team identity, opponent identity, home/away, W/L. No header metadata.
 
@@ -55,7 +55,7 @@ Covers [player_game_finder.py](../src/nbatools/commands/player_game_finder.py), 
 - No echo of the filter/context the user actually asked for (e.g. a query like `Jokic last 10 games over 25 points and under 15 rebounds` produces 10 rows but no record that the boolean expression was `over 25 points and under 15 rebounds`).
 - No "sample size" or "count of matching games" field distinct from the row count; the consumer has to count rows itself.
 
-**Is pretty formatting doing work that belongs in raw output?** Yes. `format_output._extract_sections` has to probe for the `rank` column to recognize this as a finder/leaderboard table, and `format_output.format_pretty_output` then picks a column subset and writes `Rows returned: N` — a value that only exists in pretty output. The column-ordering logic in [format_output.py:536-558](../src/nbatools/commands/format_output.py#L536-L558) is effectively raw-shape disambiguation living in a pretty renderer.
+**Is pretty formatting doing work that belongs in raw output?** Yes. `format_output._extract_sections` has to probe for the `rank` column to recognize this as a finder/leaderboard table, and `format_output.format_pretty_output` then picks a column subset and writes `Rows returned: N` — a value that only exists in pretty output. The column-ordering logic in [format_output.py:536-558](../../src/nbatools/commands/format_output.py#L536-L558) is effectively raw-shape disambiguation living in a pretty renderer.
 
 **Difficulty to align incrementally.** Low. Adding a `FINDER` section label and a small leading metadata CSV block is a handful of lines per command, and the stdout-text transport doesn't need to change. The `rank`-column signalling in the pretty formatter can then be removed.
 
@@ -63,7 +63,7 @@ Covers [player_game_finder.py](../src/nbatools/commands/player_game_finder.py), 
 
 ## 2. Summary
 
-Covers [player_game_summary.py](../src/nbatools/commands/player_game_summary.py), [game_summary.py](../src/nbatools/commands/game_summary.py), and the natural-query summary routes.
+Covers [player_game_summary.py](../../src/nbatools/commands/player_game_summary.py), [game_summary.py](../../src/nbatools/commands/game_summary.py), and the natural-query summary routes.
 
 **Raw output shape today.** Two sections, both as CSV, separated by `SUMMARY` and `BY_SEASON` labels. The SUMMARY row carries the overall aggregates plus some per-row context (`player_name` / `team_name`, `season_start`, `season_end`, `season_type`, `games`, `wins`, `losses`, `win_pct`, the `_avg` and `_sum` box-score fields, and sample-aware `usg_pct_avg`, `ast_pct_avg`, `reb_pct_avg` for player summaries). BY_SEASON is a per-season breakdown with the same metric family. Empty result writes `SUMMARY\nno matching games`.
 
@@ -80,7 +80,7 @@ Covers [player_game_summary.py](../src/nbatools/commands/player_game_summary.py)
 - No `grouped_boolean_used` flag, even though grouped boolean filters are supported on summaries per [current_state_guide.md §grouped-boolean-coverage](../reference/current_state_guide.md#grouped-boolean-coverage).
 - No `notes / caveats` field for the case where the sample-aware rate metric is recomputed from the filtered sample rather than a season average — which per [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) is the canonical example of a silent fallback that should become visible.
 
-**Is pretty formatting doing work that belongs in raw output?** Partly. The raw SUMMARY row already contains every numeric value the pretty view prints. But the metric-label mapping (`pts_avg` → `PTS`, `efg_pct_avg` → `eFG%`, etc. in [format_output.py:157-186](../src/nbatools/commands/format_output.py#L157-L186)) and the `Record: 9-1` formatting live in the formatter. Those are presentation and are fine there. The one load-bearing thing that doesn't exist in raw output is any header identifying this as a `summary` result class.
+**Is pretty formatting doing work that belongs in raw output?** Partly. The raw SUMMARY row already contains every numeric value the pretty view prints. But the metric-label mapping (`pts_avg` → `PTS`, `efg_pct_avg` → `eFG%`, etc. in [format_output.py:157-186](../../src/nbatools/commands/format_output.py#L157-L186)) and the `Record: 9-1` formatting live in the formatter. Those are presentation and are fine there. The one load-bearing thing that doesn't exist in raw output is any header identifying this as a `summary` result class.
 
 **Difficulty to align incrementally.** Low-to-medium. This class is the closest to the contract today. The biggest wins are adding a stable metadata header above `SUMMARY`, surfacing resolved date windows, and marking sample-aware recomputation as a caveat.
 
@@ -88,9 +88,9 @@ Covers [player_game_summary.py](../src/nbatools/commands/player_game_summary.py)
 
 ## 3. Comparison
 
-Covers [player_compare.py](../src/nbatools/commands/player_compare.py), [team_compare.py](../src/nbatools/commands/team_compare.py), and natural-query comparison routes including `vs`, `h2h`, and `head-to-head`.
+Covers [player_compare.py](../../src/nbatools/commands/player_compare.py), [team_compare.py](../../src/nbatools/commands/team_compare.py), and natural-query comparison routes including `vs`, `h2h`, and `head-to-head`.
 
-**Raw output shape today.** Two sections: a `SUMMARY` CSV with one row per entity (containing `player_name`, `games`, `wins`, `losses`, `win_pct`, and the full `_avg` / `_sum` metric set including sample-aware rates), and a `COMPARISON` CSV with one row per metric and one column per entity (see [player_compare.py:319-351](../src/nbatools/commands/player_compare.py#L319-L351)).
+**Raw output shape today.** Two sections: a `SUMMARY` CSV with one row per entity (containing `player_name`, `games`, `wins`, `losses`, `win_pct`, and the full `_avg` / `_sum` metric set including sample-aware rates), and a `COMPARISON` CSV with one row per metric and one column per entity (see [player_compare.py:319-351](../../src/nbatools/commands/player_compare.py#L319-L351)).
 
 **Stable section labels that already exist.** `SUMMARY`, `COMPARISON`. Both are stable.
 
@@ -99,7 +99,7 @@ Covers [player_compare.py](../src/nbatools/commands/player_compare.py), [team_co
 **Metadata missing relative to the contract.**
 
 - The SUMMARY rows for a comparison do **not** include `season_start`, `season_end`, `season_type`, or any notion of the shared sample definition. The summary comparison raw output is structurally different from the player/team summary raw output in that respect. A consumer of the raw text cannot tell what time window the comparison covers.
-- `head_to_head_used` is never emitted, even though [player_compare.py:268-282](../src/nbatools/commands/player_compare.py#L268-L282) literally branches on `head_to_head=True` and filters to same-game pairs. This is a significant gap: the contract calls this out specifically, and it is invisible in output today.
+- `head_to_head_used` is never emitted, even though [player_compare.py:268-282](../../src/nbatools/commands/player_compare.py#L268-L282) literally branches on `head_to_head=True` and filters to same-game pairs. This is a significant gap: the contract calls this out specifically, and it is invisible in output today.
 - No `sample_size_differs` indicator for the non-head-to-head case where entity A and entity B have different numbers of games in the sample.
 - No opponent context, no date-window context, no route metadata.
 - Grouped boolean context is correctly **not** in scope here per [result_contracts.md §3.3](../reference/result_contracts.md#33-comparison), so no gap there.
@@ -112,7 +112,7 @@ Covers [player_compare.py](../src/nbatools/commands/player_compare.py), [team_co
 
 ## 4. Split Summary
 
-Covers [player_split_summary.py](../src/nbatools/commands/player_split_summary.py), [team_split_summary.py](../src/nbatools/commands/team_split_summary.py), and natural-query split routes.
+Covers [player_split_summary.py](../../src/nbatools/commands/player_split_summary.py), [team_split_summary.py](../../src/nbatools/commands/team_split_summary.py), and natural-query split routes.
 
 **Raw output shape today.** Two sections: a `SUMMARY` CSV with one meta row (`player_name` / `team_name`, `season_start`, `season_end`, `season_type`, `split`, `games_total`) and a `SPLIT_COMPARISON` CSV with one row per bucket (`bucket`, `games`, `wins`, `losses`, `win_pct`, the `_avg` metric set, and sample-aware rates merged in from `compute_grouped_sample_advanced_metrics`). Empty result writes `SUMMARY\nno matching games`.
 
@@ -126,7 +126,7 @@ Covers [player_split_summary.py](../src/nbatools/commands/player_split_summary.p
 - No per-bucket date range (buckets within the same sample can span the same window, but if a filter like `last 20 games` was applied, the resolved range is never echoed).
 - The `split` field is a machine-safe enum (`home_away`, `wins_losses`), which is good — this is actually the one spot where a `split_type` field per [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) already exists in raw output.
 
-**Is pretty formatting doing work that belongs in raw output?** Mostly no. The raw output already carries the canonical split enum. The pretty formatter maps `home_away` → `Home vs Away` and `wins` → `Wins` for display, which is presentation. The one load-bearing mapping is `_pretty_bucket_name` and `_pretty_split_name` in [format_output.py:139-154](../src/nbatools/commands/format_output.py#L139-L154); those are legitimate renderers.
+**Is pretty formatting doing work that belongs in raw output?** Mostly no. The raw output already carries the canonical split enum. The pretty formatter maps `home_away` → `Home vs Away` and `wins` → `Wins` for display, which is presentation. The one load-bearing mapping is `_pretty_bucket_name` and `_pretty_split_name` in [format_output.py:139-154](../../src/nbatools/commands/format_output.py#L139-L154); those are legitimate renderers.
 
 **Difficulty to align incrementally.** Low. This is the closest class to target shape. The additive changes are a shared metadata header and the usual list of missing universal fields.
 
@@ -134,9 +134,9 @@ Covers [player_split_summary.py](../src/nbatools/commands/player_split_summary.p
 
 ## 5. Leaderboard
 
-Covers [season_leaders.py](../src/nbatools/commands/season_leaders.py), [season_team_leaders.py](../src/nbatools/commands/season_team_leaders.py), [top_player_games.py](../src/nbatools/commands/top_player_games.py), [top_team_games.py](../src/nbatools/commands/top_team_games.py), and natural-query leaderboard phrasing.
+Covers [season_leaders.py](../../src/nbatools/commands/season_leaders.py), [season_team_leaders.py](../../src/nbatools/commands/season_team_leaders.py), [top_player_games.py](../../src/nbatools/commands/top_player_games.py), [top_team_games.py](../../src/nbatools/commands/top_team_games.py), and natural-query leaderboard phrasing.
 
-**Raw output shape today.** A bare CSV table with no leading section label. For `season_leaders`, columns are `rank, player_name, player_id, team_abbr, games_played, <target_stat>, season, season_type` (see [season_leaders.py:391-410](../src/nbatools/commands/season_leaders.py#L391-L410)). `season` and `season_type` are glued on to every row.
+**Raw output shape today.** A bare CSV table with no leading section label. For `season_leaders`, columns are `rank, player_name, player_id, team_abbr, games_played, <target_stat>, season, season_type` (see [season_leaders.py:391-410](../../src/nbatools/commands/season_leaders.py#L391-L410)). `season` and `season_type` are glued on to every row.
 
 **Stable section labels that already exist.** None. Same detection hack as finder: the pretty formatter notices a `rank` column and routes through the ranked-table branch.
 
@@ -144,12 +144,12 @@ Covers [season_leaders.py](../src/nbatools/commands/season_leaders.py), [season_
 
 **Metadata missing relative to the contract.**
 
-- No header metadata at all — no query text, no `stat` being ranked, no `limit` / top-N value, no sort direction, no `min_games` qualifier that was applied, no FGA/FG3A/FTA minimum that was silently applied for percentage metrics in [season_leaders.py:298-306](../src/nbatools/commands/season_leaders.py#L298-L306).
-- No resolved `date_window`, even though date-windowed leaderboards are a first-class feature and even though `_recommended_min_games` in [season_leaders.py:112-123](../src/nbatools/commands/season_leaders.py#L112-L123) quietly lowers the minimum-games threshold when a window is active.
-- No `dataset source` provenance. [season_leaders.py:356-371](../src/nbatools/commands/season_leaders.py#L356-L371) builds from game logs and then optionally merges the advanced table; that distinction is exactly the [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) fallback case (`leaderboard metric not present in season-advanced table, derived from game logs`) and it is currently silent.
+- No header metadata at all — no query text, no `stat` being ranked, no `limit` / top-N value, no sort direction, no `min_games` qualifier that was applied, no FGA/FG3A/FTA minimum that was silently applied for percentage metrics in [season_leaders.py:298-306](../../src/nbatools/commands/season_leaders.py#L298-L306).
+- No resolved `date_window`, even though date-windowed leaderboards are a first-class feature and even though `_recommended_min_games` in [season_leaders.py:112-123](../../src/nbatools/commands/season_leaders.py#L112-L123) quietly lowers the minimum-games threshold when a window is active.
+- No `dataset source` provenance. [season_leaders.py:356-371](../../src/nbatools/commands/season_leaders.py#L356-L371) builds from game logs and then optionally merges the advanced table; that distinction is exactly the [result_contracts.md §4](../reference/result_contracts.md#4-shared-metadata-contract) fallback case (`leaderboard metric not present in season-advanced table, derived from game logs`) and it is currently silent.
 - No `notes / caveats` for the case where `ts_pct`, `usage_rate`, etc. came from the advanced table vs the basic one.
 
-**Is pretty formatting doing work that belongs in raw output?** Yes, and visibly. `format_output._detect_value_column` in [format_output.py:77-136](../src/nbatools/commands/format_output.py#L77-L136) is an entire priority-list heuristic for guessing which column the leaderboard was ranked by — a fact that the raw output does not record. The pretty layer is reverse-engineering a value the engine already knew and discarded.
+**Is pretty formatting doing work that belongs in raw output?** Yes, and visibly. `format_output._detect_value_column` in [format_output.py:77-136](../../src/nbatools/commands/format_output.py#L77-L136) is an entire priority-list heuristic for guessing which column the leaderboard was ranked by — a fact that the raw output does not record. The pretty layer is reverse-engineering a value the engine already knew and discarded.
 
 **Difficulty to align incrementally.** Medium. Adding a `LEADERBOARD` label and a metadata header are easy, but the most valuable gap to close — dataset provenance / fallback notes — requires threading a caveat from the merge branch in `season_leaders` out to the emit point. It is not hard in absolute terms; it is harder than the others because the fallback is currently implicit.
 
@@ -157,9 +157,9 @@ Covers [season_leaders.py](../src/nbatools/commands/season_leaders.py), [season_
 
 ## 6. Streak
 
-Covers [player_streak_finder.py](../src/nbatools/commands/player_streak_finder.py), [team_streak_finder.py](../src/nbatools/commands/team_streak_finder.py), and natural-query streak phrasing.
+Covers [player_streak_finder.py](../../src/nbatools/commands/player_streak_finder.py), [team_streak_finder.py](../../src/nbatools/commands/team_streak_finder.py), and natural-query streak phrasing.
 
-**Raw output shape today.** A bare CSV table with columns `rank, player_name, condition, streak_length, games, start_date, end_date, start_game_id, end_game_id, wins, losses, is_active, minutes_avg, pts_avg, reb_avg, ast_avg, stl_avg, blk_avg, fg3m_avg, tov_avg, plus_minus_avg` (see [player_streak_finder.py:282-305](../src/nbatools/commands/player_streak_finder.py#L282-L305)). Empty result writes `no matching games` with no header.
+**Raw output shape today.** A bare CSV table with columns `rank, player_name, condition, streak_length, games, start_date, end_date, start_game_id, end_game_id, wins, losses, is_active, minutes_avg, pts_avg, reb_avg, ast_avg, stl_avg, blk_avg, fg3m_avg, tov_avg, plus_minus_avg` (see [player_streak_finder.py:282-305](../../src/nbatools/commands/player_streak_finder.py#L282-L305)). Empty result writes `no matching games` with no header.
 
 **Stable section labels that already exist.** None.
 
@@ -182,7 +182,7 @@ Covers [player_streak_finder.py](../src/nbatools/commands/player_streak_finder.p
 
 ## 7. No-result / error-style
 
-Covers the empty-state behavior of every command and the parser-level failure path in [natural_query.py](../src/nbatools/commands/natural_query.py).
+Covers the empty-state behavior of every command and the parser-level failure path in [natural_query.py](../../src/nbatools/commands/natural_query.py).
 
 **Raw output shape today.** A literal string. Summary/comparison/split paths print `SUMMARY\nno matching games`. Finder / leaderboard / streak paths print `no matching games` with no header. `_write_csv_from_raw_output` turns this into `message\nno matching games\n`. `_write_json_from_raw_output` turns it into `{"message": "no matching games"}`.
 

@@ -20,6 +20,7 @@ DURABLE_GLOBS = (
     "docs/operations/**/*.md",
     "docs/reference/**/*.md",
 )
+LINK_ONLY_GLOBS = ("docs/audits/**/*.md",)
 DOCS_ROOT_MARKDOWN_ALLOWLIST = {
     Path("docs/index.md"),
 }
@@ -169,6 +170,13 @@ def durable_files() -> list[Path]:
     return sorted(files)
 
 
+def link_only_files() -> list[Path]:
+    files: set[Path] = set()
+    for pattern in LINK_ONLY_GLOBS:
+        files.update(path.relative_to(ROOT) for path in ROOT.glob(pattern) if path.is_file())
+    return sorted(files)
+
+
 def tracked_output_dependency_files() -> list[Path]:
     files: set[Path] = set()
     for pattern in TRACKED_OUTPUT_DEPENDENCY_GLOBS:
@@ -265,6 +273,9 @@ def main() -> int:
         text = (ROOT / path).read_text(encoding="utf-8")
         errors.extend(check_banned_paths(path, text))
         errors.extend(check_output_paths(path, text))
+        errors.extend(check_relative_links(path, text))
+    for path in link_only_files():
+        text = (ROOT / path).read_text(encoding="utf-8")
         errors.extend(check_relative_links(path, text))
     for path in tracked_output_dependency_files():
         text = (ROOT / path).read_text(encoding="utf-8")

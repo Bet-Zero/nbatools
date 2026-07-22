@@ -559,14 +559,13 @@ class TestParseRecordLeaderboard:
 
 
 class TestParseRecordContextual:
-    @pytest.mark.xfail(reason="contextual 'when scoring 120+' parsing not yet supported")
     def test_record_when_scoring_threshold(self):
         parsed = parse_query("Celtics record when scoring 120+ since 2022")
         assert parsed["route"] == "team_record"
         assert parsed["route_kwargs"]["team"] == "BOS"
-        # Threshold should be captured as stat/min_value
         assert parsed["route_kwargs"]["stat"] == "pts"
-        assert parsed["route_kwargs"]["min_value"] is not None
+        assert parsed["route_kwargs"]["min_value"] == 120.0
+        assert parsed["route_kwargs"]["start_season"] == "2022-23"
 
 
 class TestParsePlayerRecordRouting:

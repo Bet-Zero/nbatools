@@ -54,6 +54,7 @@ nbatools = ["ui/dist/**"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-n auto"
+xfail_strict = true
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "needs_data: skip when local CSV data files are not available",
