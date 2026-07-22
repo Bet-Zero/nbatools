@@ -54,7 +54,7 @@ The engine is tuned for stat-shaped NBA questions in the following areas. Each a
 ### Date-aware windows
 
     top scorers in March
-    best offensive teams since January
+    top scorers since January
     Jokic since All-Star break
 
 ### Game finders and boolean filters
@@ -84,7 +84,7 @@ The product has explicit boundaries. When a question falls outside them, the eng
 - Subjective, opinion, or narrative questions (best defender, MVP candidate, cooled off, best player lately).
 - Inference beyond available data, including invented metric definitions for terms the product has not approved.
 - Query families that are still being evaluated against the promotion path (see [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md)).
-- Specific guarded families that are out of scope for the current release — for example fouls-drawn leaderboards, team bench scoring, clutch filters where trusted data is unavailable, championship/ring counts (playoff data starts at 1996-97), opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, and team single-game threes. The durable supported and unsupported boundary lives in [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
+- Specific guarded families that are out of scope for the current release — for example fouls-drawn leaderboards, team bench scoring, rolling/date-window team advanced-rating leaderboards, clutch filters where trusted data is unavailable, championship/ring counts (playoff data starts at 1996-97), opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, and team single-game threes. The durable supported and unsupported boundary lives in [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
 
 The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 

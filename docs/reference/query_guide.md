@@ -363,12 +363,17 @@ Bulls Finals-era round labels are not reliable in the current pre-2001 data.
 ## Date-aware queries
 
 - `top scorers in March`
-- `best offensive teams in March`
 - `teams with best efg% in March`
-- `best offensive teams since January`
+- `top scorers since January`
 - `Celtics road record since January 1`
 - `Jokic since All-Star break`
-- `best offensive teams since All-Star break`
+- `top scorers since All-Star break`
+
+Rolling or date-window team advanced-rating requests such as `best offensive
+teams since January`, `best offensive teams since All-Star break`, and `best
+defense recently` are recognized but are not execution-backed. They return
+`no_result` / `filter_not_supported` instead of substituting team points or a
+full-season advanced leaderboard.
 
 ## Streaks
 
@@ -476,9 +481,12 @@ Examples:
 - `Jokic recent form`
 - `Jokic last 8 games summary`
 - `top scorers in March`
-- `best offensive teams since January`
+- `top scorers since January`
 - `Celtics road record since January 1`
 - `Jokic since All-Star break`
+
+Date-window support is route and metric specific; it does not include rolling
+or date-window team advanced-rating leaderboards.
 
 ---
 
