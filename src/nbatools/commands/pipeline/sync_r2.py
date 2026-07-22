@@ -39,9 +39,10 @@ class R2SyncConfig:
     """Runtime configuration for R2 sync."""
 
     account_id: str
-    access_key_id: str
-    secret_access_key: str
+    access_key_id: str = field(repr=False)
+    secret_access_key: str = field(repr=False)
     bucket_name: str
+    session_token: str | None = field(default=None, repr=False)
 
     @property
     def endpoint_url(self) -> str:
@@ -132,6 +133,7 @@ def load_r2_config(
         access_key_id=values["R2_ACCESS_KEY_ID"],
         secret_access_key=values["R2_SECRET_ACCESS_KEY"],
         bucket_name=values["R2_BUCKET_NAME"],
+        session_token=values.get("R2_SESSION_TOKEN") or None,
     )
 
 
@@ -203,20 +205,28 @@ def run_sync_r2(
     return result
 
 
-def create_r2_client(config: R2SyncConfig) -> Any:
+def create_r2_client(config: R2SyncConfig, *, disable_retries: bool = False) -> Any:
     """Create a boto3 S3 client configured for Cloudflare R2."""
     try:
         import boto3
+        from botocore.config import Config
     except ImportError as exc:
         message = "boto3 is required for R2 sync. Install project dependencies."
         raise R2SyncError(message) from exc
 
+    kwargs: dict[str, Any] = {
+        "endpoint_url": config.endpoint_url,
+        "aws_access_key_id": config.access_key_id,
+        "aws_secret_access_key": config.secret_access_key,
+        "region_name": "auto",
+    }
+    if config.session_token:
+        kwargs["aws_session_token"] = config.session_token
+    if disable_retries:
+        kwargs["config"] = Config(retries={"total_max_attempts": 1, "mode": "standard"})
     return boto3.client(
         "s3",
-        endpoint_url=config.endpoint_url,
-        aws_access_key_id=config.access_key_id,
-        aws_secret_access_key=config.secret_access_key,
-        region_name="auto",
+        **kwargs,
     )
 
 

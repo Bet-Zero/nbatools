@@ -18,6 +18,10 @@ from nbatools.commands.pipeline.generation_publication import (
     rollback_local_generation,
     rollback_r2_generation,
 )
+from nbatools.commands.pipeline.live_recovery_drill import (
+    LiveRecoveryDrillError,
+    prepare_live_recovery_drill_plan,
+)
 from nbatools.commands.pipeline.orchestrator import (
     PipelineResult,
     backfill_seasons,
@@ -350,6 +354,76 @@ def recovery_drill(
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered + "\n")
+    print(rendered)
+
+
+@app.command("live-recovery-drill-plan")
+def live_recovery_drill_plan(
+    source_generation_dir: Path = typer.Option(
+        ...,
+        "--source-generation-dir",
+        help="Existing immutable local generation directory; read only.",
+    ),
+    source_generation: str = typer.Option(
+        ...,
+        "--source-generation",
+        help="Expected immutable local source generation identifier.",
+    ),
+    repository_commit: str = typer.Option(
+        ...,
+        "--repository-commit",
+        help="Current-main commit bound into the plan.",
+    ),
+    drill_id: str = typer.Option(
+        ...,
+        "--drill-id",
+        help="Unique e03b-* isolated drill identifier.",
+    ),
+    r2_account_id_sha256: str = typer.Option(
+        ...,
+        "--r2-account-id-sha256",
+        help="SHA-256 of the exact target R2 account ID; the account ID is not written.",
+    ),
+    bucket_name: str = typer.Option(
+        "nbatools-data",
+        "--bucket-name",
+        help="Exact bucket name for later separately authorized execution.",
+    ),
+    production_url: str = typer.Option(
+        ...,
+        "--production-url",
+        help="Accepted production URL bound into the plan.",
+    ),
+    expected_production_generation: str = typer.Option(
+        ...,
+        "--expected-production-generation",
+        help="Production generation that later read-only preflight must prove.",
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        help="Optional JSON plan path. This command never opens a network connection.",
+    ),
+):
+    """Prepare a hash-bound E-03B plan without credentials or provider access."""
+    try:
+        plan = prepare_live_recovery_drill_plan(
+            source_generation_dir=source_generation_dir,
+            source_generation=source_generation,
+            repository_commit=repository_commit,
+            drill_id=drill_id,
+            r2_account_id_sha256=r2_account_id_sha256,
+            bucket_name=bucket_name,
+            production_url=production_url,
+            expected_production_generation=expected_production_generation,
+        )
+    except LiveRecoveryDrillError as exc:
+        print(f"Live recovery drill plan failed: {exc.code}")
+        raise typer.Exit(code=1)
+    rendered = json.dumps(plan.to_dict(), indent=2, sort_keys=True)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered + "\n", encoding="utf-8")
     print(rendered)
 
 
