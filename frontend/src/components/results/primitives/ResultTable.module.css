@@ -112,7 +112,7 @@
     var(--accent) 12%,
     var(--bg-elevated)
   );
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
 /* Footer rows for Average / Total in game-log style tables. */
