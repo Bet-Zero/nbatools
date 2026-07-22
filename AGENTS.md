@@ -179,7 +179,7 @@ Or run the matching domain slice (`make test-query`, `make test-api`, etc.). Eit
 
 #### CI is the backstop — local tests are for fast feedback
 
-CI (`.github/workflows/ci.yml`) runs lint, docs governance, frontend install/build/lint/test, and `make test-unit` on every PR. `make test` (the full parallel suite) runs on main pushes, nightly, and manual dispatch. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
+CI (`.github/workflows/ci.yml`) runs lint, docs governance, frontend locked install/audit/build/lint/test, and `make test-unit` on every PR. `make test` (the full parallel suite) runs on main pushes, nightly, and manual dispatch. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
 
 - Run focused pytest on the directly-changed test files, **or** the matching `make test-<domain>` slice.
 - Push the PR. CI runs the comprehensive suite in parallel while you move on.
@@ -261,7 +261,10 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 | Manual dispatch     | ✓      | ✓                 | ✓          | ✓           | ✓           |
 
 - **`docs-governance`** calls `make docs-governance`.
-- **`frontend`** calls `npm --prefix frontend ci`, `npm --prefix frontend run build`, `npm --prefix frontend run lint`, and `npm --prefix frontend test`.
+- **`frontend`** calls `npm --prefix frontend ci`, rejects any low-or-higher
+  advisory with `npm --prefix frontend audit --audit-level=low`, then calls
+  `npm --prefix frontend run build`, `npm --prefix frontend run lint`, and
+  `npm --prefix frontend test`.
 - **`test-fast`** calls `make test-unit`. Excludes `slow` and `needs_data` tests. Runs in parallel. This is the fast feedback path.
 - **`test-full`** calls `make test`. Full regression suite in parallel. This is the correctness backstop.
 
