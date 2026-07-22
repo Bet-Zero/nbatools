@@ -26,6 +26,7 @@ AVAILABILITY_OBJECTIVE_PERCENT = 99.0
 OBJECTIVE_WINDOW_DAYS = 30
 SCHEDULE_INTERVAL_MINUTES = 120
 MAX_ATTEMPTS = 2
+NETWORK_TIMEOUT_GRACE_SECONDS = 10.0
 TRANSIENT_FAILURE_KINDS = frozenset({"latency", "transport"})
 EXPECTED_SCHEDULED_RUNS_PER_WINDOW = OBJECTIVE_WINDOW_DAYS * 24 * 60 // SCHEDULE_INTERVAL_MINUTES
 MINIMUM_SUCCESSES_AT_FULL_WINDOW = 357
@@ -92,6 +93,7 @@ class ProductionMonitorReport:
                 "normal_requests_per_run": NORMAL_REQUESTS_PER_RUN,
                 "normal_requests_per_day": NORMAL_REQUESTS_PER_DAY,
                 "max_attempts_for_transport_or_latency": MAX_ATTEMPTS,
+                "network_timeout_grace_seconds": NETWORK_TIMEOUT_GRACE_SECONDS,
             },
             "cases": [asdict(case) for case in self.cases],
         }
@@ -219,7 +221,7 @@ def _run_monitor_attempt(
             url,
             case.method,
             case.body,
-            monitor_case.max_duration_ms / 1_000,
+            monitor_case.max_duration_ms / 1_000 + NETWORK_TIMEOUT_GRACE_SECONDS,
         )
     except HTTPError as exc:
         duration_ms = round((perf_counter() - started) * 1_000, 3)

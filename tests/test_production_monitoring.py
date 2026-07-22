@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 from nbatools.production_monitoring import (
     AVAILABILITY_OBJECTIVE_PERCENT,
     MINIMUM_SUCCESSES_AT_FULL_WINDOW,
+    NETWORK_TIMEOUT_GRACE_SECONDS,
     OBJECTIVE_WINDOW_DAYS,
     SCHEDULE_INTERVAL_MINUTES,
     ProductionMonitorCase,
@@ -80,8 +81,9 @@ def test_successful_monitor_report_contains_policy_and_no_request_body() -> None
         "normal_requests_per_run": 3,
         "normal_requests_per_day": 36,
         "max_attempts_for_transport_or_latency": 2,
+        "network_timeout_grace_seconds": NETWORK_TIMEOUT_GRACE_SECONDS,
     }
-    assert timeouts == [2.0, 10.0, 15.0]
+    assert timeouts == [12.0, 20.0, 25.0]
     assert [case["attempts"][0]["request_id"] for case in payload["cases"]] == [
         "req-health",
         "req-readiness",
@@ -253,6 +255,7 @@ def test_transport_retry_can_recover_without_notification() -> None:
 
 def test_latency_failure_retries_once(monkeypatch) -> None:
     ticks = iter([0.0, 3.0, 3.0, 6.0])
+    timeouts: list[float] = []
     monkeypatch.setattr("nbatools.production_monitoring.perf_counter", lambda: next(ticks))
     case = ProductionMonitorCase(
         default_production_monitor_cases()[0].smoke_case,
@@ -262,12 +265,15 @@ def test_latency_failure_retries_once(monkeypatch) -> None:
     report = run_production_monitor(
         "https://deploy.example",
         cases=[case],
-        fetcher=lambda url, method, body, timeout: _response_for("health"),
+        fetcher=lambda url, method, body, timeout: (
+            timeouts.append(timeout) or _response_for("health")
+        ),
     )
 
     assert report.ok is False
     assert len(report.cases[0].attempts) == 2
     assert all(attempt.failure_kind == "latency" for attempt in report.cases[0].attempts)
+    assert timeouts == [12.0, 12.0]
 
 
 def test_readiness_contract_failure_alerts_without_retry() -> None:

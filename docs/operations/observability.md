@@ -68,6 +68,12 @@ it contains only the policy, stable case names, timings, response status,
 allowlisted response summaries, and bounded request IDs. Every response read is
 capped at 1 MiB; exceeding the cap fails immediately without retaining the body.
 
+The HTTP socket timeout is deliberately 10 seconds longer than each latency
+objective. That grace does not relax the 2/10/15-second pass thresholds; it
+allows a slow serverless response to finish so the monitor can classify it as
+latency, apply the single approved retry, and retain a measured duration. A
+socket failure beyond that grace remains a transport failure.
+
 The workflow fixes its target to the accepted production deployment in tracked
 configuration. It has no dispatch URL input, secret, or mutable repository
 variable that can silently redirect scheduled requests. A production target
