@@ -1060,12 +1060,13 @@ cases:
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
     expected_route: season_team_leaders
-    expected_reason: unsupported
+    expected_reason: filter_not_supported
     expected_shape: no_result
-    expected_filters:
-      - kind: window
-        value: "10"
-    review_notes: "Current dataset/reporting path lacks recent defensive rating for this leaderboard."
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_concept
+    review_notes: "Rolling team defensive-rating leaderboards fail closed because the current reporting path lacks a source-backed recent advanced-rating sample."
     manual_review:
       status: expected_unsupported
       tags:
@@ -2411,16 +2412,27 @@ cases:
 
   - id: best_offensive_teams_since_january
     query: "best offensive teams since January"
-    category: date_range
+    category: unsupported_boundary
     priority: p2
-    expected_status: ok
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
     expected_route: season_team_leaders
-    expected_shape: leaderboard_table
-    expected_filters:
-      - kind: date
-    expected_sections:
-      - leaderboard
-    review_notes: "Team stat leaderboard with open-ended date filter."
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.start_date
+        equals: "2026-01-01"
+      - path: result.metadata.unsupported_filters.0
+        equals: unsupported_concept
+    review_notes: "The date is recognized, but a date-window team offensive-rating leaderboard is not source-backed and must not fall back to points or a full-season answer."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - offensive_rating
+        - date_window
+        - no_broad_fallback
+      notes: "Expected unsupported until a trusted date-window team advanced-rating execution path is available."
 
   - id: jokic_home_away_split
     query: "Jokic home vs away this season"

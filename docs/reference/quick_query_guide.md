@@ -80,14 +80,19 @@ Celtics wins vs losses
 
 Month window:
 top scorers in March
-best offensive teams in March
+teams with best efg% in March
 
 Open-ended month window:
-best offensive teams since January
+top scorers since January
 
 Special NBA window:
 Jokic since All-Star break
-best offensive teams since All-Star break
+top scorers since All-Star break
+
+Rolling or date-window team advanced-rating requests such as `best offensive
+teams since January` and `best defense recently` currently fail closed with
+`filter_not_supported`; the engine does not substitute points or a full-season
+advanced leaderboard.
 
 ---
 
