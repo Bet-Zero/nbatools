@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { fetchFreshness } from "../api/client";
 import type { FreshnessResponse, FreshnessStatusValue } from "../api/types";
 import { Badge, Card, type BadgeVariant } from "../design-system";
 import styles from "./FreshnessStatus.module.css";
+
+type VerificationState = "loading" | "verified" | "unverified";
 
 const STATUS_CONFIG: Record<
   FreshnessStatusValue,
@@ -43,6 +45,30 @@ const BADGE_LABELS: Record<FreshnessStatusValue, string> = {
   failed: "refresh failed",
 };
 
+const VALID_STATUSES = new Set<FreshnessStatusValue>([
+  "fresh",
+  "stale",
+  "unknown",
+  "failed",
+]);
+
+function normalizeStatus(value: unknown): FreshnessStatusValue {
+  return VALID_STATUSES.has(value as FreshnessStatusValue)
+    ? (value as FreshnessStatusValue)
+    : "unknown";
+}
+
+function normalizeFreshness(data: FreshnessResponse): FreshnessResponse {
+  return {
+    ...data,
+    status: normalizeStatus(data.status),
+    seasons: data.seasons.map((season) => ({
+      ...season,
+      status: normalizeStatus(season.status),
+    })),
+  };
+}
+
 interface Props {
   /** Poll interval in ms — 0 to disable polling. */
   pollInterval?: number;
@@ -54,83 +80,208 @@ export default function FreshnessStatus({
   variant = "panel",
 }: Props) {
   const [info, setInfo] = useState<FreshnessResponse | null>(null);
+  const [verification, setVerification] =
+    useState<VerificationState>("loading");
   const [expanded, setExpanded] = useState(false);
+  const detailsId = useId();
 
   useEffect(() => {
-    let cancelled = false;
+    let disposed = false;
+    let generation = 0;
+    let activeController: AbortController | null = null;
+    let timerId: ReturnType<typeof setTimeout> | undefined;
 
-    async function load() {
-      try {
-        const data = await fetchFreshness();
-        if (!cancelled) setInfo(data);
-      } catch {
-        // API offline — leave info as null
+    function clearTimer() {
+      if (timerId !== undefined) {
+        clearTimeout(timerId);
+        timerId = undefined;
       }
     }
 
-    load();
-
-    if (pollInterval > 0) {
-      const id = setInterval(load, pollInterval);
-      return () => {
-        cancelled = true;
-        clearInterval(id);
-      };
+    function scheduleNext() {
+      clearTimer();
+      if (
+        !disposed &&
+        pollInterval > 0 &&
+        document.visibilityState !== "hidden"
+      ) {
+        timerId = setTimeout(() => void load(), pollInterval);
+      }
     }
 
+    function cancelActiveRequest() {
+      generation += 1;
+      activeController?.abort();
+      activeController = null;
+    }
+
+    async function load() {
+      if (
+        disposed ||
+        activeController !== null ||
+        document.visibilityState === "hidden"
+      ) {
+        return;
+      }
+      const requestGeneration = ++generation;
+      const controller = new AbortController();
+      activeController = controller;
+      try {
+        const data = normalizeFreshness(
+          await fetchFreshness({ signal: controller.signal }),
+        );
+        if (!disposed && requestGeneration === generation) {
+          setInfo(data);
+          setVerification("verified");
+        }
+      } catch (error) {
+        if (
+          !disposed &&
+          requestGeneration === generation &&
+          !(error instanceof DOMException && error.name === "AbortError")
+        ) {
+          setVerification("unverified");
+        }
+      } finally {
+        if (requestGeneration === generation) {
+          if (activeController === controller) activeController = null;
+          scheduleNext();
+        }
+      }
+    }
+
+    function onVisibilityChange() {
+      clearTimer();
+      if (document.visibilityState === "hidden") {
+        cancelActiveRequest();
+        setVerification((current) =>
+          current === "loading" ? "loading" : "unverified",
+        );
+        return;
+      }
+      setVerification((current) =>
+        current === "loading" ? "loading" : "unverified",
+      );
+      void load();
+    }
+
+    if (pollInterval > 0) {
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    }
+    void load();
+
     return () => {
-      cancelled = true;
+      disposed = true;
+      clearTimer();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      cancelActiveRequest();
     };
   }, [pollInterval]);
 
-  if (!info) return null;
+  if (verification === "loading") return null;
 
-  const status = info.status as FreshnessStatusValue;
+  const status = normalizeStatus(info?.status);
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.unknown;
   const isBanner = variant === "banner";
-  const label = info.current_through
-    ? `Data through ${info.current_through}`
-    : cfg.label;
+  const isUnverified = verification === "unverified";
+  const canPresentDate = status === "fresh" || status === "stale";
+  const label = isUnverified
+    ? info?.current_through
+      ? `Last known data through ${info.current_through}`
+      : "Freshness check unavailable"
+    : info?.current_through && canPresentDate
+      ? `Data through ${info.current_through}`
+      : cfg.label;
+  const statusLabel = isUnverified ? "unverified" : BADGE_LABELS[status];
+  const message = isUnverified
+    ? info
+      ? "Current freshness could not be verified. Details below are last known."
+      : "Current data freshness could not be verified. Try again soon."
+    : BANNER_MESSAGES[status];
+  const buttonLabel = isUnverified
+    ? `Data freshness unverified: ${label}`
+    : `Data freshness: ${label}`;
+  const liveMessage = isUnverified || isBanner ? message : null;
+  const summaryContent = (
+    <>
+      <span className={styles.dot} aria-hidden="true">
+        {isUnverified ? "○" : cfg.dot}
+      </span>
+      <span className={styles.labelStack}>
+        {isBanner && <span className={styles.kicker}>Data freshness</span>}
+        <span className={styles.label}>{label}</span>
+        {(isBanner || isUnverified) && (
+          <span
+            className={
+              isUnverified ? styles.verificationMessage : styles.bannerMessage
+            }
+          >
+            {message}
+          </span>
+        )}
+      </span>
+      <Badge
+        variant={isUnverified ? "warning" : BADGE_VARIANTS[status]}
+        size="sm"
+        uppercase
+      >
+        {statusLabel}
+      </Badge>
+      {info && (
+        <span className={styles.expand} aria-hidden="true">
+          {expanded ? "▾" : "▸"}
+        </span>
+      )}
+    </>
+  );
 
   return (
     <Card
       className={[
         styles.panel,
-        cfg.className,
+        isUnverified ? styles.unverified : cfg.className,
         isBanner ? styles.banner : "",
       ].join(" ")}
       depth="card"
       padding="none"
     >
-      <button
-        type="button"
-        className={styles.summary}
-        onClick={() => setExpanded((e) => !e)}
-        aria-expanded={expanded}
-        title={cfg.label}
-        aria-label={isBanner ? `Data freshness: ${label}` : undefined}
+      <span
+        className={styles.liveStatus}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
       >
-        <span className={styles.dot}>{cfg.dot}</span>
-        <span className={styles.labelStack}>
-          {isBanner && (
-            <span className={styles.kicker}>Data freshness</span>
-          )}
-          <span className={styles.label}>{label}</span>
-          {isBanner && (
-            <span className={styles.bannerMessage}>
-              {BANNER_MESSAGES[status] ?? BANNER_MESSAGES.unknown}
-            </span>
-          )}
-        </span>
-        <Badge variant={BADGE_VARIANTS[status]} size="sm" uppercase>
-          {BADGE_LABELS[status] ?? status}
-        </Badge>
-        <span className={styles.expand}>{expanded ? "▾" : "▸"}</span>
-      </button>
+        {buttonLabel}
+        {liveMessage ? `. ${liveMessage}` : ""}
+      </span>
+      {info ? (
+        <button
+          type="button"
+          className={styles.summary}
+          onClick={() => setExpanded((current) => !current)}
+          aria-expanded={expanded}
+          aria-controls={detailsId}
+          title={isUnverified ? "Freshness is unverified" : cfg.label}
+          aria-label={buttonLabel}
+        >
+          {summaryContent}
+        </button>
+      ) : (
+        <div className={[styles.summary, styles.staticSummary].join(" ")}>
+          {summaryContent}
+        </div>
+      )}
 
-      {expanded && (
-        <div className={styles.details}>
-          <div className={styles.detailsLabel}>Season coverage</div>
+      {info && expanded && (
+        <div className={styles.details} id={detailsId}>
+          <div className={styles.detailsLabel}>
+            {isUnverified ? "Last-known season coverage" : "Season coverage"}
+          </div>
+          {isUnverified && (
+            <div className={styles.lastVerified}>
+              Last verified: {info.checked_at ?? "time unavailable"}
+            </div>
+          )}
           {info.seasons.map((s) => (
             <div
               key={`${s.season}-${s.season_type}`}
@@ -140,14 +291,16 @@ export default function FreshnessStatus({
                 {s.season} {s.season_type}
               </span>
               <Badge
-                variant={BADGE_VARIANTS[s.status as FreshnessStatusValue]}
+                variant={BADGE_VARIANTS[normalizeStatus(s.status)]}
                 size="sm"
                 uppercase
               >
-                {s.status}
+                {normalizeStatus(s.status)}
               </Badge>
               <span className={styles.seasonCurrentThrough}>
-                {s.current_through ? `through ${s.current_through}` : "—"}
+                {s.current_through
+                  ? `${isUnverified ? "last known through" : "through"} ${s.current_through}`
+                  : "—"}
               </span>
               <span
                 className={styles.seasonCurrentThrough}
@@ -161,16 +314,11 @@ export default function FreshnessStatus({
 
           {info.last_refresh_at && (
             <div className={styles.refreshRow}>
-              Last refresh: {info.last_refresh_ok ? "✅" : "❌"}{" "}
+              {isUnverified ? "Last-known refresh" : "Last refresh"}:{" "}
+              {info.last_refresh_ok ? "✅" : "❌"} {" "}
               {info.last_refresh_at}
               {info.last_refresh_error && (
-                <span
-                  className={styles.error}
-                  title={info.last_refresh_error}
-                >
-                  {" "}
-                  — {info.last_refresh_error.slice(0, 80)}
-                </span>
+                <span className={styles.error}> — details withheld</span>
               )}
             </div>
           )}

@@ -156,8 +156,13 @@ export async function postQueryFeedback(
   });
 }
 
-export async function fetchFreshness(): Promise<FreshnessResponse> {
-  return request<FreshnessResponse>("/freshness");
+export async function fetchFreshness(options?: {
+  signal?: AbortSignal;
+}): Promise<FreshnessResponse> {
+  return request<FreshnessResponse>(
+    "/freshness",
+    options?.signal ? { signal: options.signal } : undefined,
+  );
 }
 
 export async function fetchDevFixtures(): Promise<DevFixturesResponse> {

@@ -724,6 +724,11 @@ Responsive expectations for future frontend work:
   retry controls.
 - Freshness and API status are shell chrome, but their fetching and semantics
   remain in `App.tsx` and `FreshnessStatus.tsx`.
+- Freshness verification is fail-closed: any failed poll removes the current
+  trust badge immediately, retains the last successful payload only as
+  last-known data, and announces failure/recovery through a polite live status.
+  Polls are completion-scheduled, pause while hidden, resume immediately when
+  visible, and abort on supersession or unmount.
 
 ## Out of scope (intentional)
 

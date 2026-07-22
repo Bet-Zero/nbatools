@@ -328,6 +328,27 @@ describe("fetchFreshness", () => {
     );
     await expect(fetchFreshness()).rejects.toThrow("server error");
   });
+
+  it("forwards an abort signal", async () => {
+    const controller = new AbortController();
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        status: "unknown",
+        current_through: null,
+        checked_at: null,
+        seasons: [],
+        last_refresh_ok: null,
+        last_refresh_at: null,
+        last_refresh_error: null,
+      }),
+    );
+
+    await fetchFreshness({ signal: controller.signal });
+
+    expect(mockFetch).toHaveBeenCalledWith("/freshness", {
+      signal: controller.signal,
+    });
+  });
 });
 
 describe("fetchDevFixtures", () => {
