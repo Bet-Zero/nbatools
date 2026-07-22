@@ -452,11 +452,18 @@ describe("ResultRenderer leaderboard patterns", () => {
 
     render(<ResultRenderer data={data} />);
 
+    const answer = screen.getByText(
+      "The Golden State Warriors have a net rating of -0.5 (20th of 30) in the 2025-26 regular season.",
+    );
+    expect(answer).toBeInTheDocument();
+    const hero = answer.parentElement?.parentElement;
+    expect(hero).not.toBeNull();
     expect(
-      screen.getByText(
-        "The Golden State Warriors have a net rating of -0.5 (20th of 30) in the 2025-26 regular season.",
-      ),
+      within(hero as HTMLElement).getByText("Golden State Warriors"),
     ).toBeInTheDocument();
+    expect(
+      within(hero as HTMLElement).queryByText("Oklahoma City Thunder"),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Oklahoma City Thunder had the most net rating/i),
     ).not.toBeInTheDocument();
