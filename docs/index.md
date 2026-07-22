@@ -63,8 +63,8 @@ Runbooks and durable workflow policies.
 
 - [`operations/pipeline_runbook.md`](operations/pipeline_runbook.md) - data pipeline operations
 - [`operations/deployment.md`](operations/deployment.md) - Cloudflare R2 and Vercel deployment
-- [`operations/observability.md`](operations/observability.md) - privacy-safe request telemetry contract and open monitoring gates
-- [`operations/recovery.md`](operations/recovery.md) - code rollback, immutable-data recovery, isolated drill, and open external recovery gates
+- [`operations/observability.md`](operations/observability.md) - privacy-safe request telemetry plus the approved scheduled production-monitor contract
+- [`operations/recovery.md`](operations/recovery.md) - code/data recovery, approved RTO/RPO, isolated drill, and open live/external proof gates
 - [`operations/query_feedback_privacy.md`](operations/query_feedback_privacy.md) - deferred manual-feedback release boundary and future privacy, retention, activation, and deletion contract
 - [`operations/query_feedback_review.md`](operations/query_feedback_review.md) - dormant query-feedback review workflow for a future approved activation
 - [`operations/exploratory_query_review.md`](operations/exploratory_query_review.md) - input-only natural-query review workflow

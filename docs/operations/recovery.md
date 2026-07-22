@@ -2,8 +2,30 @@
 
 This runbook defines the repository recovery contract for application code and
 immutable runtime data. It separates safe local proof from any production
-mutation. The owner-approved recovery objectives, external backup controls, and
-live recovery drill remain explicit operational gates.
+mutation. External backup controls and live recovery evidence remain explicit
+operational gates.
+
+## Approved recovery objectives
+
+John Matthew approved these Queue E objectives on 2026-07-22:
+
+- **Recovery point objective (RPO): 24 hours.** At incident time, the newest
+  independently recoverable trusted generation may be no more than 24 hours
+  older than the affected state.
+- **Recovery time objective (RTO): 8 hours.** Measure from the first confirmed
+  failed production-monitor probe until the service again passes readiness and
+  the required post-recovery deployment smoke.
+
+The two-hour monitor interval creates a separate detection gap of up to roughly
+two hours; every live receipt must record the last known-good probe, first
+failed probe, and best-known failure start rather than hiding that gap. The
+objectives are owner policy, not evidence that the current system has met them.
+The isolated 79.662 ms drill is only an implementation lower bound.
+
+The 24-hour RPO requires an independent backup/export at least daily while data
+can change. Retaining the previous generation in the active pointer is useful
+rollback protection but is not an independent backup and cannot close E-03B by
+itself.
 
 ## Safe drill
 
@@ -83,9 +105,8 @@ active or previous generation.
 
 That is rollback retention, not an independent backup. Dependable-production
 acceptance additionally requires externally verified backup/export coverage,
-restore access independent of the failed path, retention aligned to the
-owner-approved RPO, and a live or provider-representative restore receipt. No
-backup schedule or retention interval is inferred before the RPO decision.
+restore access independent of the failed path, retention satisfying the
+24-hour RPO, and a live or provider-representative restore receipt.
 
 ## Credential loss and incident escalation
 
@@ -117,6 +138,7 @@ Every live recovery exercise or incident must record:
 - post-recovery health, readiness, and deployment-smoke evidence; and
 - remaining exceptions, follow-up owner, and expiry.
 
-Repository tests and the safe drill do not substitute for external backup
-proof, an approved live drill, a monitored escalation channel, or the owner's
-RTO/RPO acceptance.
+The owner approved preparation of a live drill but explicitly did not authorize
+production or R2 mutation. Repository tests and the safe drill do not
+substitute for external backup proof, a separately authorized exact live
+operation, successful alert delivery, or measured RTO/RPO evidence.

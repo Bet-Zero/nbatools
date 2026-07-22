@@ -315,6 +315,29 @@ Neither substitutes for `/readiness`. The default deployment smoke fails before
 release acceptance when readiness returns `503`, reports any blocker, or cannot
 prove an immutable active generation.
 
+### Scheduled production monitor
+
+Queue E adds a separate three-request monitor for ongoing best-effort coverage:
+
+```bash
+./.venv/bin/python tools/production_monitor.py \
+    --base-url https://<accepted-production-host> \
+    --output <evidence-path>.json
+```
+
+The `Production Monitor` GitHub Actions workflow runs the same check every two
+hours against the accepted production target fixed in its tracked workflow. It
+enforces the approved health/readiness/query latency and response thresholds.
+Transport and latency failures receive one immediate retry; readiness and
+response-contract failures fail immediately. See
+[`observability.md`](observability.md) for the objective, privacy boundary,
+notification channel, and synthetic delivery procedure.
+
+Do not substitute this lightweight schedule for the eight-case release smoke.
+After any production promotion or domain cutover, update the tracked workflow
+target and run both a normal manual monitor dispatch and the full deployment
+smoke.
+
 ### Readiness exception record
 
 Only the named release owner, **John Matthew, project owner**, may authorize a

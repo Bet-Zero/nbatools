@@ -3,11 +3,40 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 
+import pytest
+
 from nbatools.deployment_monitoring import (
+    MAX_SMOKE_RESPONSE_BYTES,
+    ResponseTooLargeError,
     default_smoke_cases,
+    fetch_http,
     normalize_base_url,
     run_deployment_smoke,
 )
+
+
+def test_fetch_http_rejects_response_over_safe_limit(monkeypatch) -> None:
+    class OversizedResponse:
+        status = 200
+        headers: dict[str, str] = {}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback) -> None:
+            del exc_type, exc, traceback
+
+        def read(self, amount: int) -> bytes:
+            assert amount == MAX_SMOKE_RESPONSE_BYTES + 1
+            return b"x" * amount
+
+    monkeypatch.setattr(
+        "nbatools.deployment_monitoring.request.urlopen",
+        lambda request, timeout: OversizedResponse(),
+    )
+
+    with pytest.raises(ResponseTooLargeError, match="safe smoke-monitoring limit"):
+        fetch_http("https://deploy.example/health", "GET", None, 2.0)
 
 
 def test_normalize_base_url_trims_whitespace_and_slash() -> None:
