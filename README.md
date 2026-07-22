@@ -81,10 +81,10 @@ The engine is tuned for stat-shaped NBA questions in the following areas. Each a
 
 The product has explicit boundaries. When a question falls outside them, the engine returns an explicit unsupported, no-result, or `filter_not_supported` response rather than a broad plausible answer.
 
-- Subjective, opinion, or narrative questions (best defender, MVP candidate, clutch, cooled off, best player lately).
+- Subjective, opinion, or narrative questions (best defender, MVP candidate, cooled off, best player lately).
 - Inference beyond available data, including invented metric definitions for terms the product has not approved.
 - Query families that are still being evaluated against the promotion path (see [docs/operations/feature_promotion_rules.md](docs/operations/feature_promotion_rules.md)).
-- Specific guarded families that are out of scope for the current release — for example personal-foul leaderboards, team bench scoring, clutch filters where trusted data is unavailable, championship/ring counts (playoff data starts at 1996-97), opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, minutes leaderboards, and team single-game threes. The durable supported and unsupported boundary lives in [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
+- Specific guarded families that are out of scope for the current release — for example fouls-drawn leaderboards, team bench scoring, clutch filters where trusted data is unavailable, championship/ring counts (playoff data starts at 1996-97), opponent-conference history outside trusted current-era coverage, single-team playoff round records, multi-player availability, lineup summaries/leaderboards where trusted coverage is unavailable, on/off surfaces where trusted data is unavailable, team rolling-stretch leaderboards, and team single-game threes. The durable supported and unsupported boundary lives in [docs/reference/query_catalog.md](docs/reference/query_catalog.md).
 
 The working principle: forgive phrasing, do not invent meaning. No broad fallback answers for unsupported or low-confidence queries. See [docs/operations/parser_routing_growth_guardrails.md](docs/operations/parser_routing_growth_guardrails.md).
 
@@ -98,11 +98,13 @@ The React frontend is served by FastAPI at `/`.
 
 Public default at `/`: answer-first hero, scoped context chips, result table, freshness panel, query history, saved queries, and an explicit unsupported/no-result surface when a query falls outside the supported boundary.
 
-Diagnostics surfaces (preserved, not removed):
+The public page supports one request-scoped diagnostic mode:
 
 - `/?debug=1` — restores route, query class, status, reason, JSON, and dev chrome for the same query.
-- `/review` — debug-rich review page.
-- `/visual-qa` — manual visual QA harness over the accepted baseline cases.
+
+The debug-rich `/review` page and the `/visual-qa` manual review harness are
+local/preview operator surfaces. Production routing does not expose them; see
+[deployment operations](docs/operations/deployment.md).
 
 For frontend dev workflow, component reference, and hot-reload setup, see [docs/operations/ui_guide.md](docs/operations/ui_guide.md).
 
@@ -138,7 +140,11 @@ Explicit CLI wrappers are convenience commands and may cover a focused subset of
     nbatools-cli query route-help team_record
     nbatools-cli query route team_record --kwargs-json '{"team":"LAL","season":"2025-26"}'
 
-30 structured engine/API routes are available through `GET /routes` and `nbatools-cli query routes`. Use `route-help` for route-specific kwargs guidance before calling the generic route executor.
+The [generated repository inventory](contracts/repository_inventory.json)
+records the current structured-route count. `GET /routes` and
+`nbatools-cli query routes` expose the live registered surface. Use
+`route-help` for route-specific kwargs guidance before calling the generic
+route executor.
 
 ### HTTP API
 
@@ -217,8 +223,10 @@ Pointers:
 
 ### Current tested state
 
-- Python pytest collection: **3,100+ test items** across 80 test files
-- coverage spans parser, routing, result contracts, CLI smoke, API, query service, frontend contracts, Raw QA harness behavior, and specialized query areas
+The test suite covers parser and routing behavior, result contracts, CLI and
+API paths, the query service, frontend contracts, Raw QA harness behavior, and
+specialized query areas. Use the test runner's collection output when an exact
+current count is needed rather than freezing a volatile total into this guide.
 
 Run tests:
 

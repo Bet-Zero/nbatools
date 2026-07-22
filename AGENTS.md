@@ -95,7 +95,7 @@ It may contain:
 - typed API client code (`frontend/src/api/`)
 - React components for rendering results (`frontend/src/components/`)
 - UI state management (loading, error, result)
-- styling (`App.css`)
+- styling (component CSS modules and shared files under `frontend/src/styles/`)
 
 It must **not** contain:
 
@@ -260,7 +260,8 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 | Nightly (06:00 UTC) | ✓      | ✓                 | ✓          | ✓           | ✓           |
 | Manual dispatch     | ✓      | ✓                 | ✓          | ✓           | ✓           |
 
-- **`docs-governance`** calls `make docs-governance`.
+- **`docs-governance`** calls `make docs-governance`, including the generated
+  repository-inventory drift check.
 - **`frontend`** calls `npm --prefix frontend ci`, rejects any low-or-higher
   advisory with `npm --prefix frontend audit --audit-level=low`, then calls
   `npm --prefix frontend run build`, `npm --prefix frontend run lint`, and
@@ -492,8 +493,9 @@ If a feature does not improve the reusable engine or its consumers, rethink the 
 frontend/
   src/
     api/
-      types.ts          # TypeScript interfaces matching the API response envelope
       client.ts         # Typed fetch wrappers (fetchHealth, postQuery, etc.)
+      types.ts          # TypeScript interfaces matching the API response envelope
+      savedQueryTypes.ts # Saved-query persistence contracts
     components/
       QueryBar.tsx       # Text input + submit
       SampleQueries.tsx  # Pre-filled example query buttons
@@ -501,33 +503,23 @@ frontend/
       QueryHistory.tsx   # In-session query history list
       FreshnessStatus.tsx # Collapsible data freshness panel (status, current_through, details)
       ResultEnvelope.tsx # Envelope metadata (status, route, notes, caveats)
-      ResultSections.tsx # Dispatcher — routes to per-query-class renderers
-      SummarySection.tsx     # Summary + By Season tables
-      ComparisonSection.tsx  # Players + Comparison tables
-      SplitSummarySection.tsx # Summary + Split Comparison tables
-      FinderSection.tsx      # Matching Games table with count
-      LeaderboardSection.tsx # Leaderboard table with count
-      StreakSection.tsx       # Streaks table with count
-      DataTable.tsx      # Generic table renderer with highlight mode
       NoResultDisplay.tsx # No-result and error state display
-      RawJsonToggle.tsx  # Raw JSON toggle
-      CopyButton.tsx     # Copy-to-clipboard button
-      DevTools.tsx       # Structured query panel (route selector + kwargs)
-      Loading.tsx        # Loading spinner
-      ErrorBox.tsx       # Error display
+      QueryFeedback.tsx  # Deferred feedback UI boundary
+      results/
+        ResultRenderer.tsx       # Result-pattern dispatcher
+        config/routeToPattern.ts # Route-to-display-pattern registry
+        patterns/                # Query-class presentation patterns
+        primitives/              # Shared result display primitives
+    design-system/       # Reusable UI primitives and tokens
     hooks/
-      useQueryHistory.ts # In-session query history state hook
-      useUrlState.ts     # URL search-param sync for shareable deep links
+    storage/
+    styles/
+      global.css
+      tokens.css
     test/
-      setup.ts           # Vitest + jest-dom setup
-      client.test.ts     # API client tests
-      DataTable.test.tsx  # DataTable component tests
-      ResultSections.test.tsx # Result rendering tests for all query classes
-      UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
-      FreshnessStatus.test.tsx # Freshness panel rendering tests
-      useUrlState.test.ts  # URL state parsing, building, and hook behavior tests
     App.tsx              # Main app component — wires state + components
-    App.css              # All styles (dark theme, CSS custom properties)
+    App.module.css       # App-scoped styles
+    InternalRoutes.tsx   # Local/preview review surfaces
     main.tsx             # React entry point
   vite.config.ts         # Dev proxy + build output path + vitest config
 ```

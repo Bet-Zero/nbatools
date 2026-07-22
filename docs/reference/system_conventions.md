@@ -166,19 +166,21 @@ Manifest alignment should be checked against season-type labels only.
 
 # 11. Current Historical Coverage Convention
 
-Current official coverage baseline:
+The verified local Queue D baseline covers `1996-97` through `2025-26` for
+both Regular Season and Playoffs. The `2025-26` playoff slice contains 85
+final games through `2026-06-13` and has a passed dataset manifest.
 
-- `1996-97` through `2024-25`: Regular Season + Playoffs
-- `2025-26`: Regular Season only
-
-If coverage expands earlier or current playoffs are added, update all relevant docs.
+This does not establish what a deployment serves. Runtime readiness and the
+active immutable generation manifest are the release authority. If the local
+baseline changes, update all relevant durable docs together.
 
 ---
 
 # 12. Known Limitations
 
-## Current-season playoffs
-May not exist yet if the season is still in progress.
+## Upcoming postseason slices
+A requested playoff slice may not exist before that postseason starts. Check
+the slice manifest and readiness response rather than assuming availability.
 
 ## Older historical seasons
 May have more endpoint instability or historical naming quirks.

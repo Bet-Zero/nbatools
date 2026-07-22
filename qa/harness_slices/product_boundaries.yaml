@@ -19,3 +19,5 @@ case_ids:
   - celtics_conference_finals_atlantic_division_guard
   - lakers_record_with_reaves_without_luka_public_sweep
   - lakers_record_without_luk_public_sweep
+  - opponent_quality_player_leaderboard_refuses_unfiltered
+  - opponent_quality_team_leaderboard_refuses_unfiltered

@@ -227,23 +227,42 @@ export default function LeaderboardResult({
   const entityKind = rowEntityKind(firstRow);
   const route = leaderboardRoute(data);
   const columns = tableColumns(rows, metric, entityKind, metricLabel, route);
+  const metadata = data.result?.metadata;
+  const answerSentence = answerHeadline(metadata);
+  const answerSubjectRow = answerSentence
+    ? scopedAnswerSubjectRow(rows, metadata)
+    : firstRow;
+  const answerSubjectKind = answerSubjectRow
+    ? rowEntityKind(answerSubjectRow)
+    : null;
 
   return (
     <section className={styles.pattern} aria-label="Leaderboard result">
       <ResultHero
         sentence={
-          countHeadline(data.result?.metadata) ??
+          answerSentence ??
+          countHeadline(metadata) ??
           heroSentence(firstRow, metric, data, {
             sentenceMetricLabel,
             valueSuffix,
             verb,
           })
         }
-        subjectIllustration={heroIdentity(firstRow)}
-        disambiguationNote={disambiguationNote(data.result?.metadata)}
-        tone={entityKind === "team" ? "team" : "accent"}
+        subjectIllustration={
+          answerSubjectRow ? heroIdentity(answerSubjectRow) : null
+        }
+        disambiguationNote={disambiguationNote(metadata)}
+        tone={
+          answerSubjectKind === "team"
+            ? "team"
+            : answerSubjectKind === "player"
+              ? "accent"
+              : "neutral"
+        }
         teamAccentAbbr={
-          entityKind === "team" ? textValue(firstRow, "team_abbr") : null
+          answerSubjectKind === "team" && answerSubjectRow
+            ? textValue(answerSubjectRow, "team_abbr")
+            : null
         }
       />
       {afterHero}
@@ -256,6 +275,54 @@ export default function LeaderboardResult({
       />
     </section>
   );
+}
+
+function answerHeadline(metadata: ResultMetadata | undefined): string | null {
+  const phrase = metadata?.answer_phrase;
+  return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
+}
+
+function scopedAnswerSubjectRow(
+  rows: SectionRow[],
+  metadata: ResultMetadata | undefined,
+): SectionRow | null {
+  if (!metadata) return null;
+
+  const playerValues = [
+    metadata.player_id,
+    metadata.player,
+    metadata.player_name,
+  ];
+  const teamValues = [
+    metadata.team_id,
+    metadata.team,
+    metadata.team_abbr,
+    metadata.team_name,
+  ];
+
+  return (
+    rows.find((row) => {
+      const kind = rowEntityKind(row);
+      if (kind === "unknown") return false;
+      const metadataValues = kind === "player" ? playerValues : teamValues;
+      const rowValues =
+        kind === "player"
+          ? [row.player_id, row.player, row.player_name]
+          : [row.team_id, row.team, row.team_abbr, row.team_name];
+      return metadataValues.some((metadataValue) =>
+        rowValues.some((rowValue) =>
+          sameIdentityValue(metadataValue, rowValue),
+        ),
+      );
+    }) ?? null
+  );
+}
+
+function sameIdentityValue(left: unknown, right: unknown): boolean {
+  if (left == null || right == null) return false;
+  const normalizedLeft = String(left).trim().toLowerCase();
+  const normalizedRight = String(right).trim().toLowerCase();
+  return Boolean(normalizedLeft) && normalizedLeft === normalizedRight;
 }
 
 function countHeadline(metadata: ResultMetadata | undefined): string | null {
@@ -465,14 +532,7 @@ function lineupLeaderboardColumns(
   const supportOrder =
     primaryMetric === "minutes"
       ? ["net_rating", "off_rating", "def_rating", "pace", "ts_pct"]
-      : [
-          "minutes",
-          "net_rating",
-          "off_rating",
-          "def_rating",
-          "pace",
-          "ts_pct",
-        ];
+      : ["minutes", "net_rating", "off_rating", "def_rating", "pace", "ts_pct"];
   for (const key of supportOrder) {
     pushValueColumn(columns, rows, key);
   }
@@ -1049,7 +1109,10 @@ function lineupIdentityLabel(row: SectionRow): string | null {
 
 function readableNameList(value: unknown): string | null {
   if (Array.isArray(value)) {
-    const parts = value.map(String).map((part) => part.trim()).filter(Boolean);
+    const parts = value
+      .map(String)
+      .map((part) => part.trim())
+      .filter(Boolean);
     return parts.length > 0 ? parts.join(" / ") : null;
   }
 
@@ -1061,7 +1124,10 @@ function readableNameList(value: unknown): string | null {
   if (parsed.length > 0) return parsed.join(" / ");
 
   if (trimmed.includes("|")) {
-    const parts = trimmed.split("|").map((part) => part.trim()).filter(Boolean);
+    const parts = trimmed
+      .split("|")
+      .map((part) => part.trim())
+      .filter(Boolean);
     return parts.length > 0 ? parts.join(" / ") : null;
   }
 
@@ -1074,7 +1140,10 @@ function parseArrayLikeNames(value: string): string[] {
   try {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) {
-      return parsed.map(String).map((part) => part.trim()).filter(Boolean);
+      return parsed
+        .map(String)
+        .map((part) => part.trim())
+        .filter(Boolean);
     }
   } catch {
     // Some backend/debug paths stringify arrays with single quotes.

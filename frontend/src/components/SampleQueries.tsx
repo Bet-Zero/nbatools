@@ -145,7 +145,7 @@ const STARTER_QUERY_GROUPS: StarterQueryGroup[] = [
       {
         label: "Lineup summary",
         query: "lineup with Tatum and Jaylen Brown",
-        resultHint: "fallback_table (lineup_summary)",
+        resultHint: "entity_summary (lineup_summary)",
       },
       {
         label: "Lineup leaderboard",

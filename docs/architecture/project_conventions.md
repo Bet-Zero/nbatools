@@ -175,9 +175,10 @@ Before adding a new natural feature, identify the underlying structured behavior
 
 If the behavior cannot be expressed clearly in structured form, it should be reconsidered before shipping.
 
-## 4.2 Preferred route classes
+## 4.2 Route and result classes
 
-Use explicit conceptual route classes whenever possible:
+Use explicit conceptual classes whenever possible. The current structured
+result inventory has eight types:
 
 - finder
 - summary
@@ -185,9 +186,16 @@ Use explicit conceptual route classes whenever possible:
 - comparison
 - leaderboard
 - streak
-- matchup / head-to-head
+- count
+- no-result / error-style result
 
-New features should fit into one of these route classes or justify a new one clearly.
+Public route names remain domain-specific and map into those result classes.
+For example, matchup and head-to-head routes produce comparison-shaped results,
+while count intent produces a count result without requiring a separate route
+name. New features should fit an existing class or justify a new one clearly.
+The generated
+[`repository_inventory.json`](../../contracts/repository_inventory.json) is
+the machine-checked result-type and route inventory.
 
 ## 4.3 Keep player/team symmetry intentional
 
@@ -294,9 +302,13 @@ Examples:
 
 - `SUMMARY`
 - `BY_SEASON`
+- `TOP_PERFORMERS`
 - `COMPARISON`
 - `SPLIT_COMPARISON`
 - `COUNT`
+- `FINDER`
+- `LEADERBOARD`
+- `STREAK`
 
 Do not rename output sections casually, because they may be consumed downstream.
 
@@ -403,6 +415,7 @@ The React frontend already renders these result types:
 - streak results
 - leaderboard tables
 - finder / matching-games tables
+- count results, including zero and optional matching-game detail
 - no-result status messages
 
 New result types should produce structured data that the existing component set can render. If a new layout is needed, add a component — do not change the engine to match a rendering assumption.

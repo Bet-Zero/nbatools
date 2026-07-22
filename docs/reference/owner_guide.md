@@ -15,11 +15,12 @@ current plan lives in [`ROADMAP.md`](../../ROADMAP.md) at the repo root.
 
 Someone types an NBA question. The engine reads the sentence and fills out a
 form (which player, which team, which season, what kind of question). It
-then picks one of about 30 "recipes" that can answer that kind of form.
-The recipe loads game data from CSV files and computes the answer. The
-answer gets wrapped with a headline sentence and labels, and the web page
-displays it. That's it. Everything else in this repo exists either to feed
-data into that pipeline or to check the answers coming out of it.
+then picks one of the registered "recipes" that can answer that kind of form.
+The [generated repository inventory](../../contracts/repository_inventory.json)
+records the current recipe count. The recipe loads game data and computes the
+answer. The answer gets wrapped with a headline sentence and labels, and the
+web page displays it. That's it. Everything else in this repo exists either to
+feed data into that pipeline or to check the answers coming out of it.
 
 ---
 
@@ -52,10 +53,11 @@ than guesses.
 **4. The recipe — recipe name in, numbers out.**
 Each route name maps to a command module, e.g.
 [`src/nbatools/commands/player_game_summary.py`](../../src/nbatools/commands/player_game_summary.py).
-The recipe loads game logs from the CSV files under `data/`, filters them
-with pandas (this player, last 10 games), and computes the numbers. There
-is no database and no external service at question time — just CSV files on
-disk.
+The recipe reads request-pinned CSV datasets through the project's configured
+data source, filters them with pandas (this player, last 10 games), and
+computes the numbers. Local mode reads files under `data/`; deployed R2 mode
+downloads files from one immutable generation into a local cache. No NBA API
+call is made while answering a question.
 
 **5. The envelope — numbers in, answer out.**
 `execute_natural_query()` in
@@ -70,8 +72,8 @@ filter labels (called chips), notes, and caveats. The React frontend
 
 - A *wrong* answer is almost always station 2 or 3 — the sentence was
   misread or sent to the wrong recipe.
-- A *missing* answer ("no data") is almost always station 4 — the CSVs
-  don't cover what was asked.
+- A *missing* answer ("no data") is almost always station 4 — required data
+  coverage or trust is unavailable for what was asked.
 - An answer that is right but *displayed* badly is station 5 or the
   frontend.
 
@@ -94,15 +96,18 @@ make exploratory-query-review-slice SLICE=001_player_last_n
 ```
 
 **Stage 2: The Raw QA corpus — "lock it in."**
-`qa/raw_query_answer_corpus.yaml` holds 314 queries where the right answer
-*has* been decided. Each case records what the engine must do: which
-recipe, what status, what shape of result. A tool re-asks all of them and
-fails loudly if any answer changed. Queries that pass human review in
-Stage 1 get *promoted* into this file — that's the link between your two
-systems. The files in `qa/harness_slices/` are just named subsets of the
-corpus so you can re-check one theme at a time. The file
-`qa/raw_query_answer_acceptance_families.yaml` is bookkeeping that records
-"a human reviewed these on this date."
+`qa/raw_query_answer_corpus.yaml` holds the current versioned query contracts;
+the exact count is generated from source and checked in the
+[repository inventory](../../contracts/repository_inventory.json).
+Each case records what the engine must do: which recipe, what status, and what
+shape of result. A tool re-asks all of them and fails loudly if any contract
+changed. Human acceptance remains a separate review state; putting a case in
+the corpus does not manufacture that acceptance. The files in
+`qa/harness_slices/` are named subsets of the corpus so you can re-check one
+theme at a time. The file
+`qa/raw_query_answer_acceptance_families.yaml` records family/variant
+expectations and the current review-closure state; it does not by itself prove
+human acceptance.
 
 ```bash
 make raw-query-answer-qa
@@ -110,8 +115,8 @@ make raw-query-answer-qa
 
 **Around the funnel, three ordinary safety nets:**
 
-- **pytest** (`tests/`, ~3,100 tests, `make test-query` and friends) —
-  normal code tests protecting the parser and engine internals.
+- **pytest** (`tests/`, with `make test-query` and related commands) — normal
+  code tests protecting the parser and engine internals.
 - **Smoke tests** (`make test-smoke-all`) — a small set of end-to-end
   natural queries through the real CLI and API paths.
 - **Visual QA** (`make visual-qa-screenshots`, plus the `/visual-qa` page)
@@ -162,7 +167,8 @@ new phrasing idea
   sentences, chips, metadata.
 - `src/nbatools/api.py` — the front door (station 1).
 - `frontend/src/` — the React page that displays answers.
-- `data/` — the CSV game data the recipes read.
+- `data/` — local datasets, validation manifests, and immutable-generation
+  pointers. Production can read the equivalent generation from R2.
 - `qa/` — the query funnel described above.
 - `tests/` — ordinary code tests.
 - `docs/` — deep documentation, mostly written by and for agents. You do

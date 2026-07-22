@@ -36,7 +36,7 @@ ONE_POSSESSION_NOTE_SUBSTRINGS = ("one_possession", "unfiltered")
 NATIONAL_TV_NOTE_SUBSTRINGS = ("national_tv", "unfiltered")
 STARTER_NOTE_SUBSTRINGS = ("starter", "unfiltered")
 BENCH_NOTE_SUBSTRINGS = ("bench", "unfiltered")
-ON_OFF_NOTE_SUBSTRINGS = ("on_off", "placeholder")
+ON_OFF_NOTE_SUBSTRINGS = ("on_off", "coverage-gated")
 LINEUP_NOTE_SUBSTRINGS = ("lineup", "coverage")
 
 STABLE_QUERY_SMOKE_CASES = (

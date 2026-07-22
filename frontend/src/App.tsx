@@ -500,7 +500,7 @@ export default function App() {
         <div>
           <h1 className={styles.appTitle}>nbatools</h1>
           <p className={styles.tagline}>
-            Ask any NBA stat question. Get a straight answer.
+            Ask a supported NBA stat question. Get a straight answer.
           </p>
         </div>
       </div>

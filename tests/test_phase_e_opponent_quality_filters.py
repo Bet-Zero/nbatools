@@ -3,6 +3,7 @@ import pytest
 from nbatools.commands.data_utils import resolve_opponent_quality_teams
 from nbatools.commands.natural_query import parse_query
 from nbatools.commands.player_game_summary import build_result as build_player_summary_result
+from nbatools.commands.structured_results import NoResult
 from nbatools.commands.team_record import build_team_record_result
 from nbatools.query_service import execute_natural_query
 
@@ -26,6 +27,27 @@ def test_playoff_team_quality_phrases_propagate_without_playoff_season_type():
     assert parsed["route"] == "team_record"
     assert parsed["route_kwargs"]["season_type"] == "Regular Season"
     assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "playoff teams"
+
+
+@pytest.mark.parametrize(
+    ("query", "expected_route"),
+    [
+        ("top scorers against contenders this season", "season_leaders"),
+        (
+            "players with most assists against playoff teams this season",
+            "season_team_leaders",
+        ),
+    ],
+)
+def test_unsupported_opponent_quality_routes_fail_closed(query, expected_route):
+    qr = execute_natural_query(query)
+
+    assert qr.route == expected_route
+    assert isinstance(qr.result, NoResult)
+    assert qr.result_status == "no_result"
+    assert qr.result_reason == "filter_not_supported"
+    assert qr.metadata["unsupported_filters"] == ["opponent_quality"]
+    assert any("opponent_quality" in note for note in qr.result.notes)
 
 
 @pytest.mark.parametrize(

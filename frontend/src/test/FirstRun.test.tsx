@@ -85,6 +85,22 @@ beforeEach(() => {
 });
 
 describe("first-run starter queries", () => {
+  it("scopes the public promise to supported NBA stat questions", async () => {
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Data freshness")).toBeInTheDocument(),
+    );
+    expect(
+      screen.getAllByText(
+        "Ask a supported NBA stat question. Get a straight answer.",
+      ),
+    ).toHaveLength(2);
+    expect(
+      screen.queryByText("Ask any NBA stat question. Get a straight answer."),
+    ).not.toBeInTheDocument();
+  });
+
   it("keeps keyboard flow from query input to starter queries", async () => {
     const user = userEvent.setup();
     render(<App />);

@@ -1,7 +1,8 @@
 # API Layer
 
-The nbatools API is a thin local HTTP layer over the query service.
-It is the first UI-facing backend surface — not the final UI.
+The nbatools API is the HTTP transport layer over the query service. Public
+query endpoints stay thin; the local FastAPI application also hosts explicitly
+gated operator-only feedback-review endpoints for development workflows.
 
 ## Running
 
@@ -134,6 +135,35 @@ disabled. No automatic public query diagnostics are stored. Future activation
 requires the separate privacy and deployment contract; it is not a current
 release requirement.
 
+### Authentication and local admin feedback
+
+The contracted public routes—including query, freshness/readiness, and the
+disabled feedback compatibility endpoint—do not implement user-account
+authentication. CORS, request budgets, rate limits, and request IDs are
+transport safeguards, not authentication; any platform or edge access policy
+is a deployment responsibility.
+
+Feedback review is a separate, local-only operator surface:
+
+- the FastAPI development server can serve the `/admin/feedback` UI shell and
+  `/api/admin/feedback/*` data endpoints; the public Vercel package has no
+  functions or rewrites for them
+- the data endpoints return `404 admin_feedback_disabled` unless
+  `NBATOOLS_ADMIN_FEEDBACK_ENABLED` is true
+- when `NBATOOLS_ADMIN_TOKEN` is configured, every admin data request must
+  supply the same value in `X-NBATools-Admin-Token`; an enabled deployed
+  FastAPI environment fails closed when the token is not configured
+- local development may omit the token only after explicitly enabling the
+  operator surface; the UI shell itself grants no feedback-data access
+- the admin handlers read immutable feedback records and write only separate
+  triage-overlay objects. They do not alter query execution or rewrite source
+  feedback records
+
+The authoritative route-placement boundary is
+`contracts/public_http_routes.json`; operational enablement and storage rules
+are documented in
+[`query_feedback_review.md`](../operations/query_feedback_review.md).
+
 ### `GET /freshness`
 
 Returns structured data freshness status — current_through, manifest state, per-season classification, and last refresh outcome.
@@ -186,7 +216,7 @@ Every query response has the same top-level shape:
 | `query`           | string      | Original query text or synthetic description                                                                        |
 | `route`           | string/null | Resolved route name                                                                                                 |
 | `result_status`   | string      | `"ok"`, `"no_result"`, or `"error"`                                                                                 |
-| `result_reason`   | string/null | `"no_match"`, `"no_data"`, `"unrouted"`, `"ambiguous"`, `"unsupported"`, `"error"`, or `null` when status is `"ok"` |
+| `result_reason`   | string/null | Canonical reason code documented below, or `null` when status is `"ok"`                                                    |
 | `current_through` | string/null | Latest game date covered by the data                                                                                |
 | `notes`           | list[str]   | Semantic annotations                                                                                                |
 | `caveats`         | list[str]   | Warnings or limitations                                                                                             |
@@ -203,7 +233,9 @@ Expected failures produce `result_status: "no_result"`:
 | `no_match`      | Data exists, filters matched nothing |
 | `no_data`       | Season/type data file unavailable |
 | `unsupported`   | Invalid filter combination, unsupported stat, or unknown route |
+| `filter_not_supported` | Parsed filter cannot be applied safely to the selected route or data |
 | `ambiguous`     | Entity resolution found multiple matches |
+| `ambiguous_query` | Recognized query has multiple valid intents |
 
 System-level failures produce `result_status: "error"`:
 
@@ -275,12 +307,16 @@ unexpected exception text may not.
     └───────────────────┘
 ```
 
-The API layer contains no business logic. It validates input, calls the query service, and serializes the result.
+Query business logic remains outside the API layer. The API owns transport
+validation, admission limits, request correlation and operational outcomes,
+the local admin-feedback gate, query-service calls, and response
+serialization.
 
 ## What is now UI-callable
 
 - Natural-language queries (any query the CLI `ask` command supports)
-- All 30 structured routes (summaries, comparisons, finders, streaks, leaderboards, records, playoff, occurrence, on/off, lineup, by-decade)
+- All registered structured routes (summaries, comparisons, finders, streaks,
+  leaderboards, records, playoff, occurrence, on/off, lineup, by-decade)
 - Route discovery
 - Health checks
 - **Data freshness status** (`/freshness` endpoint — status, current_through, per-season details, last refresh outcome)
@@ -292,4 +328,5 @@ The API layer contains no business logic. It validates input, calls the query se
 - Auto-refresh runner (`pipeline auto-refresh`) — stays CLI-only
 - Analysis scripts
 - Export to file (CSV/TXT/JSON export is a CLI concern)
-- Authentication, deployment, background jobs
+- Public user-account authentication and platform/edge access control
+- Deployment and background jobs

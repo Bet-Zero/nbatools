@@ -1,7 +1,7 @@
 """Thin local HTTP API layer over the nbatools query service.
 
 This module exposes the structured query engine through a small FastAPI
-application so that a future UI or any HTTP client can call the engine
+application so that the web UI and other HTTP clients can call the engine
 directly without going through the CLI.
 
 Run locally with::

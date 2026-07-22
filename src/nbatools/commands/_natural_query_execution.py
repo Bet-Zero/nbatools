@@ -292,8 +292,8 @@ def _route_context_filters_for_execution(
 ) -> tuple[dict, list[str], list[str]]:
     """Route context-filter kwargs through capability-aware transport.
 
-    Phase G routes keep clutch / period / role kwargs so later execution-backed
-    work can happen on a single shared path.
+    Routes with shipped clutch / period / role support retain those kwargs for
+    execution. Other route/filter combinations are recorded as blocked.
 
     Returns ``(sanitized_kwargs, notes, blocked_filters)`` where
     ``blocked_filters`` is a non-empty list when at least one parsed filter
@@ -351,18 +351,21 @@ def _route_context_filters_for_execution(
     return routed, notes, blocked_filters
 
 
-def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, list[str]]:
+def _resolve_opponent_quality_kwargs(
+    route: str,
+    kwargs: dict,
+    *,
+    original_kwargs: dict | None = None,
+) -> tuple[dict, list[str], list[str]]:
     sanitized = dict(kwargs)
     opponent_quality = sanitized.pop("opponent_quality", None)
 
     if opponent_quality is None:
-        return sanitized, []
+        return sanitized, [], []
 
     if route not in _SUPPORTED_OPPONENT_QUALITY_ROUTES:
-        return sanitized, [
-            "opponent_quality filter is not supported with current data; try removing "
-            "this filter or asking for standard player, team, or game stats."
-        ]
+        _mark_original_unsupported_filter(original_kwargs, "opponent_quality")
+        return sanitized, [], ["opponent_quality"]
 
     season = sanitized.get("season")
     start_season = sanitized.get("start_season")
@@ -382,7 +385,7 @@ def _resolve_opponent_quality_kwargs(route: str, kwargs: dict) -> tuple[dict, li
             "across the selected seasons."
         )
 
-    return sanitized, notes
+    return sanitized, notes, []
 
 
 def _normalize_opponent_conference(value: str | None) -> str | None:
@@ -664,15 +667,14 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "rookie_leaderboard":
         return (
-            "rookie leaderboards are not supported by the current season "
-            "leaderboard contract; use standard player leaderboards instead "
+            "rookie leaderboards are supported with roster-experience coverage; "
+            "retry with an explicit stat and season "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id == "role_leaderboard":
         return (
-            "league-wide starter/bench leaderboards are not supported by the "
-            "current season leaderboard contract; use named-player starter or "
-            "bench queries instead "
+            "starter and bench leaderboards are supported with trusted role "
+            "coverage; retry with an explicit starter or bench role, stat, and season "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id == "team_bench_scoring":
@@ -690,8 +692,9 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
         )
     if filter_id == "single_team_advanced_stat_summary":
         return (
-            "single-team advanced-stat summaries are not supported yet; try a "
-            "team advanced leaderboard, like 'Which teams have the best net rating?' "
+            "date-windowed single-team advanced-stat summaries are not supported; "
+            "remove the date window or ask for a team advanced leaderboard, like "
+            "'Which teams have the best net rating?' "
             f"(blocked: {', '.join(all_filters)})"
         )
     if filter_id == "opponent_conference":
@@ -789,7 +792,9 @@ def _execute_build_result(
             ],
         )
 
-    sanitized_kwargs, notes = _resolve_opponent_quality_kwargs(route, kwargs)
+    sanitized_kwargs, notes, opponent_quality_blocked_filters = _resolve_opponent_quality_kwargs(
+        route, kwargs, original_kwargs=kwargs
+    )
     sanitized_kwargs, conference_notes, conference_blocked_filters = (
         _resolve_opponent_conference_kwargs(route, sanitized_kwargs, original_kwargs=kwargs)
     )
@@ -802,6 +807,11 @@ def _execute_build_result(
     notes.extend(division_notes)
     unsupported_filters = _normalize_unsupported_filters(
         sanitized_kwargs.pop("unsupported_filters", None)
+    )
+    unsupported_filters.extend(
+        blocked_filter
+        for blocked_filter in opponent_quality_blocked_filters
+        if blocked_filter not in unsupported_filters
     )
     sanitized_kwargs, context_notes, blocked_filters = _route_context_filters_for_execution(
         route, sanitized_kwargs

@@ -622,26 +622,41 @@ Before adding or consuming a primitive:
 
 ## Frontend file structure
 
+The tree below reflects the current tracked architecture. Repeated CSS-module
+siblings and individual files inside the pattern, primitive, and test-suite
+groups are collapsed for readability.
+
 ```
 frontend/src/
   api/
-    types.ts             # TypeScript interfaces for API envelope, result types, query history
-    client.ts            # Typed fetch wrappers (fetchHealth, postQuery, fetchFreshness, etc.)
+    client.ts             # Typed HTTP wrappers
+    savedQueryTypes.ts    # Saved-query persistence contracts
+    types.ts              # API envelope, route, result, feedback, and freshness types
+  assets/
+    hero.png
   components/
+    AppShell.tsx          # Header/freshness/query/result page regions
     QueryBar.tsx          # Text input + submit
     SampleQueries.tsx     # Pre-filled example query buttons
     EmptyState.tsx        # Welcome state shown before first query
     QueryHistory.tsx      # In-session query history list
     FreshnessStatus.tsx   # Collapsible freshness panel (status, current_through, details)
     ResultEnvelope.tsx    # Envelope metadata (status, route, notes, caveats)
+    QueryFeedback.tsx     # Deferred/manual feedback UI boundary
+    queryFeedbackPayload.ts # Minimized feedback-payload builder
+    SaveQueryDialog.tsx   # Save-query dialog
+    SavedQueries.tsx      # Saved-query list and actions
     results/
       ResultRenderer.tsx  # Route-to-pattern result display entry point
       config/
         routeToPattern.ts # API route -> pattern config map
       patterns/           # Shared result-pattern components
       primitives/         # ResultHero, ResultTable, EntityIdentity, RawDetailToggle
+      resultShapes.ts     # Presentation-only response-shape helpers
     DataTable.tsx         # NBA-specific wrapper over the generic table primitive
     NoResultDisplay.tsx   # No-result and error state display
+    noResultDisplayUtils.ts # No-result recovery-copy helpers
+    RawDetailToggle.tsx   # Legacy shared raw-detail control
     RawJsonToggle.tsx     # Raw JSON toggle
     CopyButton.tsx        # Copy-to-clipboard button
     DevTools.tsx          # Structured query panel (route selector + kwargs)
@@ -661,19 +676,40 @@ frontend/src/
     TeamBadge.tsx         # Team fallback identity mark
     index.ts              # Barrel export for primitives and prop types
   hooks/
+    useModalDialog.ts     # Dialog focus/escape behavior
     useQueryHistory.ts    # In-session query history state hook
+    useSavedQueries.ts    # Saved-query state and actions
     useUrlState.ts        # URL search-param sync for shareable deep links
+  lib/
+    identity.ts           # Presentation identity helpers
+    reviewScreenshots.ts  # Internal screenshot-review helpers
+  storage/
+    savedQueryStorage.ts  # Browser-local saved-query persistence
+  styles/
+    global.css
+    team-colors.json
+    tokens.css
   test/
-    setup.ts             # Vitest + jest-dom setup
-    client.test.ts       # API client tests
-    DataTable.test.tsx   # DataTable component tests
-    ResultRenderer.test.tsx # Pattern-based result rendering tests
-    UIComponents.test.tsx # EmptyState, NoResult, Loading, ErrorBox tests
-    FreshnessStatus.test.tsx # Freshness panel rendering and status display tests
-    useUrlState.test.ts  # URL state parsing, building, and hook behavior tests
+    resultRenderer/       # Per-pattern renderer suites
+    AdminFeedbackPage.test.tsx
+    QueryFeedback.test.tsx
+    ReviewPage.test.tsx
+    SavedQueries.test.tsx
+    VisualQaPage.test.tsx
+    client.test.ts
+    resultShapes.test.ts
+    routeToPattern.test.ts
+    savedQueryStorage.test.ts
+    setup.ts              # Vitest + jest-dom setup
   App.tsx                # Main app component — wires state + components
   App.module.css         # App shell styles
+  AdminFeedbackPage.tsx  # Protected feedback-review surface
+  displayMode.ts         # Product/internal display-mode boundary
+  InternalRoutes.tsx     # Local/preview-only review route switch
   main.tsx               # React entry point
+  ReviewPage.tsx         # Retained internal fixture-review page
+  VisualQaPage.tsx       # Local/preview visual-QA page
+  visualQaCases.ts       # Visual-QA case loader/contracts
 ```
 
 ## Running frontend tests

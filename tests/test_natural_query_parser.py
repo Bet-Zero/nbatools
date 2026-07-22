@@ -1562,7 +1562,7 @@ def test_opponent_quality_definition_is_structured():
 # ---------------------------------------------------------------------------
 
 
-def test_jokic_on_off_routes_to_placeholder_route():
+def test_jokic_on_off_routes_to_coverage_gated_route():
     parsed = parse_query("Jokic on/off")
     assert parsed["route"] == "player_on_off"
     assert parsed["intent"] == "on_off"
@@ -1571,7 +1571,7 @@ def test_jokic_on_off_routes_to_placeholder_route():
 
 
 @pytest.mark.parametrize("query", ["Jokic on off", "Nikola Jokic on-off"])
-def test_on_off_token_variants_route_to_placeholder_route(query):
+def test_on_off_token_variants_route_to_coverage_gated_route(query):
     parsed = parse_query(query)
     assert parsed["route"] == "player_on_off"
     assert parsed["intent"] == "on_off"
@@ -1628,10 +1628,10 @@ def test_on_off_query_does_not_set_without_player_absence_slot():
     assert parsed["without_player"] is None
 
 
-def test_on_off_note_appended():
+def test_on_off_coverage_note_appended():
     parsed = parse_query("Jokic on/off")
     notes = parsed.get("notes", [])
-    assert any("on_off" in n and "placeholder" in n for n in notes)
+    assert any("on_off" in n and "coverage-gated" in n for n in notes)
 
 
 # ---------------------------------------------------------------------------

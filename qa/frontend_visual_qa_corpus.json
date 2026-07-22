@@ -161,80 +161,80 @@
     },
     {
       "id": "rookie_scoring_leaders_wave4",
-      "category": "unsupported_role_leaderboard",
+      "category": "experience_filtered_leaderboard",
       "query": "rookie scoring leaders this season",
       "viewports": [
         "desktop_1280",
         "mobile_390"
       ],
       "visual_focus": [
-        "Unsupported rookie message is the first thing a reviewer sees",
-        "Title, body, and diagnostics read in clear hierarchy",
-        "Long unsupported details do not crowd the primary state"
+        "Rookie context stays visibly tied to the successful scoring leaderboard",
+        "The requested points metric and first ranked player read as the primary answer",
+        "Qualification and coverage notes remain secondary to the leaderboard"
       ],
       "desktop_focus": [
-        "Primary rookie boundary message remains dominant",
-        "Secondary diagnostics stay visually recessed"
+        "Rookie context, hero answer, and first rows read as one result block",
+        "Player, team, and points columns align for quick scanning"
       ],
       "mobile_focus": [
-        "Primary title and message stay visible before the diagnostics",
-        "Unsupported copy wraps cleanly without collapsing spacing"
+        "Rookie context remains visible before the leaderboard rows",
+        "Player, team, and points cells stay readable without overlap"
       ],
       "expected_primary_visual_concerns": [
-        "Unsupported messaging can be visually buried beneath diagnostics",
-        "Mobile wrapping may make the boundary message feel secondary"
+        "Rookie context can become visually secondary to generic leaderboard copy",
+        "Player and team columns may compress on mobile"
       ]
     },
     {
       "id": "starter_assist_leaders_wave4",
-      "category": "unsupported_role_leaderboard",
+      "category": "role_filtered_leaderboard",
       "query": "starter assist leaders this season",
       "viewports": [
         "desktop_1280",
         "mobile_390"
       ],
       "visual_focus": [
-        "League-wide starter/bench unsupported message is prominent",
-        "Long role wording stays readable without awkward breaks",
-        "Diagnostics remain below the primary explanation"
+        "Starter role context stays visibly tied to the successful assist leaderboard",
+        "The requested assists metric and first ranked player read as the primary answer",
+        "Starter-role coverage notes remain secondary to the leaderboard"
       ],
       "desktop_focus": [
-        "Primary starter/bench boundary copy dominates the card",
-        "Long role phrasing keeps its intended reading order"
+        "Starter context, hero answer, and first rows read as one result block",
+        "Player, team, and assists columns align for quick scanning"
       ],
       "mobile_focus": [
-        "Role wording wraps cleanly in the title and message area",
-        "Diagnostic copy remains secondary after wrapping"
+        "Starter context remains visible before the leaderboard rows",
+        "Player, team, and assists cells stay readable without overlap"
       ],
       "expected_primary_visual_concerns": [
-        "Lengthy role wording may wrap into visually noisy lines",
-        "Diagnostics can compete with the primary unsupported message"
+        "Starter context can become visually detached from a generic leaderboard hero",
+        "Coverage notes can compete with leaderboard rows on narrow screens"
       ]
     },
     {
       "id": "bench_scoring_leaders_wave4",
-      "category": "unsupported_role_leaderboard",
+      "category": "role_filtered_leaderboard",
       "query": "bench players scoring leaders this season",
       "viewports": [
         "desktop_1280",
         "mobile_390"
       ],
       "visual_focus": [
-        "League-wide bench unsupported boundary is clear before diagnostics",
-        "The no-result layout stays balanced even though the card is content-light",
-        "Bench wording does not feel hidden or secondary"
+        "Bench role context stays visibly tied to the successful scoring leaderboard",
+        "The requested points metric and first ranked player read as the primary answer",
+        "Bench-role coverage notes remain secondary to the leaderboard"
       ],
       "desktop_focus": [
-        "Primary bench boundary message remains the dominant element",
-        "Whitespace and diagnostics do not make the card feel unfinished"
+        "Bench context, hero answer, and first rows read as one result block",
+        "Player, team, and points columns align for quick scanning"
       ],
       "mobile_focus": [
-        "No-result state keeps its hierarchy after line wraps",
-        "Bench boundary message remains visible without scrolling"
+        "Bench context remains visible before the leaderboard rows",
+        "Player, team, and points cells stay readable without overlap"
       ],
       "expected_primary_visual_concerns": [
-        "Short no-result cards can feel sparse or unbalanced",
-        "Bench boundary wording may be crowded by diagnostics on mobile"
+        "Bench context can become visually detached from a generic leaderboard hero",
+        "Coverage notes can compete with leaderboard rows on narrow screens"
       ]
     },
     {

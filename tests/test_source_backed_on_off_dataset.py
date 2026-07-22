@@ -151,7 +151,7 @@ def test_player_on_off_filters_presence_state(tmp_path, monkeypatch):
     assert result.summary["presence_state"].tolist() == ["on"]
 
 
-def test_player_on_off_keeps_placeholder_when_dataset_missing(tmp_path, monkeypatch):
+def test_player_on_off_fails_closed_when_dataset_missing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     result = build_on_off_result(
@@ -163,7 +163,7 @@ def test_player_on_off_keeps_placeholder_when_dataset_missing(tmp_path, monkeypa
 
     assert isinstance(result, NoResult)
     assert result.reason == "unsupported"
-    assert any("placeholder" in note for note in result.notes)
+    assert any("coverage-gated" in note for note in result.notes)
 
 
 def test_player_on_off_rejects_untrusted_coverage(tmp_path, monkeypatch):

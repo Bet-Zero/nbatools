@@ -67,12 +67,20 @@ points per game continue to use the existing per-game semantics.
 Unsupported leaderboard boundaries currently return `no_result` /
 `filter_not_supported` rather than broad fallback leaderboards:
 
-- rookie leaderboards, such as `rookie scoring leaders this season`
-- league-wide starter/bench leaderboards, such as `starter assist leaders this season`
 - fouls-drawn leaderboards, such as `players best at drawing fouls`
 - team bench scoring, such as `Celtics bench scoring this season`
-- single-team advanced-stat summaries, such as `Warriors net rating this season`
-  (league-wide team advanced-stat leaderboards remain supported)
+- date-windowed, season-range, opponent, home/away, or wins/losses variants of
+  single-team advanced metrics
+
+Rookie and sophomore leaderboards execute when roster-experience coverage is
+available. League-wide starter and bench leaderboards execute when every
+requested player-game has trusted role coverage. Missing or untrusted coverage
+returns an explicit refusal instead of a partial ranking.
+
+An unqualified, single-season advanced team query such as
+`Warriors net rating this season` is supported through the complete team
+leaderboard and rank. The filtered variants listed above remain outside the
+current boundary.
 
 ## Finders
 
@@ -512,6 +520,6 @@ nbatools-cli query player-game-summary --player "Nikola Jokić" --season 2025-26
 
 # 8. Current Tested State
 
-Current tested state:
-
-- Python pytest collection: **3,100+ test items** across 80 test files
+The suite covers parser, routing, engine, result-contract, API, CLI, frontend,
+and Raw QA behavior. Use the test runner's collection output when an exact
+current count is needed.

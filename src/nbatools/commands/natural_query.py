@@ -3232,7 +3232,7 @@ def _finalize_route(parsed: dict) -> dict:
                 nationally_televised=nationally_televised,
             )
         )
-    if route not in {"player_game_summary", "player_game_finder"}:
+    if route not in {"player_game_summary", "player_game_finder", "season_leaders"}:
         if role_note := build_role_filter_note(role=role):
             notes.append(role_note)
     if opponent_quality_note := build_opponent_quality_note(opponent_quality=opponent_quality):

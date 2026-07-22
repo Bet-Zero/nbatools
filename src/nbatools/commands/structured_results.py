@@ -1,21 +1,23 @@
 """Structured result layer for nbatools engine.
 
-Provides typed result containers for summary, comparison, and split-summary
-query classes.  Each container holds the real data (as DataFrames / dicts)
-and can render itself into:
-  - labeled CSV text  (current raw-output transport, backwards compatible)
-  - a plain dict      (for JSON export / future API consumers)
+Provides typed containers for every query class: summary, comparison, split
+summary, finder, leaderboard, streak, and count, plus ``NoResult``. Each
+container holds the real data (as DataFrames / dicts) and can render itself
+into:
 
-Commands build these via ``build_result()`` helpers.  The existing ``run()``
-functions call ``build_result().to_labeled_text()`` so stdout behaviour is
-unchanged.
+- labeled CSV text for CLI and raw-output compatibility
+- a plain dict for the API, web UI, and JSON export
+
+Commands construct these objects through ``build_result()`` helpers. CLI
+wrappers render the structured objects while API consumers use their dict
+representation.
 
 Trust/status metadata
 ---------------------
 Every result carries first-class trust fields:
 
 - ``result_status``   — "ok" | "no_result" | "error"
-- ``result_reason``   — finer detail  ("no_match" | "no_data" | "unrouted" | free text)
+- ``result_reason``   — canonical ``ResultReason`` code (or ``None`` on success)
 - ``current_through`` — latest final game_date the data covers (when determinable)
 - ``notes`` / ``caveats`` — semantic annotations
 """
@@ -36,7 +38,8 @@ import pandas as pd
 #
 #   no_match    → no_result   (data exists, filters matched nothing)
 #   no_data     → no_result   (data files missing — expected for unloaded seasons)
-#   unsupported → no_result   (invalid filter combo or unsupported stat)
+#   unsupported → no_result   (unsupported query type, combination, or stat)
+#   filter_not_supported → no_result (recognised filter cannot be applied safely)
 #   ambiguous   → no_result   (entity resolution found multiple matches)
 #   ambiguous_query → no_result (recognised query has multiple valid intents)
 #   unrouted    → error       (query could not be parsed/routed)
@@ -62,7 +65,8 @@ class ResultReason(StrEnum):
 
     - ``no_match``    → ``no_result`` — data exists, filters matched nothing
     - ``no_data``     → ``no_result`` — underlying data file is unavailable
-    - ``unsupported`` → ``no_result`` — invalid filter combination or stat
+    - ``unsupported`` → ``no_result`` — unsupported query type, combination, or stat
+    - ``filter_not_supported`` → ``no_result`` — recognised filter cannot be applied safely
     - ``ambiguous``   → ``no_result`` — multiple entity matches
     - ``ambiguous_query`` → ``no_result`` — multiple valid query intents
     - ``unrouted``    → ``error``     — query could not be parsed/routed
@@ -91,11 +95,10 @@ class ResultReason(StrEnum):
 class NoResult:
     """Represents a query that matched no data.
 
-    ``reason`` distinguishes *why* the result is empty:
-    - ``no_match``  — data files exist but filters produced nothing
-    - ``no_data``   — the underlying season/type data is unavailable
-    - ``unrouted``  — the query could not be routed to a command
-    - ``error``     — an unexpected error occurred
+    ``reason`` distinguishes *why* the result is empty using the canonical
+    ``ResultReason`` values: ``no_match``, ``no_data``, ``unsupported``,
+    ``filter_not_supported``, ``ambiguous``, ``ambiguous_query``, ``unrouted``,
+    or ``error``.
     """
 
     query_class: str

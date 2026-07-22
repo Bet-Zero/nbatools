@@ -6,7 +6,10 @@
 
 ## 1. The core problem
 
-The goal is a system that can answer any NBA stat question. The hard part is **not** the stats — it's the input.
+The goal is a system that can understand messy input and answer questions
+inside the documented supported NBA-stat boundary, while failing closed for
+unsupported requests. Within that boundary, the hard part is often **not** the
+stats — it's the input.
 
 Users won't type clean questions. They'll type search fragments, shorthand, abbreviations, typos, and commands. A parser that only accepts question format will fail on a large share of real usage.
 
