@@ -211,6 +211,14 @@ operations for S3-compatible `PutObject`](https://developers.cloudflare.com/r2/a
 the publisher uses those preconditions for immutable objects and pointer
 compare-and-swap ownership.
 
+The ordinary runtime/publication configuration may provide `R2_SESSION_TOKEN`
+but does not require it. The isolated live-recovery drill has a stricter
+boundary: it requires two distinct temporary session-token credentials, one
+read/write credential scoped only to the exact drill prefix and one production
+read-only credential. Both clients disable SDK retries. The live path must not
+load credentials through the ordinary `.env` fallback, and credential values
+must never be copied into tracked files, logs, shell output, or evidence.
+
 For the first migration from legacy canonical R2 keys, publish the currently
 trusted snapshot as a baseline generation before making further data changes.
 Automated rollback to unmanifested legacy R2 keys is refused; after this

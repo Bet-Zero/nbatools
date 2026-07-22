@@ -44,6 +44,18 @@ class GenerationValidationError(GenerationPublicationError):
     """Raised when a staged generation fails validation."""
 
 
+class GenerationObjectValidationError(GenerationValidationError):
+    """Identify the exact immutable object that failed rollback validation."""
+
+    def __init__(self, generation_id: str, object_key: str, reason: str):
+        self.generation_id = generation_id
+        self.object_key = object_key
+        self.reason = reason
+        super().__init__(
+            f"R2 rollback generation object failed verification: {object_key} ({reason})"
+        )
+
+
 class GenerationConflictError(GenerationPublicationError):
     """Raised when immutable data or active-pointer ownership changed."""
 
@@ -701,14 +713,12 @@ def _validate_r2_manifest_inventory(
         key = f"{GENERATIONS_DIR}/{generation}/{relative}"
         response = _head_r2_object(client, bucket, key)
         metadata = (response or {}).get("Metadata") or {}
-        if (
-            response is None
-            or response.get("ContentLength") != item.get("size_bytes")
-            or metadata.get(SHA256_METADATA_KEY) != item.get("sha256")
-        ):
-            raise GenerationValidationError(
-                f"R2 rollback generation object failed verification: {key}"
-            )
+        if response is None:
+            raise GenerationObjectValidationError(generation, key, "missing")
+        if response.get("ContentLength") != item.get("size_bytes") or metadata.get(
+            SHA256_METADATA_KEY
+        ) != item.get("sha256"):
+            raise GenerationObjectValidationError(generation, key, "metadata_mismatch")
 
 
 def _head_r2_object(client: Any, bucket: str, key: str) -> dict[str, Any] | None:

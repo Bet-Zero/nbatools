@@ -84,6 +84,21 @@ The drill uses temporary local data and an in-memory R2 simulator only. See
 [`recovery.md`](recovery.md) for code rollback, restore, backup, credential-loss,
 incident-escalation, and live-evidence requirements.
 
+`pipeline live-recovery-drill-plan` is the separate network-free E-03B
+preparation path. It validates the approved immutable local generation and
+writes a hash-bound plan; it cannot execute the live drill or load R2
+credentials. The plan requires the full current-main SHA and a SHA-256
+fingerprint of the exact R2 account target, without persisting the plain
+account ID. See the recovery runbook for its exact options, isolation model,
+operation ceilings, and still-open external authorization gates.
+
+For a later exactly authorized live drill, use two distinct temporary R2
+credentials: read/write access to only the exact drill prefix, and read-only
+access for the exact production preflight objects. Both must supply a session
+token and use a one-attempt SDK client so operation ceilings remain enforceable.
+Do not load these through the ordinary `.env` fallback or add any credential
+value to tracked files, command output, logs, or evidence.
+
 For the initial R2 migration, first publish the currently trusted last-good
 snapshot as a baseline generation. Only then stage and publish a changed
 candidate. Automated rollback to unmanifested legacy R2 keys is intentionally

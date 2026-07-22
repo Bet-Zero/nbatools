@@ -9,6 +9,7 @@ from typer.testing import CliRunner
 from nbatools.commands.pipeline.sync_r2 import (
     R2CredentialError,
     R2SyncError,
+    create_r2_client,
     load_r2_config,
     run_sync_r2,
 )
@@ -121,6 +122,48 @@ def test_load_r2_config_reports_missing_credentials():
     assert "Missing R2 environment variables" in message
     assert "R2_ACCOUNT_ID" in message
     assert "R2_SECRET_ACCESS_KEY" in message
+
+
+def test_r2_config_and_client_support_scoped_session_token_without_retries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_client(service: str, **kwargs):
+        captured["service"] = service
+        captured.update(kwargs)
+        return object()
+
+    monkeypatch.setattr("boto3.client", fake_client)
+    config = load_r2_config(
+        env={**VALID_ENV, "R2_SESSION_TOKEN": "temporary-session-token"},
+        env_file=None,
+    )
+
+    create_r2_client(config, disable_retries=True)
+
+    assert config.session_token == "temporary-session-token"
+    assert captured["service"] == "s3"
+    assert captured["aws_session_token"] == "temporary-session-token"
+    assert captured["config"].retries == {
+        "total_max_attempts": 1,
+        "mode": "standard",
+    }
+
+
+def test_r2_config_repr_hides_all_credentials() -> None:
+    config = load_r2_config(
+        env={**VALID_ENV, "R2_SESSION_TOKEN": "temporary-session-token"},
+        env_file=None,
+    )
+
+    rendered = repr(config)
+
+    assert "account-id" in rendered
+    assert "nbatools-data" in rendered
+    assert "access-key-id" not in rendered
+    assert "secret-access-key" not in rendered
+    assert "temporary-session-token" not in rendered
 
 
 def test_pipeline_sync_r2_cli_rejects_mutable_upload_without_traceback(

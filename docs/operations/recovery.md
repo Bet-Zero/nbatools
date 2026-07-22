@@ -53,6 +53,94 @@ These timings are a lower-bound implementation measurement. They do not include
 real dataset size, network transfer, provider recovery, diagnosis, deployment,
 DNS/cache propagation, or human response, so they are not an RTO or RPO.
 
+## Prepared live drill boundary
+
+The current production pointer retains `legacy` as its previous generation, so
+the ordinary root-level `rollback-generation --target r2` command is not a safe
+live drill. It correctly refuses that unmanifested target. E-03B therefore uses
+an isolated prefix in the existing bucket and never writes root
+`metadata/active_generation.json` or root `generations/` objects.
+
+Prepare the exact local-only plan with:
+
+```bash
+nbatools-cli pipeline live-recovery-drill-plan \
+  --source-generation-dir data/generations/<approved-local-generation> \
+  --source-generation <approved-local-generation> \
+  --repository-commit <current-main-sha> \
+  --drill-id e03b-<current-main-short-sha>-<date>-<sequence> \
+  --r2-account-id-sha256 <sha256-of-exact-r2-account-id> \
+  --bucket-name nbatools-data \
+  --production-url https://<accepted-production-host> \
+  --expected-production-generation <verified-production-generation> \
+  --output <evidence-path>.json
+```
+
+Planning reads and validates the immutable local generation only. It does not
+load credentials or contact R2, Vercel, or production. The plan is hash-bound
+to the full repository commit, hashed R2 account target, bucket, production
+generation, local manifest, isolated prefix, object and byte counts, and
+operation ceilings. The plain account ID is not written to the plan. Any field
+change invalidates the plan hash and therefore any later authorization.
+
+The approved-source boundary currently contains 684 manifested files and
+401,730,141 source bytes. The prepared drill hard-stops above 689 live isolated
+objects, 401,900,000 uploaded bytes, 695 Class A operations, 3,448 Class B
+operations, or 690 deletes. It also caps downloaded byte verification at
+401,900,000 bytes. The client has no general key forwarding: ordinary
+S3-shaped publication and rollback calls are rewritten beneath the exact
+`recovery-drills/e03b-.../` prefix. A separate provider credential performs
+production reads through an exact allowlist and exposes no mutation methods.
+The write credential must prove that a root-pointer HEAD is denied before the
+first mutation. Root writes, a different account or bucket, path escape,
+pagination beyond the expected inventory, and any ceiling breach fail closed.
+
+The separately authorized execution sequence will:
+
+1. prove a typed readiness/deployment-smoke result is bound to the planned URL,
+   deployment, and generation; prove the full production manifest/inventory
+   match the approved local source; and prove the isolated prefix is empty;
+2. restore the full source and activate a tiny valid candidate inside only the
+   isolated prefix;
+3. remove one manifested restored object, prove rollback refuses the incomplete
+   target without moving the isolated pointer, restore captured exact bytes and
+   SHA-256 metadata, download and hash the restored objects, then conditionally
+   roll back;
+4. prove the candidate remains retained and the real production pointer and
+   readiness did not change; and
+5. require the exact expected isolated key set, delete only that inventory,
+   prove the prefix is empty, and rerun the bound production readiness and
+   pointer checks.
+
+Both provider clients are separate, temporary, session-token credentials and
+must report one total SDK attempt. The mutation credential is provider-scoped
+to the one drill prefix with read/write access; the production credential is
+read-only. A timeout or other ambiguous
+mutation result is never retried or automatically cleaned up; the prefix is
+not mutated further after failure, and its exact state must be inspected using
+the redacted failure receipt. Authorization expiry is checked before every
+write or delete. Successful cleanup occurs only after every
+production-preservation invariant passes; cleanup after expiry or failure
+requires a new exact approval.
+
+Preparation is not execution authorization. A current plan-bound owner
+approval, Standard storage proof, `$0` projected cost proof, prefix-scoped
+temporary mutation-credential proof, separate production-read-only credential
+proof, exact R2 account/bucket proof, current production preflight receipt, and
+an independent backup receipt no older than the 24-hour RPO are all required.
+The authorization must also carry a current throughput-backed duration estimate
+that fits entirely inside its remaining window, and it expires within eight
+hours. The executor also rederives the
+entire canonical plan from the approved immutable source and requires the exact
+current 40-character commit. It accepts only role-bound, retry-disabled client
+handles and is deliberately not exposed as a casual general-purpose delete or
+rollback command.
+
+The success package is the plan, authorization and external receipts, typed
+pre/post production guards, and execution receipt together. The isolated drill
+records component timings but explicitly does not prove the incident-level
+eight-hour RTO, a detection interval, or a production data-loss window.
+
 ## Code rollback
 
 1. Identify the last known-good commit, the failing commit, and the exact CI and
