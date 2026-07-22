@@ -1,0 +1,54 @@
+name: Production Monitor
+
+on:
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run the production probe or a network-free notification test"
+        required: true
+        default: probe
+        type: choice
+        options:
+          - probe
+          - synthetic-alert
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    if: ${{ github.event_name == 'schedule' || inputs.mode == 'probe' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.13"
+
+      - name: Run production monitor
+        env:
+          PYTHONPATH: src
+          PRODUCTION_MONITOR_BASE_URL: >-
+            https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app
+        run: >-
+          python tools/production_monitor.py
+          --base-url "$PRODUCTION_MONITOR_BASE_URL"
+
+  synthetic-alert:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'synthetic-alert' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Trigger approved network-free notification failure
+        run: |
+          printf '%s\n' '{"kind":"production_monitor_synthetic_notification_test","network_requests_made":0,"ok":false}'
+          exit 1

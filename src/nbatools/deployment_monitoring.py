@@ -20,6 +20,11 @@ INTERESTING_HEADERS = (
     "x-vercel-id",
     "x-request-id",
 )
+MAX_SMOKE_RESPONSE_BYTES = 1_048_576
+
+
+class ResponseTooLargeError(RuntimeError):
+    """Raised when a smoke endpoint exceeds the bounded response budget."""
 
 
 @dataclass(frozen=True)
@@ -148,7 +153,10 @@ def fetch_http(url: str, method: str, body: dict[str, Any] | None, timeout: floa
 
     req = request.Request(url, data=data, headers=headers, method=method)
     with request.urlopen(req, timeout=timeout) as response:
-        return response.status, dict(response.headers.items()), response.read()
+        body = response.read(MAX_SMOKE_RESPONSE_BYTES + 1)
+        if len(body) > MAX_SMOKE_RESPONSE_BYTES:
+            raise ResponseTooLargeError("response exceeded the safe smoke-monitoring limit")
+        return response.status, dict(response.headers.items()), body
 
 
 def run_deployment_smoke(
@@ -168,7 +176,7 @@ def run_deployment_smoke(
         try:
             status, headers, body = fetcher(url, case.method, case.body, timeout)
             duration_ms = round((perf_counter() - started) * 1000, 3)
-            result = _evaluate_case(case, url, status, headers, body, duration_ms)
+            result = evaluate_smoke_response(case, url, status, headers, body, duration_ms)
         except Exception as exc:
             duration_ms = round((perf_counter() - started) * 1000, 3)
             result = SmokeCaseResult(
@@ -199,7 +207,7 @@ def run_deployment_smoke(
     )
 
 
-def _evaluate_case(
+def evaluate_smoke_response(
     case: SmokeCase,
     url: str,
     status: int,
