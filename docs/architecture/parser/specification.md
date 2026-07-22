@@ -4,7 +4,12 @@
 >
 > **Scope:** This doc describes the parser's _design_ — components, contracts, and slot shapes. It is not a capability catalog. For the living inventory of what the parser currently supports, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-Where this spec notes parser-shipped but execution-partial behavior (for example, unfiltered context filters, coverage-gated filters, or placeholder routes), use [`docs/reference/query_catalog.md`](../../reference/query_catalog.md) and [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md) for the durable shipped boundary. This file remains a current-state design reference, not a roadmap.
+Where this spec notes parser-shipped but execution-limited behavior (for example,
+coverage-gated filters or explicit unsupported boundaries), use
+[`docs/reference/query_catalog.md`](../../reference/query_catalog.md) and
+[`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md)
+for the durable shipped boundary. This file remains a current-state design
+reference, not a roadmap.
 
 ---
 
@@ -286,6 +291,10 @@ This is deliberately different from a flat "one intent enum" model. The combinat
 | `Edwards in wins vs losses`             | `split`              | `split_intent` + `split_type="wins_vs_losses"` |
 | `Suns when Booker out`                  | `summary`/`record`   | `without_player` filter                        |
 | `Nuggets Jokic on off`                  | `summary`            | `lineup_members` + `presence_state`; coverage-gated on/off route |
+| `personal fouls leaders`                | `leaderboard`        | `stat="pf"`; season totals                              |
+| `most minutes this season`              | `leaderboard`        | `stat="minutes"`; season totals                         |
+| `rookie scoring leaders`                | `leaderboard`        | `rookies_only=True`; roster-experience coverage gate     |
+| `most points off the bench`             | `leaderboard`        | `role="bench"`; trusted starter-role coverage gate      |
 | `LeBron vs Durant career stats`         | `comparison`         | `career_intent` + player comparison            |
 | `Jokic longest 30-point streak`         | `streak`             | `streak_request` populated                     |
 | `Lakers vs Celtics playoff history`     | `playoff`            | `playoff_history_intent`                       |
@@ -499,7 +508,23 @@ The threshold slot travels _with_ the rest of the parse state; it doesn't stand 
 
 ## 8. Context filters
 
-**Status: partially shipped.** Home/away, wins/losses, season type, and playoff-round filters are execution-backed. Role filters are execution-backed on player summary/finder and season-leader routes only when every requested player-game has trusted starter-role coverage; one missing/untrusted key returns `filter_not_supported` with exact detail. Period filters are execution-backed on `player_game_finder` and `team_record` only when the exact requested entity-game window is complete; one missing key returns the same typed refusal. Schedule-context filters are execution-backed on `team_record` and `player_game_summary` when trusted `schedule_context_features` coverage exists for the requested slice, and otherwise fall back with an explicit unfiltered-results note. Those three coverage-gated boundaries are final for the core finish line; broader route expansion is out of scope unless a future product queue reopens it. Clutch is parser-recognized and executes only when raw PBP covers every requested base game and every qualifying event key has the exact trusted derived clutch window; incomplete slices refuse with exact detail.
+**Status: partially shipped.** Home/away, wins/losses, season type, and
+playoff-round filters are execution-backed. Role filters are execution-backed on
+player summary/finder and season-leader routes only when every requested
+player-game has trusted starter-role coverage; one missing/untrusted key returns
+`filter_not_supported` with exact detail. Period filters are execution-backed on
+`player_game_finder` and `team_record` only when the exact requested entity-game
+window is complete; one missing key returns the same typed refusal.
+Schedule-context filters are execution-backed on `team_record` and
+`player_game_summary` when trusted `schedule_context_features` coverage exists
+for the requested slice. A parsed context filter that reaches a route outside
+its supported transport set returns a typed `NoResult(reason="filter_not_supported")`
+instead of being silently dropped. Those three coverage-gated boundaries are
+final for the core finish line; broader route expansion is out of scope unless
+a future product queue reopens it. Clutch is parser-recognized and executes only
+when raw PBP covers every requested base game and every qualifying event key has
+the exact trusted derived clutch window; incomplete slices refuse with exact
+detail.
 
 Define where or when within a game the stat applies.
 
@@ -518,8 +543,10 @@ Define where or when within a game the stat applies.
 - `one-possession games` → `one_possession=True`
 - `nationally televised`, `on national TV` → `nationally_televised=True`
 - `as starter`, `as a starter`, `starting`, `off the bench`, `bench`, `reserve` → `role`
-  for player-context queries only; team-only phrasing like `Celtics bench scoring`
-  is intentionally ignored. `player_game_summary`, `player_game_finder`, and
+  for player-context queries only. Team-only phrasing like `Celtics bench scoring`
+  does not propagate a player-role slot; it is tagged as the explicit
+  `team_bench_scoring` unsupported boundary and returns typed
+  `filter_not_supported`. `player_game_summary`, `player_game_finder`, and
   `season_leaders` apply the filter only when trusted `player_game_starter_roles`
   coverage exists for every requested player-game; otherwise execution returns
   `filter_not_supported` with exact missing/untrusted keys.
@@ -527,15 +554,15 @@ Define where or when within a game the stat applies.
   parse slots. `player_game_finder` and `team_record` execute these filters when
   exact period-window coverage exists for the requested entity-game set via
   `player_game_period_stats` / `team_game_period_stats`; otherwise execution
-  returns `filter_not_supported` with exact key/window detail. Other routes still append the
-  explicit unfiltered-results note because period execution is not enabled there.
+  returns `filter_not_supported` with exact key/window detail. Other routes return
+  typed `filter_not_supported` because period execution is not enabled there.
 
 Schedule-context slots above are execution-backed on `team_record` and
 `player_game_summary` through the team-game-grain `schedule_context_features`
-contract. Missing feature coverage still produces an explicit unfiltered-results
-note. `nationally_televised` additionally requires trusted national-TV source
-coverage; current placeholder schedule pulls can leave that filter untrusted
-even when the other schedule-context filters execute.
+contract. Missing feature coverage returns typed `filter_not_supported`.
+`nationally_televised` additionally requires trusted national-TV source coverage;
+current schedule pulls can leave that filter untrusted even when the other
+schedule-context filters execute.
 
 **Outcome**
 
@@ -555,7 +582,10 @@ even when the other schedule-context filters execute.
 
 ### 8.2 Core boundary and explicit non-goals
 
-- true clutch-filtered results backed by play-by-play data
+- clutch route expansion beyond the current trusted play-by-play-backed
+  `player_game_summary` / `player_game_finder` / `team_record` /
+  `season_leaders` boundary is out of scope unless a future product queue
+  reopens it
 - period route expansion beyond the current coverage-gated `player_game_finder` /
   `team_record` boundary is out of scope for the core finish line unless a
   future product queue reopens it
@@ -564,15 +594,15 @@ even when the other schedule-context filters execute.
   finish line unless a future product queue reopens it; trusted national-TV
   source coverage remains part of the documented execution gate
 - starter / bench route expansion beyond the current `player_game_summary` /
-  `player_game_finder` trusted-role boundary, including team-level bench
-  semantics, is out of scope for the core finish line unless a future product
-  queue reopens it
+  `player_game_finder` / `season_leaders` trusted-role boundary, including
+  team-level bench semantics, is out of scope for the core finish line unless a
+  future product queue reopens it; unsupported combinations return typed
+  `filter_not_supported`
 
-Parser recognition for these filters is shipped. For `clutch`, the remaining gap
-is honest execution-level filtering rather than slot detection. For the
-coverage-gated period, schedule-context, and role families, unsupported routes
-and untrusted coverage remain explicit fallback-note behavior, not open core
-blockers.
+Parser recognition and coverage-gated execution are shipped for the listed
+clutch, period, schedule-context, and role route boundaries. Unsupported routes
+and untrusted coverage return explicit no-result responses rather than silently
+unfiltered answers.
 
 ---
 
@@ -648,9 +678,9 @@ These are structurally different and should not be conflated:
 | Concept                             | Supported?                  |
 | ----------------------------------- | --------------------------- |
 | Player absent from game (DNP)       | ✅ via `without_player`     |
-| Player off court during possessions | Parser/routing shipped; execution placeholder — see §11 |
-| Player did not start                | Not supported               |
-| Player played limited minutes       | Not supported               |
+| Player off court during possessions | Coverage-gated execution via `player_on_off` — see §11 |
+| Player did not start                | Coverage-gated `role="bench"` on supported player/leaderboard routes |
+| Player played limited minutes       | Game-level filter unsupported; total-minutes leaderboards supported |
 
 ### 10.2 Negation forms to handle
 
@@ -693,7 +723,13 @@ Shipped in Phase E items 8, 9, and 10:
 - `best 5-game stretch by Game Score`
 - `most efficient 10-game rolling stretch`
 
-These queries populate `lineup_members`, `presence_state`, `unit_size`, and `minute_minimum` as applicable, route to `player_on_off`, `lineup_summary`, or `lineup_leaderboard`. `player_on_off` is coverage-gated on trusted `team_player_on_off_summary` rows. Lineup routes are coverage-gated on trusted `league_lineup_viz` rows. Whole-game `without_player` absence is explicitly not an on/off source, and roster membership is explicitly not a lineup-unit source.
+These queries populate `lineup_members`, `presence_state`, `unit_size`, and
+`minute_minimum` as applicable, then route to `player_on_off`, `lineup_summary`,
+or `lineup_leaderboard`. `player_on_off` is a shipped route coverage-gated on
+trusted `team_player_on_off_summary` rows, not an execution placeholder. Lineup
+routes are coverage-gated on trusted `league_lineup_viz` rows. Whole-game
+`without_player` absence is explicitly not an on/off source, and roster
+membership is explicitly not a lineup-unit source.
 
 Stretch queries populate `window_size` and `stretch_metric`, route to `player_stretch_leaderboard`, keep the intent in the `leaderboard` family, and return real rolling-window results over player game logs.
 

@@ -8357,3 +8357,45 @@ cases:
       - path: result.metadata.season_type
         equals: Playoffs
     review_notes: "'performances' is a synonym for the 'best games' top-performance concept. Battery 3."
+
+  - id: opponent_quality_player_leaderboard_refuses_unfiltered
+    query: "top scorers against contenders this season"
+    category: unsupported_boundary
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_quality
+    review_notes: "Opponent-quality filters unsupported by the player leaderboard must fail closed, never return the unfiltered league leaders."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - opponent_quality
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: opponent_quality_team_leaderboard_refuses_unfiltered
+    query: "players with most assists against playoff teams this season"
+    category: unsupported_boundary
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_quality
+    review_notes: "Opponent-quality wording routed to a team leaderboard must fail closed, never return an unfiltered leaderboard."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - opponent_quality
+        - unsupported_boundary
+        - no_broad_fallback

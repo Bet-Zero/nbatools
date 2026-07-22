@@ -1429,10 +1429,11 @@ def build_period_filter_note(
     quarter: str | None = None,
     half: str | None = None,
 ) -> str | None:
-    """Describe the current quarter/half-filter limitation honestly.
+    """Describe quarter/half filters that cannot execute on a selected route.
 
-    The parser recognizes these surface forms, but the current game-log
-    layer does not expose period-level splits, so results remain unfiltered.
+    The parser recognizes these surface forms. Unsupported route combinations
+    fail closed with ``filter_not_supported`` instead of returning unfiltered
+    full-game results.
     """
     if quarter is not None:
         return (
@@ -1490,12 +1491,12 @@ def build_on_off_note(
     lineup_members: list[str] | None = None,
     presence_state: str | None = None,
 ) -> str | None:
-    """Describe the current on/off placeholder behavior honestly."""
+    """Describe the coverage-gated on/off execution contract."""
     if not lineup_members or presence_state is None:
         return None
     return (
-        "on_off: query recognized but on/off splits require play-by-play or lineup-stint "
-        "data that is not yet available in the current data layer; placeholder route returned"
+        "on_off: source-backed execution is coverage-gated; requests fail closed when "
+        "trustworthy on/off rows are unavailable for the requested slice"
     )
 
 
@@ -1659,11 +1660,10 @@ def build_game_context_filter_notes(
     one_possession: bool = False,
     nationally_televised: bool = False,
 ) -> list[str]:
-    """Describe current schedule-context limitations honestly.
+    """Describe schedule-context filters that cannot execute on a route.
 
-    The parser recognizes these surface forms, but the current query engine
-    does not yet join the needed schedule/context features into route
-    execution, so results remain unfiltered.
+    Unsupported route combinations fail closed with ``filter_not_supported``;
+    these notes explain how to retry without the blocked filter.
     """
     notes: list[str] = []
 
@@ -1692,7 +1692,7 @@ def build_game_context_filter_notes(
 
 
 def build_role_filter_note(role: str | None = None) -> str | None:
-    """Describe the current starter/bench role-filter limitation honestly."""
+    """Describe a starter/bench role filter blocked on the selected route."""
     if role is None:
         return None
     return (

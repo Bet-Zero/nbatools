@@ -10,7 +10,7 @@
 .PHONY: test-smoke-queries test-phase-smoke test-smoke-all
 .PHONY: parser-examples-sweep raw-query-answer-qa exploratory-query-review query-feedback-export
 .PHONY: browser-release-review visual-qa-screenshots
-.PHONY: docs-governance
+.PHONY: repository-inventory repository-inventory-check docs-governance
 
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then printf '%s' .venv/bin/python; elif command -v python3 >/dev/null 2>&1; then command -v python3; elif command -v python >/dev/null 2>&1; then command -v python; else printf '%s' python3; fi)
 PYTEST ?= $(PYTHON) -m pytest
@@ -171,6 +171,14 @@ visual-qa-screenshots:
 browser-release-review:
 	npm --prefix frontend run qa:browser-release-review -- --base-url "$(BROWSER_REVIEW_BASE_URL)" $(if $(BROWSER_REVIEW_RUN_ID),--run-id "$(BROWSER_REVIEW_RUN_ID)")
 
+## Rewrite the deterministic inventory of authoritative repository surfaces.
+repository-inventory:
+	$(PYTHON) tools/generate_repository_inventory.py --write
+
+## Fail when the committed repository inventory differs from authoritative sources.
+repository-inventory-check:
+	$(PYTHON) tools/generate_repository_inventory.py --check
+
 ## Durable-doc path and relative-link governance check.
-docs-governance:
+docs-governance: repository-inventory-check
 	$(PYTHON) tools/check_docs_governance.py

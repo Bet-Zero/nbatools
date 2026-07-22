@@ -4,7 +4,7 @@ This module is the primary entry point for executing NBA queries
 programmatically.  Both natural-language and structured (route-based)
 queries are supported and return structured result objects directly.
 
-A future UI or API layer should call the functions here instead of
+The web UI, HTTP API, and library callers use these functions instead of
 going through CLI wrappers.
 
 Entry points
@@ -20,7 +20,7 @@ Entry points
 Both return one of the typed result classes defined in
 ``nbatools.commands.structured_results`` (``SummaryResult``,
 ``ComparisonResult``, ``FinderResult``, ``LeaderboardResult``,
-``StreakResult``, ``SplitSummaryResult``, ``NoResult``).
+``StreakResult``, ``SplitSummaryResult``, ``CountResult``, ``NoResult``).
 """
 
 from __future__ import annotations

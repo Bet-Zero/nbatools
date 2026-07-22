@@ -21,7 +21,7 @@ export default function EmptyState() {
     <Card className={styles.emptyState} depth="card" padding="lg">
       <div className={styles.content}>
         <h2 className={styles.title}>
-          Ask a basketball question. Get a straight answer.
+          Ask a supported NBA stat question. Get a straight answer.
         </h2>
         <p className={styles.description}>
           Players, teams, records, streaks, matchups, playoff history — type a

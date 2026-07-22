@@ -88,6 +88,42 @@ beforeEach(() => {
 });
 
 describe("VisualQaPage", () => {
+  it("reviews promoted player filters as successful leaderboards while retaining the team bench boundary", () => {
+    const casesById = new Map(
+      VISUAL_QA_CASES.map((caseItem) => [caseItem.id, caseItem]),
+    );
+
+    expect(casesById.get("rookie_scoring_leaders_wave4")).toMatchObject({
+      category: "experience_filtered_leaderboard",
+      visual_focus: expect.arrayContaining([
+        "Rookie context stays visibly tied to the successful scoring leaderboard",
+      ]),
+    });
+    for (const caseId of [
+      "starter_assist_leaders_wave4",
+      "bench_scoring_leaders_wave4",
+    ]) {
+      expect(casesById.get(caseId)?.category).toBe(
+        "role_filtered_leaderboard",
+      );
+      expect(casesById.get(caseId)?.visual_focus.join(" ")).toContain(
+        "successful",
+      );
+      expect(casesById.get(caseId)?.visual_focus.join(" ")).not.toContain(
+        "unsupported",
+      );
+    }
+
+    expect(
+      casesById.get("celtics_bench_scoring_boundary_wave4"),
+    ).toMatchObject({
+      category: "unsupported_team_role_boundary",
+      visual_focus: expect.arrayContaining([
+        "Team context remains visible alongside the unsupported bench-scoring message",
+      ]),
+    });
+  });
+
   it("mounts the visual QA corpus without sending queries until a deliberate run", async () => {
     expect(() => JSON.parse(visualQaCorpusRawText)).toThrow();
 

@@ -1002,26 +1002,36 @@ cases:
       - unsupported_guidance
       - unsupported_analysis_boundary
     expected_semantic_facts:
-      - Can't answer that one yet
+      - Unsupported Question
       - cooled off
 
   - id: rookie_scoring_leaders_wave4
-    category: no_result_unsupported
+    category: leaderboard
     review_focus:
-      - unsupported_filter_guidance
-      - roster_experience_boundary
+      - leaderboard_hero
+      - rookie_filter
+      - table_columns
     expected_semantic_facts:
-      - [Unsupported Leaderboard, Unavailable Filter]
-      - rookie leaderboards
+      - Cooper Flagg
+      - Rookies: roster experience of 0 years
+      - 21 PPG
+    expected_table_header_fragments:
+      - Player
+      - PPG
 
   - id: starter_assist_leaders_wave4
-    category: no_result_unsupported
+    category: leaderboard
     review_focus:
-      - unsupported_filter_guidance
-      - role_boundary
+      - leaderboard_hero
+      - starter_filter
+      - table_columns
     expected_semantic_facts:
-      - [Unsupported Leaderboard, Unavailable Filter]
-      - starter/bench
+      - Nikola Jokić
+      - Starter games using trusted starter-role data
+      - 10.7 APG
+    expected_table_header_fragments:
+      - Player
+      - APG
 
   - id: celtics_against_east_record_wave4
     category: team_record
@@ -1039,50 +1049,61 @@ cases:
       - East
 
   - id: personal_foul_leaders_wave4
-    category: no_result_unsupported
+    category: leaderboard
     review_focus:
-      - unsupported_metric_guidance
-      - metric_boundary
+      - leaderboard_hero
+      - personal_foul_metric
+      - table_columns
     expected_semantic_facts:
-      - [Unsupported Leaderboard, Unavailable Metric]
-      - Personal-foul leaderboards
+      - Wendell Carter Jr.
+      - 267 personal fouls
+    expected_table_header_fragments:
+      - Player
+      - PF
 
   - id: players_personal_fouls_wave5
-    category: no_result_unsupported
+    category: leaderboard
     review_focus:
-      - unsupported_metric_guidance
-      - metric_boundary
+      - leaderboard_hero
+      - personal_foul_metric
+      - table_columns
       - no_broad_fallback
     expected_semantic_facts:
-      - Unsupported Leaderboard
-      - Personal-foul leaderboards
-    expected_absent_fragments:
-      - led the NBA
+      - Wendell Carter Jr.
+      - 267 personal fouls
+    expected_table_header_fragments:
+      - Player
+      - PF
 
   - id: warriors_net_rating_single_team_wave5
-    category: no_result_unsupported
+    category: team_leaderboard
     review_focus:
-      - unsupported_summary_guidance
-      - advanced_metric_boundary
+      - single_team_answer_phrase
+      - advanced_metric
+      - table_columns
       - no_broad_fallback
     expected_semantic_facts:
-      - Unavailable Filter
-      - Net rating
-      - single-team advanced-stat summaries
-    expected_absent_fragments:
-      - led the NBA
+      - Golden State Warriors
+      - net rating of -0.5
+      - 20th of 30
+    expected_table_header_fragments:
+      - Team
+      - Net
 
   - id: rookie_assist_leaders_wave5
-    category: no_result_unsupported
+    category: leaderboard
     review_focus:
-      - unsupported_filter_guidance
-      - roster_experience_boundary
+      - leaderboard_hero
+      - rookie_filter
+      - table_columns
       - no_broad_fallback
     expected_semantic_facts:
-      - Unsupported Leaderboard
-      - Rookie leaderboards
-    expected_absent_fragments:
-      - led the NBA
+      - Ryan Nembhard
+      - Rookies: roster experience of 0 years
+      - 5.3 APG
+    expected_table_header_fragments:
+      - Player
+      - APG
 
   - id: celtics_bench_points_wave5
     category: no_result_unsupported

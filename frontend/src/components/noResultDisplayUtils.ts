@@ -225,13 +225,6 @@ export function unsupportedBoundaryTitle(
   metadata: ResultMetadata | null | undefined,
 ): string | null {
   const filters = unsupportedFilters(metadata);
-  if (
-    filters.includes("personal_foul_leaderboard") ||
-    filters.includes("rookie_leaderboard") ||
-    filters.includes("role_leaderboard")
-  ) {
-    return "Unsupported Leaderboard";
-  }
   if (filters.includes("team_bench_scoring")) {
     return "Unsupported Summary";
   }
@@ -252,19 +245,19 @@ function unsupportedBoundaryMessage(
 ): string | null {
   const filters = unsupportedFilters(metadata);
   if (filters.includes("personal_foul_leaderboard")) {
-    return "Personal-foul leaderboards are not supported yet.";
+    return "Personal-foul leaderboards are supported. Try asking for personal fouls or PF and include the season you want ranked.";
   }
   if (filters.includes("rookie_leaderboard")) {
-    return "Rookie leaderboards are not supported yet.";
+    return "Rookie leaderboards are supported. Try specifying the stat and season you want ranked.";
   }
   if (filters.includes("role_leaderboard")) {
-    return "League-wide starter/bench leaderboards are not supported yet.";
+    return "Starter and bench leaderboards are supported. Specify either starter or bench and include the stat you want ranked.";
   }
   if (filters.includes("team_bench_scoring")) {
     return "Team bench-scoring summaries are not supported yet.";
   }
   if (filters.includes("unsupported_concept")) {
-    return "That concept is not supported yet. Try asking for a specific player, team, game, or stat.";
+    return "That concept is not supported yet. Try a starter query or one of the supported areas on the start screen.";
   }
   if (filters.includes("player_playoff_appearances")) {
     return "Player playoff-appearance counts are not supported yet. Try asking about a team or the league leaderboard.";

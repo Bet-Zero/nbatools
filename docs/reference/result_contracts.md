@@ -1,310 +1,266 @@
-# Result Contracts — Design Target
+# Result Contracts
 
-> **Status: design target.**
-> This document defines the _target_ result contracts for `nbatools`.
-> It is **not** a description of current engine output. For the current-state
-> audit of engine output against these targets, see
-> [result_contracts_audit.md](../audits/result_contracts_audit.md).
-> For verified shipped behavior, see [current_state_guide.md](current_state_guide.md).
+> **Status: current reference.**
+> The typed result layer in
+> [`structured_results.py`](../../src/nbatools/commands/structured_results.py)
+> implements the contracts described here. The generated
+> [`repository_inventory.json`](../../contracts/repository_inventory.json)
+> records the current result-type names and count. The original gap analysis
+> is retained separately as the historical
+> [result contracts audit](../audits/result_contracts_audit.md).
 
-This doc describes the result shapes that command modules should evolve toward so that the CLI, exports, and the React web UI can all consume the same engine.
+This document separates the shipped result boundary from design guidance for
+extending it. For verified query behavior, see
+[current_state_guide.md](current_state_guide.md).
 
 Related docs:
 
-- [docs/architecture/project_conventions.md](../architecture/project_conventions.md) — engineering conventions (see section 9, UI-readiness)
-- [docs/data_contracts.md](data_contracts.md) — dataset-level contracts
-- [docs/current_state_guide.md](current_state_guide.md) — currently shipped behavior
+- [project_conventions.md](../architecture/project_conventions.md) — engineering conventions
+- [data_contracts.md](data_contracts.md) — dataset-level contracts
+- [structured_result_layer.md](../architecture/structured_result_layer.md) — result-layer architecture
 
 ---
 
-## 1. Why result contracts matter
+## 1. Current implementation
 
-### 1.1 CLI and UI share the same engine
+### 1.1 Consumer boundaries
 
-The repo has two user surfaces — a CLI that prints pretty text and a React web UI that renders structured results. Both call the same engine and consume the same `QueryResponse` envelope.
+The repository has three consumer surfaces over the shared query engine:
 
-Pretty terminal formatting is **not** the core contract. It is one of several presentation layers over a shared structured result. If the engine's source of truth is a formatted string, the UI cannot reuse it without re-parsing terminal output — which is exactly the wrong direction.
+- The CLI receives a query-service `QueryResult` and renders its typed result
+  through `format_output.py`. It does **not** consume the FastAPI
+  `QueryResponse` model.
+- The FastAPI layer converts the same `QueryResult` into the HTTP
+  `QueryResponse` envelope.
+- The React web UI calls the HTTP endpoints and renders that `QueryResponse`.
 
-### 1.2 Stable engine outputs vs presentation
+The shared source of truth is the typed structured result. Pretty terminal
+text, exports, the HTTP envelope, and browser components are presentation or
+transport layers over it; none should be the first place an NBA value is
+calculated.
 
-The engine should produce stable, structured results. Presentation layers then render those results differently:
+### 1.2 Implemented result types
 
-- CLI pretty text
-- CLI exports (CSV / TXT / JSON)
-- React web UI components
-- API responses
+There are eight structured result types:
 
-A result contract is the shape the engine guarantees. A presentation layer is a renderer over that shape. The contract must be stable even when renderers change.
+| Python type | `query_class` | Structured `sections` keys | Labeled CLI/raw sections |
+| --- | --- | --- | --- |
+| `SummaryResult` | `summary` | `summary`; optional `by_season`, `game_log`, `top_performers` | `SUMMARY`; optional `BY_SEASON`, `TOP_PERFORMERS` (`GAME_LOG` is also available in the CLI section map) |
+| `ComparisonResult` | `comparison` | `summary`, `comparison` | `SUMMARY`, `COMPARISON` |
+| `SplitSummaryResult` | `split_summary` | `summary`, `split_comparison` | `SUMMARY`, `SPLIT_COMPARISON` |
+| `FinderResult` | `finder` | `finder` | `FINDER` |
+| `LeaderboardResult` | `leaderboard` | `leaderboard` | `LEADERBOARD` |
+| `StreakResult` | `streak` | `streak` | `STREAK` |
+| `CountResult` | `count` | `count`; optional `finder` detail | `COUNT`; optional `FINDER` detail |
+| `NoResult` | route-specific | no successful data sections | rendered from `result_status` and `result_reason`; the compatibility parser recognizes `NO_RESULT` and `ERROR` labels |
 
-### 1.3 Why this matters before a UI exists
+The generated repository inventory is the machine-checked source for this
+list. New result types must be added deliberately and wired through structured
+rendering, API serialization, UI rendering, tests, and the inventory.
 
-Even with no UI on the horizon, result contracts:
+### 1.3 Shared structured fields
 
-- make export behavior predictable across routes
-- make test assertions cleaner (assert on fields, not on formatted lines)
-- make new query classes cheaper to add (they slot into an existing shape)
-- prevent the CLI presentation from quietly becoming load-bearing
+Every result object carries the same trust and status boundary:
 
----
+- `query_class`
+- `result_status`: `ok`, `no_result`, or `error`
+- `result_reason`, when the result is not `ok`
+- `current_through`, when determinable
+- `metadata`
+- `notes`
+- `caveats`
+- `sections` in the dictionary representation
 
-## 2. Core result classes
+`QueryResult` adds query-level context, including the original or synthetic
+query text and resolved route. The API then exposes request-level fields such
+as `ok`, `query`, `route`, `confidence`, `intent`, and `alternates` alongside
+the structured result payload.
 
-The engine should think in these result classes. They align with the preferred route classes in [docs/architecture/project_conventions.md](../architecture/project_conventions.md#42-preferred-route-classes).
+Metadata values are populated when they apply and are known. A field being
+part of the shared vocabulary does not justify inventing a value when the
+engine did not resolve one.
 
-1. **finder** — list of matching games or entities
-2. **summary** — aggregated stats for one entity over a sample
-3. **comparison** — side-by-side stats for two or more entities over a sample
-4. **split summary** — two or more sub-samples of one entity, compared
-5. **leaderboard** — ranked list of entities by one or more metrics
-6. **streak** — streak detections or longest-streak results for an entity
-7. **no-result / error-style result** — a first-class class, not an unhandled absence
+### 1.4 No-result and error semantics
 
-Every query the engine answers should map to one of these. A query that does not fit is a signal that either a new result class needs to be added deliberately or the query should be rephrased to fit an existing one.
+`NoResult` is a first-class structured result. Its current canonical reasons
+are:
 
----
+- `no_match`
+- `no_data`
+- `unsupported`
+- `filter_not_supported`
+- `ambiguous`
+- `ambiguous_query`
+- `unrouted`
+- `error`
 
-## 3. Expected conceptual shape per class
+The query service maps expected failures (`no_match`, `no_data`,
+`unsupported`, `filter_not_supported`, `ambiguous`, and `ambiguous_query`) to
+`result_status: "no_result"`. `unrouted` and `error` map to
+`result_status: "error"`.
 
-Each class below is defined by its conceptual shape. Field names are illustrative — this doc defines the _shape the engine should guarantee_, not a Python class diagram.
-
-Every result class also carries the shared metadata block defined in [section 4](#4-shared-metadata-contract).
-
-### 3.1 finder
-
-**Purpose:** return the list of games (or entities) that match a filter.
-
-Conceptual shape:
-
-- **primary entity/entities:** the player(s) or team(s) being filtered
-- **filters/context:** threshold conditions, grouped boolean expression, date window, opponent filter, home/away, W/L
-- **tabular data section(s):** one row per matching game with the columns appropriate to the finder (player-game columns for player finders, team-game columns for team finders)
-- **summary metrics:** count of matching games; optionally aggregate rollups over the matched set
-- **optional metadata:** sort key and direction, max result count if truncated
-- **current CLI surfaces that map here:**
-  - `player_game_finder`
-  - `game_finder` (team game finder)
-  - natural-query finder routes (`Jokic under 20 points`, `Jokic last 10 games over 25 and under 15 rebounds`)
-
-### 3.2 summary
-
-**Purpose:** return aggregated stats for one entity over a sample.
-
-Conceptual shape:
-
-- **primary entity:** one player or one team
-- **filters/context:** season(s), season type, date window, last-N, opponent filter, split selector, grouped boolean filter
-- **tabular data section(s):**
-  - overall summary row
-  - optional per-season breakdown (maps to the stable `BY_SEASON` label — see [section 6](#6-section-label-guidance))
-  - optional exact-sample game series for player/team summaries, exposed as
-    structured API/JSON data rather than a CLI section label
-- **summary metrics:** box-score aggregates plus shooting splits; for player summaries, sample-aware rate metrics (USG%, AST%, REB%) per [docs/data_contracts.md](data_contracts.md#7-sample-aware-metric-contract)
-- **optional metadata:** sample size, games played, date range of the actual sample
-- **current CLI surfaces that map here:**
-  - `player_game_summary`
-  - `game_summary` (team/game summary)
-  - `season_leaders` single-entity summary path when applicable
-  - natural-query summary routes (`Jokic recent form`, `Celtics last 15 games summary`, `Jokic summary vs Lakers`)
-
-### 3.3 comparison
-
-**Purpose:** return side-by-side stats for two or more entities over a consistent sample definition.
-
-Conceptual shape:
-
-- **primary entities:** two or more players, or two or more teams
-- **filters/context:** shared season/window/filter definition applied to each entity; head-to-head flag when the comparison is restricted to games the entities played against each other
-- **tabular data section(s):**
-  - one comparison table with one column per entity and one row per metric (maps to the stable `COMPARISON` label)
-  - optional per-season alignment if requested
-- **summary metrics:** the same metric set per entity for an apples-to-apples view; for players, sample-aware rate metrics recomputed from each entity's sample
-- **optional metadata:** whether the comparison was head-to-head, whether samples differ in size, any fallback notes
-- **current CLI surfaces that map here:**
-  - `player_compare`
-  - `team_compare`
-  - natural-query comparison routes including `vs`, `h2h`, and `head-to-head` phrasing
-
-**Note:** grouped boolean filtering is currently documented for finder/summary/split, **not** for comparisons. The comparison result contract should not assume grouped boolean context until that support is explicitly verified and shipped. See [docs/current_state_guide.md](current_state_guide.md#grouped-boolean-coverage).
-
-### 3.4 split summary
-
-**Purpose:** return two or more sub-samples of one entity, compared against each other.
-
-Conceptual shape:
-
-- **primary entity:** one player or one team
-- **filters/context:** base filter (season, window, opponent, etc.) plus a split selector (home vs away, wins vs losses, pre/post All-Star, etc.)
-- **tabular data section(s):**
-  - one split-comparison table with one column per split and one row per metric (maps to the stable `SPLIT_COMPARISON` label)
-- **summary metrics:** same metric set per split; player sample-aware rate metrics recomputed per split sample
-- **optional metadata:** split type, sample size per split
-- **current CLI surfaces that map here:**
-  - `player_split_summary`
-  - `team_split_summary`
-  - natural-query split routes (`Jokic home vs away in 2025-26`, `Celtics wins vs losses`)
-
-### 3.5 leaderboard
-
-**Purpose:** return a ranked list of entities by one or more metrics.
-
-Conceptual shape:
-
-- **primary entities:** a league-wide set of players or teams
-- **filters/context:** season, season type, date window, minimum qualifiers (games played, minutes), metric being ranked, sort direction, top-N
-- **tabular data section(s):** one ranked table, ordered by the ranking metric, with identity columns plus the ranking metric plus a reasonable default set of supporting metrics
-- **summary metrics:** none beyond the ranked table itself, typically
-- **optional metadata:** dataset source used for ranking (season-advanced table vs derived-from-game-logs), any qualifier thresholds applied, any fallback notes when the requested metric is not directly present in the source
-- **current CLI surfaces that map here:**
-  - `season_leaders`
-  - `season_team_leaders`
-  - natural-query leaderboard phrasing (`top scorers this season`, `best offensive teams`, `teams with most threes`)
-
-**Note:** leaderboard breadth and phrasing coverage should still be treated as something to verify by tests before broadening claims, per [docs/current_state_guide.md](current_state_guide.md#5-leaderboard-queries). The result _contract_ here is target shape, not a claim that every phrasing works today.
-
-### 3.6 streak
-
-**Purpose:** return streak detections or longest-streak results for an entity.
-
-Conceptual shape:
-
-- **primary entity:** one player or one team
-- **filters/context:** threshold definition (e.g. 20+ points, made three, triple-double, team scoring 120+), season/window, opponent filter, streak mode (longest vs "N in a row")
-- **tabular data section(s):**
-  - one or more streak rows, each with start game, end game, streak length, and the per-game values that satisfied the threshold
-- **summary metrics:** longest streak length, count of qualifying streaks when applicable
-- **optional metadata:** streak mode, threshold definition, whether streaks are restricted to a date window
-- **current CLI surfaces that map here:**
-  - `player_streak_finder`
-  - `team_streak_finder`
-  - natural-query streak phrasing (`Jokic 5 straight games with 20+ points`, `longest Lakers winning streak`)
-
-**Note:** streak surface is present but breadth is still being tightened. The contract defines shape, not exhaustive phrasing coverage.
-
-### 3.7 no-result / error-style result
-
-**Purpose:** represent "no answer" as a first-class result, not as an unhandled absence.
-
-A query that parses but finds nothing, a query that routes successfully but has no data for the requested season/type, and a query that fails parsing are three distinct states. A UI needs to tell them apart. The engine should too.
-
-Conceptual shape:
-
-- **result kind:** one of
-  - `no_match` — query was valid and executed, but the filter returned nothing
-  - `no_data` — the requested season/type/window is not loaded
-  - `unrouted` — parser could not confidently select a route
-  - `ambiguous` — parser matched multiple routes with similar confidence
-  - `unsupported` — query was understood but the requested combination is not supported (e.g. mutually exclusive filters, invalid stat name)
-  - `error` — execution failed for a known reason
-- **reason → status mapping** (implemented in `query_service.reason_to_status()`):
-  - Expected failures → `result_status: "no_result"`: `no_match`, `no_data`, `unsupported`, `ambiguous`
-  - System failures → `result_status: "error"`: `unrouted`, `error`
-- **reason:** a short machine-readable reason code
-- **message:** a human-readable explanation suitable for CLI or UI display (see `_REASON_DISPLAY` in `format_output.py`)
-- **echoed context:** the query text, detected route (if any), and any partially-resolved filters so the user can see what the engine thought they meant
-- **current state:** fully implemented in `NoResult` class; reason/status mapping enforced by `query_service.py`; display mapping in `format_output._REASON_DISPLAY`
+This distinction lets every consumer tell a valid empty answer from missing
+coverage, an unsupported request, an ambiguity, or a system failure.
 
 ---
 
-## 4. Shared metadata contract
+## 2. Current role of each result class
 
-Every result class should eventually carry a consistent metadata block. These fields are the bridge between "we got an answer" and "here is what that answer is an answer _to_."
+### 2.1 Finder
 
-Future result objects should carry:
+Returns games or entities matching a filter. The `finder` section contains one
+row per match and may include rank, entity identity, game context, and the
+requested statistics. Sample count, filter context, sort information, and
+truncation details belong in structured data or metadata when applicable.
 
-- **query_text** — the original natural query, when applicable
-- **route / query_class** — which result class this is (`finder`, `summary`, `comparison`, `split_summary`, `leaderboard`, `streak`, `no_result`)
-- **season / season_range** — the season(s) the result covers
-- **season_type** — regular season, playoffs, or both
-- **date_window** — resolved absolute date range (e.g. `last 10 games` becomes a concrete date range the engine actually used)
-- **player_context** — player identity (id + name) where applicable
-- **team_context** — team identity (id + abbr + name) where applicable
-- **opponent_context** — opponent identity when an opponent filter was applied
-- **split_type** — when the result is a split summary
-- **sort_by / ascending** — the executed sort metric and direction for ranked
-  results when applicable
-- **grouped_boolean_used** — whether a grouped boolean expression was parsed and applied
-- **boolean_filter_mode** — how threshold filters combine: `any` (OR), `all`
-  (AND), or `grouped` (mixed AND/OR)
-- **head_to_head_used** — whether a head-to-head restriction was applied
-- **current_through** — freshness marker for the underlying data: the latest covered game date for the relevant result scope. The durable freshness states and API behavior are documented in [current_state_guide.md](current_state_guide.md#data-freshness). Future-ready — not all results carry this today.
-- **notes / caveats** — short, machine-readable notes when the engine applied a semantic fallback. Examples:
-  - leaderboard metric not present in season-advanced table, derived from game logs
-  - sample-aware player rate recomputed from the filtered sample rather than season-average
-  - requested window extended to the nearest available date because the exact window had no games
+Typical routes include `player_game_finder` and `game_finder`.
 
-The purpose of `notes / caveats` is to make semantic fallbacks visible instead of silent. A UI should be able to render these as small badges or footnotes without the engine needing to know anything about the UI.
+### 2.2 Summary
+
+Returns aggregated statistics for one entity over a sample. The `summary`
+section is the primary answer. A summary may also supply `by_season`,
+`game_log`, or `top_performers` detail without changing result class.
+
+Typical routes include `player_game_summary`, `game_summary`,
+`player_on_off`, and `lineup_summary`.
+
+### 2.3 Comparison
+
+Returns consistent side-by-side statistics for multiple entities or matchup
+scopes. The `summary` section carries entity-level context and the
+`comparison` section carries the aligned comparison rows. Metadata identifies
+special semantics such as head-to-head scope when applicable.
+
+Typical routes include `player_compare`, `team_compare`, and matchup-history
+routes.
+
+### 2.4 Split summary
+
+Returns two or more sub-samples of one entity. The `summary` section describes
+the base sample and `split_comparison` contains aligned bucket rows such as
+home/away or wins/losses.
+
+Typical routes include `player_split_summary` and `team_split_summary`.
+
+### 2.5 Leaderboard
+
+Returns ranked entities, games, stretches, appearances, or other occurrences.
+The `leaderboard` section contains the ordered rows. Ranking metric, direction,
+qualifiers, source provenance, and coverage caveats belong in metadata when
+applicable.
+
+Typical routes include `season_leaders`, `season_team_leaders`,
+`top_player_games`, `top_team_games`, and the specialized leaderboard routes.
+
+### 2.6 Streak
+
+Returns streak detections or longest-streak results. The `streak` section
+contains the qualifying runs and their start/end context. Threshold, mode,
+scope, and coverage information belong in the rows or metadata rather than in
+renderer-only inference.
+
+Typical routes include `player_streak_finder` and `team_streak_finder`.
+
+### 2.7 Count
+
+Returns a scalar count without forcing a consumer to infer it from detail-row
+length. The `count` section always contains the answer, including zero. A
+`finder` detail section may accompany the count when matching games are useful,
+but that detail is optional and does not change the result class.
+
+`CountResult` is produced by query-service count-intent post-processing rather
+than by a separate public route name.
+
+### 2.8 No result
+
+Represents a non-successful answer with explicit status and reason fields.
+Consumers render the reason and any supplied recovery context; they do not
+deduce failure type from an empty table or a literal text string.
 
 ---
 
-## 5. Raw output, pretty output, exports, and UI
+## 3. Stable section names
 
-These four layers should relate as renderers over the same underlying result.
-
-- **Raw structured output** is the canonical form. Everything else is derived from it.
-- **Pretty CLI output** is a terminal renderer. It may add section headers, column alignment, and color. It must not invent new fields and must not be the place where a value is computed for the first time.
-- **Exports (CSV / TXT / JSON)** are additional renderers. JSON export should be the closest to the raw structured output. CSV and TXT are projections suitable for spreadsheet and plain-text consumption.
-- **React web UI rendering** is one more renderer. It consumes the same raw structured result that JSON export consumes. If the UI needs a value that only exists in pretty CLI output, that is a signal the value belongs in the raw structured result.
-
-The rule:
-
-> Any value a user sees should exist in the raw structured result first. Presentation layers may reformat it; they should not be the source of it.
-
----
-
-## 6. Section label guidance
-
-The following section labels are already established as machine-readable output markers and are documented as stable in [docs/architecture/project_conventions.md](../architecture/project_conventions.md#64-output-section-labels):
+The current structured result layer establishes these uppercase labels for
+labeled text and CLI section maps:
 
 - `SUMMARY`
 - `BY_SEASON`
+- `TOP_PERFORMERS`
 - `COMPARISON`
 - `SPLIT_COMPARISON`
 - `COUNT`
+- `FINDER`
+- `LEADERBOARD`
+- `STREAK`
 
-These labels should be understood as **the current naming for sections within specific result classes**, not as a replacement for result classes. In the target contracts:
+`GAME_LOG` is an optional `SummaryResult` CLI section-map key. `NO_RESULT` and
+`ERROR` remain recognized compatibility labels in `format_output.py`; direct
+typed-result rendering uses `NoResult.result_status` and
+`NoResult.result_reason` instead.
 
-- `SUMMARY` corresponds to the overall summary block inside a **summary** result
-- `BY_SEASON` corresponds to the optional per-season breakdown inside a **summary** result
-- `COMPARISON` corresponds to the main table inside a **comparison** result
-- `SPLIT_COMPARISON` corresponds to the main table inside a **split summary** result
-- `COUNT` corresponds to the primary scalar table inside a **count** result;
-  optional finder detail remains a separate `FINDER` section
-
-Rules:
-
-- Do not rename these labels casually — downstream consumers may depend on them.
-- New result classes (leaderboard, streak, finder, no-result) will need their own stable section labels over time. Introduce them deliberately and document them when they are added.
-- Section labels live inside results. They are not a substitute for the result class itself.
+The dictionary/API representation uses lowercase section keys. Section labels
+live inside a result and are not substitutes for the result class itself. Do
+not rename them casually because CLI/export consumers and tests may depend on
+them.
 
 ---
 
-## 7. What should not happen
+## 4. Rendering and export contract
 
-- **UI depending on terminal formatting.** The React UI must not parse pretty CLI output to recover values. If it ever needs to, the engine is producing the wrong shape.
-- **Route-specific ad hoc output shapes multiplying without documentation.** New routes should slot into an existing result class. A new shape is a deliberate, documented event, not an accident of implementation.
-- **Docs claims outrunning actual result consistency.** This doc describes target contracts. It should not be cited as evidence that the engine already produces fully consistent results across routes. When a route is brought into alignment with a contract, update the current-state guide — not this doc — to reflect the new verified behavior.
-- **Silent semantic fallbacks.** If the engine substitutes a different dataset, recomputes a metric from a different sample, or widens a date window to find data, that must surface via the `notes / caveats` metadata, not be hidden inside pretty output.
-- **Computing user-visible values in the formatting layer.** If a value appears in pretty output, it must also exist in the raw structured result.
+- **Typed result objects** are the engine contract.
+- **`QueryResult`** is the query-service envelope used by in-process consumers,
+  including the CLI.
+- **Pretty CLI output** may align columns, add headings, and format values, but
+  it must not invent data.
+- **CSV/TXT/JSON exports** project the typed result into their target format.
+  A single-table CSV may intentionally omit optional mixed-grain detail, as the
+  count export does, while JSON retains the structured sections.
+- **FastAPI `QueryResponse`** is the HTTP transport envelope derived from
+  `QueryResult`.
+- **React rendering** consumes `QueryResponse` and selects presentation
+  patterns from the supplied route, metadata, and result sections.
+
+The invariant is:
+
+> Any NBA value a user sees must exist in the typed result first.
 
 ---
 
-## 8. Near-term guidance
+## 5. Design guidance for extensions
 
-This doc is meant to be useful _before_ any UI work begins.
+The following are design rules, not claims that every field is populated by
+every route:
 
-### 8.1 How to use this doc now
+- Echo resolved scope when relevant: season or season range, season type,
+  absolute date window, entity/opponent identity, split type, and sort order.
+- Preserve semantic flags such as grouped-boolean mode and head-to-head scope.
+- Surface trusted freshness through `current_through` and put real limitations
+  or fallback behavior in `notes` or `caveats`.
+- Keep player/team samples comparable in comparison and split results.
+- Add data to the engine/API contract when the UI needs it; do not compute NBA
+  facts in React.
+- Fit a new route into an existing result type when its shape genuinely
+  matches. Add a ninth type only when the existing eight cannot represent it
+  without distortion.
+- Protect contract changes with structured-result, export, API, and frontend
+  tests appropriate to the affected consumers.
 
-- When adding a new route or query feature, identify the result class it belongs to from [section 2](#2-core-result-classes) and shape its output to match [section 3](#3-expected-conceptual-shape-per-class).
-- When touching an existing command that already emits raw output, prefer to add missing shared metadata fields from [section 4](#4-shared-metadata-contract) rather than inventing new ad hoc fields.
-- When exposing a new section in CLI output, reuse an existing stable label where one applies; only introduce new section labels deliberately.
-- When the engine makes a semantic fallback (metric fallback, sample recomputation, window adjustment), surface it as a caveat in the result, not only in pretty output.
+Grouped boolean filtering is not implied for every class simply because the
+metadata vocabulary can represent it. Query support remains governed by the
+verified query catalog and current-state guide.
 
-### 8.2 How code should move toward these contracts without a rewrite
+---
 
-- **Do not do a broad rewrite.** Per [docs/architecture/project_conventions.md](../architecture/project_conventions.md#82-avoid-architecture-churn), architecture churn without a clear payoff is discouraged.
-- **Migrate opportunistically.** When a command is already being edited for another reason, bring its result shape closer to the contract for its class. Over time, this converges without a dedicated refactor pass.
-- **Prefer additive changes.** Adding fields to a result is safer than renaming or restructuring them. Presentation layers can ignore new fields.
-- **Protect migrations with tests.** When a result shape is tightened, back it with export or structured-output tests, per the testing conventions in [docs/architecture/project_conventions.md](../architecture/project_conventions.md#7-testing-conventions).
-- **Update the current-state guide only after verification.** This doc describes the target. [docs/current_state_guide.md](current_state_guide.md) describes what is actually shipped and tested. Keep that distinction strict.
+## 6. Historical context
 
-The target is gradual convergence: every route ends up producing a result that fits one of the seven result classes, carries the shared metadata block, and can be rendered by the CLI, exports, and the React UI without any of them needing to know about the others.
+This reference began as a design target before the UI and typed result layer
+existed. At that time, command output was stdout CSV text and downstream code
+had to infer shapes from labels and columns. The historical
+[result contracts audit](../audits/result_contracts_audit.md) records those
+gaps and the incremental migration rationale.
+
+That audit is retained as history, not as current release evidence. Current
+claims must be verified against `structured_results.py`, `query_service.py`,
+`api.py`, the frontend renderer, their tests, and the generated repository
+inventory.

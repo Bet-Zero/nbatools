@@ -296,7 +296,6 @@ describe("ResultRenderer leaderboard patterns", () => {
     expect(screen.queryByText(/led the NBA/i)).not.toBeInTheDocument();
   });
 
-
   it("includes position context in center-filtered leaderboard heroes", () => {
     const data = makeResponse({
       query: "Which centers have the most rebounds this season?",
@@ -344,7 +343,6 @@ describe("ResultRenderer leaderboard patterns", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/led the NBA/i)).not.toBeInTheDocument();
   });
-
 
   it("renders season team leaderboards with a team-first sentence and highlighted metric", () => {
     const data = makeResponse({
@@ -407,6 +405,62 @@ describe("ResultRenderer leaderboard patterns", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("uses a backend answer phrase for a single-team scalar leaderboard query", () => {
+    const data = makeResponse({
+      query: "Warriors net rating this season",
+      route: "season_team_leaders",
+      result: {
+        query_class: "leaderboard",
+        result_status: "ok",
+        metadata: {
+          query_text: "Warriors net rating this season",
+          route: "season_team_leaders",
+          season: "2025-26",
+          season_type: "Regular Season",
+          team: "GSW",
+          stat: "net_rating",
+          answer_phrase:
+            "The Golden State Warriors have a net rating of -0.5 (20th of 30) in the 2025-26 regular season.",
+        },
+        notes: [],
+        caveats: [],
+        sections: {
+          leaderboard: [
+            {
+              rank: 1,
+              team_name: "Oklahoma City Thunder",
+              team_abbr: "OKC",
+              games_played: 82,
+              net_rating: 11.1,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+            {
+              rank: 20,
+              team_name: "Golden State Warriors",
+              team_abbr: "GSW",
+              games_played: 82,
+              net_rating: -0.5,
+              season: "2025-26",
+              season_type: "Regular Season",
+            },
+          ],
+        },
+        current_through: "2026-04-12",
+      },
+    });
+
+    render(<ResultRenderer data={data} />);
+
+    expect(
+      screen.getByText(
+        "The Golden State Warriors have a net rating of -0.5 (20th of 30) in the 2025-26 regular season.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Oklahoma City Thunder had the most net rating/i),
+    ).not.toBeInTheDocument();
+  });
 
   it("uses lowest-direction copy for fewest points allowed leaderboards", () => {
     const data = makeResponse({
@@ -459,7 +513,6 @@ describe("ResultRenderer leaderboard patterns", () => {
     ).toBeInTheDocument();
   });
 
-
   it("uses highest-direction copy for most points allowed leaderboards", () => {
     const data = makeResponse({
       query: "which teams allow the most points per game this season",
@@ -506,7 +559,6 @@ describe("ResultRenderer leaderboard patterns", () => {
       screen.getByRole("columnheader", { name: "Opponent PTS Per Game" }),
     ).toBeInTheDocument();
   });
-
 
   it("keeps wins as the primary metric for team season wins leaderboards", () => {
     const data = makeResponse({
@@ -564,7 +616,6 @@ describe("ResultRenderer leaderboard patterns", () => {
     ).not.toBeInTheDocument();
   });
 
-
   it("renders occurrence leaderboards without the old card-row detail toggle", () => {
     const data = makeResponse({
       query: "teams with most 120-point games this season",
@@ -617,7 +668,6 @@ describe("ResultRenderer leaderboard patterns", () => {
       screen.queryByRole("button", { name: "Show raw table" }),
     ).not.toBeInTheDocument();
   });
-
 
   it("renders lineup leaderboards as dense rows with the lineup identity", () => {
     const data = makeResponse({
@@ -694,7 +744,6 @@ describe("ResultRenderer leaderboard patterns", () => {
       screen.queryByText("Jayson Tatum|Jaylen Brown|Derrick White"),
     ).not.toBeInTheDocument();
   });
-
 
   it("renders top player games as league-wide top performances", () => {
     const data = makeResponse({
@@ -774,24 +823,29 @@ describe("ResultRenderer leaderboard patterns", () => {
     expect(
       screen.getByRole("columnheader", { name: "3PM" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Rank" }),
-    ).toHaveAttribute("data-mobile-priority", "primary");
+    expect(screen.getByRole("columnheader", { name: "Rank" })).toHaveAttribute(
+      "data-mobile-priority",
+      "primary",
+    );
     expect(
       screen.getByRole("columnheader", { name: "Player" }),
     ).toHaveAttribute("data-mobile-priority", "primary");
-    expect(
-      screen.getByRole("columnheader", { name: "Date" }),
-    ).toHaveAttribute("data-mobile-priority", "primary");
-    expect(
-      screen.getByRole("columnheader", { name: "PTS" }),
-    ).toHaveAttribute("data-mobile-priority", "primary");
-    expect(
-      screen.getByRole("columnheader", { name: "Opp" }),
-    ).toHaveAttribute("data-mobile-priority", "secondary");
-    expect(
-      screen.getByRole("columnheader", { name: "3PM" }),
-    ).toHaveAttribute("data-mobile-priority", "secondary");
+    expect(screen.getByRole("columnheader", { name: "Date" })).toHaveAttribute(
+      "data-mobile-priority",
+      "primary",
+    );
+    expect(screen.getByRole("columnheader", { name: "PTS" })).toHaveAttribute(
+      "data-mobile-priority",
+      "primary",
+    );
+    expect(screen.getByRole("columnheader", { name: "Opp" })).toHaveAttribute(
+      "data-mobile-priority",
+      "secondary",
+    );
+    expect(screen.getByRole("columnheader", { name: "3PM" })).toHaveAttribute(
+      "data-mobile-priority",
+      "secondary",
+    );
     expect(screen.getByText("Showing top 2 of 35")).toBeInTheDocument();
     expect(
       screen.queryByRole("table", { name: "Game log" }),
@@ -800,7 +854,6 @@ describe("ResultRenderer leaderboard patterns", () => {
       screen.queryByText("Top Player Games Detail"),
     ).not.toBeInTheDocument();
   });
-
 
   it("renders top player triple-double games with a composite primary metric", () => {
     const data = makeResponse({
@@ -850,7 +903,6 @@ describe("ResultRenderer leaderboard patterns", () => {
       screen.getByRole("columnheader", { name: "PTS-REB-AST" }),
     ).toBeInTheDocument();
   });
-
 
   it("renders top team games as team top performances", () => {
     const data = makeResponse({

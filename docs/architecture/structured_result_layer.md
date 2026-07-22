@@ -1,100 +1,66 @@
 # Structured Result Layer
 
-Internal architecture doc for the structured result layer introduced in the
-summary / comparison / split-summary result classes.
+The structured result layer is the transport-neutral contract between command
+execution and the CLI, API, and React UI. It lives in
+`src/nbatools/commands/structured_results.py`.
 
-## What changed
+## Result families
 
-Six commands now produce **structured result objects** before rendering any
-text output:
+The module defines seven successful result families plus the explicit
+`NoResult` sentinel:
 
-| Command                | Result type          | Module                             |
-| ---------------------- | -------------------- | ---------------------------------- |
-| `player_game_summary`  | `SummaryResult`      | `commands/player_game_summary.py`  |
-| `game_summary`         | `SummaryResult`      | `commands/game_summary.py`         |
-| `player_compare`       | `ComparisonResult`   | `commands/player_compare.py`       |
-| `team_compare`         | `ComparisonResult`   | `commands/team_compare.py`         |
-| `player_split_summary` | `SplitSummaryResult` | `commands/player_split_summary.py` |
-| `team_split_summary`   | `SplitSummaryResult` | `commands/team_split_summary.py`   |
+| Result type | Query shape |
+| --- | --- |
+| `SummaryResult` | One entity summary, optionally grouped by season |
+| `ComparisonResult` | Two or more entities plus comparison rows |
+| `SplitSummaryResult` | One summary split into labeled buckets |
+| `FinderResult` | Matching game rows |
+| `LeaderboardResult` | Ranked player, team, game, lineup, or record rows |
+| `StreakResult` | Matching streak rows |
+| `CountResult` | A count plus the evaluated matching rows |
+| `NoResult` | No data, no match, unsupported, ambiguous, unrouted, or error state |
 
-When there are no matching games, `build_result()` returns a `NoResult`
-sentinel instead.
+Every registered public query route executes a command `build_result()` path
+through the query service. Natural-language execution resolves a route first;
+structured execution supplies the route and arguments directly. Both paths
+therefore return the same typed result contract.
 
-## Where it lives
+## Rendering contracts
 
-`src/nbatools/commands/structured_results.py`
+Successful result objects expose:
 
-Defines four dataclasses:
+| Method | Consumer and purpose |
+| --- | --- |
+| `to_labeled_text()` | Stable labeled CSV text for raw CLI output and text export |
+| `to_dict()` | JSON-serializable result data for the query service, API, UI, and JSON export |
+| `to_sections_dict()` | Labeled CSV sections consumed by CLI presentation formatting |
 
-- **`NoResult`** — empty result sentinel
-- **`SummaryResult`** — holds `summary` (DataFrame) + optional `by_season` (DataFrame)
-- **`ComparisonResult`** — holds `summary` (DataFrame, 2 rows) + `comparison` (DataFrame, metric table)
-- **`SplitSummaryResult`** — holds `summary` (DataFrame) + `split_comparison` (DataFrame, per-bucket rows)
+`NoResult` exposes `to_labeled_text()` and `to_dict()` with the same status,
+reason, metadata, notes, and caveat vocabulary, but it has no successful data
+sections to format.
 
-## How it works
+## Data flow
 
-Each refactored command now exposes two functions:
-
-```
-build_result(**kwargs) -> SummaryResult | ComparisonResult | SplitSummaryResult | NoResult
-run(**kwargs) -> None   # prints to stdout, delegates to build_result()
-```
-
-`run()` is unchanged externally — same signature, same stdout output.
-Internally it calls `build_result()` and prints `result.to_labeled_text()`.
-
-### Rendering methods
-
-Every result object has three rendering methods:
-
-| Method               | Returns          | Purpose                                                                                                                     |
-| -------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `to_labeled_text()`  | `str`            | Labeled CSV sections (SUMMARY / BY_SEASON / COMPARISON / SPLIT_COMPARISON) — identical to the old `print()` output          |
-| `to_dict()`          | `dict`           | Machine-readable structure with `query_class`, `result_status`, `metadata`, `notes`, `sections` (list-of-dicts per section) |
-| `to_sections_dict()` | `dict[str, str]` | Section-label → CSV-text mapping, for the pretty formatter                                                                  |
-
-### Data flow
-
-```
-build_result()
-  └─> SummaryResult / ComparisonResult / SplitSummaryResult / NoResult
-        ├─ .to_labeled_text()  →  stdout (CLI raw output)
-        ├─ .to_dict()          →  JSON export / future API
-        └─ .to_sections_dict() →  pretty formatter input
+```text
+natural text or structured route
+  -> query service
+  -> command build_result()
+  -> typed result object
+       -> to_dict() for API/UI/JSON
+       -> labeled text or sections for CLI rendering and text/CSV export
 ```
 
-## What is now structured-first
+CLI command wrappers remain presentation adapters: they normalize arguments,
+call the query service, and render the returned result. The HTTP layer calls
+the same service and serializes `QueryResult.to_dict()`. Business logic stays
+in command modules rather than either transport.
 
-- **summary** (player_game_summary, game_summary)
-- **comparison** (player_compare, team_compare)
-- **split_summary** (player_split_summary, team_split_summary)
+## Compatibility and validation
 
-These commands produce real DataFrames in structured containers. All output
-is derived from that structure.
+The labeled section vocabulary remains part of the CLI/raw-output contract,
+while `to_dict()` is the machine-readable contract shared by API and web
+consumers. `src/nbatools/commands/format_output.py` owns CLI presentation; it
+does not become the source for API data.
 
-## What remains text-first
-
-- **finder** (player_game_finder, game_finder)
-- **leaderboard** (season_leaders, season_team_leaders, top_player_games, top_team_games)
-- **streak** (player_streak_finder, team_streak_finder)
-
-These still print CSV text directly to stdout. They are candidates for future
-structured-result passes.
-
-## Compatibility
-
-- `run()` functions have the same signature and produce identical stdout output
-- All 313 pre-existing tests still pass
-- Labeled section labels are preserved: SUMMARY, BY_SEASON, COMPARISON, SPLIT_COMPARISON
-- The `format_output.py` pretty formatter, `wrap_raw_output()`, and export
-  plumbing all work unchanged because `to_labeled_text()` matches the old format
-
-## Tests
-
-`tests/test_structured_results.py` — 39 tests covering:
-
-- Unit tests for each result class (shape, labeled text, dict output, NaN handling)
-- Integration tests proving `build_result()` returns the correct type for each command
-- Round-trip tests proving `build_result().to_labeled_text() == run()` stdout output
-- `to_dict()` contract tests (correct sections, correct data values)
-- Pretty-output-from-structured tests
+Tests in `tests/test_structured_results.py`, the query-service tests, API
+tests, output tests, and frontend contract tests protect these boundaries.

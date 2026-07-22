@@ -814,7 +814,7 @@ class TestStructuredQueryExecution:
         assert qr.metadata["role"] == "bench"
         assert not any("role" in note and "unfiltered" in note for note in qr.result.notes)
 
-    def test_structured_query_accepts_on_off_placeholder_route(self):
+    def test_structured_query_accepts_coverage_gated_on_off_route(self):
         qr = execute_structured_query(
             "player_on_off",
             season="1950-51",
@@ -827,7 +827,7 @@ class TestStructuredQueryExecution:
         assert qr.result_reason == "unsupported"
         assert qr.metadata["lineup_members"] == ["Nikola Jokić"]
         assert qr.metadata["presence_state"] == "both"
-        assert any("on_off" in note and "placeholder" in note for note in qr.result.notes)
+        assert any("on_off" in note and "coverage-gated" in note for note in qr.result.notes)
 
     def test_structured_query_accepts_lineup_summary_route_without_coverage(self):
         qr = execute_structured_query(

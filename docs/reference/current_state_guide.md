@@ -396,7 +396,10 @@ The parser includes entity resolution with:
 
 ## Structured routes
 
-The query service exposes 30 structured routes:
+The query service exposes the registered structured routes below. The
+[generated repository inventory](../../contracts/repository_inventory.json)
+records the current count, while `GET /routes` and `VALID_ROUTES` remain the
+live runtime authority.
 
 **Player routes:**
 
@@ -499,9 +502,9 @@ Current UI capabilities:
 
 - text input for natural-language queries
 - pre-filled sample query buttons
-- result rendering for all query classes (summary, comparison, split, finder, leaderboard, streak)
+- result rendering for all query classes (summary, comparison, split, finder, leaderboard, streak, count)
 - envelope metadata display (status, route, freshness, notes, caveats)
-- no-result display with reason-specific messaging (no_match, no_data, unrouted, ambiguous, unsupported)
+- no-result display with reason-specific messaging for every canonical result reason
 - raw JSON toggle
 - in-session query history
 - saved queries (localStorage persistence with load/save/export)
@@ -665,14 +668,16 @@ The legacy CLI labeled output remains `SUMMARY` plus optional `BY_SEASON`.
 
 Each reason maps to a canonical status:
 
-| Reason        | Status      | Meaning                                                        |
-| ------------- | ----------- | -------------------------------------------------------------- |
-| `no_match`    | `no_result` | Data exists, filters matched nothing                           |
-| `no_data`     | `no_result` | Underlying season/type data file is unavailable                |
-| `unsupported` | `no_result` | Invalid filter combination, unsupported stat, or unknown route |
-| `ambiguous`   | `no_result` | Entity resolution found multiple matches                       |
-| `unrouted`    | `error`     | Parser could not select a route                                |
-| `error`       | `error`     | Unexpected internal exception                                  |
+| Reason | Status | Meaning |
+| --- | --- | --- |
+| `no_match` | `no_result` | Data exists, filters matched nothing |
+| `no_data` | `no_result` | Underlying season/type data file is unavailable |
+| `unsupported` | `no_result` | Unsupported query type, combination, stat, or unknown route |
+| `filter_not_supported` | `no_result` | Parsed filter cannot be applied safely to the selected route or data |
+| `ambiguous` | `no_result` | Entity resolution found multiple matches |
+| `ambiguous_query` | `no_result` | Recognized query has multiple valid intents |
+| `unrouted` | `error` | Parser could not select a route |
+| `error` | `error` | Unexpected internal exception |
 
 The mapping is enforced by `query_service.reason_to_status()`. Expected failures (conditions the user or data can cause) always produce `no_result`; only system-level failures produce `error`.
 
@@ -686,8 +691,8 @@ Invalid routes in the structured query endpoint return a `NoResult` with `result
 
 ## Current tested-state snapshot
 
-- Python pytest collection: **3,100+ test items**
-- 80 test files covering parser, routing, result contracts, CLI smoke, API, query service, Raw QA harness behavior, frontend contract support, and specialized query coverage
-- test areas include natural query parsing, explicit intent detection, leaderboard queries, streak queries, matchup queries, boolean parsing, occurrence/compound occurrence queries, playoff history, historical team/player queries, context filters, trust-status behavior, and API/UI contracts
-
-This count reflects the current repo state. It should be updated whenever the test surface changes materially.
+Tests cover parser and routing behavior, result contracts, CLI smoke, API,
+query service, Raw QA harness behavior, frontend contracts, and specialized
+query areas including leaderboards, streaks, matchups, boolean and compound
+conditions, playoff history, context filters, and trust-status behavior. Use
+the test runner's collection output when an exact current count is needed.

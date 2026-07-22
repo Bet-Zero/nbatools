@@ -10,7 +10,9 @@ describe("EmptyState", () => {
   it("renders first-run message", () => {
     render(<EmptyState />);
     expect(
-      screen.getByText("Ask a basketball question. Get a straight answer."),
+      screen.getByText(
+        "Ask a supported NBA stat question. Get a straight answer.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -47,6 +49,12 @@ describe("SampleQueries", () => {
     render(<SampleQueries onSelect={vi.fn()} displayMode="debug" />);
 
     expect(screen.getByText("entity_summary + game_log")).toBeInTheDocument();
+    expect(
+      screen.getByText("entity_summary (lineup_summary)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("fallback_table (lineup_summary)"),
+    ).not.toBeInTheDocument();
   });
 
   it("submits selected starter query text", () => {
@@ -201,7 +209,7 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("uses boundary-specific copy for personal-foul leaderboards", () => {
+  it("uses supported recovery copy for legacy personal-foul leaderboard boundaries", () => {
     render(
       <NoResultDisplay
         reason="filter_not_supported"
@@ -214,13 +222,36 @@ describe("NoResultDisplay", () => {
       />,
     );
 
-    expect(screen.getByText("Unsupported Leaderboard")).toBeInTheDocument();
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Personal-foul leaderboards are not supported yet.",
+        "Personal-foul leaderboards are supported. Try asking for personal fouls or PF and include the season you want ranked.",
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Pf is not available/)).not.toBeInTheDocument();
+  });
+
+  it("keeps fouls-drawn concepts distinct from supported personal-foul totals", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          query_text: "players best at drawing fouls",
+          unsupported_filters: ["unsupported_concept"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "That concept is not supported yet. Try a starter query or one of the supported areas on the start screen.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Personal-foul leaderboards are supported/),
+    ).not.toBeInTheDocument();
   });
 
   it("explains the player playoff-appearance grain boundary", () => {
@@ -265,7 +296,9 @@ describe("NoResultDisplay", () => {
     );
 
     expect(
-      screen.getByText("Personal-foul leaderboards are not supported yet."),
+      screen.getByText(
+        "Personal-foul leaderboards are supported. Try asking for personal fouls or PF and include the season you want ranked.",
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText("filter_not_supported")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Submit for review" })).toBeInTheDocument();
@@ -293,7 +326,7 @@ describe("NoResultDisplay", () => {
     expect(screen.getByText("season_leaders")).toBeInTheDocument();
   });
 
-  it("uses boundary-specific copy for rookie leaderboards", () => {
+  it("uses supported recovery copy for legacy rookie leaderboard boundaries", () => {
     render(
       <NoResultDisplay
         reason="filter_not_supported"
@@ -306,15 +339,18 @@ describe("NoResultDisplay", () => {
       />,
     );
 
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
     expect(
-      screen.getByText("Rookie leaderboards are not supported yet."),
+      screen.getByText(
+        "Rookie leaderboards are supported. Try specifying the stat and season you want ranked.",
+      ),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Points is not available for this query."),
     ).not.toBeInTheDocument();
   });
 
-  it("uses boundary-specific copy for role leaderboards", () => {
+  it("uses supported recovery copy for unresolved role leaderboards", () => {
     render(
       <NoResultDisplay
         reason="filter_not_supported"
@@ -327,9 +363,10 @@ describe("NoResultDisplay", () => {
       />,
     );
 
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "League-wide starter/bench leaderboards are not supported yet.",
+        "Starter and bench leaderboards are supported. Specify either starter or bench and include the stat you want ranked.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -374,7 +411,7 @@ describe("NoResultDisplay", () => {
     expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "That concept is not supported yet. Try asking for a specific player, team, game, or stat.",
+        "That concept is not supported yet. Try a starter query or one of the supported areas on the start screen.",
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText("unsupported_concept")).not.toBeInTheDocument();

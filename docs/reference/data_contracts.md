@@ -196,6 +196,7 @@ These are convenience fields only. Commands should join the role dataset back to
 
 - starter / bench execution for `player_game_summary`
 - starter / bench execution for `player_game_finder`
+- starter / bench execution for `season_leaders`
 - future role-aware player routes that explicitly opt into the same contract
 
 ### Notes
@@ -450,7 +451,7 @@ player time-on-court or possession time, and must not be labeled as either.
 
 ## 1D. `team_player_on_off_summary`
 
-The approved future source path for `player_on_off` execution is the upstream
+The approved source for `player_on_off` execution is the upstream
 `teamplayeronoffsummary` split table, called through
 `nba_api.stats.endpoints.TeamPlayerOnOffSummary`. This section is the durable
 source boundary.
@@ -522,7 +523,7 @@ Recommended uniqueness expectation:
 
 ### Primary consumer(s)
 
-- future `player_on_off` execution
+- coverage-gated `player_on_off` execution
 
 ### Notes
 
@@ -1208,11 +1209,15 @@ Contract rules:
 
 - command owners must join by (`game_id`, `team_id`) so team-relative rest and
   back-to-back state is not confused with game-level state
-- `schedule_context_source_trusted=0` means commands must fall back with an
-  explicit unfiltered-results note instead of partially filtering
+- missing, empty, incomplete, or untrusted schedule-context coverage must fail
+  closed. The player-summary and team-record command owners translate the
+  coverage note from `apply_schedule_context_filters()` into a structured
+  `NoResult` with `result_reason="filter_not_supported"`; they must never return
+  the original unfiltered game set as the requested answer
 - `national_tv_source_trusted=0` means the raw schedule source is still acting
-  as the historical placeholder; commands may execute other schedule-context
-  filters but must fall back for `nationally_televised`
+  as the historical placeholder. Commands may execute other trusted
+  schedule-context filters, but a requested `nationally_televised` filter must
+  fail closed with `result_reason="filter_not_supported"`
 - current raw `pull_schedule` output can still produce blank `national_tv`
   values; a season file is considered national-TV trusted only when at least
   one non-empty national-TV marker is present
@@ -1395,15 +1400,15 @@ When adding a new core dataset, add it here before making it an implicit depende
   untrusted PBP/clutch keys return `filter_not_supported` with exact game/key
   detail. Whole-game logs and
   period-only box-score windows remain rejected as clutch substitutes.
-- `player_on_off` now has an approved future source path: upstream
+- `player_on_off` uses the approved upstream source path:
   `teamplayeronoffsummary` via
   `nba_api.stats.endpoints.TeamPlayerOnOffSummary`. The source dataset path,
   validation, loader, and coverage-gated `player_on_off` execution exist.
   Missing or untrusted coverage keeps the explicit unsupported-data response.
   Whole-game `without_player` absence remains rejected as an on/off substitute
   because it has no on-court/off-court sample boundary.
-- `lineup_summary` and `lineup_leaderboard` now have an approved future source
-  path: upstream `leaguelineupviz` via
+- `lineup_summary` and `lineup_leaderboard` use the approved upstream source
+  path: `leaguelineupviz` via
   `nba_api.stats.endpoints.LeagueLineupViz`. The raw source dataset path,
   validation, loader, and coverage-gated route execution exist. Missing or
   untrusted coverage keeps the explicit unsupported-data response. Roster

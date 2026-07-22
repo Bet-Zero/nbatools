@@ -232,6 +232,7 @@ export default function LeaderboardResult({
     <section className={styles.pattern} aria-label="Leaderboard result">
       <ResultHero
         sentence={
+          answerHeadline(data.result?.metadata) ??
           countHeadline(data.result?.metadata) ??
           heroSentence(firstRow, metric, data, {
             sentenceMetricLabel,
@@ -256,6 +257,11 @@ export default function LeaderboardResult({
       />
     </section>
   );
+}
+
+function answerHeadline(metadata: ResultMetadata | undefined): string | null {
+  const phrase = metadata?.answer_phrase;
+  return typeof phrase === "string" && phrase.trim() ? phrase.trim() : null;
 }
 
 function countHeadline(metadata: ResultMetadata | undefined): string | null {
@@ -465,14 +471,7 @@ function lineupLeaderboardColumns(
   const supportOrder =
     primaryMetric === "minutes"
       ? ["net_rating", "off_rating", "def_rating", "pace", "ts_pct"]
-      : [
-          "minutes",
-          "net_rating",
-          "off_rating",
-          "def_rating",
-          "pace",
-          "ts_pct",
-        ];
+      : ["minutes", "net_rating", "off_rating", "def_rating", "pace", "ts_pct"];
   for (const key of supportOrder) {
     pushValueColumn(columns, rows, key);
   }
@@ -1049,7 +1048,10 @@ function lineupIdentityLabel(row: SectionRow): string | null {
 
 function readableNameList(value: unknown): string | null {
   if (Array.isArray(value)) {
-    const parts = value.map(String).map((part) => part.trim()).filter(Boolean);
+    const parts = value
+      .map(String)
+      .map((part) => part.trim())
+      .filter(Boolean);
     return parts.length > 0 ? parts.join(" / ") : null;
   }
 
@@ -1061,7 +1063,10 @@ function readableNameList(value: unknown): string | null {
   if (parsed.length > 0) return parsed.join(" / ");
 
   if (trimmed.includes("|")) {
-    const parts = trimmed.split("|").map((part) => part.trim()).filter(Boolean);
+    const parts = trimmed
+      .split("|")
+      .map((part) => part.trim())
+      .filter(Boolean);
     return parts.length > 0 ? parts.join(" / ") : null;
   }
 
@@ -1074,7 +1079,10 @@ function parseArrayLikeNames(value: string): string[] {
   try {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) {
-      return parsed.map(String).map((part) => part.trim()).filter(Boolean);
+      return parsed
+        .map(String)
+        .map((part) => part.trim())
+        .filter(Boolean);
     }
   } catch {
     // Some backend/debug paths stringify arrays with single quotes.

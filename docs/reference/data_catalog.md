@@ -23,6 +23,12 @@ Raw tables live in:
 - `data/raw/standings_snapshots/`
 - `data/raw/team_game_stats/`
 - `data/raw/player_game_stats/`
+- `data/raw/player_game_starter_roles/`
+- `data/raw/player_game_period_stats/`
+- `data/raw/team_game_period_stats/`
+- `data/raw/play_by_play_events/`
+- `data/raw/team_player_on_off_summary/`
+- `data/raw/league_lineup_viz/`
 - `data/raw/team_season_advanced/`
 - `data/raw/player_season_advanced/`
 - `data/raw/teams/`
@@ -35,11 +41,15 @@ Processed tables live in:
 - `data/processed/schedule_context_features/`
 - `data/processed/player_game_features/`
 - `data/processed/league_season_stats/`
+- `data/processed/player_game_clutch_stats/`
+- `data/processed/team_game_clutch_stats/`
 
 ## Metadata
 Metadata lives in:
 
 - `data/metadata/backfill_manifest.csv`
+- `data/metadata/dataset_manifests/`
+- `data/metadata/active_generation.json`
 
 ---
 
@@ -420,6 +430,28 @@ Player box score source truth.
 - `plus_minus`
 - `comment`
 
+The legacy `starter_flag` and `start_position` columns in this whole-game table
+are not the authoritative starter/bench source. Role-filtered execution uses
+the separately validated `player_game_starter_roles` dataset below.
+
+---
+
+## Coverage-gated raw capability tables
+
+These raw datasets support query capabilities only when validation proves
+complete, trusted coverage for the exact requested slice. Their full schemas,
+keys, producers, and refusal behavior live in
+[`data_contracts.md`](data_contracts.md).
+
+| Dataset | Path | Grain | Purpose and trust boundary |
+| --- | --- | --- | --- |
+| `player_game_starter_roles` | `data/raw/player_game_starter_roles/<season>_<season_type>.csv` | Player-game role | Authoritative starter/bench assignment; incomplete or untrusted player-game keys refuse role filtering |
+| `player_game_period_stats` | `data/raw/player_game_period_stats/<season>_<season_type>.csv` | Player-game period window | Quarter, half, and overtime player execution with exact-window coverage |
+| `team_game_period_stats` | `data/raw/team_game_period_stats/<season>_<season_type>.csv` | Team-game period window | Quarter, half, and overtime team execution with exact-window coverage |
+| `play_by_play_events` | `data/raw/play_by_play_events/<season>_<season_type>.csv` | Play-by-play event | Trusted source for locally derived clutch samples; whole-game or period rows are not substitutes |
+| `team_player_on_off_summary` | `data/raw/team_player_on_off_summary/<season>_<season_type>.csv` | Team/player/presence-state season split | Coverage-gated single-player on/off execution; both trusted on and off states are required |
+| `league_lineup_viz` | `data/raw/league_lineup_viz/<season>_<season_type>.csv` | Team lineup unit and threshold season split | Coverage-gated lineup summaries and leaderboards with trusted unit membership |
+
 ---
 
 ## team_season_advanced
@@ -671,6 +703,19 @@ League-wide seasonal environment context.
 
 ---
 
+## Coverage-gated processed capability tables
+
+| Dataset | Path | Grain | Purpose and trust boundary |
+| --- | --- | --- | --- |
+| `player_game_clutch_stats` | `data/processed/player_game_clutch_stats/<season>_<season_type>.csv` | Player-game clutch sample | Derived from trusted play-by-play for the fixed clutch window |
+| `team_game_clutch_stats` | `data/processed/team_game_clutch_stats/<season>_<season_type>.csv` | Team-game clutch sample | Derived from trusted play-by-play for the fixed clutch window |
+
+Both datasets are optional capabilities. If a requested slice lacks complete,
+trusted play-by-play and derived keys, the query refuses the clutch filter
+instead of mixing partial results.
+
+---
+
 # 4. Metadata Tables
 
 ## backfill_manifest
@@ -705,8 +750,24 @@ record per applicable raw or processed dataset.
 Authoritative control-plane evidence for a coherent validated slice. The
 receipt records schema version, generation, source, grain, row and key counts,
 required schema columns, file and key-set checksums, exact cross-dataset
-coverage, trust, and validation state. Required gaps fail the receipt. Optional capability datasets may be
-absent, but a present corrupt, incomplete, or untrusted optional dataset fails.
+coverage, trust, and validation state. Required gaps fail the receipt. Optional
+capability datasets may be absent, but a present corrupt, incomplete, or
+untrusted optional dataset fails.
+
+## active_generation
+
+### Path
+`data/metadata/active_generation.json`
+
+### Grain
+One pointer to the immutable generation selected for new requests.
+
+### Purpose
+Pins every read within a request to one coherent dataset generation. In R2
+mode the equivalent object is `metadata/active_generation.json`; its
+`generation_id` selects files below `generations/<generation_id>/`. Missing
+pointers retain legacy-path compatibility, while invalid or unreadable
+pointers fail closed.
 
 ---
 
@@ -732,9 +793,11 @@ absent, but a present corrupt, incomplete, or untrusted optional dataset fails.
 
 # 6. Coverage Status
 
-Current known coverage:
+The verified local Queue D baseline covers `1996-97` through `2025-26` for
+both Regular Season and Playoffs. The `2025-26` playoff slice contains 85
+final games through `2026-06-13` and has a passed dataset manifest.
 
-- `1996-97` through `2024-25`: Regular Season + Playoffs
-- `2025-26`: Regular Season only
-
-This should be updated if coverage expands further back or when current-season playoffs are loaded.
+This local inventory is not deployment proof. The deployed `/readiness`
+response and active immutable generation manifest are the authority for the
+data a release will actually serve. Update this section when the verified
+baseline changes.

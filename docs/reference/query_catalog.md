@@ -18,9 +18,11 @@
 > representative outputs from `product_review.md`; raw QA case count alone is not
 > enough public-readiness evidence.
 
-When this catalog marks a family as parser-recognized but still unfiltered,
-placeholder-backed, or explicitly deferred, that note reflects current shipped
-behavior only. This catalog and
+When this catalog marks a family as parser-recognized but execution-limited,
+coverage-gated, or explicitly deferred, that note reflects current shipped
+behavior only. Role/experience filters and the explicit fail-closed combinations
+documented below return typed `no_result` / `filter_not_supported` responses
+instead of silently dropping the filter. This catalog and
 [current_state_guide.md](current_state_guide.md) are the durable shipped
 boundary.
 
@@ -130,27 +132,28 @@ If a feature is not reflected here, it should not be assumed shipped.
   execute these filters when `player_game_period_stats` / `team_game_period_stats`
   contains every requested entity-game key for the exact window; otherwise they
   return `no_result` / `filter_not_supported` with exact missing key/window detail.
-  Other routes still remain unfiltered and are
+  Other routes return the same typed refusal and are
   out of scope for the core finish line unless a future product queue reopens
   period route expansion.)
 - schedule context: `back-to-back`, `b2b`, `rest advantage`, `rest disadvantage`, `2 days rest`, `one-possession games`, `nationally televised`, `on national TV`
   (parser-recognized and engine-accepted; `team_record` and `player_game_summary`
   execute these filters when trusted `schedule_context_features` coverage exists
-  for the requested slice, otherwise they fall back with an explicit
-  unfiltered-results note. Other routes still remain unfiltered and are out of
-  scope for the core finish line unless a future product queue reopens
-  schedule-context route expansion.)
+  for the requested slice. Missing/untrusted coverage or other routes return
+  `no_result` / `filter_not_supported`; broader route expansion is out of scope
+  for the core finish line unless a future product queue reopens it.)
 - role context: `as a starter`, `starting`, `off the bench`, `bench`, `reserve`
   (parser-recognized and engine-executed for player summary/finder queries when trusted
   `player_game_starter_roles` coverage exists for every requested player-game;
   otherwise execution returns `no_result` / `filter_not_supported` with exact
   missing or untrusted key detail. `season_leaders` uses the same exact gate.
   Team-only phrases like `Celtics bench scoring` remain an explicit unsupported
-  boundary.)
+  boundary and return `no_result` / `filter_not_supported` rather than a team
+  total or an unfiltered leaderboard.)
 - opponent-quality context: `against contenders`, `against good teams`, `vs top teams`, `against top 10 teams`, `against top 5 teams`, `against top seeded teams`, `against playoff teams`, `against non-playoff teams`, `against postseason teams`, `against teams that made the playoffs`, `against winning teams`, `against losing teams`, `against teams over .500`, `against teams under .500`, `against bad teams`, `against top-10 defenses`
   (resolved to concrete opponent buckets on the supported single-entity summary/finder/record
   routes using the latest regular-season standings or team-advanced data for the selected season;
-  unsupported routes append an explicit note and remain unfiltered)
+  unsupported routes return `no_result` / `filter_not_supported` and never
+  execute an unfiltered substitute)
 - opponent-conference context for team records: `against the East`, `against East teams`, `against Eastern Conference teams`, `vs the West`, `versus Western Conference opponents`
   (resolved through trusted `team_conference_membership` coverage for `2024-25`
   and `2025-26`; missing or untrusted coverage returns `no_result` /
@@ -388,6 +391,7 @@ Current behavior:
 - parser routes to `player_on_off` and preserves `lineup_members` and `presence_state`
 - execution uses trusted `team_player_on_off_summary` rows when both `on` and `off` coverage exists for the requested single-player slice
 - missing or untrusted coverage, unsupported multi-player on/off, and slices outside the source contract return explicit unsupported/no-result responses
+- `player_on_off` is a shipped coverage-gated route, not an execution placeholder
 - whole-game `with_player` / `without_player` availability is not an on/off substitute
 - compound or multi-player availability record phrasing such as `Lakers record when LeBron and AD both play` or `Lakers record with Reaves without Luka` is outside the current lineup/availability boundary and returns an explicit unsupported/no-result response rather than an unfiltered team record or player summary
 
@@ -496,6 +500,9 @@ Ranking semantics:
 
 - box-score volume aliases promoted for `season_leaders` (`pf`, `minutes`,
   `fgm`, `fga`, `fg3a`, `ftm`, `fta`) rank season totals
+- `personal foul` / `PF` means personal fouls committed, while `minutes` means
+  total minutes played; both execute as their named leaderboard stat and never
+  fall back to points
 - existing public per-game semantics remain unchanged for aliases such as
   points per game, rebounds per game, assists per game, steals per game,
   blocks per game, turnovers per game, plus-minus per game, and made threes
@@ -538,7 +545,8 @@ Leaderboard no-match behavior:
 - rookie leaderboards (`rookie scoring leaders`, `top rookies this season`)
   are supported: players are filtered to roster experience of 0 years in
   each season, with roster coverage from 1996-97; seasons without roster
-  data refuse honestly
+  data return `no_result` / `filter_not_supported` rather than an unfiltered
+  leaderboard
 - sophomore leaderboards (`sophomore scoring leaders`, `second-year
   assist leaders`) are supported the same way, filtered to roster
   experience of 1 year per season
@@ -845,9 +853,9 @@ Current behavior:
   `player_game_period_stats` / `team_game_period_stats` coverage exists for the
   requested slice; one missing entity-game key for the requested window returns
   `no_result` / `filter_not_supported` with exact key/window detail
-- other routes, such as period leaderboard phrasing, still append the explicit
-  unfiltered-results note because the current period-backed route boundary does
-  not extend beyond `player_game_finder` / `team_record`
+- other routes, such as period leaderboard phrasing, return typed
+  `no_result` / `filter_not_supported` because the current period-backed route
+  boundary does not extend beyond `player_game_finder` / `team_record`
 - broader period route expansion is out of scope for the core finish line unless
   a future product queue reopens it
 
@@ -862,7 +870,8 @@ Current behavior:
 
 - parser sets `back_to_back=True` and preserves the filter in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter through `schedule_context_features` when coverage exists
-- unsupported routes or missing coverage keep an explicit unfiltered-results note
+- unsupported routes or missing coverage return typed `no_result` /
+  `filter_not_supported`
 - broader schedule-context route expansion is out of scope for the core finish
   line unless a future product queue reopens it
 
@@ -877,7 +886,8 @@ Current behavior:
 
 - parser sets `rest_days` to `advantage`, `disadvantage`, or an integer day count and preserves it in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter through normalized `schedule_context_features.rest_days` / `rest_advantage` when coverage exists
-- unsupported routes or missing coverage keep an explicit unfiltered-results note
+- unsupported routes or missing coverage return typed `no_result` /
+  `filter_not_supported`
 - broader schedule-context route expansion is out of scope for the core finish
   line unless a future product queue reopens it
 
@@ -892,7 +902,8 @@ Current behavior:
 
 - parser sets `one_possession=True` and preserves the filter in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter through `schedule_context_features.one_possession` when coverage exists
-- unsupported routes or missing coverage keep an explicit unfiltered-results note
+- unsupported routes or missing coverage return typed `no_result` /
+  `filter_not_supported`
 - broader schedule-context route expansion is out of scope for the core finish
   line unless a future product queue reopens it
 
@@ -907,7 +918,8 @@ Current behavior:
 
 - parser sets `nationally_televised=True` and preserves the filter in `route_kwargs`
 - `team_record` and `player_game_summary` execute the filter only when `schedule_context_features.national_tv_source_trusted=1`
-- current placeholder schedule pulls can still leave national-TV coverage untrusted; in that case execution falls back with an explicit unfiltered-results note
+- current schedule pulls can still leave national-TV coverage untrusted; in that
+  case execution returns typed `no_result` / `filter_not_supported`
 - broader schedule-context route expansion is out of scope for the core finish
   line unless a future product queue reopens it
 
@@ -926,7 +938,8 @@ Current behavior:
   requested slice, execution returns `no_result` / `filter_not_supported` with
   exact key detail instead of partially filtering
 - `season_leaders` uses the same exact trusted player-game gate; team-level
-  bench scoring remains an explicit unsupported boundary
+  bench scoring remains an explicit unsupported boundary that returns
+  `no_result` / `filter_not_supported`
 
 ### Opponent-quality filter
 

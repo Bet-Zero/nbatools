@@ -2,7 +2,14 @@
 
 > **Purpose of this doc:** The example library. Use this for test inputs, equivalence verification, and to see how real user language maps to the parser's canonical parse state. For framing, see [`overview.md`](./overview.md). For component specs, see [`specification.md`](./specification.md). For the living inventory of currently-shipped query shapes, see [`docs/reference/query_catalog.md`](../../reference/query_catalog.md).
 
-When an example below carries an explicit unfiltered-results, coverage-gated, placeholder, or deferral note, that note describes current shipped behavior only. Use [`docs/reference/query_catalog.md`](../../reference/query_catalog.md) and [`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md) for the durable shipped boundary.
+When an example below carries a coverage-gated, unsupported-boundary, or
+deferral note, that note describes current shipped behavior only. Role,
+experience, and the explicit fail-closed filter combinations documented below
+return a typed `NoResult(reason="filter_not_supported")` instead of silently
+executing without the filter. Use
+[`docs/reference/query_catalog.md`](../../reference/query_catalog.md) and
+[`docs/reference/current_state_guide.md`](../../reference/current_state_guide.md)
+for the durable shipped boundary.
 
 ---
 
@@ -64,6 +71,14 @@ Primary class: `leaderboard`
 9. Who has the highest true shooting percentage this season?
 10. What teams have the best net rating this year?
 
+_Current support note:_ `personal fouls leaders` / `PF leaders` and `most
+minutes` route through `season_leaders` and rank the named box-score stat by
+season total. `rookie scoring leaders` applies the roster-experience gate, while
+`most points off the bench` and `top scorers among starters` apply the trusted
+starter-role gate. Missing required coverage returns typed
+`no_result` / `filter_not_supported`; none of these forms falls back to an
+unfiltered points leaderboard.
+
 ### 2.2 Recent / lately / last night / past month
 
 Primary class: `leaderboard` or `summary` with fuzzy timeframe
@@ -82,8 +97,8 @@ Primary class: `leaderboard` or `summary` with fuzzy timeframe
 _Current boundary note:_ fuzzy recent/lately player leaderboards over supported
 box-score and percentage stats route through `season_leaders`. Rolling team
 advanced-rating leaderboards and subjective trend concepts such as "cooled off"
-are outside the shipped support boundary and must carry an explicit unsupported
-boundary note if they route through a broad fallback.
+are outside the shipped support boundary and return an explicit typed unsupported
+response rather than a broad fallback.
 
 ### 2.3 Last N games / since date / over span
 
@@ -234,7 +249,7 @@ Primary class: `split` or context-filtered variants
 6. What is the Lakers' record on back-to-backs this season?
 7. Who has the best clutch field goal percentage this year?
 8. What team has the best record in one-possession games this season?
-9. Which players average the most points as a starter vs off the bench?
+9. Which players score the most points off the bench?
 10. What is the Nuggets' net rating with Nikola Jokić on the floor vs off the floor?
 
 ---
@@ -275,8 +290,8 @@ These pairs verify that the parser maps both phrasings to the same parse state. 
 
 _Current boundary note:_ rolling team advanced ratings, double-double averages,
 and per-game attempt minimums are not execution-backed yet. Per-game attempt
-minimum examples route as broad leaderboard fallbacks with an explicit
-unsupported boundary note; rolling team advanced ratings and double-double
+minimum examples return typed unsupported responses rather than broad
+leaderboard fallbacks; rolling team advanced ratings and double-double
 averages remain unsupported boundary examples.
 
 ### 3.4 Best games / biggest games / most efficient
@@ -873,8 +888,8 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Tatum clutch time stats`
 - `late-game Tatum stats`
 - _Current execution note:_ all variants set `clutch=True`; supported routes
-  execute against trusted play-by-play-derived clutch rows and keep an
-  unfiltered-results note when coverage is missing or untrusted._
+  execute against trusted play-by-play-derived clutch rows. Missing or untrusted
+  coverage returns typed `no_result` / `filter_not_supported`._
 
 ### 7.8 Period context — 4th quarter scoring leaders
 
@@ -883,8 +898,9 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `4th quarter scoring leaders this season`
 - _Current execution note:_ all variants set `quarter="4"`. Period execution is now
   coverage-gated on `player_game_finder` / `team_record` when period backfills exist
-  for the requested slice, but these leaderboard variants still remain unfiltered
-  because the current period-backed route boundary does not include `season_leaders`._
+  for the requested slice. These leaderboard variants return typed
+  `filter_not_supported` because the current period-backed route boundary does
+  not include `season_leaders`._
 
 ### 7.9 Schedule context — Lakers back-to-back record
 
@@ -892,14 +908,20 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `Lakers on back-to-backs record`
 - `Lakers b2b record`
 - `Lakers second of a back-to-back record`
-- _Execution note:_ all variants set `back_to_back=True`; `team_record` executes the filter when trusted `schedule_context_features` coverage exists, otherwise it keeps the explicit unfiltered-results note._
+- _Execution note:_ all variants set `back_to_back=True`; `team_record` executes
+  the filter when trusted `schedule_context_features` coverage exists. Missing
+  coverage returns typed `no_result` / `filter_not_supported`._
 
 ### 7.10 Role filter — LeBron as a starter
 
 - `How has LeBron played as a starter this season?`
 - `LeBron as a starter stats`
 - `LeBron starting stats`
-- _Current execution note:_ all variants set `role="starter"` for player-context queries; `player_game_summary` / `player_game_finder` apply the filter only when trusted `player_game_starter_roles` coverage exists for the requested slice, otherwise they keep the explicit unfiltered-results note._
+- _Current execution note:_ all variants set `role="starter"` for player-context
+  queries; `player_game_summary` / `player_game_finder` apply the filter only
+  when trusted `player_game_starter_roles` coverage exists for the requested
+  slice. Missing/untrusted coverage returns typed `no_result` /
+  `filter_not_supported` instead of an unfiltered player summary._
 
 ### 7.11 Opponent-quality — Jokic against contenders
 
@@ -913,28 +935,39 @@ Queries within a group must produce identical parse states (modulo confidence). 
 - `How has Jokic played with rest advantage this season?`
 - `Jokic with rest advantage this season`
 - `Jokic rest advantage stats`
-- _Execution note:_ all variants set `rest_days="advantage"`; `player_game_summary` executes the filter when trusted `schedule_context_features` coverage exists, otherwise it keeps the explicit unfiltered-results note._
+- _Execution note:_ all variants set `rest_days="advantage"`;
+  `player_game_summary` executes the filter when trusted
+  `schedule_context_features` coverage exists. Missing coverage returns typed
+  `no_result` / `filter_not_supported`._
 
 ### 7.13 One-possession filter — Celtics one-possession record
 
 - `What is the Celtics' record in one-possession games this season?`
 - `Celtics one-possession record this season`
 - `Celtics record in one-possession games`
-- _Execution note:_ all variants set `one_possession=True`; `team_record` executes the filter when trusted `schedule_context_features` coverage exists, otherwise it keeps the explicit unfiltered-results note._
+- _Execution note:_ all variants set `one_possession=True`; `team_record`
+  executes the filter when trusted `schedule_context_features` coverage exists.
+  Missing coverage returns typed `no_result` / `filter_not_supported`._
 
 ### 7.14 National-TV filter — Lakers national-TV record
 
 - `What is the Lakers' record on national TV this season?`
 - `Lakers national TV record`
 - `Lakers nationally televised record`
-- _Execution note:_ all variants set `nationally_televised=True`; `team_record` executes the filter only when trusted national-TV source coverage exists. Placeholder schedule pulls keep the explicit unfiltered-results note for this filter._
+- _Execution note:_ all variants set `nationally_televised=True`; `team_record`
+  executes the filter only when trusted national-TV source coverage exists.
+  Missing or untrusted coverage returns typed `no_result` /
+  `filter_not_supported`._
 
-### 7.15 On/off placeholder — Jokic on/off
+### 7.15 On/off coverage-gated execution — Jokic on/off
 
 - `Jokic on/off`
 - `Jokic on off`
 - `Nikola Jokic on-off`
-- _Current execution note:_ all variants route to `player_on_off`. Execution returns trusted `team_player_on_off_summary` rows when coverage exists for the requested single-player slice; missing or untrusted coverage keeps the honest unsupported-data response._
+- _Current execution note:_ all variants route to the shipped, coverage-gated
+  `player_on_off` executor. It returns trusted `team_player_on_off_summary` rows
+  when coverage exists for the requested single-player slice; missing or
+  untrusted coverage returns an honest unsupported-data response._
 
 ### 7.16 Lineup leaderboard — best 5-man lineups
 
@@ -994,9 +1027,10 @@ future product queue reopens them.
 - schedule-context route expansion beyond `team_record` / `player_game_summary`
   is out of scope for the core finish line unless a future product queue reopens it
 - starter / bench route expansion beyond the current `player_game_summary` /
-  `player_game_finder` trusted-role boundary, including team-level bench
-  semantics, is out of scope for the core finish line unless a future product
-  queue reopens it
+  `player_game_finder` / `season_leaders` trusted-role boundary, including
+  team-level bench semantics, is out of scope for the core finish line unless a
+  future product queue reopens it; unsupported combinations return typed
+  `filter_not_supported`
 - broader trusted national-TV source coverage remains part of the
   schedule-context coverage gate, not a reason to silently filter untrusted data
 - period execution beyond the current `player_game_finder` / `team_record`

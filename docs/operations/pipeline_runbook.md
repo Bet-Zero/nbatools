@@ -101,6 +101,8 @@ For a given season and season_type, `backfill-season` runs:
 - `pull-rosters`
 - `pull-team-game-stats`
 - `pull-player-game-stats`
+- `pull-player-game-starter-roles`
+- `pull-game-period-stats` (writes player-game and team-game period datasets)
 - `pull-standings-snapshots` (regular season only)
 - `pull-team-season-advanced`
 - `pull-player-season-advanced`
@@ -127,14 +129,14 @@ For a given season and season_type, `backfill-season` runs:
 - `season_type = "Playoffs"`
 - standings snapshots do not exist for playoffs
 
-## Current-season playoff skip behavior
+## Upcoming-postseason skip behavior
 If playoffs have not started yet and no data exists:
 - `backfill-season` will skip that season/type cleanly
 - it will not print a large traceback
 - `backfill-range` can continue safely
 
 Example:
-- `2025-26 Playoffs` before playoff games exist
+- `<current-season> Playoffs` before the first postseason game exists
 
 ---
 
@@ -172,7 +174,7 @@ Example:
 - transient NBA API timeouts
 - empty API responses
 - historical endpoint flakiness
-- current-season playoffs not available yet
+- a requested upcoming postseason slice has not started
 
 ---
 
@@ -228,9 +230,9 @@ unknown, or `legacy_unverified` validation.
 Use:
 `nbatools-cli ops backfill-range --start-season XXXX-YY --end-season YYYY-ZZ --include-playoffs --skip-existing`
 
-## For current season refreshes
-Use:
-`nbatools-cli ops backfill-season --season 2025-26 --season-type "Regular Season"`
+## For active-season refreshes
+Use `nbatools-cli pipeline refresh`, or run `backfill-season` explicitly for
+the active season and intended season type.
 
 ## After major runs
 Check:
@@ -248,9 +250,11 @@ verification boundary during development.
 
 # 10. Current Coverage
 
-Current known coverage:
+The verified local Queue D baseline covers `1996-97` through `2025-26` for
+both Regular Season and Playoffs. The `2025-26` playoff slice contains 85
+final games through `2026-06-13`; its dataset manifest passed validation.
 
-- `1996-97` through `2024-25`: Regular Season + Playoffs
-- `2025-26`: Regular Season only
-
-Update this section if historical coverage expands.
+This local baseline is not deployment proof. The deployed `/readiness`
+response and the active immutable generation manifest are the authority for
+the data a release will actually serve. Update this section when the verified
+baseline changes.

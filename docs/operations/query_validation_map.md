@@ -95,27 +95,28 @@ change the scope of the harness run that generated it.
 
 ## Current Scoreboard
 
-Snapshot: 2026-07-15.
+Snapshot: 2026-07-21. Current source counts are checked against the
+[generated repository inventory](../../contracts/repository_inventory.json).
 
 ### Corpus And Slices
 
-| Scope | Source | Current case count |
-| --- | --- | ---: |
-| Full Raw QA corpus | `qa/raw_query_answer_corpus.yaml` | 349 |
-| `basic_public_availability` | `qa/harness_slices/basic_public_availability.yaml` | 7 |
-| `defensive_aliases` | `qa/harness_slices/defensive_aliases.yaml` | 8 |
-| `natural_query_route_priority` | `qa/harness_slices/natural_query_route_priority.yaml` | 41 |
-| `player_entity_stat_context` | `qa/harness_slices/player_entity_stat_context.yaml` | 9 |
-| `playoff_phrasing` | `qa/harness_slices/playoff_phrasing.yaml` | 12 |
-| `product_boundaries` | `qa/harness_slices/product_boundaries.yaml` | 20 |
-| `public_query_acceptance` | `qa/harness_slices/public_query_acceptance.yaml` | 134 |
-| `team_date_context` | `qa/harness_slices/team_date_context.yaml` | 9 |
+| Scope | Source | Generated inventory field |
+| --- | --- | --- |
+| Full Raw QA corpus | `qa/raw_query_answer_corpus.yaml` | `query_validation.raw_qa_case_count` |
+| `basic_public_availability` | `qa/harness_slices/basic_public_availability.yaml` | `query_validation.slice_case_counts.basic_public_availability` |
+| `defensive_aliases` | `qa/harness_slices/defensive_aliases.yaml` | `query_validation.slice_case_counts.defensive_aliases` |
+| `natural_query_route_priority` | `qa/harness_slices/natural_query_route_priority.yaml` | `query_validation.slice_case_counts.natural_query_route_priority` |
+| `player_entity_stat_context` | `qa/harness_slices/player_entity_stat_context.yaml` | `query_validation.slice_case_counts.player_entity_stat_context` |
+| `playoff_phrasing` | `qa/harness_slices/playoff_phrasing.yaml` | `query_validation.slice_case_counts.playoff_phrasing` |
+| `product_boundaries` | `qa/harness_slices/product_boundaries.yaml` | `query_validation.slice_case_counts.product_boundaries` |
+| `public_query_acceptance` | `qa/harness_slices/public_query_acceptance.yaml` | `query_validation.slice_case_counts.public_query_acceptance` |
+| `team_date_context` | `qa/harness_slices/team_date_context.yaml` | `query_validation.slice_case_counts.team_date_context` |
 
 ### Current Evidence
 
 | Artifact | Evidence pointer | Scope note |
 | --- | --- | --- |
-| Full Raw QA corpus run | `outputs/raw_query_answer_qa/20260608T041500Z_full_top_single_game_performances_007/` | Historical 314-case corpus run. It predates the current 349-case corpus and is not current closure evidence. |
+| Full Raw QA corpus run | `outputs/raw_query_answer_qa/20260608T041500Z_full_top_single_game_performances_007/` | Historical 314-case corpus run. It predates the current corpus and is not current closure evidence. |
 | `public_query_acceptance` slice closure run | `outputs/raw_query_answer_qa_closure_validation/d10_final_83889c6/` | Current exact-artifact 134-case closure validation. It binds commit `83889c68d9375cc2b271391fadf9f3a433e84ea7`, immutable generation `d10-local-4688f85-20260715`, corpus/case/output hashes, 37 representative rows, reviewer, and UI spot check. |
 | Latest local public-acceptance review path | `outputs/raw_query_answer_qa/latest_public_query_acceptance/` | Mutable latest-mode folder for repeated local review. Do not cite it as durable product evidence. |
 | Current generated `product_review.md` | `outputs/raw_query_answer_qa_closure_validation/d10_final_83889c6/product_review.md` | Reports `human_review_complete` and `closure_integrity: pass` with zero integrity errors. |
