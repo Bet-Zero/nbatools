@@ -258,7 +258,9 @@ describe("latest request ownership", () => {
     expect(
       container.querySelector("[data-app-state='loading']"),
     ).not.toBeNull();
-    expect(screen.getByRole("status")).toHaveTextContent("Searching NBA data");
+    expect(screen.getByRole("status", { busy: true })).toHaveTextContent(
+      "Searching NBA data",
+    );
     expect(screen.queryByText("stale request failed")).toBeNull();
     expect(postQueryFeedback).not.toHaveBeenCalled();
 

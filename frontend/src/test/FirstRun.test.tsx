@@ -376,7 +376,9 @@ describe("first-run starter queries", () => {
     expect(
       container.querySelector("[data-state-surface='loading']"),
     ).not.toBeNull();
-    expect(screen.getByRole("status")).toHaveTextContent("Searching NBA data");
+    expect(screen.getByRole("status", { busy: true })).toHaveTextContent(
+      "Searching NBA data",
+    );
     expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
 
     resolveQuery(makeResponse("Jokic last 10 games"));
@@ -424,7 +426,9 @@ describe("first-run starter queries", () => {
       { stat: "pts" },
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
-    expect(screen.getByRole("status")).toHaveTextContent("Searching NBA data");
+    expect(screen.getByRole("status", { busy: true })).toHaveTextContent(
+      "Searching NBA data",
+    );
     expect(screen.getByLabelText("Loading result preview")).toBeInTheDocument();
 
     resolveStructured(makeResponse("structured query"));

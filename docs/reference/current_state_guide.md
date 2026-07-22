@@ -628,7 +628,16 @@ The web UI displays a collapsible freshness panel with:
 - expandable per-season details
 - validation state and abbreviated generation identity
 - last refresh outcome
-- auto-polls every 2 minutes
+- auto-polls two minutes after each completed check, without overlapping
+  requests
+- immediately changes to **unverified** after a failed check; prior dates and
+  season details remain visible only as explicitly labelled last-known data
+- pauses and invalidates polling while the page is hidden, checks immediately
+  when visible again, and aborts superseded or unmounted requests
+
+Transport failures never leave a prior `current` or `awaiting refresh` badge in
+place and never expose raw network/provider error text. A later successful
+check restores the API's normalized fresh, stale, unknown, or failed state.
 
 ---
 
