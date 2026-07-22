@@ -142,15 +142,16 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
 
 ### What runs when
 
-| Trigger                      | Lint | Docs governance | Frontend install/build/lint/test | `make test-unit` | `make test` |
-| ---------------------------- | ---- | --------------- | --------------------------------- | ---------------- | ----------- |
-| Pull request                 | ✓    | ✓               | ✓                                 | ✓                |             |
-| Push to `main`               | ✓    | ✓               | ✓                                 | ✓                | ✓           |
-| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                 | ✓                | ✓           |
-| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                | ✓           |
+| Trigger                      | Lint | Docs governance | Frontend install/audit/build/lint/test | `make test-unit` | `make test` |
+| ---------------------------- | ---- | --------------- | --------------------------------------- | ---------------- | ----------- |
+| Pull request                 | ✓    | ✓               | ✓                                       | ✓                |             |
+| Push to `main`               | ✓    | ✓               | ✓                                       | ✓                | ✓           |
+| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                       | ✓                | ✓           |
+| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                       | ✓                | ✓           |
 
 - **`docs-governance`** (`make docs-governance`): Verifies durable-doc and working/archive policy checks.
-- **`frontend`**: Runs `npm --prefix frontend ci`, build, lint, and test.
+- **`frontend`**: Runs `npm --prefix frontend ci`, fails on any low-or-higher
+  npm advisory, then runs build, lint, and test.
 - **`test-fast`** (`make test-unit`): Excludes `slow` and `needs_data` tests. Runs in parallel across Python 3.11/3.12/3.13. Provides fast feedback on every trigger.
 - **`test-full`** (`make test`): Full regression suite in parallel. Runs on main push, nightly, and manual dispatch. Skipped on PRs to keep feedback fast.
 
