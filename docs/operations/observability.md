@@ -107,8 +107,11 @@ not claim:
 
 GitHub scheduled workflows can be delayed, dropped under load, or disabled
 after prolonged public-repository inactivity. This is a zero-paid-overage,
-best-effort monitor rather than a commercial continuous-uptime service. A
-successful synthetic delivery receipt and owner confirmation remain required
-before alert delivery is accepted. `/health` remains liveness, `/readiness`
-remains the release gate, and the full deployment smoke remains explicit
-promotion evidence.
+best-effort monitor rather than a commercial continuous-uptime service. John
+Matthew confirmed on 2026-07-23 that the approved network-free synthetic
+failure notification reached the GitHub Actions channel he monitors, completing
+the Queue E alert-delivery requirement. That confirmation does not turn GitHub
+Actions into a continuous-uptime service or provide live recovery or broader
+release acceptance. `/health` remains liveness, `/readiness` remains the
+release gate, and the full deployment smoke remains explicit promotion
+evidence.
