@@ -112,6 +112,7 @@ class FakeR2Client:
         self.corruption_count = 0
         self.swap_cleanup_inventory = False
         self.prefix_list_count = 0
+        self.list_error: Exception | None = None
         self.unexpected_cleanup_key: str | None = None
 
     def head_object(self, *, Bucket: str, Key: str) -> dict[str, Any]:
@@ -179,6 +180,8 @@ class FakeR2Client:
     def list_objects_v2(self, *, Bucket: str, Prefix: str) -> dict[str, Any]:
         del Bucket
         self.calls.append(("list", Prefix))
+        if self.list_error is not None:
+            raise self.list_error
         if Prefix.startswith("recovery-drills/"):
             self.prefix_list_count += 1
         if self.swap_cleanup_inventory and self.prefix_list_count == 2:
@@ -343,6 +346,61 @@ def test_authorized_fake_provider_drill_proves_isolation_bytes_and_exact_cleanup
         key.startswith(context.plan.drill_prefix) for key in context.mutation_store.objects
     )
     assert len(context.mutation_client.delete_calls) == limits.deletes
+    assert context.mutation_client.calls[:2] == [
+        ("list", context.plan.drill_prefix),
+        ("head", ACTIVE_GENERATION_PATH.as_posix()),
+    ]
+
+
+def test_scope_proof_accepts_provider_concealed_not_found_after_prefix_access(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    context = _context(tmp_path, monkeypatch)
+    context.mutation_client.deny_root_head = False
+
+    receipt = _execute(context)
+
+    assert receipt.status == "passed"
+    assert context.mutation_client.calls[:2] == [
+        ("list", context.plan.drill_prefix),
+        ("head", ACTIVE_GENERATION_PATH.as_posix()),
+    ]
+
+
+def test_scope_proof_rejects_credential_without_authorized_prefix_access(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    context = _context(tmp_path, monkeypatch)
+    context.mutation_client.list_error = FakeClientError("Unauthorized", 401)
+
+    with pytest.raises(LiveRecoveryDrillExecutionError) as excinfo:
+        _execute(context)
+
+    assert excinfo.value.code == "mutation_credential_prefix_access_unverified"
+    assert excinfo.value.receipt.mutation_started is False
+    assert context.mutation_client.calls == [
+        ("list", context.plan.drill_prefix),
+    ]
+
+
+def test_scope_proof_rejects_credential_that_can_read_production_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    context = _context(tmp_path, monkeypatch)
+    context.mutation_client.deny_root_head = False
+    context.mutation_store.objects[ACTIVE_GENERATION_PATH.as_posix()] = context.production_pointer
+    context.mutation_store.metadata[ACTIVE_GENERATION_PATH.as_posix()] = {}
+
+    with pytest.raises(LiveRecoveryDrillExecutionError) as excinfo:
+        _execute(context)
+
+    assert excinfo.value.code == "mutation_credential_scope_too_broad"
+    assert excinfo.value.receipt.mutation_started is False
+    assert context.mutation_client.put_calls == []
+    assert context.mutation_client.delete_calls == []
 
 
 def test_recomputed_noncanonical_plan_is_rejected_before_network(
