@@ -115,7 +115,10 @@ The separately authorized execution sequence will:
 Both provider clients are separate, temporary, session-token credentials and
 must report one total SDK attempt. The mutation credential is provider-scoped
 to the one drill prefix with read/write access; the production credential is
-read-only. A timeout or other ambiguous
+read-only. Credential separation is bound to each complete temporary session,
+not only its access-key ID, because provider-supported locally signed sessions
+can intentionally reuse one parent access-key ID while carrying distinct
+session tokens and scopes. A timeout or other ambiguous
 mutation result is never retried or automatically cleaned up; the prefix is
 not mutated further after failure, and its exact state must be inspected using
 the redacted failure receipt. Authorization expiry is checked before every

@@ -575,7 +575,7 @@ def create_live_drill_mutation_client(config: R2SyncConfig) -> LiveDrillR2Client
         role="isolated-prefix-read-write",
         account_id_sha256=hashlib.sha256(config.account_id.encode()).hexdigest(),
         bucket_name=config.bucket_name,
-        credential_id_sha256=hashlib.sha256(config.access_key_id.encode()).hexdigest(),
+        credential_id_sha256=_temporary_credential_identity_sha256(config),
     )
 
 
@@ -590,8 +590,21 @@ def create_live_drill_production_reader(config: R2SyncConfig) -> LiveDrillR2Clie
         role="production-read-only",
         account_id_sha256=hashlib.sha256(config.account_id.encode()).hexdigest(),
         bucket_name=config.bucket_name,
-        credential_id_sha256=hashlib.sha256(config.access_key_id.encode()).hexdigest(),
+        credential_id_sha256=_temporary_credential_identity_sha256(config),
     )
+
+
+def _temporary_credential_identity_sha256(config: R2SyncConfig) -> str:
+    """Fingerprint one temporary session without retaining credential material."""
+    if not config.session_token:
+        raise LiveRecoveryDrillError("temporary_session_token_required")
+    identity = (
+        b"r2-temporary-session-v1\0"
+        + config.access_key_id.encode()
+        + b"\0"
+        + config.session_token.encode()
+    )
+    return hashlib.sha256(identity).hexdigest()
 
 
 def prepare_live_recovery_drill_plan(
