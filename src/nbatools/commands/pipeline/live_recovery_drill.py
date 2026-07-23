@@ -824,6 +824,8 @@ def execute_live_recovery_drill(
 
     try:
         _require_execution_window(authorization, expires_at, now())
+        _require_mutation_credential_prefix_access(wrapped)
+        checks.append("isolated_prefix_empty_before")
         _prove_mutation_credential_is_prefix_scoped(
             mutation_client.client,
             plan,
@@ -842,9 +844,6 @@ def execute_live_recovery_drill(
             source_manifest,
         )
         checks.append("bound_production_readiness_and_inventory_verified_before")
-
-        _require_empty_prefix(wrapped)
-        checks.append("isolated_prefix_empty_before")
 
         restore_started = time.perf_counter()
         restored = publish_r2_generation(
@@ -1447,6 +1446,13 @@ def _prove_mutation_credential_is_prefix_scoped(
     plan: LiveRecoveryDrillPlan,
     usage: _OperationUsage,
 ) -> None:
+    """Require the prefix-verified credential to be unable to read root data.
+
+    R2 may conceal an out-of-scope object from ``HeadObject`` as either an
+    explicit access denial or a not-found response. The caller first proves
+    that the same temporary credential can list the authorized drill prefix,
+    so either response here establishes the required root-read boundary.
+    """
     if usage.class_b + 1 > plan.operation_limits.class_b:
         raise LiveRecoveryDrillError("operation_budget_exceeded")
     usage.class_b += 1
@@ -1457,11 +1463,30 @@ def _prove_mutation_credential_is_prefix_scoped(
         )
     except Exception as exc:
         code, status = client_error_code_and_status(exc)
-        if status == 403 and code in {"403", "AccessDenied"}:
+        if (status, code) in {
+            (403, "403"),
+            (403, "AccessDenied"),
+            (404, "404"),
+            (404, "NoSuchKey"),
+            (404, "NotFound"),
+        }:
             return
         _raise_read_transport_error(exc)
         raise LiveRecoveryDrillError("mutation_credential_scope_unverified") from exc
     raise LiveRecoveryDrillError("mutation_credential_scope_too_broad")
+
+
+def _require_mutation_credential_prefix_access(
+    client: PrefixEnforcingR2Client,
+) -> None:
+    """Prove the temporary mutation credential works on its exact prefix."""
+    try:
+        _require_empty_prefix(client)
+    except LiveRecoveryDrillError:
+        raise
+    except Exception as exc:
+        _raise_read_transport_error(exc)
+        raise LiveRecoveryDrillError("mutation_credential_prefix_access_unverified") from exc
 
 
 def _require_retries_disabled(client: Any) -> None:
