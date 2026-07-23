@@ -31,6 +31,7 @@ from nbatools.commands.pipeline.live_recovery_drill import (
     execute_live_recovery_drill,
     prepare_live_recovery_drill_plan,
 )
+from nbatools.commands.pipeline.sync_r2 import R2SyncConfig
 from nbatools.data_source import ACTIVE_GENERATION_PATH, GENERATIONS_DIR
 
 pytestmark = pytest.mark.engine
@@ -604,6 +605,64 @@ def test_execution_requires_distinct_retry_disabled_role_bound_clients_and_targe
 
     assert context.mutation_client.calls == []
     assert context.production_client.calls == []
+
+
+def test_temporary_credential_identity_distinguishes_locally_signed_sessions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clients: list[SimpleNamespace] = []
+
+    def fake_create_r2_client(
+        config: R2SyncConfig,
+        *,
+        disable_retries: bool,
+    ) -> SimpleNamespace:
+        assert disable_retries is True
+        client = SimpleNamespace(
+            meta=SimpleNamespace(
+                config=SimpleNamespace(retries={"total_max_attempts": 1}),
+                endpoint_url=(f"https://{config.account_id}.r2.cloudflarestorage.com"),
+            )
+        )
+        clients.append(client)
+        return client
+
+    monkeypatch.setattr(live_drill, "create_r2_client", fake_create_r2_client)
+    shared = {
+        "account_id": TEST_ACCOUNT_ID,
+        "access_key_id": "shared-parent-access-key",
+        "bucket_name": TEST_BUCKET,
+    }
+    mutation = live_drill.create_live_drill_mutation_client(
+        R2SyncConfig(
+            **shared,
+            secret_access_key="mutation-secret",
+            session_token="mutation-session",
+        )
+    )
+    production = live_drill.create_live_drill_production_reader(
+        R2SyncConfig(
+            **shared,
+            secret_access_key="production-secret",
+            session_token="production-session",
+        )
+    )
+    repeated_mutation = live_drill.create_live_drill_mutation_client(
+        R2SyncConfig(
+            **shared,
+            secret_access_key="mutation-secret",
+            session_token="mutation-session",
+        )
+    )
+
+    assert mutation.client is not production.client
+    assert mutation.credential_id_sha256 != production.credential_id_sha256
+    assert mutation.credential_id_sha256 == repeated_mutation.credential_id_sha256
+    assert all(
+        len(handle.credential_id_sha256) == 64
+        for handle in (mutation, production, repeated_mutation)
+    )
+    assert len(clients) == 3
 
 
 def test_live_plan_cli_fails_closed_without_traceback_or_provider_access(
