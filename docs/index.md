@@ -38,6 +38,7 @@ Current-state documentation, verified behavior, and data contracts.
 - [`reference/query_guide.md`](reference/query_guide.md) - comprehensive structured and natural query reference
 - [`reference/natural_search_and_deep_tools_boundary.md`](reference/natural_search_and_deep_tools_boundary.md) - natural-search product boundary
 - [`reference/raw_product_release_status.md`](reference/raw_product_release_status.md) - current Raw Product QA, review, and release-cutover status
+- [`reference/known_issues.md`](reference/known_issues.md) - small non-urgent engineering backlog items
 - [`reference/data_catalog.md`](reference/data_catalog.md) - dataset inventory
 - [`reference/data_contracts.md`](reference/data_contracts.md) - dataset-level contracts and source boundaries
 - [`reference/result_contracts.md`](reference/result_contracts.md) - target engine result contracts

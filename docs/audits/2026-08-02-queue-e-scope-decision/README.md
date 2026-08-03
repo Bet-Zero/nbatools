@@ -26,7 +26,7 @@ decision.
 | E-FINAL / Queue E owner acceptance | Will not be sought. Queue E's combined closure checker is expected to remain in a failing state indefinitely; this is expected, not a defect. |
 | Phase 5 (limited beta / broad production promotion) | Will not be entered. No observation window, branding/domain work, or custom-domain cutover is planned. |
 | Production deployment parity (current `main` vs. deployed `be14078`) | Not a release blocker under this decision. Future deploys may promote current `main` through the existing Queue D deployment path whenever convenient, without needing a new Queue E/Phase 5 gate. |
-| FSR-024 (saved structured-query safety), FSR-025 (frontend/backend wording coupling), FSR-030 (asset caching) | Remain open as ordinary backlog items, independent of this decision. Not required for closure. |
+| FSR-024 (saved structured-query safety), FSR-025 (frontend/backend wording coupling), FSR-030 (asset caching) | Remain open as ordinary backlog items, independent of this decision. Not required for closure. Tracked in [`known_issues.md`](../../reference/known_issues.md). |
 
 ## Why
 
