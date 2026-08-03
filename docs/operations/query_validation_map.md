@@ -95,7 +95,7 @@ change the scope of the harness run that generated it.
 
 ## Current Scoreboard
 
-Snapshot: 2026-07-21. Current source counts are checked against the
+Snapshot: 2026-08-02. Current source counts are checked against the
 [generated repository inventory](../../contracts/repository_inventory.json).
 
 ### Corpus And Slices
@@ -116,25 +116,29 @@ Snapshot: 2026-07-21. Current source counts are checked against the
 
 | Artifact | Evidence pointer | Scope note |
 | --- | --- | --- |
-| Full Raw QA corpus run | `outputs/raw_query_answer_qa/20260608T041500Z_full_top_single_game_performances_007/` | Historical 314-case corpus run. It predates the current corpus and is not current closure evidence. |
+| Full Raw QA corpus run | `outputs/raw_query_answer_qa/20260724T081634Z/` | Current 351-case corpus run, exact-artifact bound. It binds commit `28d73f0fbee1dd708a8cbee16956bd54b910269f`, immutable generation `queue-d-local-7e55c810-20260715`, corpus/case/output hashes, and the owner's package-level `human_review_complete` receipt. The prior 314-case run is superseded and historical only. |
 | `public_query_acceptance` slice closure run | `outputs/raw_query_answer_qa_closure_validation/d10_final_83889c6/` | Current exact-artifact 134-case closure validation. It binds commit `83889c68d9375cc2b271391fadf9f3a433e84ea7`, immutable generation `d10-local-4688f85-20260715`, corpus/case/output hashes, 37 representative rows, reviewer, and UI spot check. |
 | Latest local public-acceptance review path | `outputs/raw_query_answer_qa/latest_public_query_acceptance/` | Mutable latest-mode folder for repeated local review. Do not cite it as durable product evidence. |
 | Current generated `product_review.md` | `outputs/raw_query_answer_qa_closure_validation/d10_final_83889c6/product_review.md` | Reports `human_review_complete` and `closure_integrity: pass` with zero integrity errors. |
 | Rendered UI review | Durable summary below | Selected representative rendered-output queries passed; the older generated screenshot folder is not retained as durable source of truth. |
 
-Historical full Raw QA corpus run result (not current closure evidence):
+Current full Raw QA corpus run result (`20260724T081634Z`):
 
 | Metric | Result |
 | --- | ---: |
-| Cases | 314 |
-| Expectation cases passed | 314 |
+| Cases | 351 |
+| Expectation cases passed | 351 |
 | Failed case IDs | none |
-| Result status: `ok` | 243 |
-| Result status: `no_result` | 50 |
-| Result status: `error` | 21 |
+| Result status: `ok` | 270 |
+| Result status: `no_result` | 63 |
+| Result status: `error` | 18 |
 | Suspicious flag cases | 0 |
-| Informational flag cases | 187 |
-| Verified outlier cases | 2 |
+| Family coverage | complete |
+| Human product review | `human_review_complete` (package-level) — John Matthew, project owner, 2026-07-24. See the [full Raw QA package acceptance](../audits/2026-07-24-full-raw-qa-package-acceptance/README.md). |
+| Corpus SHA-256 | `c0e00229b5b42a989eb932f754e8d319556d8a5c5b6ccf6faa4985042fc71167` |
+
+The prior 314-case run is superseded and historical only; do not cite it as
+current evidence.
 
 Historical `public_query_acceptance` slice run result (not current closure evidence):
 

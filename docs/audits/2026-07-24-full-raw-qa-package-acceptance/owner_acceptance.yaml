@@ -1,0 +1,24 @@
+schema_version: 1
+review_kind: full_raw_qa_package
+decision: approve
+reviewer: John Matthew
+reviewer_role: project owner
+approval_text: APPROVE FULL RAW QA PACKAGE 20260724T081634Z
+approved_at: 2026-07-24
+run_id: 20260724T081634Z
+source_commit: 28d73f0fbee1dd708a8cbee16956bd54b910269f
+source_tree_clean_at_run: true
+data_generation: queue-d-local-7e55c810-20260715
+case_count: 351
+machine_expectations:
+  passed: 351
+  failed: 0
+family_coverage: complete
+suspicious_result_flags: 0
+corpus_sha256: c0e00229b5b42a989eb932f754e8d319556d8a5c5b6ccf6faa4985042fc71167
+selected_case_sha256: 0176bf5c9179289738605944cc7b3f3db72941809e57edac781c9bd7186f9ec4
+review_output_sha256: a9fa96483a22f2dc1d7dfbab125bcac610e409c6be3acb34446107648edd9a1d
+result: human_review_complete
+scope_boundary: >
+  This closes the full Raw QA package-level human-review gate only. It does not
+  grant release acceptance or waive the deferred E-03B live R2 recovery drill.
