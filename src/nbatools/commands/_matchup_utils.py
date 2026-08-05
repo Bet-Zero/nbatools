@@ -440,6 +440,27 @@ def detect_opponent_player(text: str) -> tuple[str | None, str]:
 # ---------------------------------------------------------------------------
 
 
+def _phrase_names_multiple_players(phrase: str) -> bool:
+    """True if a presence/absence phrase names two distinct players.
+
+    ``detect_player`` falls back to a substring alias scan, which will match a
+    single known name embedded anywhere in the phrase even when the phrase
+    actually names two players (e.g. "both Bane and Franz"). Without this
+    check, presence/absence detectors silently collapse a two-player request
+    down to whichever one name happens to match first, instead of surfacing
+    it as unresolved.
+    """
+    for sep in (" and ", " & "):
+        if sep not in phrase:
+            continue
+        left, right = phrase.split(sep, 1)
+        left_player = detect_player(left.strip(" ."))
+        right_player = detect_player(right.strip(" ."))
+        if left_player and right_player and left_player != right_player:
+            return True
+    return False
+
+
 def detect_without_player(text: str) -> tuple[str | None, str]:
     """Detect absence patterns like 'without PLAYER', 'w/o PLAYER',
     'when PLAYER out', 'when PLAYER didn't play', 'no PLAYER',
@@ -474,6 +495,8 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
             phrase = m.group(1).strip()
             if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
                 continue
+            if _phrase_names_multiple_players(phrase):
+                continue
             player = detect_player(phrase)
             if player:
                 cleaned = (cleaned_text[: m.start()] + " " + cleaned_text[m.end() :]).strip()
@@ -505,6 +528,8 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
         if m:
             phrase = m.group(1).strip()
             if re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
+                continue
+            if _phrase_names_multiple_players(phrase):
                 continue
             player = detect_player(phrase)
             if player:
@@ -545,6 +570,8 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         phrase = m.group(1).strip()
         if mode == "with" and re.search(r"\b(?:didn'?t|doesn'?t|did\s+not|does\s+not)\b", phrase):
             continue
+        if phrase and _phrase_names_multiple_players(phrase):
+            return phrase
         if phrase and not detect_player(phrase):
             return phrase
     return None

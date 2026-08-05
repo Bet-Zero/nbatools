@@ -146,6 +146,33 @@ def _extract_since_explicit_calendar_date(
     return start, end
 
 
+def season_for_explicit_month_year(text: str) -> str | None:
+    """Return the NBA season containing an explicit ``<month> <year>`` phrase.
+
+    "in January 2024" names a calendar window, not a season, but that window
+    only exists inside the 2023-24 season. Callers use this so an explicit year
+    moves the season off its default; otherwise the default (current) season
+    gets filtered by a window it does not overlap and returns nothing.
+
+    Returns None when the text names no explicit four-digit year.
+    """
+    month_pattern = _month_name_pattern()
+    m = re.search(
+        rf"\b({month_pattern})\.?(?:\s+\d{{1,2}}(?:st|nd|rd|th)?)?"
+        rf"(?:,?\s+((?:19|20)\d{{2}}))\b",
+        text,
+    )
+    if not m:
+        return None
+
+    month_num = MONTH_NAME_TO_NUM[m.group(1)]
+    year = int(m.group(2))
+    # NBA seasons span two calendar years: October onward opens the season
+    # named for that year, January-September closes the previous one.
+    start_year = year if month_num >= 10 else year - 1
+    return f"{start_year}-{str(start_year + 1)[-2:]}"
+
+
 def uses_fuzzy_date_term(text: str) -> bool:
     """True when the text uses a day-anchored fuzzy window (yesterday,
     last night, today, this week, last N days). Empty results for these
@@ -202,17 +229,24 @@ def extract_date_range(
     if explicit_start or explicit_end:
         return explicit_start, explicit_end
 
-    m = re.search(rf"\bsince\s+({month_pattern})\b", text)
+    # The optional trailing year mirrors the month-day forms above. Without it
+    # "in January 2024" matched only "in january" and the year was dropped on
+    # the floor, silently answering about the current season instead.
+    m = re.search(rf"\bsince\s+({month_pattern})(?:\s+((?:19|20)\d{{2}}))?\b", text)
     if m:
         month_num = MONTH_NAME_TO_NUM[m.group(1)]
-        year = _resolve_year_for_month_in_season(season, month_num)
+        year = (
+            int(m.group(2)) if m.group(2) else _resolve_year_for_month_in_season(season, month_num)
+        )
         start = f"{year}-{month_num:02d}-01"
         return start, None
 
-    m = re.search(rf"\b(?:in|during)\s+({month_pattern})\b", text)
+    m = re.search(rf"\b(?:in|during)\s+({month_pattern})(?:\s+((?:19|20)\d{{2}}))?\b", text)
     if m:
         month_num = MONTH_NAME_TO_NUM[m.group(1)]
-        year = _resolve_year_for_month_in_season(season, month_num)
+        year = (
+            int(m.group(2)) if m.group(2) else _resolve_year_for_month_in_season(season, month_num)
+        )
         last_day = monthrange(year, month_num)[1]
         start = f"{year}-{month_num:02d}-01"
         end = f"{year}-{month_num:02d}-{last_day:02d}"

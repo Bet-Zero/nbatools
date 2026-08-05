@@ -621,6 +621,40 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "no broad team record was returned "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id in ("with_player", "unresolved_with_player"):
+        return (
+            "whole-game 'with player' availability filtering is only supported for "
+            "team record queries (e.g. 'Lakers record with Austin Reaves available'); "
+            "no unfiltered player answer was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id in ("without_player", "unresolved_without_player"):
+        return (
+            "whole-game 'without player' availability filtering is not supported on "
+            "this route; no unfiltered answer was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "position_filter":
+        return (
+            "position-group filtering is only supported on player leaderboards "
+            "(e.g. 'most rebounds among centers'); no unfiltered answer was "
+            "substituted for this route "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "last_n":
+        return (
+            "a last-N game window is not supported on this route; season records, "
+            "playoff history, decade splits and team occurrence counts cover the "
+            "whole requested span, so no full-span answer was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "special_event":
+        return (
+            "triple-double / double-double filtering is not supported on this route; "
+            "try a player query such as 'most triple doubles this season'; "
+            "no unrelated answer was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "unresolved_team":
         return (
             "the requested team could not be resolved confidently; no broad team "

@@ -1202,6 +1202,28 @@ def merge_opponent_points_allowed_conditions(
     return merged
 
 
+def extract_min_games(text: str) -> int | None:
+    """Extract a games-played minimum such as ``at least 50 games``.
+
+    This is a sample-size qualifier on leaderboards, distinct from a per-game
+    stat threshold. It is matched only when the number is directly followed by
+    "games", so "at least 30 point games" stays a stat threshold.
+    """
+    patterns = (
+        r"\bat least\s+(\d+)\s+games?\b",
+        r"\bmin(?:imum)?\s+(\d+)\s+games?\b",
+        r"\b(\d+)\s+or\s+more\s+games?\b",
+        r"\b(\d+)\+\s*games?\b",
+    )
+    for pattern in patterns:
+        m = re.search(pattern, text)
+        if m:
+            value = int(m.group(1))
+            if value > 0:
+                return value
+    return None
+
+
 def extract_min_value(text: str, stat: str | None) -> float | None:
     """Fallback threshold extraction for when extract_threshold_conditions
     finds no stat-aware match.
@@ -1209,13 +1231,19 @@ def extract_min_value(text: str, stat: str | None) -> float | None:
     Handles stat-less generic patterns (``30+``, ``at least 30``) and bare
     ``N STAT`` phrases using the unified alias table from ``STAT_PATTERN``.
     """
-    # Generic stat-less patterns (no stat word adjacent to number)
+    # Generic stat-less patterns (no stat word adjacent to number).
+    # The (?!\s+games?\b) guard keeps a games-played minimum ("at least 50
+    # games") out of the stat threshold: that is a sample-size qualifier, not a
+    # per-game stat cutoff, and extract_min_games picks it up instead. A stat
+    # word between the number and "games" ("at least 30 point games") still
+    # reads as a threshold because the lookahead only rejects a bare "games".
+    _NOT_GAMES = r"(?!\s+games?\b)"
     patterns = [
-        r"\b(\d+)\+",
-        r"\bat least (\d+)\b",
-        r"\bminimum (\d+)\b",
-        r"\bmin(?:imum)? (\d+)\b",
-        r"\b(\d+)\s+or\s+more\b",
+        rf"\b(\d+){_NOT_GAMES}\+",
+        rf"\bat least (\d+){_NOT_GAMES}\b",
+        rf"\bminimum (\d+){_NOT_GAMES}\b",
+        rf"\bmin(?:imum)? (\d+){_NOT_GAMES}\b",
+        rf"\b(\d+){_NOT_GAMES}\s+or\s+more\b",
     ]
     for pattern in patterns:
         m = re.search(pattern, text)

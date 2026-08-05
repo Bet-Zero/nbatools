@@ -18,6 +18,7 @@ from nbatools.commands._date_utils import (
     MONTH_NAME_TO_NUM,
     extract_date_range,
     has_explicit_calendar_date,
+    season_for_explicit_month_year,
     uses_fuzzy_date_term,
 )
 from nbatools.commands._default_rules import (
@@ -214,6 +215,9 @@ from nbatools.commands._parse_helpers import (
     extract_last_n_seasons as extract_last_n_seasons,
 )
 from nbatools.commands._parse_helpers import (
+    extract_min_games as extract_min_games,
+)
+from nbatools.commands._parse_helpers import (
     extract_min_value as extract_min_value,
 )
 from nbatools.commands._parse_helpers import (
@@ -407,6 +411,117 @@ def _multi_player_availability_boundary(q: str) -> bool:
 
     left, right = [part.strip(" .") for part in with_without.group(1).split(" and ", 1)]
     return bool(detect_player(left) and detect_player(right))
+
+
+# Routes whose build_result() actually filters by a whole-game teammate
+# presence/absence flag. Every other route only ever receives with_player /
+# without_player as display metadata (set unconditionally by the parser) with
+# nothing downstream applying it - see _player_availability_unsupported_markers.
+_WITH_PLAYER_SUPPORTED_ROUTES = {"team_record"}
+_WITHOUT_PLAYER_SUPPORTED_ROUTES = {
+    "team_record",
+    "team_record_leaderboard",
+    "game_finder",
+    "game_summary",
+    "player_stretch_leaderboard",
+    "player_game_finder",
+    "player_game_summary",
+}
+# "lineup with X and Y" is a distinct, already-correctly-handled feature
+# (lineup composition via lineup_members), not a whole-game availability
+# filter. It shares surface phrasing with detect_with_player, so with_player
+# ends up set here too, but that's incidental parser noise, not an unapplied
+# filter - gating on it would block a working, unrelated feature.
+_PLAYER_AVAILABILITY_NOT_APPLICABLE_ROUTES = {"lineup_summary", "lineup_leaderboard"}
+
+
+def _player_availability_unsupported_markers(parsed: dict, route: str | None) -> list[str]:
+    """Return unsupported_filters markers for availability filters this route can't apply.
+
+    detect_with_player/detect_without_player run unconditionally over every
+    query regardless of which route it ends up on, so parsed["with_player"] /
+    parsed["without_player"] get set even for routes that never learned to
+    filter by them. Without this check those routes silently ignore the
+    filter while the UI still shows it as applied.
+
+    Deliberately does not gate on unresolved_with_player/unresolved_without_player:
+    that fallback fragment detector is too imprecise to use as a blocking signal
+    outside its original team-record-only context (e.g. it flags "with at least
+    3 threes" as an unresolved availability player, which would incorrectly
+    block ordinary stat-threshold queries on every other route).
+    """
+    if route in _PLAYER_AVAILABILITY_NOT_APPLICABLE_ROUTES:
+        return []
+    markers = []
+    if parsed.get("with_player") and route not in _WITH_PLAYER_SUPPORTED_ROUTES:
+        markers.append("with_player")
+    if parsed.get("without_player") and route not in _WITHOUT_PLAYER_SUPPORTED_ROUTES:
+        markers.append("without_player")
+    return markers
+
+
+# Routes whose build_result() actually applies a position-group filter. The
+# parser sets parsed["position_filter"] on every query, but `position` is only
+# ever forwarded into route_kwargs on the season_leaders branches, so any other
+# route showed a "Position" badge over an unfiltered list.
+_POSITION_FILTER_SUPPORTED_ROUTES = {"season_leaders"}
+
+# Routes whose build_result() accepts and applies last_n. Derived from the
+# build_result signatures in _natural_query_execution._get_build_result_map;
+# routes outside this set (team_record, team_matchup_record, playoff_*,
+# record_by_decade*, the occurrence leaders, ...) have no last_n parameter at
+# all, so "last 10 games" silently returned the full span behind a
+# "Last N games" badge.
+_LAST_N_SUPPORTED_ROUTES = {
+    "game_finder",
+    "game_summary",
+    "player_compare",
+    "player_game_finder",
+    "player_game_summary",
+    "player_split_summary",
+    "player_streak_finder",
+    "player_stretch_leaderboard",
+    "season_leaders",
+    "season_team_leaders",
+    "team_compare",
+    "team_split_summary",
+    "team_streak_finder",
+    "top_player_games",
+    "top_team_games",
+}
+
+
+def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: dict) -> list[str]:
+    """Return unsupported_filters markers for filters this route parses but never applies.
+
+    Same failure mode as _player_availability_unsupported_markers: the parser
+    detects these unconditionally and query_service renders them as applied
+    filter badges straight off ``parsed``, so a route that never received the
+    corresponding kwarg answered a different question than the badge claimed.
+
+    special_event is keyed off route_kwargs rather than a route allowlist
+    because the routes that consume it do so through three different paths:
+    an explicit ``special_event`` kwarg (finder/summary routes and occurrence
+    counting), and ``special_condition`` on the streak finders, which encode
+    "longest triple-double streak" as the streak's condition. Routes that
+    merely detected it set neither - e.g. "team triple double leaders" reached
+    team_occurrence_leaders, which silently counted 100-point games instead.
+    """
+    markers = []
+    if parsed.get("position_filter") and route not in _POSITION_FILTER_SUPPORTED_ROUTES:
+        markers.append("position_filter")
+    if parsed.get("last_n") is not None and route not in _LAST_N_SUPPORTED_ROUTES:
+        markers.append("last_n")
+    occurrence_event = parsed.get("occurrence_event")
+    detected_special_event = (
+        occurrence_event.get("special_event") if isinstance(occurrence_event, dict) else None
+    )
+    executed_special_event = route_kwargs.get("special_event") or route_kwargs.get(
+        "special_condition"
+    )
+    if detected_special_event and executed_special_event != detected_special_event:
+        markers.append("special_event")
+    return markers
 
 
 def _team_record_availability_intent(
@@ -825,6 +940,7 @@ __all__ = [
     "detect_wins_losses",
     "extract_last_n",
     "extract_last_n_seasons",
+    "extract_min_games",
     "extract_min_value",
     "extract_opponent_points_allowed_conditions",
     "extract_position_filter",
@@ -895,9 +1011,16 @@ def _build_parse_state(query: str) -> dict:
         if season is None:
             season = extract_relative_season(q, season_type)
             explicit_relative_season = season is not None
+        if season is None:
+            # An explicit "<month> <year>" pins the season as well as the date
+            # window. This has to run before the default_season_for_context
+            # fallbacks below, or the season stays on the current one while the
+            # date window points at a year that season never covers.
+            season = season_for_explicit_month_year(q)
 
     stat = detect_stat(q)
     last_n = extract_last_n(q)
+    min_games = extract_min_games(q)
     top_n = extract_top_n(q)
     split_type = detect_split_type(q)
     leaderboard_intent = wants_leaderboard(q)
@@ -1256,6 +1379,7 @@ def _build_parse_state(query: str) -> dict:
         "min_value": min_value,
         "max_value": max_value,
         "last_n": last_n,
+        "min_games": min_games,
         "top_n": top_n,
         "split_type": split_type,
         "home_only": home_only,
@@ -1397,6 +1521,7 @@ def _finalize_route(parsed: dict) -> dict:
     min_value = parsed["min_value"]
     max_value = parsed["max_value"]
     last_n = parsed["last_n"]
+    min_games = parsed.get("min_games")
     top_n = parsed.get("top_n")
     split_type = parsed["split_type"]
     home_only = parsed["home_only"]
@@ -2408,7 +2533,7 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": team_leader_stat,
             "limit": top_n or 5,
             "season_type": season_type,
-            "min_games": 1,
+            "min_games": min_games or 1,
             "ascending": team_leader_stat in LOWER_IS_BETTER_STATS,
             "start_date": start_date,
             "end_date": end_date,
@@ -2431,7 +2556,7 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": stat or detect_player_leaderboard_stat(q) or "pts",
             "limit": top_n or 10,
             "season_type": season_type,
-            "min_games": 1,
+            "min_games": min_games or 1,
             "ascending": wants_ascending_leaderboard(q),
             "start_date": start_date,
             "end_date": end_date,
@@ -2460,7 +2585,7 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": stat or detect_player_leaderboard_stat(q) or "pts",
             "limit": top_n or 10,
             "season_type": season_type,
-            "min_games": 1,
+            "min_games": min_games or 1,
             "ascending": wants_ascending_leaderboard(q),
             "start_date": start_date,
             "end_date": end_date,
@@ -2485,7 +2610,7 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": stat or detect_player_leaderboard_stat(q) or "pts",
             "limit": top_n or 10,
             "season_type": season_type,
-            "min_games": 1,
+            "min_games": min_games or 1,
             "ascending": wants_ascending_leaderboard(q),
             "start_date": start_date,
             "end_date": end_date,
@@ -2587,7 +2712,7 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": stat,
             "limit": 30,
             "season_type": season_type,
-            "min_games": 1,
+            "min_games": min_games or 1,
             "ascending": stat in LOWER_IS_BETTER_STATS,
         }
     elif _single_team_advanced_stat_summary_boundary(parsed):
@@ -2695,7 +2820,7 @@ def _finalize_route(parsed: dict) -> dict:
             "stat": "pts",
             "limit": top_n or 10,
             "season_type": season_type,
-            "min_games": 1,
+            "min_games": min_games or 1,
             "ascending": False,
             "start_date": start_date,
             "end_date": end_date,
@@ -2756,7 +2881,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "stat": leaderboard_stat,
                 "limit": top_n or 10,
                 "season_type": season_type,
-                "min_games": 1,
+                "min_games": min_games or 1,
                 "ascending": lb_ascending,
                 "start_date": start_date,
                 "end_date": end_date,
@@ -2787,7 +2912,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "stat": leaderboard_stat,
                 "limit": top_n or 10,
                 "season_type": season_type,
-                "min_games": 1,
+                "min_games": min_games or 1,
                 "ascending": lb_ascending,
                 "start_date": start_date,
                 "end_date": end_date,
@@ -2828,7 +2953,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "stat": leaderboard_stat,
                 "limit": top_n or 10,
                 "season_type": season_type,
-                "min_games": 1,
+                "min_games": min_games or 1,
                 "ascending": lb_ascending,
                 "start_date": start_date,
                 "end_date": end_date,
@@ -3199,6 +3324,46 @@ def _finalize_route(parsed: dict) -> dict:
     route_kwargs["quarter"] = quarter
     route_kwargs["half"] = half
     _apply_route_conditions(parsed, route, route_kwargs)
+
+    availability_markers = _player_availability_unsupported_markers(parsed, route)
+    if availability_markers:
+        parsed = dict(parsed)
+        if "with_player" in availability_markers:
+            parsed["with_player"] = None
+        if "without_player" in availability_markers:
+            parsed["without_player"] = None
+        existing_unsupported = route_kwargs.get("unsupported_filters") or []
+        if not isinstance(existing_unsupported, list):
+            existing_unsupported = list(existing_unsupported)
+        for marker in availability_markers:
+            if marker not in existing_unsupported:
+                existing_unsupported.append(marker)
+        route_kwargs["unsupported_filters"] = existing_unsupported
+        notes.append(
+            "unsupported_boundary: whole-game teammate presence/absence filtering "
+            "is only execution-backed for team records; no unfiltered fallback "
+            "was returned for this route"
+        )
+
+    unexecuted_markers = _unexecuted_filter_markers(parsed, route, route_kwargs)
+    if unexecuted_markers:
+        parsed = dict(parsed)
+        if "position_filter" in unexecuted_markers:
+            parsed["position_filter"] = None
+        if "last_n" in unexecuted_markers:
+            parsed["last_n"] = None
+        existing_unsupported = route_kwargs.get("unsupported_filters") or []
+        if not isinstance(existing_unsupported, list):
+            existing_unsupported = list(existing_unsupported)
+        for marker in unexecuted_markers:
+            if marker not in existing_unsupported:
+                existing_unsupported.append(marker)
+        route_kwargs["unsupported_filters"] = existing_unsupported
+        notes.append(
+            "unsupported_boundary: this route parses "
+            f"{', '.join(unexecuted_markers)} but has no execution path for it; "
+            "no unfiltered fallback was returned"
+        )
 
     out = dict(parsed)
     out["route"] = route

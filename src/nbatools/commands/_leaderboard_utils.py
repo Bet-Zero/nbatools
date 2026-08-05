@@ -248,5 +248,10 @@ def detect_team_leaderboard_stat(text: str) -> str | None:
 
 
 def wants_ascending_leaderboard(text: str) -> bool:
-    """Detect if the leaderboard should sort ascending (lowest/fewest/least/bottom)."""
-    return bool(re.search(r"\blowest\b|\bfewest\b|\bleast\b|\bworst\b|\bbottom\b", text))
+    """Detect if the leaderboard should sort ascending (lowest/fewest/least/bottom).
+
+    The ``(?<!at )`` guard keeps the "least" inside a qualifier like "at least
+    50 games" from flipping the sort: that phrase sets a minimum, it does not
+    ask for the bottom of the board.
+    """
+    return bool(re.search(r"\blowest\b|\bfewest\b|(?<!at )\bleast\b|\bworst\b|\bbottom\b", text))
