@@ -149,7 +149,10 @@ def _assert_no_unsupported_filters(parsed: dict) -> None:
             "route_kwargs": {
                 "team": "BOS",
                 "playoff_round": "03",
-                "unsupported_filters": ["single_team_playoff_round_record"],
+                # Two independent reasons: the single-team playoff-round record
+                # boundary, plus opponent-division filtering, which
+                # playoff_history never executes.
+                "unsupported_filters": ["single_team_playoff_round_record", "opponent_division"],
             },
             "note_contains": "unsupported_boundary",
         },

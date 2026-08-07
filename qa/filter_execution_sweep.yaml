@@ -1,0 +1,139 @@
+version: 1
+
+# Filter-execution sweep inputs.
+#
+# The sweep asks every question twice: once with a filter phrase appended, once
+# without. If both come back with identical data, the app ignored the filter.
+# Nobody has to know the correct answer in advance, which is why this can cover
+# far more phrasings than qa/raw_query_answer_corpus.yaml (which needs a
+# hand-verified answer per question, and is the stronger check where it exists).
+#
+# To widen coverage, add a seed or a filter below and re-run:
+#     python tools/filter_execution_sweep.py
+
+# One base question per kind of answer the app can produce.
+seeds:
+  - id: player_summary
+    query: "Jokic averages in 2023-24"
+  - id: player_game_finder
+    query: "Jokic games over 30 points in 2023-24"
+  - id: player_compare
+    query: "Jokic vs Embiid comparison in 2023-24"
+  - id: player_split
+    query: "Jokic home vs away splits in 2023-24"
+  - id: player_streak
+    query: "Jokic longest streak with 30 points in 2023-24"
+  - id: player_occurrence
+    query: "most 30 point games in 2023-24"
+  - id: player_stretch
+    query: "best 10 game stretch in 2023-24"
+  - id: season_leaders
+    query: "points leaders in 2023-24"
+  - id: season_team_leaders
+    query: "team points leaders in 2023-24"
+  - id: top_player_games
+    query: "highest scoring games in 2023-24"
+  - id: top_team_games
+    query: "highest scoring team games in 2023-24"
+  - id: team_record
+    query: "Lakers record in 2023-24"
+  - id: team_record_leaderboard
+    query: "best record in 2023-24"
+  - id: team_matchup_record
+    query: "Lakers vs Celtics record in 2023-24"
+  - id: team_split
+    query: "Lakers home vs away splits in 2023-24"
+  - id: team_streak
+    query: "Lakers longest winning streak in 2023-24"
+  - id: team_occurrence
+    query: "which team had the most 120 point games in 2023-24"
+  - id: team_compare
+    query: "Lakers vs Celtics comparison in 2023-24"
+  - id: game_finder
+    query: "Lakers games over 120 points in 2023-24"
+  - id: playoff_history
+    query: "Lakers playoff history"
+  - id: record_by_decade
+    query: "Lakers record by decade"
+  - id: lineup_leaderboard
+    query: "best Lakers lineups in 2023-24"
+  - id: player_on_off
+    query: "Lakers on/off with LeBron James in 2023-24"
+
+# Filter phrases appended to each seed. `skip_seeds` suppresses combinations
+# where the seed already carries that filter, which would look ignored simply
+# because the phrase is redundant.
+filters:
+  - id: home_only
+    phrase: "at home"
+    badge: "Location"
+    skip_seeds: [player_split, team_split]
+  - id: wins_only
+    phrase: "in wins"
+    badge: "Outcome"
+    skip_seeds: [team_streak]
+  - id: opponent
+    phrase: "vs the Celtics"
+    badge: "Opponent"
+    skip_seeds: [team_matchup_record, team_compare, player_compare]
+  - id: opponent_quality
+    phrase: "against winning teams"
+    badge: "Opponent quality"
+  - id: opponent_conference
+    phrase: "against the east"
+    badge: "Opponent conference"
+  - id: opponent_division
+    phrase: "against the pacific division"
+    badge: "Opponent division"
+  - id: clutch
+    phrase: "in clutch time"
+    badge: "Clutch"
+  - id: quarter
+    phrase: "in the first quarter"
+    badge: "Quarter"
+  - id: half
+    phrase: "in the first half"
+    badge: "Half"
+  - id: role_starter
+    phrase: "as a starter"
+    badge: "Role"
+  - id: role_bench
+    phrase: "off the bench"
+    badge: "Role"
+  - id: back_to_back
+    phrase: "on back to backs"
+    badge: "Back-to-back"
+  - id: rest_days
+    phrase: "on 2 days rest"
+    badge: "Rest days"
+  - id: one_possession
+    phrase: "in one possession games"
+    badge: "One-possession game"
+  - id: nationally_televised
+    phrase: "on national tv"
+    badge: "Nationally televised"
+  - id: position_guards
+    phrase: "by guards"
+    badge: "Position"
+  - id: position_centers
+    phrase: "among centers"
+    badge: "Position"
+  - id: last_n
+    phrase: "last 10 games"
+    badge: "Last N games"
+  - id: without_player
+    phrase: "without Anthony Davis"
+    badge: "Without player"
+  - id: with_player
+    phrase: "with Anthony Davis"
+    badge: "With player"
+    skip_seeds: [player_on_off, lineup_leaderboard]
+  - id: date_window
+    phrase: "in January 2024"
+    badge: "Date range"
+  - id: special_event
+    phrase: "for triple doubles"
+    badge: "Special Event"
+  - id: min_games
+    phrase: "with at least 40 games"
+    badge: null

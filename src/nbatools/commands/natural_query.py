@@ -491,6 +491,39 @@ _LAST_N_SUPPORTED_ROUTES = {
 }
 
 
+# Filters the parser attaches to `parsed` (where query_service builds badges
+# from) but only forwards into route_kwargs on the routes that execute them.
+# For these, presence in route_kwargs is the authoritative signal: a route that
+# supports the filter always receives it, and a route that merely detected it
+# never does. Checking build_result signatures instead would be wrong, because
+# some of these are transformed before execution - opponent_conference and
+# opponent_division are resolved into a list of `opponent` teams, so the routes
+# that support them do not take a parameter by that name at all.
+_ROUTE_KWARG_BACKED_FILTERS = {
+    "opponent_conference": "opponent conference",
+    "opponent_division": "opponent division",
+    "wins_only": "wins-only",
+    "losses_only": "losses-only",
+    "home_only": "home-only",
+    "away_only": "away-only",
+    "start_date": "date range",
+    "end_date": "date range",
+}
+
+# A split query sets the fields naming its own axis - "home vs away" sets
+# home_only *and* away_only, "wins vs losses" sets both outcome flags - as the
+# thing being split by, not as filters. The split routes handle that through
+# `split`, so gating on the axis fields would block a working feature, exactly
+# as gating with_player would break lineup composition queries. Only the axis
+# of the split actually requested is exempt: "home vs away splits in wins"
+# still has a genuine, unapplied wins-only filter on top.
+_SPLIT_AXIS_FIELDS = {
+    "home_away": ("home_only", "away_only"),
+    "wins_losses": ("wins_only", "losses_only"),
+}
+_SPLIT_AXIS_ROUTES = {"player_split_summary", "team_split_summary"}
+
+
 def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: dict) -> list[str]:
     """Return unsupported_filters markers for filters this route parses but never applies.
 
@@ -521,6 +554,18 @@ def _unexecuted_filter_markers(parsed: dict, route: str | None, route_kwargs: di
     )
     if detected_special_event and executed_special_event != detected_special_event:
         markers.append("special_event")
+
+    axis_fields: tuple[str, ...] = ()
+    if route in _SPLIT_AXIS_ROUTES:
+        split_type = route_kwargs.get("split") or parsed.get("split_type")
+        axis_fields = _SPLIT_AXIS_FIELDS.get(split_type, ())
+
+    for field in _ROUTE_KWARG_BACKED_FILTERS:
+        if not parsed.get(field) or field in axis_fields:
+            continue
+        if not route_kwargs.get(field):
+            markers.append(field)
+
     return markers
 
 
@@ -3352,6 +3397,9 @@ def _finalize_route(parsed: dict) -> dict:
             parsed["position_filter"] = None
         if "last_n" in unexecuted_markers:
             parsed["last_n"] = None
+        for marker in unexecuted_markers:
+            if marker in _ROUTE_KWARG_BACKED_FILTERS:
+                parsed[marker] = None
         existing_unsupported = route_kwargs.get("unsupported_filters") or []
         if not isinstance(existing_unsupported, list):
             existing_unsupported = list(existing_unsupported)

@@ -655,6 +655,31 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "no unrelated answer was substituted "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id in ("opponent_conference", "opponent_division"):
+        scope = "conference" if filter_id == "opponent_conference" else "division"
+        return (
+            f"filtering by opponent {scope} is only supported for team record queries "
+            f"(e.g. 'Lakers record against the East'); no unfiltered answer was "
+            f"substituted (blocked: {', '.join(all_filters)})"
+        )
+    if filter_id in ("wins_only", "losses_only"):
+        outcome = "wins" if filter_id == "wins_only" else "losses"
+        return (
+            f"restricting to {outcome} is not supported on this route; no unfiltered "
+            f"answer was substituted (blocked: {', '.join(all_filters)})"
+        )
+    if filter_id in ("home_only", "away_only"):
+        location = "home" if filter_id == "home_only" else "away"
+        return (
+            f"restricting to {location} games is not supported on this route; no "
+            f"unfiltered answer was substituted (blocked: {', '.join(all_filters)})"
+        )
+    if filter_id in ("start_date", "end_date"):
+        return (
+            "a date-range window is not supported on this route; it covers the whole "
+            "requested season, so no full-span answer was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "unresolved_team":
         return (
             "the requested team could not be resolved confidently; no broad team "

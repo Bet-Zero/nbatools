@@ -87,7 +87,53 @@ FILTER_PAIRS = [
         "Jokic averages in 2023-24",
         "With player",
     ),
+    # opponent conference / division outside team records
+    (
+        "points leaders in 2023-24 against the east",
+        "points leaders in 2023-24",
+        "Opponent conference",
+    ),
+    (
+        "highest scoring games in 2023-24 against the pacific division",
+        "highest scoring games in 2023-24",
+        "Opponent division",
+    ),
+    # win/loss and location filters on routes that cover a whole span
+    ("Lakers playoff history in wins", "Lakers playoff history", "Outcome"),
+    ("Lakers playoff history at home", "Lakers playoff history", "Location"),
+    ("Lakers record by decade at home", "Lakers record by decade", "Location"),
+    # a genuine filter layered on top of a split axis
+    (
+        "Jokic home vs away splits in 2023-24 in wins",
+        "Jokic home vs away splits in 2023-24",
+        "Outcome",
+    ),
+    # date windows on the split routes, which cover a whole season
+    (
+        "Jokic home vs away splits in 2023-24 in January 2024",
+        "Jokic home vs away splits in 2023-24",
+        "Date range",
+    ),
 ]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Jokic home vs away splits in 2023-24",
+        "Lakers home vs away splits in 2023-24",
+        "Celtics wins vs losses 2024-25",
+    ],
+)
+def test_split_axis_is_not_mistaken_for_an_unapplied_filter(query: str) -> None:
+    """A split sets the fields naming its own axis; that is the feature, not a filter.
+
+    "home vs away" sets home_only and away_only, "wins vs losses" sets both
+    outcome flags. Gating those would break the split routes entirely.
+    """
+    executed, _badges, _fp = _run(query)
+
+    assert executed.result_status == "ok", f"{query!r} was refused but is a supported query"
 
 
 @pytest.mark.parametrize(("filtered_query", "control_query", "badge_label"), FILTER_PAIRS)

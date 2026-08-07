@@ -52,7 +52,10 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "Celtics conference finals record vs Atlantic Division",
             "route": "playoff_history",
             "reason": "filter_not_supported",
-            "unsupported_filters": ["single_team_playoff_round_record"],
+            # Two independent reasons this cannot be answered: the single-team
+            # playoff-round record boundary, and opponent-division filtering,
+            # which playoff_history never executes.
+            "unsupported_filters": ["single_team_playoff_round_record", "opponent_division"],
         },
         {
             "query": "Celtics record vs Atlantic Division in 2023-24",
