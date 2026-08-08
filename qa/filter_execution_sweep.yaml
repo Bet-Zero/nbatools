@@ -11,6 +11,14 @@ version: 1
 # To widen coverage, add a seed or a filter below and re-run:
 #     python tools/filter_execution_sweep.py
 
+# SEASON COVERAGE MATTERS. Most seeds below use 2023-24, which the core
+# datasets cover but schedule_context_features does not (it only has 2024-25
+# onward). A filter that reads an uncovered dataset will REFUSE for a data
+# reason, not a code reason, and look like it works nowhere. Before concluding
+# a filter is unimplemented, re-run it against a season the dataset covers:
+#     python tools/filter_execution_sweep.py --only back_to_back
+# and compare with the same question in 2024-25.
+
 # One base question per kind of answer the app can produce.
 seeds:
   - id: player_summary
