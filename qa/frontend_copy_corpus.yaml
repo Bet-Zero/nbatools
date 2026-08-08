@@ -92,13 +92,13 @@ cases:
   - id: warriors_last_10_record_wave5
     category: team_record
     review_focus:
-      - hero_record
-      - last_n_context
+      - unsupported_filter_copy
     expected_semantic_facts:
       - Warriors
-      - last 10
-    expected_filter_chip_fragments:
-      - Last 10
+    # Was hero_record + a "Last 10" chip, which is what the backend used to
+    # render over a full 82-game record. Team records have no last-N execution
+    # path, so the query now refuses and no chip should appear at all.
+    expected_filter_chip_fragments: []
 
   - id: celtics_regular_season_record_vs_playoff_teams_wave4
     category: team_record

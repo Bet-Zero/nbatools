@@ -19,7 +19,14 @@ def normalize_text(text: str) -> str:
         .replace("\u201d", '"')
         .lower()
     )
-    return " ".join(normalized.strip().split())
+    collapsed = " ".join(normalized.strip().split())
+    # Drop end-of-sentence punctuation. Detectors that anchor on a word boundary
+    # or end of string stop matching when a "?" is glued to the last token, so
+    # "Lakers record against the Celtics?" failed opponent detection and fell
+    # through to a looser team scan that read the Celtics as the *subject* -
+    # returning Boston's own record. Only trailing punctuation is stripped, and
+    # "%" is deliberately excluded so stat phrasing like "fg%" survives.
+    return collapsed.rstrip("?!.,;:")
 
 
 BOOLEAN_OR_PATTERN = re.compile(r"\s+or\s+(?!more\b)", flags=re.IGNORECASE)
