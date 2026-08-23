@@ -2538,10 +2538,13 @@ cases:
     expected_route: player_game_summary
     expected_reason: filter_not_supported
     expected_shape: no_result
-    expected_filters:
-      - kind: situation
-        value: "True"
-    review_notes: "Clutch recognition returns an unsupported-data no-result response."
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: clutch
+      - path: result.metadata.clutch
+        equals: true
+    review_notes: "Clutch recognition returns an unsupported-data no-result response. Clutch is reported as the blocker, not as an applied filter, because no clutch filtering ran."
     manual_review:
       status: expected_unsupported
       tags:
@@ -7156,6 +7159,8 @@ cases:
     hard_assertions:
       - path: result.metadata.clutch
         equals: true
+      - path: result.metadata.unsupported_filters.0
+        equals: clutch
     review_notes: "Subjective clutch-player leaderboard should not broaden to normal points leaders."
     manual_review:
       status: expected_unsupported
@@ -8418,3 +8423,306 @@ cases:
         - opponent_quality
         - unsupported_boundary
         - no_broad_fallback
+
+  # -------------------------------------------------------------------------
+  # Phase 1A — intent preservation. Each of these returned a populated
+  # league-wide points-per-game leaderboard, or an unexplained error, after
+  # silently discarding the condition the question was actually about.
+  # -------------------------------------------------------------------------
+
+  - id: stayed_afloat_leading_scorer_out
+    query: "What team has stayed afloat best when its leading scorer was out?"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: sentence
+      concept: unbound_availability_condition
+      public_surface: false
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+        - role_based_player_reference
+        - subjective_outcome
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Regression guard for the confirmed defect: this returned a populated team points-per-game leaderboard headlined 'Denver Nuggets, 122.1 per game'."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+      notes: "Availability condition, role reference, and subjective framing were all discarded."
+
+  - id: best_team_leading_scorer_injured
+    query: "best team when leading scorer is injured"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Search-bar fragment form of the same discarded availability condition."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: teams_cope_without_leading_scorer
+    query: "teams that cope best without their leading scorer"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: synonym
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+        - role_based_player_reference
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Synonym phrasing of the same unbound availability condition."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: teams_when_star_is_out
+    query: "how do teams do when their star is out"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: sentence
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+        - role_based_player_reference
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Previously produced an unexplained unrouted error; must now be a typed, explained refusal."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: stayed_afloat_no_condition
+    query: "what team has stayed afloat best"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: subjective_outcome_boundary
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - subjective_outcome
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: subjective_outcome
+    review_notes: "Subjective framing with no metric behind it must not be answered as a points-per-game ranking."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: clutch_stats_bare_fragment
+    query: "clutch stats"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unresolved_clutch_fragment
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - clutch
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: clutch
+      - path: result.metadata.clutch
+        equals: true
+    review_notes: "Clutch context is the blocker; the card must not report an invented points metric as unavailable."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - clutch
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: clutch_time_no_subject_fragment
+    query: "how did they do in clutch time"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: sentence
+      concept: unresolved_clutch_fragment
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - clutch
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: clutch
+    review_notes: "Clutch fragment with no subject or metric must never produce a populated default points leaderboard."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - clutch
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: against_winning_teams_bare_fragment
+    query: "against winning teams this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unresolved_opponent_quality_fragment
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - opponent_quality
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: opponent_quality
+    review_notes: "Opponent-quality fragment with no subject or metric must refuse, not rank the league by points."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - opponent_quality
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: team_points_per_game_leaderboard_positive_control
+    query: "teams with the most points per game this season"
+    category: leaderboard
+    priority: p0
+    acceptance:
+      family: leaderboards
+      variant: canonical
+      concept: team_season_per_game_leader
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: season_team_leaders
+      qualifier_model:
+        - points_per_game
+    expected_status: ok
+    expected_route: season_team_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Positive control for the intent-preservation guard: an explicitly requested team points-per-game ranking must still answer."
+
+  - id: top_scorers_this_season_positive_control
+    query: "top scorers this season"
+    category: leaderboard
+    priority: p0
+    acceptance:
+      family: leaderboards
+      variant: short
+      concept: player_season_scoring_leader
+      public_surface: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - points_per_game
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    expected_row_counts:
+      leaderboard: 10
+    review_notes: "Positive control: a role population ('top scorers') names the metric and must not be mistaken for an unresolved role reference."

@@ -1357,6 +1357,43 @@ def _apply_count_intent(
     )
 
 
+# A no-result whose reason is one of these ran its filters against the data and
+# simply matched nothing, so echoing the applied filters is accurate. Every
+# other non-ok reason means execution stopped before any filtering happened -
+# the request was refused, ambiguous, unrouted, or had no data to filter - so an
+# applied-filter badge there claims work the engine never did. The requested
+# context itself stays in metadata (clutch, opponent_quality, ...) alongside
+# unsupported_filters, which names what actually blocked the answer.
+_FILTERS_EXECUTED_REASONS: frozenset[str] = frozenset({"no_match"})
+
+
+def _apply_unexecuted_filter_metadata(metadata: dict[str, Any], result: Any) -> None:
+    """Keep a non-executing result from claiming filters it never applied.
+
+    Also promotes any blocker the route identified at execution time (for
+    example clutch coverage) into ``unsupported_filters`` so consumers can name
+    the real blocker instead of inferring one from whatever metric the route
+    happened to default to.
+    """
+    if getattr(result, "result_status", "ok") == "ok":
+        return
+
+    result_metadata = getattr(result, "metadata", None)
+    executed_blockers = (
+        result_metadata.get("unsupported_filters") if isinstance(result_metadata, dict) else None
+    )
+    if executed_blockers:
+        existing = list(metadata.get("unsupported_filters") or [])
+        for blocker in executed_blockers:
+            if blocker not in existing:
+                existing.append(blocker)
+        metadata["unsupported_filters"] = existing
+
+    if getattr(result, "result_reason", None) in _FILTERS_EXECUTED_REASONS:
+        return
+    metadata.pop("applied_filters", None)
+
+
 def _finalize_natural_query_result(
     result: Any,
     parsed: dict[str, Any],
@@ -1391,6 +1428,7 @@ def _finalize_natural_query_result(
         )
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
+    _apply_unexecuted_filter_metadata(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -1520,6 +1558,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         parsed = _build_parse_state(query)
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         result = NoResult(query_class="unknown", reason="unrouted", result_status="error")
+        _apply_unexecuted_filter_metadata(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1548,6 +1587,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             notes=notes,
         )
         _merge_metadata_notes(metadata, notes)
+        _apply_unexecuted_filter_metadata(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1599,6 +1639,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             notes=list(notes),
             metadata={"entity_ambiguity": enriched_ambiguity},
         )
+        _apply_unexecuted_filter_metadata(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1841,6 +1882,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         result = _execute_build_result(route, kwargs)
     except FileNotFoundError:
         result = NoResult(query_class=query_class, reason="no_data")
+        _apply_unexecuted_filter_metadata(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1854,6 +1896,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
             result_status="no_result",
             notes=[str(exc)],
         )
+        _apply_unexecuted_filter_metadata(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1862,6 +1905,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         )
 
     _add_game_summary_answer_metadata(metadata, result)
+    _apply_unexecuted_filter_metadata(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))

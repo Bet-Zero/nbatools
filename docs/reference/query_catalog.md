@@ -557,6 +557,17 @@ Leaderboard no-match behavior:
   metric) and refuses
 - two-player combined totals (`luka and kyrie combined points`) are not
   supported and refuse rather than answer for one player
+- subject-less questions carrying a condition a league-wide leaderboard cannot
+  execute refuse instead of ranking the league by a substituted metric. Three
+  concept families are recognized: an unbound player availability/absence
+  condition (`best team when leading scorer is injured`), a role-based player
+  reference that resolved to no one (`how do teams do when their star is out`),
+  and a subjective outcome concept with no approved metric (`what team has
+  stayed afloat best`). These return `no_result` / `filter_not_supported` with
+  `metadata.unsupported_filters` naming the condition
+  (`unresolved_availability`, `unresolved_role_player`, `subjective_outcome`).
+  Questions whose metric is actually named (`top scorers this season`, `best
+  offensive teams`, `teams with the most points per game`) are unaffected
 - league-wide starter/bench player leaderboards (`most points off the
   bench`, `top scorers among starters`) are supported using trusted
   per-game starter-role data; seasons without trusted coverage return
@@ -838,6 +849,13 @@ Current behavior:
   `filter_not_supported` with exact coverage detail rather than a partial answer
 - whole-game logs, period-only box-score windows, and season-level clutch
   dashboard aggregates remain rejected as clutch substitutes
+- a refused clutch request reports `metadata.unsupported_filters=["clutch"]`, so
+  clutch context is named as the blocker rather than whatever metric the route
+  defaulted to
+- a bare clutch fragment with no player, team, or requested stat (`clutch stats`,
+  `in clutch time`, `how did they do in clutch time`) refuses on the same
+  boundary. It never returns a league-wide points leaderboard, because no metric
+  was requested to rank by
 
 ### Quarter / half / overtime context
 

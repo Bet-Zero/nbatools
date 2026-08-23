@@ -113,11 +113,14 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "Tatum clutch stats",
             "route": "player_game_summary",
             "reason": "filter_not_supported",
+            # Clutch context is the blocker, not the stat the route defaulted to.
+            "unsupported_filters": ["clutch"],
         },
         {
             "query": "Who is the most clutch player this season?",
             "route": "season_leaders",
             "reason": "filter_not_supported",
+            "unsupported_filters": ["clutch"],
         },
         {
             "query": "who has cooled off lately",
@@ -147,6 +150,7 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "in clutch time",
             "route": "season_leaders",
             "reason": "filter_not_supported",
+            "unsupported_filters": ["clutch"],
         },
         {
             "query": "who won mvp this season",

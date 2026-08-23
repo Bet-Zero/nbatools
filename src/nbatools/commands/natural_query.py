@@ -804,6 +804,102 @@ def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
     return None
 
 
+# ---------------------------------------------------------------------------
+# Intent preservation: conditions a subject-less default route would discard
+# ---------------------------------------------------------------------------
+#
+# The subject-less default routes rank every player or team in the league by one
+# season metric. They can express a metric, a scope, and a sort direction -
+# nothing else. A query that carries one of the concepts below and still lands on
+# such a default is having that concept silently deleted, and the answer that
+# comes back is confidently about a different question. These detectors are
+# concept families, not a phrase list: each pairs a semantic marker with the
+# parse state that would have bound it, and only fires when nothing bound it.
+
+# 1. Player availability / absence. "when its leading scorer was out",
+#    "is injured", "without their star". Bound availability lives in
+#    with_player / without_player; anything left over is unexecuted.
+_AVAILABILITY_CONDITION_RE = re.compile(
+    r"\b(?:"
+    r"injur\w+"
+    r"|sidelined"
+    r"|unavailable"
+    r"|inactive"
+    r"|absent|absence"
+    r"|(?:is|are|was|were|been|being|get|gets|got|go|goes|went)\s+(?:out|down|hurt)\b"
+    r"|miss(?:es|ed|ing)?\s+(?:time|games?|action|the\s+game)"
+    r"|(?:sits?|sat)\s+out"
+    r"|out\s+(?:with|due|for\s+the|of\s+the\s+(?:lineup|game))"
+    r"|(?:without|w/o)\s+(?:its|their|his|her|the|a)\b"
+    r")"
+)
+
+# 2. Role-based player reference pointing at one unidentified player - "its
+#    leading scorer", "their star", "best player". The possessive is what makes
+#    it a dangling reference: it names a player belonging to some team the
+#    engine never resolved. A bare role population ("top scorers") is the thing
+#    being ranked, not a reference, and stays supported; team-scoped forms
+#    ("Lakers leading scorer") resolve through detect_team_leader_stat against a
+#    real subject and never reach here.
+_ROLE_PLAYER_REFERENCE_RE = re.compile(
+    r"\b(?:its|their|his|her)\s+"
+    r"(?:(?:leading|lead|top|best|number\s+one|no\.?\s*1|franchise|go-to)\s+)?"
+    r"(?:scorer|player|guy|man|option|star)s?\b"
+    r"|\bbest\s+player\b"
+)
+
+# 3. Subjective narrative outcome. "stayed afloat", "cope best", "survives",
+#    "holds up". These describe a judgement about performance with no approved
+#    metric behind them. Plain superlatives ("best offensive teams") are not in
+#    this family - those name a metric and stay supported.
+_SUBJECTIVE_OUTCOME_RE = re.compile(
+    r"\b(?:"
+    r"(?:stay|stays|stayed|staying|keep|keeps|keeping|kept|remain|remains|remained)"
+    r"\s+afloat"
+    r"|cope[sd]?|coping"
+    r"|surviv\w+"
+    r"|(?:hold|holds|holding)\s+up|held\s+up"
+    r"|(?:hang|hangs|hanging)\s+on|hung\s+on"
+    r"|(?:get|gets|getting)\s+by|got\s+by"
+    r"|(?:weather|weathers|weathered)\s+(?:the|it)"
+    r"|withstand\w*|withstood"
+    r"|fares?|fared|faring"
+    r"|(?:manage|manages|managed)\s+without"
+    r"|(?:stay|stays|stayed)\s+competitive"
+    r")\b"
+)
+
+
+def _discarded_condition_markers(parsed: dict) -> list[str]:
+    """Return markers for meaningful conditions a subject-less default would drop.
+
+    Returns an empty list unless the query has no subject entity at all - the
+    precondition every broad default shares. With a resolved player or team the
+    query reaches a specific route that owns its own filter-execution checks
+    (see _player_availability_unsupported_markers), so this guard stays out of
+    the way.
+    """
+    if any(
+        parsed.get(key) for key in ("player", "team", "player_a", "player_b", "team_a", "team_b")
+    ):
+        return []
+
+    q = parsed["normalized_query"]
+    markers: list[str] = []
+
+    availability_bound = bool(parsed.get("with_player") or parsed.get("without_player"))
+    if not availability_bound and _AVAILABILITY_CONDITION_RE.search(q):
+        markers.append("unresolved_availability")
+
+    if _ROLE_PLAYER_REFERENCE_RE.search(q):
+        markers.append("unresolved_role_player")
+
+    if _SUBJECTIVE_OUTCOME_RE.search(q):
+        markers.append("subjective_outcome")
+
+    return markers
+
+
 def _unsupported_route_kwargs(
     filter_id: str,
     *,
@@ -2847,6 +2943,27 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         notes.append("league_threshold_games: listing all games at or above the threshold")
+    elif discarded_conditions := _discarded_condition_markers(parsed):
+        # A meaningful condition the broad defaults below cannot execute. Refuse
+        # on the route that would have answered the wrong question rather than
+        # dropping the condition and ranking the league by a substituted metric.
+        route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+        route_kwargs = _unsupported_route_kwargs(
+            discarded_conditions[0],
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        # Report every discarded condition, not only the primary blocker.
+        route_kwargs["unsupported_filters"] = list(discarded_conditions)
+        notes.append(
+            "unsupported_boundary: this question carries a condition the "
+            f"league-wide leaderboard route cannot execute ({', '.join(discarded_conditions)}); "
+            "no substituted leaderboard was returned"
+        )
     elif (
         not player
         and not team
@@ -2859,29 +2976,24 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_leaderboard_intent
         and (opponent_quality or clutch)
     ):
+        # A bare clutch / opponent-quality fragment with nothing to apply it to.
+        # There is no requested metric here, so ranking the league by points
+        # would be an invented answer, not a fallback.
         route = "season_leaders"
-        route_kwargs = {
-            "season": season or default_season_for_context(season_type),
-            "stat": "pts",
-            "limit": top_n or 10,
-            "season_type": season_type,
-            "min_games": min_games or 1,
-            "ascending": False,
-            "start_date": start_date,
-            "end_date": end_date,
-            "start_season": start_season,
-            "end_season": end_season,
-            "opponent": opponent,
-            "position": position_filter,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "last_n": last_n,
-        }
+        route_kwargs = _unsupported_route_kwargs(
+            "clutch" if clutch else "opponent_quality",
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            limit=top_n or 10,
+        )
         notes.append(
-            "boundary_fragment: context detected without a player, team, or stat; "
-            "returning a broad points leaderboard fallback"
+            "boundary_fragment: "
+            f"{'clutch' if clutch else 'opponent-quality'} context was requested with no "
+            "player, team, or stat to apply it to; no broad points leaderboard was returned"
         )
     elif (_lb := metric_only_leaderboard_default(parsed))[0]:
         # No subject entity → league-wide leaderboard default (spec §15.2)

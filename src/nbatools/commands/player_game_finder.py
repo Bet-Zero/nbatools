@@ -345,6 +345,9 @@ def build_result(
             return NoResult(
                 query_class="finder",
                 reason="filter_not_supported",
+                # Name clutch as the blocker so consumers do not have to guess
+                # one from whatever stat the route happened to default to.
+                metadata={"unsupported_filters": ["clutch"]},
                 notes=[clutch_note],
             )
 

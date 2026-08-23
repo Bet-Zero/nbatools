@@ -910,6 +910,7 @@ Default rules are implemented as named functions in `_default_rules.py`. Each ta
 | Season-high with player                 | `player_game_finder` sorted by stat desc                   | `_finalize_route` inline             | `season_high:`             |
 | `<player> + <timeframe>` only           | Summary (stat line for the window)                         | `player_timeframe_summary_default()` | `default:`                 |
 | `<metric>` only, no subject             | League-wide leaderboard                                    | `metric_only_leaderboard_default()`  | `default:`                 |
+| Subject-less query carrying an unexecutable condition | Refuse on the leaderboard boundary; no substituted metric | `_discarded_condition_markers()` | `unsupported_boundary:` |
 | `<player> + <threshold>` only           | `player_game_finder` (list matching games)                 | `player_threshold_finder_default()`  | `default:`                 |
 | `<team> + <threshold>` only             | `game_finder` (list matching games)                        | `team_threshold_finder_default()`    | `default:`                 |
 | Top player/team games (keyword)         | `top_player_games` / `top_team_games` ranked by stat       | `_finalize_route` inline             | `default:`                 |
@@ -938,7 +939,25 @@ These are recognized as desirable but not yet implemented:
 | `Lakers over 120 points`                 | Game finder listing Lakers 120+ point games | `team_threshold_finder_default`    |
 | `highest scoring games this season`      | League-wide top single-game performances    | season-high inline                 |
 
-### 15.4 Defaults are product policy
+### 15.4 Defaults must not delete the question
+
+A default may fill in what the user left unsaid. It may not discard what they
+did say. Before the subject-less defaults fire, `_discarded_condition_markers()`
+checks the query for conditions a league-wide leaderboard cannot express:
+
+| Concept family | Marker | Fires when |
+| --- | --- | --- |
+| Player availability / absence | `unresolved_availability` | availability language is present and neither `with_player` nor `without_player` bound it |
+| Role-based player reference | `unresolved_role_player` | a possessive role reference (`its leading scorer`, `their star`, `best player`) resolved to no player |
+| Subjective outcome | `subjective_outcome` | narrative performance language (`stayed afloat`, `cope best`, `holds up`) with no approved metric |
+
+Any marker blocks the default and refuses on the route that would have answered
+the wrong question, with `unsupported_filters` naming the condition. The check
+requires no subject entity at all, so queries that reach a specific route keep
+their own filter-execution checks. A role *population* being ranked (`top
+scorers`) is not a reference and stays supported.
+
+### 15.5 Defaults are product policy
 
 These affect every subsequent answer. They should be documented in §18 (Glossary) and changeable without rewriting parser code. Named functions in `_default_rules.py` make each rule inspectable and independently testable.
 

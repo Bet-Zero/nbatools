@@ -300,6 +300,12 @@ documented route boundaries. Supported coverage-gated routes return
 missing or untrusted; they never present a partial or unfiltered game set as a
 complete answer. Unsupported routes keep explicit boundary notes.
 
+A refused request names the condition that blocked it in
+`metadata.unsupported_filters`, and carries no `metadata.applied_filters`: a
+filter that did not execute is never presented as applied. What was requested
+stays visible in its own metadata field. See
+[result_contracts.md](result_contracts.md) §1.3.
+
 - Clutch filters execute on `player_game_summary`, `player_game_finder`,
   `team_record`, and `season_leaders` when trusted `player_game_clutch_stats`
   / `team_game_clutch_stats` rows cover the requested slice. The definition is

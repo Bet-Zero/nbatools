@@ -417,6 +417,94 @@ describe("NoResultDisplay", () => {
     expect(screen.queryByText("unsupported_concept")).not.toBeInTheDocument();
   });
 
+  it("names clutch context as the blocker instead of an invented metric", () => {
+    // "clutch stats" reached season_leaders, which defaults to points, so the
+    // card announced "Points is not available for this query." about a metric
+    // the user never asked for. The blocker is the clutch context.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          clutch: true,
+          unsupported_filters: ["clutch"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(screen.getByText(/Clutch-time splits are not available/)).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("names the discarded condition for unanswerable availability questions", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          stat: "pts",
+          unsupported_filters: ["unresolved_availability", "unresolved_role_player"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(/depends on a player being out/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("explains subjective questions rather than naming a default metric", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          stat: "pts",
+          unsupported_filters: ["subjective_outcome"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(/no agreed measure for how well a team coped/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("names opponent quality as the blocker instead of a default metric", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          unsupported_filters: ["opponent_quality"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(screen.getByText(/Opponent-quality filters/)).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
   it("guides recent defensive-rating unsupported queries to safe alternatives", () => {
     render(
       <NoResultDisplay

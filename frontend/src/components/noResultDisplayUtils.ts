@@ -237,6 +237,16 @@ export function unsupportedBoundaryTitle(
   if (filters.includes("opponent_conference")) {
     return "Unavailable Filter";
   }
+  if (filters.includes("clutch") || filters.includes("opponent_quality")) {
+    return "Unavailable Filter";
+  }
+  if (
+    filters.includes("unresolved_availability") ||
+    filters.includes("unresolved_role_player") ||
+    filters.includes("subjective_outcome")
+  ) {
+    return "Unsupported Question";
+  }
   return null;
 }
 
@@ -264,6 +274,21 @@ function unsupportedBoundaryMessage(
   }
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";
+  }
+  if (filters.includes("clutch")) {
+    return "Clutch-time splits are not available — they need play-by-play coverage this data does not have. Clutch context is the blocker here, not the stat. Try the same question without the clutch wording.";
+  }
+  if (filters.includes("opponent_quality")) {
+    return "Opponent-quality filters like \u201cagainst winning teams\u201d are not supported yet. Try naming a specific opponent instead.";
+  }
+  if (filters.includes("unresolved_availability")) {
+    return "This question depends on a player being out, and no specific player was identified to check that against. Name the player who was out, such as \u201cLakers record without LeBron\u201d.";
+  }
+  if (filters.includes("unresolved_role_player")) {
+    return "This question refers to a player by role \u2014 a team\u2019s leading scorer, best player, or star \u2014 and no such player was identified. Name the player or the team.";
+  }
+  if (filters.includes("subjective_outcome")) {
+    return "There is no agreed measure for how well a team coped or held up, so this cannot be ranked. Ask for a specific stat or record instead.";
   }
   return null;
 }

@@ -671,17 +671,22 @@ class TestStatPhraseExpansion:
         assert parsed["route_kwargs"]["stat"] == "fg_pct"
         assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "top-10 defenses"
 
-    def test_route_context_only_boundary_fragment_with_fallback_note(self):
+    def test_route_context_only_boundary_fragment_refuses_without_inventing_a_metric(self):
+        # A bare clutch fragment names no metric, so there is nothing to rank.
         parsed = parse_query("in clutch time")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["clutch"]
+        assert "stat" not in parsed["route_kwargs"]
         assert any("boundary_fragment" in note for note in parsed.get("notes", []))
 
-    def test_route_opponent_quality_boundary_fragment_with_fallback_note(self):
+    def test_route_opponent_quality_boundary_fragment_refuses_without_inventing_a_metric(self):
         parsed = parse_query("against winning teams")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
-        assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "winning teams"
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["opponent_quality"]
+        assert "stat" not in parsed["route_kwargs"]
+        # The requested context is preserved as parse state even though no
+        # filtering executed, so consumers can name what was asked for.
+        assert parsed["opponent_quality"]["surface_term"] == "winning teams"
         assert any("boundary_fragment" in note for note in parsed.get("notes", []))
 
     def test_route_best_rim_protector_past_month(self):

@@ -80,6 +80,18 @@ Metadata values are populated when they apply and are known. A field being
 part of the shared vocabulary does not justify inventing a value when the
 engine did not resolve one.
 
+`metadata.applied_filters` describes filtering that actually executed. A result
+where execution never reached the data - refused, ambiguous, unrouted, errored,
+or missing its dataset - carries no `applied_filters`, because there is no
+applied filtering to describe. `no_match` is the exception: those filters ran
+and matched nothing, so echoing them is accurate.
+
+What the user asked for is still preserved. The request itself stays in its own
+metadata fields (`clutch`, `opponent_quality`, `position_filter`, ...), and
+`metadata.unsupported_filters` names what blocked the answer. Consumers should
+render the blocker from `unsupported_filters` rather than inferring one from
+whatever metric a route happened to default to.
+
 ### 1.4 No-result and error semantics
 
 `NoResult` is a first-class structured result. Its current canonical reasons

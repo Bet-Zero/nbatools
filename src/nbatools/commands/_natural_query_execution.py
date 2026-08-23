@@ -704,6 +704,33 @@ def _unsupported_filter_note(filter_id: str, all_filters: list[str]) -> str:
             "routing; no full-scope leaderboard was returned "
             f"(blocked: {', '.join(all_filters)})"
         )
+    if filter_id == "clutch":
+        return (
+            "clutch-time context is the blocker here, not the stat: clutch splits "
+            "need trusted play-by-play-derived coverage that this data generation "
+            "does not have. No non-clutch leaderboard was substituted "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "unresolved_availability":
+        return (
+            "this question depends on a player being out or unavailable, and that "
+            "availability condition was never bound to a resolved player, so it "
+            "could not be executed; no leaderboard ignoring the condition was "
+            f"returned (blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "unresolved_role_player":
+        return (
+            "this question refers to a player by role - a team's leading scorer, "
+            "best player, or star - and no such player was resolved; name the "
+            "player or the team so the role can be resolved "
+            f"(blocked: {', '.join(all_filters)})"
+        )
+    if filter_id == "subjective_outcome":
+        return (
+            "this question asks how well teams coped or held up, which has no "
+            "approved metric behind it; ask for a specific stat or record instead "
+            f"(blocked: {', '.join(all_filters)})"
+        )
     if filter_id == "unresolved_player":
         return (
             "the requested player could not be resolved confidently; no broad "
