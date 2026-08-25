@@ -123,6 +123,11 @@ export interface ResultMetadata {
   current_through?: string | null;
   scope_kind?: string | null;
   applied_filters?: AppliedFilter[];
+  /** Filters that were requested and supported but never reached, because an
+   *  earlier filter emptied the sample first. Not a refusal. */
+  unevaluated_filters?: string[];
+  /** Per-filter execution receipts recorded by the route that filtered. */
+  filter_receipts?: Record<string, { state: string; detail?: string }>;
   primary_count?: number | null;
   count_phrase?: string | null;
   answer_phrase?: string | null;

@@ -2541,10 +2541,10 @@ cases:
     expected_sections: []
     hard_assertions:
       - path: result.metadata.unsupported_filters.0
-        equals: clutch
+        equals: clutch_coverage
       - path: result.metadata.clutch
         equals: true
-    review_notes: "Clutch recognition returns an unsupported-data no-result response. Clutch is reported as the blocker, not as an applied filter, because no clutch filtering ran."
+    review_notes: "Clutch recognition returns an unsupported-data no-result response. The blocker is trusted clutch coverage, distinct from an uninterpretable clutch fragment, and clutch is never reported as an applied filter because no clutch filtering ran."
     manual_review:
       status: expected_unsupported
       tags:
@@ -8726,3 +8726,356 @@ cases:
     expected_row_counts:
       leaderboard: 10
     review_notes: "Positive control: a role population ('top scorers') names the metric and must not be mistaken for an unresolved role reference."
+
+  # -------------------------------------------------------------------------
+  # Phase 1A repair iteration 2. The first attempt blocked the phrases it was
+  # written against and let straightforward paraphrases through. These cover
+  # the semantic dimensions - absence verb, absence state, squad-level absence,
+  # absence preposition - rather than more spellings of one phrase.
+  # -------------------------------------------------------------------------
+
+  - id: leading_scorer_does_not_play
+    query: "best team when leading scorer does not play"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: synonym
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Negated absence verb. Returned a populated points-per-game leaderboard on the rejected candidate."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: leading_scorer_suspended
+    query: "best team when leading scorer is suspended"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: synonym
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Absence state other than injury. Returned a populated leaderboard on the rejected candidate."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: missing_starters_team_performance
+    query: "which team plays best when missing starters"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: sentence
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+        - role_based_player_reference
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Squad-level absence with a plural role noun."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: teams_shorthanded_performance
+    query: "teams that do best shorthanded"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Squad-level absence with no explicit player reference at all."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: teams_depleted_performance
+    query: "best team while depleted"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Adjectival squad-depletion state."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: teams_perform_without_stars
+    query: "teams that perform best without stars"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: synonym
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+        - role_based_player_reference
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Absence preposition with a bare plural role noun."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: best_team_with_no_stars
+    query: "best team with no stars"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unbound_availability_condition
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - player_availability
+        - role_based_player_reference
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: unresolved_availability
+    review_notes: "Negated-possession phrasing of the same absence concept."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: mixed_filter_clutch_never_evaluated
+    query: "Tatum clutch stats at home on January 1 2024"
+    category: filter_execution_integrity
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: nearby_unsupported
+      concept: unevaluated_filter_receipt
+      public_surface: false
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - clutch
+        - date_window
+        - home_away
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_sections: []
+    expected_filters:
+      - kind: location
+        label: Location
+        value: Home
+      - kind: date
+        label: Date range
+    hard_assertions:
+      - path: result.metadata.unevaluated_filters.0
+        equals: clutch
+      - path: result.metadata.clutch
+        equals: true
+    review_notes: "The date and location filters empty the sample before clutch is reached. Clutch must be reported as never evaluated, never as an applied filter, and the request itself must stay visible."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - clutch
+        - no_broad_fallback
+      notes: "Rejected candidate showed a Clutch applied badge over a sample clutch never touched."
+
+  - id: starters_role_coverage_blocker
+    query: "top scorers among starters on January 1 2024"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: leaderboards
+      variant: nearby_unsupported
+      concept: role_coverage_blocker
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - role
+        - date_window
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: role_coverage
+    review_notes: "Role-coverage failure must surface as a stable blocker in metadata, not only in prose notes."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: clutch_coverage_vs_fragment_sibling
+    query: "clutch numbers this season"
+    category: unsupported_boundary
+    priority: p2
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unresolved_clutch_fragment
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      sibling_of: tatum_clutch_stats
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - clutch
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: clutch
+    review_notes: "Unbound clutch fragment reports 'clutch'; its sibling tatum_clutch_stats reports 'clutch_coverage'. The two must not share copy."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - clutch
+        - no_broad_fallback
+
+  - id: jokic_high_threshold_proven_no_match
+    query: "Nikola Jokic games with over 80 points this season"
+    category: filter_execution_integrity
+    priority: p0
+    acceptance:
+      family: game_finders
+      variant: nearby_unsupported
+      concept: proven_no_match_receipt
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: player_game_finder
+      qualifier_model:
+        - stat_threshold
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: player_game_finder
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_sections: []
+    expected_filters:
+      - kind: threshold
+        label: pts min
+    review_notes: "Control for the receipt contract: this threshold really did execute and matched nothing, so its badge must survive."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - no_broad_fallback

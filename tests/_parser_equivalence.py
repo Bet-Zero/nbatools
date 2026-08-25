@@ -41,7 +41,21 @@ _DEFAULT_EXCLUDE: frozenset[str] = frozenset(
 
 def _canonical(parse_state: dict, exclude: frozenset[str]) -> dict:
     """Return the parse-state slice that must match across equivalent forms."""
-    return {k: v for k, v in parse_state.items() if k not in exclude}
+    canonical = {k: v for k, v in parse_state.items() if k not in exclude}
+    if "requested_conditions" in canonical:
+        canonical["requested_conditions"] = _canonical_conditions(canonical["requested_conditions"])
+    return canonical
+
+
+def _canonical_conditions(conditions) -> list[tuple[str, str | None]]:
+    """Compare requested conditions by meaning, not by the words that triggered them.
+
+    ``surface`` deliberately holds the user's own wording so a refusal can quote
+    it back, which is exactly what differs between equivalent phrasings:
+    "Warriors record when Curry was out" and "Warriors record without Curry"
+    record the same bound availability condition off different words.
+    """
+    return sorted((condition.kind, condition.binding) for condition in conditions or ())
 
 
 def assert_parse_equivalence(

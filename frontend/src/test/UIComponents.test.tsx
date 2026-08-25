@@ -417,10 +417,12 @@ describe("NoResultDisplay", () => {
     expect(screen.queryByText("unsupported_concept")).not.toBeInTheDocument();
   });
 
-  it("names clutch context as the blocker instead of an invented metric", () => {
+  it("blames an unbound clutch fragment on the question, not on missing data", () => {
     // "clutch stats" reached season_leaders, which defaults to points, so the
     // card announced "Points is not available for this query." about a metric
-    // the user never asked for. The blocker is the clutch context.
+    // the user never asked for. Nothing was identified to apply clutch to -
+    // telling the user the play-by-play data is missing would send them to fix
+    // something that was never the problem.
     render(
       <NoResultDisplay
         reason="filter_not_supported"
@@ -434,11 +436,86 @@ describe("NoResultDisplay", () => {
       />,
     );
 
-    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
-    expect(screen.getByText(/Clutch-time splits are not available/)).toBeInTheDocument();
+    expect(screen.getByText("Unclear Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(/does not say who or what to measure/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/play-by-play/)).not.toBeInTheDocument();
     expect(
       screen.queryByText("Points is not available for this query."),
     ).not.toBeInTheDocument();
+  });
+
+  it("blames a clutch coverage failure on the data, not on the question", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "player_game_summary",
+          stat: "pts",
+          clutch: true,
+          unsupported_filters: ["clutch_coverage"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(/play-by-play coverage that clutch splits need/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says starter/bench coverage is missing rather than naming a metric", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          unsupported_filters: ["role_coverage"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(/trusted starter-role data/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("explains that an unevaluated filter never ran", () => {
+    // The badge is gone because clutch never executed. Saying nothing would
+    // make its absence look like an oversight.
+    render(
+      <NoResultDisplay
+        reason="no_match"
+        status="no_result"
+        metadata={{
+          route: "player_game_finder",
+          clutch: true,
+          applied_filters: [
+            { label: "Location", value: "Home", kind: "location" },
+            { label: "Date range", value: "2024-01-01", kind: "date" },
+          ],
+          unevaluated_filters: ["clutch"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(/clutch time filter was not applied/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/never evaluated/),
+    ).toBeInTheDocument();
   });
 
   it("names the discarded condition for unanswerable availability questions", () => {
@@ -485,7 +562,9 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("names opponent quality as the blocker instead of a default metric", () => {
+  it("scopes opponent-quality copy to this query, not to the product", () => {
+    // "Celtics record against playoff teams" answers successfully, so telling
+    // the user opponent quality is unsupported would be false.
     render(
       <NoResultDisplay
         reason="filter_not_supported"
@@ -499,7 +578,13 @@ describe("NoResultDisplay", () => {
     );
 
     expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
-    expect(screen.getByText(/Opponent-quality filters/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/could not be applied on the route that answers it/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/do work with a named subject/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/not supported yet/)).not.toBeInTheDocument();
     expect(
       screen.queryByText("Points is not available for this query."),
     ).not.toBeInTheDocument();

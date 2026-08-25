@@ -44,12 +44,29 @@ acceptance of the answers.
 - Later phases are not drafted yet. Phase 1's final queue item must draft the
   next queue or write an explicit review-handoff.
 
+## Independent review
+
+Machine-passing validation is not acceptance. Phase 1A candidate
+`69d9a1eff9abccd00b59004b0b7787d32fa560a3` passed every required local suite and
+was still rejected on independent review for two design defects that the suites
+were not shaped to catch. Two rules follow:
+
+- A phase item is complete only after independent review accepts its **exact
+  head**, not after its tests go green.
+- When a validation tool cannot express a defect class, fix the tool or add one
+  that can. Do not cite an unchanged aggregate from a tool that is blind to the
+  defect as evidence the defect is gone.
+
 ## Guardrails for every Phase 1 item
 
 - One bounded PR per queue item. No dependency updates, CI restructuring,
   branch cleanup, season refresh work, unrelated parser expansion, or general
   refactoring mixed in.
-- Concept-level guards, never phrase blacklists.
+- Concept-level guards, never phrase blacklists. A pattern may *identify* a
+  concept; it may not be the safety boundary. Normalize into parse state and
+  make the routing decision on that state.
+- Execution claims come from execution. Only the code that performs filtering
+  may report a filter as applied.
 - Never invent a metric to satisfy an unresolved question.
 - Requested-but-unexecuted filters must never render as applied filters.
 - Concept-level test assertions, not snapshots of whatever the app emits today.

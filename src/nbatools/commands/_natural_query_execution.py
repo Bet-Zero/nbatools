@@ -913,6 +913,7 @@ def _execute_build_result(
             reason="filter_not_supported",
             result_status="no_result",
             result_reason="filter_not_supported",
+            metadata={"unsupported_filters": list(unsupported_filters)},
             notes=[_unsupported_filter_note(primary, unsupported_filters)],
         )
 
@@ -923,6 +924,7 @@ def _execute_build_result(
             reason="filter_not_supported",
             result_status="no_result",
             result_reason="filter_not_supported",
+            metadata={"unsupported_filters": list(conference_blocked_filters)},
             notes=[_unsupported_filter_note(primary, conference_blocked_filters)],
         )
 
@@ -933,6 +935,7 @@ def _execute_build_result(
             reason="filter_not_supported",
             result_status="no_result",
             result_reason="filter_not_supported",
+            metadata={"unsupported_filters": list(division_blocked_filters)},
             notes=[_unsupported_filter_note(primary, division_blocked_filters)],
         )
 
@@ -949,6 +952,7 @@ def _execute_build_result(
             reason="filter_not_supported",
             result_status="no_result",
             result_reason="filter_not_supported",
+            metadata={"unsupported_filters": list(blocked_filters)},
             notes=[note],
         )
 

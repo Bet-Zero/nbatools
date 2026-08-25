@@ -4,6 +4,7 @@ import type { DisambiguationCandidate, ResultMetadata } from "../api/types";
 import { normalizeDisplayMode, type DisplayModeInput } from "../displayMode";
 import {
   buildNoResultDetails,
+  unevaluatedFilterNotices,
   buildNoResultGuidance,
   isColumnUnavailableReason,
   isMetricUnavailableNoResult,
@@ -176,6 +177,7 @@ export default function NoResultDisplay({
   const [detailsOpen, setDetailsOpen] = useState(isDebugMode);
   const candidateLine = candidateSuggestionLine(metadata?.candidates);
   const details = buildNoResultDetails(notes, caveats, metadata);
+  const unevaluatedNotices = unevaluatedFilterNotices(metadata);
   const detailTexts = details.map((detail) => detail.text);
   const profile = stateProfile(
     reason,
@@ -223,6 +225,17 @@ export default function NoResultDisplay({
         )}
       </div>
       <div className={styles.message}>{message}</div>
+      {/* A filter that never ran is a trust statement, so it stays visible on
+          the card rather than hiding inside the details disclosure. */}
+      {unevaluatedNotices.map((notice) => (
+        <div
+          key={notice}
+          className={styles.recovery}
+          aria-label="Unapplied filters"
+        >
+          {notice}
+        </div>
+      ))}
       {candidateLine && (
         <div
           className={styles.recovery}

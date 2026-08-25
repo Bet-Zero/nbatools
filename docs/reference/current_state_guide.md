@@ -301,10 +301,15 @@ missing or untrusted; they never present a partial or unfiltered game set as a
 complete answer. Unsupported routes keep explicit boundary notes.
 
 A refused request names the condition that blocked it in
-`metadata.unsupported_filters`, and carries no `metadata.applied_filters`: a
-filter that did not execute is never presented as applied. What was requested
-stays visible in its own metadata field. See
-[result_contracts.md](result_contracts.md) §1.3.
+`metadata.unsupported_filters`. A filter is shown as applied only where the
+route that filters recorded an execution receipt proving it ran — a final
+`no_match` is not proof, because an earlier filter can empty the sample before a
+later one is reached. Filters that were requested and supported but never
+reached appear in `metadata.unevaluated_filters` rather than being reported as
+refused. What was requested stays visible in its own metadata field. Receipts
+currently cover `player_game_finder`, `player_game_summary`, `season_leaders`,
+and `team_record`; see [result_contracts.md](result_contracts.md) §1.3 for the
+exact coverage boundary.
 
 - Clutch filters execute on `player_game_summary`, `player_game_finder`,
   `team_record`, and `season_leaders` when trusted `player_game_clutch_stats`

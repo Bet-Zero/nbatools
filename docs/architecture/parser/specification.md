@@ -910,7 +910,7 @@ Default rules are implemented as named functions in `_default_rules.py`. Each ta
 | Season-high with player                 | `player_game_finder` sorted by stat desc                   | `_finalize_route` inline             | `season_high:`             |
 | `<player> + <timeframe>` only           | Summary (stat line for the window)                         | `player_timeframe_summary_default()` | `default:`                 |
 | `<metric>` only, no subject             | League-wide leaderboard                                    | `metric_only_leaderboard_default()`  | `default:`                 |
-| Subject-less query carrying an unexecutable condition | Refuse on the leaderboard boundary; no substituted metric | `_discarded_condition_markers()` | `unsupported_boundary:` |
+| Subject-less query carrying an unconsumed condition | Refuse on the leaderboard boundary; no substituted metric | `unconsumed_conditions()` over `requested_conditions` | `unsupported_boundary:` |
 | `<player> + <threshold>` only           | `player_game_finder` (list matching games)                 | `player_threshold_finder_default()`  | `default:`                 |
 | `<team> + <threshold>` only             | `game_finder` (list matching games)                        | `team_threshold_finder_default()`    | `default:`                 |
 | Top player/team games (keyword)         | `top_player_games` / `top_team_games` ranked by stat       | `_finalize_route` inline             | `default:`                 |
@@ -942,20 +942,38 @@ These are recognized as desirable but not yet implemented:
 ### 15.4 Defaults must not delete the question
 
 A default may fill in what the user left unsaid. It may not discard what they
-did say. Before the subject-less defaults fire, `_discarded_condition_markers()`
-checks the query for conditions a league-wide leaderboard cannot express:
+did say.
 
-| Concept family | Marker | Fires when |
+The decision is made on normalized parse state, not on a pattern match.
+`_build_parse_state` records every meaningful condition a question asks for in
+`parsed["requested_conditions"]` as `RequestedCondition` records
+(`commands/_condition_semantics.py`), each carrying what was requested, the
+words the user wrote, and what it bound to — if anything:
+
+| Condition kind | Blocker marker | Recognized from |
 | --- | --- | --- |
-| Player availability / absence | `unresolved_availability` | availability language is present and neither `with_player` nor `without_player` bound it |
-| Role-based player reference | `unresolved_role_player` | a possessive role reference (`its leading scorer`, `their star`, `best player`) resolved to no player |
-| Subjective outcome | `subjective_outcome` | narrative performance language (`stayed afloat`, `cope best`, `holds up`) with no approved metric |
+| `player_availability` | `unresolved_availability` | absence states (`injured`, `suspended`, `shorthanded`, `depleted`), absence verbs (`does not play`, `sits out`, `misses games`), and absence prepositions (`without their star`, `with no stars`, `missing starters`) |
+| `role_reference` | `unresolved_role_player` | a possessive role reference (`its leading scorer`, `their star`) or `best player` |
+| `subjective_outcome` | `subjective_outcome` | narrative performance language (`stayed afloat`, `cope best`, `holds up`, `fare`) with no approved metric |
 
-Any marker blocks the default and refuses on the route that would have answered
-the wrong question, with `unsupported_filters` naming the condition. The check
-requires no subject entity at all, so queries that reach a specific route keep
-their own filter-execution checks. A role *population* being ranked (`top
-scorers`) is not a reference and stays supported.
+`ROUTE_CONDITION_SUPPORT` declares which kinds each route can represent and
+execute. Before a subject-less default fires, `unconsumed_conditions()` asks the
+ledger which recorded conditions the chosen route can neither represent nor has
+bound. Any unconsumed condition blocks the default and refuses on the route that
+would otherwise have answered the wrong question, with `unsupported_filters`
+naming each one.
+
+Why this shape rather than "does a pattern match?": a detector that misses a
+phrasing now loses coverage of one concept, whereas previously it silently
+authorized a broad default. Adding a synonym is a data change to the vocabulary
+tuples. Adding a *new* concept means one detector plus a `ROUTE_CONDITION_SUPPORT`
+entry — never another special case in the router.
+
+The gate is scoped to subject-less queries, the precondition every broad default
+shares; with a resolved player or team the query reaches a specific route that
+owns its own filter-execution checks. Conditions stay recorded in parse state
+either way, so later phases can consume them. A role *population* being ranked
+(`top scorers`) is not a reference and stays supported.
 
 ### 15.5 Defaults are product policy
 

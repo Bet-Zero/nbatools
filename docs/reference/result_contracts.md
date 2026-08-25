@@ -80,17 +80,62 @@ Metadata values are populated when they apply and are known. A field being
 part of the shared vocabulary does not justify inventing a value when the
 engine did not resolve one.
 
-`metadata.applied_filters` describes filtering that actually executed. A result
-where execution never reached the data - refused, ambiguous, unrouted, errored,
-or missing its dataset - carries no `applied_filters`, because there is no
-applied filtering to describe. `no_match` is the exception: those filters ran
-and matched nothing, so echoing them is accurate.
+#### Per-filter execution receipts
 
-What the user asked for is still preserved. The request itself stays in its own
-metadata fields (`clutch`, `opponent_quality`, `position_filter`, ...), and
-`metadata.unsupported_filters` names what blocked the answer. Consumers should
-render the blocker from `unsupported_filters` rather than inferring one from
-whatever metric a route happened to default to.
+`metadata.applied_filters` describes filtering that actually executed. A final
+result reason cannot establish that. `Tatum clutch stats at home on January 1
+2024` returns `no_match` with the date and location filters genuinely applied
+and clutch never evaluated at all — the sample was empty before execution
+reached it. Reading `no_match` as "everything ran" is exactly how the product
+came to claim clutch filtering it had not performed.
+
+So execution is recorded where it happens. A route opens a
+`FilterExecutionLedger` (`commands/_filter_receipts.py`), declares the filters
+it was asked for, and marks each one as it applies it. Whatever is still
+unmarked when the route returns early was never evaluated. Receipt states:
+
+| State | Meaning |
+| --- | --- |
+| `applied` | Ran against the sample. Only the route that filtered may set this. |
+| `unsupported` | This route has no code that can express it. |
+| `unresolved` | The entity or value it needed never resolved. |
+| `not_evaluated` | Supported and requested, but execution returned before reaching it — normally because an earlier filter emptied the sample. Not a refusal. |
+| `coverage_unavailable` | Supported, but the trusted source coverage it needs is missing. |
+
+The ledger is serialized as `metadata.filter_receipts`. `query_service` derives
+`applied_filters` from it and never infers execution from parse state, the
+selected route, or the result reason.
+
+#### Coverage of the receipt contract
+
+Receipts are currently produced by the routes that execute context filters:
+`player_game_finder`, `player_game_summary`, `season_leaders`, and
+`team_record`. **This is a bounded migration, not a universal guarantee.**
+
+- Where a route reports a receipt for a filter, that receipt is authoritative.
+- Where it does not — an unmigrated route, or a filter outside the tracked set —
+  the badge is trusted on a successful answer and dropped on any non-ok result,
+  because a result that stopped early cannot vouch for it.
+
+Do not read this section as a claim that every filter on every route is
+execution-proven. Extending receipts to the remaining filter-capable routes is
+tracked, not done.
+
+#### Requested context and blockers
+
+What the user asked for is preserved regardless. The request stays in its own
+metadata fields (`clutch`, `opponent_quality`, `position_filter`, …),
+`metadata.unsupported_filters` names what blocked the answer, and
+`metadata.unevaluated_filters` names supported filters that were simply never
+reached. A filter that was never reached must not be reported as unsupported —
+it was not refused.
+
+Consumers should render the blocker from `unsupported_filters` rather than
+inferring one from whatever metric a route happened to default to. Blocker ids
+distinguish causes that need different user guidance: `clutch` means the
+question never bound clutch to a subject or metric, while `clutch_coverage`
+means the question was understood and the trusted play-by-play coverage behind
+it is missing. `role_coverage` is the same distinction for starter/bench data.
 
 ### 1.4 No-result and error semantics
 

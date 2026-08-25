@@ -2,6 +2,11 @@ import re
 
 import pandas as pd
 
+from nbatools.commands._condition_semantics import (
+    blocker_ids,
+    detect_requested_conditions,
+    unconsumed_conditions,
+)
 from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
 from nbatools.commands._constants import (
@@ -805,99 +810,36 @@ def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Intent preservation: conditions a subject-less default route would discard
+# Intent preservation: broad defaults may not delete a requested condition
 # ---------------------------------------------------------------------------
-#
-# The subject-less default routes rank every player or team in the league by one
-# season metric. They can express a metric, a scope, and a sort direction -
-# nothing else. A query that carries one of the concepts below and still lands on
-# such a default is having that concept silently deleted, and the answer that
-# comes back is confidently about a different question. These detectors are
-# concept families, not a phrase list: each pairs a semantic marker with the
-# parse state that would have bound it, and only fires when nothing bound it.
-
-# 1. Player availability / absence. "when its leading scorer was out",
-#    "is injured", "without their star". Bound availability lives in
-#    with_player / without_player; anything left over is unexecuted.
-_AVAILABILITY_CONDITION_RE = re.compile(
-    r"\b(?:"
-    r"injur\w+"
-    r"|sidelined"
-    r"|unavailable"
-    r"|inactive"
-    r"|absent|absence"
-    r"|(?:is|are|was|were|been|being|get|gets|got|go|goes|went)\s+(?:out|down|hurt)\b"
-    r"|miss(?:es|ed|ing)?\s+(?:time|games?|action|the\s+game)"
-    r"|(?:sits?|sat)\s+out"
-    r"|out\s+(?:with|due|for\s+the|of\s+the\s+(?:lineup|game))"
-    r"|(?:without|w/o)\s+(?:its|their|his|her|the|a)\b"
-    r")"
-)
-
-# 2. Role-based player reference pointing at one unidentified player - "its
-#    leading scorer", "their star", "best player". The possessive is what makes
-#    it a dangling reference: it names a player belonging to some team the
-#    engine never resolved. A bare role population ("top scorers") is the thing
-#    being ranked, not a reference, and stays supported; team-scoped forms
-#    ("Lakers leading scorer") resolve through detect_team_leader_stat against a
-#    real subject and never reach here.
-_ROLE_PLAYER_REFERENCE_RE = re.compile(
-    r"\b(?:its|their|his|her)\s+"
-    r"(?:(?:leading|lead|top|best|number\s+one|no\.?\s*1|franchise|go-to)\s+)?"
-    r"(?:scorer|player|guy|man|option|star)s?\b"
-    r"|\bbest\s+player\b"
-)
-
-# 3. Subjective narrative outcome. "stayed afloat", "cope best", "survives",
-#    "holds up". These describe a judgement about performance with no approved
-#    metric behind them. Plain superlatives ("best offensive teams") are not in
-#    this family - those name a metric and stay supported.
-_SUBJECTIVE_OUTCOME_RE = re.compile(
-    r"\b(?:"
-    r"(?:stay|stays|stayed|staying|keep|keeps|keeping|kept|remain|remains|remained)"
-    r"\s+afloat"
-    r"|cope[sd]?|coping"
-    r"|surviv\w+"
-    r"|(?:hold|holds|holding)\s+up|held\s+up"
-    r"|(?:hang|hangs|hanging)\s+on|hung\s+on"
-    r"|(?:get|gets|getting)\s+by|got\s+by"
-    r"|(?:weather|weathers|weathered)\s+(?:the|it)"
-    r"|withstand\w*|withstood"
-    r"|fares?|fared|faring"
-    r"|(?:manage|manages|managed)\s+without"
-    r"|(?:stay|stays|stayed)\s+competitive"
-    r")\b"
-)
 
 
-def _discarded_condition_markers(parsed: dict) -> list[str]:
-    """Return markers for meaningful conditions a subject-less default would drop.
+def _unconsumed_broad_default_conditions(parsed: dict, route: str) -> list:
+    """Conditions *route* would silently drop if it answered this question.
 
-    Returns an empty list unless the query has no subject entity at all - the
-    precondition every broad default shares. With a resolved player or team the
-    query reaches a specific route that owns its own filter-execution checks
-    (see _player_availability_unsupported_markers), so this guard stays out of
-    the way.
+    A default may supply a detail the user omitted. It may not delete one they
+    stated. ``season_leaders`` / ``season_team_leaders`` rank the league by a
+    single metric and can represent none of the semantic condition kinds, so any
+    condition still unconsumed here would vanish from the answer.
+
+    Reads the normalized ledger built during parsing rather than re-matching the
+    query text, so a concept the detectors recognized can never be forgotten on
+    the way to a route.
+
+    Scoped to subject-less queries, which is the precondition every broad
+    default shares. With a resolved player or team the query reaches a specific
+    route that owns its own filter-execution checks - ``Lakers record without
+    LeBron`` is answered by ``team_record``, not defaulted. The conditions stay
+    recorded in parse state either way; only this gate is narrowed.
     """
     if any(
         parsed.get(key) for key in ("player", "team", "player_a", "player_b", "team_a", "team_b")
     ):
         return []
-
-    q = parsed["normalized_query"]
-    markers: list[str] = []
-
-    availability_bound = bool(parsed.get("with_player") or parsed.get("without_player"))
-    if not availability_bound and _AVAILABILITY_CONDITION_RE.search(q):
-        markers.append("unresolved_availability")
-
-    if _ROLE_PLAYER_REFERENCE_RE.search(q):
-        markers.append("unresolved_role_player")
-
-    if _SUBJECTIVE_OUTCOME_RE.search(q):
-        markers.append("subjective_outcome")
-
-    return markers
+    conditions = parsed.get("requested_conditions") or []
+    if not conditions:
+        return []
+    return unconsumed_conditions(list(conditions), route)
 
 
 def _unsupported_route_kwargs(
@@ -1561,6 +1503,14 @@ def _build_parse_state(query: str) -> dict:
         "without_player": without_player,
         "unresolved_with_player": unresolved_with_player,
         "unresolved_without_player": unresolved_without_player,
+        # Normalized record of the meaningful conditions this question asks for,
+        # independent of which route ends up answering it. Routing consults this
+        # rather than re-reading the query text.
+        "requested_conditions": detect_requested_conditions(
+            q,
+            with_player=with_player,
+            without_player=without_player,
+        ),
         "entity_ambiguity": entity_ambiguity,
         "team_resolution_confidence": team_resolution_confidence,
         "stat_resolution_confidence": stat_resolution_confidence,
@@ -2943,13 +2893,16 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         notes.append("league_threshold_games: listing all games at or above the threshold")
-    elif discarded_conditions := _discarded_condition_markers(parsed):
-        # A meaningful condition the broad defaults below cannot execute. Refuse
-        # on the route that would have answered the wrong question rather than
-        # dropping the condition and ranking the league by a substituted metric.
+    elif unconsumed := _unconsumed_broad_default_conditions(
+        parsed, "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+    ):
+        # The broad defaults below cannot represent these conditions, so letting
+        # one answer would delete them from the question. Refuse on the route
+        # that would have answered the wrong question instead.
         route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+        blocking = blocker_ids(unconsumed)
         route_kwargs = _unsupported_route_kwargs(
-            discarded_conditions[0],
+            blocking[0],
             season=season,
             start_season=start_season,
             end_season=end_season,
@@ -2957,12 +2910,13 @@ def _finalize_route(parsed: dict) -> dict:
             end_date=end_date,
             season_type=season_type,
         )
-        # Report every discarded condition, not only the primary blocker.
-        route_kwargs["unsupported_filters"] = list(discarded_conditions)
+        # Report every unconsumed condition, not only the primary blocker.
+        route_kwargs["unsupported_filters"] = blocking
+        route_kwargs["requested_conditions"] = [c.to_dict() for c in unconsumed]
         notes.append(
-            "unsupported_boundary: this question carries a condition the "
-            f"league-wide leaderboard route cannot execute ({', '.join(discarded_conditions)}); "
-            "no substituted leaderboard was returned"
+            "unsupported_boundary: this question asks for "
+            f"{', '.join(sorted({c.surface for c in unconsumed}))}, which a league-wide "
+            "leaderboard cannot express; no substituted leaderboard was returned"
         )
     elif (
         not player

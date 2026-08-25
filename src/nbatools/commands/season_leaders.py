@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pandas as pd
 
+from nbatools.commands._filter_receipts import (
+    FilterExecutionLedger,
+    clutch_coverage_blocked,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     build_role_filter_coverage_note,
@@ -759,6 +763,23 @@ def build_result(
     notes: list[str] = []
     multi_season = len(seasons) > 1
 
+    # Execution receipts: only this route may say a filter here actually ran.
+    receipts = FilterExecutionLedger()
+    receipts.declare_all(
+        {
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "date_range": start_date or end_date,
+            "last_n": last_n,
+            "position_filter": position,
+            "clutch": clutch,
+            "role": role,
+        }
+    )
+
     # Validate params
     if limit <= 0:
         raise ValueError("limit must be greater than 0")
@@ -874,10 +895,24 @@ def build_result(
         )
         basic = basic.groupby("player_id", group_keys=False).head(last_n).copy()
 
+    # Everything above ran against the loaded sample, whatever it produced.
+    for sample_filter in (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "last_n",
+    ):
+        receipts.applied(sample_filter)
+
     if basic.empty:
+        receipts.short_circuit("sample was already empty before this filter ran")
         return NoResult(
             query_class="leaderboard",
             reason="no_match",
+            metadata=receipts.to_metadata(),
             notes=["No games matched the specified filters"],
         )
 
@@ -892,8 +927,14 @@ def build_result(
             ].unique()
             basic = basic[basic["player_id"].isin(eligible_ids)].copy()
             position_filtered = True
+            receipts.applied("position_filter")
         if basic.empty:
-            return NoResult(query_class="leaderboard", reason="no_match")
+            receipts.short_circuit("sample was already empty before this filter ran")
+            return NoResult(
+                query_class="leaderboard",
+                reason="no_match",
+                metadata=receipts.to_metadata(),
+            )
 
     # Starter/bench role filtering: every requested player-game must have a
     # trusted starter assignment. Partial leaderboards are wrong answers.
@@ -910,10 +951,16 @@ def build_result(
                 trust_column="role_source_trusted",
                 reason_column="role_validation_reason",
             )
+            note = build_role_filter_coverage_note(role, detail=detail)
+            receipts.coverage_unavailable("role", note)
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                notes=[build_role_filter_coverage_note(role, detail=detail)],
+                metadata={
+                    "unsupported_filters": ["role_coverage"],
+                    **receipts.to_metadata(),
+                },
+                notes=[note],
             )
         # The game logs carry an untrusted native starter_flag; rename the
         # trusted dataset's columns so the merge can't collide with it.
@@ -936,10 +983,16 @@ def build_result(
             reason_column="role_validation_reason",
         )
         if coverage_failure:
+            note = build_role_filter_coverage_note(role, detail=coverage_failure)
+            receipts.coverage_unavailable("role", note)
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                notes=[build_role_filter_coverage_note(role, detail=coverage_failure)],
+                metadata={
+                    "unsupported_filters": ["role_coverage"],
+                    **receipts.to_metadata(),
+                },
+                notes=[note],
             )
         trusted = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
         expected_flag = 1 if role == "starter" else 0
@@ -950,10 +1003,12 @@ def build_result(
             .copy()
         )
         role_caveat = f"filtered to {role} games using trusted starter-role data"
+        receipts.applied("role")
         if basic.empty:
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
+                metadata=receipts.to_metadata(),
                 notes=[f"No {role} games matched the specified filters"],
             )
 
@@ -992,20 +1047,24 @@ def build_result(
 
     clutch_executed = False
     if clutch:
-        clutch_rows, clutch_note = select_player_clutch_stats_for_base(basic, seasons, season_type)
-        if clutch_note:
-            return NoResult(
-                query_class="leaderboard",
-                reason="filter_not_supported",
-                # Name clutch as the blocker so consumers do not have to guess
-                # one from whatever stat the route happened to default to.
-                metadata={"unsupported_filters": ["clutch"]},
-                notes=[clutch_note],
+        if basic.empty:
+            receipts.short_circuit("sample was already empty before this filter ran")
+        else:
+            clutch_rows, clutch_note = select_player_clutch_stats_for_base(
+                basic, seasons, season_type
             )
-        if clutch_rows.empty:
-            return NoResult(query_class="leaderboard", reason="no_match")
-        df = _build_from_clutch_rows(clutch_rows)
-        clutch_executed = True
+            if clutch_note:
+                return clutch_coverage_blocked("leaderboard", clutch_note, receipts)
+            if clutch_rows.empty:
+                receipts.applied("clutch")
+                return NoResult(
+                    query_class="leaderboard",
+                    reason="no_match",
+                    metadata=receipts.to_metadata(),
+                )
+            df = _build_from_clutch_rows(clutch_rows)
+            receipts.applied("clutch")
+            clutch_executed = True
 
     if not clutch_executed:
         df = _build_from_game_logs(basic)

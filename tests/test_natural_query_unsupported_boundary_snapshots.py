@@ -113,8 +113,9 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "Tatum clutch stats",
             "route": "player_game_summary",
             "reason": "filter_not_supported",
-            # Clutch context is the blocker, not the stat the route defaulted to.
-            "unsupported_filters": ["clutch"],
+            # Understood, but trusted clutch coverage is missing - distinct from
+            # an unbound clutch fragment, which reports plain "clutch".
+            "unsupported_filters": ["clutch_coverage"],
         },
         {
             "query": "Who is the most clutch player this season?",

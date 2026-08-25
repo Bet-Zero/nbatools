@@ -17,6 +17,10 @@ from __future__ import annotations
 
 import pandas as pd
 
+from nbatools.commands._filter_receipts import (
+    FilterExecutionLedger,
+    clutch_coverage_blocked,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
     add_aggregate_metric_fields,
@@ -240,6 +244,29 @@ def build_team_record_result(
 
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
+
+    # Execution receipts: only this route may say a filter here actually ran.
+    receipts = FilterExecutionLedger()
+    receipts.declare_all(
+        {
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "date_range": start_date or end_date,
+            "threshold": min_value is not None or max_value is not None,
+            "with_player": with_player,
+            "without_player": without_player,
+            "clutch": clutch,
+            "quarter": quarter,
+            "half": half,
+            "back_to_back": back_to_back,
+            "rest_days": rest_days,
+            "one_possession": one_possession,
+            "nationally_televised": nationally_televised,
+        }
+    )
     period_filter_requested = quarter is not None or half is not None
     period_execution_backed = False
 
@@ -368,19 +395,16 @@ def build_team_record_result(
 
     clutch_executed = False
     if clutch:
-        df, clutch_note = apply_team_clutch_filter(df, seasons, season_type)
-        if clutch_note:
-            # Data unavailable for this clutch filter — return an honest no-result
-            # rather than executing unfiltered and returning misleading data.
-            return NoResult(
-                query_class="summary",
-                reason="filter_not_supported",
-                # Name clutch as the blocker so consumers do not have to guess
-                # one from whatever stat the route happened to default to.
-                metadata={"unsupported_filters": ["clutch"]},
-                notes=[clutch_note],
-            )
+        if df.empty:
+            receipts.short_circuit("sample was already empty before this filter ran")
         else:
+            df, clutch_note = apply_team_clutch_filter(df, seasons, season_type)
+            if clutch_note:
+                # Data unavailable for this clutch filter — return an honest
+                # no-result rather than executing unfiltered and returning
+                # misleading data.
+                return clutch_coverage_blocked("summary", clutch_note, receipts)
+            receipts.applied("clutch")
             clutch_executed = True
 
     if with_player and without_player:

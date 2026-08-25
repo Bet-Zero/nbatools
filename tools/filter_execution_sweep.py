@@ -34,7 +34,8 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from nbatools.query_service import execute_natural_query  # noqa: E402
+from nbatools.commands._filter_receipts import APPLIED as RECEIPT_APPLIED  # noqa: E402
+from nbatools.query_service import _badge_filter_id, execute_natural_query  # noqa: E402
 
 DEFAULT_CONFIG = REPO_ROOT / "qa" / "filter_execution_sweep.yaml"
 
@@ -66,23 +67,38 @@ def _run(query: str) -> dict[str, Any]:
     except Exception as exc:  # noqa: BLE001 - the sweep reports failures, never raises
         return {"error": f"{type(exc).__name__}: {exc}"}
     metadata = executed.metadata or {}
+    receipts = (getattr(executed.result, "metadata", None) or {}).get("filter_receipts") or {}
+    badges = metadata.get("applied_filters") or []
     return {
         "route": metadata.get("route"),
         "status": executed.result_status,
         "reason": executed.result_reason,
-        "badges": [
+        "badges": [f"{badge.get('label')}={badge.get('value')}" for badge in badges],
+        # Badges on a non-ok answer that no execution receipt backs. Comparing
+        # data cannot catch these: there is no data to compare.
+        "unproven_badges": [
             f"{badge.get('label')}={badge.get('value')}"
-            for badge in (metadata.get("applied_filters") or [])
+            for badge in badges
+            if executed.result_status != "ok"
+            and _receipt_state(receipts, _badge_filter_id(badge)) != RECEIPT_APPLIED
         ],
         "fingerprint": _fingerprint(executed.result),
     }
+
+
+def _receipt_state(receipts: dict[str, Any], filter_id: str | None) -> str | None:
+    entry = receipts.get(filter_id) if filter_id else None
+    return entry.get("state") if isinstance(entry, dict) else None
 
 
 def _classify(filtered: dict[str, Any], control: dict[str, Any], badge: str | None) -> str:
     if "error" in filtered:
         return ERROR
     if filtered.get("status") == "no_result":
-        return REFUSED
+        # A refusal is only honest if it stops claiming filters it never ran.
+        # Without this check every no_result was waved through as REFUSED, which
+        # is why a false applied-filter badge on an empty answer was invisible.
+        return LIED if filtered.get("unproven_badges") else REFUSED
     if "error" in control:
         return APPLIED  # nothing to compare against; not evidence of a lie
     if filtered.get("fingerprint") != control.get("fingerprint"):

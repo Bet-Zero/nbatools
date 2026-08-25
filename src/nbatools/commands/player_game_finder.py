@@ -1,6 +1,10 @@
 import pandas as pd
 
 from nbatools.commands._condition_utils import apply_stat_conditions
+from nbatools.commands._filter_receipts import (
+    FilterExecutionLedger,
+    clutch_coverage_blocked,
+)
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
     apply_player_clutch_filter,
@@ -176,6 +180,28 @@ def build_result(
     seasons = resolve_seasons(season, start_season, end_season)
     notes: list[str] = []
 
+    # Execution receipts: only this route may say a filter here actually ran.
+    receipts = FilterExecutionLedger()
+    receipts.declare_all(
+        {
+            "opponent": opponent,
+            "home_only": home_only,
+            "away_only": away_only,
+            "wins_only": wins_only,
+            "losses_only": losses_only,
+            "date_range": start_date or end_date,
+            "last_n": last_n,
+            "threshold": (min_value is not None or max_value is not None or conditions),
+            "quarter": quarter,
+            "half": half,
+            "opponent_player": opponent_player,
+            "without_player": without_player,
+            "special_event": special_event,
+            "clutch": clutch,
+            "role": role,
+        }
+    )
+
     if home_only and away_only:
         return NoResult(
             query_class="finder",
@@ -227,6 +253,8 @@ def build_result(
                 notes=[coverage_note] if coverage_note else [],
             )
         df = filter_period_rows(period_df, quarter=quarter, half=half)
+        receipts.applied("quarter")
+        receipts.applied("half")
     else:
         df = base_df
 
@@ -328,39 +356,75 @@ def build_result(
         start_date=start_date,
         end_date=end_date,
     )
+    for sample_filter in (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "last_n",
+        "threshold",
+    ):
+        receipts.applied(sample_filter)
+
+    # Everything from here runs against whatever survived above. An empty sample
+    # means these filters have nothing to evaluate - they are not refused, they
+    # simply never ran, and must not be reported as applied.
+    if df.empty:
+        receipts.short_circuit("sample was already empty before this filter ran")
+        return NoResult(
+            query_class="finder",
+            notes=notes,
+            metadata=receipts.to_metadata(),
+        )
 
     # Cross-reference filters: opponent_player and without_player
-    if opponent_player and not df.empty:
+    if opponent_player:
         df = filter_by_opponent_player(df, opponent_player, seasons, season_type)
+        receipts.applied("opponent_player")
 
     if without_player and not df.empty:
         df = filter_without_player(df, without_player, seasons, season_type, team=team)
+        receipts.applied("without_player")
 
     if special_event and not df.empty:
         df = df[_flag_special_event(df, special_event)].copy()
+        receipts.applied("special_event")
 
     if clutch:
-        df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)
-        if clutch_note:
+        if df.empty:
+            receipts.short_circuit("sample was already empty before this filter ran")
+        else:
+            df, clutch_note = apply_player_clutch_filter(df, seasons, season_type)
+            if clutch_note:
+                return clutch_coverage_blocked("finder", clutch_note, receipts)
+            receipts.applied("clutch")
+
+    if role and df.empty:
+        receipts.short_circuit("sample was already empty before this filter ran")
+    else:
+        df, role_note = apply_player_role_filter(df, seasons, season_type, role)
+        if role_note:
+            receipts.coverage_unavailable("role", role_note)
             return NoResult(
                 query_class="finder",
                 reason="filter_not_supported",
-                # Name clutch as the blocker so consumers do not have to guess
-                # one from whatever stat the route happened to default to.
-                metadata={"unsupported_filters": ["clutch"]},
-                notes=[clutch_note],
+                metadata={
+                    "unsupported_filters": ["role_coverage"],
+                    **receipts.to_metadata(),
+                },
+                notes=[role_note],
             )
-
-    df, role_note = apply_player_role_filter(df, seasons, season_type, role)
-    if role_note:
-        return NoResult(
-            query_class="finder",
-            reason="filter_not_supported",
-            notes=[role_note],
-        )
+        receipts.applied("role")
 
     if df.empty:
-        return NoResult(query_class="finder", notes=notes)
+        receipts.short_circuit("sample was already empty before this filter ran")
+        return NoResult(
+            query_class="finder",
+            notes=notes,
+            metadata=receipts.to_metadata(),
+        )
 
     stat_col = None
     if stat:

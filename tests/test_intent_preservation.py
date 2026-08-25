@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import pytest
 
+from nbatools.commands._condition_semantics import detect_requested_conditions
+from nbatools.commands._constants import normalize_text
 from nbatools.commands.natural_query import parse_query
 from nbatools.query_service import execute_natural_query
 
@@ -37,36 +39,128 @@ def _applied_filter_labels(metadata: dict) -> list[str]:
 # 1. Parser / routing: no broad leaderboard fallback for discarded conditions
 # ---------------------------------------------------------------------------
 
-# (query, marker that must be reported as blocking)
-DISCARDED_CONDITION_QUERIES = [
+# A semantic variant matrix, not a list of the phrases the detectors were
+# written against. Each row names the dimension it varies, so a detector that
+# only learned one spelling of a concept fails here rather than in production.
+#
+# (dimension, query, marker that must be reported as blocking)
+DISCARDED_CONDITION_MATRIX = [
+    # -- absence verbs ----------------------------------------------------
     (
+        "absence_verb_negated",
+        "best team when leading scorer does not play",
+        "unresolved_availability",
+    ),
+    ("absence_verb_past", "best team when leading scorer did not play", "unresolved_availability"),
+    (
+        "absence_verb_modal",
+        "which team wins most when their star cannot play",
+        "unresolved_availability",
+    ),
+    (
+        "absence_verb_sit",
+        "which teams win most when their best player sits out",
+        "unresolved_availability",
+    ),
+    (
+        "absence_verb_miss",
+        "best team when its leading scorer misses games",
+        "unresolved_availability",
+    ),
+    # -- absence states ---------------------------------------------------
+    (
+        "absence_state_injured",
+        "best team when leading scorer is injured",
+        "unresolved_availability",
+    ),
+    (
+        "absence_state_suspended",
+        "best team when leading scorer is suspended",
+        "unresolved_availability",
+    ),
+    ("absence_state_sidelined", "best team when its star is sidelined", "unresolved_availability"),
+    (
+        "absence_state_inactive",
+        "which team wins most with its best player inactive",
+        "unresolved_availability",
+    ),
+    # -- squad-level absence ---------------------------------------------
+    ("shorthanded", "teams that do best shorthanded", "unresolved_availability"),
+    ("depleted", "best team while depleted", "unresolved_availability"),
+    ("depleted_plural", "teams that win most when depleted", "unresolved_availability"),
+    ("undermanned", "which teams win most undermanned", "unresolved_availability"),
+    ("missing_starters", "which team plays best when missing starters", "unresolved_availability"),
+    # -- absence prepositions --------------------------------------------
+    ("without_plural_role", "teams that perform best without stars", "unresolved_availability"),
+    ("with_no_role", "best team with no stars", "unresolved_availability"),
+    (
+        "without_possessive_role",
+        "teams that cope best without their leading scorer",
+        "unresolved_availability",
+    ),
+    ("without_singular_role", "best record without its best player", "unresolved_availability"),
+    # -- subjective outcomes ---------------------------------------------
+    ("subjective_afloat", "what team has stayed afloat best", "subjective_outcome"),
+    ("subjective_hold_up", "which teams hold up best", "subjective_outcome"),
+    ("subjective_fare", "how do teams fare", "subjective_outcome"),
+    ("subjective_tread_water", "which teams tread water best", "subjective_outcome"),
+    # -- combined ---------------------------------------------------------
+    (
+        "combined_all_three",
         "What team has stayed afloat best when its leading scorer was out?",
         "unresolved_availability",
     ),
-    ("best team when leading scorer is injured", "unresolved_availability"),
-    ("what team has stayed afloat best", "subjective_outcome"),
-    ("teams that cope best without their leading scorer", "unresolved_availability"),
-    ("how do teams do when their star is out", "unresolved_availability"),
-    # "best player" is claimed by the older subjective-query guard, which already
-    # refuses before this one is reached. Either blocker is correct; what matters
-    # is that neither shape reaches a leaderboard default.
-    ("which teams hold up best when their best player sits out", "subjective_query"),
-    ("how do teams fare without their star", "unresolved_availability"),
+    ("combined_role_absence", "how do teams do when their star is out", "unresolved_availability"),
 ]
 
 
 @pytest.mark.parser
-@pytest.mark.parametrize("query, marker", DISCARDED_CONDITION_QUERIES)
-def test_discarded_condition_never_selects_a_broad_leaderboard_fallback(query, marker):
+@pytest.mark.parametrize(
+    "dimension, query, marker",
+    DISCARDED_CONDITION_MATRIX,
+    ids=[row[0] for row in DISCARDED_CONDITION_MATRIX],
+)
+def test_semantic_condition_is_represented_in_parse_state(dimension, query, marker):
+    """Every variant must normalize into the condition ledger during parsing."""
+    conditions = detect_requested_conditions(normalize_text(query))
+
+    assert conditions, f"{dimension}: no condition recorded for {query!r}"
+    assert all(condition.surface for condition in conditions)
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "dimension, query, marker",
+    DISCARDED_CONDITION_MATRIX,
+    ids=[row[0] for row in DISCARDED_CONDITION_MATRIX],
+)
+def test_broad_default_cannot_fire_with_an_unconsumed_condition(dimension, query, marker):
     parsed = parse_query(query)
     route_kwargs = parsed["route_kwargs"]
+    blockers = route_kwargs.get("unsupported_filters") or []
 
-    assert marker in (route_kwargs.get("unsupported_filters") or [])
-    # The route boundary may still be named, but it must be blocked from
-    # executing, and it must not carry a substituted ranking metric.
-    if parsed["route"] in BROAD_LEADERBOARD_ROUTES:
-        assert route_kwargs.get("unsupported_filters")
+    assert blockers, f"{dimension}: refused with no stable blocker"
+    # "best player" is claimed by the older subjective-query guard, which
+    # refuses earlier than this one. Either blocker is a correct refusal; what
+    # must never happen is the question reaching a broad default.
+    assert marker in blockers or "subjective_query" in blockers, dimension
+    # No substituted ranking metric may be handed to the blocked route.
     assert "stat" not in route_kwargs
+    assert parsed["route"] in BROAD_LEADERBOARD_ROUTES or parsed["route"] is None
+
+
+@pytest.mark.parametrize(
+    "dimension, query, marker",
+    DISCARDED_CONDITION_MATRIX,
+    ids=[row[0] for row in DISCARDED_CONDITION_MATRIX],
+)
+def test_semantic_variant_returns_no_substituted_answer(dimension, query, marker):
+    executed = execute_natural_query(query)
+
+    assert executed.result_status != "ok", dimension
+    assert executed.to_dict()["sections"] == {}
+    for attr in ("leaders", "games", "streaks", "summary", "splits", "comparison"):
+        assert getattr(executed.result, attr, None) is None
 
 
 @pytest.mark.parser
@@ -148,7 +242,9 @@ def test_unexecutable_question_explains_the_real_condition(query):
         ("clutch stats", "clutch"),
         ("clutch numbers this season", "clutch"),
         ("how did they do in clutch time", "clutch"),
-        ("Tatum clutch stats", "clutch"),
+        # A named player whose clutch request was understood but has no trusted
+        # coverage is a different blocker from an uninterpretable clutch fragment.
+        ("Tatum clutch stats", "clutch_coverage"),
         ("stats against winning teams", "opponent_quality"),
         ("against winning teams this season", "opponent_quality"),
         (

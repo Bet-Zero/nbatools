@@ -69,6 +69,48 @@ export function buildNoResultDetails(
   ]);
 }
 
+const UNEVALUATED_FILTER_LABELS: Record<string, string> = {
+  clutch: "clutch time",
+  role: "starter/bench role",
+  quarter: "quarter",
+  half: "half",
+  opponent_quality: "opponent quality",
+  without_player: "without-player",
+  with_player: "with-player",
+  special_event: "special event",
+  position_filter: "position",
+  last_n: "last-N games",
+  date_range: "date range",
+  opponent: "opponent",
+  home_only: "home",
+  away_only: "away",
+  wins_only: "wins",
+  losses_only: "losses",
+  threshold: "stat threshold",
+};
+
+/** Say plainly that a filter never ran, rather than silently dropping its badge.
+ *
+ *  These filters are supported and were not refused - nothing was left for them
+ *  to narrow by the time execution reached them. Leaving that unsaid would make
+ *  the missing badge look like an oversight. */
+export function unevaluatedFilterNotices(
+  metadata?: ResultMetadata | null,
+): string[] {
+  const raw = metadata?.unevaluated_filters;
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+  const labels = raw
+    .map((id) => (typeof id === "string" ? id.trim() : ""))
+    .filter(Boolean)
+    .map((id) => UNEVALUATED_FILTER_LABELS[id] ?? id.replace(/_/g, " "));
+  if (labels.length === 0) return [];
+  const list = labels.join(", ");
+  const verb = labels.length === 1 ? "filter was" : "filters were";
+  return [
+    `The ${list} ${verb} not applied: earlier filters left no games to check, so it was never evaluated.`,
+  ];
+}
+
 export function productFacingNotice(text: string): string | null {
   const trimmed = text.trim();
   if (!trimmed) return null;
@@ -237,8 +279,17 @@ export function unsupportedBoundaryTitle(
   if (filters.includes("opponent_conference")) {
     return "Unavailable Filter";
   }
-  if (filters.includes("clutch") || filters.includes("opponent_quality")) {
+  if (
+    filters.includes("clutch_coverage") ||
+    filters.includes("role_coverage") ||
+    filters.includes("opponent_quality")
+  ) {
     return "Unavailable Filter";
+  }
+  // An unbound clutch fragment is not an unavailable filter - the question
+  // itself did not say enough to act on.
+  if (filters.includes("clutch")) {
+    return "Unclear Question";
   }
   if (
     filters.includes("unresolved_availability") ||
@@ -275,11 +326,23 @@ function unsupportedBoundaryMessage(
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";
   }
-  if (filters.includes("clutch")) {
-    return "Clutch-time splits are not available — they need play-by-play coverage this data does not have. Clutch context is the blocker here, not the stat. Try the same question without the clutch wording.";
+  // Two different clutch failures, and naming the wrong one sends the user
+  // to fix something that was never the problem. "clutch_coverage" means the
+  // question was understood and the data behind it is missing; plain "clutch"
+  // means nothing was identified to apply clutch to.
+  if (filters.includes("clutch_coverage")) {
+    return "This clutch question was understood, but the play-by-play coverage that clutch splits need is not available for the seasons requested. Try the same question without the clutch wording.";
   }
+  if (filters.includes("clutch")) {
+    return "Clutch on its own does not say who or what to measure. Add a player or team and a stat — for example “Tatum clutch stats”.";
+  }
+  if (filters.includes("role_coverage")) {
+    return "Starter and bench splits need trusted starter-role data, which is not available for the games this question covers. Try a season with full role coverage, or drop the starter/bench wording.";
+  }
+  // Opponent quality does work — "Celtics record against playoff teams" answers.
+  // Say it is unavailable here, never that the product cannot do it at all.
   if (filters.includes("opponent_quality")) {
-    return "Opponent-quality filters like \u201cagainst winning teams\u201d are not supported yet. Try naming a specific opponent instead.";
+    return "The opponent-quality condition in this question could not be applied on the route that answers it. Opponent-quality questions do work with a named subject — for example “Celtics record against playoff teams”.";
   }
   if (filters.includes("unresolved_availability")) {
     return "This question depends on a player being out, and no specific player was identified to check that against. Name the player who was out, such as \u201cLakers record without LeBron\u201d.";

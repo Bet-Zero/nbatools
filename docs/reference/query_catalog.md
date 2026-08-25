@@ -558,16 +558,27 @@ Leaderboard no-match behavior:
 - two-player combined totals (`luka and kyrie combined points`) are not
   supported and refuse rather than answer for one player
 - subject-less questions carrying a condition a league-wide leaderboard cannot
-  execute refuse instead of ranking the league by a substituted metric. Three
-  concept families are recognized: an unbound player availability/absence
-  condition (`best team when leading scorer is injured`), a role-based player
-  reference that resolved to no one (`how do teams do when their star is out`),
-  and a subjective outcome concept with no approved metric (`what team has
-  stayed afloat best`). These return `no_result` / `filter_not_supported` with
+  represent refuse instead of ranking the league by a substituted metric. The
+  parser records every such condition in normalized parse state; a broad default
+  may fire only when the route can represent or has bound each one. Three
+  concept families are recognized:
+  - player availability or absence, covering absence states (`suspended`,
+    `shorthanded`, `depleted`), absence verbs (`does not play`, `sits out`,
+    `misses games`) and absence prepositions (`without their star`, `with no
+    stars`, `missing starters`)
+  - a role-based player reference that resolved to no one (`how do teams do when
+    their star is out`)
+  - a subjective outcome concept with no approved metric (`what team has stayed
+    afloat best`, `which teams hold up best`)
+
+  These return `no_result` / `filter_not_supported` with
   `metadata.unsupported_filters` naming the condition
   (`unresolved_availability`, `unresolved_role_player`, `subjective_outcome`).
   Questions whose metric is actually named (`top scorers this season`, `best
-  offensive teams`, `teams with the most points per game`) are unaffected
+  offensive teams`, `teams with the most points per game`, `who is the top
+  scorer this season`) are unaffected, as are team-scoped role questions
+  (`Lakers leading scorer`) and bound availability questions (`Lakers record
+  without LeBron`)
 - league-wide starter/bench player leaderboards (`most points off the
   bench`, `top scorers among starters`) are supported using trusted
   per-game starter-role data; seasons without trusted coverage return
@@ -849,13 +860,16 @@ Current behavior:
   `filter_not_supported` with exact coverage detail rather than a partial answer
 - whole-game logs, period-only box-score windows, and season-level clutch
   dashboard aggregates remain rejected as clutch substitutes
-- a refused clutch request reports `metadata.unsupported_filters=["clutch"]`, so
-  clutch context is named as the blocker rather than whatever metric the route
-  defaulted to
+- a clutch request that was understood but has no trusted coverage reports
+  `metadata.unsupported_filters=["clutch_coverage"]`, so the blocker is named as
+  the missing data rather than whatever metric the route defaulted to
 - a bare clutch fragment with no player, team, or requested stat (`clutch stats`,
-  `in clutch time`, `how did they do in clutch time`) refuses on the same
-  boundary. It never returns a league-wide points leaderboard, because no metric
-  was requested to rank by
+  `in clutch time`, `how did they do in clutch time`) reports
+  `metadata.unsupported_filters=["clutch"]` — a different blocker, because
+  nothing was identified to apply clutch to. It never returns a league-wide
+  points leaderboard, because no metric was requested to rank by
+- when an earlier filter empties the sample before clutch is reached, clutch is
+  reported in `metadata.unevaluated_filters` and never as an applied filter
 
 ### Quarter / half / overtime context
 

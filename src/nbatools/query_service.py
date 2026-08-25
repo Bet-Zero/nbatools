@@ -36,6 +36,12 @@ import pandas as pd
 
 from nbatools.commands._condition_utils import normalize_stat_conditions
 from nbatools.commands._constants import contains_boolean_or
+from nbatools.commands._filter_receipts import (
+    APPLIED,
+    NOT_EVALUATED,
+    receipt_state,
+    receipts_from_metadata,
+)
 from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
@@ -1357,28 +1363,63 @@ def _apply_count_intent(
     )
 
 
-# A no-result whose reason is one of these ran its filters against the data and
-# simply matched nothing, so echoing the applied filters is accurate. Every
-# other non-ok reason means execution stopped before any filtering happened -
-# the request was refused, ambiguous, unrouted, or had no data to filter - so an
-# applied-filter badge there claims work the engine never did. The requested
-# context itself stays in metadata (clutch, opponent_quality, ...) alongside
-# unsupported_filters, which names what actually blocked the answer.
-_FILTERS_EXECUTED_REASONS: frozenset[str] = frozenset({"no_match"})
+# Badge label/kind -> stable filter id. Labels are already part of the published
+# response contract, so this mapping is stable without changing the badge shape.
+# The id is what routes report execution receipts against.
+_BADGE_FILTER_IDS: dict[tuple[str, str | None], str] = {
+    ("Opponent conference", None): "opponent_conference",
+    ("Opponent division", None): "opponent_division",
+    ("Opponent", None): "opponent",
+    ("Without player", None): "without_player",
+    ("With player", None): "with_player",
+    ("Location", "Home"): "home_only",
+    ("Location", "Away"): "away_only",
+    ("Outcome", "Wins"): "wins_only",
+    ("Outcome", "Losses"): "losses_only",
+    ("Clutch", None): "clutch",
+    ("Back-to-back", None): "back_to_back",
+    ("Rest days", None): "rest_days",
+    ("One-possession game", None): "one_possession",
+    ("Nationally televised", None): "nationally_televised",
+    ("Role", None): "role",
+    ("Quarter", None): "quarter",
+    ("Half", None): "half",
+    ("Position", None): "position_filter",
+    ("Opponent quality", None): "opponent_quality",
+    ("Special Event", None): "special_event",
+    ("Season range", None): "season",
+    ("Season", None): "season",
+    ("Date range", None): "date_range",
+    ("Last N games", None): "last_n",
+}
 
 
-def _apply_unexecuted_filter_metadata(metadata: dict[str, Any], result: Any) -> None:
-    """Keep a non-executing result from claiming filters it never applied.
+def _badge_filter_id(badge: dict[str, Any]) -> str | None:
+    """Stable filter id for one applied-filter badge, or None if untracked."""
+    label = str(badge.get("label", ""))
+    if badge.get("kind") == "threshold":
+        return "threshold"
+    value = str(badge.get("value", ""))
+    return _BADGE_FILTER_IDS.get((label, value)) or _BADGE_FILTER_IDS.get((label, None))
 
-    Also promotes any blocker the route identified at execution time (for
-    example clutch coverage) into ``unsupported_filters`` so consumers can name
-    the real blocker instead of inferring one from whatever metric the route
-    happened to default to.
+
+def _reconcile_applied_filters(metadata: dict[str, Any], result: Any) -> None:
+    """Show a filter as applied only where execution proves it ran.
+
+    A final result reason cannot stand in for that proof. ``Tatum clutch stats
+    at home on January 1 2024`` comes back ``no_match`` with the date and
+    location filters genuinely applied and clutch never evaluated at all - the
+    sample was empty before it got there. Reading ``no_match`` as "everything
+    ran" is what let the product claim clutch filtering it had not done.
+
+    Receipts are authoritative for every filter the route reports on. Filters a
+    receipt-producing route did not report, and routes that produce no receipts
+    at all, fall back to the bounded rule documented in result_contracts.md:
+    trusted on a successful answer, dropped on any non-ok result, because a
+    result that stopped early cannot vouch for them.
     """
-    if getattr(result, "result_status", "ok") == "ok":
-        return
-
     result_metadata = getattr(result, "metadata", None)
+
     executed_blockers = (
         result_metadata.get("unsupported_filters") if isinstance(result_metadata, dict) else None
     )
@@ -1389,9 +1430,37 @@ def _apply_unexecuted_filter_metadata(metadata: dict[str, Any], result: Any) -> 
                 existing.append(blocker)
         metadata["unsupported_filters"] = existing
 
-    if getattr(result, "result_reason", None) in _FILTERS_EXECUTED_REASONS:
-        return
-    metadata.pop("applied_filters", None)
+    receipts = receipts_from_metadata(result_metadata)
+    if receipts:
+        metadata["filter_receipts"] = dict(receipts)
+
+    result_ok = getattr(result, "result_status", "ok") == "ok"
+    candidates = metadata.get("applied_filters") or []
+    kept: list[dict[str, Any]] = []
+    unevaluated: list[str] = []
+
+    for badge in candidates:
+        filter_id = _badge_filter_id(badge)
+        state = receipt_state(receipts, filter_id) if filter_id else None
+        if state is not None:
+            if state == APPLIED:
+                kept.append(badge)
+            elif state == NOT_EVALUATED:
+                unevaluated.append(filter_id)
+            continue
+        # No receipt for this filter.
+        if result_ok:
+            kept.append(badge)
+
+    if kept:
+        metadata["applied_filters"] = kept
+    else:
+        metadata.pop("applied_filters", None)
+
+    # A supported filter that simply never got reached is not a refusal, and
+    # must not be laundered into unsupported_filters.
+    if unevaluated:
+        metadata["unevaluated_filters"] = unevaluated
 
 
 def _finalize_natural_query_result(
@@ -1428,7 +1497,7 @@ def _finalize_natural_query_result(
         )
     _add_game_summary_answer_metadata(metadata, result)
     _add_team_advanced_scalar_answer_metadata(metadata, result)
-    _apply_unexecuted_filter_metadata(metadata, result)
+    _reconcile_applied_filters(metadata, result)
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
     return QueryResult(
@@ -1558,7 +1627,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
         parsed = _build_parse_state(query)
         metadata = _build_query_metadata(parsed, query, grouped_boolean_used=False)
         result = NoResult(query_class="unknown", reason="unrouted", result_status="error")
-        _apply_unexecuted_filter_metadata(metadata, result)
+        _reconcile_applied_filters(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1587,7 +1656,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             notes=notes,
         )
         _merge_metadata_notes(metadata, notes)
-        _apply_unexecuted_filter_metadata(metadata, result)
+        _reconcile_applied_filters(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1639,7 +1708,7 @@ def _execute_natural_query_in_generation(query: str) -> QueryResult:
             notes=list(notes),
             metadata={"entity_ambiguity": enriched_ambiguity},
         )
-        _apply_unexecuted_filter_metadata(metadata, result)
+        _reconcile_applied_filters(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1882,7 +1951,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         result = _execute_build_result(route, kwargs)
     except FileNotFoundError:
         result = NoResult(query_class=query_class, reason="no_data")
-        _apply_unexecuted_filter_metadata(metadata, result)
+        _reconcile_applied_filters(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1896,7 +1965,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
             result_status="no_result",
             notes=[str(exc)],
         )
-        _apply_unexecuted_filter_metadata(metadata, result)
+        _reconcile_applied_filters(metadata, result)
         return QueryResult(
             result=result,
             metadata=metadata,
@@ -1905,7 +1974,7 @@ def _execute_structured_query_in_generation(route: str, **kwargs: Any) -> QueryR
         )
 
     _add_game_summary_answer_metadata(metadata, result)
-    _apply_unexecuted_filter_metadata(metadata, result)
+    _reconcile_applied_filters(metadata, result)
 
     if getattr(result, "notes", None):
         _merge_metadata_notes(metadata, list(result.notes))
