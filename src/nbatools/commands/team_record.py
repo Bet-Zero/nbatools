@@ -18,8 +18,10 @@ from __future__ import annotations
 import pandas as pd
 
 from nbatools.commands._filter_receipts import (
-    FilterExecutionLedger,
+    REQUESTED,
+    active_ledger,
     clutch_coverage_blocked,
+    emits_filter_receipts,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
@@ -171,6 +173,15 @@ def _apply_game_filters(
     return out
 
 
+#: Schedule-context filters this route declares, marks, and reports together.
+SCHEDULE_CONTEXT_FILTERS = (
+    "back_to_back",
+    "rest_days",
+    "one_possession",
+    "nationally_televised",
+)
+
+
 def _compute_record(df: pd.DataFrame) -> dict:
     """Compute wins/losses/win_pct from a filtered game log."""
     if df.empty:
@@ -206,6 +217,7 @@ def _empty_sample_result(query_class: str, *, notes: list[str] | None = None) ->
 # ---------------------------------------------------------------------------
 
 
+@emits_filter_receipts
 def build_team_record_result(
     *,
     team: str,
@@ -246,7 +258,9 @@ def build_team_record_result(
     notes: list[str] = []
 
     # Execution receipts: only this route may say a filter here actually ran.
-    receipts = FilterExecutionLedger()
+    # The decorator attaches whatever this ledger holds to every result the
+    # route returns, so no exit below has to remember to carry it.
+    receipts = active_ledger()
     receipts.declare_all(
         {
             "opponent": opponent,
@@ -255,7 +269,7 @@ def build_team_record_result(
             "wins_only": wins_only,
             "losses_only": losses_only,
             "date_range": start_date or end_date,
-            "threshold": min_value is not None or max_value is not None,
+            "threshold": REQUESTED if (min_value is not None or max_value is not None) else None,
             "with_player": with_player,
             "without_player": without_player,
             "clutch": clutch,
@@ -283,6 +297,8 @@ def build_team_record_result(
                 nationally_televised=nationally_televised,
             )
         )
+        for filter_id in receipts.declared_ids():
+            receipts.coverage_unavailable(filter_id, "missing team game dataset")
         return NoResult(query_class="summary", reason="no_data", notes=notes)
 
     if period_filter_requested:
@@ -297,9 +313,13 @@ def build_team_record_result(
                     f"window={period_window_label(quarter=quarter, half=half)}"
                 ),
             )
+            receipts.coverage_unavailable("quarter", coverage_note)
+            receipts.coverage_unavailable("half", coverage_note)
+            receipts.short_circuit("period coverage failed before this filter ran")
             return NoResult(
                 query_class="summary",
                 reason="filter_not_supported",
+                metadata={"unsupported_filters": ["period_coverage"]},
                 notes=[coverage_note] if coverage_note else [],
             )
         df = filter_period_rows(period_df, quarter=quarter, half=half)
@@ -369,12 +389,18 @@ def build_team_record_result(
                 half=half,
                 reason=coverage_failure,
             )
+            receipts.coverage_unavailable("quarter", coverage_note)
+            receipts.coverage_unavailable("half", coverage_note)
+            receipts.short_circuit("period coverage failed before this filter ran")
             return NoResult(
                 query_class="summary",
                 reason="filter_not_supported",
+                metadata={"unsupported_filters": ["period_coverage"]},
                 notes=[coverage_note] if coverage_note else [],
             )
         period_execution_backed = True
+        receipts.applied("quarter")
+        receipts.applied("half")
     else:
         df = base_df
 
@@ -392,6 +418,19 @@ def build_team_record_result(
         start_date=start_date,
         end_date=end_date,
     )
+    for sample_filter in (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "threshold",
+    ):
+        receipts.applied(sample_filter)
+    if df.empty:
+        # Everything from here has nothing left to evaluate.
+        receipts.short_circuit("sample was already empty before this filter ran")
 
     clutch_executed = False
     if clutch:
@@ -408,9 +447,18 @@ def build_team_record_result(
             clutch_executed = True
 
     if with_player and without_player:
+        receipts.unsupported(
+            "with_player", "multi-player availability is outside this route's execution boundary"
+        )
+        receipts.unsupported(
+            "without_player",
+            "multi-player availability is outside this route's execution boundary",
+        )
+        receipts.short_circuit("route refused the combination before this filter ran")
         return NoResult(
             query_class="summary",
             reason="filter_not_supported",
+            metadata={"unsupported_filters": ["multi_player_availability"]},
             notes=[
                 "multi-player availability filters are not supported with current team record data"
             ],
@@ -425,6 +473,7 @@ def build_team_record_result(
             team=team,
             strict_team_match=True,
         )
+        receipts.applied("with_player")
 
     if without_player and not df.empty:
         df = filter_without_player(
@@ -435,7 +484,9 @@ def build_team_record_result(
             team=team,
             strict_team_match=True,
         )
+        receipts.applied("without_player")
 
+    schedule_sample_empty = df.empty
     df, schedule_notes = apply_schedule_context_filters(
         df,
         seasons,
@@ -447,11 +498,20 @@ def build_team_record_result(
     )
     if schedule_notes:
         # Data unavailable for schedule-context filter — honest no-result.
+        for filter_id in SCHEDULE_CONTEXT_FILTERS:
+            receipts.coverage_unavailable(filter_id, "; ".join(schedule_notes))
+        receipts.short_circuit("schedule-context coverage failed before this filter ran")
         return NoResult(
             query_class="summary",
             reason="filter_not_supported",
+            metadata={"unsupported_filters": ["schedule_context_coverage"]},
             notes=list(schedule_notes),
         )
+    if schedule_sample_empty:
+        receipts.short_circuit("sample was already empty before this filter ran")
+    else:
+        for filter_id in SCHEDULE_CONTEXT_FILTERS:
+            receipts.applied(filter_id)
 
     tied_period_rows = 0
     if period_execution_backed and not df.empty:
@@ -462,6 +522,7 @@ def build_team_record_result(
     if df.empty:
         if tied_period_rows:
             notes.append("period record excludes tied period windows from record totals")
+        receipts.short_circuit("sample was already empty before this filter ran")
         return _empty_sample_result("summary", notes=notes)
 
     rec = _compute_record(df)

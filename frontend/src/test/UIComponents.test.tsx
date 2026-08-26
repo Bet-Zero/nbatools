@@ -491,6 +491,93 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("says a query it could not fully read is unsupported, not a missing metric", () => {
+    // The refusal that replaced the substituted leaderboard. Part of the
+    // question had no supported meaning, so ranking the league would have
+    // answered something else. The card must say that, and must not name a
+    // metric the user never asked for.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          query_text: "best team while down two starters",
+          unsupported_filters: ["residual_query_content"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Question")).toBeInTheDocument();
+    expect(
+      screen.getByText(/has no supported meaning yet/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/play-by-play/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("blames a period coverage failure on the data for this question", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "team_record",
+          quarter: "4",
+          unsupported_filters: ["period_coverage"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(/period-level box scores/),
+    ).toBeInTheDocument();
+  });
+
+  it("blames a schedule-context coverage failure on the data for this question", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "player_game_summary",
+          back_to_back: true,
+          unsupported_filters: ["schedule_context_coverage"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(/schedule data that is not available/),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps opponent-quality copy scoped to this query, not to the product", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          unsupported_filters: ["opponent_quality"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unavailable Filter")).toBeInTheDocument();
+    expect(
+      screen.getByText(/could not be applied on the route that answers it/),
+    ).toBeInTheDocument();
+    // It does work with a named subject; never say the product cannot do it.
+    expect(
+      screen.getByText(/Celtics record against playoff teams/),
+    ).toBeInTheDocument();
+  });
+
   it("explains that an unevaluated filter never ran", () => {
     // The badge is gone because clutch never executed. Saying nothing would
     // make its absence look like an oversight.

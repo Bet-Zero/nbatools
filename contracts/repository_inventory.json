@@ -546,7 +546,7 @@
       "typo_partial_entity_behavior",
       "unsupported_subjective_narrative"
     ],
-    "raw_qa_case_count": 372,
+    "raw_qa_case_count": 380,
     "slice_case_counts": {
       "basic_public_availability": 7,
       "defensive_aliases": 8,

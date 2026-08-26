@@ -557,11 +557,22 @@ Leaderboard no-match behavior:
   metric) and refuses
 - two-player combined totals (`luka and kyrie combined points`) are not
   supported and refuse rather than answer for one player
-- subject-less questions carrying a condition a league-wide leaderboard cannot
-  represent refuse instead of ranking the league by a substituted metric. The
-  parser records every such condition in normalized parse state; a broad default
-  may fire only when the route can represent or has bound each one. Three
-  concept families are recognized:
+- a subject-less question is answered by a league-wide leaderboard only when the
+  leaderboard can account for **all** of it. Every content-bearing word must be
+  carried by ranking intent, sort direction, the population being ranked, the
+  requested metric, a time or season window, a supported qualifier, or plain
+  grammar. Anything left over refuses with
+  `metadata.unsupported_filters=["residual_query_content"]` rather than ranking
+  the league by a substituted metric — so `best team while down two starters`,
+  `best team at less than full strength`, and `which team won most while missing
+  half its rotation` all decline, even though none of that wording is in any
+  refusal vocabulary. The check is what *authorizes* the leaderboard; it is not a
+  list of phrases to reject
+- a metric word inside an unresolved condition is not a request to rank by that
+  metric. `scorer` in `best team when its leading scorer was out` does not
+  produce a scoring leaderboard
+- on top of that, three condition families are recognized by name so the refusal
+  can say something more specific than "part of this is unsupported":
   - player availability or absence, covering absence states (`suspended`,
     `shorthanded`, `depleted`), absence verbs (`does not play`, `sits out`,
     `misses games`) and absence prepositions (`without their star`, `with no
@@ -574,6 +585,9 @@ Leaderboard no-match behavior:
   These return `no_result` / `filter_not_supported` with
   `metadata.unsupported_filters` naming the condition
   (`unresolved_availability`, `unresolved_role_player`, `subjective_outcome`).
+  A condition that never bound to an entity also blocks routes a broad default
+  never reaches, so a question like `teams that thrive when key pieces are
+  unavailable` refuses rather than answering about an unrelated player.
   Questions whose metric is actually named (`top scorers this season`, `best
   offensive teams`, `teams with the most points per game`, `who is the top
   scorer this season`) are unaffected, as are team-scoped role questions

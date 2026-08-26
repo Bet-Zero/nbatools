@@ -49,13 +49,21 @@ acceptance of the answers.
 Machine-passing validation is not acceptance. Phase 1A candidate
 `69d9a1eff9abccd00b59004b0b7787d32fa560a3` passed every required local suite and
 was still rejected on independent review for two design defects that the suites
-were not shaped to catch. Two rules follow:
+were not shaped to catch. Its repair, `7d56a664`, passed every suite *including
+the two new tools written for those defects* and was rejected again — the guard
+had been restructured without changing the direction of its inference, and the
+new validator scored "all badges dropped" as clean. Three rules follow:
 
 - A phase item is complete only after independent review accepts its **exact
   head**, not after its tests go green.
 - When a validation tool cannot express a defect class, fix the tool or add one
   that can. Do not cite an unchanged aggregate from a tool that is blind to the
   defect as evidence the defect is gone.
+- A safety gate must be **fail-closed**: state what makes an answer *allowed*,
+  and refuse everything that does not meet it. A gate that refuses only what it
+  recognizes is fail-open no matter how its detections are stored, and a
+  validator that only checks for false claims will accept a build that has
+  destroyed all the true ones.
 
 ## Guardrails for every Phase 1 item
 

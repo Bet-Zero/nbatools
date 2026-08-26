@@ -190,10 +190,17 @@ _AVAILABILITY_PATTERNS = (
     re.compile(rf"\b(?:{_alternation(tuple(re.escape(t) for t in _ABSENCE_STATES))})\b"),
     # "does not play", "sits out", "misses time"
     re.compile(rf"\b(?:{_alternation(_ABSENCE_VERB_PHRASES)})"),
-    # "without their leading scorer", "missing starters", "with no stars"
+    # "without their leading scorer", "missing starters", "with no stars",
+    # "missing key players", "without his two best guys".
+    #
+    # The words between the preposition and the role noun are counted, not
+    # enumerated. Requiring each one to be a known determiner or qualifier made
+    # this a vocabulary list in disguise: "missing key players" failed only
+    # because "key" was not in it. A role noun a few words after an absence
+    # preposition is the same concept whatever fills the gap.
     re.compile(
         rf"\b(?:{_alternation(_ABSENCE_PREPOSITIONS)})"
-        rf"\s+(?:(?:{_ROLE_QUALIFIER_GROUP}|any|all|its|their|his|her|the)\s+)*"
+        rf"\s+(?:\w+\s+){{0,3}}"
         rf"{_ROLE_NOUN_GROUP}\b"
     ),
     re.compile(rf"\bwith\s+no\s+(?:{_ROLE_QUALIFIER_GROUP}\s+)?{_ROLE_NOUN_GROUP}\b"),

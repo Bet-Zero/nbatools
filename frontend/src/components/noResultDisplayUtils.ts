@@ -282,6 +282,8 @@ export function unsupportedBoundaryTitle(
   if (
     filters.includes("clutch_coverage") ||
     filters.includes("role_coverage") ||
+    filters.includes("period_coverage") ||
+    filters.includes("schedule_context_coverage") ||
     filters.includes("opponent_quality")
   ) {
     return "Unavailable Filter";
@@ -294,7 +296,8 @@ export function unsupportedBoundaryTitle(
   if (
     filters.includes("unresolved_availability") ||
     filters.includes("unresolved_role_player") ||
-    filters.includes("subjective_outcome")
+    filters.includes("subjective_outcome") ||
+    filters.includes("residual_query_content")
   ) {
     return "Unsupported Question";
   }
@@ -336,6 +339,12 @@ function unsupportedBoundaryMessage(
   if (filters.includes("clutch")) {
     return "Clutch on its own does not say who or what to measure. Add a player or team and a stat — for example “Tatum clutch stats”.";
   }
+  if (filters.includes("period_coverage")) {
+    return "Quarter and half splits need period-level box scores, which are not available for the games this question covers. Try the same question without the quarter or half wording.";
+  }
+  if (filters.includes("schedule_context_coverage")) {
+    return "Schedule-context filters \u2014 back-to-backs, days of rest, one-possession games, national TV \u2014 need schedule data that is not available for the games this question covers. Try the same question without that wording.";
+  }
   if (filters.includes("role_coverage")) {
     return "Starter and bench splits need trusted starter-role data, which is not available for the games this question covers. Try a season with full role coverage, or drop the starter/bench wording.";
   }
@@ -352,6 +361,12 @@ function unsupportedBoundaryMessage(
   }
   if (filters.includes("subjective_outcome")) {
     return "There is no agreed measure for how well a team coped or held up, so this cannot be ranked. Ask for a specific stat or record instead.";
+  }
+  // Part of the question had no supported meaning, so a league-wide
+  // leaderboard would have answered a different question. Say that, rather
+  // than ranking the league by a metric nobody asked for.
+  if (filters.includes("residual_query_content")) {
+    return "Part of this question has no supported meaning yet, so ranking the league would answer something you did not ask. Try a stat and a season \u2014 for example \u201ctop scorers this season\u201d.";
   }
   return null;
 }

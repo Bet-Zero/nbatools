@@ -108,9 +108,26 @@ selected route, or the result reason.
 
 #### Coverage of the receipt contract
 
-Receipts are currently produced by the routes that execute context filters:
-`player_game_finder`, `player_game_summary`, `season_leaders`, and
-`team_record`. **This is a bounded migration, not a universal guarantee.**
+Receipts are produced by the four routes that execute context filters. **This is
+a bounded migration, not a universal guarantee**, and the bound is machine-
+readable: `MIGRATED_ROUTE_FILTERS` in `commands/_filter_receipts.py` is the one
+list the docs, the route tests, and `tools/filter_receipt_validator.py` all
+read. A route named there must serialize a final state for every listed filter
+it was asked for, on **every** result it returns.
+
+Attachment is not a convention any route has to remember. `build_result` on each
+migrated route is wrapped in `@emits_filter_receipts`, which opens the ledger for
+the call and stamps it onto whatever the route returns. A `return` added later is
+instrumented by construction.
+
+| Route | Tracked filters | Natural path | Structured path | Success | `no_match` | Coverage failure | Short-circuit |
+| --- | --- | :-: | :-: | :-: | :-: | :-: | :-: |
+| `player_game_finder` | opponent, home_only, away_only, wins_only, losses_only, date_range, last_n, threshold, quarter, half, opponent_player, without_player, special_event, clutch, role | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `player_game_summary` | opponent, home_only, away_only, wins_only, losses_only, date_range, last_n, threshold, opponent_player, without_player, special_event, clutch, role, back_to_back, rest_days, one_possession, nationally_televised | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `season_leaders` | opponent, home_only, away_only, wins_only, losses_only, date_range, last_n, position_filter, clutch, role | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `team_record` | opponent, home_only, away_only, wins_only, losses_only, date_range, threshold, with_player, without_player, clutch, quarter, half, back_to_back, rest_days, one_possession, nationally_televised | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+Outside that table:
 
 - Where a route reports a receipt for a filter, that receipt is authoritative.
 - Where it does not — an unmigrated route, or a filter outside the tracked set —
@@ -120,6 +137,31 @@ Receipts are currently produced by the routes that execute context filters:
 Do not read this section as a claim that every filter on every route is
 execution-proven. Extending receipts to the remaining filter-capable routes is
 tracked, not done.
+
+##### Request detection
+
+A filter is declared when its value is neither `None` nor `False`. Truthiness is
+not the test: `rest_days = 0` is what `on no rest` parses to, and every other
+consumer of that slot reads it as `is not None`. A ledger that dropped it would
+have been silent about a filter the user asked for, which is the failure these
+receipts exist to prevent. Routes with nothing to hand over pass the `REQUESTED`
+sentinel.
+
+##### Badge contract
+
+For a migrated route:
+
+- `metadata.applied_filters` contains exactly the filters whose receipt is
+  `applied`.
+- `metadata.unevaluated_filters` contains supported requested filters whose
+  receipt is `not_evaluated`.
+- Coverage failures and unsupported combinations report through
+  `metadata.unsupported_filters` with a stable blocker id, and are never
+  relabelled as applied.
+- The request itself stays available in its own metadata fields either way.
+
+Dropping a badge is not a safe default. A filter with an `applied` receipt keeps
+its badge; removing it destroys an accurate description of work the engine did.
 
 #### Requested context and blockers
 

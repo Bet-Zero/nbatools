@@ -2,8 +2,10 @@ import pandas as pd
 
 from nbatools.commands._condition_utils import apply_stat_conditions
 from nbatools.commands._filter_receipts import (
-    FilterExecutionLedger,
+    REQUESTED,
+    active_ledger,
     clutch_coverage_blocked,
+    emits_filter_receipts,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
@@ -147,6 +149,7 @@ def _apply_filters(
     return out
 
 
+@emits_filter_receipts
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -181,7 +184,9 @@ def build_result(
     notes: list[str] = []
 
     # Execution receipts: only this route may say a filter here actually ran.
-    receipts = FilterExecutionLedger()
+    # The decorator attaches whatever this ledger holds to every result the
+    # route returns, so no exit below has to remember to carry it.
+    receipts = active_ledger()
     receipts.declare_all(
         {
             "opponent": opponent,
@@ -191,7 +196,9 @@ def build_result(
             "losses_only": losses_only,
             "date_range": start_date or end_date,
             "last_n": last_n,
-            "threshold": (min_value is not None or max_value is not None or conditions),
+            "threshold": REQUESTED
+            if (min_value is not None or max_value is not None or conditions)
+            else None,
             "quarter": quarter,
             "half": half,
             "opponent_player": opponent_player,
@@ -203,6 +210,7 @@ def build_result(
     )
 
     if home_only and away_only:
+        receipts.short_circuit("route rejected the request before any filter ran")
         return NoResult(
             query_class="finder",
             reason="unsupported",
@@ -211,6 +219,7 @@ def build_result(
         )
 
     if wins_only and losses_only:
+        receipts.short_circuit("route rejected the request before any filter ran")
         return NoResult(
             query_class="finder",
             reason="unsupported",
@@ -219,6 +228,7 @@ def build_result(
         )
 
     if sort_by not in {"game_date", "stat"}:
+        receipts.short_circuit("route rejected the request before any filter ran")
         return NoResult(
             query_class="finder",
             reason="unsupported",
@@ -233,6 +243,8 @@ def build_result(
     except FileNotFoundError:
         if clutch:
             notes.append(build_clutch_filter_coverage_note("missing player game dataset"))
+        for filter_id in receipts.declared_ids():
+            receipts.coverage_unavailable(filter_id, "missing player game dataset")
         return NoResult(query_class="finder", reason="no_data", notes=notes)
 
     if period_filter_requested:
@@ -247,9 +259,13 @@ def build_result(
                     f"window={period_window_label(quarter=quarter, half=half)}"
                 ),
             )
+            receipts.coverage_unavailable("quarter", coverage_note)
+            receipts.coverage_unavailable("half", coverage_note)
+            receipts.short_circuit("period coverage failed before this filter ran")
             return NoResult(
                 query_class="finder",
                 reason="filter_not_supported",
+                metadata={"unsupported_filters": ["period_coverage"]},
                 notes=[coverage_note] if coverage_note else [],
             )
         df = filter_period_rows(period_df, quarter=quarter, half=half)
@@ -333,9 +349,13 @@ def build_result(
                 half=half,
                 reason=coverage_failure,
             )
+            receipts.coverage_unavailable("quarter", coverage_note)
+            receipts.coverage_unavailable("half", coverage_note)
+            receipts.short_circuit("period coverage failed before this filter ran")
             return NoResult(
                 query_class="finder",
                 reason="filter_not_supported",
+                metadata={"unsupported_filters": ["period_coverage"]},
                 notes=[coverage_note] if coverage_note else [],
             )
 

@@ -307,9 +307,10 @@ route that filters recorded an execution receipt proving it ran — a final
 later one is reached. Filters that were requested and supported but never
 reached appear in `metadata.unevaluated_filters` rather than being reported as
 refused. What was requested stays visible in its own metadata field. Receipts
-currently cover `player_game_finder`, `player_game_summary`, `season_leaders`,
-and `team_record`; see [result_contracts.md](result_contracts.md) §1.3 for the
-exact coverage boundary.
+cover `player_game_finder`, `player_game_summary`, `season_leaders`, and
+`team_record` — every tracked filter on those four, on every result path they
+return. See [result_contracts.md](result_contracts.md) §1.3 for the exact
+route/filter matrix and what is deliberately outside it.
 
 - Clutch filters execute on `player_game_summary`, `player_game_finder`,
   `team_record`, and `season_leaders` when trusted `player_game_clutch_stats`

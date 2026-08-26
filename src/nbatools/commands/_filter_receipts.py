@@ -17,7 +17,11 @@ state, the selected route, or the final result reason.
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
+from functools import wraps
+from typing import Any, TypeVar
 
 # ---------------------------------------------------------------------------
 # Receipt states
@@ -41,6 +45,10 @@ UNPROVEN_STATES = frozenset({UNSUPPORTED, UNRESOLVED, NOT_EVALUATED, COVERAGE_UN
 
 #: Metadata key carrying the serialized ledger.
 RECEIPTS_KEY = "filter_receipts"
+
+#: Sentinel for "this filter was requested" when the route has no value to pass.
+#: Truthy, so it survives any caller that still tests the argument itself.
+REQUESTED = True
 
 
 class FilterExecutionLedger:
@@ -66,18 +74,28 @@ class FilterExecutionLedger:
     # -- declaration ------------------------------------------------------
 
     def declare(self, filter_id: str, requested: Any) -> None:
-        """Record that *filter_id* was requested. Falsy *requested* is ignored.
+        """Record that *filter_id* was requested.
 
-        ``0`` and ``False`` are genuinely "not requested" for every filter this
-        ledger tracks, so plain truthiness is the right test.
+        ``None`` and ``False`` mean "not requested" - the first is an unset
+        optional, the second an unset flag. Every other value counts, ``0``
+        included: ``rest_days=0`` is what ``on no rest`` parses to, and every
+        other consumer of that slot tests ``rest_days is not None``. Reading it
+        as absent dropped a requested filter out of the ledger entirely, which
+        is exactly the silence these receipts exist to prevent.
+
+        Pass :data:`REQUESTED` when a route has no value to hand over but knows
+        the filter was asked for.
         """
-        if not requested:
+        if requested is None or requested is False:
             return
         self._entries.setdefault(filter_id, {"state": NOT_EVALUATED, "detail": None})
 
     def declare_all(self, requests: dict[str, Any]) -> None:
         for filter_id, requested in requests.items():
             self.declare(filter_id, requested)
+
+    def declared_ids(self) -> list[str]:
+        return list(self._entries)
 
     # -- outcomes ---------------------------------------------------------
 
@@ -182,3 +200,205 @@ def clutch_coverage_blocked(
         metadata=metadata,
         notes=[note],
     )
+
+
+# ---------------------------------------------------------------------------
+# Centralized attachment
+# ---------------------------------------------------------------------------
+
+# The route currently recording receipts. A route has many exits - validation
+# refusals, coverage refusals, empty samples, the successful answer - and
+# remembering ``metadata=receipts.to_metadata()`` at each one is a rule that
+# holds only until someone adds the next ``return``. The decorator below closes
+# every exit at once, including exits that do not exist yet.
+_ACTIVE_LEDGER: ContextVar[FilterExecutionLedger | None] = ContextVar(
+    "active_filter_ledger", default=None
+)
+
+_R = TypeVar("_R")
+
+
+def active_ledger() -> FilterExecutionLedger:
+    """The ledger for the route currently executing.
+
+    Returns a detached ledger outside any :func:`emits_filter_receipts` route so
+    helpers stay callable on their own; nothing reads a detached ledger, so it
+    can neither leak receipts nor claim work.
+    """
+    ledger = _ACTIVE_LEDGER.get()
+    return ledger if ledger is not None else FilterExecutionLedger()
+
+
+def attach_receipts(result: _R, ledger: FilterExecutionLedger) -> _R:
+    """Stamp *ledger* onto *result*'s metadata. Idempotent."""
+    metadata = getattr(result, "metadata", None)
+    if not isinstance(metadata, dict):
+        return result
+    metadata.update(ledger.to_metadata())
+    return result
+
+
+@contextmanager
+def receipt_scope() -> Iterator[FilterExecutionLedger]:
+    ledger = FilterExecutionLedger()
+    token = _ACTIVE_LEDGER.set(ledger)
+    try:
+        yield ledger
+    finally:
+        _ACTIVE_LEDGER.reset(token)
+
+
+def emits_filter_receipts(fn: Callable[..., _R]) -> Callable[..., _R]:
+    """Route decorator: every result this route returns carries its receipts.
+
+    The route opens no ledger of its own - it calls :func:`active_ledger` - and
+    returns results however it likes. Attachment happens here, once, on the way
+    out, so a return path added later is instrumented by construction rather
+    than by remembering.
+    """
+
+    @wraps(fn)
+    def wrapper(*args: Any, **kwargs: Any) -> _R:
+        with receipt_scope() as ledger:
+            result = fn(*args, **kwargs)
+        return attach_receipts(result, ledger)
+
+    return wrapper
+
+
+# ---------------------------------------------------------------------------
+# The published migration contract
+# ---------------------------------------------------------------------------
+
+#: Route -> the filter ids that route declares, marks, and serializes.
+#:
+#: This is the contract the docs, the validator and the route tests all read, so
+#: "which routes are migrated, for which filters" has exactly one answer. A route
+#: listed here must serialize a final state for every one of these filters it was
+#: asked for, on *every* result it returns - success, no_match, coverage failure
+#: and short-circuit alike. Adding a filter to a route means adding it here and
+#: marking it where it runs; the validator fails until both are true.
+MIGRATED_ROUTE_FILTERS: dict[str, tuple[str, ...]] = {
+    "player_game_finder": (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "last_n",
+        "threshold",
+        "quarter",
+        "half",
+        "opponent_player",
+        "without_player",
+        "special_event",
+        "clutch",
+        "role",
+    ),
+    "player_game_summary": (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "last_n",
+        "threshold",
+        "opponent_player",
+        "without_player",
+        "special_event",
+        "clutch",
+        "role",
+        "back_to_back",
+        "rest_days",
+        "one_possession",
+        "nationally_televised",
+    ),
+    "season_leaders": (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "last_n",
+        "position_filter",
+        "clutch",
+        "role",
+    ),
+    "team_record": (
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "date_range",
+        "threshold",
+        "with_player",
+        "without_player",
+        "clutch",
+        "quarter",
+        "half",
+        "back_to_back",
+        "rest_days",
+        "one_possession",
+        "nationally_televised",
+    ),
+}
+
+#: Every legal final state for a declared filter.
+RECEIPT_STATES = frozenset({APPLIED, UNSUPPORTED, UNRESOLVED, NOT_EVALUATED, COVERAGE_UNAVAILABLE})
+
+
+def _present(value: Any) -> bool:
+    """A route argument that was actually supplied.
+
+    ``is not None`` and ``is not False``, matching :meth:`FilterExecutionLedger.declare`
+    so a caller can predict from the route kwargs exactly which filters the
+    ledger will hold.
+    """
+    return value is not None and value is not False
+
+
+#: filter id -> how to read "was this requested?" out of a route's kwargs.
+_REQUEST_TESTS: dict[str, Any] = {
+    "opponent": lambda kw: _present(kw.get("opponent")),
+    "home_only": lambda kw: _present(kw.get("home_only")),
+    "away_only": lambda kw: _present(kw.get("away_only")),
+    "wins_only": lambda kw: _present(kw.get("wins_only")),
+    "losses_only": lambda kw: _present(kw.get("losses_only")),
+    "date_range": lambda kw: _present(kw.get("start_date")) or _present(kw.get("end_date")),
+    "last_n": lambda kw: _present(kw.get("last_n")),
+    "threshold": lambda kw: (
+        kw.get("min_value") is not None
+        or kw.get("max_value") is not None
+        or bool(kw.get("conditions"))
+    ),
+    "quarter": lambda kw: _present(kw.get("quarter")),
+    "half": lambda kw: _present(kw.get("half")),
+    "opponent_player": lambda kw: _present(kw.get("opponent_player")),
+    "with_player": lambda kw: _present(kw.get("with_player")),
+    "without_player": lambda kw: _present(kw.get("without_player")),
+    "special_event": lambda kw: _present(kw.get("special_event")),
+    "clutch": lambda kw: _present(kw.get("clutch")),
+    "role": lambda kw: _present(kw.get("role")),
+    "position_filter": lambda kw: _present(kw.get("position")),
+    "back_to_back": lambda kw: _present(kw.get("back_to_back")),
+    "rest_days": lambda kw: _present(kw.get("rest_days")),
+    "one_possession": lambda kw: _present(kw.get("one_possession")),
+    "nationally_televised": lambda kw: _present(kw.get("nationally_televised")),
+}
+
+
+def requested_filter_ids(route: str, kwargs: dict[str, Any]) -> set[str]:
+    """The tracked filters *route* was asked for, given the arguments it got.
+
+    Lets a caller predict the ledger from the request, which is what makes
+    "no declared filter is silently missing" checkable from outside the route.
+    """
+    return {
+        filter_id
+        for filter_id in MIGRATED_ROUTE_FILTERS.get(route, ())
+        if _REQUEST_TESTS[filter_id](kwargs)
+    }

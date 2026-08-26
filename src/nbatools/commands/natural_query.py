@@ -2,10 +2,13 @@ import re
 
 import pandas as pd
 
+from nbatools.commands._broad_default_authorization import (
+    BroadDefaultAuthorization,
+    authorize_broad_default,
+)
 from nbatools.commands._condition_semantics import (
     blocker_ids,
     detect_requested_conditions,
-    unconsumed_conditions,
 )
 from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
@@ -810,36 +813,51 @@ def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Intent preservation: broad defaults may not delete a requested condition
+# Intent preservation: a broad default must be earned, not merely unblocked
 # ---------------------------------------------------------------------------
 
 
-def _unconsumed_broad_default_conditions(parsed: dict, route: str) -> list:
-    """Conditions *route* would silently drop if it answered this question.
+def _broad_default_route(parsed: dict) -> tuple[str, bool]:
+    """The route the metric-only leaderboard default would actually pick.
 
-    A default may supply a detail the user omitted. It may not delete one they
-    stated. ``season_leaders`` / ``season_team_leaders`` rank the league by a
-    single metric and can represent none of the semantic condition kinds, so any
-    condition still unconsumed here would vanish from the answer.
-
-    Reads the normalized ledger built during parsing rather than re-matching the
-    query text, so a concept the detectors recognized can never be forgotten on
-    the way to a route.
-
-    Scoped to subject-less queries, which is the precondition every broad
-    default shares. With a resolved player or team the query reaches a specific
-    route that owns its own filter-execution checks - ``Lakers record without
-    LeBron`` is answered by ``team_record``, not defaulted. The conditions stay
-    recorded in parse state either way; only this gate is narrowed.
+    Mirrors the branch structure below so authorization is decided against the
+    route that would answer, not against a stand-in.
     """
-    if any(
-        parsed.get(key) for key in ("player", "team", "player_a", "player_b", "team_a", "team_b")
-    ):
-        return []
-    conditions = parsed.get("requested_conditions") or []
-    if not conditions:
-        return []
-    return unconsumed_conditions(list(conditions), route)
+    if parsed.get("team_leaderboard_intent"):
+        return "season_team_leaders", True
+    q = parsed.get("normalized_query") or ""
+    if re.search(r"\bteams?\b", q):
+        return "season_team_leaders", True
+    return "season_leaders", False
+
+
+def _broad_default_authorization(parsed: dict) -> BroadDefaultAuthorization:
+    """Whether a league-wide leaderboard may stand in for this question.
+
+    Fail-closed. The leaderboard runs only when every content-bearing span of
+    the query is accounted for by something the leaderboard implements; anything
+    left over is content it would delete. A detector that misses a phrase now
+    withholds authorization instead of granting it, because authorization is
+    never inferred from the absence of a match.
+    """
+    route, team_scope = _broad_default_route(parsed)
+    return authorize_broad_default(parsed, route=route, team_scope=team_scope)
+
+
+def _unresolvable_conditions(parsed: dict) -> list:
+    """Requested conditions nothing in the query ever bound to an entity.
+
+    Backstop for the routes a broad default never reaches. ``teams that thrive
+    when key pieces are unavailable`` resolves "key" to a *player* named Key, so
+    the query is no longer subject-less and the default gate above does not
+    apply - yet no route can filter by "key pieces are unavailable" either, and
+    answering it as a player summary deletes the condition silently.
+
+    Only unbound conditions qualify. A bound one names a real entity and the
+    routes that execute availability filters keep answering it exactly as
+    before, so this cannot refuse ``Lakers record without LeBron``.
+    """
+    return [c for c in (parsed.get("requested_conditions") or []) if not c.is_bound]
 
 
 def _unsupported_route_kwargs(
@@ -2893,14 +2911,15 @@ def _finalize_route(parsed: dict) -> dict:
             "opponent": opponent,
         }
         notes.append("league_threshold_games: listing all games at or above the threshold")
-    elif unconsumed := _unconsumed_broad_default_conditions(
-        parsed, "season_team_leaders" if team_leaderboard_intent else "season_leaders"
-    ):
-        # The broad defaults below cannot represent these conditions, so letting
-        # one answer would delete them from the question. Refuse on the route
-        # that would have answered the wrong question instead.
-        route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
-        blocking = blocker_ids(unconsumed)
+    elif (_lb := metric_only_leaderboard_default(parsed))[0] and not (
+        _auth := _broad_default_authorization(parsed)
+    ).authorized:
+        # The leaderboard default would have answered here. It may only do that
+        # when the whole question is representable as a league-wide ranking, and
+        # this one is not: something in it has no component to carry it. Refuse
+        # on the route that would have answered the wrong question.
+        route, _ = _broad_default_route(parsed)
+        blocking = _auth.blocker_ids
         route_kwargs = _unsupported_route_kwargs(
             blocking[0],
             season=season,
@@ -2910,13 +2929,19 @@ def _finalize_route(parsed: dict) -> dict:
             end_date=end_date,
             season_type=season_type,
         )
-        # Report every unconsumed condition, not only the primary blocker.
+        # Report every blocker, not only the primary one, plus the evidence that
+        # explains the decision back to the caller.
         route_kwargs["unsupported_filters"] = blocking
-        route_kwargs["requested_conditions"] = [c.to_dict() for c in unconsumed]
+        route_kwargs["broad_default_authorization"] = _auth.to_dict()
+        if _auth.unconsumed:
+            route_kwargs["requested_conditions"] = [c.to_dict() for c in _auth.unconsumed]
+            unaccounted = sorted({c.surface for c in _auth.unconsumed})
+        else:
+            unaccounted = list(dict.fromkeys(_auth.residual))
         notes.append(
             "unsupported_boundary: this question asks for "
-            f"{', '.join(sorted({c.surface for c in unconsumed}))}, which a league-wide "
-            "leaderboard cannot express; no substituted leaderboard was returned"
+            f"{', '.join(unaccounted)}, which a league-wide leaderboard cannot "
+            "express; no substituted leaderboard was returned"
         )
     elif (
         not player
@@ -2949,8 +2974,9 @@ def _finalize_route(parsed: dict) -> dict:
             f"{'clutch' if clutch else 'opponent-quality'} context was requested with no "
             "player, team, or stat to apply it to; no broad points leaderboard was returned"
         )
-    elif (_lb := metric_only_leaderboard_default(parsed))[0]:
-        # No subject entity → league-wide leaderboard default (spec §15.2)
+    elif _lb[0]:
+        # No subject entity → league-wide leaderboard default (spec §15.2), now
+        # positively authorized by the gate above.
         notes.append(_lb[1])
         # For leaderboards, prefer multi-season params if available
         lb_season = season
@@ -3409,6 +3435,31 @@ def _finalize_route(parsed: dict) -> dict:
         _fires, _note = team_threshold_finder_default(parsed)
         if _fires:
             notes.append(_note)
+    elif unresolvable := _unresolvable_conditions(parsed):
+        # Nothing matched a supported pattern, but the question was not
+        # unintelligible: it asked for a condition nothing could bind. Saying
+        # which condition beats "could not map query to a supported pattern",
+        # and it keeps the blocker stable for questions like "how do teams fare"
+        # that carry a condition and no ranking intent to hang it on.
+        route, _ = _broad_default_route(parsed)
+        markers = blocker_ids(unresolvable)
+        route_kwargs = _unsupported_route_kwargs(
+            markers[0],
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        route_kwargs["unsupported_filters"] = markers
+        route_kwargs["requested_conditions"] = [c.to_dict() for c in unresolvable]
+        notes.append(
+            "unsupported_boundary: this question depends on "
+            f"{', '.join(sorted({c.surface for c in unresolvable}))}, which never "
+            "resolved to anything the data can filter by; no substituted answer "
+            "was returned"
+        )
     else:
         raise ValueError(
             "Could not map query to a supported pattern yet. "
@@ -3478,6 +3529,22 @@ def _finalize_route(parsed: dict) -> dict:
             f"{', '.join(unexecuted_markers)} but has no execution path for it; "
             "no unfiltered fallback was returned"
         )
+
+    # Backstop: a condition nothing ever bound cannot be executed by any route,
+    # so no route may answer as though it had been. Applied only where routing
+    # produced an ordinary answer - an existing, more specific refusal already
+    # says something truer about the same query and keeps its own copy.
+    if not route_kwargs.get("unsupported_filters"):
+        if unresolvable := _unresolvable_conditions(parsed):
+            markers = blocker_ids(unresolvable)
+            route_kwargs["unsupported_filters"] = markers
+            route_kwargs["requested_conditions"] = [c.to_dict() for c in unresolvable]
+            notes.append(
+                "unsupported_boundary: this question depends on "
+                f"{', '.join(sorted({c.surface for c in unresolvable}))}, which never "
+                "resolved to anything the data can filter by; no unfiltered fallback "
+                "was returned"
+            )
 
     out = dict(parsed)
     out["route"] = route

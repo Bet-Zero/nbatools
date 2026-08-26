@@ -5,8 +5,10 @@ import unicodedata
 import pandas as pd
 
 from nbatools.commands._filter_receipts import (
-    FilterExecutionLedger,
+    REQUESTED,
+    active_ledger,
     clutch_coverage_blocked,
+    emits_filter_receipts,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.aggregate_metrics import (
@@ -112,6 +114,15 @@ _DASH_TRANSLATION = str.maketrans(
         "\u2015": "-",
         "\u2212": "-",
     }
+)
+
+
+#: Schedule-context filters this route declares, marks, and reports together.
+SCHEDULE_CONTEXT_FILTERS = (
+    "back_to_back",
+    "rest_days",
+    "one_possession",
+    "nationally_televised",
 )
 
 
@@ -225,6 +236,7 @@ def _build_game_log_section(df: pd.DataFrame) -> pd.DataFrame:
     return game_log
 
 
+@emits_filter_receipts
 def build_result(
     season: str | None = None,
     start_season: str | None = None,
@@ -259,7 +271,9 @@ def build_result(
     notes: list[str] = []
 
     # Execution receipts: only this route may say a filter here actually ran.
-    receipts = FilterExecutionLedger()
+    # The decorator attaches whatever this ledger holds to every result the
+    # route returns, so no exit below has to remember to carry it.
+    receipts = active_ledger()
     receipts.declare_all(
         {
             "opponent": opponent,
@@ -269,7 +283,8 @@ def build_result(
             "losses_only": losses_only,
             "date_range": start_date or end_date,
             "last_n": last_n,
-            "threshold": min_value is not None or max_value is not None,
+            "threshold": REQUESTED if (min_value is not None or max_value is not None) else None,
+            "opponent_player": opponent_player,
             "without_player": without_player,
             "special_event": special_event,
             "clutch": clutch,
@@ -301,6 +316,8 @@ def build_result(
                     nationally_televised=nationally_televised,
                 )
             )
+            for filter_id in receipts.declared_ids():
+                receipts.coverage_unavailable(filter_id, "missing player game dataset")
             return NoResult(query_class="summary", reason="no_data", notes=notes)
 
         required = [
@@ -351,13 +368,32 @@ def build_result(
             start_date=start_date,
             end_date=end_date,
         )
+        for sample_filter in (
+            "opponent",
+            "home_only",
+            "away_only",
+            "wins_only",
+            "losses_only",
+            "date_range",
+            "last_n",
+            "threshold",
+        ):
+            receipts.applied(sample_filter)
+
+        # Everything from here runs against whatever survived above. An empty
+        # sample means these filters have nothing to evaluate - they are not
+        # refused, they simply never ran.
+        if df.empty:
+            receipts.short_circuit("sample was already empty before this filter ran")
 
         # Cross-reference filters: opponent_player and without_player
         if opponent_player and not df.empty:
             df = filter_by_opponent_player(df, opponent_player, seasons, season_type)
+            receipts.applied("opponent_player")
 
         if without_player and not df.empty:
             df = filter_without_player(df, without_player, seasons, season_type, team=team)
+            receipts.applied("without_player")
     else:
         _player_arc_seasons = None
         df = df.copy()
@@ -366,6 +402,7 @@ def build_result(
 
     if special_event and not df.empty:
         df = df[_flag_special_event(df, special_event)].copy()
+        receipts.applied("special_event")
 
     clutch_executed = False
     if clutch:
@@ -383,6 +420,7 @@ def build_result(
             receipts.applied("clutch")
             clutch_executed = True
 
+    schedule_sample_empty = df.empty
     df, schedule_notes = apply_schedule_context_filters(
         df,
         seasons,
@@ -394,22 +432,40 @@ def build_result(
     )
     if schedule_notes:
         # Data unavailable for schedule-context filter — honest no-result.
+        for filter_id in SCHEDULE_CONTEXT_FILTERS:
+            receipts.coverage_unavailable(filter_id, "; ".join(schedule_notes))
+        receipts.short_circuit("schedule-context coverage failed before this filter ran")
         return NoResult(
             query_class="summary",
             reason="filter_not_supported",
+            metadata={"unsupported_filters": ["schedule_context_coverage"]},
             notes=list(schedule_notes),
         )
+    if schedule_sample_empty:
+        # The call above had nothing to filter, so it proved nothing about these
+        # filters. Leave them where short_circuit put them.
+        receipts.short_circuit("sample was already empty before this filter ran")
+    else:
+        for filter_id in SCHEDULE_CONTEXT_FILTERS:
+            receipts.applied(filter_id)
 
-    df, role_note = apply_player_role_filter(df, seasons, season_type, role)
-    if role_note:
-        # Role data unavailable — honest no-result.
-        return NoResult(
-            query_class="summary",
-            reason="filter_not_supported",
-            notes=[role_note],
-        )
+    if role and df.empty:
+        receipts.short_circuit("sample was already empty before this filter ran")
+    else:
+        df, role_note = apply_player_role_filter(df, seasons, season_type, role)
+        if role_note:
+            # Role data unavailable — honest no-result.
+            receipts.coverage_unavailable("role", role_note)
+            return NoResult(
+                query_class="summary",
+                reason="filter_not_supported",
+                metadata={"unsupported_filters": ["role_coverage"]},
+                notes=[role_note],
+            )
+        receipts.applied("role")
 
     if df.empty:
+        receipts.short_circuit("sample was already empty before this filter ran")
         return NoResult(query_class="summary", notes=notes)
 
     team_df = load_team_games_for_seasons(seasons, season_type)

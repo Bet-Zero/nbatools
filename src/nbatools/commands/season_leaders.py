@@ -5,8 +5,9 @@ from pathlib import Path
 import pandas as pd
 
 from nbatools.commands._filter_receipts import (
-    FilterExecutionLedger,
+    active_ledger,
     clutch_coverage_blocked,
+    emits_filter_receipts,
 )
 from nbatools.commands._seasons import resolve_seasons
 from nbatools.commands.data_utils import (
@@ -728,6 +729,7 @@ def _load_roster_experience(seasons: list[str]) -> pd.DataFrame:
     return rosters.drop_duplicates(subset=["season", "player_id"])
 
 
+@emits_filter_receipts
 def build_result(
     season: str | None = None,
     stat: str = "pts",
@@ -764,7 +766,9 @@ def build_result(
     multi_season = len(seasons) > 1
 
     # Execution receipts: only this route may say a filter here actually ran.
-    receipts = FilterExecutionLedger()
+    # The decorator attaches whatever this ledger holds to every result the
+    # route returns, so no exit below has to remember to carry it.
+    receipts = active_ledger()
     receipts.declare_all(
         {
             "opponent": opponent,
@@ -827,6 +831,8 @@ def build_result(
             frames.append(data_read_csv(basic_path))
 
     if not frames:
+        for filter_id in receipts.declared_ids():
+            receipts.coverage_unavailable(filter_id, "missing player game logs for the request")
         return NoResult(query_class="leaderboard", reason="no_data")
 
     basic = pd.concat(frames, ignore_index=True)
@@ -882,6 +888,7 @@ def build_result(
     if team is not None and "team_abbr" in basic.columns:
         basic = basic[basic["team_abbr"].astype(str).str.upper() == team.upper()].copy()
         if basic.empty:
+            receipts.short_circuit("sample was already empty before this filter ran")
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
@@ -912,7 +919,6 @@ def build_result(
         return NoResult(
             query_class="leaderboard",
             reason="no_match",
-            metadata=receipts.to_metadata(),
             notes=["No games matched the specified filters"],
         )
 
@@ -921,6 +927,10 @@ def build_result(
     position_filtered = False
     if position_codes is not None:
         roster_pos = _load_roster_positions(seasons)
+        if roster_pos.empty or "player_id" not in basic.columns:
+            receipts.coverage_unavailable(
+                "position_filter", "missing roster position data for the requested seasons"
+            )
         if not roster_pos.empty and "player_id" in basic.columns:
             eligible_ids = roster_pos[roster_pos["position"].isin(position_codes)][
                 "player_id"
@@ -933,7 +943,6 @@ def build_result(
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
-                metadata=receipts.to_metadata(),
             )
 
     # Starter/bench role filtering: every requested player-game must have a
@@ -956,10 +965,7 @@ def build_result(
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                metadata={
-                    "unsupported_filters": ["role_coverage"],
-                    **receipts.to_metadata(),
-                },
+                metadata={"unsupported_filters": ["role_coverage"]},
                 notes=[note],
             )
         # The game logs carry an untrusted native starter_flag; rename the
@@ -988,10 +994,7 @@ def build_result(
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
-                metadata={
-                    "unsupported_filters": ["role_coverage"],
-                    **receipts.to_metadata(),
-                },
+                metadata={"unsupported_filters": ["role_coverage"]},
                 notes=[note],
             )
         trusted = pd.to_numeric(work["_role_source_trusted"], errors="coerce").fillna(0).eq(1)
@@ -1008,7 +1011,6 @@ def build_result(
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
-                metadata=receipts.to_metadata(),
                 notes=[f"No {role} games matched the specified filters"],
             )
 
@@ -1025,6 +1027,7 @@ def build_result(
             ["season", "player_id"]
         ].drop_duplicates()
         if experience_pairs.empty:
+            receipts.short_circuit("experience data was unavailable before this filter ran")
             return NoResult(
                 query_class="leaderboard",
                 reason="filter_not_supported",
@@ -1039,6 +1042,7 @@ def build_result(
             basic = basic[basic["player_id"].isin(experience_pairs["player_id"].unique())].copy()
         rookies_filtered = True
         if basic.empty:
+            receipts.short_circuit("sample was already empty before this filter ran")
             return NoResult(
                 query_class="leaderboard",
                 reason="no_match",
@@ -1060,7 +1064,6 @@ def build_result(
                 return NoResult(
                     query_class="leaderboard",
                     reason="no_match",
-                    metadata=receipts.to_metadata(),
                 )
             df = _build_from_clutch_rows(clutch_rows)
             receipts.applied("clutch")

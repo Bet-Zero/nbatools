@@ -8542,14 +8542,14 @@ cases:
         - role_based_player_reference
     answer_text_policy: no_answer_text_expected
     expected_status: no_result
-    expected_route: season_leaders
+    expected_route: season_team_leaders
     expected_reason: filter_not_supported
     expected_shape: no_result
     expected_sections: []
     hard_assertions:
       - path: result.metadata.unsupported_filters.0
         equals: unresolved_availability
-    review_notes: "Previously produced an unexplained unrouted error; must now be a typed, explained refusal."
+    review_notes: "Previously produced an unexplained unrouted error; must now be a typed, explained refusal. The refusal is attributed to season_team_leaders because the question names teams - the route that would have answered wrongly is the one that reports the refusal."
     manual_review:
       status: expected_unsupported
       tags:
@@ -9078,4 +9078,270 @@ cases:
     manual_review:
       status: expected_unsupported
       tags:
+        - no_broad_fallback
+
+  # -------------------------------------------------------------------------
+  # Fail-closed broad-default authorization
+  #
+  # None of the wording below appears in any condition vocabulary. They are here
+  # to prove the refusal comes from the leaderboard failing to account for the
+  # whole question, not from a detector recognizing a phrase - so they must not
+  # be "fixed" later by adding their words to a detector.
+  # -------------------------------------------------------------------------
+
+  - id: best_team_down_two_starters
+    query: "best team while down two starters"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unaccounted_query_content
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - residual_query_content
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: residual_query_content
+    review_notes: "Out-of-vocabulary residual. On 7d56a664 this returned a populated 10-row team points-per-game leaderboard."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: best_team_less_than_full_strength
+    query: "best team at less than full strength"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unaccounted_query_content
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - residual_query_content
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_team_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: residual_query_content
+    review_notes: "Second out-of-vocabulary residual, phrased with no absence verb at all."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  - id: top_scorers_when_defense_collapses
+    query: "top scorers when the defense collapses"
+    category: unsupported_boundary
+    priority: p1
+    acceptance:
+      family: unsupported_subjective_narrative
+      variant: short
+      concept: unaccounted_query_content
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: unrouted_boundary
+      qualifier_model:
+        - residual_query_content
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: residual_query_content
+    review_notes: "Player-side residual: the metric is real and anchored, the game-state condition is not representable."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - unsupported_boundary
+        - no_broad_fallback
+
+  # -------------------------------------------------------------------------
+  # Positive authorization controls: fully accounted leaderboards still answer
+  # -------------------------------------------------------------------------
+
+  - id: authorized_leaderboard_top_scorers_home
+    query: "top scorers at home this season"
+    category: leaderboard
+    priority: p0
+    acceptance:
+      family: leaderboards
+      variant: canonical
+      concept: fully_accounted_leaderboard
+      public_surface: true
+      review_role: representative
+      intent_model: season_leaders
+      qualifier_model:
+        - location
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: location
+        label: Location
+        value: Home
+    expected_sections:
+      - leaderboard
+    review_notes: "Positive control: ranking intent, metric, population, location qualifier and season window account for every word, and the location badge is receipt-backed."
+    manual_review:
+      status: unreviewed
+      tags:
+        - authorized_broad_default
+
+  - id: authorized_leaderboard_guards_position
+    query: "top scorers among guards this season"
+    category: leaderboard
+    priority: p1
+    acceptance:
+      family: leaderboards
+      variant: canonical
+      concept: fully_accounted_leaderboard
+      public_surface: true
+      review_role: representative
+      intent_model: season_leaders
+      qualifier_model:
+        - position
+    expected_status: ok
+    expected_route: season_leaders
+    expected_shape: leaderboard_table
+    expected_sections:
+      - leaderboard
+    review_notes: "Positive control with a supported qualifier: 'among guards' is accounted for by the position filter, which the receipt proves ran."
+    manual_review:
+      status: unreviewed
+      tags:
+        - authorized_broad_default
+
+  # -------------------------------------------------------------------------
+  # Mixed-filter receipt assertions on more than one migrated route
+  # -------------------------------------------------------------------------
+
+  - id: curry_home_wins_summary_receipts
+    query: "Stephen Curry stats at home in wins this season"
+    category: filter_execution_integrity
+    priority: p0
+    acceptance:
+      family: player_stats_this_season
+      variant: canonical
+      concept: applied_filter_receipt
+      public_surface: true
+      review_role: representative
+      intent_model: player_game_summary
+      qualifier_model:
+        - location
+        - outcome
+    expected_status: ok
+    expected_route: player_game_summary
+    expected_shape: entity_summary
+    expected_filters:
+      - kind: location
+        label: Location
+        value: Home
+      - kind: outcome
+        label: Outcome
+        value: Wins
+    expected_sections:
+      - summary
+      - by_season
+      - game_log
+    hard_assertions:
+      - path: result.metadata.filter_receipts.home_only.state
+        equals: applied
+      - path: result.metadata.filter_receipts.wins_only.state
+        equals: applied
+    review_notes: "player_game_summary success path: receipts present and both badges survive. On 7d56a664 this route returned no receipts at all."
+    manual_review:
+      status: unreviewed
+      tags:
+        - filter_receipts
+
+  - id: lakers_clutch_record_short_circuit
+    query: "Lakers clutch record on January 1 2024"
+    category: filter_execution_integrity
+    priority: p0
+    acceptance:
+      family: team_records
+      variant: nearby_unsupported
+      concept: short_circuit_receipt
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: team_record
+      qualifier_model:
+        - date_range
+        - clutch
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: team_record
+    expected_reason: no_match
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.filter_receipts.date_range.state
+        equals: applied
+      - path: result.metadata.filter_receipts.clutch.state
+        equals: not_evaluated
+    review_notes: "team_record short-circuit: the date filter really ran, clutch never did. The clutch badge must be gone and the date badge must remain."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - filter_receipts
+        - no_broad_fallback
+
+  - id: leaderboard_role_coverage_after_date
+    query: "top scorers among starters on January 1 2024"
+    category: filter_execution_integrity
+    priority: p0
+    acceptance:
+      family: leaderboards
+      variant: nearby_unsupported
+      concept: coverage_failure_receipt
+      public_surface: false
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: season_leaders
+      qualifier_model:
+        - date_range
+        - role
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.filter_receipts.date_range.state
+        equals: applied
+      - path: result.metadata.filter_receipts.role.state
+        equals: coverage_unavailable
+      - path: result.metadata.unsupported_filters.0
+        equals: role_coverage
+    review_notes: "season_leaders coverage failure: the date filter ran and keeps its badge, the role filter is honestly reported as uncovered."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - filter_receipts
         - no_broad_fallback

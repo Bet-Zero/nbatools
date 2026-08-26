@@ -16,10 +16,13 @@ import pytest
 
 from nbatools.commands._filter_receipts import (
     APPLIED,
+    MIGRATED_ROUTE_FILTERS,
     NOT_EVALUATED,
+    RECEIPT_STATES,
     FilterExecutionLedger,
     receipt_state,
     receipts_from_metadata,
+    requested_filter_ids,
 )
 from nbatools.query_service import _badge_filter_id, execute_natural_query, execute_structured_query
 
@@ -27,6 +30,59 @@ pytestmark = [pytest.mark.query, pytest.mark.needs_data]
 
 # The mixed-filter query at the centre of the finding.
 MIXED_FILTER_QUERY = "Tatum clutch stats at home on January 1 2024"
+
+# Filters that always render a badge when they run, so an ``applied`` receipt
+# with no badge means truthful context was thrown away.
+BADGE_BACKED_FILTERS = frozenset(
+    {
+        "opponent",
+        "home_only",
+        "away_only",
+        "wins_only",
+        "losses_only",
+        "clutch",
+        "quarter",
+        "half",
+        "role",
+        "position_filter",
+        "with_player",
+        "without_player",
+        "back_to_back",
+        "one_possession",
+        "nationally_televised",
+        "special_event",
+    }
+)
+
+
+def _request_view(metadata: dict) -> dict:
+    """Route-kwarg-shaped view of what the parser asked the route for."""
+    return {
+        "opponent": metadata.get("opponent"),
+        "home_only": metadata.get("home_only"),
+        "away_only": metadata.get("away_only"),
+        "wins_only": metadata.get("wins_only"),
+        "losses_only": metadata.get("losses_only"),
+        "start_date": metadata.get("start_date"),
+        "end_date": metadata.get("end_date"),
+        "last_n": metadata.get("last_n"),
+        "min_value": metadata.get("min_value"),
+        "max_value": metadata.get("max_value"),
+        "conditions": metadata.get("conditions"),
+        "quarter": metadata.get("quarter"),
+        "half": metadata.get("half"),
+        "opponent_player": metadata.get("opponent_player"),
+        "with_player": metadata.get("with_player"),
+        "without_player": metadata.get("without_player"),
+        "special_event": metadata.get("special_event"),
+        "clutch": metadata.get("clutch"),
+        "role": metadata.get("role"),
+        "position": metadata.get("position_filter"),
+        "back_to_back": metadata.get("back_to_back"),
+        "rest_days": metadata.get("rest_days"),
+        "one_possession": metadata.get("one_possession"),
+        "nationally_televised": metadata.get("nationally_televised"),
+    }
 
 
 def _badge_labels(metadata: dict) -> list[str]:
@@ -198,3 +254,224 @@ class TestCoverageBlockers:
 
         assert executed.result_reason == "filter_not_supported"
         assert executed.metadata.get("unsupported_filters") == ["role_coverage"]
+
+
+# ---------------------------------------------------------------------------
+# 5. Request detection: a falsy value can still be a request
+# ---------------------------------------------------------------------------
+
+
+class TestFalsyRequests:
+    """``0`` is a value for some filters, not an absent slot.
+
+    ``detect_rest_days`` returns ``0`` for "on no rest" / "with zero days rest",
+    and every other consumer of that slot tests ``rest_days is not None``. A
+    ledger that declared on truthiness dropped the filter entirely, so the one
+    record that was supposed to prove what ran had nothing to say about it.
+    """
+
+    def test_zero_rest_days_is_declared(self):
+        ledger = FilterExecutionLedger()
+        ledger.declare("rest_days", 0)
+
+        assert ledger.state("rest_days") == NOT_EVALUATED
+        assert "rest_days" in ledger.to_metadata()["filter_receipts"]
+
+    def test_zero_threshold_is_declared(self):
+        ledger = FilterExecutionLedger()
+        ledger.declare("threshold", 0)
+
+        assert ledger.state("threshold") == NOT_EVALUATED
+
+    def test_none_and_false_are_still_absent(self):
+        ledger = FilterExecutionLedger()
+        ledger.declare("clutch", False)
+        ledger.declare("opponent", None)
+
+        assert ledger.to_metadata()["filter_receipts"] == {}
+
+    def test_zero_rest_days_reaches_the_result_ledger(self):
+        executed = execute_structured_query(
+            "player_game_summary", player="LeBron James", season="2024-25", rest_days=0
+        )
+
+        assert receipt_state(_receipts(executed), "rest_days") is not None
+
+
+# ---------------------------------------------------------------------------
+# 6. The published migration matrix
+# ---------------------------------------------------------------------------
+
+# One row per (route, path) the migration advertises. ``expect`` pins the states
+# the row exists to prove; completeness is asserted for every requested filter,
+# which is the check a partially migrated route fails.
+#
+# (route, natural query, expected states)
+ROUTE_RECEIPT_MATRIX = [
+    (
+        "player_game_finder",
+        "Tatum clutch stats at home on January 1 2024",
+        {"date_range": APPLIED, "home_only": APPLIED, "clutch": NOT_EVALUATED},
+    ),
+    (
+        "player_game_finder",
+        "LeBron James games with over 30 points at home this season",
+        {"threshold": APPLIED, "home_only": APPLIED},
+    ),
+    (
+        "player_game_summary",
+        "Stephen Curry stats at home in wins this season",
+        {"home_only": APPLIED, "wins_only": APPLIED},
+    ),
+    (
+        "player_game_summary",
+        "Stephen Curry clutch averages at home on January 1 2024",
+        {"date_range": APPLIED, "home_only": APPLIED, "clutch": NOT_EVALUATED},
+    ),
+    (
+        "player_game_summary",
+        "Stephen Curry clutch stats this season",
+        {"clutch": "coverage_unavailable"},
+    ),
+    (
+        "season_leaders",
+        "top scorers at home this season",
+        {"home_only": APPLIED},
+    ),
+    (
+        "season_leaders",
+        "top scorers among starters on January 1 2024",
+        {"date_range": APPLIED, "role": "coverage_unavailable"},
+    ),
+    (
+        "season_leaders",
+        "top scorers among guards this season",
+        {"position_filter": APPLIED},
+    ),
+    (
+        "team_record",
+        "Lakers clutch record on January 1 2024",
+        {"date_range": APPLIED, "clutch": NOT_EVALUATED},
+    ),
+    (
+        "team_record",
+        "Lakers record without LeBron James",
+        {"without_player": APPLIED},
+    ),
+    (
+        "team_record",
+        "Celtics record in the 4th quarter this season",
+        {"quarter": APPLIED},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "route, query, expected",
+    ROUTE_RECEIPT_MATRIX,
+    ids=[f"{row[0]}::{row[1][:40]}" for row in ROUTE_RECEIPT_MATRIX],
+)
+def test_migrated_route_serializes_every_requested_filter(route, query, expected):
+    executed = execute_natural_query(query)
+    receipts = _receipts(executed)
+
+    assert executed.route == route, f"{query!r} no longer routes to {route}"
+    for filter_id, state in expected.items():
+        assert receipt_state(receipts, filter_id) == state, (
+            f"{query!r}: {filter_id} receipt was {receipt_state(receipts, filter_id)!r}"
+        )
+    # Completeness: nothing requested may be missing from the ledger.
+    for filter_id in requested_filter_ids(route, _request_view(executed.metadata)):
+        assert receipt_state(receipts, filter_id) in RECEIPT_STATES, (
+            f"{query!r}: {filter_id} was requested but carries no serialized state"
+        )
+
+
+STRUCTURED_RECEIPT_MATRIX = [
+    (
+        "player_game_finder",
+        {
+            "player": "Jayson Tatum",
+            "season": "2023-24",
+            "start_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "home_only": True,
+            "clutch": True,
+        },
+        {"date_range": APPLIED, "home_only": APPLIED, "clutch": NOT_EVALUATED},
+    ),
+    (
+        "player_game_summary",
+        {"player": "Stephen Curry", "season": "2024-25", "home_only": True},
+        {"home_only": APPLIED},
+    ),
+    (
+        "season_leaders",
+        {"season": "2024-25", "stat": "pts", "home_only": True},
+        {"home_only": APPLIED},
+    ),
+    (
+        "team_record",
+        {"team": "LAL", "season": "2024-25", "home_only": True},
+        {"home_only": APPLIED},
+    ),
+    (
+        "team_record",
+        {
+            "team": "LAL",
+            "season": "2023-24",
+            "start_date": "2024-01-01",
+            "end_date": "2024-01-01",
+            "clutch": True,
+        },
+        {"date_range": APPLIED, "clutch": NOT_EVALUATED},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "route, kwargs, expected",
+    STRUCTURED_RECEIPT_MATRIX,
+    ids=[row[0] + "::" + ",".join(sorted(row[1])) for row in STRUCTURED_RECEIPT_MATRIX],
+)
+def test_structured_path_carries_the_same_receipts(route, kwargs, expected):
+    """The structured API is not a second, unproven way into the same routes."""
+    executed = execute_structured_query(route, **kwargs)
+    receipts = _receipts(executed)
+
+    for filter_id, state in expected.items():
+        assert receipt_state(receipts, filter_id) == state, f"{route}/{filter_id}"
+    for filter_id in requested_filter_ids(route, kwargs):
+        assert receipt_state(receipts, filter_id) in RECEIPT_STATES, (
+            f"{route}: {filter_id} was requested but carries no serialized state"
+        )
+
+
+@pytest.mark.parametrize(
+    "route, query",
+    [(row[0], row[1]) for row in ROUTE_RECEIPT_MATRIX],
+    ids=[f"{row[0]}::{row[1][:40]}" for row in ROUTE_RECEIPT_MATRIX],
+)
+def test_applied_receipts_keep_their_badges(route, query):
+    """Truthful context survives. Dropping every badge is not a safe default.
+
+    The first receipt pass removed false badges but had nothing to say about
+    true ones, so a route that returned no receipts at all scored clean while
+    losing every accurate filter description it had.
+    """
+    executed = execute_natural_query(query)
+    receipts = _receipts(executed)
+    shown = {_badge_filter_id(badge) for badge in (executed.metadata.get("applied_filters") or [])}
+
+    for filter_id, entry in receipts.items():
+        if entry.get("state") != APPLIED or filter_id not in BADGE_BACKED_FILTERS:
+            continue
+        assert filter_id in shown, f"{query!r}: {filter_id} ran but its badge was dropped"
+
+
+@pytest.mark.parametrize("route", sorted(MIGRATED_ROUTE_FILTERS))
+def test_every_advertised_route_is_exercised_by_the_matrix(route):
+    """The advertised scope and the tested scope are the same set."""
+    assert any(row[0] == route for row in ROUTE_RECEIPT_MATRIX), (
+        f"{route} is advertised as receipt-migrated but has no matrix row"
+    )

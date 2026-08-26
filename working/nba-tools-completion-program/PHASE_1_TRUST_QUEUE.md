@@ -32,66 +32,131 @@ Ordered. One bounded PR per item. Work the first unchecked item.
   positive control keeps its established behavior; filter execution sweep shows
   zero LIED and zero ERROR with every count change explained.
 
-  ### Status: repair iteration 2, awaiting exact-head independent re-review
+  ### Status: repair iteration 3 — under repair, not accepted
 
-  Candidate `69d9a1e` was **rejected** by independent review (Codex) for two
-  blocking design defects and one high-severity copy defect. Do not mark this
-  item complete until the new exact head is independently accepted.
+  Candidate `69d9a1e` was rejected by independent review. Candidate `7d56a664`
+  (repair iteration 2) was rejected again by the same reviewer. Do not mark this
+  item complete until a new exact head is independently accepted.
 
-  **Blocker 1 — the guard was phrase-oriented.** Three regexes were the
-  authoritative safety boundary, so paraphrases escaped: `best team when leading
-  scorer is suspended`, `teams that do best shorthanded`, `best team with no
-  stars` and five more still returned a populated points-per-game leaderboard.
-  Replaced with a normalized condition ledger in parse state
-  (`commands/_condition_semantics.py`): detectors record `RequestedCondition`
-  records, `ROUTE_CONDITION_SUPPORT` declares what each route can represent, and
-  a broad default may fire only when every recorded condition is represented or
-  bound. Detectors can no longer authorize a default by failing to match.
+  #### Why iteration 2 was rejected
 
-  **Blocker 2 — `no_match` did not prove execution.** `Tatum clutch stats at
-  home on January 1 2024` returned `no_match` showing a `Clutch` applied badge
-  over a sample the clutch filter never touched, because the date and location
-  filters emptied it first. Replaced with per-filter execution receipts
-  (`commands/_filter_receipts.py`) recorded by the route that filters.
-  `applied_filters` is now derived from receipts. **Bounded migration:**
-  `player_game_finder`, `player_game_summary`, `season_leaders`, `team_record`.
-  The contract in `result_contracts.md` states that boundary rather than
-  claiming universal coverage.
+  **Blocker 1 — the condition ledger still failed open.** Iteration 2 moved the
+  detections into `RequestedCondition` records, but the gate still read
 
-  **High — copy was context-inaccurate.** Opponent quality no longer claims the
-  product does not support it (`Celtics record against playoff teams` answers);
-  the message is scoped to this query and route. Clutch now splits into two
-  blockers: `clutch` for an unbound fragment, `clutch_coverage` for an
-  understood question whose trusted play-by-play coverage is missing.
+      if no condition was recorded: allow the default
 
-  **Validation blind spot.** The filter sweep classified every `no_result` as
-  REFUSED before reading badges, so it could not see the false claim. Added
-  `tools/filter_receipt_validator.py` (fails 7/11 on `69d9a1e`, passes 11/11 on
-  the repair) and taught the sweep to classify an unproven badge on a non-ok
-  result as LIED. Sweep totals are unchanged because its seed matrix contains no
-  mixed-filter short-circuit case — that is why the separate validator exists,
-  and the sweep total must not be cited as proof this defect is fixed.
+  so a detector miss remained a grant of permission. Eight reviewer
+  counterexamples proved it: `best team while down two starters`, `best team at
+  less than full strength` and `which team won most while missing half its
+  rotation` still returned populated 10-row team points-per-game leaderboards on
+  `7d56a664`. The claim that "a detector miss now only loses coverage" was not
+  true of that implementation.
 
-  Verified against data generation `queue-d-local-7e55c810-20260715`:
-  `make test` 3959 passed / 0 failed / 0 skipped; Raw QA 372/372; parser
-  examples sweep 394 pass / 8 fail with zero verdict changes versus the rejected
-  candidate; filter sweep 99 APPLIED / 376 REFUSED / 0 LIED / 46 DROPPED /
-  0 ERROR with zero classification changes.
+  **Blocker 2 — the advertised receipt migration was incomplete.** The docs named
+  four migrated routes. `player_game_summary` declared fifteen filters and marked
+  one; `team_record` and `season_leaders` serialized the ledger on some paths and
+  not others; no route attached receipts to a successful result. The validator
+  could not see any of it, because it only inspected badges on non-ok results and
+  scored "every badge dropped" as a pass.
+
+  #### What iteration 3 changes
+
+  **Broad-default authorization is now positive and fail-closed.**
+  `commands/_broad_default_authorization.py` decides eligibility by span
+  coverage: every content-bearing word must be claimed by a component the
+  leaderboard implements (ranking intent, sort direction, population, requested
+  metric, time window, a supported qualifier, or grammar). Anything left over is
+  residual and refuses with `residual_query_content`. Each claimer is gated on
+  the parse slot it explains, so an unrecognized phrase produces *no claim* —
+  vocabulary gaps cost coverage, they cannot manufacture permission. Metric
+  evidence found inside a condition span is recorded and never promoted, so
+  `scorer` in `when its leading scorer was out` cannot become a scoring
+  leaderboard. `RequestedCondition` records still run and still sharpen the
+  refusal copy; they are additive evidence with no authorizing power.
+
+  A second, narrow backstop refuses on **any** route when a recorded condition
+  never bound to an entity, which covers the two counterexamples where the parser
+  over-resolved a common word to a player name (`key` → Braxton Key).
+
+  **The receipt migration is now complete for the four advertised routes.**
+  `MIGRATED_ROUTE_FILTERS` in `commands/_filter_receipts.py` is the single
+  published contract read by the docs, the route tests, and the validator.
+  `build_result` on each route is wrapped in `@emits_filter_receipts`, which
+  opens the ledger and stamps it onto every result the route returns — success
+  included — so a `return` added later is instrumented by construction rather
+  than by remembering. `declare()` no longer tests truthiness: `rest_days = 0`
+  ("on no rest") is a genuine request and was being dropped from the ledger
+  entirely.
+
+  **The validator now checks three claims, not one:** completeness (every
+  requested tracked filter has a serialized final state), no false badge, and no
+  *lost* badge. The third is the one that made "drop everything" look safe.
+
+  #### Proofs that fail on `7d56a664`
+
+  | Proof | On `7d56a664` | On this head |
+  | --- | --- | --- |
+  | 10 out-of-vocabulary residual queries | 10/10 returned populated leaderboards with an invented metric | 10/10 refuse with `residual_query_content` |
+  | `tools/filter_receipt_validator.py` | 8/24 pass, 16 fail | 24/24 pass, 4/4 routes covered |
+  | Receipt matrix (11 natural + 5 structured) | 12/16 rows fail | 16/16 pass |
+  | `FilterExecutionLedger.declare("rest_days", 0)` | dropped, ledger empty | declared |
+  | Truthful badge preservation | `LOST_BADGE` on the structured finder case | preserved |
+
+  #### Validation, data generation `queue-d-local-7e55c810-20260715`
+
+  | Suite | Result |
+  | --- | --- |
+  | `make test` | 4054 passed / 0 failed / 0 skipped |
+  | `make test-parser` | 1050 passed |
+  | `make test-query` | 1194 passed |
+  | `make test-api` | 232 passed, 3822 deselected |
+  | `make test-output` | 350 passed |
+  | `make test-preflight` | 3982 passed |
+  | focused: integrity + intent + receipts | 289 passed |
+  | Raw QA | 380/380 expectation pass, 0 failed case ids |
+  | `make parser-examples-sweep` | 402 cases, 394 pass / 8 fail, **0 verdict changes** vs `7d56a664` |
+  | `tools/filter_execution_sweep.py` | 521 combinations, 99 APPLIED / 376 REFUSED / 0 LIED / 46 DROPPED / 0 ERROR — **0 classification changes** vs `7d56a664` |
+  | `tools/filter_receipt_validator.py` | 24/24 pass, 4/4 advertised routes covered (8/24 on `7d56a664`) |
+  | frontend build / lint / test | build ok, lint clean, 425 tests in 37 files |
+  | `ruff check` / `ruff format --check` | clean / 252 files formatted |
+  | `make docs-governance` | inventory check + governance check pass |
+  | `git diff --check` | clean |
+
+  The filter sweep total is unchanged and **must not be cited as evidence for
+  either blocker**. Its seed matrix contains no out-of-vocabulary residual query
+  and no mixed-filter short-circuit case; that is why the receipt validator and
+  the intent-preservation counterprobes exist.
+
+  #### Known coverage losses, deliberate
+
+  - `NBA three point leaders this season` and `top three point shooters this
+    season` now refuse. Both resolved to `pts` — an invented metric for a
+    three-point question — so the refusal is the honest outcome. Both are
+    input-only exploratory samples with no assertion; giving them a real 3PT
+    metric is parser work outside this PR.
+  - `how do teams do when their star is out` now reports its refusal on
+    `season_team_leaders` rather than `season_leaders`, because the question
+    names teams. Corpus expectation updated.
+  - `Lakers record without their leading scorer` — listed below as a 1B input —
+    is no longer a lying answer. On `7d56a664` it returned the Lakers' top-5
+    scoring leaderboard (`season_leaders`, 5 rows, `ok`). The unbound-condition
+    backstop now refuses it with both conditions named. **The feature is still
+    not built**: this is the lie removed, not the question answered, and it stays
+    in the 1B queue.
 
 - [ ] **1B — Not yet drafted**
 
   Not drafted while 1A is under repair. Two same-family defects remain
   pre-existing and unchanged, and are candidate inputs:
 
-  - `Lakers record without their leading scorer` returns the Lakers' top-5
-    scoring leaderboard (`season_leaders`, 5 rows, `ok`). The record intent and
-    the unbound availability condition are both discarded. Same intent-loss
-    family as 1A, but with a resolved subject entity, so 1A's subject-less
-    guard does not cover it. No applied-filter badge is claimed, so this is a
-    silent drop rather than a false claim. 1A's condition ledger already records
-    both conditions for this query (`player_availability` and `role_reference`,
-    both unresolved) even though a team resolved, so 1B can consume that state
-    without new detection work.
+  - `Lakers record without their leading scorer` — as of 1A's unbound-condition
+    backstop this refuses honestly instead of returning the Lakers' top-5 scoring
+    leaderboard, but it still does not *answer*. The record intent is understood
+    and the availability condition is recorded (`player_availability` and
+    `role_reference`, both unresolved); what is missing is a way to resolve "the
+    team's leading scorer" to a player and hand it to `team_record` as
+    `without_player`. That resolution is the 1B feature, and 1B can consume the
+    parse state 1A already produces without new detection work.
   - `leading scorers this season` returns `error` / `unrouted` with no
     explanation. A plural role population that names its own metric should
     either answer or refuse understandably.

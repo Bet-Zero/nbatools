@@ -910,7 +910,8 @@ Default rules are implemented as named functions in `_default_rules.py`. Each ta
 | Season-high with player                 | `player_game_finder` sorted by stat desc                   | `_finalize_route` inline             | `season_high:`             |
 | `<player> + <timeframe>` only           | Summary (stat line for the window)                         | `player_timeframe_summary_default()` | `default:`                 |
 | `<metric>` only, no subject             | League-wide leaderboard                                    | `metric_only_leaderboard_default()`  | `default:`                 |
-| Subject-less query carrying an unconsumed condition | Refuse on the leaderboard boundary; no substituted metric | `unconsumed_conditions()` over `requested_conditions` | `unsupported_boundary:` |
+| Subject-less query the leaderboard cannot fully account for | Refuse on the leaderboard boundary; no substituted metric | `authorize_broad_default()` | `unsupported_boundary:` |
+| Any route with a condition nothing ever bound | Refuse on the selected route; no unfiltered fallback | `_unresolvable_conditions()` | `unsupported_boundary:` |
 | `<player> + <threshold>` only           | `player_game_finder` (list matching games)                 | `player_threshold_finder_default()`  | `default:`                 |
 | `<team> + <threshold>` only             | `game_finder` (list matching games)                        | `team_threshold_finder_default()`    | `default:`                 |
 | Top player/team games (keyword)         | `top_player_games` / `top_team_games` ranked by stat       | `_finalize_route` inline             | `default:`                 |
@@ -956,24 +957,69 @@ words the user wrote, and what it bound to — if anything:
 | `role_reference` | `unresolved_role_player` | a possessive role reference (`its leading scorer`, `their star`) or `best player` |
 | `subjective_outcome` | `subjective_outcome` | narrative performance language (`stayed afloat`, `cope best`, `holds up`, `fare`) with no approved metric |
 
+These records sharpen a refusal. **They do not authorize one.** An earlier
+attempt made them the safety boundary — the default fired whenever no condition
+had been detected — and that is fail-open by construction: every phrasing the
+detectors did not happen to spell produced no detection, and no detection was
+read as permission. `best team while down two starters`, `best team at less than
+full strength` and `which team won most while missing half its rotation` all
+came back as populated league leaderboards ranked by a metric nobody asked for.
+
+#### Broad-default authorization is positive and fail-closed
+
+`authorize_broad_default()` (`commands/_broad_default_authorization.py`) decides
+whether a league-wide leaderboard may answer at all. The default is refused
+unless *proven* eligible, and the proof is span coverage: every content-bearing
+word of the normalized query must be claimed by a component the leaderboard
+actually implements.
+
+| Component | What it accounts for | Gate |
+| --- | --- | --- |
+| `ranking_intent` | interrogatives, `leaders`, `leads`, `ranks`, and the benign verbs a ranking question uses | always claimable |
+| `sort_direction` | `top`, `best`, `worst`, `highest`, `lowest`, `most`, `fewest` | always claimable |
+| `population` | `players`, `teams`, `league`, `nba`, `games` | always claimable |
+| `metric` | a leaderboard/stat alias span, anchored outside every condition | the alias tables the route itself reads |
+| `time_window` | season phrases, season type, last-N windows, date windows | the matching parse slot resolved |
+| `qualifier` | opponent, opponent quality, clutch, period, location, outcome, position, role, limit, min-games, threshold, special event, schedule context | that filter's parse slot resolved |
+| `grammar` | closed-class function words with no basketball meaning | fixed list |
+
+Anything left over is **residual**: content the leaderboard would silently drop.
+Residual refuses, with `unsupported_filters` reporting `residual_query_content`
+and the authorization payload naming the exact words nothing could account for.
+
+The safety property comes from the *direction* of the claim, not the size of any
+word list. A claimer only claims text when the corresponding parse slot actually
+resolved, so an unrecognized phrase produces no claim, which leaves residual,
+which refuses. A vocabulary gap here costs coverage of a legitimate question; it
+cannot manufacture permission, which is what a blacklist gap did.
+
+#### Metric anchoring
+
+A metric alias found *inside* a condition's surface is recorded as evidence and
+never promoted. `scorer` in `when its leading scorer was out` maps to `pts` in
+the alias table, but the request there is that the scorer was absent, not that
+the league should be ranked by scoring. Only a span outside every condition may
+become the leaderboard's requested metric; when none exists, the metric is
+`None` and its words stay in residual.
+
+#### Backstop for the routes a default never reaches
+
 `ROUTE_CONDITION_SUPPORT` declares which kinds each route can represent and
-execute. Before a subject-less default fires, `unconsumed_conditions()` asks the
-ledger which recorded conditions the chosen route can neither represent nor has
-bound. Any unconsumed condition blocks the default and refuses on the route that
-would otherwise have answered the wrong question, with `unsupported_filters`
-naming each one.
+execute, and `unconsumed_conditions()` reports the ones a chosen route can
+neither represent nor has bound — these still produce the sharper
+`unresolved_availability` / `unresolved_role_player` / `subjective_outcome`
+blockers when they apply.
 
-Why this shape rather than "does a pattern match?": a detector that misses a
-phrasing now loses coverage of one concept, whereas previously it silently
-authorized a broad default. Adding a synonym is a data change to the vocabulary
-tuples. Adding a *new* concept means one detector plus a `ROUTE_CONDITION_SUPPORT`
-entry — never another special case in the router.
+Separately, `_unresolvable_conditions()` refuses on **any** route that would
+otherwise answer with a condition nothing ever bound. `teams that thrive when key
+pieces are unavailable` resolves `key` to a player named Key, so the query is no
+longer subject-less and the authorization gate does not apply — yet no route can
+filter by "key pieces are unavailable" either. The backstop applies only to
+unbound conditions and only where routing produced no more specific refusal, so
+`Lakers record without LeBron` is untouched.
 
-The gate is scoped to subject-less queries, the precondition every broad default
-shares; with a resolved player or team the query reaches a specific route that
-owns its own filter-execution checks. Conditions stay recorded in parse state
-either way, so later phases can consume them. A role *population* being ranked
-(`top scorers`) is not a reference and stays supported.
+A role *population* being ranked (`top scorers`) is not a reference and stays
+supported.
 
 ### 15.5 Defaults are product policy
 
