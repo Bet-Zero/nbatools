@@ -457,11 +457,61 @@ describe("NoResultDisplay", () => {
     );
 
     expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
-    expect(screen.getByText(/rank per-game figures/)).toBeInTheDocument();
-    // The metric resolved, but naming it here would imply the board ran.
+    // Metric-scoped: rebounds is ranked per game, but minutes and personal
+    // fouls really do rank season totals, so the copy must not claim every
+    // leaderboard is per-game.
+    expect(screen.getByText(/Rebounds is ranked per game/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Some stats do rank season totals/),
+    ).toBeInTheDocument();
     expect(
       screen.queryByText("Rebounds is not available for this query."),
     ).not.toBeInTheDocument();
+  });
+
+  it("says a ranking orders by one stat when several were asked for", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "points and rebounds leaders this season",
+          requested_metrics: ["pts", "reb"],
+          unsupported_filters: ["leaderboard_multiple_metrics_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(
+      screen.getByText(/only be ordered by one stat/),
+    ).toBeInTheDocument();
+  });
+
+  it("says a stat is unavailable for the window without naming a substitute", () => {
+    // This used to return a points leaderboard with a "using pts" note.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          stat: "off_rating",
+          query_text: "best offensive teams from 2022-23 to 2024-25",
+          unsupported_filters: ["leaderboard_metric_unavailable_for_scope"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Offensive rating is not available for that time range/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/no other stat was substituted for it/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/using pts/)).not.toBeInTheDocument();
   });
 
   it("does not name a metric for a ranking it could not fully read", () => {

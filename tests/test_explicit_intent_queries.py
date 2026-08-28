@@ -452,10 +452,23 @@ class TestRouteSelection:
         assert parsed["route"] == "season_leaders"
         assert parsed["route_kwargs"].get("rookies_only") is True
 
-    def test_top_rookies_routes_with_rookie_filter(self):
-        parsed = parse_query("top rookies this season")
+    def test_rookie_leaderboard_routes_with_rookie_filter_when_a_stat_is_named(self):
+        parsed = parse_query("rookie scoring leaders this season")
         assert parsed["route"] == "season_leaders"
         assert parsed["route_kwargs"].get("rookies_only") is True
+        assert parsed["route_kwargs"]["stat"] == "pts"
+
+    def test_top_rookies_asks_which_stat(self):
+        """A population says who to rank, never what to rank them by.
+
+        This asserted the rookie filter for a query that names no stat, which
+        only worked because the route supplied points. The filter is still
+        right; what is missing is the metric.
+        """
+        parsed = parse_query("top rookies this season")
+        assert parsed["route"] == "season_leaders"
+        assert "stat" not in parsed["route_kwargs"]
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_metric_required"]
 
     def test_bench_leaderboard_routes_with_role(self):
         parsed = parse_query("most points off the bench")

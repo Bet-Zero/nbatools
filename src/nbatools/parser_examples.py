@@ -99,10 +99,23 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
         "above .600",
     )
     future_or_unsupported = (
-        # League leaderboards rank per-game figures, so an explicit season-total
-        # ranking is a different question the product does not answer yet.
+        # League leaderboards rank per-game figures for these metrics, so an
+        # explicit season-total ranking is a different question. Metrics whose
+        # column already is a season total - minutes, personal fouls, the
+        # made/attempted counts - are unaffected and still answer.
         "most total rebounds",
         "total points leaders",
+        # The single-game top-performance route has no position filter, so a
+        # position clause in one of these questions is dropped rather than
+        # applied. The plural forms have always failed here for that reason.
+        "games by a point guard",
+        "games by a center",
+        "games by point guards",
+        "games by centers",
+        # A ranking that names a population but no stat: "performances" says
+        # which games to look at, not what makes one best.
+        "best playoff performances",
+        "top rookies",
         "co-star",
         "star teammate",
         "leading scorer",

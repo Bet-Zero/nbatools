@@ -71,13 +71,30 @@ Primary class: `leaderboard`
 9. Who has the highest true shooting percentage this season?
 10. What teams have the best net rating this year?
 
-_Current boundary note:_ league leaderboards rank per-game figures, so an
-explicit season-total ranking such as `Which players have the most total
-rebounds this year?` returns typed `no_result` / `filter_not_supported` rather
-than a per-game board. `most rebounds this year` and `rebounds per game leaders`
-are unaffected. A ranking that names no stat at all (`NBA leaders this season`,
-`best NBA teams this season`, `playoff leaders since 2010`) refuses the same
-way: there is no default metric, and points is not inferred.
+_Current boundary note:_ aggregation support is metric-specific. Points and
+rebounds are ranked per game, so an explicit season-total ranking such as
+`Which players have the most total rebounds this year?` returns typed
+`no_result` / `filter_not_supported` rather than a per-game board. Metrics whose
+leaderboard column already is a season total — minutes, personal fouls, field
+goals and free throws made or attempted — do answer `total ...` wording.
+`most rebounds this year` and `rebounds per game leaders` are unaffected.
+
+A ranking that names no stat at all refuses the same way, whatever population it
+names: `NBA leaders this season`, `best NBA teams this season`, `playoff leaders
+since 2010`, `rookie leaders this season`, `best sophomores`, `starter leaders`,
+`bench leaders`, `best team performances this season`. A population says who to
+rank, never what to rank them by, and there is no default metric. Naming the
+stat answers: `rookie scoring leaders this season`, `bench assist leaders this
+season`, `highest scoring team games this season`.
+
+A ranking that names several stats (`points and rebounds leaders this season`)
+refuses rather than silently ranking by one of them, and a stat the requested
+window cannot compute (`best offensive teams from 2022-23 to 2024-25`) refuses
+rather than being swapped for points.
+
+The single-game top-performance route has no position filter, so a position
+clause in one of those questions (`highest assist games by a point guard`) is
+refused rather than dropped.
 
 _Current support note:_ `personal fouls leaders` / `PF leaders` and `most
 minutes` route through `season_leaders` and rank the named box-score stat by

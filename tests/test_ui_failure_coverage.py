@@ -1440,7 +1440,13 @@ class TestDateFilterDropPrevention:
         assert offensive.route == "season_team_leaders"
         assert offensive.result.result_status == "no_result"
         assert offensive.result.result_reason == "filter_not_supported"
-        assert offensive.metadata["unsupported_filters"] == ["unsupported_concept"]
+        # Already a refusal here; the blocker is now the specific one. Offensive
+        # rating cannot be computed inside a date window, and the answer says so
+        # rather than reporting a generic unsupported concept.
+        assert offensive.metadata["unsupported_filters"] == [
+            "leaderboard_metric_unavailable_for_scope"
+        ]
+        assert offensive.metadata["stat"] == "off_rating"
         assert offensive.metadata["start_date"] == "2026-01-01"
         assert offensive.metadata["end_date"] is None
         assert offensive.metadata.get("applied_filters", []) == []

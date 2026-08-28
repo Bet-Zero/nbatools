@@ -243,7 +243,11 @@ export function unsupportedBoundaryTitle(
   ) {
     return "Which Stat?";
   }
-  if (filters.includes("leaderboard_aggregation_unsupported")) {
+  if (
+    filters.includes("leaderboard_aggregation_unsupported") ||
+    filters.includes("leaderboard_multiple_metrics_unsupported") ||
+    filters.includes("leaderboard_metric_unavailable_for_scope")
+  ) {
     return "Unsupported Ranking";
   }
   return null;
@@ -280,7 +284,17 @@ function unsupportedBoundaryMessage(
     return "League rankings need a stat to rank by. Try naming one \u2014 for example \u201ctop scorers this season\u201d, \u201cmost rebounds this season\u201d, or \u201cbest defensive teams\u201d.";
   }
   if (filters.includes("leaderboard_aggregation_unsupported")) {
-    return "League leaderboards rank per-game figures, so season totals are not available yet. Try the same question per game \u2014 for example \u201cpoints per game leaders this season\u201d.";
+    const stat = metricFromMetadata(metadata);
+    const named = stat ? `${metricLabel(stat)} is ranked per game` : "This stat is ranked per game";
+    return `${named}, so a season total is not available for it. Try its per-game form \u2014 for example \u201cpoints per game leaders this season\u201d. Some stats do rank season totals, such as minutes and personal fouls.`;
+  }
+  if (filters.includes("leaderboard_multiple_metrics_unsupported")) {
+    return "A ranking can only be ordered by one stat, and this asks for more than one. Ask for them one at a time \u2014 for example \u201cpoints leaders this season\u201d, then \u201crebounds leaders this season\u201d.";
+  }
+  if (filters.includes("leaderboard_metric_unavailable_for_scope")) {
+    const stat = metricFromMetadata(metadata);
+    const named = stat ? metricLabel(stat) : "This stat";
+    return `${named} is not available for that time range or filter, and no other stat was substituted for it. Try a single season, or another supported stat.`;
   }
   // Covers two shapes: wording the ranking cannot express ("top three point
   // shooters"), and a bare context fragment with nothing to apply it to

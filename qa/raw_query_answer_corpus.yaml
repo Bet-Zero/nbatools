@@ -2424,8 +2424,10 @@ cases:
       - path: result.metadata.start_date
         equals: "2026-01-01"
       - path: result.metadata.unsupported_filters.0
-        equals: unsupported_concept
-    review_notes: "The date is recognized, but a date-window team offensive-rating leaderboard is not source-backed and must not fall back to points or a full-season answer."
+        equals: leaderboard_metric_unavailable_for_scope
+      - path: result.metadata.stat
+        equals: off_rating
+    review_notes: "The date is recognized, but a date-window team offensive-rating leaderboard is not source-backed and must not fall back to points or a full-season answer. The blocker now names that specifically instead of the generic unsupported_concept, and metadata reports the stat that was actually requested rather than the points it used to be swapped for."
     manual_review:
       status: expected_unsupported
       tags:
@@ -8367,18 +8369,24 @@ cases:
 
   - id: fan_best_playoff_performances
     query: "best playoff performances this year"
-    category: leaderboard
+    category: unsupported_boundary
     priority: p1
-    answer_text_policy: frontend_hero_expected
-    expected_status: ok
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
     expected_route: top_player_games
-    expected_shape: top_performances
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
     hard_assertions:
-      - path: result.metadata.stat
-        equals: pts
+      - path: result.metadata.unsupported_filters.0
+        equals: leaderboard_metric_required
       - path: result.metadata.season_type
         equals: Playoffs
-    review_notes: "'performances' is a synonym for the 'best games' top-performance concept. Battery 3."
+    review_notes: "This asserted result.metadata.stat == pts for a query that names no stat - 'performances' says which games to look at, not what makes one best. Points was supplied because the route needed a metric, which is the inference the metric boundary removes. Owner decision: a ranking with no stat asks which stat. The playoff scope is still understood; 'best playoff scoring performances' answers."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - metric_boundary
 
   - id: opponent_quality_player_leaderboard_refuses_unfiltered
     query: "top scorers against contenders this season"

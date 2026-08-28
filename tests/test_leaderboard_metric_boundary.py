@@ -23,10 +23,14 @@ import pytest
 
 from nbatools.commands import natural_query as natural_query_module
 from nbatools.commands._leaderboard_eligibility import (
+    METRIC_SCOPE_UNSUPPORTED,
+    MULTIPLE_METRICS,
     NO_REQUESTED_METRIC,
     UNCLEAR_REQUEST,
     UNSUPPORTED_AGGREGATION,
     assess_leaderboard_request,
+    ranks_a_season_total,
+    requested_leaderboard_metrics,
 )
 from nbatools.commands.natural_query import _build_parse_state, parse_query
 from nbatools.query_service import execute_natural_query
@@ -492,3 +496,337 @@ def test_concrete_clutch_keeps_its_coverage_behavior(query, expected_route):
     assert executed.result_reason == "filter_not_supported"
     assert executed.metadata.get("stat") is None
     assert UNCLEAR_REQUEST not in _blockers(executed.metadata)
+
+
+# ---------------------------------------------------------------------------
+# 9. The metric boundary governs every ranking-producing route family
+# ---------------------------------------------------------------------------
+
+# Test-owned inventory. Each row is a route family that can return a ranked
+# list, with a query that names a metric and one that does not. The point is to
+# be independent of the router: a new specialized branch that forgets the guard
+# fails here even though every other test still passes, because a metricless
+# query for its family will come back populated.
+#
+# (family, metric-named query, metricless query)
+RANKING_ROUTE_FAMILIES = [
+    ("season_leaders", "points leaders this season", "top players this season"),
+    ("season_team_leaders", "teams with the most points per game", "best teams overall"),
+    ("rookie_leaderboard", "rookie scoring leaders this season", "rookie leaders this season"),
+    ("sophomore_leaderboard", "sophomore assist leaders this season", "best sophomores"),
+    ("starter_leaderboard", "starter points leaders this season", "starter leaders"),
+    ("bench_leaderboard", "bench assist leaders this season", "bench leaders"),
+    (
+        "top_team_games",
+        "highest scoring team games this season",
+        "best team performances this season",
+    ),
+    ("top_player_games", "top scoring games this season", "top players this season"),
+    ("team_scoped_leader", "Lakers leading scorer", "Lakers record without their leading scorer"),
+]
+
+#: Route families whose metric is fixed by the route itself rather than chosen
+#: from the query, so "no metric named" is not a possible request for them.
+FIXED_METRIC_RANKING_ROUTES = {
+    # Ranks win percentage by definition; "best team record" names it.
+    "team_record_leaderboard",
+    # Ranks occurrences of a named event ("most 40 point games"), which the
+    # event itself supplies.
+    "player_occurrence_leaders",
+}
+
+
+@pytest.mark.parametrize(
+    "family, with_metric, _without",
+    RANKING_ROUTE_FAMILIES,
+    ids=[r[0] for r in RANKING_ROUTE_FAMILIES],
+)
+def test_ranking_family_answers_when_a_metric_is_named(family, with_metric, _without):
+    executed = execute_natural_query(with_metric)
+
+    assert executed.result_status == "ok", f"{family}: {with_metric!r} stopped answering"
+    assert executed.metadata.get("stat"), family
+
+
+@pytest.mark.parametrize(
+    "family, _with_metric, without",
+    RANKING_ROUTE_FAMILIES,
+    ids=[r[0] for r in RANKING_ROUTE_FAMILIES],
+)
+def test_ranking_family_refuses_when_no_metric_is_named(family, _with_metric, without):
+    executed = execute_natural_query(without)
+
+    _no_substituted_answer(executed)
+    assert _blockers(executed.metadata), f"{family}: refused with no blocker"
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "family, _with_metric, without",
+    RANKING_ROUTE_FAMILIES,
+    ids=[r[0] for r in RANKING_ROUTE_FAMILIES],
+)
+def test_ranking_family_never_invents_a_metric(family, _with_metric, without):
+    """No ranking branch may hand its route a metric the query did not name."""
+    route_kwargs = parse_query(without)["route_kwargs"]
+
+    assert "stat" not in route_kwargs or route_kwargs["stat"] is None, family
+
+
+@pytest.mark.parser
+def test_no_unanchored_points_fallback_remains_in_the_router():
+    """Every surviving ``pts`` literal is an approved shorthand, not a default.
+
+    The router had thirteen `or "pts"` tails. What is left may only be the
+    documented shorthands - `<player> season high`, `top scoring games` - which
+    the branch conditions require the wording for.
+    """
+    source = pathlib.Path(natural_query_module.__file__).read_text()
+    code = [line for line in source.splitlines() if not line.lstrip().startswith("#")]
+
+    assert 'stat or detect_player_leaderboard_stat(q) or "pts"' not in source
+    offenders = [line.strip() for line in code if 'or "pts"' in line]
+    assert not offenders, f"an unanchored points fallback is back: {offenders}"
+
+
+# ---------------------------------------------------------------------------
+# 10. Several metrics at once
+# ---------------------------------------------------------------------------
+
+MULTI_METRIC_REQUESTS = [
+    ("and_two", "points and rebounds leaders this season"),
+    ("and_synonym", "scoring and assists leaders this season"),
+    ("or_two", "top points or rebounds this season"),
+    ("team_and", "teams with the most points and assists"),
+    ("comma_three", "players leading in points, rebounds, and assists"),
+    ("rate_and_count", "best shooting percentage and scoring leaders"),
+]
+
+
+@pytest.mark.parametrize(
+    "category, query", MULTI_METRIC_REQUESTS, ids=[r[0] for r in MULTI_METRIC_REQUESTS]
+)
+def test_several_requested_metrics_refuse_instead_of_picking_one(category, query):
+    """Ranking by whichever the detectors returned last deletes the rest."""
+    executed = execute_natural_query(query)
+
+    _no_substituted_answer(executed)
+    assert MULTIPLE_METRICS in _blockers(executed.metadata), category
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "category, query", MULTI_METRIC_REQUESTS, ids=[r[0] for r in MULTI_METRIC_REQUESTS]
+)
+def test_every_requested_metric_is_preserved_in_metadata(category, query):
+    metrics = requested_leaderboard_metrics(_build_parse_state(query))
+
+    assert len(metrics) > 1, f"{category}: precondition lost, only {metrics}"
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        # One metric, spelled with words that also appear in other aliases.
+        ("highest true shooting percentage this season", ("ts_pct",)),
+        ("points per game leaders", ("pts",)),
+        ("best field goal percentage among guards", ("fg_pct",)),
+        # A position name contains "point"; that is not a points request.
+        ("point guard assist leaders this season", ("ast",)),
+        ("most assists while the starting point guard was out", ("ast",)),
+    ],
+)
+def test_single_metric_questions_are_not_read_as_compound(query, expected):
+    assert requested_leaderboard_metrics(_build_parse_state(query)) == expected
+
+
+# ---------------------------------------------------------------------------
+# 11. A metric the window cannot compute is not a reason to rank by another
+# ---------------------------------------------------------------------------
+
+UNSUPPORTED_SCOPE_REQUESTS = [
+    ("team_rating_multi_season", "best offensive teams from 2022-23 to 2024-25"),
+    ("team_net_rating_multi_season", "best net rating teams from 2022-23 to 2024-25"),
+    ("team_pace_multi_season", "pace leaders from 2022-23 to 2024-25"),
+    (
+        "team_rating_opponent",
+        "offensive rating leaders vs Lakers from 2022-23 to 2024-25",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "category, query",
+    UNSUPPORTED_SCOPE_REQUESTS,
+    ids=[r[0] for r in UNSUPPORTED_SCOPE_REQUESTS],
+)
+def test_unavailable_metric_window_refuses_rather_than_becoming_points(category, query):
+    """These returned points leaderboards with a `stat_fallback` note.
+
+    Saying "using pts" in a note does not make the answer the one that was
+    asked for.
+    """
+    executed = execute_natural_query(query)
+
+    _no_substituted_answer(executed)
+    assert METRIC_SCOPE_UNSUPPORTED in _blockers(executed.metadata), category
+    assert executed.metadata.get("stat") != "pts", category
+
+
+@pytest.mark.parser
+def test_no_cross_metric_stat_fallback_remains():
+    source = pathlib.Path(natural_query_module.__file__).read_text()
+
+    assert "stat_fallback" not in source
+    assert "using pts" not in source
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The same metrics inside a window that can compute them.
+        "best offensive teams",
+        "best defensive teams",
+    ],
+)
+def test_single_season_rating_requests_still_answer(query):
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok"
+    assert not _blockers(executed.metadata)
+
+
+# ---------------------------------------------------------------------------
+# 12. Narrative clauses refuse on specialized branches too
+# ---------------------------------------------------------------------------
+
+# Safety probes. The product is not expected to understand any of these; the
+# requirement is that a specialized branch cannot skip residual accounting just
+# because it already resolved a metric and a population.
+SPECIALIZED_NARRATIVE_PROBES = [
+    ("league_wide", "most assists while the starting point guard was out"),
+    ("rookie", "rookie scoring leaders while their best player was injured"),
+    ("bench", "bench points leaders when the rotation was depleted"),
+    ("team_games", "best team performances once their center fouled out"),
+    ("sophomore", "top sophomore scorers amid roster churn"),
+]
+
+
+@pytest.mark.parametrize(
+    "category, query",
+    SPECIALIZED_NARRATIVE_PROBES,
+    ids=[r[0] for r in SPECIALIZED_NARRATIVE_PROBES],
+)
+def test_specialized_route_refuses_a_narrative_clause(category, query):
+    executed = execute_natural_query(query)
+
+    _no_substituted_answer(executed)
+    assert _blockers(executed.metadata), f"{category}: refused with no blocker"
+
+
+# ---------------------------------------------------------------------------
+# 13. Aggregation is metric-specific
+# ---------------------------------------------------------------------------
+
+# The leaderboards are not uniformly per-game. `pf` ranks `pf_total`, so "total
+# personal fouls leaders" is exactly what runs; `pts` ranks `pts_per_game`, so
+# "total points leaders" would be answered with a different figure entirely.
+TOTAL_BACKED_METRICS = [
+    ("personal fouls leaders", "pf"),
+    ("total personal fouls leaders", "pf"),
+    ("minutes leaders", "minutes"),
+    ("total minutes leaders", "minutes"),
+    ("total field goals made leaders", "fgm"),
+    ("total free throws made leaders", "ftm"),
+]
+
+PER_GAME_BACKED_TOTAL_REQUESTS = [
+    "total points leaders this season",
+    "players with the most total rebounds",
+    "most points total this season",
+    "combined scoring leaders",
+    "cumulative points leaders this season",
+]
+
+RATE_AND_PER_GAME_REQUESTS = [
+    ("points per game leaders", "pts"),
+    ("average points leaders", "pts"),
+    ("rebounds per game leaders", "reb"),
+    ("best 3P%", "fg3_pct"),
+    ("usage rate leaders", "usg_pct"),
+]
+
+
+@pytest.mark.parametrize("query, expected_metric", TOTAL_BACKED_METRICS)
+def test_total_backed_metrics_keep_their_total_support(query, expected_metric):
+    """A blanket "leaderboards are per-game" rule refuses these wrongly."""
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok", f"{query!r} lost its total-backed answer"
+    assert executed.metadata.get("stat") == expected_metric
+    assert not _blockers(executed.metadata)
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize("query, expected_metric", TOTAL_BACKED_METRICS)
+def test_total_backed_metrics_rank_a_total_column(query, expected_metric):
+    assert ranks_a_season_total(expected_metric, team_scope=False), (
+        f"{expected_metric} is not total-backed; this row belongs in the per-game set"
+    )
+
+
+@pytest.mark.parametrize("query", PER_GAME_BACKED_TOTAL_REQUESTS)
+def test_per_game_backed_metrics_refuse_total_wording(query):
+    executed = execute_natural_query(query)
+
+    _no_substituted_answer(executed)
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata)
+
+
+@pytest.mark.parametrize("query, expected_metric", RATE_AND_PER_GAME_REQUESTS)
+def test_per_game_and_rate_requests_answer(query, expected_metric):
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == expected_metric
+
+
+# ---------------------------------------------------------------------------
+# 14. Metricless player rankings get a typed clarification, not an error
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["top players this season", "best players overall", "players that perform best"],
+)
+def test_metricless_player_ranking_is_typed_not_unrouted(query):
+    """These came back as `error` / `unrouted`, which tells the user nothing."""
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "no_result"
+    assert executed.result_reason == "filter_not_supported"
+    assert NO_REQUESTED_METRIC in _blockers(executed.metadata)
+    assert executed.metadata.get("stat") is None
+    _no_substituted_answer(executed)
+
+
+# ---------------------------------------------------------------------------
+# 15. Subject-resolved team controls
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "query, expected_route, expected_metric",
+    [
+        ("Lakers leading scorer", "season_leaders", "pts"),
+        ("Nuggets top rebounder", "season_leaders", "reb"),
+    ],
+)
+def test_team_scoped_leaders_still_answer(query, expected_route, expected_metric):
+    executed = execute_natural_query(query)
+
+    assert executed.route == expected_route
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == expected_metric
