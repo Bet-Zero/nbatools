@@ -482,7 +482,33 @@ describe("NoResultDisplay", () => {
 
     expect(screen.getByText("Which Stat?")).toBeInTheDocument();
     expect(
-      screen.getByText(/has no supported meaning yet/),
+      screen.getByText(/does not say enough to rank on its own/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("asks for a subject and a stat for a bare context fragment", () => {
+    // "clutch stats" used to be handed stat="pts" so the leaderboard had
+    // something to rank. The card must not mention points, and must ask for
+    // the two things actually missing.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "clutch stats",
+          clutch: true,
+          unsupported_filters: ["leaderboard_request_unclear"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Which Stat?")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Name the player or team you mean and the stat you want/),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Points is not available for this query."),

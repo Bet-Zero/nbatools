@@ -671,18 +671,29 @@ class TestStatPhraseExpansion:
         assert parsed["route_kwargs"]["stat"] == "fg_pct"
         assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "top-10 defenses"
 
-    def test_route_context_only_boundary_fragment_with_fallback_note(self):
+    def test_route_context_only_boundary_fragment_refuses_without_a_metric(self):
+        """A clutch fragment with no subject and no stat invents neither.
+
+        This used to assert ``stat == "pts"``: the branch handed the leaderboard
+        a metric so it had something to rank. The request is still recorded -
+        ``clutch`` stays true - but nothing is substituted for the stat the
+        question never named.
+        """
         parsed = parse_query("in clutch time")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
-        assert any("boundary_fragment" in note for note in parsed.get("notes", []))
+        assert "stat" not in parsed["route_kwargs"]
+        assert parsed["route_kwargs"]["clutch"] is True
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_request_unclear"]
+        assert not any("boundary_fragment" in note for note in parsed.get("notes", []))
 
-    def test_route_opponent_quality_boundary_fragment_with_fallback_note(self):
+    def test_route_opponent_quality_boundary_fragment_refuses_without_a_metric(self):
+        """Same for opponent quality: the qualifier survives, the metric is not invented."""
         parsed = parse_query("against winning teams")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
+        assert "stat" not in parsed["route_kwargs"]
         assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "winning teams"
-        assert any("boundary_fragment" in note for note in parsed.get("notes", []))
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_request_unclear"]
+        assert not any("boundary_fragment" in note for note in parsed.get("notes", []))
 
     def test_route_best_rim_protector_past_month(self):
         parsed = parse_query("best rim protector over the past month")

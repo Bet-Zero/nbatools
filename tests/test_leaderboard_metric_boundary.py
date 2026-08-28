@@ -17,8 +17,11 @@ answer.
 
 from __future__ import annotations
 
+import pathlib
+
 import pytest
 
+from nbatools.commands import natural_query as natural_query_module
 from nbatools.commands._leaderboard_eligibility import (
     NO_REQUESTED_METRIC,
     UNCLEAR_REQUEST,
@@ -363,3 +366,129 @@ def test_grammatical_variation_keeps_eligibility(query):
     eligibility = assess_leaderboard_request(_build_parse_state(query))
 
     assert eligibility.authorized, f"{query!r} unaccounted words: {eligibility.residual}"
+
+
+# ---------------------------------------------------------------------------
+# 8. Subject-less context fragments never receive an invented metric
+# ---------------------------------------------------------------------------
+
+# A branch ahead of the eligibility gate used to hand `season_leaders` a literal
+# stat="pts" so it had something to rank, for any clutch or opponent-quality
+# fragment with no subject and no stat. That is the same metric invention the
+# gate exists to stop, reached by a route that ran before it. The data happened
+# to refuse afterwards, but the substituted metric was already created and
+# reached result metadata.
+CONTEXT_ONLY_FRAGMENTS = [
+    ("clutch_bare", "clutch stats"),
+    ("clutch_season", "clutch numbers this season"),
+    ("clutch_prepositional", "in clutch time"),
+    ("clutch_sentence", "how did they do in clutch time"),
+    ("opponent_quality_bare", "stats against winning teams"),
+    ("opponent_quality_season", "against winning teams this season"),
+    ("opponent_quality_playoff", "stats against playoff teams"),
+]
+
+
+@pytest.mark.parser
+def test_context_fragment_points_fallback_no_longer_exists():
+    """The literal fallback is gone from the source, not merely unreachable.
+
+    Scoped to the branch itself. Elsewhere in the router ``stat="pts"`` can be
+    legitimate - ``top_player_games`` serves "top scorer on January 1", where
+    the wording names scoring - so a file-wide ban would assert the wrong thing.
+    """
+    source = pathlib.Path(natural_query_module.__file__).read_text()
+
+    assert "returning a broad points leaderboard fallback" not in source
+    assert "boundary_fragment:" not in source
+
+    marker = "and (opponent_quality or clutch)"
+    assert marker in source, "the context-fragment branch moved; rescope this test"
+    branch = source.split(marker, 1)[1].split("    elif ", 1)[0]
+    assert '"stat"' not in branch, "the context-fragment branch is setting a metric again"
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "category, query", CONTEXT_ONLY_FRAGMENTS, ids=[r[0] for r in CONTEXT_ONLY_FRAGMENTS]
+)
+def test_context_fragment_gets_no_invented_metric(category, query):
+    route_kwargs = parse_query(query)["route_kwargs"]
+
+    assert "stat" not in route_kwargs, category
+    assert UNCLEAR_REQUEST in (route_kwargs.get("unsupported_filters") or []), category
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "category, query", CONTEXT_ONLY_FRAGMENTS, ids=[r[0] for r in CONTEXT_ONLY_FRAGMENTS]
+)
+def test_context_fragment_carries_no_broad_points_fallback_note(category, query):
+    notes = " ".join(parse_query(query).get("notes") or [])
+
+    assert "broad points leaderboard fallback" not in notes, category
+    assert "no substituted leaderboard was returned" in notes, category
+
+
+@pytest.mark.parametrize(
+    "category, query", CONTEXT_ONLY_FRAGMENTS, ids=[r[0] for r in CONTEXT_ONLY_FRAGMENTS]
+)
+def test_context_fragment_returns_no_points_result(category, query):
+    executed = execute_natural_query(query)
+
+    _no_substituted_answer(executed)
+    # No points metadata for the frontend to build a headline out of.
+    assert executed.metadata.get("stat") is None, category
+    assert UNCLEAR_REQUEST in _blockers(executed.metadata), category
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["Williams clutch stats", "Smith against good teams"],
+)
+def test_ambiguous_entity_stays_ambiguous(query):
+    """An unresolved name is an ambiguity, not a missing-metric refusal.
+
+    These never reach the fragment branch - entity ambiguity resolves earlier -
+    and turning them into a generic metric complaint would hide the real fix,
+    which is naming the player.
+    """
+    executed = execute_natural_query(query)
+
+    assert executed.result_reason == "ambiguous"
+    assert not _blockers(executed.metadata)
+    assert executed.metadata.get("stat") is None
+
+
+@pytest.mark.parametrize(
+    "query, expected_route",
+    [
+        ("Tatum against good teams", "player_game_summary"),
+        ("Celtics record against playoff teams", "team_record"),
+        ("Nuggets record vs winning teams", "team_record"),
+    ],
+)
+def test_opponent_quality_with_a_subject_still_answers(query, expected_route):
+    executed = execute_natural_query(query)
+
+    assert executed.route == expected_route
+    assert executed.result_status == "ok"
+    assert not _blockers(executed.metadata)
+
+
+@pytest.mark.parametrize(
+    "query, expected_route",
+    [("Tatum clutch stats", "player_game_summary"), ("Lakers clutch record", "team_record")],
+)
+def test_concrete_clutch_keeps_its_coverage_behavior(query, expected_route):
+    """A clutch question with a subject is understood; its refusal is about data.
+
+    This correction is only about subject-less fragments inventing a metric, so
+    these must keep the route and the honest coverage refusal they already had.
+    """
+    executed = execute_natural_query(query)
+
+    assert executed.route == expected_route
+    assert executed.result_reason == "filter_not_supported"
+    assert executed.metadata.get("stat") is None
+    assert UNCLEAR_REQUEST not in _blockers(executed.metadata)

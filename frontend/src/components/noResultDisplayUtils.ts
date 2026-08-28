@@ -282,8 +282,12 @@ function unsupportedBoundaryMessage(
   if (filters.includes("leaderboard_aggregation_unsupported")) {
     return "League leaderboards rank per-game figures, so season totals are not available yet. Try the same question per game \u2014 for example \u201cpoints per game leaders this season\u201d.";
   }
+  // Covers two shapes: wording the ranking cannot express ("top three point
+  // shooters"), and a bare context fragment with nothing to apply it to
+  // ("clutch stats"). Both need the same thing said - name who you mean and
+  // the stat - so the copy asks for both rather than guessing which is missing.
   if (filters.includes("leaderboard_request_unclear")) {
-    return "Part of this question has no supported meaning yet, so ranking the league would answer something you did not ask. Try a stat and a season \u2014 for example \u201ctop scorers this season\u201d.";
+    return "This does not say enough to rank on its own, so answering it would mean guessing at the question. Name the player or team you mean and the stat you want \u2014 for example \u201cTatum clutch stats\u201d or \u201ctop scorers this season\u201d.";
   }
   return null;
 }

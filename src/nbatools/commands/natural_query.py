@@ -2921,29 +2921,29 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_leaderboard_intent
         and (opponent_quality or clutch)
     ):
+        # A bare context fragment: clutch or opponent-quality with nothing to
+        # apply it to. This used to hand the leaderboard ``stat="pts"`` so the
+        # route had something to rank, which invented a metric the question
+        # never named - the same defect the eligibility gate below exists to
+        # stop, reached by a branch that runs before it. Naming a stat would
+        # not rescue these either: with no player, team, or population there is
+        # no ranking request to complete, so the request is unclear rather than
+        # merely metric-less.
         route = "season_leaders"
-        route_kwargs = {
-            "season": season or default_season_for_context(season_type),
-            "stat": "pts",
-            "limit": top_n or 10,
-            "season_type": season_type,
-            "min_games": min_games or 1,
-            "ascending": False,
-            "start_date": start_date,
-            "end_date": end_date,
-            "start_season": start_season,
-            "end_season": end_season,
-            "opponent": opponent,
-            "position": position_filter,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "last_n": last_n,
-        }
+        route_kwargs = _unsupported_route_kwargs(
+            LEADERBOARD_REQUEST_UNCLEAR,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
         notes.append(
-            "boundary_fragment: context detected without a player, team, or stat; "
-            "returning a broad points leaderboard fallback"
+            "unsupported_boundary: "
+            f"{'clutch' if clutch else 'opponent-quality'} context was requested with "
+            "no player, team, or stat to apply it to; no substituted leaderboard was "
+            "returned"
         )
     elif (_lb := metric_only_leaderboard_default(parsed))[0] and not (
         _elig := assess_leaderboard_request(parsed)
