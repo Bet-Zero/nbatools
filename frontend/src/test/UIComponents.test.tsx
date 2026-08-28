@@ -417,6 +417,78 @@ describe("NoResultDisplay", () => {
     expect(screen.queryByText("unsupported_concept")).not.toBeInTheDocument();
   });
 
+  it("asks which stat when a ranking names none", () => {
+    // "best NBA teams this season" used to return a points-per-game
+    // leaderboard. The card must ask for a stat, and must never name one the
+    // user did not ask for.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          query_text: "best NBA teams this season",
+          unsupported_filters: ["leaderboard_metric_required"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Which Stat?")).toBeInTheDocument();
+    expect(
+      screen.getByText(/League rankings need a stat to rank by/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says season totals are unsupported rather than showing per-game", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "reb",
+          query_text: "players with the most total rebounds",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(screen.getByText(/rank per-game figures/)).toBeInTheDocument();
+    // The metric resolved, but naming it here would imply the board ran.
+    expect(
+      screen.queryByText("Rebounds is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not name a metric for a ranking it could not fully read", () => {
+    // "top three point shooters" resolved to pts at the base. The card must
+    // not announce anything about points.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          stat: "pts",
+          query_text: "top three point shooters",
+          unsupported_filters: ["leaderboard_request_unclear"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Which Stat?")).toBeInTheDocument();
+    expect(
+      screen.getByText(/has no supported meaning yet/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
   it("guides recent defensive-rating unsupported queries to safe alternatives", () => {
     render(
       <NoResultDisplay

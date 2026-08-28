@@ -2649,19 +2649,22 @@ cases:
     query: "Which players have the most total rebounds this year?"
     category: leaderboard
     priority: p1
-    answer_text_policy: frontend_hero_expected
-    expected_status: ok
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
     expected_route: season_leaders
-    expected_shape: leaderboard_table
-    expected_sections:
-      - leaderboard
-    review_notes: "Total-rebounds leaderboard phrasing."
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: leaderboard_aggregation_unsupported
+    review_notes: "This case was flagged unreviewed with exactly this open question: does total-rebound wording map to the rebound leaderboard? It did, and the leaderboard ranks reb_per_game - so the answer to an explicit season-total request was a per-game board. Owner decision: season totals are not supported, so refuse rather than answer a different question."
     manual_review:
-      status: unreviewed
+      status: expected_unsupported
       tags:
         - stat_mapping
-        - phrasing_variant
-      notes: "Review that total rebound wording maps to the intended rebound leaderboard."
+        - aggregation
+      notes: "Refuses until season-total leaderboards exist. Per-game phrasing is unaffected."
 
   - id: assists_per_game_right_now
     query: "Who is averaging the most assists per game right now?"

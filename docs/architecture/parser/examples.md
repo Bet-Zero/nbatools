@@ -71,6 +71,14 @@ Primary class: `leaderboard`
 9. Who has the highest true shooting percentage this season?
 10. What teams have the best net rating this year?
 
+_Current boundary note:_ league leaderboards rank per-game figures, so an
+explicit season-total ranking such as `Which players have the most total
+rebounds this year?` returns typed `no_result` / `filter_not_supported` rather
+than a per-game board. `most rebounds this year` and `rebounds per game leaders`
+are unaffected. A ranking that names no stat at all (`NBA leaders this season`,
+`best NBA teams this season`, `playoff leaders since 2010`) refuses the same
+way: there is no default metric, and points is not inferred.
+
 _Current support note:_ `personal fouls leaders` / `PF leaders` and `most
 minutes` route through `season_leaders` and rank the named box-score stat by
 season total. `rookie scoring leaders` applies the roster-experience gate, while

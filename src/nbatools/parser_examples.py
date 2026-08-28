@@ -99,6 +99,10 @@ def expected_for(query: str, section: str, subsection: str) -> tuple[str, str]:
         "above .600",
     )
     future_or_unsupported = (
+        # League leaderboards rank per-game figures, so an explicit season-total
+        # ranking is a different question the product does not answer yet.
+        "most total rebounds",
+        "total points leaders",
         "co-star",
         "star teammate",
         "leading scorer",

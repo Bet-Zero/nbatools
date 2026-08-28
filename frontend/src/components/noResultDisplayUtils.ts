@@ -237,6 +237,15 @@ export function unsupportedBoundaryTitle(
   if (filters.includes("opponent_conference")) {
     return "Unavailable Filter";
   }
+  if (
+    filters.includes("leaderboard_metric_required") ||
+    filters.includes("leaderboard_request_unclear")
+  ) {
+    return "Which Stat?";
+  }
+  if (filters.includes("leaderboard_aggregation_unsupported")) {
+    return "Unsupported Ranking";
+  }
   return null;
 }
 
@@ -264,6 +273,17 @@ function unsupportedBoundaryMessage(
   }
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";
+  }
+  // A ranking with no stat in it. Naming a metric here would answer a question
+  // nobody asked, so ask which one instead.
+  if (filters.includes("leaderboard_metric_required")) {
+    return "League rankings need a stat to rank by. Try naming one \u2014 for example \u201ctop scorers this season\u201d, \u201cmost rebounds this season\u201d, or \u201cbest defensive teams\u201d.";
+  }
+  if (filters.includes("leaderboard_aggregation_unsupported")) {
+    return "League leaderboards rank per-game figures, so season totals are not available yet. Try the same question per game \u2014 for example \u201cpoints per game leaders this season\u201d.";
+  }
+  if (filters.includes("leaderboard_request_unclear")) {
+    return "Part of this question has no supported meaning yet, so ranking the league would answer something you did not ask. Try a stat and a season \u2014 for example \u201ctop scorers this season\u201d.";
   }
   return null;
 }
