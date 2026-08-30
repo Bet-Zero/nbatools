@@ -449,7 +449,9 @@ describe("NoResultDisplay", () => {
         status="no_result"
         metadata={{
           route: "season_leaders",
-          stat: "reb",
+          // No `stat`: nothing ran. The metric the refusal is *about* travels
+          // in `requested_stat`, which is what the backend now publishes.
+          requested_stat: "reb",
           query_text: "players with the most total rebounds",
           unsupported_filters: ["leaderboard_aggregation_unsupported"],
         }}
@@ -497,7 +499,7 @@ describe("NoResultDisplay", () => {
         status="no_result"
         metadata={{
           route: "season_team_leaders",
-          stat: "off_rating",
+          requested_stat: "off_rating",
           query_text: "best offensive teams from 2022-23 to 2024-25",
           unsupported_filters: ["leaderboard_metric_unavailable_for_scope"],
         }}
@@ -523,7 +525,8 @@ describe("NoResultDisplay", () => {
         status="no_result"
         metadata={{
           route: "season_leaders",
-          stat: "pts",
+          // Neither `stat` nor `requested_stat`: the product could not read
+          // the whole question, so it has no metric it can honestly report.
           query_text: "top three point shooters",
           unsupported_filters: ["leaderboard_request_unclear"],
         }}
@@ -537,6 +540,103 @@ describe("NoResultDisplay", () => {
     expect(
       screen.queryByText("Points is not available for this query."),
     ).not.toBeInTheDocument();
+  });
+
+  // Opening Details is the only way to see these notes: the disclosure body is
+  // not rendered while it is closed, so a collapsed-card assertion cannot see
+  // what a reader sees after one click. Every case below opens it.
+  describe("opened Details never shows an internal blocker id", () => {
+    // The exact shapes the backend publishes for each boundary refusal: the
+    // human boundary note, then the generic "<id> filter is not supported"
+    // fallback that rendered the identifier verbatim.
+    const BOUNDARY_CASES = [
+      {
+        id: "leaderboard_metric_required",
+        boundaryNote:
+          "unsupported_boundary: this asks for a ranking without naming a stat to rank by, and there is no default metric; no substituted leaderboard was returned",
+        query: "best players this season",
+      },
+      {
+        id: "leaderboard_multiple_metrics_unsupported",
+        boundaryNote:
+          "unsupported_boundary: this asks for more than one stat, and a ranking orders by exactly one; no substituted leaderboard was returned",
+        query: "points and rebounds leaders this season",
+      },
+      {
+        id: "leaderboard_aggregation_unsupported",
+        boundaryNote:
+          "unsupported_boundary: this asks for a season total of a stat the leaderboard ranks per game; no substituted leaderboard was returned",
+        query: "total points leaders this season",
+      },
+      {
+        id: "leaderboard_metric_unavailable_for_scope",
+        boundaryNote:
+          "unsupported_boundary: the requested stat is not available for that window; no substituted leaderboard was returned",
+        query: "best offensive teams from 2022-23 to 2024-25",
+      },
+      {
+        id: "leaderboard_request_unclear",
+        boundaryNote:
+          "unsupported_boundary: part of this request is outside what a ranking can express; no substituted leaderboard was returned",
+        query: "top three point shooters this season",
+      },
+    ];
+
+    it.each(BOUNDARY_CASES)(
+      "$id is never rendered as text",
+      ({ id, boundaryNote, query }) => {
+        const genericNote = `${id} filter is not supported with current data; try removing this filter or asking for standard player, team, or game stats (blocked: ${id})`;
+        const { container } = render(
+          <NoResultDisplay
+            reason="filter_not_supported"
+            status="no_result"
+            notes={[boundaryNote, genericNote]}
+            metadata={{
+              route: "season_leaders",
+              query_text: query,
+              unsupported_filters: [id],
+              notes: [genericNote],
+            }}
+          />,
+        );
+
+        const summary = screen.queryByText("Details");
+        if (summary) fireEvent.click(summary);
+
+        expect(container.textContent).not.toContain(id);
+        expect(container.textContent).not.toContain("blocked:");
+        expect(container.textContent).not.toContain("unsupported_boundary");
+      },
+    );
+
+    it("keeps ordinary notes that are not the blocker record", () => {
+      // Suppression is scoped to the boundary's own duplicate notes. A real
+      // caveat about the data still has to reach the reader.
+      const { container } = render(
+        <NoResultDisplay
+          reason="filter_not_supported"
+          status="no_result"
+          notes={[
+            "unsupported_boundary: this asks for a ranking without naming a stat to rank by, and there is no default metric; no substituted leaderboard was returned",
+          ]}
+          caveats={["Rookie experience coverage is incomplete before 2015-16."]}
+          metadata={{
+            route: "season_leaders",
+            query_text: "best rookies",
+            unsupported_filters: ["leaderboard_metric_required"],
+          }}
+        />,
+      );
+
+      fireEvent.click(screen.getByText("Details"));
+
+      expect(
+        screen.getByText(
+          "Rookie experience coverage is incomplete before 2015-16.",
+        ),
+      ).toBeInTheDocument();
+      expect(container.textContent).not.toContain("leaderboard_metric_required");
+    });
   });
 
   it("asks for a subject and a stat for a bare context fragment", () => {

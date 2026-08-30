@@ -36,6 +36,7 @@ import pandas as pd
 
 from nbatools.commands._condition_utils import normalize_stat_conditions
 from nbatools.commands._constants import contains_boolean_or
+from nbatools.commands._leaderboard_eligibility import is_boundary_refusal
 from nbatools.commands._natural_query_execution import (
     _execute_build_result,
     _execute_grouped_boolean_build_result,
@@ -505,8 +506,7 @@ def _build_query_metadata(
 ) -> dict[str, Any]:
     """Build metadata dict from a parsed query state.
 
-    This mirrors ``_build_metadata_dict`` in natural_query.py but is
-    decoupled from CLI-specific concerns.
+    Decoupled from CLI-specific concerns.
     """
     if not parsed:
         return {"query_text": query}
@@ -595,7 +595,17 @@ def _build_query_metadata(
             dedupe_players=route_kwargs.get("dedupe_players"),
         ),
         "min_streak_length": route_kwargs.get("min_streak_length"),
-        "stat": parsed.get("stat") or route_kwargs.get("stat"),
+        # A refused ranking executed nothing, so it publishes no metric. The
+        # parser's own `stat` is a detector reading, and presenting it here as
+        # the answer metric is how a refusal came to look like a partial
+        # answer. What was asked for is published separately, below.
+        "stat": (
+            None
+            if is_boundary_refusal(route_kwargs)
+            else parsed.get("stat") or route_kwargs.get("stat")
+        ),
+        "requested_stat": route_kwargs.get("requested_stat"),
+        "requested_metrics": route_kwargs.get("requested_metrics"),
         "min_value": (
             parsed.get("min_value")
             if parsed.get("min_value") is not None

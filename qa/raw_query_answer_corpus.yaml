@@ -2426,8 +2426,10 @@ cases:
       - path: result.metadata.unsupported_filters.0
         equals: leaderboard_metric_unavailable_for_scope
       - path: result.metadata.stat
+        equals: null
+      - path: result.metadata.requested_stat
         equals: off_rating
-    review_notes: "The date is recognized, but a date-window team offensive-rating leaderboard is not source-backed and must not fall back to points or a full-season answer. The blocker now names that specifically instead of the generic unsupported_concept, and metadata reports the stat that was actually requested rather than the points it used to be swapped for."
+    review_notes: "The date is recognized, but a date-window team offensive-rating leaderboard is not source-backed and must not fall back to points or a full-season answer. The blocker names that specifically instead of the generic unsupported_concept. No ranking ran, so metadata.stat is absent rather than reporting a metric as executed; the stat that was actually requested is reported as requested_stat, which is where it was previously published as stat."
     manual_review:
       status: expected_unsupported
       tags:

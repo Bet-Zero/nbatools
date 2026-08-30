@@ -48,24 +48,50 @@ const MONTH_LABELS = [
   "Dec",
 ];
 
+// The blocker ids the metric boundary raises. They are stable identifiers for
+// the backend and for tests, never product copy: each one already has human
+// wording on the card, so a Details entry naming the id is a leak, not a
+// detail. Kept in sync with BOUNDARY_FILTERS in _leaderboard_eligibility.py.
+const LEADERBOARD_BOUNDARY_IDS = [
+  "leaderboard_metric_required",
+  "leaderboard_aggregation_unsupported",
+  "leaderboard_request_unclear",
+  "leaderboard_multiple_metrics_unsupported",
+  "leaderboard_metric_unavailable_for_scope",
+] as const;
+
 export function buildNoResultDetails(
   notes: string[] = [],
   caveats: string[] = [],
   metadata?: ResultMetadata | null,
 ): NoResultDetail[] {
+  // A boundary refusal already says everything it has to say in the headline
+  // copy. Its remaining notes are the internal record of the same decision, so
+  // opening Details would only repeat the message in the product's own
+  // vocabulary of blocker ids.
+  const boundaryRefusal = unsupportedFilters(metadata).some((filter) =>
+    LEADERBOARD_BOUNDARY_IDS.includes(
+      filter as (typeof LEADERBOARD_BOUNDARY_IDS)[number],
+    ),
+  );
+  const keep = (text: string): boolean =>
+    !boundaryRefusal || !/^unsupported_boundary:/i.test(text.trim());
+
   return uniqueDetails([
-    ...productFacingNotices(notes).map((text) => ({
+    ...productFacingNotices(notes.filter(keep)).map((text) => ({
       kind: "Note" as const,
       text,
     })),
-    ...productFacingNotices(caveats).map((text) => ({
+    ...productFacingNotices(caveats.filter(keep)).map((text) => ({
       kind: "Caveat" as const,
       text,
     })),
-    ...productFacingNotices(metadataNotes(metadata?.notes)).map((text) => ({
-      kind: "Note" as const,
-      text,
-    })),
+    ...productFacingNotices(metadataNotes(metadata?.notes).filter(keep)).map(
+      (text) => ({
+        kind: "Note" as const,
+        text,
+      }),
+    ),
   ]);
 }
 
@@ -99,6 +125,11 @@ export function productFacingNotice(text: string): string | null {
 
   if (/^default:\s*<metric> only/i.test(trimmed)) return null;
   if (/^leaderboard_source:/i.test(trimmed)) return null;
+
+  // Last line of defence: a note that names an internal blocker id is never
+  // product copy. The backend's generic "<id> filter is not supported with
+  // current data" fallback rendered the identifier verbatim in Details.
+  if (LEADERBOARD_BOUNDARY_IDS.some((id) => trimmed.includes(id))) return null;
 
   return trimmed;
 }
@@ -505,7 +536,15 @@ function metricFromMetadata(
   metadata: ResultMetadata | null | undefined,
 ): string | null {
   if (!metadata) return null;
-  for (const key of ["stat", "metric", "target_stat", "target_metric"]) {
+  // `requested_stat` first: on a refusal it is the only truthful metric, and
+  // `stat` is deliberately absent because nothing ran.
+  for (const key of [
+    "requested_stat",
+    "stat",
+    "metric",
+    "target_stat",
+    "target_metric",
+  ]) {
     const value = metadata[key];
     if (typeof value === "string" && value.trim()) return value.trim();
   }

@@ -119,6 +119,14 @@ STAT_ALIASES: dict[str, str] = {
     "three-pointers attempted": "fg3a",
     "three-pointer attempts": "fg3a",
     "three-pointer attempted": "fg3a",
+    # The adjectival long form. Its siblings already carry it - "three-point
+    # makes" for fg3m, "three point percentage" for fg3_pct - so "3PA" was the
+    # only one of the three whose spelled-out form did not resolve, and
+    # "total three-point attempts leaders" was read as a points request.
+    "three point attempts": "fg3a",
+    "three-point attempts": "fg3a",
+    "three point attempted": "fg3a",
+    "three-point attempted": "fg3a",
     "threes attempted": "fg3a",
     "three attempts": "fg3a",
     "3pa": "fg3a",

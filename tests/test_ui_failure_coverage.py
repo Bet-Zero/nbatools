@@ -1446,7 +1446,11 @@ class TestDateFilterDropPrevention:
         assert offensive.metadata["unsupported_filters"] == [
             "leaderboard_metric_unavailable_for_scope"
         ]
-        assert offensive.metadata["stat"] == "off_rating"
+        # No ranking ran, so no metric is published as the one that did. The
+        # metric the refusal is about travels in `requested_stat`; publishing
+        # it as `stat` made a refusal look like it had settled on an answer.
+        assert offensive.metadata["stat"] is None
+        assert offensive.metadata["requested_stat"] == "off_rating"
         assert offensive.metadata["start_date"] == "2026-01-01"
         assert offensive.metadata["end_date"] is None
         assert offensive.metadata.get("applied_filters", []) == []

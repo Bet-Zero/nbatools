@@ -13,6 +13,14 @@ The negative matrix is deliberately one row per *semantic category*, not a list
 of synonyms. Understanding narrative language is not a Phase 1 goal; the only
 requirement is that it cannot be silently discarded on the way to a different
 answer.
+
+Scope. These tests cover the ranking branches that *choose* a metric from the
+query - the inventory in section 9 - and nothing wider. They do not claim that
+every ranking route, or every unexecuted qualifier, is governed. Fixed-metric,
+occurrence, stretch, lineup, playoff and decade routes are listed as deferred
+and only pinned as *left alone*; compound threshold/event routing, availability
+conditions on every route, and filter execution receipts are separate projects.
+See ``docs/architecture/parser/leaderboard_metric_boundary.md``.
 """
 
 from __future__ import annotations
@@ -499,78 +507,220 @@ def test_concrete_clutch_keeps_its_coverage_behavior(query, expected_route):
 
 
 # ---------------------------------------------------------------------------
-# 9. The metric boundary governs every ranking-producing route family
+# 9. The variable-metric ranking branches this PR governs
 # ---------------------------------------------------------------------------
 
-# Test-owned inventory. Each row is a route family that can return a ranked
-# list, with a query that names a metric and one that does not. The point is to
-# be independent of the router: a new specialized branch that forgets the guard
-# fails here even though every other test still passes, because a metricless
-# query for its family will come back populated.
+# Test-owned inventory of the branches inside PR #295's scope: the ranking
+# branches that *choose* their metric from the query. Each row is one such
+# branch, with a query that names a metric and one that does not.
 #
-# (family, metric-named query, metricless query)
-RANKING_ROUTE_FAMILIES = [
-    ("season_leaders", "points leaders this season", "top players this season"),
-    ("season_team_leaders", "teams with the most points per game", "best teams overall"),
-    ("rookie_leaderboard", "rookie scoring leaders this season", "rookie leaders this season"),
-    ("sophomore_leaderboard", "sophomore assist leaders this season", "best sophomores"),
-    ("starter_leaderboard", "starter points leaders this season", "starter leaders"),
-    ("bench_leaderboard", "bench assist leaders this season", "bench leaders"),
+# This is deliberately not a claim about every route that can return a ranked
+# list. Fixed-metric routes, occurrence, stretch, lineup, playoff and decade
+# routes pick no metric, so this boundary has nothing to decide for them; they
+# are listed in DEFERRED_RANKING_ROUTE_FAMILIES and are Phase 1C work.
+#
+# The point of owning the list here is to stay independent of the router: a new
+# variable-metric branch that forgets the guard fails on this row even though
+# every other test still passes, because its metricless query comes back
+# populated.
+#
+# (family, metric query, expected route, expected metric, metricless query,
+#  expected refusal route, expected blocker)
+VARIABLE_METRIC_RANKING_BRANCHES = [
+    (
+        "league_player_leaderboard",
+        "points leaders this season",
+        "season_leaders",
+        "pts",
+        "best players this season",
+        "season_leaders",
+        NO_REQUESTED_METRIC,
+    ),
+    (
+        "league_team_leaderboard",
+        "teams with the most points per game",
+        "season_team_leaders",
+        "pts",
+        "best teams overall",
+        "season_team_leaders",
+        NO_REQUESTED_METRIC,
+    ),
+    (
+        "rookie_leaderboard",
+        "rookie scoring leaders this season",
+        "season_leaders",
+        "pts",
+        "rookie leaders this season",
+        "season_leaders",
+        NO_REQUESTED_METRIC,
+    ),
+    (
+        "sophomore_leaderboard",
+        "sophomore assist leaders this season",
+        "season_leaders",
+        "ast",
+        "best sophomores",
+        "season_leaders",
+        NO_REQUESTED_METRIC,
+    ),
+    (
+        "starter_leaderboard",
+        "starter points leaders this season",
+        "season_leaders",
+        "pts",
+        "starter leaders",
+        "season_leaders",
+        NO_REQUESTED_METRIC,
+    ),
+    (
+        "bench_leaderboard",
+        "bench assist leaders this season",
+        "season_leaders",
+        "ast",
+        "bench leaders",
+        "season_leaders",
+        NO_REQUESTED_METRIC,
+    ),
     (
         "top_team_games",
         "highest scoring team games this season",
+        "top_team_games",
+        "pts",
         "best team performances this season",
+        "top_team_games",
+        NO_REQUESTED_METRIC,
     ),
-    ("top_player_games", "top scoring games this season", "top players this season"),
-    ("team_scoped_leader", "Lakers leading scorer", "Lakers record without their leading scorer"),
+    (
+        "top_player_games",
+        "top scoring games this season",
+        "top_player_games",
+        "pts",
+        "best performances this season",
+        "top_player_games",
+        NO_REQUESTED_METRIC,
+    ),
+    (
+        "team_scoped_player_leader",
+        "Lakers leading scorer",
+        "season_leaders",
+        "pts",
+        "Lakers record without their leading scorer",
+        "season_leaders",
+        UNCLEAR_REQUEST,
+    ),
 ]
 
-#: Route families whose metric is fixed by the route itself rather than chosen
-#: from the query, so "no metric named" is not a possible request for them.
-FIXED_METRIC_RANKING_ROUTES = {
+#: Ranking route families this PR does **not** govern, and does not claim to.
+#: Their metric is fixed by the route or supplied by a named event, so "which
+#: stat?" is not a question they can be asked. Whether they drop an
+#: unsupported extra clause is a real defect and a real project - Phase 1C -
+#: but it is not this boundary's decision and is not tested here.
+DEFERRED_RANKING_ROUTE_FAMILIES = {
     # Ranks win percentage by definition; "best team record" names it.
     "team_record_leaderboard",
-    # Ranks occurrences of a named event ("most 40 point games"), which the
+    # Rank occurrences of a named event ("most triple doubles"), which the
     # event itself supplies.
     "player_occurrence_leaders",
+    "team_occurrence_leaders",
+    # Ranks a rolling window by a stretch metric resolved elsewhere.
+    "player_stretch_leaderboard",
+    # Playoff, decade and lineup rankings, whose metric is the route's subject.
+    "playoff_appearances",
+    "playoff_round_record",
+    "record_by_decade_leaderboard",
+    "lineup_leaderboard",
 }
 
+#: Fixed-metric routes with a query that must keep answering, and the metric
+#: the route supplies for itself. Used to prove the boundary leaves them alone.
+FIXED_METRIC_RANKING_ROUTES = [
+    ("team_record_leaderboard", "best team record", "win_pct"),
+    ("player_occurrence_leaders", "most triple doubles this season", None),
+]
+
 
 @pytest.mark.parametrize(
-    "family, with_metric, _without",
-    RANKING_ROUTE_FAMILIES,
-    ids=[r[0] for r in RANKING_ROUTE_FAMILIES],
+    "family, with_metric, expected_route, expected_metric, _without, _refusal_route, _blocker",
+    VARIABLE_METRIC_RANKING_BRANCHES,
+    ids=[r[0] for r in VARIABLE_METRIC_RANKING_BRANCHES],
 )
-def test_ranking_family_answers_when_a_metric_is_named(family, with_metric, _without):
+def test_ranking_branch_answers_when_a_metric_is_named(
+    family, with_metric, expected_route, expected_metric, _without, _refusal_route, _blocker
+):
     executed = execute_natural_query(with_metric)
 
+    assert executed.route == expected_route, f"{family}: {with_metric!r} changed route"
     assert executed.result_status == "ok", f"{family}: {with_metric!r} stopped answering"
-    assert executed.metadata.get("stat"), family
+    assert executed.metadata.get("stat") == expected_metric, family
+    assert not _blockers(executed.metadata), family
 
 
 @pytest.mark.parametrize(
-    "family, _with_metric, without",
-    RANKING_ROUTE_FAMILIES,
-    ids=[r[0] for r in RANKING_ROUTE_FAMILIES],
+    "family, _with_metric, _expected_route, _expected_metric, without, refusal_route, blocker",
+    VARIABLE_METRIC_RANKING_BRANCHES,
+    ids=[r[0] for r in VARIABLE_METRIC_RANKING_BRANCHES],
 )
-def test_ranking_family_refuses_when_no_metric_is_named(family, _with_metric, without):
+def test_ranking_branch_refuses_when_no_metric_is_named(
+    family, _with_metric, _expected_route, _expected_metric, without, refusal_route, blocker
+):
     executed = execute_natural_query(without)
 
     _no_substituted_answer(executed)
-    assert _blockers(executed.metadata), f"{family}: refused with no blocker"
+    assert executed.route == refusal_route, family
+    assert blocker in _blockers(executed.metadata), family
+    # Nothing ran, so nothing may be published as the metric that did.
+    assert executed.metadata.get("stat") is None, family
+    # Neither of these questions named a metric or named several, so there is
+    # no requested-metric reading to publish either. A value here would be the
+    # detector's pick wearing a different field name.
+    assert executed.metadata.get("requested_stat") is None, family
+    assert executed.metadata.get("requested_metrics") is None, family
 
 
 @pytest.mark.parser
 @pytest.mark.parametrize(
-    "family, _with_metric, without",
-    RANKING_ROUTE_FAMILIES,
-    ids=[r[0] for r in RANKING_ROUTE_FAMILIES],
+    "family, _with_metric, _expected_route, _expected_metric, without, _refusal_route, _blocker",
+    VARIABLE_METRIC_RANKING_BRANCHES,
+    ids=[r[0] for r in VARIABLE_METRIC_RANKING_BRANCHES],
 )
-def test_ranking_family_never_invents_a_metric(family, _with_metric, without):
+def test_ranking_branch_never_invents_a_metric(
+    family, _with_metric, _expected_route, _expected_metric, without, _refusal_route, _blocker
+):
     """No ranking branch may hand its route a metric the query did not name."""
     route_kwargs = parse_query(without)["route_kwargs"]
 
     assert "stat" not in route_kwargs or route_kwargs["stat"] is None, family
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "family, expected_query, expected_metric",
+    FIXED_METRIC_RANKING_ROUTES,
+    ids=[r[0] for r in FIXED_METRIC_RANKING_ROUTES],
+)
+def test_fixed_metric_route_is_left_alone_by_this_boundary(family, expected_query, expected_metric):
+    """A route that supplies its own metric is never asked "which stat?".
+
+    These are outside PR #295's scope on purpose. Pinning them here keeps the
+    boundary from quietly growing into route families whose residual-clause
+    behavior this PR has not audited.
+    """
+    parsed = parse_query(expected_query)
+
+    assert parsed["route"] == family
+    assert not (parsed["route_kwargs"].get("unsupported_filters") or [])
+    if expected_metric is not None:
+        assert parsed["route_kwargs"].get("stat") == expected_metric
+    assert family in DEFERRED_RANKING_ROUTE_FAMILIES
+
+
+@pytest.mark.parser
+def test_deferred_route_families_are_not_claimed_by_the_inventory():
+    """The two lists stay disjoint, so the PR's scope claim stays honest."""
+    governed = {row[2] for row in VARIABLE_METRIC_RANKING_BRANCHES}
+    governed |= {row[5] for row in VARIABLE_METRIC_RANKING_BRANCHES}
+
+    assert not (governed & DEFERRED_RANKING_ROUTE_FAMILIES)
 
 
 @pytest.mark.parser
@@ -830,3 +980,210 @@ def test_team_scoped_leaders_still_answer(query, expected_route, expected_metric
     assert executed.route == expected_route
     assert executed.result_status == "ok"
     assert executed.metadata.get("stat") == expected_metric
+
+
+# ---------------------------------------------------------------------------
+# 16. A refusal publishes what was asked for, never what a detector picked
+# ---------------------------------------------------------------------------
+
+# The rows are refused, but the public metadata still presented one
+# detector-selected stat: `points and rebounds leaders` published `stat=reb`,
+# `best offense and defense` published `stat=off_rating`, and both ambiguous
+# three-point forms published `stat=pts`. A reader - or anything reading the
+# envelope - saw a refusal that had apparently settled on a metric.
+#
+# The contract these pin:
+#   * `stat` is absent on every boundary refusal, because no ranking ran;
+#   * `requested_stat` names the one explicit metric a refusal is *about*,
+#     which only the aggregation and scope refusals have;
+#   * `requested_metrics` carries the whole list when several were named, and
+#     is absent rather than reduced to one;
+#   * a refusal that could not read the whole question publishes neither.
+#
+# (query, expected blocker, expected requested_stat, expected requested_metrics)
+REFUSAL_METADATA_CONTRACT = [
+    (
+        "points and rebounds leaders this season",
+        MULTIPLE_METRICS,
+        None,
+        ["pts", "reb"],
+    ),
+    (
+        "scoring and assists leaders this season",
+        MULTIPLE_METRICS,
+        None,
+        ["pts", "ast"],
+    ),
+    ("best offense and defense this season", UNCLEAR_REQUEST, None, None),
+    ("field goals made and attempted leaders", UNCLEAR_REQUEST, None, None),
+    ("NBA three point leaders this season", UNCLEAR_REQUEST, None, None),
+    ("top three point shooters this season", UNCLEAR_REQUEST, None, None),
+    ("total points leaders this season", UNSUPPORTED_AGGREGATION, "pts", None),
+    (
+        "best offensive teams from 2022-23 to 2024-25",
+        METRIC_SCOPE_UNSUPPORTED,
+        "off_rating",
+        None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "query, blocker, requested_stat, requested_metrics",
+    REFUSAL_METADATA_CONTRACT,
+    ids=[r[0] for r in REFUSAL_METADATA_CONTRACT],
+)
+def test_refusal_publishes_no_executed_stat(query, blocker, requested_stat, requested_metrics):
+    executed = execute_natural_query(query)
+    metadata = executed.metadata
+
+    assert blocker in _blockers(metadata), query
+    # The defect: a refused ranking that still names one metric as its stat.
+    assert metadata.get("stat") is None, query
+    assert metadata.get("requested_stat") == requested_stat, query
+    assert metadata.get("requested_metrics") == requested_metrics, query
+    _no_substituted_answer(executed)
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "query, blocker, requested_stat, requested_metrics",
+    REFUSAL_METADATA_CONTRACT,
+    ids=[r[0] for r in REFUSAL_METADATA_CONTRACT],
+)
+def test_refusal_route_kwargs_carry_no_selected_stat(
+    query, blocker, requested_stat, requested_metrics
+):
+    """The metric must not reach the route either, not just the metadata."""
+    route_kwargs = parse_query(query)["route_kwargs"]
+
+    assert "stat" not in route_kwargs or route_kwargs["stat"] is None, query
+    assert route_kwargs.get("requested_stat") == requested_stat, query
+    assert route_kwargs.get("requested_metrics") == requested_metrics, query
+    # The refusal record itself reports no executed metric.
+    assert "metric" not in route_kwargs["leaderboard_eligibility"], query
+
+
+@pytest.mark.parser
+def test_several_requested_metrics_are_published_whole_or_not_at_all():
+    """A one-entry list beside a "more than one stat" refusal is the bug."""
+    eligibility = assess_leaderboard_request(
+        _build_parse_state("points and rebounds leaders this season")
+    )
+
+    assert eligibility.published_requested_metrics == ("pts", "reb")
+    assert eligibility.published_requested_stat is None
+
+    single = assess_leaderboard_request(_build_parse_state("total points leaders"))
+    assert single.published_requested_metrics == ()
+    assert single.published_requested_stat == "pts"
+
+
+@pytest.mark.parser
+def test_unclear_request_publishes_no_metric_at_all():
+    """`metric` is set for an unclear request, but it is a partial reading.
+
+    `top three point shooters` resolves `pts` internally because "point" is a
+    points alias. Publishing that as the requested metric would answer for the
+    user; the honest report is that the question could not be read in full.
+    """
+    eligibility = assess_leaderboard_request(
+        _build_parse_state("top three point shooters this season")
+    )
+
+    assert eligibility.reason == UNCLEAR_REQUEST
+    assert eligibility.published_requested_stat is None
+    assert eligibility.published_requested_metrics == ()
+
+
+# ---------------------------------------------------------------------------
+# 17. Total-backed metrics: every documented form resolves
+# ---------------------------------------------------------------------------
+
+# `total 3PA leaders` worked and `total three-point attempts leaders` did not:
+# the long adjectival form was missing from the metric vocabulary, so "point"
+# won and the question was read as a points request and then refused for
+# aggregation. Its siblings already carried the same form - `three-point makes`
+# for fg3m, `three point percentage` for fg3_pct - so 3PA was the odd one out.
+TOTAL_BACKED_CONTROLS = [
+    ("total personal fouls leaders", "pf"),
+    ("total minutes leaders", "minutes"),
+    ("total field goals made leaders", "fgm"),
+    ("total field goals attempted leaders", "fga"),
+    ("total 3PA leaders", "fg3a"),
+    ("total three-point attempts leaders", "fg3a"),
+    ("total three point attempts leaders", "fg3a"),
+    ("total free throws made leaders", "ftm"),
+    ("total free throws attempted leaders", "fta"),
+]
+
+
+@pytest.mark.parametrize(
+    "query, expected_metric", TOTAL_BACKED_CONTROLS, ids=[r[0] for r in TOTAL_BACKED_CONTROLS]
+)
+def test_total_backed_metric_answers(query, expected_metric):
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok", f"{query!r} refused a total it does rank"
+    assert executed.metadata.get("stat") == expected_metric, query
+    assert ranks_a_season_total(expected_metric, team_scope=False), expected_metric
+    assert len(executed.result.leaders) > 0
+
+
+PER_GAME_BACKED_TOTALS = [
+    ("total points leaders", "pts"),
+    ("total rebounds leaders", "reb"),
+    ("total assists leaders", "ast"),
+    ("total steals leaders", "stl"),
+    ("total blocks leaders", "blk"),
+    ("total turnovers leaders", "tov"),
+]
+
+
+@pytest.mark.parametrize(
+    "query, metric", PER_GAME_BACKED_TOTALS, ids=[r[0] for r in PER_GAME_BACKED_TOTALS]
+)
+def test_per_game_backed_total_still_refuses(query, metric):
+    executed = execute_natural_query(query)
+
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
+    assert not ranks_a_season_total(metric, team_scope=False), metric
+    # The metric is what the user asked for, not what ran.
+    assert executed.metadata.get("stat") is None, query
+    assert executed.metadata.get("requested_stat") == metric, query
+    _no_substituted_answer(executed)
+
+
+@pytest.mark.parser
+def test_every_documented_total_backed_form_resolves_to_its_metric():
+    """The route's vocabulary and the detector's must not drift apart.
+
+    Both sides have to agree, or an alias the route documents becomes a form
+    the router cannot reach - which is exactly how `three-point attempts`
+    became a points question.
+    """
+    from nbatools.commands._leaderboard_utils import detect_player_leaderboard_stat
+    from nbatools.commands.season_leaders import ALLOWED_STATS
+
+    total_backed = {
+        form: column for form, column in ALLOWED_STATS.items() if str(column).endswith("_total")
+    }
+    unreachable = []
+    for form, column in total_backed.items():
+        if form.endswith("_total"):
+            continue
+        detected = detect_player_leaderboard_stat(f"total {form} leaders")
+        if detected is None or ALLOWED_STATS.get(detected) != column:
+            unreachable.append((form, column, detected))
+
+    assert not unreachable, f"documented total-backed forms the router cannot reach: {unreachable}"
+
+
+@pytest.mark.parser
+def test_deferred_route_families_name_real_routes():
+    """The deferred list has to keep naming routes that exist to stay honest."""
+    from nbatools.route_input_metadata import ROUTE_INPUT_METADATA
+
+    missing = sorted(DEFERRED_RANKING_ROUTE_FAMILIES - set(ROUTE_INPUT_METADATA))
+
+    assert not missing, f"deferred list names routes that do not exist: {missing}"

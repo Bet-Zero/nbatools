@@ -31,9 +31,26 @@ refuses - so a gap here costs coverage of a real question and cannot invent
 permission. That direction is the whole point; listing phrases to reject is the
 shape that failed.
 
-Scope: this decides *eligibility*. Once a request is eligible, the route's
-existing behavior is unchanged, including its documented `stat_fallback`
-substitutions for metrics a particular window cannot compute.
+Scope - deliberately narrow, and narrower than "every ranking route":
+
+This is the metric-selection and aggregation-integrity boundary for the ranking
+branches that *choose* their metric from the query. For those branches it
+guarantees that no metric is invented, that several requested metrics are not
+reduced to one, that an unsupported metric or window is not swapped for a
+different metric, that aggregation wording is not dropped, and that a refusal
+publishes no executed stat.
+
+It is **not** universal residual-clause protection. Routes whose metric is
+fixed by the route itself - record leaderboards, occurrence, stretch, lineup,
+playoff and decade rankings - are not governed here: "which stat?" is not a
+question they can be asked. Whether one of those drops an unsupported extra
+clause is a real defect and a separate project. Compound threshold and event
+routing, availability conditions on every route, vague-language understanding
+and filter execution receipts are likewise out of scope.
+
+The governed and deferred route families are listed in
+``docs/architecture/parser/leaderboard_metric_boundary.md`` and owned as test
+data in ``tests/test_leaderboard_metric_boundary.py``.
 """
 
 from __future__ import annotations
@@ -61,6 +78,18 @@ MULTIPLE_METRICS = "leaderboard_multiple_metrics_unsupported"
 #: The requested metric cannot be computed for the requested window or scope.
 METRIC_SCOPE_UNSUPPORTED = "leaderboard_metric_unavailable_for_scope"
 
+#: Every blocker this boundary raises. A result carrying one of these ran no
+#: ranking, so it must publish no executed metric - see ``is_boundary_refusal``.
+BOUNDARY_FILTERS = frozenset(
+    {
+        NO_REQUESTED_METRIC,
+        UNSUPPORTED_AGGREGATION,
+        UNCLEAR_REQUEST,
+        MULTIPLE_METRICS,
+        METRIC_SCOPE_UNSUPPORTED,
+    }
+)
+
 
 @dataclass(frozen=True)
 class LeaderboardEligibility:
@@ -76,15 +105,67 @@ class LeaderboardEligibility:
     #: The window or scope that put the metric out of reach, when that is why.
     unsupported_scope: str | None = None
 
+    @property
+    def published_requested_stat(self) -> str | None:
+        """The one explicit metric a refusal is *about*, when there is one.
+
+        Only the aggregation and scope refusals have one: the user named a
+        metric, the product recognized it, and then could not serve it in the
+        form or window asked for. Saying so is useful and true.
+
+        The other two refusals deliberately publish nothing. ``metric`` is set
+        for an unclear request too, but there it is a detector reading of a
+        question the product could *not* read in full - publishing it would
+        present a partial interpretation as the request, which is the defect
+        this contract exists to remove.
+        """
+        if self.authorized or self.reason not in (
+            UNSUPPORTED_AGGREGATION,
+            METRIC_SCOPE_UNSUPPORTED,
+        ):
+            return None
+        return self.metric
+
+    @property
+    def published_requested_metrics(self) -> tuple[str, ...]:
+        """Every metric the question named, when it named more than one.
+
+        Published whole or not at all. A one-entry list next to a "more than
+        one stat" refusal would be the silent reduction this refuses to make.
+        """
+        if self.authorized or len(self.requested_metrics) < 2:
+            return ()
+        return self.requested_metrics
+
     def to_dict(self) -> dict[str, object]:
+        """The refusal record, carrying requested intent but no executed stat.
+
+        ``metric`` is deliberately absent: nothing ran, so there is no metric
+        to report as the one that did. What the user asked for travels in
+        ``requested_stat`` and ``requested_metrics`` instead.
+        """
         return {
             "authorized": self.authorized,
-            "metric": self.metric,
             "reason": self.reason,
             "residual": list(self.residual),
-            "requested_metrics": list(self.requested_metrics),
+            "requested_stat": self.published_requested_stat,
+            "requested_metrics": list(self.published_requested_metrics),
             "unsupported_scope": self.unsupported_scope,
         }
+
+
+def is_boundary_refusal(route_kwargs: dict | None) -> bool:
+    """True when this route was blocked by the metric boundary.
+
+    The single test both metadata builders and the router use, so "no ranking
+    executed" and "no executed metric is published" can never drift apart.
+    """
+    if not isinstance(route_kwargs, dict):
+        return False
+    filters = route_kwargs.get("unsupported_filters") or []
+    if isinstance(filters, str):
+        filters = [filters]
+    return any(f in BOUNDARY_FILTERS for f in filters)
 
 
 # ---------------------------------------------------------------------------

@@ -861,12 +861,18 @@ def _ranking_refusal_kwargs(
     start_date: str | None,
     end_date: str | None,
     season_type: str,
+    team: str | None = None,
 ) -> tuple[dict, str]:
     """Typed refusal kwargs and note for any ranking branch, from one decision.
 
-    Every ranking-producing branch refuses the same shape, so a specialized
-    population cannot invent its own softer boundary. Carries no ``stat``: the
-    whole point is that no metric reaches the route.
+    Every variable-metric ranking branch refuses the same shape, so a
+    specialized population cannot invent its own softer boundary, and every
+    refusal publishes the same truthful metadata.
+
+    Carries no ``stat``. Nothing ran, so there is no executed metric to report;
+    publishing the detector's pick would present a partial interpretation of a
+    refused question as its answer. What the user actually asked for travels in
+    ``requested_stat`` and ``requested_metrics`` instead.
     """
     route_kwargs = _unsupported_route_kwargs(
         eligibility.reason,
@@ -877,9 +883,13 @@ def _ranking_refusal_kwargs(
         end_date=end_date,
         season_type=season_type,
     )
+    if team is not None:
+        route_kwargs["team"] = team
     route_kwargs["leaderboard_eligibility"] = eligibility.to_dict()
-    if eligibility.requested_metrics:
-        route_kwargs["requested_metrics"] = list(eligibility.requested_metrics)
+    if eligibility.published_requested_stat:
+        route_kwargs["requested_stat"] = eligibility.published_requested_stat
+    if eligibility.published_requested_metrics:
+        route_kwargs["requested_metrics"] = list(eligibility.published_requested_metrics)
     note = (
         "unsupported_boundary: "
         + _LEADERBOARD_REFUSAL_NOTES[eligibility.reason]
@@ -2736,22 +2746,17 @@ def _finalize_route(parsed: dict) -> dict:
         # clause are things this ranking cannot express - returning the team's
         # top five scorers answers a different question.
         route = "season_leaders"
-        route_kwargs = _unsupported_route_kwargs(
-            _team_elig.reason,
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _team_elig,
             season=season,
             start_season=start_season,
             end_season=end_season,
             start_date=start_date,
             end_date=end_date,
             season_type=season_type,
+            team=team,
         )
-        route_kwargs["team"] = team
-        route_kwargs["leaderboard_eligibility"] = _team_elig.to_dict()
-        notes.append(
-            "unsupported_boundary: "
-            + _LEADERBOARD_REFUSAL_NOTES[_team_elig.reason]
-            + "; no substituted leaderboard was returned"
-        )
+        notes.append(_note)
     elif (
         team_leader_stat is not None
         and team
@@ -3144,8 +3149,9 @@ def _finalize_route(parsed: dict) -> dict:
         # outside the stat-shaped grammar. Ranking by points anyway would be a
         # confident answer to a different question.
         route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
-        route_kwargs = _unsupported_route_kwargs(
-            _elig.reason,
+        # No substituted ranking metric reaches the blocked route.
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _elig,
             season=season,
             start_season=start_season,
             end_season=end_season,
@@ -3153,13 +3159,7 @@ def _finalize_route(parsed: dict) -> dict:
             end_date=end_date,
             season_type=season_type,
         )
-        # No substituted ranking metric reaches the blocked route.
-        route_kwargs["leaderboard_eligibility"] = _elig.to_dict()
-        notes.append(
-            "unsupported_boundary: "
-            + _LEADERBOARD_REFUSAL_NOTES[_elig.reason]
-            + "; no substituted leaderboard was returned"
-        )
+        notes.append(_note)
     elif _lb[0]:
         # No subject entity → league-wide leaderboard default (spec §15.2),
         # reached only once the request is eligible.
