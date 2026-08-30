@@ -1450,3 +1450,86 @@ def test_serialized_refusal_never_publishes_an_executed_stat(query):
 
     assert metadata.get("stat") is None, query
     assert payload["sections"] == {}, query
+
+
+# ---------------------------------------------------------------------------
+# 19. A generic boundary must not preempt a specific one
+# ---------------------------------------------------------------------------
+
+# `three-point attempts per game leaders` was refused by the broad
+# "unsupported phrase" boundary, which runs before any routing, because the
+# bare phrase "attempts per game" was on its list. That phrase was there to
+# catch a minimum-attempts qualifier - "with at least 5 attempts per game" -
+# and it also swallowed a plain ranking whose metric and aggregation the
+# product understands perfectly well.
+#
+# The refusal was safe, but it told the reader the question was unrecognizable
+# and published `stat=fg3a` as though something had run. The accurate answer is
+# that only the season total exists for this metric.
+#
+# The fix is a classification one: a number is what makes "attempts per game" a
+# qualifier, the same test the metric boundary already applies to a metric
+# sitting next to a number.
+
+FG3A_PER_GAME_FORMS = [
+    "three-point attempts per game leaders",
+    "three point attempts per game leaders",
+    "3PA per game leaders",
+    "average 3PA leaders",
+    "average three point attempts leaders",
+    "average three-point attempts leaders",
+]
+
+
+@pytest.mark.parametrize("query", FG3A_PER_GAME_FORMS)
+def test_fg3a_per_game_form_gets_the_typed_aggregation_refusal(query):
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "no_result", query
+    assert executed.result_reason == "filter_not_supported", query
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
+    # The metric and the aggregation were both recognized, so the generic
+    # "unrecognizable phrase" answer is the wrong one to give.
+    assert "unsupported_concept" not in _blockers(executed.metadata), query
+    assert executed.metadata.get("stat") is None, query
+    assert executed.metadata.get("requested_stat") == "fg3a", query
+    assert executed.metadata.get("requested_aggregation") == PER_GAME, query
+    assert executed.metadata.get("available_aggregation") == TOTAL, query
+    _no_substituted_answer(executed)
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize("query", FG3A_PER_GAME_FORMS)
+def test_fg3a_per_game_form_never_reaches_the_route_with_a_stat(query):
+    route_kwargs = parse_query(query)["route_kwargs"]
+
+    assert "stat" not in route_kwargs or route_kwargs["stat"] is None, query
+
+
+def test_total_three_point_attempts_still_answers():
+    """The positive control the refusals above must not cost."""
+    executed = execute_natural_query("total three-point attempts leaders")
+
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == "fg3a"
+    assert ranks_a_season_total("fg3a", team_scope=False)
+    assert len(executed.result.leaders) > 0
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "query",
+    [
+        # The qualifier the phrase boundary exists for, in both documented
+        # forms. A number next to "attempts" is what makes it a qualifier.
+        "Who is shooting the best from three over the last month with at least 5 attempts per game?",
+        "Who is shooting the best from three since February 1 with at least 4 attempts per game?",
+        "best 3pt percentage last month min 5 attempts",
+    ],
+)
+def test_minimum_attempts_qualifier_still_refuses_generically(query):
+    """Narrowing the phrase must not let a min-attempts qualifier through."""
+    parsed = parse_query(query)
+
+    assert parsed["route"] is None, query
+    assert "unsupported_concept" in (parsed["route_kwargs"].get("unsupported_filters") or []), query

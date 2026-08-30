@@ -102,14 +102,18 @@ route; none of them answers wrongly, so none is urgent.
 - `3 point attempts` / `3-point attempts` (digit-adjectival) do not resolve.
   No sibling metric documents a digit-adjectival form, so adding one would be
   new vocabulary rather than restoring parity.
-- `three-point attempts per game leaders` is stopped by the broader
-  `unsupported_concept` boundary before the metric boundary sees it. It refuses
-  with nothing populated, which is safe, but it is the one required refusal in
-  the aggregation matrix that does not carry the aggregation blocker, and its
-  metadata still publishes `stat=fg3a` because the generic boundary predates
-  the truthful-refusal contract. Pre-existing at `a87fedd` and unchanged by the
-  aggregation repair. Extending the refusal contract to the generic boundary is
-  Phase 1C-shaped work, not metric selection.
+- *(Resolved in PR #295.)* `three-point attempts per game leaders` was stopped
+  by the broader `unsupported_concept` boundary before the metric boundary saw
+  it, because the bare phrase "attempts per game" was on the unsupported-phrase
+  list. That entry existed to catch a minimum-attempts qualifier; it is now
+  bound to a number, so the qualifier still refuses generically and the ranking
+  reaches the typed aggregation boundary.
+- The generic unsupported-phrase boundary still publishes the parser's `stat`
+  on its own refusals - it short-circuits before routing and predates the
+  truthful-refusal contract. Every remaining query it catches is genuinely
+  unrecognizable rather than a recognized ranking, so nothing is presented as a
+  metric that ran a ranking. Extending the truthful-refusal contract to the
+  generic boundary is Phase 1C-shaped work, not metric selection.
 - `games played` and the occurrence-count columns (`games_20p`, `wins`,
   `losses`) are classified as `count`: only an unqualified request matches one,
   so `total 30 point games` keeps refusing exactly as it did. Whether a season

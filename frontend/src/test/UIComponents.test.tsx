@@ -506,6 +506,36 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("names the mismatch for a stat that only exists as a season total", () => {
+    // `three-point attempts per game leaders` used to reach the card as a
+    // generic unsupported_concept with stat=fg3a. It now arrives on the
+    // aggregation path, so the card must name this direction.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          requested_stat: "fg3a",
+          requested_aggregation: "per_game",
+          available_aggregation: "total",
+          query_text: "three-point attempts per game leaders",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(screen.getByText(/ranked by season total here/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/leaderboard is not available/),
+    ).toBeInTheDocument();
+    // Never the generic "outside the shipped support boundary" answer.
+    expect(
+      screen.queryByText(/outside the shipped support boundary/),
+    ).not.toBeInTheDocument();
+  });
+
   it("says only what is certain when no aggregation direction was recorded", () => {
     render(
       <NoResultDisplay

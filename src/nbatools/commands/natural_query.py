@@ -337,7 +337,6 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "offensive rating when",
     "offensive rating without",
     "10+ assists and 0 turnovers",
-    "attempts per game",
     "road by 20",
     "road team won by 20",
     "above .600",
@@ -346,10 +345,23 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
 )
 
 
+# A minimum-attempts qualifier, in either the short or long form: "min 5
+# attempts", "with at least 4 attempts per game". A number is what makes this a
+# qualifier - the same test the metric boundary applies, where a metric next to
+# a number is a condition rather than a ranking key.
+#
+# This used to be the bare phrase "attempts per game", which also swallowed
+# "three-point attempts per game leaders" - a plain ranking whose metric and
+# aggregation the product understands perfectly well. A generic "this phrase is
+# unsupported" answer preempted the specific one, so the reader was told the
+# question was unrecognizable rather than that only the season total exists.
+_ATTEMPT_QUALIFIER = re.compile(
+    r"\bmin(?:imum)?\s+\d+\s+attempts\b|\b\d+\s+attempts?\s+per\s+game\b"
+)
+
+
 def _unsupported_phrase_boundary_note(q: str) -> str | None:
-    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or re.search(
-        r"\bmin(?:imum)?\s+\d+\s+attempts\b", q
-    ):
+    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or _ATTEMPT_QUALIFIER.search(q):
         return (
             "unsupported_boundary: this phrase is outside the shipped support boundary; "
             "no result was executed for the unsupported concept"
