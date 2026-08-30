@@ -315,9 +315,7 @@ function unsupportedBoundaryMessage(
     return "League rankings need a stat to rank by. Try naming one \u2014 for example \u201ctop scorers this season\u201d, \u201cmost rebounds this season\u201d, or \u201cbest defensive teams\u201d.";
   }
   if (filters.includes("leaderboard_aggregation_unsupported")) {
-    const stat = metricFromMetadata(metadata);
-    const named = stat ? `${metricLabel(stat)} is ranked per game` : "This stat is ranked per game";
-    return `${named}, so a season total is not available for it. Try its per-game form \u2014 for example \u201cpoints per game leaders this season\u201d. Some stats do rank season totals, such as minutes and personal fouls.`;
+    return aggregationMismatchCopy(metadata);
   }
   if (filters.includes("leaderboard_multiple_metrics_unsupported")) {
     return "A ranking can only be ordered by one stat, and this asks for more than one. Ask for them one at a time \u2014 for example \u201cpoints leaders this season\u201d, then \u201crebounds leaders this season\u201d.";
@@ -335,6 +333,53 @@ function unsupportedBoundaryMessage(
     return "This does not say enough to rank on its own, so answering it would mean guessing at the question. Name the player or team you mean and the stat you want \u2014 for example \u201cTatum clutch stats\u201d or \u201ctop scorers this season\u201d.";
   }
   return null;
+}
+
+
+// How each leaderboard actually ranks, in the reader's words.
+const AGGREGATION_PHRASE: Record<string, string> = {
+  total: "by season total",
+  per_game: "per game",
+  rate: "as a rate",
+  count: "as a season count",
+};
+
+// What the reader asked for, named the same way.
+const REQUESTED_PHRASE: Record<string, string> = {
+  total: "a season-total",
+  per_game: "a per-game",
+  rate: "a rate",
+  count: "a season-count",
+};
+
+function aggregationMismatchCopy(
+  metadata: ResultMetadata | null | undefined,
+): string {
+  // Direction-specific. The old copy said "is ranked per game, so a season
+  // total is not available" for every aggregation refusal, which is exactly
+  // backwards for a per-game request against a total-backed stat like minutes.
+  const stat = metricFromMetadata(metadata);
+  const label = stat ? metricLabel(stat) : null;
+  const requested = stringValue(metadata?.requested_aggregation) ?? "";
+  const available = stringValue(metadata?.available_aggregation) ?? "";
+  const ranks = AGGREGATION_PHRASE[available];
+  const asked = REQUESTED_PHRASE[requested];
+
+  if (ranks && asked) {
+    const subject = label ?? "This stat";
+    const named = label ? `${label.toLowerCase()} ` : "";
+    const suggestion =
+      available === "total"
+        ? ` Try the season-total form \u2014 for example \u201ctotal ${named}leaders this season\u201d.`
+        : available === "per_game"
+          ? ` Try the per-game form \u2014 for example \u201c${named}per game leaders this season\u201d.`
+          : "";
+    return `${subject} is ranked ${ranks} here, so ${asked} ${named}leaderboard is not available.${suggestion}`;
+  }
+
+  // No direction recorded: say only what is certainly true.
+  const subject = label ?? "This stat";
+  return `${subject} is not ranked by the aggregation this asks for, and no other aggregation was substituted for it.`;
 }
 
 function unsupportedFilters(

@@ -104,6 +104,10 @@ class LeaderboardEligibility:
     requested_metrics: tuple[str, ...] = ()
     #: The window or scope that put the metric out of reach, when that is why.
     unsupported_scope: str | None = None
+    #: The aggregation the question explicitly asked for, when that is why.
+    requested_aggregation: str | None = None
+    #: The aggregation this metric's leaderboard actually ranks, when that is why.
+    available_aggregation: str | None = None
 
     @property
     def published_requested_stat(self) -> str | None:
@@ -151,6 +155,8 @@ class LeaderboardEligibility:
             "requested_stat": self.published_requested_stat,
             "requested_metrics": list(self.published_requested_metrics),
             "unsupported_scope": self.unsupported_scope,
+            "requested_aggregation": self.requested_aggregation,
+            "available_aggregation": self.available_aggregation,
         }
 
 
@@ -193,10 +199,52 @@ def anchored_leaderboard_metric(parsed: dict) -> str | None:
 # 2. Aggregation
 # ---------------------------------------------------------------------------
 
-# Leaderboards rank per-game rates. "total points leaders" asks for something
-# else, and answering it with a per-game board is a wrong answer, not a near
-# one. These words are content, never grammar.
-_TOTAL_AGGREGATION = re.compile(r"\b(?:total|totals|combined|cumulative|aggregate)\b")
+# The aggregation a question asks for, and the one a column actually ranks.
+# Both sides are named so they can be compared in either direction: asking for
+# a total of a per-game column and asking for a per-game figure of a total
+# column are the same mistake, and answering either one is a wrong answer
+# rather than a near one.
+UNSPECIFIED = "unspecified"
+TOTAL = "total"
+PER_GAME = "per_game"
+RATE = "rate"
+#: A season count that is neither a per-game figure nor a total *of* a stat -
+#: games played, occurrence counts, wins and losses. Only an unqualified
+#: request matches one.
+COUNT = "count"
+
+# Requested-aggregation wording. Checked in this order: a rate word settles the
+# question before "average" is read as a per-game request, so "average true
+# shooting percentage" stays a rate request rather than becoming a count one.
+_REQUESTED_TOTAL = re.compile(r"\b(?:total|totals|combined|cumulative|aggregate)\b")
+_REQUESTED_RATE = re.compile(r"\b(?:percentage|percent|pct|rate)\b|%")
+_REQUESTED_PER_GAME = re.compile(
+    r"\bper[-\s]game\b|\ba\s+game\b|\beach\s+game\b"
+    r"|\b(?:average|averages|averaged|averaging|avg|mean)\b"
+)
+
+#: The wording each backing aggregation is described by, for span accounting.
+_AGGREGATION_WORDING = {
+    TOTAL: _REQUESTED_TOTAL,
+    PER_GAME: _REQUESTED_PER_GAME,
+    RATE: _REQUESTED_RATE,
+}
+
+#: Columns whose name does not carry its aggregation in a suffix. Every one is
+#: classified here on purpose rather than falling through to a default.
+_EXCEPTIONAL_COLUMNS = {
+    # Season counts of games, not a per-game or total-of-a-stat figure.
+    "games_played": COUNT,
+    "games_10a": COUNT,
+    "games_10r": COUNT,
+    "games_20p": COUNT,
+    "games_30p": COUNT,
+    "games_40p": COUNT,
+    "wins": COUNT,
+    "losses": COUNT,
+    # Possessions per 48 minutes - a rate, not a count.
+    "pace": RATE,
+}
 
 
 def _leaderboard_column(metric: str, *, team_scope: bool) -> str | None:
@@ -210,32 +258,65 @@ def _leaderboard_column(metric: str, *, team_scope: bool) -> str | None:
     return PLAYER_STATS.get(metric.lower())
 
 
+def column_aggregation(column: str | None) -> str | None:
+    """What aggregation *column* actually ranks, or ``None`` if unknown."""
+    if not column:
+        return None
+    if column in _EXCEPTIONAL_COLUMNS:
+        return _EXCEPTIONAL_COLUMNS[column]
+    if column.endswith("_total"):
+        return TOTAL
+    if column.endswith("_per_game"):
+        return PER_GAME
+    if column.endswith("_pct") or column.endswith("_rating"):
+        return RATE
+    return None
+
+
+def metric_aggregation(metric: str, *, team_scope: bool) -> str | None:
+    """What aggregation this metric's leaderboard ranks, or ``None``."""
+    return column_aggregation(_leaderboard_column(metric, team_scope=team_scope))
+
+
+def detect_requested_aggregation(text: str) -> str:
+    """The aggregation the question explicitly asked for, if it asked at all."""
+    if _REQUESTED_TOTAL.search(text):
+        return TOTAL
+    if _REQUESTED_RATE.search(text):
+        return RATE
+    if _REQUESTED_PER_GAME.search(text):
+        return PER_GAME
+    return UNSPECIFIED
+
+
 def _aggregation_supported(text: str, metric: str, *, team_scope: bool) -> bool:
     """Whether the aggregation the question asked for is the one that would run.
 
-    Metric-specific, because the leaderboards are not uniformly per-game.
-    ``pts`` ranks ``pts_per_game``, so "total points leaders" would be answered
-    with a per-game board - a different question. ``pf`` ranks ``pf_total``, so
-    "total personal fouls leaders" is exactly what runs. The backing column
-    decides; a blanket "leaderboards are per-game" rule refuses real answers.
+    Symmetric and metric-specific. The leaderboards are not uniformly per-game
+    and not uniformly totals: ``pts`` ranks ``pts_per_game`` and ``pf`` ranks
+    ``pf_total``. So "total points leaders" and "personal fouls per game
+    leaders" are the same defect pointing opposite ways, and both are refused.
 
-    Only totals are checked. Per-game and rate wording describe what a per-game
-    column already computes, and a rate metric has no total form to confuse it
-    with.
+    Checking only totals - the earlier shape here - quietly assumed every
+    per-game or average request was already satisfied, which handed
+    ``pf_total`` to someone who asked for a per-game figure.
+
+    An unqualified question asks for no particular aggregation and keeps the
+    metric's established behavior. An unknown column is left alone; the route
+    refuses it on its own terms.
     """
-    if not _TOTAL_AGGREGATION.search(text):
+    requested = detect_requested_aggregation(text)
+    if requested == UNSPECIFIED:
         return True
-    column = _leaderboard_column(metric, team_scope=team_scope)
-    if column is None:
+    backing = metric_aggregation(metric, team_scope=team_scope)
+    if backing is None:
         return True  # unknown metric; the route will refuse it on its own terms
-    # A season total is only available where the leaderboard already ranks one.
-    return column.endswith("_total")
+    return requested == backing
 
 
 def ranks_a_season_total(metric: str, *, team_scope: bool) -> bool:
     """True when this metric's leaderboard column already is a season total."""
-    column = _leaderboard_column(metric, team_scope=team_scope)
-    return bool(column and column.endswith("_total"))
+    return metric_aggregation(metric, team_scope=team_scope) == TOTAL
 
 
 # ---------------------------------------------------------------------------
@@ -521,13 +602,15 @@ def _claimed_ranges(text: str, parsed: dict, metric: str | None) -> list[tuple[i
     claim(_POPULATION)
     if metric:
         claim(tuple(_metric_patterns(text, parsed)))
-        # "total minutes leaders" ranks minutes_total, so "total" describes what
-        # actually runs and is accounted for. For a per-game metric the word is
-        # left unclaimed on purpose - the aggregation check refuses it first,
-        # and it must never pass as filler.
+        # Aggregation wording is accounted for only when it describes what the
+        # column actually ranks: "total" for minutes_total, "per game" for
+        # pts_per_game. Wording that points the other way is left unclaimed on
+        # purpose - the aggregation check refuses it first, and it must never
+        # pass as filler.
         team_scope = bool(parsed.get("team_leaderboard_intent")) or "team" in text
-        if ranks_a_season_total(metric, team_scope=team_scope):
-            claim((_TOTAL_AGGREGATION.pattern,))
+        backing = metric_aggregation(metric, team_scope=team_scope)
+        if backing in _AGGREGATION_WORDING:
+            claim((_AGGREGATION_WORDING[backing].pattern,))
     for keys, patterns in _SLOT_CLAIMS:
         if _slot_resolved(parsed, keys):
             claim(patterns)
@@ -636,6 +719,8 @@ def assess_leaderboard_request(
             metric=metric,
             reason=UNSUPPORTED_AGGREGATION,
             requested_metrics=requested,
+            requested_aggregation=detect_requested_aggregation(text),
+            available_aggregation=metric_aggregation(metric, team_scope=team_scope),
         )
 
     if check_residual:

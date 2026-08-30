@@ -606,6 +606,8 @@ def _build_query_metadata(
         ),
         "requested_stat": route_kwargs.get("requested_stat"),
         "requested_metrics": route_kwargs.get("requested_metrics"),
+        "requested_aggregation": route_kwargs.get("requested_aggregation"),
+        "available_aggregation": route_kwargs.get("available_aggregation"),
         "min_value": (
             parsed.get("min_value")
             if parsed.get("min_value") is not None

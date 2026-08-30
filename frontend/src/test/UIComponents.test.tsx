@@ -452,6 +452,8 @@ describe("NoResultDisplay", () => {
           // No `stat`: nothing ran. The metric the refusal is *about* travels
           // in `requested_stat`, which is what the backend now publishes.
           requested_stat: "reb",
+          requested_aggregation: "total",
+          available_aggregation: "per_game",
           query_text: "players with the most total rebounds",
           unsupported_filters: ["leaderboard_aggregation_unsupported"],
         }}
@@ -459,16 +461,70 @@ describe("NoResultDisplay", () => {
     );
 
     expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
-    // Metric-scoped: rebounds is ranked per game, but minutes and personal
-    // fouls really do rank season totals, so the copy must not claim every
-    // leaderboard is per-game.
-    expect(screen.getByText(/Rebounds is ranked per game/)).toBeInTheDocument();
+    // Metric-scoped and direction-specific: rebounds is ranked per game, so
+    // the season-total board is the one that does not exist.
     expect(
-      screen.getByText(/Some stats do rank season totals/),
+      screen.getByText(/Rebounds is ranked per game here/),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Rebounds is not available for this query."),
+      screen.getByText(/a season-total rebounds leaderboard is not available/),
+    ).toBeInTheDocument();
+    // It must not claim every leaderboard is per-game.
+    expect(
+      screen.queryByText(/League leaderboards rank per-game figures/),
     ).not.toBeInTheDocument();
+  });
+
+  it("says per-game is unsupported for a total-backed stat, not the reverse", () => {
+    // `minutes per game leaders` executed minutes_total and presented it as
+    // the answer. The copy must name this direction, not the opposite one.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          requested_stat: "minutes",
+          requested_aggregation: "per_game",
+          available_aggregation: "total",
+          query_text: "minutes per game leaders",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Minutes is ranked by season total here/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/a per-game minutes leaderboard is not available/),
+    ).toBeInTheDocument();
+    // The opposite claim, and any suggestion that the total board ran.
+    expect(
+      screen.queryByText(/Minutes is ranked per game/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says only what is certain when no aggregation direction was recorded", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          requested_stat: "pts",
+          query_text: "combined scoring leaders",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        /Points is not ranked by the aggregation this asks for, and no other aggregation was substituted for it\./,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("says a ranking orders by one stat when several were asked for", () => {

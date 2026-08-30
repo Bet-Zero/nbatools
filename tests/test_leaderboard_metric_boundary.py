@@ -34,9 +34,16 @@ from nbatools.commands._leaderboard_eligibility import (
     METRIC_SCOPE_UNSUPPORTED,
     MULTIPLE_METRICS,
     NO_REQUESTED_METRIC,
+    PER_GAME,
+    RATE,
+    TOTAL,
     UNCLEAR_REQUEST,
+    UNSPECIFIED,
     UNSUPPORTED_AGGREGATION,
     assess_leaderboard_request,
+    column_aggregation,
+    detect_requested_aggregation,
+    metric_aggregation,
     ranks_a_season_total,
     requested_leaderboard_metrics,
 )
@@ -1187,3 +1194,259 @@ def test_deferred_route_families_name_real_routes():
     missing = sorted(DEFERRED_RANKING_ROUTE_FAMILIES - set(ROUTE_INPUT_METADATA))
 
     assert not missing, f"deferred list names routes that do not exist: {missing}"
+
+
+# ---------------------------------------------------------------------------
+# 18. Aggregation compatibility, in both directions
+# ---------------------------------------------------------------------------
+
+# The check used to test only totals. Per-game and average wording was assumed
+# already satisfied, which is true only where the column is per-game - so
+# `minutes per game leaders` executed `minutes_total`, `personal fouls per game
+# leaders` executed `pf_total`, and `average three-point attempts leaders`
+# executed `fg3a_total`. The user asked for a per-game ranking and got a season
+# total. It is the same defect as `total points leaders` pointing the other way.
+#
+# A cross-product, not a handful of examples: every metric crossed with every
+# explicit aggregation wording, so a metric that changes its backing column
+# fails here rather than silently answering the opposite question.
+
+#: (metric, the wording a question names it by)
+TOTAL_BACKED_MATRIX = [
+    ("pf", "personal fouls"),
+    ("minutes", "minutes"),
+    ("fgm", "field goals made"),
+    ("fga", "field goals attempted"),
+    ("fg3a", "three-point attempts"),
+    ("ftm", "free throws made"),
+    ("fta", "free throws attempted"),
+]
+
+PER_GAME_BACKED_MATRIX = [
+    ("pts", "points"),
+    ("reb", "rebounds"),
+    ("ast", "assists"),
+    ("stl", "steals"),
+    ("blk", "blocks"),
+    ("tov", "turnovers"),
+]
+
+RATE_BACKED_MATRIX = [
+    ("fg3_pct", "three point percentage"),
+    ("ts_pct", "true shooting percentage"),
+    ("usg_pct", "usage rate"),
+]
+
+#: The two ways a question asks for a per-game figure.
+PER_GAME_WORDINGS = ["{phrase} per game leaders", "average {phrase} leaders"]
+
+
+def _ids(rows):
+    return [r[0] for r in rows]
+
+
+def _refused_without_executing(query, metric):
+    """Refused, nothing populated, and no ranking on the wrong column.
+
+    Some wordings are stopped by an earlier, broader boundary than this one.
+    That is a safe refusal and is allowed; what is never allowed is a populated
+    answer computed from the aggregation the question did not ask for.
+    """
+    executed = execute_natural_query(query)
+
+    assert executed.result_status != "ok", f"{query!r} answered with the wrong aggregation"
+    assert executed.to_dict()["sections"] == {}, query
+    assert getattr(executed.result, "leaders", None) is None, query
+    if UNSUPPORTED_AGGREGATION in _blockers(executed.metadata):
+        # The aggregation boundary owns this refusal, so its contract applies.
+        assert executed.metadata.get("stat") is None, query
+        assert executed.metadata.get("requested_stat") == metric, query
+    return executed
+
+
+# --- total-backed metrics --------------------------------------------------
+
+
+@pytest.mark.parametrize("metric, phrase", TOTAL_BACKED_MATRIX, ids=_ids(TOTAL_BACKED_MATRIX))
+def test_total_backed_metric_ranks_a_total_column(metric, phrase):
+    """Pins the classification these rows depend on."""
+    assert metric_aggregation(metric, team_scope=False) == TOTAL
+
+
+@pytest.mark.parametrize("metric, phrase", TOTAL_BACKED_MATRIX, ids=_ids(TOTAL_BACKED_MATRIX))
+def test_total_backed_unqualified_request_keeps_its_behavior(metric, phrase):
+    """No aggregation was asked for, so the established default still runs."""
+    executed = execute_natural_query(f"{phrase} leaders")
+
+    assert executed.result_status == "ok", f"{phrase!r} lost its leaderboard"
+    assert executed.metadata.get("stat") == metric
+    assert not _blockers(executed.metadata)
+
+
+@pytest.mark.parametrize("metric, phrase", TOTAL_BACKED_MATRIX, ids=_ids(TOTAL_BACKED_MATRIX))
+def test_total_backed_total_request_answers(metric, phrase):
+    executed = execute_natural_query(f"total {phrase} leaders")
+
+    assert executed.result_status == "ok", f"total {phrase!r} lost its answer"
+    assert executed.metadata.get("stat") == metric
+    assert len(executed.result.leaders) > 0
+
+
+@pytest.mark.parametrize("wording", PER_GAME_WORDINGS)
+@pytest.mark.parametrize("metric, phrase", TOTAL_BACKED_MATRIX, ids=_ids(TOTAL_BACKED_MATRIX))
+def test_total_backed_per_game_request_never_returns_the_total(metric, phrase, wording):
+    """The reverse-direction bug: a per-game request served a season total."""
+    _refused_without_executing(wording.format(phrase=phrase), metric)
+
+
+# --- per-game-backed metrics ----------------------------------------------
+
+
+@pytest.mark.parametrize("metric, phrase", PER_GAME_BACKED_MATRIX, ids=_ids(PER_GAME_BACKED_MATRIX))
+def test_per_game_backed_metric_ranks_a_per_game_column(metric, phrase):
+    assert metric_aggregation(metric, team_scope=False) == PER_GAME
+
+
+@pytest.mark.parametrize("metric, phrase", PER_GAME_BACKED_MATRIX, ids=_ids(PER_GAME_BACKED_MATRIX))
+def test_per_game_backed_unqualified_request_keeps_its_behavior(metric, phrase):
+    executed = execute_natural_query(f"{phrase} leaders")
+
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == metric
+    assert not _blockers(executed.metadata)
+
+
+@pytest.mark.parametrize("wording", PER_GAME_WORDINGS)
+@pytest.mark.parametrize("metric, phrase", PER_GAME_BACKED_MATRIX, ids=_ids(PER_GAME_BACKED_MATRIX))
+def test_per_game_backed_per_game_request_answers(metric, phrase, wording):
+    query = wording.format(phrase=phrase)
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok", f"{query!r} lost its answer"
+    assert executed.metadata.get("stat") == metric, query
+    assert len(executed.result.leaders) > 0
+
+
+@pytest.mark.parametrize("metric, phrase", PER_GAME_BACKED_MATRIX, ids=_ids(PER_GAME_BACKED_MATRIX))
+def test_per_game_backed_total_request_never_returns_the_per_game_board(metric, phrase):
+    _refused_without_executing(f"total {phrase} leaders", metric)
+
+
+# --- rates -----------------------------------------------------------------
+
+
+@pytest.mark.parametrize("metric, phrase", RATE_BACKED_MATRIX, ids=_ids(RATE_BACKED_MATRIX))
+def test_rate_backed_metric_is_classified_as_a_rate(metric, phrase):
+    assert metric_aggregation(metric, team_scope=False) == RATE
+
+
+@pytest.mark.parametrize("metric, phrase", RATE_BACKED_MATRIX, ids=_ids(RATE_BACKED_MATRIX))
+def test_rate_request_stays_a_rate(metric, phrase):
+    """A percentage or rate request may not become a count in either direction."""
+    executed = execute_natural_query(f"{phrase} leaders")
+
+    assert executed.result_status == "ok", f"{phrase!r} lost its answer"
+    assert executed.metadata.get("stat") == metric
+    assert not _blockers(executed.metadata)
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("total points leaders", TOTAL),
+        ("combined scoring leaders", TOTAL),
+        ("cumulative points leaders this season", TOTAL),
+        ("points per game leaders", PER_GAME),
+        ("average points leaders", PER_GAME),
+        ("minutes per-game leaders", PER_GAME),
+        ("three point percentage leaders", RATE),
+        ("usage rate leaders", RATE),
+        ("best 3p% this season", RATE),
+        # A rate word settles it before "average" is read as a per-game
+        # request, so an averaged rate stays a rate question.
+        ("average true shooting percentage leaders", RATE),
+        ("points leaders", UNSPECIFIED),
+        ("personal fouls leaders", UNSPECIFIED),
+    ],
+)
+def test_requested_aggregation_is_detected(text, expected):
+    assert detect_requested_aggregation(text) == expected
+
+
+@pytest.mark.parser
+def test_every_leaderboard_column_is_classified():
+    """An unclassified column would silently pass every compatibility check."""
+    from nbatools.commands.season_leaders import ALLOWED_STATS as PLAYER_STATS
+    from nbatools.commands.season_team_leaders import ALLOWED_STATS as TEAM_STATS
+
+    unclassified = sorted(
+        {
+            column
+            for column in (*PLAYER_STATS.values(), *TEAM_STATS.values())
+            if column_aggregation(column) is None
+        }
+    )
+
+    assert not unclassified, f"leaderboard columns with no aggregation contract: {unclassified}"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "combined scoring leaders",
+        "cumulative points leaders this season",
+        "most points total this season",
+    ],
+)
+def test_combined_and_cumulative_wording_still_refuses_for_a_per_game_metric(query):
+    """Preserved as-is; this repair does not broaden what they support."""
+    executed = execute_natural_query(query)
+
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
+    _no_substituted_answer(executed)
+
+
+def test_average_three_point_attempts_never_returns_the_total_board():
+    """The exact case the focused rejection named.
+
+    At `a87fedd` this returned a populated `fg3a_total` leaderboard: the alias
+    repair made `fg3a` resolvable, and the one-directional aggregation check
+    let an "average" request through to the season-total column.
+    """
+    executed = execute_natural_query("average three-point attempts leaders")
+
+    assert executed.result_status == "no_result"
+    assert executed.result_reason == "filter_not_supported"
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata)
+    assert executed.metadata.get("stat") is None
+    assert executed.metadata.get("requested_stat") == "fg3a"
+    assert executed.metadata.get("requested_aggregation") == PER_GAME
+    assert executed.metadata.get("available_aggregation") == TOTAL
+    _no_substituted_answer(executed)
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "best players this season",
+        "points and rebounds leaders this season",
+        "total points leaders this season",
+        "minutes per game leaders",
+        "best offensive teams from 2022-23 to 2024-25",
+        "top three point shooters this season",
+    ],
+)
+def test_serialized_refusal_never_publishes_an_executed_stat(query):
+    """`stat` is null or absent - never a metric - in the serialized envelope.
+
+    The durable contract used to say "always absent". The metadata builder
+    always emits the key, so serializing produces ``"stat": null``. The
+    guarantee worth making is that no metric is ever published as the one that
+    ran, so that is what is pinned, in the shape a client actually receives.
+    """
+    payload = execute_natural_query(query).to_dict()
+    metadata = payload["metadata"]
+
+    assert metadata.get("stat") is None, query
+    assert payload["sections"] == {}, query

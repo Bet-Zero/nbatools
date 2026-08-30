@@ -131,6 +131,9 @@ export interface ResultMetadata {
   // ran - so these carry the request itself instead.
   requested_stat?: string | null;
   requested_metrics?: string[] | null;
+  // Both sides of an aggregation mismatch, so the copy can name the direction.
+  requested_aggregation?: string | null;
+  available_aggregation?: string | null;
   candidates?: DisambiguationCandidate[];
   suggested_queries?: string[];
   notes?: string[];

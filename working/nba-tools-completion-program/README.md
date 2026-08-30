@@ -102,3 +102,15 @@ route; none of them answers wrongly, so none is urgent.
 - `3 point attempts` / `3-point attempts` (digit-adjectival) do not resolve.
   No sibling metric documents a digit-adjectival form, so adding one would be
   new vocabulary rather than restoring parity.
+- `three-point attempts per game leaders` is stopped by the broader
+  `unsupported_concept` boundary before the metric boundary sees it. It refuses
+  with nothing populated, which is safe, but it is the one required refusal in
+  the aggregation matrix that does not carry the aggregation blocker, and its
+  metadata still publishes `stat=fg3a` because the generic boundary predates
+  the truthful-refusal contract. Pre-existing at `a87fedd` and unchanged by the
+  aggregation repair. Extending the refusal contract to the generic boundary is
+  Phase 1C-shaped work, not metric selection.
+- `games played` and the occurrence-count columns (`games_20p`, `wins`,
+  `losses`) are classified as `count`: only an unqualified request matches one,
+  so `total 30 point games` keeps refusing exactly as it did. Whether a season
+  count should accept "total" wording is a coverage question, not a trust one.

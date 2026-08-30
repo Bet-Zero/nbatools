@@ -837,7 +837,7 @@ _LEADERBOARD_REFUSAL_NOTES = {
         "this asks for a ranking without naming a stat to rank by, and there is no default metric"
     ),
     LEADERBOARD_AGGREGATION_UNSUPPORTED: (
-        "this asks for a season total of a stat the leaderboard ranks per game"
+        "the aggregation this asks for is not the one this stat's leaderboard ranks"
     ),
     LEADERBOARD_REQUEST_UNCLEAR: (
         "part of this question is outside what a league-wide leaderboard can express"
@@ -890,12 +890,41 @@ def _ranking_refusal_kwargs(
         route_kwargs["requested_stat"] = eligibility.published_requested_stat
     if eligibility.published_requested_metrics:
         route_kwargs["requested_metrics"] = list(eligibility.published_requested_metrics)
+    # Both sides of an aggregation mismatch, so the copy can name the direction
+    # instead of assuming one.
+    if eligibility.requested_aggregation:
+        route_kwargs["requested_aggregation"] = eligibility.requested_aggregation
+    if eligibility.available_aggregation:
+        route_kwargs["available_aggregation"] = eligibility.available_aggregation
     note = (
         "unsupported_boundary: "
-        + _LEADERBOARD_REFUSAL_NOTES[eligibility.reason]
+        + _aggregation_refusal_note(eligibility)
         + "; no substituted leaderboard was returned"
     )
     return route_kwargs, note
+
+
+_AGGREGATION_WORDS = {
+    "total": "a season total",
+    "per_game": "a per-game figure",
+    "rate": "a rate or percentage",
+    "count": "a season count",
+}
+
+
+def _aggregation_refusal_note(eligibility) -> str:
+    """The reason text, naming the direction of an aggregation mismatch.
+
+    A single fixed sentence used to say "asks for a season total of a stat the
+    leaderboard ranks per game" for every aggregation refusal, which is exactly
+    backwards for `minutes per game leaders`.
+    """
+    base = _LEADERBOARD_REFUSAL_NOTES[eligibility.reason]
+    requested = _AGGREGATION_WORDS.get(eligibility.requested_aggregation or "")
+    available = _AGGREGATION_WORDS.get(eligibility.available_aggregation or "")
+    if requested and available:
+        return f"this asks for {requested} of a stat the leaderboard ranks as {available}"
+    return base
 
 
 def _unsupported_route_kwargs(

@@ -89,10 +89,17 @@ Nothing ran, so nothing is published as the metric that did.
 
 | Field | On a boundary refusal |
 | --- | --- |
-| `stat` | always absent - no ranking executed |
+| `stat` | null or absent - never a metric, because no ranking executed |
 | route `stat` kwarg | never set |
 | `requested_stat` | the one explicit metric the refusal is about, for the aggregation and scope refusals only |
 | `requested_metrics` | every distinct metric named, in query order, only when more than one was named |
+| `requested_aggregation` | what the question asked for, on an aggregation mismatch |
+| `available_aggregation` | what the metric's leaderboard actually ranks, on an aggregation mismatch |
+
+`stat` is **null or absent**, not strictly absent: the metadata builder always
+emits the key, and serializing it produces `"stat": null`. The guarantee the
+product makes is the one that matters - no metric is ever published as the one
+that ran - and it is tested that way rather than by key presence.
 
 A refusal that could not read the whole question publishes neither
 `requested_stat` nor `requested_metrics`: it has no complete reading of the
@@ -104,11 +111,28 @@ this contract removes.
 Leaderboards are not uniformly per-game. The backing column decides whether a
 requested season total is the thing that would actually run.
 
-| Backing column | Metrics | `total <metric> leaders` |
-| --- | --- | --- |
-| `*_total` | `pf`, `minutes`, `fgm`, `fga`, `fg3a`, `ftm`, `fta` | answers |
-| `*_per_game` | `pts`, `reb`, `ast`, `stl`, `blk`, `tov`, `fg3m` | refuses |
-| rate | percentages and ratings | unaffected; a rate has no total form |
+Compatibility is symmetric. Two things are decided independently - what the
+question explicitly asked for, and what the selected column actually ranks -
+and an explicit request must match. Asking for a total of a per-game column and
+asking for a per-game figure of a total column are the same mistake pointing
+opposite ways, and both refuse.
+
+Requested aggregation is read from the query as one of `unspecified`, `total`,
+`per_game` or `rate`. A rate word settles it before "average" is read as a
+per-game request, so "average true shooting percentage" stays a rate question.
+
+| Backing | Columns | `total X` | `X per game` / `average X` | rate wording |
+| --- | --- | --- | --- | --- |
+| `total` | `pf`, `minutes`, `fgm`, `fga`, `fg3a`, `ftm`, `fta` | answers | **refuses** | refuses |
+| `per_game` | `pts`, `reb`, `ast`, `stl`, `blk`, `tov`, `fg3m`, `oreb`, `dreb`, `plus_minus`, `opponent_pts` | **refuses** | answers | refuses |
+| `rate` | `*_pct`, `*_rating`, `pace` | refuses | refuses | answers |
+| `count` | `games_played`, occurrence counts, `wins`, `losses` | refuses | refuses | refuses |
+
+An unqualified question asks for no particular aggregation and keeps the
+metric's established behavior: `personal fouls leaders` still ranks `pf_total`,
+`points leaders` still ranks `pts_per_game`. A column with no classification
+would silently pass every check, so every column in both leaderboard tables is
+classified and a test fails if a new one is not.
 
 Team leaderboards rank no season totals at all, so every team total refuses.
 

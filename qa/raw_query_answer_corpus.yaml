@@ -2670,6 +2670,60 @@ cases:
         - aggregation
       notes: "Refuses until season-total leaderboards exist. Per-game phrasing is unaffected."
 
+  - id: minutes_per_game_leaders
+    query: "minutes per game leaders"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: leaderboard_aggregation_unsupported
+      - path: result.metadata.stat
+        equals: null
+      - path: result.metadata.requested_stat
+        equals: minutes
+      - path: result.metadata.requested_aggregation
+        equals: per_game
+      - path: result.metadata.available_aggregation
+        equals: total
+    review_notes: "The mirror image of total_rebound_leaders_this_year. Minutes ranks minutes_total, so an explicit per-game request was answered with a season-total board - the same aggregation defect pointing the other way. Owner decision: an explicit aggregation must match the one the column ranks, in both directions, or refuse."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - stat_mapping
+        - aggregation
+      notes: "Refuses until per-game minutes leaderboards exist. Unqualified 'minutes leaders' is unaffected and still ranks the season total."
+
+  - id: average_three_point_attempts_leaders
+    query: "average three-point attempts leaders"
+    category: leaderboard
+    priority: p1
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: leaderboard_aggregation_unsupported
+      - path: result.metadata.stat
+        equals: null
+      - path: result.metadata.requested_stat
+        equals: fg3a
+    review_notes: "Regression pin. This was a safe refusal until the three-point-attempts alias was restored, at which point fg3a resolved and the one-directional aggregation check let an 'average' request through to fg3a_total - a populated season-total board for a per-game question. Refuses now in both readings."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - stat_mapping
+        - aggregation
+      notes: "Refuses until per-game three-point-attempt leaderboards exist. 'total three-point attempts leaders' is unaffected."
+
   - id: assists_per_game_right_now
     query: "Who is averaging the most assists per game right now?"
     category: leaderboard
