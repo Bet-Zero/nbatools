@@ -106,38 +106,88 @@ A refusal that could not read the whole question publishes neither
 request to report, and a partial one presented as the request is the defect
 this contract removes.
 
-## Aggregation is metric-specific
+## Aggregation is route-specific
 
-Leaderboards are not uniformly per-game. The backing column decides whether a
-requested season total is the thing that would actually run.
+Leaderboards are not uniformly per-game, and no metric has one backing
+representation across every board that ranks it. The route decides which
+representation is on offer; the wording decides which one was asked for.
 
-Compatibility is symmetric. Two things are decided independently - what the
-question explicitly asked for, and what the selected column actually ranks -
-and an explicit request must match. Asking for a total of a per-game column and
-asking for a per-game figure of a total column are the same mistake pointing
-opposite ways, and both refuse.
+Compatibility is symmetric, metric-specific **and route-specific**. Two things
+are decided independently - what the question asked for, and what the selected
+*route* would actually produce for that metric - and an explicit request must
+match. Asking for a total of a per-game column and asking for a per-game figure
+of a total column are the same mistake pointing opposite ways, and both refuse.
 
-Requested aggregation is read from the query as one of `unspecified`, `total`,
-`per_game` or `rate`. A rate word settles it before "average" is read as a
-per-game request, so "average true shooting percentage" stays a rate question.
+### The backing representation belongs to the route, not the metric name
 
-| Backing | Columns | `total X` | `X per game` / `average X` | rate wording |
-| --- | --- | --- | --- | --- |
-| `total` | `pf`, `minutes`, `fgm`, `fga`, `fg3a`, `ftm`, `fta` | answers | **refuses** | refuses |
-| `per_game` | `pts`, `reb`, `ast`, `stl`, `blk`, `tov`, `fg3m`, `oreb`, `dreb`, `plus_minus`, `opponent_pts` | **refuses** | answers | refuses |
-| `rate` | `*_pct`, `*_rating`, `pace` | refuses | refuses | answers |
-| `count` | `games_played`, occurrence counts, `wins`, `losses` | refuses | refuses | refuses |
+The same metric has different backings on different boards. `pf` means
+`pf_total` on the season leaderboard and a raw box-score number on the
+single-game board. Reading one route's column to judge another route's request
+refuses `most personal fouls in a game`, which is an ordinary question.
+
+| Ranking mode | Routes | Backing |
+| --- | --- | --- |
+| season leaderboard | `season_leaders`, `season_team_leaders` | the route's own `ALLOWED_STATS` column |
+| raw single-game ranking | `top_player_games`, `top_team_games` | `single_game` for every metric the board ranks |
+
+`single_game` is deliberately **not** the same category as season `per_game`.
+One is the best figure in one game; the other is a season average.
+
+### Requested wording, as six distinct signals
+
+Read strongest-first, so a stronger statement of intent settles the question
+before a weaker word can.
+
+| Signal | Wording | Reading |
+| --- | --- | --- |
+| explicit single-game | `in a game`, `single game`, `game high` | `single_game` |
+| explicit total | `total`, `totals`, `cumulative`, `aggregate`, `combined` | `total` |
+| explicit per-game | `per game`, `each game`, `a game` | `per_game` |
+| explicit rate | `percentage`, `percent`, `pct`, `rate`, `%` | `rate` |
+| soft average | `average`, `avg`, `mean` | resolved against the backing |
+| unspecified | - | the metric's established default |
+
+Explicit per-game outranks a rate word, so `true shooting percentage per game
+leaders` is the mismatch it plainly is rather than an ordinary rate request.
+
+A soft `average` says an average is wanted without saying of what kind, so it is
+settled against the metric: per-game for a counting stat, the rate it already is
+for a rate metric, and per-game - therefore a mismatch - against a season total.
+Forcing every `average` to mean per-game refused `average pace leaders`, which
+was answering correctly.
+
+`a game` means two different things, and the precedence handles both without a
+global substring rule: `most points in a game` matches the single-game signal
+first and stays a top-game ranking, while `points a game leaders` reaches the
+per-game signal and stays a season average.
+
+### Seasonal compatibility
+
+| Backing | Columns | `total X` | `X per game` | `average X` | rate wording | `in a game` |
+| --- | --- | --- | --- | --- | --- | --- |
+| `total` | `pf`, `minutes`, `fgm`, `fga`, `fg3a`, `ftm`, `fta` | answers | **refuses** | **refuses** | refuses | refuses |
+| `per_game` | `pts`, `reb`, `ast`, `stl`, `blk`, `tov`, `fg3m`, `oreb`, `dreb`, `plus_minus`, `opponent_pts` | **refuses** | answers | answers | refuses | refuses |
+| `rate` | `*_pct`, `*_rating`, `pace` | refuses | **refuses** | answers | answers | refuses |
+| `count` | `games_played`, occurrence counts, `wins`, `losses` | refuses | refuses | refuses | refuses | refuses |
+
+### Single-game compatibility
+
+| Backing | Metrics | `in a game` | unqualified | `total X` | `X per game` |
+| --- | --- | --- | --- | --- | --- |
+| `single_game` | every metric the top-game board ranks - `pts`, `reb`, `ast`, `stl`, `blk`, `fgm`, `fga`, `fg3m`, `fg3a`, `ftm`, `fta`, `tov`, `pf`, `minutes`, `plus_minus`, plus `oreb` and `dreb` for teams | answers | answers | refuses | refuses |
 
 An unqualified question asks for no particular aggregation and keeps the
-metric's established behavior: `personal fouls leaders` still ranks `pf_total`,
-`points leaders` still ranks `pts_per_game`. A column with no classification
-would silently pass every check, so every column in both leaderboard tables is
-classified and a test fails if a new one is not.
+metric's established behavior on whichever board it reaches: `personal fouls
+leaders` still ranks `pf_total`, `points leaders` still ranks `pts_per_game`,
+and `highest scoring game` still ranks a raw game. A column with no
+classification would silently pass every check, so every column in both season
+leaderboard tables is classified and a test fails if a new one is not.
 
-Team leaderboards rank no season totals at all, so every team total refuses.
+Team season leaderboards rank no season totals at all, so every team total
+refuses.
 
-Because the metric decides, the route vocabulary and the detector vocabulary
-have to agree on every form. A form the route documents but the detector cannot
+Because the metric decides which column is selected, the route vocabulary and
+the detector vocabulary have to agree on every form. A form the route documents but the detector cannot
 reach becomes a different metric's question: `total three-point attempts
 leaders` was read as a points request until the adjectival long form was added
 alongside the `three-point makes` and `three point percentage` forms its

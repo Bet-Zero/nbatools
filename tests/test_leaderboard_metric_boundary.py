@@ -9,6 +9,12 @@ These tests pin the replacement policy: the metric comes from the query or the
 question is refused, the aggregation the user asked for is the one that runs,
 and wording outside the stat-shaped grammar is refused rather than dropped.
 
+Aggregation compatibility is route-specific. The same metric name has different
+backings on different boards - `pf` is a season total on the leaderboard and a
+raw box-score number on the top-game board - so sections 20 and 21 cross the
+metrics with the ranking modes and with each wording signal rather than
+assuming one backing per metric.
+
 The negative matrix is deliberately one row per *semantic category*, not a list
 of synonyms. Understanding narrative language is not a Phase 1 goal; the only
 requirement is that it cannot be silently discarded on the way to a different
@@ -36,6 +42,9 @@ from nbatools.commands._leaderboard_eligibility import (
     NO_REQUESTED_METRIC,
     PER_GAME,
     RATE,
+    SINGLE_GAME,
+    SINGLE_GAME_RANKING,
+    SOFT_AVERAGE,
     TOTAL,
     UNCLEAR_REQUEST,
     UNSPECIFIED,
@@ -46,6 +55,7 @@ from nbatools.commands._leaderboard_eligibility import (
     metric_aggregation,
     ranks_a_season_total,
     requested_leaderboard_metrics,
+    resolve_requested_aggregation,
 )
 from nbatools.commands.natural_query import _build_parse_state, parse_query
 from nbatools.query_service import execute_natural_query
@@ -1358,13 +1368,16 @@ def test_rate_request_stays_a_rate(metric, phrase):
         ("combined scoring leaders", TOTAL),
         ("cumulative points leaders this season", TOTAL),
         ("points per game leaders", PER_GAME),
-        ("average points leaders", PER_GAME),
         ("minutes per-game leaders", PER_GAME),
         ("three point percentage leaders", RATE),
         ("usage rate leaders", RATE),
         ("best 3p% this season", RATE),
-        # A rate word settles it before "average" is read as a per-game
-        # request, so an averaged rate stays a rate question.
+        ("most points in a game", SINGLE_GAME),
+        ("single-game rebound leaders", SINGLE_GAME),
+        # Bare "average" says an average is wanted without saying of what kind.
+        # It stays unresolved here and is settled against the metric.
+        ("average points leaders", SOFT_AVERAGE),
+        # An explicit rate word is still explicit even next to "average".
         ("average true shooting percentage leaders", RATE),
         ("points leaders", UNSPECIFIED),
         ("personal fouls leaders", UNSPECIFIED),
@@ -1533,3 +1546,272 @@ def test_minimum_attempts_qualifier_still_refuses_generically(query):
 
     assert parsed["route"] is None, query
     assert "unsupported_concept" in (parsed["route_kwargs"].get("unsupported_filters") or []), query
+
+
+# ---------------------------------------------------------------------------
+# 20. Matrix A - the backing representation belongs to the route
+# ---------------------------------------------------------------------------
+
+# `most personal fouls in a game` was refused as a total-versus-per-game
+# mismatch. Nothing was wrong with the question: the top-game board ranks a raw
+# box-score number, and only the *season* leaderboard stores `pf` as a total.
+# The boundary was reading one route's column to judge another route's request.
+#
+# Points, rebounds and assists never broke, which is what made this hard to
+# see - their season columns are per-game, so the wrong lookup happened to
+# agree with the right answer.
+#
+# (metric, single-game wording, season wording, season backing)
+ROUTE_BACKING_MATRIX = [
+    ("pts", "most points in a game this season", "points leaders", PER_GAME),
+    ("reb", "most rebounds in a game this season", "rebounds leaders", PER_GAME),
+    ("ast", "most assists in a game this season", "assists leaders", PER_GAME),
+    ("pf", "most personal fouls in a game", "personal fouls leaders", TOTAL),
+    ("minutes", "most minutes in a game", "minutes leaders", TOTAL),
+    ("fgm", "most field goals made in a game", "field goals made leaders", TOTAL),
+    ("fga", "most field goals attempted in a game", "field goals attempted leaders", TOTAL),
+    ("fg3a", "most three-point attempts in a game", "three-point attempts leaders", TOTAL),
+    ("ftm", "most free throws made in a game", "free throws made leaders", TOTAL),
+    ("fta", "most free throws attempted in a game", "free throws attempted leaders", TOTAL),
+]
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "metric, _single_game, _season, season_backing",
+    ROUTE_BACKING_MATRIX,
+    ids=[r[0] for r in ROUTE_BACKING_MATRIX],
+)
+def test_the_same_metric_has_two_backings(metric, _single_game, _season, season_backing):
+    """One metric name, two ranking modes, two different answers."""
+    assert metric_aggregation(metric, team_scope=False) == season_backing
+    assert (
+        metric_aggregation(metric, team_scope=False, ranking_mode=SINGLE_GAME_RANKING)
+        == SINGLE_GAME
+    )
+
+
+@pytest.mark.parametrize(
+    "metric, single_game, _season, _season_backing",
+    ROUTE_BACKING_MATRIX,
+    ids=[r[0] for r in ROUTE_BACKING_MATRIX],
+)
+def test_single_game_ranking_answers_with_the_raw_game_stat(
+    metric, single_game, _season, _season_backing
+):
+    executed = execute_natural_query(single_game)
+
+    assert executed.route == "top_player_games", single_game
+    assert executed.result_status == "ok", f"{single_game!r} lost its top-game answer"
+    assert executed.metadata.get("stat") == metric, single_game
+    assert not _blockers(executed.metadata), single_game
+    assert len(executed.result.leaders) > 0, single_game
+
+
+@pytest.mark.parametrize(
+    "metric, _single_game, season, _season_backing",
+    ROUTE_BACKING_MATRIX,
+    ids=[r[0] for r in ROUTE_BACKING_MATRIX],
+)
+def test_unqualified_season_ranking_keeps_its_own_backing(
+    metric, _single_game, season, _season_backing
+):
+    """The single-game correction must not weaken the seasonal contract."""
+    executed = execute_natural_query(season)
+
+    assert executed.route == "season_leaders", season
+    assert executed.result_status == "ok", season
+    assert executed.metadata.get("stat") == metric, season
+
+
+@pytest.mark.parametrize(
+    "query, expected_metric",
+    [
+        ("highest scoring game this season", "pts"),
+        ("highest scoring team game", "pts"),
+    ],
+)
+def test_top_game_shorthands_still_answer(query, expected_metric):
+    executed = execute_natural_query(query)
+
+    assert executed.route in {"top_player_games", "top_team_games"}, query
+    assert executed.result_status == "ok", query
+    assert executed.metadata.get("stat") == expected_metric, query
+
+
+# ---------------------------------------------------------------------------
+# 21. Matrix B - wording strength and precedence
+# ---------------------------------------------------------------------------
+
+# Six distinct signals, not one per-game regex with "average" folded into it.
+# Explicit per-game must beat a rate word, or `true shooting percentage per
+# game leaders` answers with the rate it was not asked for. A bare "average"
+# must not force per-game, or `average pace leaders` refuses a rate metric that
+# was answering correctly.
+#
+# (wording, metric phrase, backing, answers?)
+WORDING_STRENGTH_MATRIX = [
+    # explicit total
+    ("total {}", "minutes", TOTAL, True),
+    ("total {}", "points", PER_GAME, False),
+    ("total {}", "true shooting percentage", RATE, False),
+    # explicit per-game
+    ("{} per game", "minutes", TOTAL, False),
+    ("{} per game", "points", PER_GAME, True),
+    ("{} per game", "true shooting percentage", RATE, False),
+    ("{} per game", "usage rate", RATE, False),
+    # explicit rate
+    ("{}", "three point percentage", RATE, True),
+    ("{}", "usage rate", RATE, True),
+    # soft average, settled against the metric
+    ("average {}", "minutes", TOTAL, False),
+    ("average {}", "points", PER_GAME, True),
+    ("average {}", "true shooting percentage", RATE, True),
+    # unspecified
+    ("{}", "minutes", TOTAL, True),
+    ("{}", "points", PER_GAME, True),
+]
+
+
+@pytest.mark.parametrize(
+    "wording, phrase, backing, answers",
+    WORDING_STRENGTH_MATRIX,
+    ids=[f"{w.format(p)}" for w, p, _b, _a in WORDING_STRENGTH_MATRIX],
+)
+def test_wording_strength_decides_against_the_backing(wording, phrase, backing, answers):
+    query = f"{wording.format(phrase)} leaders"
+    executed = execute_natural_query(query)
+
+    if answers:
+        assert executed.result_status == "ok", f"{query!r} stopped answering"
+        assert not _blockers(executed.metadata), query
+        return
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
+    assert executed.metadata.get("stat") is None, query
+    assert executed.metadata.get("available_aggregation") == backing, query
+    _no_substituted_answer(executed)
+
+
+@pytest.mark.parser
+@pytest.mark.parametrize(
+    "requested, backing, expected",
+    [
+        # A bare average means per game for a counting stat and the rate it
+        # already is for a rate. Nothing else can satisfy it.
+        (SOFT_AVERAGE, PER_GAME, PER_GAME),
+        (SOFT_AVERAGE, RATE, RATE),
+        (SOFT_AVERAGE, TOTAL, PER_GAME),
+        (SOFT_AVERAGE, SINGLE_GAME, PER_GAME),
+        (SOFT_AVERAGE, None, PER_GAME),
+        # An explicit signal is never re-read against the metric.
+        (PER_GAME, RATE, PER_GAME),
+        (TOTAL, PER_GAME, TOTAL),
+        (SINGLE_GAME, TOTAL, SINGLE_GAME),
+    ],
+)
+def test_soft_average_resolves_against_the_backing(requested, backing, expected):
+    assert resolve_requested_aggregation(requested, backing) == expected
+
+
+EXPLICIT_RATE_PER_GAME_REFUSALS = [
+    ("three point percentage per game leaders", "fg3_pct"),
+    ("field goal percentage per game leaders", "fg_pct"),
+    ("true shooting percentage per game leaders", "ts_pct"),
+    ("effective field goal percentage per game leaders", "efg_pct"),
+    ("usage rate per game leaders", "usg_pct"),
+    ("pace per game leaders", "pace"),
+]
+
+
+@pytest.mark.parametrize(
+    "query, metric",
+    EXPLICIT_RATE_PER_GAME_REFUSALS,
+    ids=[r[0] for r in EXPLICIT_RATE_PER_GAME_REFUSALS],
+)
+def test_explicit_per_game_beats_a_rate_word(query, metric):
+    """These returned the rate leaderboard for a question that said per game."""
+    executed = execute_natural_query(query)
+
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata), query
+    assert executed.metadata.get("stat") is None, query
+    assert executed.metadata.get("requested_stat") == metric, query
+    assert executed.metadata.get("requested_aggregation") == PER_GAME, query
+    assert executed.metadata.get("available_aggregation") == RATE, query
+    _no_substituted_answer(executed)
+
+
+SOFT_AVERAGE_RATE_CONTROLS = [
+    ("average pace leaders", "pace"),
+    ("average true shooting percentage leaders", "ts_pct"),
+    ("average field goal percentage leaders", "fg_pct"),
+    ("average effective field goal percentage leaders", "efg_pct"),
+    ("average usage rate leaders", "usg_pct"),
+    ("average offensive rating leaders", "off_rating"),
+    ("average defensive rating leaders", "def_rating"),
+]
+
+
+@pytest.mark.parametrize(
+    "query, metric",
+    SOFT_AVERAGE_RATE_CONTROLS,
+    ids=[r[0] for r in SOFT_AVERAGE_RATE_CONTROLS],
+)
+def test_soft_average_on_a_rate_still_answers(query, metric):
+    """`average pace leaders` answered at the base and must keep answering."""
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok", f"{query!r} stopped answering"
+    assert executed.metadata.get("stat") == metric, query
+    assert not _blockers(executed.metadata), query
+
+
+# --- "a game" means two different things ------------------------------------
+
+
+def test_points_a_game_is_a_season_average():
+    """`points a game leaders` is the season per-game board, not a top game."""
+    executed = execute_natural_query("points a game leaders")
+
+    assert executed.route == "season_leaders"
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == "pts"
+
+
+def test_most_points_in_a_game_is_a_top_game_ranking():
+    executed = execute_natural_query("most points in a game")
+
+    assert executed.route == "top_player_games"
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == "pts"
+
+
+def test_most_minutes_in_a_game_is_a_top_game_ranking():
+    """The exact case the route-backing defect refused."""
+    executed = execute_natural_query("most minutes in a game")
+
+    assert executed.route == "top_player_games"
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == "minutes"
+    assert not _blockers(executed.metadata)
+
+
+def test_minutes_a_game_is_a_season_request_and_refuses():
+    """Only season-total minutes exist, so the per-game reading has no board."""
+    executed = execute_natural_query("minutes a game leaders")
+
+    assert executed.route == "season_leaders"
+    assert UNSUPPORTED_AGGREGATION in _blockers(executed.metadata)
+    assert executed.metadata.get("stat") is None
+    assert executed.metadata.get("requested_stat") == "minutes"
+    assert executed.metadata.get("requested_aggregation") == PER_GAME
+    assert executed.metadata.get("available_aggregation") == TOTAL
+    _no_substituted_answer(executed)
+
+
+def test_average_pace_leaders_is_not_a_per_game_request():
+    """The direct regression: a soft average forced pace into per_game."""
+    executed = execute_natural_query("average pace leaders")
+
+    assert executed.result_status == "ok"
+    assert executed.metadata.get("stat") == "pace"
+    assert not _blockers(executed.metadata)

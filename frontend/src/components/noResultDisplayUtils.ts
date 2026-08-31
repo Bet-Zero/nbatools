@@ -342,6 +342,7 @@ const AGGREGATION_PHRASE: Record<string, string> = {
   per_game: "per game",
   rate: "as a rate",
   count: "as a season count",
+  single_game: "one game at a time",
 };
 
 // What the reader asked for, named the same way.
@@ -350,6 +351,7 @@ const REQUESTED_PHRASE: Record<string, string> = {
   per_game: "a per-game",
   rate: "a rate",
   count: "a season-count",
+  single_game: "a single-game",
 };
 
 function aggregationMismatchCopy(
@@ -373,7 +375,9 @@ function aggregationMismatchCopy(
         ? ` Try the season-total form \u2014 for example \u201ctotal ${named}leaders this season\u201d.`
         : available === "per_game"
           ? ` Try the per-game form \u2014 for example \u201c${named}per game leaders this season\u201d.`
-          : "";
+          : available === "single_game"
+            ? ` Try the single-game form \u2014 for example \u201cmost ${named}in a game this season\u201d.`
+            : "";
     return `${subject} is ranked ${ranks} here, so ${asked} ${named}leaderboard is not available.${suggestion}`;
   }
 

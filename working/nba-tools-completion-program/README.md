@@ -114,6 +114,14 @@ route; none of them answers wrongly, so none is urgent.
   unrecognizable rather than a recognized ranking, so nothing is presented as a
   metric that ran a ranking. Extending the truthful-refusal contract to the
   generic boundary is Phase 1C-shaped work, not metric selection.
+- **Deferred metadata integrity on fixed count and occurrence routes.** Codex
+  observed that some fixed count/occurrence routes publish public metadata
+  inconsistently with the truthful-refusal contract the variable-metric
+  branches now follow. None of those routes chooses its metric from the query,
+  so none is governed by the metric boundary, and none of them is a
+  variable-metric aggregation decision. Extending the contract to them belongs
+  with **Phase 1C** (unexecuted qualifier protection across fixed-metric
+  routes), where those route families are already listed.
 - `games played` and the occurrence-count columns (`games_20p`, `wins`,
   `losses`) are classified as `count`: only an unqualified request matches one,
   so `total 30 point games` keeps refusing exactly as it did. Whether a season

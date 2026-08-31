@@ -37,17 +37,18 @@ from nbatools.commands._leaderboard_eligibility import (
     NO_REQUESTED_METRIC as LEADERBOARD_METRIC_REQUIRED,
 )
 from nbatools.commands._leaderboard_eligibility import (
-    UNCLEAR_REQUEST as LEADERBOARD_REQUEST_UNCLEAR,
-)
-from nbatools.commands._leaderboard_eligibility import (
-    UNSUPPORTED_AGGREGATION as LEADERBOARD_AGGREGATION_UNSUPPORTED,
-)
-from nbatools.commands._leaderboard_eligibility import (
+    SINGLE_GAME_RANKING,
     LeaderboardEligibility,
     anchored_leaderboard_metric,
     assess_leaderboard_request,
     requested_leaderboard_metrics,
     unrouted_ranking_reason,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    UNCLEAR_REQUEST as LEADERBOARD_REQUEST_UNCLEAR,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    UNSUPPORTED_AGGREGATION as LEADERBOARD_AGGREGATION_UNSUPPORTED,
 )
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
@@ -2240,7 +2241,9 @@ def _finalize_route(parsed: dict) -> dict:
         and not player
         and not player_a
         and not player_b
-        and not (_rank_elig := assess_leaderboard_request(parsed)).authorized
+        and not (
+            _rank_elig := assess_leaderboard_request(parsed, ranking_mode=SINGLE_GAME_RANKING)
+        ).authorized
     ):
         # Ranked team games still need a named metric: "best team performances"
         # says which games to look at, not what makes one best.
@@ -2318,7 +2321,9 @@ def _finalize_route(parsed: dict) -> dict:
         and not team
         and not team_a
         and not team_b
-        and not (_rank_elig := assess_leaderboard_request(parsed)).authorized
+        and not (
+            _rank_elig := assess_leaderboard_request(parsed, ranking_mode=SINGLE_GAME_RANKING)
+        ).authorized
     ):
         route = "top_player_games"
         route_kwargs, _note = _ranking_refusal_kwargs(
@@ -2721,7 +2726,9 @@ def _finalize_route(parsed: dict) -> dict:
         and not player
         and not player_a
         and not player_b
-        and not (_rank_elig := assess_leaderboard_request(parsed)).authorized
+        and not (
+            _rank_elig := assess_leaderboard_request(parsed, ranking_mode=SINGLE_GAME_RANKING)
+        ).authorized
     ):
         route = "top_team_games"
         route_kwargs, _note = _ranking_refusal_kwargs(
