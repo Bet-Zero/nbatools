@@ -142,12 +142,12 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
 
 ### What runs when
 
-| Trigger                      | Lint | Docs governance | Frontend install/audit/build/lint/test | `make test-unit` | `make test` |
-| ---------------------------- | ---- | --------------- | --------------------------------------- | ---------------- | ----------- |
-| Pull request                 | ✓    | ✓               | ✓                                       | ✓                |             |
-| Push to `main`               | ✓    | ✓               | ✓                                       | ✓                | ✓           |
-| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                       | ✓                | ✓           |
-| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                       | ✓                | ✓           |
+| Trigger                      | Lint | Docs governance | Frontend verify (build/lint/test) | Frontend security (audit) | `make test-unit` | `make test` |
+| ---------------------------- | ---- | --------------- | --------------------------------- | ------------------------- | ---------------- | ----------- |
+| Pull request                 | ✓    | ✓               | ✓                                 | ✓                         | ✓                |             |
+| Push to `main`               | ✓    | ✓               | ✓                                 | ✓                         | ✓                | ✓           |
+| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                 | ✓                         | ✓                | ✓           |
+| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                         | ✓                | ✓           |
 
 - **`docs-governance`** (`make docs-governance`): Verifies the generated
   repository inventory plus durable-doc and working/archive policy checks.
@@ -155,8 +155,22 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
   Raw QA registries, run `make repository-inventory` to regenerate
   `contracts/repository_inventory.json`; `make repository-inventory-check`
   verifies it without writing.
-- **`frontend`**: Runs `npm --prefix frontend ci`, fails on any low-or-higher
-  npm advisory, then runs build, lint, and test.
+- **`frontend-verify`**: Runs `npm --prefix frontend ci`, then build, lint, and
+  test. This is the *code* verdict — does the frontend build and pass its
+  tests?
+- **`frontend-security`**: Runs `npm --prefix frontend ci`, then fails on any
+  low-or-higher npm advisory via
+  `npm --prefix frontend audit --audit-level=low`. This is the *dependency*
+  verdict — does the installed tree carry published advisories?
+
+  These two jobs are independent and neither waits on the other. They fail for
+  unrelated reasons: an advisory published upstream overnight says nothing
+  about whether your code compiles, so it must not hide the build/lint/test
+  result. A red `frontend-security` still blocks like any other job — fix the
+  dependency tree rather than softening the check, and note that a dependency
+  change needs a clean security verdict before it merges. The nightly run
+  re-audits `main`, so advisories published after a lockfile lands are still
+  caught. `tests/test_ci_workflow_policy.py` guards this design.
 - **`test-fast`** (`make test-unit`): Excludes `slow` and `needs_data` tests. Runs in parallel across Python 3.11/3.12/3.13. Provides fast feedback on every trigger.
 - **`test-full`** (`make test`): Full regression suite in parallel. Runs on main push, nightly, and manual dispatch. Skipped on PRs to keep feedback fast.
 

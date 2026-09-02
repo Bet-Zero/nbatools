@@ -2,10 +2,19 @@ name: CI
 
 # ── Trigger policy ────────────────────────────────────────────────
 #
-#   pull_request  → lint + docs-governance + frontend + test-fast
-#   push to main  → lint + docs-governance + frontend + test-fast + test-full
-#   nightly       → lint + docs-governance + frontend + test-fast + test-full
-#   manual        → lint + docs-governance + frontend + test-fast + test-full
+#   pull_request  → lint + docs-governance + frontend-verify
+#                   + frontend-security + test-fast
+#   push to main  → the above + test-full
+#   nightly       → the above + test-full
+#   manual        → the above + test-full
+#
+# Frontend code verification and frontend dependency security are two
+# independent jobs on purpose.  `frontend-verify` reports whether the
+# code builds and passes lint/tests; `frontend-security` reports
+# whether the dependency tree carries known advisories.  Neither job
+# depends on the other, so an advisory published upstream can turn the
+# security verdict red without erasing the code verdict — the failure
+# mode this split exists to prevent.
 #
 # All test jobs call Makefile targets so the repo owns the pytest
 # flags.  See AGENTS.md § "CI testing policy" and CONTRIBUTING.md
@@ -44,7 +53,37 @@ jobs:
           python-version: "3.13"
       - run: make docs-governance
 
-  frontend:
+  # ── Frontend verification ────────────────────────────────────────
+  # Answers one question: does the frontend source build, lint, and
+  # pass its tests?  This job deliberately contains no dependency
+  # audit.  A newly published npm advisory must never stop the repo
+  # from learning whether the code itself is healthy.
+  frontend-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm --prefix frontend ci
+      - run: npm --prefix frontend run build
+      - run: npm --prefix frontend run lint
+      - run: npm --prefix frontend test
+
+  # ── Frontend dependency security ─────────────────────────────────
+  # Answers a different question: does the installed dependency tree
+  # contain known advisories?  Runs on every trigger, so a PR that
+  # changes dependencies always gets an audit verdict and the nightly
+  # run still catches advisories published after a lockfile was merged.
+  #
+  # This is a real blocking check.  Do not add continue-on-error, do
+  # not append `|| true`, do not raise --audit-level, and do not drop
+  # dev dependencies to make it green.  If it is red, the tree needs a
+  # fix — not a softer policy.  `tests/test_ci_workflow_policy.py`
+  # enforces both halves of this contract.
+  frontend-security:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -55,9 +94,6 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm --prefix frontend ci
       - run: npm --prefix frontend audit --audit-level=low
-      - run: npm --prefix frontend run build
-      - run: npm --prefix frontend run lint
-      - run: npm --prefix frontend test
 
   # ── Fast feedback ────────────────────────────────────────────────
   # Runs on every trigger.  Uses `make test-unit` which excludes

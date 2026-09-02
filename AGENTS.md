@@ -179,7 +179,7 @@ Or run the matching domain slice (`make test-query`, `make test-api`, etc.). Eit
 
 #### CI is the backstop — local tests are for fast feedback
 
-CI (`.github/workflows/ci.yml`) runs lint, docs governance, frontend locked install/audit/build/lint/test, and `make test-unit` on every PR. `make test` (the full parallel suite) runs on main pushes, nightly, and manual dispatch. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
+CI (`.github/workflows/ci.yml`) runs lint, docs governance, frontend verification (locked install/build/lint/test), frontend dependency security (locked install/audit), and `make test-unit` on every PR. `make test` (the full parallel suite) runs on main pushes, nightly, and manual dispatch. Local tests do not need to duplicate that coverage — they exist for fast iteration, not for full confidence. For most localized agent-loop changes:
 
 - Run focused pytest on the directly-changed test files, **or** the matching `make test-<domain>` slice.
 - Push the PR. CI runs the comprehensive suite in parallel while you move on.
@@ -253,21 +253,47 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 
 ### What runs when
 
-| Trigger             | `lint` | `docs-governance` | `frontend` | `test-fast` | `test-full` |
-| ------------------- | ------ | ----------------- | ---------- | ----------- | ----------- |
-| Pull request        | ✓      | ✓                 | ✓          | ✓           |             |
-| Push to `main`      | ✓      | ✓                 | ✓          | ✓           | ✓           |
-| Nightly (06:00 UTC) | ✓      | ✓                 | ✓          | ✓           | ✓           |
-| Manual dispatch     | ✓      | ✓                 | ✓          | ✓           | ✓           |
+| Trigger             | `lint` | `docs-governance` | `frontend-verify` | `frontend-security` | `test-fast` | `test-full` |
+| ------------------- | ------ | ----------------- | ----------------- | ------------------- | ----------- | ----------- |
+| Pull request        | ✓      | ✓                 | ✓                 | ✓                   | ✓           |             |
+| Push to `main`      | ✓      | ✓                 | ✓                 | ✓                   | ✓           | ✓           |
+| Nightly (06:00 UTC) | ✓      | ✓                 | ✓                 | ✓                   | ✓           | ✓           |
+| Manual dispatch     | ✓      | ✓                 | ✓                 | ✓                   | ✓           | ✓           |
 
 - **`docs-governance`** calls `make docs-governance`, including the generated
   repository-inventory drift check.
-- **`frontend`** calls `npm --prefix frontend ci`, rejects any low-or-higher
-  advisory with `npm --prefix frontend audit --audit-level=low`, then calls
+- **`frontend-verify`** calls `npm --prefix frontend ci`, then
   `npm --prefix frontend run build`, `npm --prefix frontend run lint`, and
-  `npm --prefix frontend test`.
+  `npm --prefix frontend test`. It answers whether the frontend *code* is
+  healthy. It deliberately runs no dependency audit.
+- **`frontend-security`** calls `npm --prefix frontend ci`, then rejects any
+  low-or-higher advisory with
+  `npm --prefix frontend audit --audit-level=low`. It answers whether the
+  installed dependency *tree* carries known advisories.
 - **`test-fast`** calls `make test-unit`. Excludes `slow` and `needs_data` tests. Runs in parallel. This is the fast feedback path.
 - **`test-full`** calls `make test`. Full regression suite in parallel. This is the correctness backstop.
+
+### Frontend verification and dependency security are independent
+
+These are two verdicts, not one, and neither job depends on the other:
+
+- **Verification** asks "does this code build, lint, and pass its tests?"
+- **Security** asks "does the installed dependency tree contain published npm
+  advisories?"
+
+They are separated because they fail for unrelated reasons. An advisory
+published upstream overnight says nothing about whether the code builds, so it
+must not stop the repo from finding out. Before this split, one `frontend` job
+ran the audit *before* build/lint/test, so a single new advisory marked all
+three verification steps skipped and the code verdict was lost.
+
+A red `frontend-security` is a real failure and blocks the same as any other
+job. Never repair it by adding `continue-on-error`, appending `|| true`,
+raising `--audit-level`, dropping dev dependencies, or adding blanket advisory
+ignores — fix the dependency tree instead. Dependency-changing PRs get an audit
+verdict on every run, and the nightly schedule catches advisories published
+after a lockfile was merged. `tests/test_ci_workflow_policy.py` enforces both
+halves of this contract.
 
 ### How this maps to agent workflow
 
@@ -278,7 +304,7 @@ CI is defined in `.github/workflows/ci.yml`. It implements a layered testing str
 | Subsystem confidence                                     | `make test-<domain>`  | —             |
 | Before declaring work complete (localized)               | `make test-impacted`  | —             |
 | Before declaring work complete (cross-cutting/risky)     | `make test-preflight` | —             |
-| PR pushed                                                | —                     | `docs-governance`, `frontend`, `test-fast` |
+| PR pushed                                                | —                     | `docs-governance`, `frontend-verify`, `frontend-security`, `test-fast` |
 | Merged to main / nightly                                 | —                     | `test-full`   |
 
 Local development uses `make test-impacted` (testmon) for the fastest feedback **on localized changes**. For cross-cutting changes it degenerates into "almost the whole suite, but serial," so use `make test-preflight` (parallel) instead. CI does not use testmon — it uses `make test-unit` (marker-based exclusion, parallel) as the fast path. Testmon state is a local development optimization only.

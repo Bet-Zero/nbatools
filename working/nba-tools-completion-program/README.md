@@ -1,9 +1,9 @@
 # NBA Tools completion program
 
-Coordination file for trust projects that are **out of scope for PR #295** and
+Coordination file for trust projects that were **out of scope for PR #295** and
 must not be started inside it.
 
-PR #295's final bounded scope is *Phase 1A - explicit metric selection and no
+PR #295's final bounded scope was *Phase 1A - explicit metric selection and no
 cross-metric substitution*: metric selection and aggregation integrity on the
 ranking branches that choose their metric from the query. The durable
 description of that scope lives in
@@ -11,6 +11,34 @@ description of that scope lives in
 
 Everything below is a real defect class that PR #295 does **not** fix and does
 **not** claim to fix.
+
+---
+
+## Program status
+
+| Item | State |
+| --- | --- |
+| Phase 1A - explicit metric selection | **Merged** at `1914bb10c12bdb98fe4b2371df8ba9fa5fd76521` (PR #295) |
+| CI-01 - trustworthy frontend verification and dependency security | **Active** (infrastructure) |
+| False-green Raw QA and no-data filter sweep gates | Next task, after CI-01 |
+| Phase 1B - compound event and filter routing integrity | Deferred, unstarted |
+| Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
+| Phase 1D - filter execution receipts | Deferred, unstarted |
+
+**CI-01** splits frontend CI into two independent verdicts so a newly published
+npm advisory can no longer mark the frontend build, lint, and test steps
+*skipped*. `frontend-verify` reports whether the code is healthy;
+`frontend-security` reports whether the dependency tree is. The audit stays a
+real blocking check at `--audit-level=low`, and
+`tests/test_ci_workflow_policy.py` prevents the old ordering from returning.
+
+CI-01 is infrastructure. It changes no parser behavior, query routing, result
+contract, or frontend product behavior.
+
+The next task after CI-01 is repairing the **false-green Raw QA and no-data
+filter sweep gates** - gates that currently report success when they have not
+actually verified anything. Phases 1B, 1C, and 1D stay deferred and must not be
+started before that gate repair lands.
 
 ---
 
