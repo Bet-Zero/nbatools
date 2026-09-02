@@ -287,13 +287,31 @@ must not stop the repo from finding out. Before this split, one `frontend` job
 ran the audit *before* build/lint/test, so a single new advisory marked all
 three verification steps skipped and the code verdict was lost.
 
-A red `frontend-security` is a real failure and blocks the same as any other
-job. Never repair it by adding `continue-on-error`, appending `|| true`,
+#### What a red `frontend-security` means
+
+Be precise about three different claims:
+
+| Claim | True today? |
+| --- | --- |
+| **Workflow-failing** — the job fails and the CI run goes red | Yes |
+| **Policy-blocking** — this repo's policy says it must be green before merge | Yes |
+| **Technically merge-blocking** — GitHub refuses the merge | **No** |
+
+`frontend-security` is a real failing check and project policy requires it to
+be green before merge. A red result must not be ignored or bypassed. But
+GitHub does not currently *enforce* that: there is no branch protection rule or
+repository ruleset naming it as a required check, so the merge button still
+works. Treat the policy as binding anyway — the enforcement gap is a
+configuration decision recorded as **CI-GOV-01** in
+`working/nba-tools-completion-program/README.md`, not a licence to merge red.
+
+Never repair a red audit by adding `continue-on-error`, appending `|| true`,
 raising `--audit-level`, dropping dev dependencies, or adding blanket advisory
 ignores — fix the dependency tree instead. Dependency-changing PRs get an audit
 verdict on every run, and the nightly schedule catches advisories published
 after a lockfile was merged. `tests/test_ci_workflow_policy.py` enforces both
-halves of this contract.
+halves of this contract: that verification stays unconditional and installs
+from the committed lockfile, and that the audit stays strict and unsuppressed.
 
 ### How this maps to agent workflow
 

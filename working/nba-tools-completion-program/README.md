@@ -21,6 +21,7 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 | Phase 1A - explicit metric selection | **Merged** at `1914bb10c12bdb98fe4b2371df8ba9fa5fd76521` (PR #295) |
 | CI-01 - trustworthy frontend verification and dependency security | **Active** (infrastructure) |
 | False-green Raw QA and no-data filter sweep gates | Next task, after CI-01 |
+| CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
 | Phase 1B - compound event and filter routing integrity | Deferred, unstarted |
 | Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
 | Phase 1D - filter execution receipts | Deferred, unstarted |
@@ -29,8 +30,10 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 npm advisory can no longer mark the frontend build, lint, and test steps
 *skipped*. `frontend-verify` reports whether the code is healthy;
 `frontend-security` reports whether the dependency tree is. The audit stays a
-real blocking check at `--audit-level=low`, and
-`tests/test_ci_workflow_policy.py` prevents the old ordering from returning.
+real check at `--audit-level=low` that fails the workflow, and project policy
+requires it green before merge — though GitHub does not currently enforce that
+mechanically (see CI-GOV-01 below). `tests/test_ci_workflow_policy.py` prevents
+the old ordering from returning and keeps verification unconditional.
 
 CI-01 is infrastructure. It changes no parser behavior, query routing, result
 contract, or frontend product behavior.
@@ -39,6 +42,33 @@ The next task after CI-01 is repairing the **false-green Raw QA and no-data
 filter sweep gates** - gates that currently report success when they have not
 actually verified anything. Phases 1B, 1C, and 1D stay deferred and must not be
 started before that gate repair lands.
+
+---
+
+## CI-GOV-01 - required-check enforcement decision
+
+**Deferred governance item. Not the active next task.**
+
+Current project policy requires both `frontend-verify` and `frontend-security`
+to be green before a merge. That policy is real and binding on anyone working
+in this repo.
+
+GitHub does not currently enforce it. As of PR #296 there is no classic branch
+protection on `main` (the protection endpoint returns *Branch not protected*)
+and no repository ruleset - so no check is registered as *required*, and
+nothing mechanically prevents merging while a check is red.
+
+The accurate description of a red `frontend-security` is therefore:
+**policy-blocking and workflow-failing, but not currently enforced as a
+required GitHub merge check.**
+
+Deciding whether to configure required-check enforcement - and if so, which
+checks to require and whether to enforce for the solo maintainer - is separate
+repository-governance work. **It was deliberately not performed in PR #296**,
+which changed no branch protection and no ruleset.
+
+This item is recorded so the gap is known and deliberate rather than
+accidental. It does not block the active queue.
 
 ---
 

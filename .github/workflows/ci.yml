@@ -78,11 +78,17 @@ jobs:
   # changes dependencies always gets an audit verdict and the nightly
   # run still catches advisories published after a lockfile was merged.
   #
-  # This is a real blocking check.  Do not add continue-on-error, do
-  # not append `|| true`, do not raise --audit-level, and do not drop
-  # dev dependencies to make it green.  If it is red, the tree needs a
-  # fix — not a softer policy.  `tests/test_ci_workflow_policy.py`
-  # enforces both halves of this contract.
+  # This is a real check that fails the workflow, and project policy
+  # requires it to be green before merge — a red result must not be
+  # ignored or bypassed.  Whether GitHub itself disables the merge
+  # button is a separate matter: that needs branch protection or a
+  # repository ruleset naming this check, which is not configured here.
+  #
+  # Do not add continue-on-error, do not append `|| true`, do not raise
+  # --audit-level, and do not drop dev dependencies to make it green.
+  # If it is red, the tree needs a fix — not a softer policy.
+  # `tests/test_ci_workflow_policy.py` enforces both halves of this
+  # contract.
   frontend-security:
     runs-on: ubuntu-latest
     steps:
