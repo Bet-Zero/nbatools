@@ -18,7 +18,8 @@ import json
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, is_dataclass
+from inspect import isclass
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -27,6 +28,7 @@ import pandas as pd
 import pytest
 import yaml
 
+from nbatools.commands import structured_results as sr
 from tools import filter_execution_sweep as sweep
 from tools import raw_query_answer_qa as qa
 
@@ -291,6 +293,30 @@ def test_a_status_outside_the_contract_fails_closed():
     assert verdict.error_kind == sweep.UNKNOWN_RESULT_STATUS
 
 
+# Every canonical result status, and the sweep policy deliberately chosen for
+# it. A new ResultStatus value fails this guard until someone decides whether
+# it is an answer, an expected negative, or a system failure - it must never
+# fall through to REFUSED or NO_SIGNAL by default.
+EXPECTED_STATUS_POLICY = {
+    "ok": None,  # a real answer
+    "no_result": None,  # an expected negative outcome
+    "error": sweep.RETURNED_ERROR_STATUS,  # a system-level failure
+}
+
+
+def test_every_canonical_status_has_an_explicit_sweep_policy():
+    assert set(sweep.CANONICAL_RESULT_STATUSES) == set(EXPECTED_STATUS_POLICY), (
+        "the result contract gained or lost a status; decide explicitly whether "
+        "the sweep treats it as an answer, an expected negative, or a system "
+        "failure before this guard is updated"
+    )
+    for status, expected_kind in EXPECTED_STATUS_POLICY.items():
+        assert sweep._returned_error_kind(status) == expected_kind
+
+    # A status nobody has ruled on fails closed rather than becoming REFUSED.
+    assert sweep._returned_error_kind("brand_new_status") == sweep.UNKNOWN_RESULT_STATUS
+
+
 def test_the_canonical_status_set_comes_from_the_result_contract():
     assert sweep.CANONICAL_RESULT_STATUSES == {"ok", "no_result", "error"}
     # An expected negative outcome is not a system failure.
@@ -306,6 +332,188 @@ def test_no_signal_is_not_one_of_the_comparable_verdicts():
         assert verdict in sweep.COMPARABLE_VERDICTS
 
 
+# ── Public answer-data evidence ───────────────────────────────────
+
+
+FRAME = pd.DataFrame({"a": [1, 2], "b": ["x", "y"]})
+OTHER_FRAME = pd.DataFrame({"a": [1, 3], "b": ["x", "z"]})
+
+
+def _print(result) -> str:
+    return sweep.fingerprint_sections(sweep.public_sections(result))
+
+
+def _fully_populated_results() -> dict[str, Any]:
+    """One instance per supported result type, every optional section filled."""
+    return {
+        "NoResult": sr.NoResult(query_class="leaderboard"),
+        "SummaryResult": sr.SummaryResult(
+            summary=FRAME, by_season=FRAME, game_log=FRAME, top_performers=FRAME
+        ),
+        "ComparisonResult": sr.ComparisonResult(summary=FRAME, comparison=FRAME),
+        "SplitSummaryResult": sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME),
+        "FinderResult": sr.FinderResult(games=FRAME),
+        "LeaderboardResult": sr.LeaderboardResult(leaders=FRAME),
+        "StreakResult": sr.StreakResult(streaks=FRAME),
+        "CountResult": sr.CountResult(count=2, games=FRAME),
+    }
+
+
+def test_a_changed_split_comparison_changes_the_fingerprint():
+    # The old hand-maintained list looked for "splits" and never saw
+    # split_comparison, so a filter that only moved the split table looked
+    # like an unchanged answer.
+    unchanged = sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME)
+    changed = sr.SplitSummaryResult(summary=FRAME, split_comparison=OTHER_FRAME)
+
+    assert "split_comparison" in sweep.public_sections(unchanged)
+    assert _print(unchanged) != _print(changed)
+
+
+def test_identical_split_results_still_fingerprint_the_same():
+    left = sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME)
+    right = sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME)
+
+    assert _print(left) == _print(right)
+
+
+@pytest.mark.parametrize("section", ["by_season", "game_log", "top_performers"])
+def test_a_changed_summary_secondary_section_changes_the_fingerprint(section):
+    base = {"by_season": FRAME, "game_log": FRAME, "top_performers": FRAME}
+    unchanged = sr.SummaryResult(summary=FRAME, **base)
+    changed = sr.SummaryResult(summary=FRAME, **{**base, section: OTHER_FRAME})
+
+    assert section in sweep.public_sections(unchanged)
+    assert _print(unchanged) != _print(changed)
+
+
+def test_a_changed_public_count_changes_the_fingerprint():
+    assert _print(sr.CountResult(count=2, games=FRAME)) != _print(
+        sr.CountResult(count=5, games=FRAME)
+    )
+
+
+def test_changed_count_games_change_the_fingerprint():
+    assert _print(sr.CountResult(count=2, games=FRAME)) != _print(
+        sr.CountResult(count=2, games=OTHER_FRAME)
+    )
+
+
+def test_identical_counts_and_games_fingerprint_the_same():
+    assert _print(sr.CountResult(count=2, games=FRAME)) == _print(
+        sr.CountResult(count=2, games=FRAME)
+    )
+
+
+def test_a_zero_count_is_not_a_populated_baseline():
+    # A zero count is an expected-negative answer. Treating it as populated
+    # would invent a comparable control out of "nothing matched".
+    assert sweep.sections_are_populated(sweep.public_sections(sr.CountResult(count=0))) is False
+    assert sweep.sections_are_populated(sweep.public_sections(sr.CountResult(count=3))) is True
+
+
+def test_a_positive_count_without_games_is_still_a_real_answer():
+    assert sweep.sections_are_populated(sweep.public_sections(sr.CountResult(count=3))) is True
+
+
+@pytest.mark.parametrize(
+    ("unchanged", "changed"),
+    [
+        (sr.FinderResult(games=FRAME), sr.FinderResult(games=OTHER_FRAME)),
+        (sr.LeaderboardResult(leaders=FRAME), sr.LeaderboardResult(leaders=OTHER_FRAME)),
+        (sr.StreakResult(streaks=FRAME), sr.StreakResult(streaks=OTHER_FRAME)),
+        (
+            sr.ComparisonResult(summary=FRAME, comparison=FRAME),
+            sr.ComparisonResult(summary=OTHER_FRAME, comparison=FRAME),
+        ),
+        (
+            sr.ComparisonResult(summary=FRAME, comparison=FRAME),
+            sr.ComparisonResult(summary=FRAME, comparison=OTHER_FRAME),
+        ),
+        (sr.SummaryResult(summary=FRAME), sr.SummaryResult(summary=OTHER_FRAME)),
+    ],
+)
+def test_primary_result_sections_still_detect_ordinary_changes(unchanged, changed):
+    assert _print(unchanged) != _print(changed)
+
+
+def test_metadata_and_presentation_never_reach_the_answer_fingerprint():
+    plain = sr.LeaderboardResult(leaders=FRAME)
+    decorated = sr.LeaderboardResult(
+        leaders=FRAME,
+        current_through="2024-04-14",
+        metadata={"route": "season_leaders", "applied_filters": [{"label": "Last N games"}]},
+        notes=["a note"],
+        caveats=["a caveat"],
+    )
+
+    assert _print(plain) == _print(decorated)
+
+
+def test_an_empty_result_is_not_populated():
+    assert (
+        sweep.sections_are_populated(sweep.public_sections(sr.NoResult(query_class="x"))) is False
+    )
+    assert sweep.sections_are_populated(sweep.public_sections(sr.LeaderboardResult())) is False
+
+
+def test_a_result_without_the_public_contract_cannot_be_compared():
+    stand_in = SimpleNamespace(leaders=FRAME)
+
+    assert sweep.public_sections(stand_in) is None
+    assert _print(stand_in) == sweep.NO_PUBLIC_CONTRACT
+    assert sweep.sections_are_populated(sweep.public_sections(stand_in)) is False
+
+
+def test_fingerprint_and_populated_read_the_same_extraction():
+    result = sr.SplitSummaryResult(summary=FRAME, split_comparison=OTHER_FRAME)
+    sections = sweep.public_sections(result)
+
+    assert sweep.fingerprint_sections(sections) == _print(result)
+    assert sweep.sections_are_populated(sections) is True
+    assert sorted(sections) == ["split_comparison", "summary"]
+
+
+# ── Result-contract inventory guard ───────────────────────────────
+
+
+def test_every_structured_result_type_has_an_extraction_policy():
+    published = {
+        name
+        for name, obj in vars(sr).items()
+        if is_dataclass(obj) and isclass(obj) and obj.__module__ == sr.__name__
+    }
+
+    assert published == set(sweep.SUPPORTED_RESULT_SECTIONS), (
+        "a structured result type was added or removed; give it an explicit "
+        "entry in SUPPORTED_RESULT_SECTIONS and decide how its sections count "
+        "as answer data"
+    )
+
+
+@pytest.mark.parametrize("name", sorted(_fully_populated_results()))
+def test_every_public_section_has_an_extraction_policy(name):
+    result = _fully_populated_results()[name]
+    sections = sweep.public_sections(result)
+
+    assert sections is not None
+    assert set(sections) == sweep.SUPPORTED_RESULT_SECTIONS[name], (
+        f"{name} publishes a public section the sweep has no policy for; add it "
+        "to SUPPORTED_RESULT_SECTIONS and decide whether it counts as a "
+        "populated answer"
+    )
+
+
+def test_the_registry_matches_what_the_extractor_actually_compares():
+    # Evidence is never filtered through the registry - everything a result
+    # publishes is compared - so the registry must describe reality.
+    for name, result in _fully_populated_results().items():
+        sections = sweep.public_sections(result)
+        assert set(sections) <= sweep.SUPPORTED_RESULT_SECTIONS[name]
+        for section in sections:
+            assert section in sweep.SUPPORTED_RESULT_SECTIONS[name]
+
+
 # ── Filter sweep run status and exit contract ─────────────────────
 
 
@@ -319,19 +527,33 @@ class FakeExecuted:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
-def _answer(rows: int = 3, *, value: int = 1, badges: list[dict[str, str]] | None = None):
+def _leaderboard(rows: int = 3, *, value: int = 1) -> sr.LeaderboardResult:
     frame = pd.DataFrame({"player": [f"p{index}" for index in range(rows)], "pts": [value] * rows})
-    result = SimpleNamespace(leaders=frame)
+    return sr.LeaderboardResult(leaders=frame)
+
+
+def _answer(
+    rows: int = 3,
+    *,
+    value: int = 1,
+    badges: list[dict[str, str]] | None = None,
+    result: Any = None,
+):
     return FakeExecuted(
         result_status="ok",
-        result=result,
+        result=_leaderboard(rows, value=value) if result is None else result,
         metadata={"route": "season_leaders", "applied_filters": badges or []},
     )
 
 
 def _refusal(reason: str = "no_data"):
     """An expected negative outcome: no_result with a user/data reason."""
-    return FakeExecuted(result_status="no_result", result_reason=reason, result=None, metadata={})
+    return FakeExecuted(
+        result_status="no_result",
+        result_reason=reason,
+        result=sr.NoResult(query_class="leaderboard", reason=reason),
+        metadata={},
+    )
 
 
 def _system_error(reason: str = "error"):
@@ -339,7 +561,7 @@ def _system_error(reason: str = "error"):
     return FakeExecuted(
         result_status="error",
         result_reason=reason,
-        result=None,
+        result=sr.NoResult(query_class="unknown", reason=reason, result_status="error"),
         metadata={"route": None},
     )
 
@@ -580,6 +802,83 @@ def test_the_error_report_does_not_claim_every_error_row_raised(tmp_path, monkey
     assert "raised or returned a system-error result" in printed
     assert "CRASHED:" not in printed
     assert sweep.RETURNED_ERROR_STATUS in printed
+
+
+def test_a_filter_that_only_moves_the_split_table_is_applied(tmp_path, monkeypatch):
+    # Against the old partial fingerprint this pair looked identical, so a
+    # badge would have made it LIED and no badge would have made it DROPPED.
+    control = sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME)
+    filtered = sr.SplitSummaryResult(summary=FRAME, split_comparison=OTHER_FRAME)
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={
+            CONTROL: _answer(result=control),
+            FILTERED: _answer(result=filtered, badges=[{"label": "Last N games", "value": "10"}]),
+        },
+    )
+    row = document["rows"][0]
+
+    assert row["verdict"] == sweep.APPLIED
+    assert row["verdict"] not in (sweep.LIED, sweep.DROPPED)
+    assert row["fingerprint_match"] is False
+    assert row["control"]["sections"] == ["split_comparison", "summary"]
+    assert exit_code == sweep.EXIT_PASS
+    assert document["summary"]["status"] == sweep.STATUS_PASS
+
+
+def test_an_unchanged_split_result_behind_a_badge_is_still_a_lie(tmp_path, monkeypatch):
+    same = sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME)
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={
+            CONTROL: _answer(result=same),
+            FILTERED: _answer(result=same, badges=[{"label": "Last N games", "value": "10"}]),
+        },
+    )
+    row = document["rows"][0]
+
+    assert row["verdict"] == sweep.LIED
+    assert row["fingerprint_match"] is True
+    assert exit_code == sweep.EXIT_FAIL
+
+
+def test_a_positive_count_control_is_comparable(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={
+            CONTROL: _answer(result=sr.CountResult(count=7, games=FRAME)),
+            FILTERED: _answer(result=sr.CountResult(count=3, games=OTHER_FRAME)),
+        },
+    )
+    row = document["rows"][0]
+
+    assert row["control"]["populated"] is True
+    assert row["verdict"] == sweep.APPLIED
+    assert exit_code == sweep.EXIT_PASS
+
+
+def test_a_zero_count_control_leaves_no_signal(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={
+            CONTROL: _answer(result=sr.CountResult(count=0)),
+            FILTERED: _answer(result=sr.CountResult(count=0)),
+        },
+    )
+    row = document["rows"][0]
+
+    assert row["control"]["populated"] is False
+    assert row["verdict"] == sweep.NO_SIGNAL
+    assert row["no_signal_reason"] == "control_empty_result"
+    assert exit_code == sweep.EXIT_NO_SIGNAL
 
 
 def test_a_fully_comparable_clean_run_passes(tmp_path, monkeypatch):

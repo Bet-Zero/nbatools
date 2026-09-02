@@ -48,7 +48,7 @@ import hashlib
 import json
 import sys
 from collections import Counter
-from collections.abc import Iterator, Mapping
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, NamedTuple
@@ -106,8 +106,33 @@ EXIT_CODES = {
 # Bumped when the shape of the --json artifact changes.
 JSON_SCHEMA_VERSION = 2
 
-# Result frames that carry comparable answer data.
-FINGERPRINT_ATTRS = ("games", "leaders", "streaks", "summary", "splits", "comparison")
+# The public answer sections each supported result type can expose, keyed by
+# result class name. `to_dict()["sections"]` is the canonical public-data
+# contract; this registry records the sections the sweep has an explicit
+# policy for. Evidence extraction deliberately does NOT filter through this
+# registry - every section a result publishes is compared - but
+# `tests/test_qa_gate_integrity.py` fails when a result grows a section that
+# is missing here, so a new section forces an explicit decision about whether
+# it counts as a populated answer.
+SUPPORTED_RESULT_SECTIONS: dict[str, frozenset[str]] = {
+    "NoResult": frozenset(),
+    "SummaryResult": frozenset({"summary", "by_season", "game_log", "top_performers"}),
+    "ComparisonResult": frozenset({"summary", "comparison"}),
+    "SplitSummaryResult": frozenset({"summary", "split_comparison"}),
+    "FinderResult": frozenset({"finder"}),
+    "LeaderboardResult": frozenset({"leaderboard"}),
+    "StreakResult": frozenset({"streak"}),
+    "CountResult": frozenset({"count", "finder"}),
+}
+
+# `count` is published on every CountResult, including a zero count. A zero
+# count is an expected-negative answer, not a populated baseline, so this
+# section is the one that needs a value check rather than a row check.
+COUNT_SECTION = "count"
+
+# Fingerprint for a result that publishes no `to_dict()["sections"]` contract,
+# so its answer data cannot be compared at all.
+NO_PUBLIC_CONTRACT = "no_public_contract"
 
 
 class Classification(NamedTuple):
@@ -119,33 +144,71 @@ class Classification(NamedTuple):
     error_kind: str | None = None
 
 
-def _frames(result: Any) -> Iterator[tuple[str, Any]]:
-    """Yield the result frames that carry comparable answer data."""
-    for attr in FINGERPRINT_ATTRS:
-        frame = getattr(result, attr, None)
-        if frame is None or not hasattr(frame, "to_csv"):
-            continue
-        yield attr, frame
+def public_sections(result: Any) -> dict[str, Any] | None:
+    """The canonical public answer sections of a structured result.
 
+    Reads `to_dict()["sections"]`, the contract the API and formatters already
+    publish, so the evidence covers every displayed answer section rather than
+    a hand-maintained attribute list that drifts from the result classes. The
+    surrounding `metadata`, `notes`, `caveats`, `current_through`, and status
+    fields are presentation and trust metadata, not answer data, and are
+    deliberately excluded.
 
-def _fingerprint(result: Any) -> str:
-    """Stable fingerprint of the data a query actually returned."""
-    if result is None:
-        return "NONE"
-    parts: list[str] = []
-    for attr, frame in _frames(result):
-        digest = hashlib.md5(frame.to_csv(index=False).encode()).hexdigest()[:16]
-        parts.append(f"{attr}:{frame.shape}:{digest}")
-    return "||".join(parts) or f"type={type(result).__name__}"
-
-
-def _populated(result: Any) -> bool:
-    """True when the result carries at least one row of comparable data.
-
-    An answer with no populated frame cannot anchor a comparison: two such
-    answers fingerprint the same no matter what the filter did.
+    Returns None when the object publishes no such contract.
     """
-    return any(getattr(frame, "shape", (0,))[0] > 0 for _, frame in _frames(result))
+    if result is None:
+        return None
+    to_dict = getattr(result, "to_dict", None)
+    if not callable(to_dict):
+        return None
+    payload = to_dict()
+    if not isinstance(payload, dict):
+        return None
+    sections = payload.get("sections")
+    if not isinstance(sections, dict):
+        return None
+    return sections
+
+
+def _section_has_answer(name: str, rows: Any) -> bool:
+    """True when one public section carries a real answer."""
+    if not rows:
+        return False
+    if name == COUNT_SECTION:
+        return any(_is_positive_count(row) for row in rows)
+    return True
+
+
+def _is_positive_count(row: Any) -> bool:
+    value = row.get(COUNT_SECTION) if isinstance(row, dict) else None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    return value > 0
+
+
+def fingerprint_sections(sections: dict[str, Any] | None) -> str:
+    """Stable fingerprint of the public answer data a query returned.
+
+    Section names are part of the fingerprint, so a section appearing or
+    disappearing counts as a change. Row order and cell values are preserved
+    by the serialization, so a reordered or edited answer is a change too.
+    """
+    if sections is None:
+        return NO_PUBLIC_CONTRACT
+    payload = json.dumps(sections, sort_keys=True, default=str)
+    digest = hashlib.sha256(payload.encode()).hexdigest()[:16]
+    return f"sections[{','.join(sorted(sections))}]:{digest}"
+
+
+def sections_are_populated(sections: dict[str, Any] | None) -> bool:
+    """True when the public answer data can anchor a comparison.
+
+    An answer with no populated section cannot: two such answers fingerprint
+    the same no matter what the filter did.
+    """
+    if not sections:
+        return False
+    return any(_section_has_answer(name, rows) for name, rows in sections.items())
 
 
 def _run(query: str) -> dict[str, Any]:
@@ -161,10 +224,14 @@ def _run(query: str) -> dict[str, Any]:
             "badges": [],
             "fingerprint": None,
             "populated": False,
+            "sections": [],
         }
     metadata = executed.metadata or {}
     status = executed.result_status
     reason = executed.result_reason
+    # One extraction feeds both the comparison and the populated decision, so
+    # they can never disagree about what the answer data was.
+    sections = public_sections(executed.result)
     return {
         "error": _returned_failure(status, reason),
         "error_kind": _returned_error_kind(status),
@@ -175,8 +242,9 @@ def _run(query: str) -> dict[str, Any]:
             f"{badge.get('label')}={badge.get('value')}"
             for badge in (metadata.get("applied_filters") or [])
         ],
-        "fingerprint": _fingerprint(executed.result),
-        "populated": _populated(executed.result),
+        "fingerprint": fingerprint_sections(sections),
+        "populated": sections_are_populated(sections),
+        "sections": sorted(sections) if sections is not None else [],
     }
 
 
@@ -445,6 +513,7 @@ def main(argv: list[str] | None = None) -> int:
                             "route": filtered.get("route"),
                             "badges": filtered.get("badges"),
                             "populated": filtered.get("populated"),
+                            "sections": filtered.get("sections"),
                             "error": filtered.get("error"),
                             "error_kind": filtered.get("error_kind"),
                         },
@@ -454,6 +523,7 @@ def main(argv: list[str] | None = None) -> int:
                             "route": control.get("route"),
                             "badges": control.get("badges"),
                             "populated": control.get("populated"),
+                            "sections": control.get("sections"),
                             "error": control.get("error"),
                             "error_kind": control.get("error_kind"),
                         },

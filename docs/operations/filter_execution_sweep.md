@@ -38,16 +38,69 @@ A control is **comparable** when all of these hold:
 - the query did not raise;
 - the query did not return a system-error envelope;
 - `result_status` is `ok`;
-- at least one result frame carries at least one row.
+- at least one public answer section carries a real answer.
 
 Anything else leaves nothing to compare against: a refusal, missing local
 data, uncovered season coverage, or an empty answer. Two unpopulated answers
 fingerprint identically no matter what the filter did, so treating that as
 evidence would manufacture a clean verdict out of missing data.
 
-Comparison uses a stable fingerprint of the returned data frames (`games`,
-`leaders`, `streaks`, `summary`, `splits`, `comparison`) — shape plus a digest
-of the CSV rendering.
+## What Counts As Answer Data
+
+Comparison uses a stable fingerprint of the result's **canonical public answer
+sections** — the data under its `to_dict()["sections"]` contract, the same
+sections the API and formatters publish. Section names, row order, and cell
+values all contribute, so a section appearing, disappearing, reordering, or
+changing a value is a change.
+
+| Result type | Public sections compared |
+| --- | --- |
+| `NoResult` | none |
+| `SummaryResult` | `summary`, `by_season`, `game_log`, `top_performers` |
+| `ComparisonResult` | `summary`, `comparison` |
+| `SplitSummaryResult` | `summary`, `split_comparison` |
+| `FinderResult` | `finder` |
+| `LeaderboardResult` | `leaderboard` |
+| `StreakResult` | `streak` |
+| `CountResult` | `count`, `finder` |
+
+Presentation and trust metadata is **excluded** — applied-filter badges,
+`notes`, `caveats`, `route` and other `metadata`, `current_through`, and
+timestamps. None of it determines whether the answer data changed. Badge claims
+are still evaluated separately, by the `LIED` / `DROPPED` logic.
+
+Fingerprinting and the populated-control decision read the *same* normalized
+extraction, so they can never disagree about what the answer was.
+
+`count` is the one section needing a value check rather than a row check: a
+`CountResult` always publishes a count, including zero. A positive count is
+real public answer data even with no games attached; a zero count keeps its
+expected-negative meaning and does not create a populated control.
+
+### Why not an attribute list
+
+An earlier revision fingerprinted a hand-maintained attribute list — `games`,
+`leaders`, `streaks`, `summary`, `splits`, `comparison`. That list had drifted
+from the result classes. It looked for `splits`, which no result class exposes;
+`SplitSummaryResult` publishes its displayed table as `split_comparison`, so
+every split table was invisible to the comparison. `SummaryResult`'s
+`by_season`, `game_log`, and `top_performers` and `CountResult`'s `count` were
+missing too.
+
+A filter could therefore change a displayed section that the fingerprint never
+looked at, and the sweep would call the answer unchanged — reporting a working
+filter as `LIED` when a badge was present, or `DROPPED` when it was not. Reading
+the published section contract removes the drift by construction.
+
+### Adding a public section
+
+Evidence extraction is not filtered through any allowlist: every section a
+result publishes is compared, so nothing can be silently omitted.
+`SUPPORTED_RESULT_SECTIONS` records the sections that have an explicit policy,
+and `tests/test_qa_gate_integrity.py` fails when a result type or section
+appears without one. A new section must get an entry plus a decision about
+whether it counts as a populated answer — a scalar like `count` needs a value
+rule, a table needs only rows.
 
 ## Row Classifications
 
@@ -185,8 +238,11 @@ list; consumers should read `schema_version` and then `summary` / `rows`.
 Each row records `seed`, `filter`, `query`, `control_query`, `verdict`,
 `comparable`, `no_signal_reason`, `error_source`, `error_kind`, `route`,
 `badges`, `error`, `fingerprint_match`, and nested `filtered` / `control`
-objects carrying `status`, `reason`, `route`, `badges`, `populated`, `error`,
-and `error_kind`.
+objects carrying `status`, `reason`, `route`, `badges`, `populated`,
+`sections`, `error`, and `error_kind`.
+
+Each side's `sections` lists the public section names that went into its
+evidence — enough to audit what was compared, without duplicating the data.
 
 `error_source` names the side that failed and `error_kind` names how. The
 `error` field carries the exception message when a side raised, and
