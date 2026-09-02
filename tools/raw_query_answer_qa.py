@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 from collections import Counter
+from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -3411,6 +3412,26 @@ def write_markdown(path: Path, rows: list[dict[str, Any]], summary: dict[str, An
     path.write_text("\n".join(lines).rstrip() + "\n")
 
 
+def harness_exit_code(
+    *,
+    closure_integrity_state: str,
+    failed_case_ids: Sequence[str],
+    fail_on_expectation_failure: bool,
+) -> int:
+    """Exit status for a completed run, after every artifact has been written.
+
+    A closure-integrity failure always fails. Failed expectations fail only
+    when the caller asked for a gate: `make raw-query-answer-qa` passes
+    `--fail-on-expectation-failure`, while a direct invocation without the flag
+    stays report-only and leaves the failed IDs visible in the artifacts.
+    """
+    if closure_integrity_state == "fail":
+        return 1
+    if failed_case_ids and fail_on_expectation_failure:
+        return 1
+    return 0
+
+
 def main() -> int:
     args = parse_args()
     corpus_path = resolve_path(args.corpus)
@@ -3519,11 +3540,11 @@ def main() -> int:
     else:
         print("Failed case IDs: none")
 
-    if product_review["closure_integrity"]["state"] == "fail":
-        return 1
-    if failed_case_ids and args.fail_on_expectation_failure:
-        return 1
-    return 0
+    return harness_exit_code(
+        closure_integrity_state=product_review["closure_integrity"]["state"],
+        failed_case_ids=failed_case_ids,
+        fail_on_expectation_failure=args.fail_on_expectation_failure,
+    )
 
 
 if __name__ == "__main__":

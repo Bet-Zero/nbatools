@@ -19,12 +19,13 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 | Item | State |
 | --- | --- |
 | Phase 1A - explicit metric selection | **Merged** at `1914bb10c12bdb98fe4b2371df8ba9fa5fd76521` (PR #295) |
-| CI-01 - trustworthy frontend verification and dependency security | **Active** (infrastructure) |
-| False-green Raw QA and no-data filter sweep gates | Next task, after CI-01 |
+| CI-01 - trustworthy frontend verification and dependency security | **Merged** at `ed15443d5ddc3ef8982d580226eb5dc49c4c7e06` (PR #296) |
+| QA-01 - fail-closed Raw QA and filter-sweep signal integrity | **Active** (QA tooling) |
 | CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
 | Phase 1B - compound event and filter routing integrity | Deferred, unstarted |
 | Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
 | Phase 1D - filter execution receipts | Deferred, unstarted |
+| Immutable data-backed CI | Separate infrastructure decision, not taken |
 
 **CI-01** splits frontend CI into two independent verdicts so a newly published
 npm advisory can no longer mark the frontend build, lint, and test steps
@@ -38,10 +39,34 @@ the old ordering from returning and keeps verification unconditional.
 CI-01 is infrastructure. It changes no parser behavior, query routing, result
 contract, or frontend product behavior.
 
-The next task after CI-01 is repairing the **false-green Raw QA and no-data
-filter sweep gates** - gates that currently report success when they have not
-actually verified anything. Phases 1B, 1C, and 1D stay deferred and must not be
-started before that gate repair lands.
+---
+
+## QA-01 - fail-closed Raw QA and filter-sweep signal integrity
+
+**Active task.** It repairs two gates that reported success without producing
+the evidence their success claimed.
+
+1. `make raw-query-answer-qa` omitted `--fail-on-expectation-failure`, so the
+   repository's named Raw QA target printed failed cases and still exited zero.
+   The target now passes the flag and fails closed. Artifacts are still written
+   before exit, and the direct harness keeps its explicit report-only mode.
+2. `tools/filter_execution_sweep.py` classified every comparison as an honest
+   refusal when there was no data to compare, and exited zero - "no lies found"
+   from a run that compared nothing. Rows without a populated control are now
+   `NO_SIGNAL`, the run reports `PASS` / `PASS_WITH_GAPS` / `FAIL` /
+   `NO_SIGNAL`, and a run with no comparable rows exits 2.
+
+QA-01 is QA tooling. It changes no parser behavior, query routing, result
+contract, API behavior, frontend product behavior, NBA data, or Raw QA case
+expectation. `tests/test_qa_gate_integrity.py` runs without NBA data and pins
+both gates' exit semantics.
+
+**Immutable data-backed CI remains a separate decision.** GitHub CI does not
+carry the local NBA dataset, so the full Raw QA corpus and the data-backed
+filter sweep were deliberately not added to ordinary CI in QA-01.
+
+Phases 1B, 1C, and 1D stay deferred and unstarted. **Do not select the next
+query phase until QA-01 is independently accepted.**
 
 ---
 

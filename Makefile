@@ -14,6 +14,8 @@
 
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then printf '%s' .venv/bin/python; elif command -v python3 >/dev/null 2>&1; then command -v python3; elif command -v python >/dev/null 2>&1; then command -v python; else printf '%s' python3; fi)
 PYTEST ?= $(PYTHON) -m pytest
+RAW_QA_CORPUS ?= qa/raw_query_answer_corpus.yaml
+RAW_QA_ARGS ?=
 VISUAL_QA_BASE_URL ?= http://127.0.0.1:8000
 VISUAL_QA_RUN_ID ?=
 BROWSER_REVIEW_BASE_URL ?= http://127.0.0.1:8000
@@ -148,8 +150,14 @@ parser-examples-sweep:
 	$(PYTHON) tools/parser_examples_full_sweep.py
 
 ## Curated raw query answer QA harness; writes ignored artifacts under outputs/.
+## This is the canonical full-corpus machine-regression gate: a failed
+## expectation makes the target non-zero.  Artifacts are still written before
+## the harness exits.  Machine passing is not human product acceptance.
+## Invoke the harness directly, without --fail-on-expectation-failure, for a
+## report-only run.
 raw-query-answer-qa:
-	$(PYTHON) tools/raw_query_answer_qa.py --corpus qa/raw_query_answer_corpus.yaml
+	$(PYTHON) tools/raw_query_answer_qa.py --corpus $(RAW_QA_CORPUS) \
+		--fail-on-expectation-failure $(RAW_QA_ARGS)
 
 ## Input-only natural-query review snapshot; writes ignored artifacts under outputs/.
 exploratory-query-review:

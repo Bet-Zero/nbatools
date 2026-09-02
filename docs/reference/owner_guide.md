@@ -113,6 +113,9 @@ human acceptance.
 make raw-query-answer-qa
 ```
 
+That command fails — non-zero exit, not just a printed warning — when any case
+breaks its contract, and it writes the full review report either way.
+
 **Around the funnel, three ordinary safety nets:**
 
 - **pytest** (`tests/`, with `make test-query` and related commands) — normal
