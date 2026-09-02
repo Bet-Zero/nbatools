@@ -29,6 +29,7 @@ import pytest
 import yaml
 
 from nbatools.commands import structured_results as sr
+from tests._filter_evidence import EvidenceFailure, assert_filter_applied_or_refused
 from tools import filter_execution_sweep as sweep
 from tools import raw_query_answer_qa as qa
 
@@ -457,12 +458,68 @@ def test_an_empty_result_is_not_populated():
     assert sweep.sections_are_populated(sweep.public_sections(sr.LeaderboardResult())) is False
 
 
-def test_a_result_without_the_public_contract_cannot_be_compared():
+def test_a_result_without_the_public_contract_raises_instead_of_comparing():
     stand_in = SimpleNamespace(leaders=FRAME)
 
-    assert sweep.public_sections(stand_in) is None
-    assert _print(stand_in) == sweep.NO_PUBLIC_CONTRACT
-    assert sweep.sections_are_populated(sweep.public_sections(stand_in)) is False
+    with pytest.raises(sweep.PublicContractError) as caught:
+        sweep.public_sections(stand_in)
+
+    assert caught.value.kind == sweep.MISSING_PUBLIC_CONTRACT
+
+
+@pytest.mark.parametrize(
+    ("result", "kind"),
+    [
+        (None, sweep.MISSING_PUBLIC_CONTRACT),
+        (SimpleNamespace(leaders=FRAME), sweep.MISSING_PUBLIC_CONTRACT),
+        (SimpleNamespace(to_dict=lambda: ["not", "a", "dict"]), sweep.NON_DICT_PUBLIC_PAYLOAD),
+        (SimpleNamespace(to_dict=lambda: {"query_class": "x"}), sweep.MISSING_PUBLIC_SECTIONS),
+        (SimpleNamespace(to_dict=lambda: {"sections": ["nope"]}), sweep.NON_DICT_PUBLIC_SECTIONS),
+        (
+            SimpleNamespace(to_dict=lambda: {"sections": {"leaderboard": "not-a-list"}}),
+            sweep.MALFORMED_PUBLIC_SECTION,
+        ),
+        (
+            SimpleNamespace(to_dict=lambda: {"sections": {"leaderboard": ["not-a-record"]}}),
+            sweep.MALFORMED_PUBLIC_SECTION,
+        ),
+        (
+            SimpleNamespace(to_dict=lambda: {"sections": {7: [{"a": 1}]}}),
+            sweep.MALFORMED_PUBLIC_SECTION,
+        ),
+    ],
+)
+def test_every_broken_public_contract_is_named_and_fails_closed(result, kind):
+    with pytest.raises(sweep.PublicContractError) as caught:
+        sweep.public_sections(result)
+
+    assert caught.value.kind == kind
+    assert caught.value.kind in sweep.PUBLIC_CONTRACT_ERROR_KINDS
+
+
+def test_an_empty_sections_contract_is_valid_not_malformed():
+    # NoResult publishes {} - an expected negative, not a broken contract.
+    sections = sweep.public_sections(sr.NoResult(query_class="leaderboard"))
+
+    assert sections == {}
+    assert sweep.sections_are_populated(sections) is False
+    assert sweep.fingerprint_sections(sections)
+
+
+def test_a_section_the_registry_does_not_know_is_still_fingerprinted():
+    # Runtime extraction is never filtered through SUPPORTED_RESULT_SECTIONS,
+    # so a newly emitted section cannot silently drop out of the evidence.
+    without = SimpleNamespace(to_dict=lambda: {"sections": {"leaderboard": [{"a": 1}]}})
+    with_extra = SimpleNamespace(
+        to_dict=lambda: {"sections": {"leaderboard": [{"a": 1}], "brand_new": [{"b": 2}]}}
+    )
+
+    assert "brand_new" not in {
+        section for sections in sweep.SUPPORTED_RESULT_SECTIONS.values() for section in sections
+    }
+    assert "brand_new" in sweep.public_sections(with_extra)
+    assert _print(with_extra) != _print(without)
+    assert sweep.sections_are_populated(sweep.public_sections(with_extra)) is True
 
 
 def test_fingerprint_and_populated_read_the_same_extraction():
@@ -475,6 +532,14 @@ def test_fingerprint_and_populated_read_the_same_extraction():
 
 
 # ── Result-contract inventory guard ───────────────────────────────
+#
+# Bounded on purpose. Runtime extraction already compares every emitted
+# section (see the "not in the registry" test above), so these guards exist to
+# force an explicit *policy* decision, not to guarantee discovery. They detect
+# a result type appearing or disappearing, and any section reachable from the
+# fully-populated fixtures below. A future conditionally emitted section that
+# no fixture populates would still be fingerprinted at runtime, but would not
+# trip these tests until the fixture covers it.
 
 
 def test_every_structured_result_type_has_an_extraction_policy():
@@ -496,11 +561,10 @@ def test_every_public_section_has_an_extraction_policy(name):
     result = _fully_populated_results()[name]
     sections = sweep.public_sections(result)
 
-    assert sections is not None
     assert set(sections) == sweep.SUPPORTED_RESULT_SECTIONS[name], (
-        f"{name} publishes a public section the sweep has no policy for; add it "
-        "to SUPPORTED_RESULT_SECTIONS and decide whether it counts as a "
-        "populated answer"
+        f"{name} publishes a section reachable from its fixture that the sweep has "
+        "no policy for; add it to SUPPORTED_RESULT_SECTIONS and decide whether it "
+        "counts as a populated answer"
     )
 
 
@@ -525,6 +589,13 @@ class FakeExecuted:
     result_reason: str | None = None
     result: Any = None
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+class _RaisingContract:
+    """A result whose public contract blows up when read."""
+
+    def to_dict(self):
+        raise RuntimeError("contract blew up")
 
 
 def _leaderboard(rows: int = 3, *, value: int = 1) -> sr.LeaderboardResult:
@@ -799,7 +870,7 @@ def test_the_error_report_does_not_claim_every_error_row_raised(tmp_path, monkey
     )
     printed = capsys.readouterr().out
 
-    assert "raised or returned a system-error result" in printed
+    assert "raised, returned a system-error result, or published unusable" in printed
     assert "CRASHED:" not in printed
     assert sweep.RETURNED_ERROR_STATUS in printed
 
@@ -879,6 +950,174 @@ def test_a_zero_count_control_leaves_no_signal(tmp_path, monkeypatch):
     assert row["verdict"] == sweep.NO_SIGNAL
     assert row["no_signal_reason"] == "control_empty_result"
     assert exit_code == sweep.EXIT_NO_SIGNAL
+
+
+# Every way a completed `ok` result can fail to publish usable evidence, as
+# seen through the real CLI entrypoint.
+BROKEN_CONTRACTS = [
+    ("no_to_dict", SimpleNamespace(leaders=FRAME), sweep.MISSING_PUBLIC_CONTRACT),
+    (
+        "non_dict_payload",
+        SimpleNamespace(to_dict=lambda: ["not", "a", "dict"]),
+        sweep.NON_DICT_PUBLIC_PAYLOAD,
+    ),
+    (
+        "no_sections",
+        SimpleNamespace(to_dict=lambda: {"query_class": "leaderboard"}),
+        sweep.MISSING_PUBLIC_SECTIONS,
+    ),
+    (
+        "non_dict_sections",
+        SimpleNamespace(to_dict=lambda: {"sections": ["nope"]}),
+        sweep.NON_DICT_PUBLIC_SECTIONS,
+    ),
+    (
+        "malformed_section",
+        SimpleNamespace(to_dict=lambda: {"sections": {"leaderboard": "not-a-list"}}),
+        sweep.MALFORMED_PUBLIC_SECTION,
+    ),
+    ("to_dict_raises", _RaisingContract(), sweep.PUBLIC_CONTRACT_EXCEPTION),
+]
+
+
+@pytest.mark.parametrize(
+    ("label", "broken", "kind"), BROKEN_CONTRACTS, ids=[case[0] for case in BROKEN_CONTRACTS]
+)
+def test_a_broken_filtered_contract_is_an_error_never_applied(
+    tmp_path, monkeypatch, label, broken, kind
+):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _answer(), FILTERED: _answer(result=broken)},
+    )
+    summary = document["summary"]
+    row = document["rows"][0]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["verdict_counts"][sweep.APPLIED] == 0
+    assert summary["verdict_counts"][sweep.ERROR] == 1
+    assert row["verdict"] == sweep.ERROR
+    assert row["error_source"] == "filtered"
+    assert row["error_kind"] == kind
+    assert row["error"]
+    # What the query did manage to report is preserved.
+    assert row["filtered"]["status"] == "ok"
+    assert row["filtered"]["route"] == "season_leaders"
+    assert row["filtered"]["populated"] is False
+    assert (tmp_path / "sweep.json").exists()
+
+
+@pytest.mark.parametrize(
+    ("label", "broken", "kind"), BROKEN_CONTRACTS, ids=[case[0] for case in BROKEN_CONTRACTS]
+)
+def test_a_broken_control_contract_is_an_error_never_a_gap(
+    tmp_path, monkeypatch, label, broken, kind
+):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _answer(result=broken), FILTERED: _answer(value=9)},
+    )
+    summary = document["summary"]
+    row = document["rows"][0]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["verdict_counts"][sweep.NO_SIGNAL] == 0
+    assert summary["verdict_counts"][sweep.APPLIED] == 0
+    assert summary["verdict_counts"][sweep.ERROR] == 1
+    assert row["verdict"] == sweep.ERROR
+    assert row["verdict"] not in (sweep.NO_SIGNAL, sweep.APPLIED)
+    assert row["error_source"] == "control"
+    assert row["error_kind"] == kind
+    assert row["control"]["status"] == "ok"
+    assert row["control"]["populated"] is False
+    assert (tmp_path / "sweep.json").exists()
+
+
+def test_a_contract_exception_still_writes_the_json_evidence(tmp_path, monkeypatch):
+    # The extraction used to run outside the protected block, so this aborted
+    # the process and the promised evidence was never written.
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _answer(), FILTERED: _answer(result=_RaisingContract())},
+    )
+    row = document["rows"][0]
+
+    assert (tmp_path / "sweep.json").exists()
+    assert exit_code == sweep.EXIT_FAIL
+    assert row["error_kind"] == sweep.PUBLIC_CONTRACT_EXCEPTION
+    assert "contract blew up" in row["error"]
+    assert document["summary"]["executed_comparisons"] == 1
+
+
+def test_a_broken_row_outranks_an_otherwise_all_no_signal_run(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL, OTHER_CONTROL],
+        answers={
+            CONTROL: _answer(result=SimpleNamespace(leaders=FRAME)),
+            FILTERED: _answer(),
+            OTHER_CONTROL: _refusal("no_data"),
+            OTHER_FILTERED: _refusal("no_data"),
+        },
+    )
+    summary = document["summary"]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert exit_code != sweep.EXIT_NO_SIGNAL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["comparable_comparisons"] == 0
+
+
+def test_a_broken_row_outranks_otherwise_valid_comparable_rows(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL, OTHER_CONTROL],
+        answers={
+            CONTROL: _answer(value=1),
+            FILTERED: _answer(value=2),
+            OTHER_CONTROL: _answer(value=3),
+            OTHER_FILTERED: _answer(result=SimpleNamespace(leaders=FRAME)),
+        },
+    )
+    summary = document["summary"]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["status"] != sweep.STATUS_PASS_WITH_GAPS
+    assert summary["verdict_counts"][sweep.ERROR] == 1
+    assert summary["verdict_counts"][sweep.APPLIED] == 1
+    # The counts still reconcile against the configured matrix.
+    assert (
+        summary["comparable_comparisons"]
+        + summary["verdict_counts"][sweep.NO_SIGNAL]
+        + summary["verdict_counts"][sweep.ERROR]
+        == summary["executed_comparisons"]
+        == summary["configured_comparisons"]
+    )
+
+
+def test_a_valid_no_result_is_still_an_expected_negative(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _answer(), FILTERED: _refusal("filter_not_supported")},
+    )
+    row = document["rows"][0]
+
+    assert row["verdict"] == sweep.REFUSED
+    assert row["error_kind"] is None
+    assert exit_code == sweep.EXIT_PASS
 
 
 def test_a_fully_comparable_clean_run_passes(tmp_path, monkeypatch):
@@ -971,3 +1210,121 @@ def test_run_status_never_turns_an_untested_matrix_into_a_pass():
     assert sweep.run_status({**counts, sweep.ERROR: 1}, comparable=5) == sweep.STATUS_FAIL
     # An error outranks an otherwise empty run: it is a verified defect.
     assert sweep.run_status({**counts, sweep.ERROR: 1}, comparable=0) == sweep.STATUS_FAIL
+
+
+# ── Data-backed integrity test logic (proved without data) ────────
+
+
+def _engine(answers: dict[str, Any]):
+    def execute(query: str):
+        answer = answers[query]
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    return execute
+
+
+def test_integrity_logic_cannot_pass_on_a_returned_system_error():
+    # The old private fingerprint saw a NoResult-shaped error envelope as
+    # "different data" and passed. A system error proves nothing.
+    execute = _engine({CONTROL: _answer(), FILTERED: _system_error("unrouted")})
+
+    with pytest.raises(EvidenceFailure) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "system level" in str(caught.value)
+    assert "unrouted" in str(caught.value)
+
+
+def test_integrity_logic_passes_when_the_complete_answer_changes():
+    execute = _engine({CONTROL: _answer(value=1), FILTERED: _answer(value=2)})
+
+    assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+
+def test_integrity_logic_fails_when_the_complete_answer_is_identical():
+    execute = _engine({CONTROL: _answer(value=1), FILTERED: _answer(value=1)})
+
+    with pytest.raises(AssertionError) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "identical public answer data" in str(caught.value)
+
+
+def test_integrity_logic_sees_a_change_only_the_complete_evidence_reveals():
+    # Identical summary, different split table: invisible to the old list.
+    execute = _engine(
+        {
+            CONTROL: _answer(result=sr.SplitSummaryResult(summary=FRAME, split_comparison=FRAME)),
+            FILTERED: _answer(
+                result=sr.SplitSummaryResult(summary=FRAME, split_comparison=OTHER_FRAME)
+            ),
+        }
+    )
+
+    assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+
+def test_integrity_logic_keeps_the_honest_refusal_path():
+    execute = _engine({CONTROL: _answer(), FILTERED: _refusal("filter_not_supported")})
+
+    assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+
+def test_integrity_logic_still_rejects_a_refusal_that_shows_the_badge():
+    refused = _refusal("filter_not_supported")
+    refused.metadata = {"applied_filters": [{"label": "Last N games", "value": "10"}]}
+    execute = _engine({CONTROL: _answer(), FILTERED: refused})
+
+    with pytest.raises(AssertionError) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "still displays" in str(caught.value)
+
+
+def test_integrity_logic_fails_on_a_malformed_public_contract():
+    execute = _engine(
+        {CONTROL: _answer(), FILTERED: _answer(result=SimpleNamespace(leaders=FRAME))}
+    )
+
+    with pytest.raises(EvidenceFailure) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert sweep.MISSING_PUBLIC_CONTRACT in str(caught.value)
+
+
+def test_integrity_logic_fails_on_a_raised_query():
+    execute = _engine({CONTROL: _answer(), FILTERED: RuntimeError("boom")})
+
+    with pytest.raises(EvidenceFailure) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "raised RuntimeError" in str(caught.value)
+
+
+def test_integrity_logic_refuses_an_unusable_control_as_a_baseline():
+    execute = _engine({CONTROL: _refusal("no_data"), FILTERED: _answer(value=2)})
+
+    with pytest.raises(EvidenceFailure) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "comparison baseline" in str(caught.value)
+
+
+def test_integrity_logic_refuses_an_empty_control_as_a_baseline():
+    execute = _engine({CONTROL: _answer(result=sr.LeaderboardResult()), FILTERED: _answer(value=2)})
+
+    with pytest.raises(EvidenceFailure) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "no populated public answer" in str(caught.value)
+
+
+def test_integrity_logic_rejects_a_status_outside_the_contract():
+    execute = _engine({CONTROL: _answer(), FILTERED: FakeExecuted(result_status="partial")})
+
+    with pytest.raises(EvidenceFailure) as caught:
+        assert_filter_applied_or_refused(FILTERED, CONTROL, "Last N games", execute)
+
+    assert "outside the result contract" in str(caught.value)

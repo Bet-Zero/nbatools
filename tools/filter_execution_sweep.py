@@ -106,14 +106,19 @@ EXIT_CODES = {
 # Bumped when the shape of the --json artifact changes.
 JSON_SCHEMA_VERSION = 2
 
-# The public answer sections each supported result type can expose, keyed by
-# result class name. `to_dict()["sections"]` is the canonical public-data
-# contract; this registry records the sections the sweep has an explicit
-# policy for. Evidence extraction deliberately does NOT filter through this
-# registry - every section a result publishes is compared - but
-# `tests/test_qa_gate_integrity.py` fails when a result grows a section that
-# is missing here, so a new section forces an explicit decision about whether
-# it counts as a populated answer.
+# The public answer sections each supported result type is currently known to
+# expose, keyed by result class name. `to_dict()["sections"]` is the canonical
+# public-data contract; this registry is the explicit inventory of the section
+# policies that have been decided and exercised.
+#
+# Evidence extraction deliberately does NOT filter through this registry -
+# every section a result actually emits is compared, so nothing can be
+# silently omitted at runtime. The registry backs the guard tests in
+# `tests/test_qa_gate_integrity.py`, which detect a new or removed result type
+# and any section reachable from their fully-populated fixtures. A future
+# optional section that no fixture populates would still be fingerprinted at
+# runtime, but it would not be caught by that fixture-based guard until the
+# fixture covers it.
 SUPPORTED_RESULT_SECTIONS: dict[str, frozenset[str]] = {
     "NoResult": frozenset(),
     "SummaryResult": frozenset({"summary", "by_season", "game_log", "top_performers"}),
@@ -130,9 +135,40 @@ SUPPORTED_RESULT_SECTIONS: dict[str, frozenset[str]] = {
 # section is the one that needs a value check rather than a row check.
 COUNT_SECTION = "count"
 
-# Fingerprint for a result that publishes no `to_dict()["sections"]` contract,
-# so its answer data cannot be compared at all.
-NO_PUBLIC_CONTRACT = "no_public_contract"
+# How a completed result failed to publish usable public answer evidence.
+# Each is a system-level failure: the answer data could not be read, so it can
+# never be compared as if it were an ordinary answer.
+MISSING_PUBLIC_CONTRACT = "missing_public_result_contract"
+NON_DICT_PUBLIC_PAYLOAD = "non_dict_public_result_payload"
+MISSING_PUBLIC_SECTIONS = "missing_public_sections"
+NON_DICT_PUBLIC_SECTIONS = "non_dict_public_sections"
+MALFORMED_PUBLIC_SECTION = "malformed_public_section"
+PUBLIC_CONTRACT_EXCEPTION = "public_result_contract_exception"
+
+PUBLIC_CONTRACT_ERROR_KINDS = frozenset(
+    {
+        MISSING_PUBLIC_CONTRACT,
+        NON_DICT_PUBLIC_PAYLOAD,
+        MISSING_PUBLIC_SECTIONS,
+        NON_DICT_PUBLIC_SECTIONS,
+        MALFORMED_PUBLIC_SECTION,
+        PUBLIC_CONTRACT_EXCEPTION,
+    }
+)
+
+
+class PublicContractError(Exception):
+    """A completed result did not publish usable public answer evidence.
+
+    Raised instead of returning a sentinel, so an unreadable answer can never
+    be compared as ordinary data. `_run` converts it into an ERROR row.
+    """
+
+    def __init__(self, kind: str, detail: str, sections: list[str] | None = None) -> None:
+        super().__init__(detail)
+        self.kind = kind
+        self.detail = detail
+        self.sections = sections or []
 
 
 class Classification(NamedTuple):
@@ -144,7 +180,7 @@ class Classification(NamedTuple):
     error_kind: str | None = None
 
 
-def public_sections(result: Any) -> dict[str, Any] | None:
+def public_sections(result: Any) -> dict[str, Any]:
     """The canonical public answer sections of a structured result.
 
     Reads `to_dict()["sections"]`, the contract the API and formatters already
@@ -154,20 +190,75 @@ def public_sections(result: Any) -> dict[str, Any] | None:
     fields are presentation and trust metadata, not answer data, and are
     deliberately excluded.
 
-    Returns None when the object publishes no such contract.
+    A result that completed but published no usable contract is a system-level
+    failure, not an unusual answer: this raises `PublicContractError` rather
+    than returning a comparable value. An empty `sections` mapping is valid -
+    `NoResult` publishes exactly that - and is simply not populated.
     """
     if result is None:
-        return None
+        raise PublicContractError(
+            MISSING_PUBLIC_CONTRACT, "result object is None; no public answer to read"
+        )
     to_dict = getattr(result, "to_dict", None)
     if not callable(to_dict):
-        return None
+        raise PublicContractError(
+            MISSING_PUBLIC_CONTRACT,
+            f"{type(result).__name__} publishes no callable to_dict()",
+        )
     payload = to_dict()
     if not isinstance(payload, dict):
-        return None
-    sections = payload.get("sections")
+        raise PublicContractError(
+            NON_DICT_PUBLIC_PAYLOAD,
+            f"{type(result).__name__}.to_dict() returned {type(payload).__name__}, not a dict",
+        )
+    if "sections" not in payload:
+        raise PublicContractError(
+            MISSING_PUBLIC_SECTIONS,
+            f"{type(result).__name__}.to_dict() has no 'sections' mapping",
+        )
+    sections = payload["sections"]
     if not isinstance(sections, dict):
-        return None
+        raise PublicContractError(
+            NON_DICT_PUBLIC_SECTIONS,
+            f"{type(result).__name__}.to_dict()['sections'] is "
+            f"{type(sections).__name__}, not a dict",
+        )
+    _validate_section_shapes(result, sections)
     return sections
+
+
+def _validate_section_shapes(result: Any, sections: dict[str, Any]) -> None:
+    """Reject a malformed answer without validating arbitrary objects.
+
+    The structured contract publishes each section as a list of public
+    records. Checking that much rejects a broken answer while leaving the
+    record contents to the fingerprint.
+    """
+    seen: list[str] = []
+    for name, rows in sections.items():
+        if not isinstance(name, str):
+            raise PublicContractError(
+                MALFORMED_PUBLIC_SECTION,
+                f"{type(result).__name__} published a non-string section name "
+                f"{name!r} ({type(name).__name__})",
+                sections=seen,
+            )
+        if not isinstance(rows, list):
+            raise PublicContractError(
+                MALFORMED_PUBLIC_SECTION,
+                f"{type(result).__name__} section {name!r} is "
+                f"{type(rows).__name__}, not a list of records",
+                sections=seen,
+            )
+        for index, row in enumerate(rows):
+            if not isinstance(row, dict):
+                raise PublicContractError(
+                    MALFORMED_PUBLIC_SECTION,
+                    f"{type(result).__name__} section {name!r} row {index} is "
+                    f"{type(row).__name__}, not a record",
+                    sections=seen,
+                )
+        seen.append(name)
 
 
 def _section_has_answer(name: str, rows: Any) -> bool:
@@ -186,21 +277,20 @@ def _is_positive_count(row: Any) -> bool:
     return value > 0
 
 
-def fingerprint_sections(sections: dict[str, Any] | None) -> str:
+def fingerprint_sections(sections: dict[str, Any]) -> str:
     """Stable fingerprint of the public answer data a query returned.
 
     Section names are part of the fingerprint, so a section appearing or
     disappearing counts as a change. Row order and cell values are preserved
     by the serialization, so a reordered or edited answer is a change too.
+    Every emitted section is included, registry or not.
     """
-    if sections is None:
-        return NO_PUBLIC_CONTRACT
     payload = json.dumps(sections, sort_keys=True, default=str)
     digest = hashlib.sha256(payload.encode()).hexdigest()[:16]
     return f"sections[{','.join(sorted(sections))}]:{digest}"
 
 
-def sections_are_populated(sections: dict[str, Any] | None) -> bool:
+def sections_are_populated(sections: dict[str, Any]) -> bool:
     """True when the public answer data can anchor a comparison.
 
     An answer with no populated section cannot: two such answers fingerprint
@@ -211,40 +301,106 @@ def sections_are_populated(sections: dict[str, Any] | None) -> bool:
     return any(_section_has_answer(name, rows) for name, rows in sections.items())
 
 
+def _failed_side(
+    kind: str,
+    error: str,
+    *,
+    status: Any = None,
+    reason: Any = None,
+    route: Any = None,
+    badges: list[str] | None = None,
+    sections: list[str] | None = None,
+) -> dict[str, Any]:
+    """One side that failed at the system level, keeping whatever it did tell us."""
+    return {
+        "error": error,
+        "error_kind": kind,
+        "route": route,
+        "status": status,
+        "reason": reason,
+        "badges": badges or [],
+        "fingerprint": None,
+        "populated": False,
+        "sections": sections or [],
+    }
+
+
 def _run(query: str) -> dict[str, Any]:
+    """Execute one query and reduce it to comparable evidence.
+
+    Every step is inside the protected boundary - execution, status
+    inspection, extraction, validation, fingerprinting, and the populated
+    decision - so a failure anywhere becomes an ERROR row instead of aborting
+    the run before the JSON evidence is written.
+    """
     try:
         executed = execute_natural_query(query)
     except Exception as exc:  # noqa: BLE001 - the sweep reports failures, never raises
-        return {
-            "error": f"{type(exc).__name__}: {exc}",
-            "error_kind": RAISED_EXCEPTION,
-            "route": None,
-            "status": None,
-            "reason": None,
-            "badges": [],
-            "fingerprint": None,
-            "populated": False,
-            "sections": [],
-        }
-    metadata = executed.metadata or {}
-    status = executed.result_status
-    reason = executed.result_reason
-    # One extraction feeds both the comparison and the populated decision, so
-    # they can never disagree about what the answer data was.
-    sections = public_sections(executed.result)
-    return {
-        "error": _returned_failure(status, reason),
-        "error_kind": _returned_error_kind(status),
-        "route": metadata.get("route"),
-        "status": status,
-        "reason": reason,
-        "badges": [
+        return _failed_side(RAISED_EXCEPTION, f"{type(exc).__name__}: {exc}")
+
+    status: Any = None
+    reason: Any = None
+    route: Any = None
+    badges: list[str] = []
+    try:
+        metadata = executed.metadata or {}
+        status = executed.result_status
+        reason = executed.result_reason
+        route = metadata.get("route")
+        badges = [
             f"{badge.get('label')}={badge.get('value')}"
             for badge in (metadata.get("applied_filters") or [])
-        ],
-        "fingerprint": fingerprint_sections(sections),
-        "populated": sections_are_populated(sections),
-        "sections": sorted(sections) if sections is not None else [],
+        ]
+
+        # An already-known system failure is recorded on its own terms; it
+        # does not need readable answer evidence first.
+        returned_kind = _returned_error_kind(status)
+        if returned_kind is not None:
+            return _failed_side(
+                returned_kind,
+                _returned_failure(status, reason) or "returned a system error",
+                status=status,
+                reason=reason,
+                route=route,
+                badges=badges,
+            )
+
+        # One extraction feeds both the comparison and the populated decision,
+        # so they can never disagree about what the answer data was.
+        sections = public_sections(executed.result)
+        fingerprint = fingerprint_sections(sections)
+        populated = sections_are_populated(sections)
+        section_names = sorted(sections)
+    except PublicContractError as exc:
+        return _failed_side(
+            exc.kind,
+            exc.detail,
+            status=status,
+            reason=reason,
+            route=route,
+            badges=badges,
+            sections=sorted(exc.sections),
+        )
+    except Exception as exc:  # noqa: BLE001 - evidence failures are reported, never raised
+        return _failed_side(
+            PUBLIC_CONTRACT_EXCEPTION,
+            f"{type(exc).__name__}: {exc}",
+            status=status,
+            reason=reason,
+            route=route,
+            badges=badges,
+        )
+
+    return {
+        "error": None,
+        "error_kind": None,
+        "route": route,
+        "status": status,
+        "reason": reason,
+        "badges": badges,
+        "fingerprint": fingerprint,
+        "populated": populated,
+        "sections": section_names,
     }
 
 
@@ -393,7 +549,7 @@ def _print_report(summary: dict[str, Any], rows: list[dict[str, Any]]) -> None:
         print(f"  {counts[REFUSED]:>4} REFUSED    declined the filtered question, honestly")
         print(f"  {counts[LIED]:>4} LIED       answered unfiltered while claiming it filtered")
         print(f"  {counts[DROPPED]:>4} DROPPED    words ignored, but nothing was claimed")
-    print(f"  {counts[ERROR]:>4} ERROR      the query raised or returned a system error")
+    print(f"  {counts[ERROR]:>4} ERROR      raised, returned a system error, or broke its contract")
     print(f"  {counts[NO_SIGNAL]:>4} NO_SIGNAL  no populated control - nothing was testable")
 
     if counts[NO_SIGNAL]:
@@ -433,7 +589,10 @@ def _print_report(summary: dict[str, Any], rows: list[dict[str, Any]]) -> None:
 
     if errored:
         print()
-        print("SYSTEM ERRORS - a query raised or returned a system-error result:")
+        print(
+            "SYSTEM ERRORS - a query raised, returned a system-error result, "
+            "or published unusable answer evidence:"
+        )
         for row in errored:
             side = row["error_source"]
             detail = row[side] if side in ("filtered", "control") else {}

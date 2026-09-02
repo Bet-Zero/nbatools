@@ -19,31 +19,22 @@ from __future__ import annotations
 import pytest
 
 from nbatools.query_service import execute_natural_query
+from tests._filter_evidence import assert_filter_applied_or_refused, collect_evidence
 
 pytestmark = [pytest.mark.query, pytest.mark.needs_data, pytest.mark.slow]
 
 
-def _fingerprint(result) -> str:
-    """Stable fingerprint of the data a query actually returned."""
-    if result is None:
-        return "NONE"
-    parts: list[str] = []
-    for attr in ("games", "leaders", "streaks", "summary", "splits", "comparison"):
-        frame = getattr(result, attr, None)
-        if frame is None or not hasattr(frame, "to_csv"):
-            continue
-        parts.append(f"{attr}:{frame.shape}:{frame.to_csv(index=False)}")
-    return "||".join(parts) or f"type={type(result).__name__}"
-
-
 def _run(query: str):
+    """Execute a query and return it with its badges and complete answer evidence.
+
+    Evidence comes from the canonical public-section extraction the filter
+    sweep uses, so this module cannot drift back to comparing part of an
+    answer, and a system-level failure raises instead of masquerading as a
+    changed answer.
+    """
     executed = execute_natural_query(query)
-    metadata = executed.metadata or {}
-    badges = [
-        (badge.get("label"), str(badge.get("value")))
-        for badge in (metadata.get("applied_filters") or [])
-    ]
-    return executed, badges, _fingerprint(executed.result)
+    evidence = collect_evidence(query, lambda _query: executed)
+    return executed, evidence.badges, evidence.fingerprint
 
 
 # (filtered query, unfiltered control, badge label the filter would display)
@@ -140,20 +131,8 @@ def test_split_axis_is_not_mistaken_for_an_unapplied_filter(query: str) -> None:
 def test_filter_either_changes_the_answer_or_is_refused(
     filtered_query: str, control_query: str, badge_label: str
 ) -> None:
-    filtered, badges, filtered_fingerprint = _run(filtered_query)
-    _control, _control_badges, control_fingerprint = _run(control_query)
-
-    if filtered.result_status == "no_result":
-        # Honest refusal: the engine must not also advertise the filter as applied.
-        assert not any(label == badge_label for label, _ in badges), (
-            f"{filtered_query!r} refused but still displays a {badge_label!r} badge"
-        )
-        return
-
-    assert filtered_fingerprint != control_fingerprint, (
-        f"{filtered_query!r} returned byte-identical data to the unfiltered control "
-        f"{control_query!r} while displaying badges {badges}. The filter was detected "
-        f"but never executed."
+    assert_filter_applied_or_refused(
+        filtered_query, control_query, badge_label, execute_natural_query
     )
 
 

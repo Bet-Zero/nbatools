@@ -94,13 +94,22 @@ the published section contract removes the drift by construction.
 
 ### Adding a public section
 
-Evidence extraction is not filtered through any allowlist: every section a
-result publishes is compared, so nothing can be silently omitted.
-`SUPPORTED_RESULT_SECTIONS` records the sections that have an explicit policy,
-and `tests/test_qa_gate_integrity.py` fails when a result type or section
-appears without one. A new section must get an entry plus a decision about
-whether it counts as a populated answer — a scalar like `count` needs a value
-rule, a table needs only rows.
+Evidence extraction is not filtered through any allowlist: **every section a
+result actually emits is compared at runtime**, registry or not, so a new
+section can never silently drop out of the evidence. A test pins that directly.
+
+`SUPPORTED_RESULT_SECTIONS` is the explicit inventory of the section policies
+that have been decided and exercised. The guard tests in
+`tests/test_qa_gate_integrity.py` detect a result type being added or removed,
+and any section reachable from their fully-populated fixtures.
+
+The guard is bounded, and worth stating plainly: it is fixture-based, not a
+source analysis. A future *conditionally* emitted section that no fixture
+populates would still be fingerprinted at runtime, but it would not trip the
+inventory test until a fixture covers it. When adding a section, add its
+registry entry, populate it in the fixture, and decide whether it counts as a
+populated answer — a scalar like `count` needs a value rule, a table needs only
+rows.
 
 ## Row Classifications
 
@@ -139,14 +148,33 @@ parsed or routed (`unrouted`), or an internal failure occurred (`error`). It is
 filter refusal nor a harmless absence of data, and it is never rounded down to
 either.
 
-A raised exception and a returned error envelope are the same class of
-failure; only the delivery differs. `error_kind` records which:
+A completed result must also publish a valid public-sections contract. An `ok`
+or `no_result` result whose contract is missing or malformed cannot be read as
+an answer, so it is a system-level failure too — never `APPLIED`, `REFUSED`,
+`DROPPED`, `LIED`, or `NO_SIGNAL`. An empty `sections` mapping is valid
+(`NoResult` publishes exactly that) and simply means not populated; that is
+different from a missing or malformed contract.
+
+A raised exception, a returned error envelope, and unusable answer evidence are
+all the same class of failure; only the delivery differs. `error_kind` records
+which:
 
 | `error_kind` | Meaning |
 | --- | --- |
-| `raised_exception` | The call raised; `error` carries the exception message. |
-| `returned_error_status` | The call returned `result_status=error`; the row preserves that side's `status`, `reason`, and `route`. |
-| `unknown_result_status` | The call returned a status outside the canonical set (`ok`, `no_result`, `error`). Treated as a contract violation and failed closed rather than guessed at. |
+| `raised_exception` | The query raised; `error` carries the exception message. |
+| `returned_error_status` | The query returned `result_status=error`; the row preserves that side's `status`, `reason`, and `route`. |
+| `unknown_result_status` | The query returned a status outside the canonical set (`ok`, `no_result`, `error`). Failed closed rather than guessed at. |
+| `missing_public_result_contract` | The result object is absent or publishes no callable `to_dict()`. |
+| `non_dict_public_result_payload` | `to_dict()` returned something other than a dict. |
+| `missing_public_sections` | The payload has no `sections` mapping. |
+| `non_dict_public_sections` | `sections` is not a dict. |
+| `malformed_public_section` | A section name is not a string, or a section value is not a list of records. |
+| `public_result_contract_exception` | Reading, validating, normalizing, fingerprinting, or scoring the sections raised. |
+
+Every one of those steps runs inside the sweep's protected boundary, alongside
+query execution and status inspection. A failure anywhere becomes an `ERROR`
+row — the JSON evidence is still written, rather than the process aborting
+before it reports anything.
 
 ### NO_SIGNAL semantics
 
@@ -265,6 +293,14 @@ carry the local NBA dataset, so every row there would be `NO_SIGNAL`.
 semantics without any NBA data.
 
 ## Relationship To Other Layers
+
+`tests/test_filter_execution_integrity.py` is the data-backed companion check:
+for a handful of curated filter pairs it asserts the engine either refuses
+honestly or changes the complete public answer. It shares this module's
+evidence extraction through `tests/_filter_evidence.py`, so both judge "did the
+answer change" from the same sections, and a system-level failure on either
+side fails that test explicitly instead of passing as a changed answer. It is
+marked `needs_data` and `slow`, so it runs locally rather than in ordinary CI.
 
 The sweep proves *that* filtering happened, not that the resulting numbers are
 right. For correctness, use the Raw QA corpus described in
