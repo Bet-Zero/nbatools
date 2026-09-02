@@ -98,6 +98,10 @@ change the scope of the harness run that generated it.
   when the unfiltered control returned a populated answer; pairs without one
   are `NO_SIGNAL` and are excluded from the verdict. A run with no comparable
   rows exits 2 and is not a pass.
+- `result_status=no_result` is an expected negative outcome: an honest
+  `REFUSED` on the filtered side, `NO_SIGNAL` on the control side.
+  `result_status=error` is a system-level failure and is `ERROR` on either
+  side, exactly like a raised exception; it fails the run with exit 1.
 - Full evidence model, verdicts, and exit codes:
   [`filter_execution_sweep.md`](filter_execution_sweep.md).
 

@@ -160,7 +160,11 @@ def _side(
     populated: bool = True,
     badges: list[str] | None = None,
     error: str | None = None,
+    error_kind: str | None = None,
 ) -> dict[str, Any]:
+    """One side of a comparison, shaped exactly as `_run` returns it."""
+    if error_kind is None:
+        error_kind = sweep.RAISED_EXCEPTION if error else sweep._returned_error_kind(status)
     return {
         "status": status,
         "reason": reason,
@@ -169,6 +173,7 @@ def _side(
         "badges": badges or [],
         "route": "season_leaders",
         "error": error,
+        "error_kind": error_kind,
     }
 
 
@@ -249,6 +254,51 @@ def test_a_filtered_query_that_raised_is_an_error():
     assert verdict.error_source == "filtered"
 
 
+def test_a_filtered_system_error_envelope_is_an_error_not_a_refusal():
+    verdict = sweep._classify(
+        _side(status="error", reason="error", fingerprint="NONE", populated=False),
+        _side(),
+        "Last N games",
+    )
+
+    assert verdict.verdict == sweep.ERROR
+    assert verdict.verdict != sweep.REFUSED
+    assert verdict.error_source == "filtered"
+    assert verdict.error_kind == sweep.RETURNED_ERROR_STATUS
+
+
+def test_a_control_system_error_envelope_is_an_error_not_a_gap():
+    verdict = sweep._classify(
+        _side(fingerprint="changed"),
+        _side(status="error", reason="unrouted", fingerprint="NONE", populated=False),
+        "Last N games",
+    )
+
+    assert verdict.verdict == sweep.ERROR
+    assert verdict.verdict not in (sweep.NO_SIGNAL, sweep.APPLIED)
+    assert verdict.error_source == "control"
+    assert verdict.error_kind == sweep.RETURNED_ERROR_STATUS
+
+
+def test_a_status_outside_the_contract_fails_closed():
+    verdict = sweep._classify(
+        _side(status="partially_ok", reason=None),
+        _side(),
+        "Last N games",
+    )
+
+    assert verdict.verdict == sweep.ERROR
+    assert verdict.error_kind == sweep.UNKNOWN_RESULT_STATUS
+
+
+def test_the_canonical_status_set_comes_from_the_result_contract():
+    assert sweep.CANONICAL_RESULT_STATUSES == {"ok", "no_result", "error"}
+    # An expected negative outcome is not a system failure.
+    assert sweep._returned_error_kind("no_result") is None
+    assert sweep._returned_error_kind("ok") is None
+    assert sweep._returned_error_kind("error") == sweep.RETURNED_ERROR_STATUS
+
+
 def test_no_signal_is_not_one_of_the_comparable_verdicts():
     assert sweep.NO_SIGNAL not in sweep.COMPARABLE_VERDICTS
     assert sweep.ERROR not in sweep.COMPARABLE_VERDICTS
@@ -280,7 +330,18 @@ def _answer(rows: int = 3, *, value: int = 1, badges: list[dict[str, str]] | Non
 
 
 def _refusal(reason: str = "no_data"):
+    """An expected negative outcome: no_result with a user/data reason."""
     return FakeExecuted(result_status="no_result", result_reason=reason, result=None, metadata={})
+
+
+def _system_error(reason: str = "error"):
+    """A system-level failure delivered as a result envelope, not an exception."""
+    return FakeExecuted(
+        result_status="error",
+        result_reason=reason,
+        result=None,
+        metadata={"route": None},
+    )
 
 
 CONTROL = "points leaders in 2023-24"
@@ -437,6 +498,88 @@ def test_a_control_execution_error_cannot_be_counted_applied(tmp_path, monkeypat
     assert row["verdict"] == sweep.ERROR
     assert row["error_source"] == "control"
     assert "RuntimeError: control blew up" in row["error"]
+
+
+def test_a_filtered_system_error_envelope_cannot_exit_clean(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _answer(), FILTERED: _system_error("error")},
+    )
+    summary = document["summary"]
+    row = document["rows"][0]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["verdict_counts"][sweep.ERROR] == 1
+    assert summary["verdict_counts"][sweep.REFUSED] == 0
+    assert row["verdict"] == sweep.ERROR
+    assert row["verdict"] != sweep.REFUSED
+    assert row["error_source"] == "filtered"
+    assert row["error_kind"] == sweep.RETURNED_ERROR_STATUS
+    # The returned envelope is preserved, not flattened into a crash message.
+    assert row["filtered"]["status"] == "error"
+    assert row["filtered"]["reason"] == "error"
+    assert "result_status=error" in row["error"]
+
+
+def test_a_control_system_error_envelope_cannot_be_a_gap_or_applied(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _system_error("unrouted"), FILTERED: _answer()},
+    )
+    summary = document["summary"]
+    row = document["rows"][0]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["verdict_counts"][sweep.ERROR] == 1
+    assert summary["verdict_counts"][sweep.NO_SIGNAL] == 0
+    assert summary["verdict_counts"][sweep.APPLIED] == 0
+    assert row["verdict"] == sweep.ERROR
+    assert row["verdict"] not in (sweep.NO_SIGNAL, sweep.APPLIED)
+    assert row["error_source"] == "control"
+    assert row["error_kind"] == sweep.RETURNED_ERROR_STATUS
+    assert row["control"]["status"] == "error"
+    assert row["control"]["reason"] == "unrouted"
+    assert "result_reason=unrouted" in row["error"]
+
+
+def test_a_system_error_outranks_a_run_that_otherwise_had_no_signal(tmp_path, monkeypatch):
+    exit_code, document = _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL, OTHER_CONTROL],
+        answers={
+            CONTROL: _system_error("unrouted"),
+            FILTERED: _answer(),
+            OTHER_CONTROL: _refusal("no_data"),
+            OTHER_FILTERED: _refusal("no_data"),
+        },
+    )
+    summary = document["summary"]
+
+    assert exit_code == sweep.EXIT_FAIL
+    assert exit_code != sweep.EXIT_NO_SIGNAL
+    assert summary["status"] == sweep.STATUS_FAIL
+    assert summary["comparable_comparisons"] == 0
+
+
+def test_the_error_report_does_not_claim_every_error_row_raised(tmp_path, monkeypatch, capsys):
+    _run_sweep(
+        tmp_path,
+        monkeypatch,
+        seeds=[CONTROL],
+        answers={CONTROL: _answer(), FILTERED: _system_error("error")},
+    )
+    printed = capsys.readouterr().out
+
+    assert "raised or returned a system-error result" in printed
+    assert "CRASHED:" not in printed
+    assert sweep.RETURNED_ERROR_STATUS in printed
 
 
 def test_a_fully_comparable_clean_run_passes(tmp_path, monkeypatch):

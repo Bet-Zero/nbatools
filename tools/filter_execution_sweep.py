@@ -22,13 +22,20 @@ Each combination lands in one of six buckets: APPLIED (the answer changed),
 REFUSED (the app declined the filtered question against a populated control),
 LIED (unfiltered answer behind a badge claiming otherwise), DROPPED (the words
 were ignored, but nothing was claimed), NO_SIGNAL (no populated control answer,
-so nothing was testable), or ERROR (a query raised).
+so nothing was testable), or ERROR (a system-level failure).
+
+The result contract separates expected negative outcomes from system failures,
+and so does this sweep. `result_status=no_result` is expected: on the filtered
+side it is an honest REFUSED, on the control side it leaves NO_SIGNAL.
+`result_status=error` is a system-level failure - `unrouted` and internal
+failures arrive that way - and is ERROR on either side, exactly like a raised
+exception. Neither is rounded down to an honest refusal or a coverage gap.
 
 The run as a whole reports PASS, PASS_WITH_GAPS, FAIL, or NO_SIGNAL.
 
 Exit codes:
     0  PASS or PASS_WITH_GAPS - every comparable row behaved honestly
-    1  FAIL - a verified defect (LIED) or an execution error (ERROR)
+    1  FAIL - a verified defect (LIED) or a system-level failure (ERROR)
     2  NO_SIGNAL - nothing was comparable; no verdict about filters was earned
 
 See docs/operations/filter_execution_sweep.md for the full evidence model.
@@ -51,6 +58,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from nbatools.commands.structured_results import ResultStatus  # noqa: E402
 from nbatools.data_source import data_generation_context  # noqa: E402
 from nbatools.query_service import execute_natural_query  # noqa: E402
 
@@ -62,7 +70,17 @@ REFUSED = "REFUSED"  # app declined the filtered question - honest
 LIED = "LIED"  # same data, and a badge claiming this filter was applied
 DROPPED = "DROPPED"  # same data, no badge - the words were silently ignored
 NO_SIGNAL = "NO_SIGNAL"  # no populated control answer - nothing was testable
-ERROR = "ERROR"  # blew up
+ERROR = "ERROR"  # raised, or came back as a system-error envelope
+
+# How a side failed. A raised exception and a returned `result_status=error`
+# envelope are both system-level failures; only the delivery differs.
+RAISED_EXCEPTION = "raised_exception"
+RETURNED_ERROR_STATUS = "returned_error_status"
+UNKNOWN_RESULT_STATUS = "unknown_result_status"
+
+# The canonical statuses the result contract may produce. Anything else is a
+# contract violation, so the sweep fails closed rather than guessing.
+CANONICAL_RESULT_STATUSES = frozenset(status.value for status in ResultStatus)
 
 # Only these verdicts were reached by actually comparing two populated answers.
 COMPARABLE_VERDICTS = (APPLIED, REFUSED, LIED, DROPPED)
@@ -93,11 +111,12 @@ FINGERPRINT_ATTRS = ("games", "leaders", "streaks", "summary", "splits", "compar
 
 
 class Classification(NamedTuple):
-    """One row's verdict, plus why it was not testable or which side raised."""
+    """One row's verdict, plus why it was not testable or how a side failed."""
 
     verdict: str
     no_signal_reason: str | None = None
     error_source: str | None = None
+    error_kind: str | None = None
 
 
 def _frames(result: Any) -> Iterator[tuple[str, Any]]:
@@ -135,6 +154,7 @@ def _run(query: str) -> dict[str, Any]:
     except Exception as exc:  # noqa: BLE001 - the sweep reports failures, never raises
         return {
             "error": f"{type(exc).__name__}: {exc}",
+            "error_kind": RAISED_EXCEPTION,
             "route": None,
             "status": None,
             "reason": None,
@@ -143,11 +163,14 @@ def _run(query: str) -> dict[str, Any]:
             "populated": False,
         }
     metadata = executed.metadata or {}
+    status = executed.result_status
+    reason = executed.result_reason
     return {
-        "error": None,
+        "error": _returned_failure(status, reason),
+        "error_kind": _returned_error_kind(status),
         "route": metadata.get("route"),
-        "status": executed.result_status,
-        "reason": executed.result_reason,
+        "status": status,
+        "reason": reason,
         "badges": [
             f"{badge.get('label')}={badge.get('value')}"
             for badge in (metadata.get("applied_filters") or [])
@@ -157,18 +180,41 @@ def _run(query: str) -> dict[str, Any]:
     }
 
 
+def _returned_error_kind(status: Any) -> str | None:
+    """How a completed query failed at the system level, if it did.
+
+    `result_status=error` is the contract's system-level failure envelope -
+    `unrouted` and internal failures arrive this way rather than as an
+    exception. A status outside the canonical set is a contract violation, so
+    it fails closed too.
+    """
+    if status == ResultStatus.ERROR:
+        return RETURNED_ERROR_STATUS
+    if status not in CANONICAL_RESULT_STATUSES:
+        return UNKNOWN_RESULT_STATUS
+    return None
+
+
+def _returned_failure(status: Any, reason: Any) -> str | None:
+    kind = _returned_error_kind(status)
+    if kind is None:
+        return None
+    return f"result_status={status!s} result_reason={reason!s}"
+
+
 def control_gap(control: dict[str, Any]) -> str | None:
     """Why this control cannot anchor a comparison, or None when it can.
 
-    A control is comparable only when the unfiltered question actually came
-    back with a populated answer. Anything else - a refusal, a typed error,
-    missing local data, an empty answer - leaves nothing to compare the
-    filtered answer against.
+    This describes coverage gaps only: an expected negative outcome that left
+    no baseline. A control that raised or returned a system-error envelope is
+    a failure, not a gap, and `_classify` settles that before calling this.
+
+    A control is comparable only when the unfiltered question came back with a
+    populated answer. A refusal, missing local data, uncovered season
+    coverage, or an empty answer all leave nothing to compare against.
     """
-    if control.get("error"):
-        return "control_execution_error"
     status = control.get("status")
-    if status != "ok":
+    if status != ResultStatus.OK:
         return f"control_{status or 'unknown'}:{control.get('reason') or 'unknown'}"
     if not control.get("populated"):
         return "control_empty_result"
@@ -178,18 +224,21 @@ def control_gap(control: dict[str, Any]) -> str | None:
 def _classify(
     filtered: dict[str, Any], control: dict[str, Any], badge: str | None
 ) -> Classification:
-    # An exception on either side is a tool defect worth surfacing regardless
-    # of what the other side did.
-    if filtered.get("error"):
-        return Classification(ERROR, error_source="filtered")
-    if control.get("error"):
-        return Classification(ERROR, error_source="control")
+    # A system-level failure on either side is a defect worth surfacing
+    # regardless of what the other side did - whether it arrived as a raised
+    # exception or as a returned `result_status=error` envelope.
+    if filtered.get("error_kind"):
+        return Classification(ERROR, error_source="filtered", error_kind=filtered["error_kind"])
+    if control.get("error_kind"):
+        return Classification(ERROR, error_source="control", error_kind=control["error_kind"])
     # Without a populated control this pair tests nothing. Saying "refused
     # honestly" here would turn missing data into a clean bill of health.
     gap = control_gap(control)
     if gap is not None:
         return Classification(NO_SIGNAL, no_signal_reason=gap)
-    if filtered.get("status") != "ok":
+    # An expected negative outcome on the filtered side only. System errors
+    # were already settled above, so this is a genuine refusal.
+    if filtered.get("status") != ResultStatus.OK:
         return Classification(REFUSED)
     if filtered.get("fingerprint") != control.get("fingerprint"):
         return Classification(APPLIED)
@@ -276,7 +325,7 @@ def _print_report(summary: dict[str, Any], rows: list[dict[str, Any]]) -> None:
         print(f"  {counts[REFUSED]:>4} REFUSED    declined the filtered question, honestly")
         print(f"  {counts[LIED]:>4} LIED       answered unfiltered while claiming it filtered")
         print(f"  {counts[DROPPED]:>4} DROPPED    words ignored, but nothing was claimed")
-    print(f"  {counts[ERROR]:>4} ERROR      the query raised")
+    print(f"  {counts[ERROR]:>4} ERROR      the query raised or returned a system error")
     print(f"  {counts[NO_SIGNAL]:>4} NO_SIGNAL  no populated control - nothing was testable")
 
     if counts[NO_SIGNAL]:
@@ -316,9 +365,13 @@ def _print_report(summary: dict[str, Any], rows: list[dict[str, Any]]) -> None:
 
     if errored:
         print()
-        print("CRASHED:")
+        print("SYSTEM ERRORS - a query raised or returned a system-error result:")
         for row in errored:
-            print(f"  {row['query']}\n      [{row['error_source']}] {row['error']}")
+            side = row["error_source"]
+            detail = row[side] if side in ("filtered", "control") else {}
+            print(f"  {row['query']}")
+            print(f"      {side} {row['error_kind']}: {row['error']}")
+            print(f"      route={detail.get('route')}")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -376,6 +429,7 @@ def main(argv: list[str] | None = None) -> int:
                         "comparable": verdict in COMPARABLE_VERDICTS,
                         "no_signal_reason": classified.no_signal_reason,
                         "error_source": classified.error_source,
+                        "error_kind": classified.error_kind,
                         "route": filtered.get("route"),
                         "badges": filtered.get("badges"),
                         "error": failing_side.get("error"),
@@ -392,6 +446,7 @@ def main(argv: list[str] | None = None) -> int:
                             "badges": filtered.get("badges"),
                             "populated": filtered.get("populated"),
                             "error": filtered.get("error"),
+                            "error_kind": filtered.get("error_kind"),
                         },
                         "control": {
                             "status": control.get("status"),
@@ -400,6 +455,7 @@ def main(argv: list[str] | None = None) -> int:
                             "badges": control.get("badges"),
                             "populated": control.get("populated"),
                             "error": control.get("error"),
+                            "error_kind": control.get("error_kind"),
                         },
                     }
                 )

@@ -36,14 +36,14 @@ judged against a control that actually produced an answer to compare with.
 A control is **comparable** when all of these hold:
 
 - the query did not raise;
+- the query did not return a system-error envelope;
 - `result_status` is `ok`;
 - at least one result frame carries at least one row.
 
-Anything else leaves nothing to compare against: a refusal, a typed error,
-missing local data, uncovered season coverage, or an empty answer. Two
-unpopulated answers fingerprint identically no matter what the filter did, so
-treating that as evidence would manufacture a clean verdict out of missing
-data.
+Anything else leaves nothing to compare against: a refusal, missing local
+data, uncovered season coverage, or an empty answer. Two unpopulated answers
+fingerprint identically no matter what the filter did, so treating that as
+evidence would manufacture a clean verdict out of missing data.
 
 Comparison uses a stable fingerprint of the returned data frames (`games`,
 `leaders`, `streaks`, `summary`, `splits`, `comparison`) — shape plus a digest
@@ -56,14 +56,44 @@ Every configured pair lands in exactly one bucket.
 | Verdict | Meaning | Comparable |
 | --- | --- | --- |
 | `APPLIED` | The control was populated and the filtered answer's data differed. The filter did something. | yes |
-| `REFUSED` | The control was populated and the filtered question came back non-`ok` (a typed `no_result` or a typed `error`). The app declined, honestly. | yes |
+| `REFUSED` | The control was populated and the filtered question came back `no_result`. The app declined, honestly. | yes |
 | `LIED` | The control was populated, the filtered data was identical to it, **and** a badge claimed *this* filter was applied. | yes |
 | `DROPPED` | The control was populated, the filtered data was identical to it, and nothing was claimed. The words were silently ignored. | yes |
 | `NO_SIGNAL` | The control was not comparable. Nothing about this filter was tested. | **no** |
-| `ERROR` | The filtered query or the control query raised an exception. `error_source` names the side. | **no** |
+| `ERROR` | Either side failed at the system level — it raised, or it returned `result_status=error`. `error_source` names the side, `error_kind` names the delivery. | **no** |
 
 A badge only counts when it names the filter under test. An unrelated badge
 from a threshold in the same query does not make an unchanged answer a lie.
+
+### Expected negative outcomes versus system failures
+
+The result contract separates the two, and so does the sweep. Getting this
+wrong is how a broken route becomes a clean report.
+
+`result_status=no_result` is an **expected negative outcome**: the data or the
+query legitimately produced no answer (`no_match`, `no_data`, `unsupported`,
+`filter_not_supported`, `ambiguous`, `ambiguous_query`). What it means depends
+on which side produced it:
+
+- on the **filtered** side, against a populated control, it is an honest
+  `REFUSED`;
+- on the **control** side, it is `NO_SIGNAL` — there is no baseline left to
+  compare against.
+
+`result_status=error` is a **system-level failure**: the query could not be
+parsed or routed (`unrouted`), or an internal failure occurred (`error`). It is
+`ERROR` on either side and fails the run. A system error is neither an honest
+filter refusal nor a harmless absence of data, and it is never rounded down to
+either.
+
+A raised exception and a returned error envelope are the same class of
+failure; only the delivery differs. `error_kind` records which:
+
+| `error_kind` | Meaning |
+| --- | --- |
+| `raised_exception` | The call raised; `error` carries the exception message. |
+| `returned_error_status` | The call returned `result_status=error`; the row preserves that side's `status`, `reason`, and `route`. |
+| `unknown_result_status` | The call returned a status outside the canonical set (`ok`, `no_result`, `error`). Treated as a contract violation and failed closed rather than guessed at. |
 
 ### NO_SIGNAL semantics
 
@@ -76,14 +106,15 @@ Each `NO_SIGNAL` row records why, as `no_signal_reason`:
 | Reason | Cause |
 | --- | --- |
 | `control_no_result:<reason>` | The control refused; `<reason>` is the typed result reason, such as `no_data` or `unsupported`. |
-| `control_error:<reason>` | The control returned a typed `error` status. |
 | `control_empty_result` | The control returned `ok` with no populated rows. |
-| `control_execution_error` | Reserved; a control that raises is classified `ERROR`, not `NO_SIGNAL`. |
 
 The most common cause is a data gap rather than a code gap. Season coverage
 matters: a filter that reads a dataset which does not cover the seed's season
 produces an unpopulated control. Re-run against a covered season before
 concluding anything about the filter itself.
+
+A control that raised or returned `result_status=error` never appears here: it
+is `ERROR`, not a coverage gap.
 
 ### DROPPED policy is unchanged
 
@@ -101,8 +132,8 @@ decision.
 | `FAIL` | One or more `LIED` rows, or one or more `ERROR` rows. | 1 |
 | `NO_SIGNAL` | Zero comparable rows. No verdict about filters was earned. | 2 |
 
-`FAIL` outranks `NO_SIGNAL`: an execution error is a verified defect worth
-surfacing even in a run that compared nothing.
+`FAIL` outranks `NO_SIGNAL`: a verified defect or a system-level failure is
+worth surfacing even in a run that compared nothing.
 
 `PASS_WITH_GAPS` exits zero, and the terminal summary states explicitly that
 the verdict covers the comparable rows only — never the full configured
@@ -152,12 +183,16 @@ list; consumers should read `schema_version` and then `summary` / `rows`.
 | `started_at`, `completed_at` | UTC run bounds |
 
 Each row records `seed`, `filter`, `query`, `control_query`, `verdict`,
-`comparable`, `no_signal_reason`, `error_source`, `route`, `badges`, `error`,
-`fingerprint_match`, and nested `filtered` / `control` objects carrying
-`status`, `reason`, `route`, `badges`, `populated`, and `error`.
+`comparable`, `no_signal_reason`, `error_source`, `error_kind`, `route`,
+`badges`, `error`, `fingerprint_match`, and nested `filtered` / `control`
+objects carrying `status`, `reason`, `route`, `badges`, `populated`, `error`,
+and `error_kind`.
 
-The `error` field carries the message from whichever side raised;
-`error_source` names that side.
+`error_source` names the side that failed and `error_kind` names how. The
+`error` field carries the exception message when a side raised, and
+`result_status=<status> result_reason=<reason>` when a side returned a
+system-error envelope; the exact returned `status`, `reason`, and `route` stay
+on that side's nested object either way.
 
 ## Data Generation Requirements
 
