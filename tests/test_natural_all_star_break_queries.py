@@ -64,10 +64,19 @@ def test_parse_top_scorers_since_all_star_break():
 
 
 def test_parse_best_offensive_teams_since_all_star_break():
+    """Offensive rating cannot be computed in a date window, so this refuses.
+
+    The old name said it plainly: it asserted the requested metric became
+    points. Substituting a different stat answers a different question, so the
+    window is now reported as the reason and no stat reaches the route.
+    """
     parsed = parse_query("best offensive teams since All-Star break")
     assert parsed["season"] == "2025-26"
     assert parsed["route"] == "season_team_leaders"
-    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert "stat" not in parsed["route_kwargs"]
+    assert parsed["route_kwargs"]["unsupported_filters"] == [
+        "leaderboard_metric_unavailable_for_scope"
+    ]
     assert parsed["route_kwargs"]["start_date"] == "2026-02-16"
 
 
@@ -122,7 +131,7 @@ def test_natural_best_offensive_teams_since_all_star_break_raw_smoke():
     )
     assert "route,season_team_leaders" in out
     assert "filter_not_supported" in out
-    assert "unsupported_concept" in out
+    assert "leaderboard_metric_unavailable_for_scope" in out
     assert "team_name" not in out
 
 

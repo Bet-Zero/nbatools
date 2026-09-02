@@ -57,6 +57,7 @@ Long-lived engineering conventions and internal layer design.
 - [`architecture/parser/overview.md`](architecture/parser/overview.md) - parser framing and principles
 - [`architecture/parser/specification.md`](architecture/parser/specification.md) - parser component specification
 - [`architecture/parser/examples.md`](architecture/parser/examples.md) - parser example library
+- [`architecture/parser/leaderboard_metric_boundary.md`](architecture/parser/leaderboard_metric_boundary.md) - which ranking branches require a named metric, and which are deferred
 
 ## Operations
 

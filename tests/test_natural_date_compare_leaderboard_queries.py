@@ -55,18 +55,36 @@ def test_parse_teams_with_best_efg_in_march():
     assert parsed["route_kwargs"]["end_date"] == "2026-03-31"
 
 
-def test_parse_best_offensive_teams_since_january_uses_points_per_game():
+def test_parse_best_offensive_teams_since_january_refuses_rather_than_using_points():
+    """Offensive rating cannot be computed in a date window, so this refuses.
+
+    The old name said it plainly: it asserted the requested metric became
+    points. Substituting a different stat answers a different question, so the
+    window is now reported as the reason and no stat reaches the route.
+    """
     parsed = parse_query("best offensive teams since January")
     assert parsed["route"] == "season_team_leaders"
-    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert "stat" not in parsed["route_kwargs"]
+    assert parsed["route_kwargs"]["unsupported_filters"] == [
+        "leaderboard_metric_unavailable_for_scope"
+    ]
     assert parsed["route_kwargs"]["start_date"] == "2026-01-01"
     assert parsed["route_kwargs"]["end_date"] is None
 
 
-def test_parse_best_offensive_teams_in_march_uses_points_per_game():
+def test_parse_best_offensive_teams_in_march_refuses_rather_than_using_points():
+    """Offensive rating cannot be computed in a date window, so this refuses.
+
+    The old name said it plainly: it asserted the requested metric became
+    points. Substituting a different stat answers a different question, so the
+    window is now reported as the reason and no stat reaches the route.
+    """
     parsed = parse_query("best offensive teams in March")
     assert parsed["route"] == "season_team_leaders"
-    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert "stat" not in parsed["route_kwargs"]
+    assert parsed["route_kwargs"]["unsupported_filters"] == [
+        "leaderboard_metric_unavailable_for_scope"
+    ]
     assert parsed["route_kwargs"]["start_date"] == "2026-03-01"
     assert parsed["route_kwargs"]["end_date"] == "2026-03-31"
 
@@ -129,5 +147,5 @@ def test_natural_best_offensive_teams_in_march_raw_smoke():
     )
     assert "route,season_team_leaders" in out
     assert "filter_not_supported" in out
-    assert "unsupported_concept" in out
+    assert "leaderboard_metric_unavailable_for_scope" in out
     assert "team_name" not in out

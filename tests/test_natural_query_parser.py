@@ -27,10 +27,20 @@ def test_minimum_attempts_boundary_fails_closed():
 
 
 def test_date_window_team_advanced_rating_boundary_fails_closed():
+    """Still fails closed; the blocker now names the actual problem.
+
+    Offensive rating cannot be computed inside a date window. This already
+    refused, under the generic ``unsupported_concept``; it now reports which
+    stat was requested and that the window is what put it out of reach, so the
+    guidance can say "try one season" instead of "unsupported".
+    """
     parsed = parse_query("best offensive rating teams since January")
 
     assert parsed["route"] == "season_team_leaders"
-    assert parsed["route_kwargs"]["unsupported_filters"] == ["unsupported_concept"]
+    assert parsed["route_kwargs"]["unsupported_filters"] == [
+        "leaderboard_metric_unavailable_for_scope"
+    ]
+    assert "stat" not in parsed["route_kwargs"]
     assert any("unsupported_boundary" in note for note in parsed.get("notes", []))
 
 
@@ -1471,12 +1481,18 @@ def test_playoff_qualifier_does_not_break_team_leaderboard_alias():
 
 
 def test_best_performances_routes_like_best_games():
-    # "performances" is a synonym for the "best games" top-performance
-    # concept; the playoff infix must not break it either.
+    """ "performances" reaches the top-performance route but names no stat.
+
+    This asserted ``stat == "pts"``. "Performances" says which games to look at,
+    not what makes one best; points was supplied only because the route needed
+    a metric. The route and the playoff scope are still resolved - what changes
+    is that the ranking asks which stat instead of guessing.
+    """
     parsed = parse_query("best playoff performances this year")
     assert parsed["route"] == "top_player_games"
     assert parsed["season_type"] == "Playoffs"
-    assert parsed["route_kwargs"]["stat"] == "pts"
+    assert "stat" not in parsed["route_kwargs"]
+    assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_metric_required"]
 
 
 @pytest.mark.parametrize(

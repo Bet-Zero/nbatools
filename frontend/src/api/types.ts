@@ -127,6 +127,13 @@ export interface ResultMetadata {
   count_phrase?: string | null;
   answer_phrase?: string | null;
   stretch_display_mode?: "named_player" | "players" | "windows" | null;
+  // What a refused ranking asked for. A refusal publishes no `stat` - nothing
+  // ran - so these carry the request itself instead.
+  requested_stat?: string | null;
+  requested_metrics?: string[] | null;
+  // Both sides of an aggregation mismatch, so the copy can name the direction.
+  requested_aggregation?: string | null;
+  available_aggregation?: string | null;
   candidates?: DisambiguationCandidate[];
   suggested_queries?: string[];
   notes?: string[];

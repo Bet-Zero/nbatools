@@ -417,6 +417,340 @@ describe("NoResultDisplay", () => {
     expect(screen.queryByText("unsupported_concept")).not.toBeInTheDocument();
   });
 
+  it("asks which stat when a ranking names none", () => {
+    // "best NBA teams this season" used to return a points-per-game
+    // leaderboard. The card must ask for a stat, and must never name one the
+    // user did not ask for.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          query_text: "best NBA teams this season",
+          unsupported_filters: ["leaderboard_metric_required"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Which Stat?")).toBeInTheDocument();
+    expect(
+      screen.getByText(/League rankings need a stat to rank by/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says season totals are unsupported rather than showing per-game", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          // No `stat`: nothing ran. The metric the refusal is *about* travels
+          // in `requested_stat`, which is what the backend now publishes.
+          requested_stat: "reb",
+          requested_aggregation: "total",
+          available_aggregation: "per_game",
+          query_text: "players with the most total rebounds",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    // Metric-scoped and direction-specific: rebounds is ranked per game, so
+    // the season-total board is the one that does not exist.
+    expect(
+      screen.getByText(/Rebounds is ranked per game here/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/a season-total rebounds leaderboard is not available/),
+    ).toBeInTheDocument();
+    // It must not claim every leaderboard is per-game.
+    expect(
+      screen.queryByText(/League leaderboards rank per-game figures/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says per-game is unsupported for a total-backed stat, not the reverse", () => {
+    // `minutes per game leaders` executed minutes_total and presented it as
+    // the answer. The copy must name this direction, not the opposite one.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          requested_stat: "minutes",
+          requested_aggregation: "per_game",
+          available_aggregation: "total",
+          query_text: "minutes per game leaders",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Minutes is ranked by season total here/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/a per-game minutes leaderboard is not available/),
+    ).toBeInTheDocument();
+    // The opposite claim, and any suggestion that the total board ran.
+    expect(
+      screen.queryByText(/Minutes is ranked per game/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("names the mismatch for a stat that only exists as a season total", () => {
+    // `three-point attempts per game leaders` used to reach the card as a
+    // generic unsupported_concept with stat=fg3a. It now arrives on the
+    // aggregation path, so the card must name this direction.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          requested_stat: "fg3a",
+          requested_aggregation: "per_game",
+          available_aggregation: "total",
+          query_text: "three-point attempts per game leaders",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(screen.getByText(/ranked by season total here/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/leaderboard is not available/),
+    ).toBeInTheDocument();
+    // Never the generic "outside the shipped support boundary" answer.
+    expect(
+      screen.queryByText(/outside the shipped support boundary/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("says only what is certain when no aggregation direction was recorded", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          requested_stat: "pts",
+          query_text: "combined scoring leaders",
+          unsupported_filters: ["leaderboard_aggregation_unsupported"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        /Points is not ranked by the aggregation this asks for, and no other aggregation was substituted for it\./,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("says a ranking orders by one stat when several were asked for", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "points and rebounds leaders this season",
+          requested_metrics: ["pts", "reb"],
+          unsupported_filters: ["leaderboard_multiple_metrics_unsupported"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(
+      screen.getByText(/only be ordered by one stat/),
+    ).toBeInTheDocument();
+  });
+
+  it("says a stat is unavailable for the window without naming a substitute", () => {
+    // This used to return a points leaderboard with a "using pts" note.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_team_leaders",
+          requested_stat: "off_rating",
+          query_text: "best offensive teams from 2022-23 to 2024-25",
+          unsupported_filters: ["leaderboard_metric_unavailable_for_scope"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Ranking")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Offensive rating is not available for that time range/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/no other stat was substituted for it/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/using pts/)).not.toBeInTheDocument();
+  });
+
+  it("does not name a metric for a ranking it could not fully read", () => {
+    // "top three point shooters" resolved to pts at the base. The card must
+    // not announce anything about points.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          // Neither `stat` nor `requested_stat`: the product could not read
+          // the whole question, so it has no metric it can honestly report.
+          query_text: "top three point shooters",
+          unsupported_filters: ["leaderboard_request_unclear"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Which Stat?")).toBeInTheDocument();
+    expect(
+      screen.getByText(/does not say enough to rank on its own/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
+  // Opening Details is the only way to see these notes: the disclosure body is
+  // not rendered while it is closed, so a collapsed-card assertion cannot see
+  // what a reader sees after one click. Every case below opens it.
+  describe("opened Details never shows an internal blocker id", () => {
+    // The exact shapes the backend publishes for each boundary refusal: the
+    // human boundary note, then the generic "<id> filter is not supported"
+    // fallback that rendered the identifier verbatim.
+    const BOUNDARY_CASES = [
+      {
+        id: "leaderboard_metric_required",
+        boundaryNote:
+          "unsupported_boundary: this asks for a ranking without naming a stat to rank by, and there is no default metric; no substituted leaderboard was returned",
+        query: "best players this season",
+      },
+      {
+        id: "leaderboard_multiple_metrics_unsupported",
+        boundaryNote:
+          "unsupported_boundary: this asks for more than one stat, and a ranking orders by exactly one; no substituted leaderboard was returned",
+        query: "points and rebounds leaders this season",
+      },
+      {
+        id: "leaderboard_aggregation_unsupported",
+        boundaryNote:
+          "unsupported_boundary: this asks for a season total of a stat the leaderboard ranks per game; no substituted leaderboard was returned",
+        query: "total points leaders this season",
+      },
+      {
+        id: "leaderboard_metric_unavailable_for_scope",
+        boundaryNote:
+          "unsupported_boundary: the requested stat is not available for that window; no substituted leaderboard was returned",
+        query: "best offensive teams from 2022-23 to 2024-25",
+      },
+      {
+        id: "leaderboard_request_unclear",
+        boundaryNote:
+          "unsupported_boundary: part of this request is outside what a ranking can express; no substituted leaderboard was returned",
+        query: "top three point shooters this season",
+      },
+    ];
+
+    it.each(BOUNDARY_CASES)(
+      "$id is never rendered as text",
+      ({ id, boundaryNote, query }) => {
+        const genericNote = `${id} filter is not supported with current data; try removing this filter or asking for standard player, team, or game stats (blocked: ${id})`;
+        const { container } = render(
+          <NoResultDisplay
+            reason="filter_not_supported"
+            status="no_result"
+            notes={[boundaryNote, genericNote]}
+            metadata={{
+              route: "season_leaders",
+              query_text: query,
+              unsupported_filters: [id],
+              notes: [genericNote],
+            }}
+          />,
+        );
+
+        const summary = screen.queryByText("Details");
+        if (summary) fireEvent.click(summary);
+
+        expect(container.textContent).not.toContain(id);
+        expect(container.textContent).not.toContain("blocked:");
+        expect(container.textContent).not.toContain("unsupported_boundary");
+      },
+    );
+
+    it("keeps ordinary notes that are not the blocker record", () => {
+      // Suppression is scoped to the boundary's own duplicate notes. A real
+      // caveat about the data still has to reach the reader.
+      const { container } = render(
+        <NoResultDisplay
+          reason="filter_not_supported"
+          status="no_result"
+          notes={[
+            "unsupported_boundary: this asks for a ranking without naming a stat to rank by, and there is no default metric; no substituted leaderboard was returned",
+          ]}
+          caveats={["Rookie experience coverage is incomplete before 2015-16."]}
+          metadata={{
+            route: "season_leaders",
+            query_text: "best rookies",
+            unsupported_filters: ["leaderboard_metric_required"],
+          }}
+        />,
+      );
+
+      fireEvent.click(screen.getByText("Details"));
+
+      expect(
+        screen.getByText(
+          "Rookie experience coverage is incomplete before 2015-16.",
+        ),
+      ).toBeInTheDocument();
+      expect(container.textContent).not.toContain("leaderboard_metric_required");
+    });
+  });
+
+  it("asks for a subject and a stat for a bare context fragment", () => {
+    // "clutch stats" used to be handed stat="pts" so the leaderboard had
+    // something to rank. The card must not mention points, and must ask for
+    // the two things actually missing.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "clutch stats",
+          clutch: true,
+          unsupported_filters: ["leaderboard_request_unclear"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Which Stat?")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Name the player or team you mean and the stat you want/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Points is not available for this query."),
+    ).not.toBeInTheDocument();
+  });
+
   it("guides recent defensive-rating unsupported queries to safe alternatives", () => {
     render(
       <NoResultDisplay

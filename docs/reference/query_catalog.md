@@ -542,9 +542,15 @@ Leaderboard no-match behavior:
   per-game attempt minimums are unsupported boundaries; they return a typed
   `no_result` / `filter_not_supported` response with
   `metadata.unsupported_filters=["unsupported_concept"]` and no answer rows
-- rookie leaderboards (`rookie scoring leaders`, `top rookies this season`)
-  are supported: players are filtered to roster experience of 0 years in
-  each season, with roster coverage from 1996-97; seasons without roster
+- rookie leaderboards (`rookie scoring leaders`, `rookie assist leaders this
+  season`) are supported **when the question names a stat**: players are
+  filtered to roster experience of 0 years in each season, with roster coverage
+  from 1996-97. A rookie ranking that names no stat (`top rookies this season`,
+  `rookie leaders this season`) returns `no_result` / `filter_not_supported`
+  with `metadata.unsupported_filters=["leaderboard_metric_required"]` — a
+  population says who to rank, never what to rank them by, and there is no
+  default metric. The same holds for sophomore, starter and bench
+  leaderboards. Seasons without roster
   data return `no_result` / `filter_not_supported` rather than an unfiltered
   leaderboard
 - sophomore leaderboards (`sophomore scoring leaders`, `second-year

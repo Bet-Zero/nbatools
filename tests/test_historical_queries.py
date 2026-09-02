@@ -598,11 +598,20 @@ class TestLiveSmokeHistorical:
         assert qr.route == "player_game_summary"
 
     def test_playoff_leaders_since_2010_live(self):
+        """ "leaders" names no stat, so this asks which one rather than guessing.
+
+        This used to return a points-per-game leaderboard. Nothing in the query
+        asks for points - "leaders" was resolved to points only because the
+        route needed a metric, which is the inference the metric boundary
+        removes. The season scope and playoff season type are understood; the
+        stat is what is missing.
+        """
         from nbatools.query_service import execute_natural_query
 
         qr = execute_natural_query("playoff leaders since 2010")
-        assert qr.is_ok
-        assert isinstance(qr.result, LeaderboardResult)
+        assert not qr.is_ok
+        assert qr.result_reason == "filter_not_supported"
+        assert "leaderboard_metric_required" in (qr.metadata.get("unsupported_filters") or [])
 
     def test_celtics_vs_bucks_since_2021_live(self):
         from nbatools.query_service import execute_natural_query

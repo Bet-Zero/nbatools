@@ -671,18 +671,29 @@ class TestStatPhraseExpansion:
         assert parsed["route_kwargs"]["stat"] == "fg_pct"
         assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "top-10 defenses"
 
-    def test_route_context_only_boundary_fragment_with_fallback_note(self):
+    def test_route_context_only_boundary_fragment_refuses_without_a_metric(self):
+        """A clutch fragment with no subject and no stat invents neither.
+
+        This used to assert ``stat == "pts"``: the branch handed the leaderboard
+        a metric so it had something to rank. The request is still recorded -
+        ``clutch`` stays true - but nothing is substituted for the stat the
+        question never named.
+        """
         parsed = parse_query("in clutch time")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
-        assert any("boundary_fragment" in note for note in parsed.get("notes", []))
+        assert "stat" not in parsed["route_kwargs"]
+        assert parsed["route_kwargs"]["clutch"] is True
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_request_unclear"]
+        assert not any("boundary_fragment" in note for note in parsed.get("notes", []))
 
-    def test_route_opponent_quality_boundary_fragment_with_fallback_note(self):
+    def test_route_opponent_quality_boundary_fragment_refuses_without_a_metric(self):
+        """Same for opponent quality: the qualifier survives, the metric is not invented."""
         parsed = parse_query("against winning teams")
         assert parsed["route"] == "season_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
+        assert "stat" not in parsed["route_kwargs"]
         assert parsed["route_kwargs"]["opponent_quality"]["surface_term"] == "winning teams"
-        assert any("boundary_fragment" in note for note in parsed.get("notes", []))
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_request_unclear"]
+        assert not any("boundary_fragment" in note for note in parsed.get("notes", []))
 
     def test_route_best_rim_protector_past_month(self):
         parsed = parse_query("best rim protector over the past month")
@@ -1429,7 +1440,17 @@ class TestDateFilterDropPrevention:
         assert offensive.route == "season_team_leaders"
         assert offensive.result.result_status == "no_result"
         assert offensive.result.result_reason == "filter_not_supported"
-        assert offensive.metadata["unsupported_filters"] == ["unsupported_concept"]
+        # Already a refusal here; the blocker is now the specific one. Offensive
+        # rating cannot be computed inside a date window, and the answer says so
+        # rather than reporting a generic unsupported concept.
+        assert offensive.metadata["unsupported_filters"] == [
+            "leaderboard_metric_unavailable_for_scope"
+        ]
+        # No ranking ran, so no metric is published as the one that did. The
+        # metric the refusal is about travels in `requested_stat`; publishing
+        # it as `stat` made a refusal look like it had settled on an answer.
+        assert offensive.metadata["stat"] is None
+        assert offensive.metadata["requested_stat"] == "off_rating"
         assert offensive.metadata["start_date"] == "2026-01-01"
         assert offensive.metadata["end_date"] is None
         assert offensive.metadata.get("applied_filters", []) == []

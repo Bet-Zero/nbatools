@@ -215,8 +215,19 @@ class TestTopPlayerGamesNote:
         assert "season_high: league-wide top single-game performances" in parsed.get("notes", [])
 
     def test_season_high_games_note(self):
+        """ "season high games" names no stat, so it asks which one.
+
+        The note it used to carry documented a default sort by points. There is
+        no default metric now; naming one answers.
+        """
         parsed = parse_query("season high games")
         assert parsed["route"] == "top_player_games"
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_metric_required"]
+
+    def test_season_high_scoring_games_note(self):
+        parsed = parse_query("highest scoring games this season")
+        assert parsed["route"] == "top_player_games"
+        assert parsed["route_kwargs"]["stat"] == "pts"
         assert "season_high: league-wide top single-game performances" in parsed.get("notes", [])
 
 
@@ -224,10 +235,10 @@ class TestTopTeamGamesNote:
     """'Top team games' keyword routing documents the default sort stat."""
 
     def test_top_team_games(self):
+        """ "top team games" names no stat, so the default sort is gone with it."""
         parsed = parse_query("top team games")
         assert parsed["route"] == "top_team_games"
-        notes = parsed.get("notes", [])
-        assert any(n.startswith("default: top team games ranked by") for n in notes)
+        assert parsed["route_kwargs"]["unsupported_filters"] == ["leaderboard_metric_required"]
 
     def test_top_team_scoring_games(self):
         parsed = parse_query("top team scoring games this season")

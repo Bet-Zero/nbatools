@@ -115,9 +115,13 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "reason": "filter_not_supported",
         },
         {
+            # A clutch superlative with no subject and no stat. This refused
+            # before, but with no blocker id and a substituted pts metric; the
+            # refusal is now typed and carries no invented metric.
             "query": "Who is the most clutch player this season?",
             "route": "season_leaders",
             "reason": "filter_not_supported",
+            "unsupported_filters": ["leaderboard_request_unclear"],
         },
         {
             "query": "who has cooled off lately",
@@ -147,6 +151,7 @@ def _unsupported_filters(metadata: dict) -> list[str] | None:
             "query": "in clutch time",
             "route": "season_leaders",
             "reason": "filter_not_supported",
+            "unsupported_filters": ["leaderboard_request_unclear"],
         },
         {
             "query": "who won mvp this season",

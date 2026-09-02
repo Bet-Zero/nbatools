@@ -313,12 +313,22 @@ class TestNaturalQueryAdvancedMetricRouting:
         assert parsed["route_kwargs"]["stat"] == "def_rating"
 
     def test_off_rating_blocked_multi_season_team(self) -> None:
-        """Team off_rating should fall back to pts for multi-season."""
+        """Team off_rating is refused for multi-season, not swapped for points.
+
+        The old docstring stated the old policy: "should fall back to pts".
+        Offensive rating genuinely cannot be computed across a season range, but
+        ranking by points instead answers a question nobody asked. The block is
+        the same; what changes is that it is now visible as a refusal.
+        """
         parsed = parse_query("best offensive teams last 3 seasons")
         assert parsed["route"] == "season_team_leaders"
-        assert parsed["route_kwargs"]["stat"] == "pts"
+        assert "stat" not in parsed["route_kwargs"]
+        assert parsed["route_kwargs"]["unsupported_filters"] == [
+            "leaderboard_metric_unavailable_for_scope"
+        ]
         notes = parsed.get("notes", [])
-        assert any("stat_fallback" in n for n in notes)
+        assert any("unsupported_boundary" in n for n in notes)
+        assert not any("stat_fallback" in n for n in notes)
 
     def test_usg_pct_allowed_multi_season_player(self) -> None:
         """Player USG% should NOT fall back for multi-season — it's game-log-derivable."""

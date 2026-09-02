@@ -48,24 +48,50 @@ const MONTH_LABELS = [
   "Dec",
 ];
 
+// The blocker ids the metric boundary raises. They are stable identifiers for
+// the backend and for tests, never product copy: each one already has human
+// wording on the card, so a Details entry naming the id is a leak, not a
+// detail. Kept in sync with BOUNDARY_FILTERS in _leaderboard_eligibility.py.
+const LEADERBOARD_BOUNDARY_IDS = [
+  "leaderboard_metric_required",
+  "leaderboard_aggregation_unsupported",
+  "leaderboard_request_unclear",
+  "leaderboard_multiple_metrics_unsupported",
+  "leaderboard_metric_unavailable_for_scope",
+] as const;
+
 export function buildNoResultDetails(
   notes: string[] = [],
   caveats: string[] = [],
   metadata?: ResultMetadata | null,
 ): NoResultDetail[] {
+  // A boundary refusal already says everything it has to say in the headline
+  // copy. Its remaining notes are the internal record of the same decision, so
+  // opening Details would only repeat the message in the product's own
+  // vocabulary of blocker ids.
+  const boundaryRefusal = unsupportedFilters(metadata).some((filter) =>
+    LEADERBOARD_BOUNDARY_IDS.includes(
+      filter as (typeof LEADERBOARD_BOUNDARY_IDS)[number],
+    ),
+  );
+  const keep = (text: string): boolean =>
+    !boundaryRefusal || !/^unsupported_boundary:/i.test(text.trim());
+
   return uniqueDetails([
-    ...productFacingNotices(notes).map((text) => ({
+    ...productFacingNotices(notes.filter(keep)).map((text) => ({
       kind: "Note" as const,
       text,
     })),
-    ...productFacingNotices(caveats).map((text) => ({
+    ...productFacingNotices(caveats.filter(keep)).map((text) => ({
       kind: "Caveat" as const,
       text,
     })),
-    ...productFacingNotices(metadataNotes(metadata?.notes)).map((text) => ({
-      kind: "Note" as const,
-      text,
-    })),
+    ...productFacingNotices(metadataNotes(metadata?.notes).filter(keep)).map(
+      (text) => ({
+        kind: "Note" as const,
+        text,
+      }),
+    ),
   ]);
 }
 
@@ -99,6 +125,11 @@ export function productFacingNotice(text: string): string | null {
 
   if (/^default:\s*<metric> only/i.test(trimmed)) return null;
   if (/^leaderboard_source:/i.test(trimmed)) return null;
+
+  // Last line of defence: a note that names an internal blocker id is never
+  // product copy. The backend's generic "<id> filter is not supported with
+  // current data" fallback rendered the identifier verbatim in Details.
+  if (LEADERBOARD_BOUNDARY_IDS.some((id) => trimmed.includes(id))) return null;
 
   return trimmed;
 }
@@ -237,6 +268,19 @@ export function unsupportedBoundaryTitle(
   if (filters.includes("opponent_conference")) {
     return "Unavailable Filter";
   }
+  if (
+    filters.includes("leaderboard_metric_required") ||
+    filters.includes("leaderboard_request_unclear")
+  ) {
+    return "Which Stat?";
+  }
+  if (
+    filters.includes("leaderboard_aggregation_unsupported") ||
+    filters.includes("leaderboard_multiple_metrics_unsupported") ||
+    filters.includes("leaderboard_metric_unavailable_for_scope")
+  ) {
+    return "Unsupported Ranking";
+  }
   return null;
 }
 
@@ -265,7 +309,81 @@ function unsupportedBoundaryMessage(
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";
   }
+  // A ranking with no stat in it. Naming a metric here would answer a question
+  // nobody asked, so ask which one instead.
+  if (filters.includes("leaderboard_metric_required")) {
+    return "League rankings need a stat to rank by. Try naming one \u2014 for example \u201ctop scorers this season\u201d, \u201cmost rebounds this season\u201d, or \u201cbest defensive teams\u201d.";
+  }
+  if (filters.includes("leaderboard_aggregation_unsupported")) {
+    return aggregationMismatchCopy(metadata);
+  }
+  if (filters.includes("leaderboard_multiple_metrics_unsupported")) {
+    return "A ranking can only be ordered by one stat, and this asks for more than one. Ask for them one at a time \u2014 for example \u201cpoints leaders this season\u201d, then \u201crebounds leaders this season\u201d.";
+  }
+  if (filters.includes("leaderboard_metric_unavailable_for_scope")) {
+    const stat = metricFromMetadata(metadata);
+    const named = stat ? metricLabel(stat) : "This stat";
+    return `${named} is not available for that time range or filter, and no other stat was substituted for it. Try a single season, or another supported stat.`;
+  }
+  // Covers two shapes: wording the ranking cannot express ("top three point
+  // shooters"), and a bare context fragment with nothing to apply it to
+  // ("clutch stats"). Both need the same thing said - name who you mean and
+  // the stat - so the copy asks for both rather than guessing which is missing.
+  if (filters.includes("leaderboard_request_unclear")) {
+    return "This does not say enough to rank on its own, so answering it would mean guessing at the question. Name the player or team you mean and the stat you want \u2014 for example \u201cTatum clutch stats\u201d or \u201ctop scorers this season\u201d.";
+  }
   return null;
+}
+
+
+// How each leaderboard actually ranks, in the reader's words.
+const AGGREGATION_PHRASE: Record<string, string> = {
+  total: "by season total",
+  per_game: "per game",
+  rate: "as a rate",
+  count: "as a season count",
+  single_game: "one game at a time",
+};
+
+// What the reader asked for, named the same way.
+const REQUESTED_PHRASE: Record<string, string> = {
+  total: "a season-total",
+  per_game: "a per-game",
+  rate: "a rate",
+  count: "a season-count",
+  single_game: "a single-game",
+};
+
+function aggregationMismatchCopy(
+  metadata: ResultMetadata | null | undefined,
+): string {
+  // Direction-specific. The old copy said "is ranked per game, so a season
+  // total is not available" for every aggregation refusal, which is exactly
+  // backwards for a per-game request against a total-backed stat like minutes.
+  const stat = metricFromMetadata(metadata);
+  const label = stat ? metricLabel(stat) : null;
+  const requested = stringValue(metadata?.requested_aggregation) ?? "";
+  const available = stringValue(metadata?.available_aggregation) ?? "";
+  const ranks = AGGREGATION_PHRASE[available];
+  const asked = REQUESTED_PHRASE[requested];
+
+  if (ranks && asked) {
+    const subject = label ?? "This stat";
+    const named = label ? `${label.toLowerCase()} ` : "";
+    const suggestion =
+      available === "total"
+        ? ` Try the season-total form \u2014 for example \u201ctotal ${named}leaders this season\u201d.`
+        : available === "per_game"
+          ? ` Try the per-game form \u2014 for example \u201c${named}per game leaders this season\u201d.`
+          : available === "single_game"
+            ? ` Try the single-game form \u2014 for example \u201cmost ${named}in a game this season\u201d.`
+            : "";
+    return `${subject} is ranked ${ranks} here, so ${asked} ${named}leaderboard is not available.${suggestion}`;
+  }
+
+  // No direction recorded: say only what is certainly true.
+  const subject = label ?? "This stat";
+  return `${subject} is not ranked by the aggregation this asks for, and no other aggregation was substituted for it.`;
 }
 
 function unsupportedFilters(
@@ -467,7 +585,15 @@ function metricFromMetadata(
   metadata: ResultMetadata | null | undefined,
 ): string | null {
   if (!metadata) return null;
-  for (const key of ["stat", "metric", "target_stat", "target_metric"]) {
+  // `requested_stat` first: on a refusal it is the only truthful metric, and
+  // `stat` is deliberately absent because nothing ran.
+  for (const key of [
+    "requested_stat",
+    "stat",
+    "metric",
+    "target_stat",
+    "target_metric",
+  ]) {
     const value = metadata[key];
     if (typeof value === "string" && value.trim()) return value.trim();
   }

@@ -6,10 +6,8 @@ from nbatools.commands._condition_utils import normalize_stat_conditions, stat_c
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
 from nbatools.commands._constants import (
     LOWER_IS_BETTER_STATS,
-    PLAYER_SEASON_ONLY_STATS,
     STAT_ALIASES,
     TEAM_SEASON_ADVANCED_STATS,
-    TEAM_SEASON_ONLY_STATS,
     normalize_text,
     route_to_intent,
 )
@@ -28,6 +26,29 @@ from nbatools.commands._default_rules import (
     player_timeframe_summary_default,
     streak_default_window,
     team_threshold_finder_default,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    METRIC_SCOPE_UNSUPPORTED as LEADERBOARD_METRIC_SCOPE_UNSUPPORTED,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    MULTIPLE_METRICS as LEADERBOARD_MULTIPLE_METRICS,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    NO_REQUESTED_METRIC as LEADERBOARD_METRIC_REQUIRED,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    SINGLE_GAME_RANKING,
+    LeaderboardEligibility,
+    anchored_leaderboard_metric,
+    assess_leaderboard_request,
+    requested_leaderboard_metrics,
+    unrouted_ranking_reason,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    UNCLEAR_REQUEST as LEADERBOARD_REQUEST_UNCLEAR,
+)
+from nbatools.commands._leaderboard_eligibility import (
+    UNSUPPORTED_AGGREGATION as LEADERBOARD_AGGREGATION_UNSUPPORTED,
 )
 from nbatools.commands._leaderboard_utils import (
     detect_player_leaderboard_stat,
@@ -317,7 +338,6 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
     "offensive rating when",
     "offensive rating without",
     "10+ assists and 0 turnovers",
-    "attempts per game",
     "road by 20",
     "road team won by 20",
     "above .600",
@@ -326,10 +346,23 @@ _UNSUPPORTED_BOUNDARY_PHRASES = (
 )
 
 
+# A minimum-attempts qualifier, in either the short or long form: "min 5
+# attempts", "with at least 4 attempts per game". A number is what makes this a
+# qualifier - the same test the metric boundary applies, where a metric next to
+# a number is a condition rather than a ranking key.
+#
+# This used to be the bare phrase "attempts per game", which also swallowed
+# "three-point attempts per game leaders" - a plain ranking whose metric and
+# aggregation the product understands perfectly well. A generic "this phrase is
+# unsupported" answer preempted the specific one, so the reader was told the
+# question was unrecognizable rather than that only the season total exists.
+_ATTEMPT_QUALIFIER = re.compile(
+    r"\bmin(?:imum)?\s+\d+\s+attempts\b|\b\d+\s+attempts?\s+per\s+game\b"
+)
+
+
 def _unsupported_phrase_boundary_note(q: str) -> str | None:
-    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or re.search(
-        r"\bmin(?:imum)?\s+\d+\s+attempts\b", q
-    ):
+    if any(phrase in q for phrase in _UNSUPPORTED_BOUNDARY_PHRASES) or _ATTEMPT_QUALIFIER.search(q):
         return (
             "unsupported_boundary: this phrase is outside the shipped support boundary; "
             "no result was executed for the unsupported concept"
@@ -802,6 +835,109 @@ def _unresolved_player_stretch_boundary(parsed: dict) -> str | None:
     if match:
         return match.group("fragment")
     return None
+
+
+# Why a league-wide ranking was refused, in the parse notes. Each reason needs
+# different guidance, so they do not share copy.
+#: "season high" and "top scoring games" have meant points here since before
+#: this boundary existed, and both are documented in the query catalog and
+#: guide. Points is written out only where the query wording carries one of
+#: those approved shorthands - never as a stand-in for a metric nobody named.
+SCORING_SHORTHAND = "pts"
+
+_LEADERBOARD_REFUSAL_NOTES = {
+    LEADERBOARD_METRIC_REQUIRED: (
+        "this asks for a ranking without naming a stat to rank by, and there is no default metric"
+    ),
+    LEADERBOARD_AGGREGATION_UNSUPPORTED: (
+        "the aggregation this asks for is not the one this stat's leaderboard ranks"
+    ),
+    LEADERBOARD_REQUEST_UNCLEAR: (
+        "part of this question is outside what a league-wide leaderboard can express"
+    ),
+    LEADERBOARD_MULTIPLE_METRICS: (
+        "this asks for more than one stat, and a ranking orders by exactly one"
+    ),
+    LEADERBOARD_METRIC_SCOPE_UNSUPPORTED: (
+        "the requested stat cannot be computed for the requested window, and no other "
+        "stat was substituted for it"
+    ),
+}
+
+
+def _ranking_refusal_kwargs(
+    eligibility,
+    *,
+    season: str | None,
+    start_season: str | None,
+    end_season: str | None,
+    start_date: str | None,
+    end_date: str | None,
+    season_type: str,
+    team: str | None = None,
+) -> tuple[dict, str]:
+    """Typed refusal kwargs and note for any ranking branch, from one decision.
+
+    Every variable-metric ranking branch refuses the same shape, so a
+    specialized population cannot invent its own softer boundary, and every
+    refusal publishes the same truthful metadata.
+
+    Carries no ``stat``. Nothing ran, so there is no executed metric to report;
+    publishing the detector's pick would present a partial interpretation of a
+    refused question as its answer. What the user actually asked for travels in
+    ``requested_stat`` and ``requested_metrics`` instead.
+    """
+    route_kwargs = _unsupported_route_kwargs(
+        eligibility.reason,
+        season=season,
+        start_season=start_season,
+        end_season=end_season,
+        start_date=start_date,
+        end_date=end_date,
+        season_type=season_type,
+    )
+    if team is not None:
+        route_kwargs["team"] = team
+    route_kwargs["leaderboard_eligibility"] = eligibility.to_dict()
+    if eligibility.published_requested_stat:
+        route_kwargs["requested_stat"] = eligibility.published_requested_stat
+    if eligibility.published_requested_metrics:
+        route_kwargs["requested_metrics"] = list(eligibility.published_requested_metrics)
+    # Both sides of an aggregation mismatch, so the copy can name the direction
+    # instead of assuming one.
+    if eligibility.requested_aggregation:
+        route_kwargs["requested_aggregation"] = eligibility.requested_aggregation
+    if eligibility.available_aggregation:
+        route_kwargs["available_aggregation"] = eligibility.available_aggregation
+    note = (
+        "unsupported_boundary: "
+        + _aggregation_refusal_note(eligibility)
+        + "; no substituted leaderboard was returned"
+    )
+    return route_kwargs, note
+
+
+_AGGREGATION_WORDS = {
+    "total": "a season total",
+    "per_game": "a per-game figure",
+    "rate": "a rate or percentage",
+    "count": "a season count",
+}
+
+
+def _aggregation_refusal_note(eligibility) -> str:
+    """The reason text, naming the direction of an aggregation mismatch.
+
+    A single fixed sentence used to say "asks for a season total of a stat the
+    leaderboard ranks per game" for every aggregation refusal, which is exactly
+    backwards for `minutes per game leaders`.
+    """
+    base = _LEADERBOARD_REFUSAL_NOTES[eligibility.reason]
+    requested = _AGGREGATION_WORDS.get(eligibility.requested_aggregation or "")
+    available = _AGGREGATION_WORDS.get(eligibility.available_aggregation or "")
+    if requested and available:
+        return f"this asks for {requested} of a stat the leaderboard ranks as {available}"
+    return base
 
 
 def _unsupported_route_kwargs(
@@ -2100,12 +2236,36 @@ def _finalize_route(parsed: dict) -> dict:
     # Season-high / single-game-best routing
     # ---------------------------------------------------------------------------
     elif (
+        season_high_intent
+        and top_team_game_intent
+        and not player
+        and not player_a
+        and not player_b
+        and not (
+            _rank_elig := assess_leaderboard_request(parsed, ranking_mode=SINGLE_GAME_RANKING)
+        ).authorized
+    ):
+        # Ranked team games still need a named metric: "best team performances"
+        # says which games to look at, not what makes one best.
+        route = "top_team_games"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _rank_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
+    elif (
         season_high_intent and top_team_game_intent and not player and not player_a and not player_b
     ):
         route = "top_team_games"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or "pts",
+            # Non-None: the eligibility guard above refuses an unanchored request.
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
@@ -2118,7 +2278,9 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "opponent": opponent,
         }
-        notes.append("default: top team games ranked by " + (stat or "pts"))
+        notes.append(
+            "default: top team games ranked by " + str(anchored_leaderboard_metric(parsed))
+        )
     elif season_high_intent and player and not player_a and not player_b:
         # Single player season-high: "Cade Cunningham season high"
         # Route to finder, limit 1, sort by stat descending
@@ -2139,7 +2301,10 @@ def _finalize_route(parsed: dict) -> dict:
             "away_only": away_only,
             "wins_only": wins_only,
             "losses_only": losses_only,
-            "stat": stat or "pts",
+            # "<player> season high" is a documented shorthand for the player's
+            # best scoring game, listed in the query catalog and guide. Points
+            # here is the request, not a substitute for one.
+            "stat": stat or SCORING_SHORTHAND,
             "min_value": min_value,
             "max_value": max_value,
             "limit": top_n or 5,
@@ -2156,12 +2321,36 @@ def _finalize_route(parsed: dict) -> dict:
         and not team
         and not team_a
         and not team_b
+        and not (
+            _rank_elig := assess_leaderboard_request(parsed, ranking_mode=SINGLE_GAME_RANKING)
+        ).authorized
+    ):
+        route = "top_player_games"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _rank_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
+    elif (
+        season_high_intent
+        and not player
+        and not player_a
+        and not player_b
+        and not team
+        and not team_a
+        and not team_b
     ):
         # League-wide season-high: "highest scoring games this season"
         route = "top_player_games"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or "pts",
+            # Non-None: the eligibility guard above refuses an unanchored request.
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
@@ -2308,6 +2497,7 @@ def _finalize_route(parsed: dict) -> dict:
             "unsupported_boundary: team bench scoring is not supported by the "
             "current team game finder contract"
         )
+        # Refusal path: carry whatever stat the query named, never a stand-in.
         route_kwargs = {
             "season": season,
             "start_season": start_season,
@@ -2323,7 +2513,7 @@ def _finalize_route(parsed: dict) -> dict:
             "away_only": away_only,
             "wins_only": wins_only,
             "losses_only": losses_only,
-            "stat": stat or "pts",
+            "stat": stat,
             "min_value": min_value,
             "max_value": max_value,
             "limit": 25,
@@ -2511,10 +2701,13 @@ def _finalize_route(parsed: dict) -> dict:
         and ("scoring" in q or stat is not None)
         and not leaderboard_intent
     ):
+        # The condition already requires "scoring" or an explicit stat, so the
+        # metric below is the one the query named, not a stand-in for none.
         route = "top_player_games"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or "pts",
+            # Non-None: the eligibility guard above refuses an unanchored request.
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
@@ -2527,7 +2720,27 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "opponent": opponent,
         }
-        notes.append("default: top games ranked by " + (stat or "pts"))
+        notes.append("default: top games ranked by " + str(stat or SCORING_SHORTHAND))
+    elif (
+        top_team_game_intent
+        and not player
+        and not player_a
+        and not player_b
+        and not (
+            _rank_elig := assess_leaderboard_request(parsed, ranking_mode=SINGLE_GAME_RANKING)
+        ).authorized
+    ):
+        route = "top_team_games"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _rank_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
     elif top_team_game_intent and not player and not player_a and not player_b:
         # Expanded trigger: catches "highest-scoring team games", "best team
         # performances", "biggest team scoring nights" in addition to the
@@ -2535,7 +2748,8 @@ def _finalize_route(parsed: dict) -> dict:
         route = "top_team_games"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or "pts",
+            # Non-None: the eligibility guard above refuses an unanchored request.
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "ascending": False,
@@ -2548,7 +2762,9 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "opponent": opponent,
         }
-        notes.append("default: top team games ranked by " + (stat or "pts"))
+        notes.append(
+            "default: top team games ranked by " + str(anchored_leaderboard_metric(parsed))
+        )
     # ---------------------------------------------------------------------------
     # Occurrence routing cluster (compound + single leaderboard)
     # ---------------------------------------------------------------------------
@@ -2560,6 +2776,35 @@ def _finalize_route(parsed: dict) -> dict:
     elif (rlr := try_record_leaderboard_route(parsed)) is not None:
         route, route_kwargs, rl_notes = rlr
         notes.extend(rl_notes)
+    elif (
+        team_leader_stat is not None
+        and team
+        and not player
+        and not player_a
+        and not player_b
+        and not team_a
+        and not team_b
+        and not (
+            _team_elig := assess_leaderboard_request(parsed, metric=team_leader_stat)
+        ).authorized
+    ):
+        # Same rule as the league-wide gate, on the route that would otherwise
+        # answer. "Lakers record without their leading scorer" anchors a metric
+        # through "leading scorer", but the record intent and the availability
+        # clause are things this ranking cannot express - returning the team's
+        # top five scorers answers a different question.
+        route = "season_leaders"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _team_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+            team=team,
+        )
+        notes.append(_note)
     elif (
         team_leader_stat is not None
         and team
@@ -2587,6 +2832,26 @@ def _finalize_route(parsed: dict) -> dict:
             "team": team,
             "last_n": last_n,
         }
+    elif (
+        sophomore_leaderboard_boundary
+        and not any([player, player_a, player_b, team, team_a, team_b])
+        and not (_rank_elig := assess_leaderboard_request(parsed)).authorized
+    ):
+        # A specialized population says who to rank, never what to rank
+        # them by. This branch used to end its metric resolution in
+        # `or "pts"`, so "sophomore leaders" ranked by points
+        # nobody asked for. Same decision as every other ranking branch.
+        route = "season_leaders"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _rank_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
     elif sophomore_leaderboard_boundary and not any(
         [player, player_a, player_b, team, team_a, team_b]
     ):
@@ -2598,7 +2863,7 @@ def _finalize_route(parsed: dict) -> dict:
         )
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or detect_player_leaderboard_stat(q) or "pts",
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "min_games": min_games or 1,
@@ -2616,6 +2881,26 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "sophomores_only": True,
         }
+    elif (
+        rookie_leaderboard_boundary
+        and not any([player, player_a, player_b, team, team_a, team_b])
+        and not (_rank_elig := assess_leaderboard_request(parsed)).authorized
+    ):
+        # A specialized population says who to rank, never what to rank
+        # them by. This branch used to end its metric resolution in
+        # `or "pts"`, so "rookie leaders" ranked by points
+        # nobody asked for. Same decision as every other ranking branch.
+        route = "season_leaders"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _rank_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
     elif rookie_leaderboard_boundary and not any(
         [player, player_a, player_b, team, team_a, team_b]
     ):
@@ -2627,7 +2912,7 @@ def _finalize_route(parsed: dict) -> dict:
         )
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or detect_player_leaderboard_stat(q) or "pts",
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "min_games": min_games or 1,
@@ -2645,6 +2930,26 @@ def _finalize_route(parsed: dict) -> dict:
             "last_n": last_n,
             "rookies_only": True,
         }
+    elif (
+        role_leaderboard_boundary
+        and not any([player, player_a, player_b, team, team_a, team_b])
+        and not (_rank_elig := assess_leaderboard_request(parsed)).authorized
+    ):
+        # A specialized population says who to rank, never what to rank
+        # them by. This branch used to end its metric resolution in
+        # `or "pts"`, so "starter leaders" ranked by points
+        # nobody asked for. Same decision as every other ranking branch.
+        route = "season_leaders"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _rank_elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
     elif role_leaderboard_boundary and not any([player, player_a, player_b, team, team_a, team_b]):
         # Starter/bench leaderboards run against trusted per-game starter
         # flags; seasons without that coverage refuse inside the command.
@@ -2652,7 +2957,7 @@ def _finalize_route(parsed: dict) -> dict:
         route = "season_leaders"
         route_kwargs = {
             "season": season or default_season_for_context(season_type),
-            "stat": stat or detect_player_leaderboard_stat(q) or "pts",
+            "stat": anchored_leaderboard_metric(parsed),
             "limit": top_n or 10,
             "season_type": season_type,
             "min_games": min_games or 1,
@@ -2859,32 +3164,53 @@ def _finalize_route(parsed: dict) -> dict:
         and not team_leaderboard_intent
         and (opponent_quality or clutch)
     ):
+        # A bare context fragment: clutch or opponent-quality with nothing to
+        # apply it to. This used to hand the leaderboard ``stat="pts"`` so the
+        # route had something to rank, which invented a metric the question
+        # never named - the same defect the eligibility gate below exists to
+        # stop, reached by a branch that runs before it. Naming a stat would
+        # not rescue these either: with no player, team, or population there is
+        # no ranking request to complete, so the request is unclear rather than
+        # merely metric-less.
         route = "season_leaders"
-        route_kwargs = {
-            "season": season or default_season_for_context(season_type),
-            "stat": "pts",
-            "limit": top_n or 10,
-            "season_type": season_type,
-            "min_games": min_games or 1,
-            "ascending": False,
-            "start_date": start_date,
-            "end_date": end_date,
-            "start_season": start_season,
-            "end_season": end_season,
-            "opponent": opponent,
-            "position": position_filter,
-            "home_only": home_only,
-            "away_only": away_only,
-            "wins_only": wins_only,
-            "losses_only": losses_only,
-            "last_n": last_n,
-        }
-        notes.append(
-            "boundary_fragment: context detected without a player, team, or stat; "
-            "returning a broad points leaderboard fallback"
+        route_kwargs = _unsupported_route_kwargs(
+            LEADERBOARD_REQUEST_UNCLEAR,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
         )
-    elif (_lb := metric_only_leaderboard_default(parsed))[0]:
-        # No subject entity → league-wide leaderboard default (spec §15.2)
+        notes.append(
+            "unsupported_boundary: "
+            f"{'clutch' if clutch else 'opponent-quality'} context was requested with "
+            "no player, team, or stat to apply it to; no substituted leaderboard was "
+            "returned"
+        )
+    elif (_lb := metric_only_leaderboard_default(parsed))[0] and not (
+        _elig := assess_leaderboard_request(parsed)
+    ).authorized:
+        # A league-wide ranking was requested, and it is not one this product
+        # can answer: either no metric was named, or the aggregation asked for
+        # is not the one leaderboards compute, or part of the question is
+        # outside the stat-shaped grammar. Ranking by points anyway would be a
+        # confident answer to a different question.
+        route = "season_team_leaders" if team_leaderboard_intent else "season_leaders"
+        # No substituted ranking metric reaches the blocked route.
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            _elig,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
+    elif _lb[0]:
+        # No subject entity → league-wide leaderboard default (spec §15.2),
+        # reached only once the request is eligible.
         notes.append(_lb[1])
         # For leaderboards, prefer multi-season params if available
         lb_season = season
@@ -2900,7 +3226,8 @@ def _finalize_route(parsed: dict) -> dict:
         # "best/lowest turnover teams" → turnovers ascending
         # But "worst defensive teams" → def_rating descending (higher = worse)
         if team_leaderboard_intent:
-            leaderboard_stat = detect_team_leaderboard_stat(q) or stat or "pts"
+            # Non-None: the eligibility gate above refuses an unanchored request.
+            leaderboard_stat = anchored_leaderboard_metric(parsed)
 
             # Semantic ascending for lower-is-better stats
             if leaderboard_stat in LOWER_IS_BETTER_STATS:
@@ -2910,16 +3237,6 @@ def _finalize_route(parsed: dict) -> dict:
                     lb_ascending = False
 
             # Season-advanced-only team stats blocked in date-window/multi-season
-            if (start_date or end_date) and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
-                notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available with date window, using pts"
-                )
-                leaderboard_stat = "pts"
-            if lb_start_season and lb_end_season and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
-                notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
-                )
-                leaderboard_stat = "pts"
             route = "season_team_leaders"
             route_kwargs = {
                 "season": lb_season,
@@ -2940,17 +3257,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "last_n": last_n,
             }
         elif "team" in q or "teams" in q:
-            leaderboard_stat = stat or "pts"
-            if (start_date or end_date) and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
-                notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available with date window, using pts"
-                )
-                leaderboard_stat = "pts"
-            if lb_start_season and lb_end_season and leaderboard_stat in TEAM_SEASON_ONLY_STATS:
-                notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
-                )
-                leaderboard_stat = "pts"
+            leaderboard_stat = anchored_leaderboard_metric(parsed)
             route = "season_team_leaders"
             route_kwargs = {
                 "season": lb_season,
@@ -2971,7 +3278,7 @@ def _finalize_route(parsed: dict) -> dict:
                 "last_n": last_n,
             }
         else:
-            leaderboard_stat = detect_player_leaderboard_stat(q) or stat or "pts"
+            leaderboard_stat = anchored_leaderboard_metric(parsed)
 
             # Semantic ascending for lower-is-better stats
             if leaderboard_stat in LOWER_IS_BETTER_STATS:
@@ -2980,18 +3287,6 @@ def _finalize_route(parsed: dict) -> dict:
                 elif re.search(r"\b(worst|most|highest)\b", q):
                     lb_ascending = False
 
-            # Season-advanced-only player stats blocked in multi-season/opponent contexts
-            if lb_start_season and lb_end_season and leaderboard_stat in PLAYER_SEASON_ONLY_STATS:
-                notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available for multi-season, using pts"
-                )
-                leaderboard_stat = "pts"
-            if opponent and leaderboard_stat in PLAYER_SEASON_ONLY_STATS:
-                notes.append(
-                    f"stat_fallback: {leaderboard_stat} not available"
-                    " with opponent filter, using pts"
-                )
-                leaderboard_stat = "pts"
             route = "season_leaders"
             route_kwargs = {
                 "season": lb_season,
@@ -3343,6 +3638,25 @@ def _finalize_route(parsed: dict) -> dict:
         _fires, _note = team_threshold_finder_default(parsed)
         if _fires:
             notes.append(_note)
+    elif (_unrouted_reason := unrouted_ranking_reason(parsed)) is not None:
+        # A legible ranking request that matched no route: it names who to rank
+        # but not what by, or names several stats. This used to surface as an
+        # unrouted error, which tells the user nothing about what to change.
+        route = "season_team_leaders" if re.search(r"\bteams?\b", q) else "season_leaders"
+        route_kwargs, _note = _ranking_refusal_kwargs(
+            LeaderboardEligibility(
+                authorized=False,
+                reason=_unrouted_reason,
+                requested_metrics=requested_leaderboard_metrics(parsed),
+            ),
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        notes.append(_note)
     else:
         raise ValueError(
             "Could not map query to a supported pattern yet. "
