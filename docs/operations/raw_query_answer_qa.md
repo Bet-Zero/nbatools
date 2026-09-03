@@ -21,11 +21,17 @@ From the repo root:
   --fail-on-expectation-failure
 ```
 
-The existing full-corpus command remains:
+The canonical full-corpus gate remains:
 
 ```bash
 make raw-query-answer-qa
 ```
+
+That target is a failing machine-regression gate. It runs the canonical corpus
+with `--fail-on-expectation-failure`, so one or more failed expectations make
+the target exit non-zero. Artifacts are written before the harness exits, so a
+failing run still leaves a full review package behind. A machine pass is not
+human product acceptance — see [Status Meanings](#status-meanings).
 
 ## Output Modes
 
@@ -65,8 +71,14 @@ local review scratch paths.
 
 ## Run Variants
 
-Use the direct harness command when selecting a specific scope or when a
-non-zero exit is required for expectation failures.
+Use the direct harness command when selecting a specific scope, or when a
+report-only run is wanted. `make raw-query-answer-qa` already gates the full
+canonical corpus; the direct command is not needed to get a non-zero exit.
+
+Direct invocation **without** `--fail-on-expectation-failure` is explicitly
+report-only: failed expectations stay visible in the artifacts and the command
+still exits zero. Use it to inspect a corpus in progress, never as evidence
+that the corpus passed.
 
 Full corpus:
 
@@ -137,6 +149,11 @@ metadata does not change the harness exit status.
   `--fail-on-expectation-failure`, failed expectations produce a non-zero exit.
   Without that flag, failed IDs remain visible in the artifacts but do not make
   the command exit non-zero.
+- `make raw-query-answer-qa` always passes `--fail-on-expectation-failure`.
+  `RAW_QA_CORPUS` and `RAW_QA_ARGS` override the corpus and append arguments
+  for deterministic testing; neither changes the gate.
+- A closure-integrity failure exits non-zero regardless of the flag.
+  `tests/test_qa_gate_integrity.py` pins these exit semantics.
 - Use `--run-id <label>` when a stable human-facing artifact path is useful.
   The label must be a folder name, not a path. Existing named run directories
   are refused unless `--overwrite-run-id` is also supplied.

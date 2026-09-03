@@ -23,13 +23,18 @@ human-inspection snapshots; it is not expectation coverage.
 - Command:
 
   ```bash
-  .venv/bin/python tools/raw_query_answer_qa.py \
-    --corpus qa/raw_query_answer_corpus.yaml \
-    --fail-on-expectation-failure
+  make raw-query-answer-qa
   ```
 
-- Meaning: runs all corpus cases from the YAML.
-- Important: this is the full corpus, not a slice and not pytest.
+- Meaning: runs all corpus cases from the YAML. This is the canonical
+  full-corpus machine-regression gate: it passes
+  `--fail-on-expectation-failure`, so a failed expectation exits non-zero,
+  and artifacts are written before the harness exits.
+- Important: this is the full corpus, not a slice and not pytest. A machine
+  pass is not human product acceptance.
+- Report-only variant: invoking `tools/raw_query_answer_qa.py` directly
+  without `--fail-on-expectation-failure` leaves failed IDs visible in the
+  artifacts and still exits zero. Do not cite a report-only run as a pass.
 
 ### Raw QA Corpus Slice
 
@@ -76,6 +81,29 @@ change the scope of the harness run that generated it.
   reviewed exploratory row becomes regression coverage only after it is
   manually promoted into `qa/raw_query_answer_corpus.yaml` with explicit
   expectations.
+
+### Filter Execution Sweep
+
+- Source: `qa/filter_execution_sweep.yaml`
+- Command:
+
+  ```bash
+  .venv/bin/python tools/filter_execution_sweep.py
+  ```
+
+- Meaning: asks each configured question with and without a filter phrase and
+  compares the returned data, to prove a filter actually executed.
+- Important: this proves *that* filtering happened, not that the numbers are
+  correct. It is not Raw QA and not expectation coverage. A pair counts only
+  when the unfiltered control returned a populated answer; pairs without one
+  are `NO_SIGNAL` and are excluded from the verdict. A run with no comparable
+  rows exits 2 and is not a pass.
+- `result_status=no_result` is an expected negative outcome: an honest
+  `REFUSED` on the filtered side, `NO_SIGNAL` on the control side.
+  `result_status=error` is a system-level failure and is `ERROR` on either
+  side, exactly like a raised exception; it fails the run with exit 1.
+- Full evidence model, verdicts, and exit codes:
+  [`filter_execution_sweep.md`](filter_execution_sweep.md).
 
 ### Rendered UI Review
 
@@ -217,6 +245,8 @@ Use these durable sources when validating or refreshing this map:
 | `pyproject.toml` | pytest marker configuration |
 | `tools/raw_query_answer_qa.py` | Raw QA harness behavior and generated paths |
 | `tools/exploratory_query_review.py` | input-only exploratory review behavior and generated paths |
+| `tools/filter_execution_sweep.py` | filter-execution sweep classification, run status, and exit codes |
+| `qa/filter_execution_sweep.yaml` | configured seed/filter matrix for the sweep |
 | `qa/raw_query_answer_corpus.yaml` | full curated Raw QA corpus |
 | `qa/exploratory_query_samples.yaml` | default exploratory review sample input |
 | `qa/harness_slices/` | named Raw QA subset selectors |

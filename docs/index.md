@@ -73,6 +73,7 @@ Runbooks and durable workflow policies.
 - [`operations/query_smoke_workflow.md`](operations/query_smoke_workflow.md) - natural-query smoke workflow
 - [`operations/raw_query_answer_qa.md`](operations/raw_query_answer_qa.md) - Raw QA operations
 - [`operations/query_validation_map.md`](operations/query_validation_map.md) - validation-layer map and generated-evidence scoreboard
+- [`operations/filter_execution_sweep.md`](operations/filter_execution_sweep.md) - filter-execution sweep evidence model, verdicts, and exit codes
 - [`operations/frontend_visual_qa.md`](operations/frontend_visual_qa.md) - frontend Visual QA workflow
 - [`operations/working_and_archive_policy.md`](operations/working_and_archive_policy.md) - task-artifact lifecycle policy
 - [`operations/feature_promotion_rules.md`](operations/feature_promotion_rules.md) - product-capability promotion rules
