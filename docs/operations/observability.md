@@ -84,10 +84,22 @@ That target is the stable production alias `https://nbatools.vercel.app`, which
 always resolves to the project's current production deployment. It is
 deliberately not a deployment-specific host: the previous target
 `nbatools-fvdbt0pfv-...` was one build's URL, and when that deployment was
-removed the monitor began reporting HTTP `410 Gone` for a healthy service. A
-dead target produces false outage alerts, which erode the notification channel
-this policy depends on. The eight-case deployment smoke remains the release/promotion
-gate; the three-case monitor is deliberately cheaper and is not a replacement.
+removed the host began answering HTTP `410 Gone`. That produced multiple
+scheduled failures caused by the retired target rather than by the service.
+
+Treat a dead target as lost coverage, not as an outage record. While the
+monitor points at a host that cannot serve the application, its failures carry
+no information about availability, and its window is a monitoring-coverage gap
+with unknown service state — the same classification this document already
+gives a delayed or dropped scheduled run. Repointing the monitor restores the
+signal prospectively; it does not establish what the service was doing during
+the affected window, and no run in that window should be cited as evidence
+either way.
+
+A dead target also erodes the notification channel this policy depends on:
+alerts that are always firing stop being read. The eight-case deployment smoke
+remains the release/promotion gate; the three-case monitor is deliberately
+cheaper and is not a replacement.
 
 The 30-day objective has 360 intended two-hour slots. Calculate service success
 only across completed normal scheduled runs; at a complete 360-run window,
