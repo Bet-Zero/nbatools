@@ -74,11 +74,19 @@ allows a slow serverless response to finish so the monitor can classify it as
 latency, apply the single approved retry, and retain a measured duration. A
 socket failure beyond that grace remains a transport failure.
 
-The workflow fixes its target to the accepted production deployment in tracked
+The workflow fixes its target to the accepted production endpoint in tracked
 configuration. It has no dispatch URL input, secret, or mutable repository
 variable that can silently redirect scheduled requests. A production target
 change therefore requires a normal reviewed repository change plus a passing
-manual probe. The eight-case deployment smoke remains the release/promotion
+manual probe.
+
+That target is the stable production alias `https://nbatools.vercel.app`, which
+always resolves to the project's current production deployment. It is
+deliberately not a deployment-specific host: the previous target
+`nbatools-fvdbt0pfv-...` was one build's URL, and when that deployment was
+removed the monitor began reporting HTTP `410 Gone` for a healthy service. A
+dead target produces false outage alerts, which erode the notification channel
+this policy depends on. The eight-case deployment smoke remains the release/promotion
 gate; the three-case monitor is deliberately cheaper and is not a replacement.
 
 The 30-day objective has 360 intended two-hour slots. Calculate service success

@@ -341,6 +341,21 @@ response-contract failures fail immediately. See
 [`observability.md`](observability.md) for the objective, privacy boundary,
 notification channel, and synthetic delivery procedure.
 
+The tracked target is the project's stable production alias:
+
+```text
+https://nbatools.vercel.app
+```
+
+Monitor the alias, never a deployment-specific `nbatools-<build>-...` host.
+A build-specific host is deleted when its deployment is removed and then
+answers HTTP `410 Gone`, which the monitor correctly reports as a failure even
+though the application is serving normally on the alias. That is exactly what
+happened to the retired `nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app`
+target. Historical acceptance receipts still name the deployment URL that was
+live when they were signed; those are evidence of a past state and are not
+rewritten when the alias later points somewhere else.
+
 Do not substitute this lightweight schedule for the eight-case release smoke.
 After any production promotion or domain cutover, update the tracked workflow
 target and run both a normal manual monitor dispatch and the full deployment

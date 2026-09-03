@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import yaml
@@ -38,10 +39,25 @@ def test_production_monitor_workflow_encodes_approved_schedule_and_permissions()
     assert "\n  push:" not in text
 
 
+def test_production_monitor_workflow_targets_the_stable_production_alias() -> None:
+    """The target is the alias that follows production, not one build's host.
+
+    `nbatools-fvdbt0pfv-...` was a single deployment's URL. When that
+    deployment was removed the host began answering HTTP 410 and the
+    scheduled monitor reported an outage the application never had.
+    """
+
+    text = WORKFLOW.read_text(encoding="utf-8")
+
+    assert "PRODUCTION_MONITOR_BASE_URL: https://nbatools.vercel.app" in text
+    assert "nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app" not in text
+    assert not re.search(r"nbatools-[0-9a-z]{9}-brents-projects-", text)
+
+
 def test_production_monitor_workflow_uses_fixed_target_and_safe_synthetic_failure() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
 
-    assert "https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app" in text
+    assert "https://nbatools.vercel.app" in text
     assert "vars." not in text
     assert "secrets." not in text
     assert "tools/production_monitor.py" in text
