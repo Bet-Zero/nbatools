@@ -34,11 +34,15 @@ jobs:
         with:
           python-version: "3.13"
 
+      # Target the project's stable production alias, not a one-off
+      # deployment URL.  A deployment-specific `nbatools-<build>-...`
+      # host stops existing when that build is removed, and the monitor
+      # then reports HTTP 410 about the target rather than the service.
+      # The alias always resolves to the current production deployment.
       - name: Run production monitor
         env:
           PYTHONPATH: src
-          PRODUCTION_MONITOR_BASE_URL: >-
-            https://nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app
+          PRODUCTION_MONITOR_BASE_URL: https://nbatools.vercel.app
         run: >-
           python tools/production_monitor.py
           --base-url "$PRODUCTION_MONITOR_BASE_URL"

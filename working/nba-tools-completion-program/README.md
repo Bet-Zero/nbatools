@@ -20,7 +20,9 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 | --- | --- |
 | Phase 1A - explicit metric selection | **Merged** at `1914bb10c12bdb98fe4b2371df8ba9fa5fd76521` (PR #295) |
 | CI-01 - trustworthy frontend verification and dependency security | **Merged** at `ed15443d5ddc3ef8982d580226eb5dc49c4c7e06` (PR #296) |
-| QA-01 - fail-closed Raw QA and filter-sweep signal integrity | **Active** (QA tooling) |
+| QA-01 - fail-closed Raw QA and filter-sweep signal integrity | **Merged** at `e2e70583f05f568df8945f4cb7039ac18a79c943` (PR #297) |
+| OPS-01 - production monitoring and dependency-security recovery | **Active** (operations) |
+| OPS-MON-01 - cold-start response failures and false-alert policy | Deferred, unstarted (monitoring policy) |
 | CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
 | Phase 1B - compound event and filter routing integrity | Deferred, unstarted |
 | Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
@@ -43,8 +45,9 @@ contract, or frontend product behavior.
 
 ## QA-01 - fail-closed Raw QA and filter-sweep signal integrity
 
-**Active task.** It repairs two gates that reported success without producing
-the evidence their success claimed.
+**Merged** at `e2e70583f05f568df8945f4cb7039ac18a79c943` (PR #297). It repairs
+two gates that reported success without producing the evidence their success
+claimed.
 
 1. `make raw-query-answer-qa` omitted `--fail-on-expectation-failure`, so the
    repository's named Raw QA target printed failed cases and still exited zero.
@@ -65,8 +68,64 @@ both gates' exit semantics.
 carry the local NBA dataset, so the full Raw QA corpus and the data-backed
 filter sweep were deliberately not added to ordinary CI in QA-01.
 
-Phases 1B, 1C, and 1D stay deferred and unstarted. **Do not select the next
-query phase until QA-01 is independently accepted.**
+Phases 1B, 1C, and 1D stay deferred and unstarted.
+
+---
+
+## OPS-01 - production monitoring and dependency-security recovery
+
+**Active task.** Operations only. It restores two signals that had gone
+untrustworthy after QA-01 merged.
+
+1. A sustained sequence of scheduled `Production Monitor` runs failed with
+   HTTP `410 Gone`. The workflow targeted
+   `nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app`, a single
+   deployment's URL from the Queue D acceptance receipt; that deployment has
+   since been removed, so its host answers `410` regardless of service state.
+   The tracked target is now `https://nbatools.vercel.app`, the project's
+   stable production alias, which was healthy at every probe taken during the
+   repair.
+
+   No evidence of a production outage was found. The failures are explained by
+   the dead target, and the stable alias and current production deployment were
+   healthy when probed. Continuous endpoint availability at every historical
+   failure timestamp was not directly proven and is not claimed: while the
+   monitor pointed at a host that could not serve the application, its runs
+   were a monitoring-coverage gap with unknown service state rather than an
+   outage record.
+
+   The regression test now asserts against the *parsed* workflow — the
+   executable target, and that exactly one step invokes the monitor — so a
+   correct-looking comment or a second overriding invocation cannot satisfy it.
+
+2. `frontend-security` went red on GHSA-p498-v437-472g
+   (`@humanfs/node < 0.16.8`, moderate), a transitive dev dependency of
+   `eslint@9.39.5`. Remediated by a lockfile-only update inside ESLint's
+   existing `^0.16.6` range.
+
+OPS-01 changes no parser behavior, query routing, result contract, frontend
+product behavior, NBA data, CI job architecture, audit severity policy, or
+monitoring threshold, case, or retry rule. It selects no query-integrity phase.
+
+---
+
+## OPS-MON-01 - cold-start response failures and false-alert policy
+
+**Deferred. Not the next active project.**
+
+Recorded during OPS-01, not acted on:
+
+- one direct cold `POST /query` probe returned HTTP `504`;
+- the monitor's single approved retry covers transport failures and latency
+  failures where a response was received; it does not retry a response failure,
+  and an HTTP `504` is classified as a response failure;
+- so a sufficiently cold serverless start could produce a failing run that the
+  current retry rule will not absorb;
+- deciding whether response failures should receive a bounded retry - or
+  whether this should be handled some other way - is a monitoring-policy change
+  that needs a separate owner-approved review.
+
+OPS-01 deliberately makes no threshold, timeout, case, or retry change.
 
 ---
 

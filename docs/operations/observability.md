@@ -74,12 +74,32 @@ allows a slow serverless response to finish so the monitor can classify it as
 latency, apply the single approved retry, and retain a measured duration. A
 socket failure beyond that grace remains a transport failure.
 
-The workflow fixes its target to the accepted production deployment in tracked
+The workflow fixes its target to the accepted production endpoint in tracked
 configuration. It has no dispatch URL input, secret, or mutable repository
 variable that can silently redirect scheduled requests. A production target
 change therefore requires a normal reviewed repository change plus a passing
-manual probe. The eight-case deployment smoke remains the release/promotion
-gate; the three-case monitor is deliberately cheaper and is not a replacement.
+manual probe.
+
+That target is the stable production alias `https://nbatools.vercel.app`, which
+always resolves to the project's current production deployment. It is
+deliberately not a deployment-specific host: the previous target
+`nbatools-fvdbt0pfv-...` was one build's URL, and when that deployment was
+removed the host began answering HTTP `410 Gone`. That produced multiple
+scheduled failures caused by the retired target rather than by the service.
+
+Treat a dead target as lost coverage, not as an outage record. While the
+monitor points at a host that cannot serve the application, its failures carry
+no information about availability, and its window is a monitoring-coverage gap
+with unknown service state — the same classification this document already
+gives a delayed or dropped scheduled run. Repointing the monitor restores the
+signal prospectively; it does not establish what the service was doing during
+the affected window, and no run in that window should be cited as evidence
+either way.
+
+A dead target also erodes the notification channel this policy depends on:
+alerts that are always firing stop being read. The eight-case deployment smoke
+remains the release/promotion gate; the three-case monitor is deliberately
+cheaper and is not a replacement.
 
 The 30-day objective has 360 intended two-hour slots. Calculate service success
 only across completed normal scheduled runs; at a complete 360-run window,
