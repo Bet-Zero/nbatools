@@ -2,13 +2,18 @@
 
 These tests assert against the *parsed* workflow. Raw text matching cannot
 tell an executable value from a comment, cannot see a second invocation
-that overrides the first, and cannot see a whole extra job. Every
-load-bearing assertion here therefore reads the loaded YAML; the few
-remaining text checks are defence in depth only.
+that overrides the first, and cannot see a whole extra job.
 
-The workflow is deliberately tiny and fixed, so the contract is an exact
-shape rather than a general GitHub Actions analysis. Adding anything to
-the workflow is expected to require updating this file on purpose.
+The contract is deliberately an exact shape rather than a general GitHub
+Actions analysis: this workflow is tiny and fixed, so every level asserts
+its exact key set. That is what makes the tests reject *unreviewed*
+fields rather than only the specific attacks anyone happened to think of.
+A monitor whose target and command are right is still worthless if the
+job can be skipped, tolerated on failure, or run from a different
+checkout, so failure sensitivity is asserted directly as well.
+
+Adding anything to the workflow is expected to require editing this file
+on purpose.
 """
 
 import re
@@ -26,9 +31,25 @@ MONITOR_ENTRYPOINT = "tools/production_monitor.py"
 RETIRED_TARGET = "nbatools-fvdbt0pfv-brents-projects-686e97fc.vercel.app"
 
 CANONICAL_MONITOR_COMMAND = f'python {MONITOR_ENTRYPOINT} --base-url "${TARGET_ENV_KEY}"'
+MONITOR_STEP_NAME = "Run production monitor"
+SYNTHETIC_STEP_NAME = "Trigger approved network-free notification failure"
+SYNTHETIC_COMMAND_LINES = [
+    r"""printf '%s\n' '{"kind":"production_monitor_synthetic_notification_test","""
+    r""""network_requests_made":0,"ok":false}'""",
+    "exit 1",
+]
+
 CHECKOUT_ACTION = "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
 SETUP_PYTHON_ACTION = "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
 APPROVED_ACTIONS = {CHECKOUT_ACTION, SETUP_PYTHON_ACTION}
+
+# Exact parsed key sets. Anything outside these is an unreviewed change to
+# executable policy, whether or not this file already names it.
+TOP_LEVEL_KEYS = {"name", "on", "permissions", "concurrency", "jobs"}
+JOB_KEYS = {"if", "runs-on", "timeout-minutes", "steps"}
+ACTION_STEP_KEYS = {"uses", "with"}
+MONITOR_STEP_KEYS = {"name", "env", "run"}
+SYNTHETIC_STEP_KEYS = {"name", "run"}
 
 # yaml.BaseLoader renders every scalar as a string, so booleans and numbers
 # are compared against their string forms throughout.
@@ -76,6 +97,25 @@ def _normalized(command: str) -> str:
     return " ".join(command.split())
 
 
+def _command_lines(command: str) -> list[str]:
+    """Executable lines, ignoring blank padding around a block scalar."""
+
+    return [line.strip() for line in command.splitlines() if line.strip()]
+
+
+def test_workflow_declares_exactly_the_approved_top_level_keys() -> None:
+    """An exact key set rejects unreviewed policy fields such as `defaults`."""
+
+    payload = _workflow()
+
+    assert set(payload) == TOP_LEVEL_KEYS
+    assert payload["name"] == "Production Monitor"
+    assert payload["concurrency"] == {
+        "group": "production-monitor",
+        "cancel-in-progress": "false",
+    }
+
+
 def test_workflow_declares_exactly_the_approved_triggers() -> None:
     """Trigger policy is read from the parsed `on` mapping, not the text.
 
@@ -84,7 +124,6 @@ def test_workflow_declares_exactly_the_approved_triggers() -> None:
 
     payload = _workflow()
 
-    assert payload["name"] == "Production Monitor"
     assert set(payload["on"]) == {"schedule", "workflow_dispatch"}
     assert payload["on"]["schedule"] == [{"cron": "17 */2 * * *"}]
 
@@ -101,55 +140,56 @@ def test_workflow_declares_exactly_read_only_permissions() -> None:
     payload = _workflow()
 
     assert payload["permissions"] == {"contents": "read"}
-    for job_name, job in payload["jobs"].items():
-        assert "permissions" not in job, f"{job_name} overrides workflow permissions"
-    rendered = str(payload["permissions"])
-    assert "write" not in rendered
+    assert "write" not in str(payload["permissions"])
 
 
 def test_workflow_declares_exactly_the_two_approved_jobs() -> None:
-    """Exactly one probe job and one network-free alert job. No third job."""
+    """Two jobs, each with an exact key set. No third job, no `needs`."""
 
     payload = _workflow()
 
     assert list(payload["jobs"]) == ["monitor", "synthetic-alert"]
-    assert payload["jobs"]["monitor"]["if"] == (
-        "${{ github.event_name == 'schedule' || inputs.mode == 'probe' }}"
-    )
-    assert payload["jobs"]["synthetic-alert"]["if"] == (
+    for job_name, job in payload["jobs"].items():
+        assert set(job) == JOB_KEYS, f"{job_name} declares unreviewed job fields"
+        assert job["runs-on"] == "ubuntu-latest"
+
+    monitor = payload["jobs"]["monitor"]
+    synthetic = payload["jobs"]["synthetic-alert"]
+    assert monitor["if"] == "${{ github.event_name == 'schedule' || inputs.mode == 'probe' }}"
+    assert monitor["timeout-minutes"] == "3"
+    assert synthetic["if"] == (
         "${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'synthetic-alert' }}"
     )
-    assert payload["concurrency"] == {
-        "group": "production-monitor",
-        "cancel-in-progress": "false",
-    }
-    assert payload["jobs"]["monitor"]["runs-on"] == "ubuntu-latest"
-    assert payload["jobs"]["monitor"]["timeout-minutes"] == "3"
-    assert payload["jobs"]["synthetic-alert"]["runs-on"] == "ubuntu-latest"
-    assert payload["jobs"]["synthetic-alert"]["timeout-minutes"] == "1"
+    assert synthetic["timeout-minutes"] == "1"
 
 
-def test_monitor_job_pins_its_actions_and_persists_no_credentials() -> None:
-    """Action pins and `persist-credentials` are read from parsed `with`."""
+def test_monitor_job_runs_exactly_the_three_approved_steps() -> None:
+    """Checkout, setup-python, probe - each pinned to an exact shape.
+
+    The checkout inputs matter as much as the command: a `ref` or
+    `repository` input would run a different monitor implementation than
+    the commit that triggered the workflow, with the target string intact.
+    """
 
     payload = _workflow()
-    monitor_steps = payload["jobs"]["monitor"]["steps"]
+    steps = payload["jobs"]["monitor"]["steps"]
 
-    checkouts = [s for s in monitor_steps if s.get("uses", "").startswith("actions/checkout")]
-    assert len(checkouts) == 1
-    assert checkouts[0]["uses"] == CHECKOUT_ACTION
-    assert isinstance(checkouts[0]["with"], dict)
-    assert checkouts[0]["with"]["persist-credentials"] == "false"
+    assert len(steps) == 3
 
-    setups = [s for s in monitor_steps if s.get("uses", "").startswith("actions/setup-python")]
-    assert len(setups) == 1
-    assert setups[0]["uses"] == SETUP_PYTHON_ACTION
-    assert setups[0]["with"]["python-version"] == "3.13"
+    checkout, setup, probe = steps
+    assert set(checkout) == ACTION_STEP_KEYS
+    assert checkout["uses"] == CHECKOUT_ACTION
+    assert checkout["with"] == {"persist-credentials": "false"}
 
-    # No unreviewed action may appear anywhere in the workflow.
+    assert set(setup) == ACTION_STEP_KEYS
+    assert setup["uses"] == SETUP_PYTHON_ACTION
+    assert setup["with"] == {"python-version": "3.13"}
+
+    assert set(probe) == MONITOR_STEP_KEYS
+    assert probe["name"] == MONITOR_STEP_NAME
+
     used = {step["uses"] for _, step in _steps(payload) if "uses" in step}
     assert used == APPROVED_ACTIONS
-    assert all("uses" not in step for step in payload["jobs"]["synthetic-alert"]["steps"])
 
 
 def test_exactly_one_executable_step_runs_the_canonical_monitor_command() -> None:
@@ -197,7 +237,7 @@ def test_monitor_target_is_the_stable_alias_with_no_alternate_source() -> None:
 
     scopes = _env_scopes(payload)
     assert [name for name, env in scopes if TARGET_ENV_KEY in env] == [
-        f"step:monitor:{monitor_step['name']}"
+        f"step:monitor:{MONITOR_STEP_NAME}"
     ], "the monitor step must be the sole target source"
 
     for name, env in scopes:
@@ -232,20 +272,28 @@ def test_no_step_outside_the_canonical_probe_touches_the_network() -> None:
         assert not NETWORK_COMMANDS.search(command), f"{job_name} step runs a network command"
 
 
-def test_synthetic_alert_job_is_network_free() -> None:
+def test_synthetic_alert_job_runs_exactly_the_approved_failing_command() -> None:
+    """The notification test must actually fail when it is dispatched.
+
+    Its whole purpose is to prove the owner receives a failure alert, so
+    the command is compared line by line: an inserted `exit 0` would keep
+    both required strings present while the job succeeded.
+    """
+
     payload = _workflow()
     steps = payload["jobs"]["synthetic-alert"]["steps"]
 
     assert len(steps) == 1
     step = steps[0]
-    assert "uses" not in step
-    assert "env" not in step
-    assert MONITOR_ENTRYPOINT not in step["run"]
-    assert TARGET_ENV_KEY not in step["run"]
-    assert "--base-url" not in step["run"]
-    assert "://" not in step["run"]
-    assert '"network_requests_made":0' in step["run"]
-    assert "exit 1" in step["run"]
+    assert set(step) == SYNTHETIC_STEP_KEYS
+    assert step["name"] == SYNTHETIC_STEP_NAME
+    assert _command_lines(step["run"]) == SYNTHETIC_COMMAND_LINES
+
+    command = step["run"]
+    assert MONITOR_ENTRYPOINT not in command
+    assert TARGET_ENV_KEY not in command
+    assert "--base-url" not in command
+    assert "://" not in command
 
 
 def test_workflow_declares_no_ambient_environment() -> None:
@@ -256,7 +304,38 @@ def test_workflow_declares_no_ambient_environment() -> None:
     assert "env" not in payload, "workflow-level env is not part of the approved shape"
     for job_name, job in payload["jobs"].items():
         assert "env" not in job, f"{job_name} declares a job-level env"
-    assert [name for name, _ in _env_scopes(payload)] == ["step:monitor:Run production monitor"]
+    assert [name for name, _ in _env_scopes(payload)] == [f"step:monitor:{MONITOR_STEP_NAME}"]
+
+
+def test_no_job_or_step_can_tolerate_or_skip_a_failure() -> None:
+    """A probe that cannot fail the workflow is not a probe.
+
+    These overlap the exact key sets above on purpose: when someone makes
+    the monitor non-failing, the failure should name the lost policy
+    rather than only report an unexpected key.
+    """
+
+    payload = _workflow()
+
+    for job_name, job in payload["jobs"].items():
+        assert "continue-on-error" not in job, (
+            f"{job_name} tolerates its own failure; a failed probe would not fail the workflow"
+        )
+        assert "needs" not in job, (
+            f"{job_name} depends on another job and could be skipped when that job is skipped"
+        )
+
+    for job_name, step in _steps(payload):
+        label = step.get("name", step.get("uses", "?"))
+        assert "continue-on-error" not in step, f"{job_name} step {label!r} tolerates failure"
+        assert "if" not in step, f"{job_name} step {label!r} is conditionally skippable"
+
+    # The two steps whose execution the monitoring policy depends on.
+    _, monitor_step = _monitor_steps(payload)[0]
+    assert set(monitor_step) == MONITOR_STEP_KEYS, "the probe step must carry no execution override"
+    synthetic_step = payload["jobs"]["synthetic-alert"]["steps"][0]
+    assert set(synthetic_step) == SYNTHETIC_STEP_KEYS
+    assert _command_lines(synthetic_step["run"])[-1] == "exit 1"
 
 
 def test_production_monitor_workflow_retains_its_safe_execution_shape() -> None:
