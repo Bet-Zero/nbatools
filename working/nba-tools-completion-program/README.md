@@ -173,6 +173,12 @@ route. The answer that comes back is confident and is not the question asked.
 **Requirement.** Preserve every requested threshold, event condition, ranking
 intent, and concrete availability filter - or refuse. No silent reduction.
 
+**Settled owner decision.** `players with 25 points and 10 rebounds` refuses.
+It names two game-level conditions and no operation over the matching games, so
+counting them would add an intent the question never stated. The accepted V1
+behavior preserves both thresholds, publishes no execution stat, and returns no
+sections. This is no longer an open decision.
+
 **Observed and recorded during the PR #295 repair.**
 
 - `field goals made and attempted leaders` refuses with
@@ -229,8 +235,21 @@ receipt decorators, or receipt validators into a metric-boundary PR.
 
 ## Recorded coverage gaps (not trust defects)
 
-Found during the PR #295 total-backed alias audit. These refuse or fail to
-route; none of them answers wrongly, so none is urgent.
+Found during the PR #295 total-backed alias audit, and extended by Phase 1B.
+These refuse or fail to route; none of them answers wrongly, so none is urgent.
+
+- **Compound player occurrence-count wording is not routed, though the team
+  form is.** `players with most games scoring 30+ and grabbing 10+ rebounds`
+  states an occurrence-count ranking outright - "most games" - yet reaches no
+  occurrence route, while the equivalent `teams with most games scoring 120+
+  and making 15+ threes since 2020` executes on `team_occurrence_leaders`. The
+  player form sets none of the three intent flags that route gates on. Current
+  behavior is a truthful refusal that preserves both conditions and publishes
+  no executed stat, and the pinned base refused it too, so nothing is silently
+  dropped and no wrong answer is returned. Extending player occurrence routing
+  to this wording is future coverage, to be taken with its own
+  baseline-to-candidate differential. It does not block Phase 1B trust
+  acceptance and is not a separate phase.
 
 - `games played` has no entry in the shared metric vocabulary, so
   `games played leaders` does not route, even though `games_played` is an

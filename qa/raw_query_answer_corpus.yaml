@@ -8688,11 +8688,11 @@ cases:
         equals: null
     review_notes: "Both thresholds are meaningful. The question states no ranking or aggregation, so executing either reading would invent one. Must not apply only points, only rebounds, or become an ordinary leaderboard."
     manual_review:
-      status: needs_product_decision
+      status: expected_unsupported
       tags:
         - compound_event_boundary
         - no_broad_fallback
-      notes: "Owner decision recorded in the Phase 1B PR: refuse, or execute as a compound occurrence count. Both preserve the thresholds; refusing avoids choosing an unstated aggregation."
+      notes: "Settled owner decision: the truthful refusal is the accepted V1 behavior. The query states two game-level conditions and no operation over the matching games - not 'most games', 'how many games', 'list the games', or any other ranking or aggregation intent. player_occurrence_leaders could count games meeting both conditions, but doing so would add a counting intent the user never stated, so the refusal preserves both thresholds, publishes no execution stat, and returns no sections instead."
 
   - id: forty_point_games_injury_condition_unsupported
     query: "most 40-point games while the player was injured"
