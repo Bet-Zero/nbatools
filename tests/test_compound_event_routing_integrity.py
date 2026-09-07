@@ -376,6 +376,88 @@ def test_existing_compound_occurrence_phrasing_still_answers():
     assert executed.metadata.get("ranking_key") == "occurrence_count"
 
 
+# Three shapes an over-strict authorization check refused on the first pass.
+# The differential against the pinned base caught every one, and each is a
+# perfectly ordinary question that must keep answering.
+
+SPECIAL_EVENT_CONTROLS = [
+    "How often has Nikola Jokic recorded a triple-double this season?",
+    "how many LeBron triple doubles",
+]
+
+
+@pytest.mark.parametrize("query", SPECIAL_EVENT_CONTROLS)
+def test_special_event_finder_queries_still_answer(query):
+    """A triple-double is an event condition the finder executes as one.
+
+    It arrives as ``special_event`` rather than in a conditions list, so a check
+    that only read the list saw a condition nobody executed and refused.
+    """
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok"
+    assert not _blockers(executed.metadata)
+    assert executed.to_dict()["sections"]
+
+
+STRICT_INEQUALITY_CONTROLS = [
+    "Jokic over 25 points and over 10 rebounds",
+    "Jokic over 30 points and over 10 rebounds and over 10 assists",
+]
+
+
+@pytest.mark.parametrize("query", STRICT_INEQUALITY_CONTROLS)
+def test_strict_inequality_thresholds_still_answer(query):
+    """ "over 25 points" is stated as 25 and executed as 25.0001.
+
+    That epsilon is how a strict inequality is expressed, not a changed
+    threshold, so conditions are matched on stat, direction and value within a
+    tolerance rather than by exact equality.
+    """
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok"
+    assert not _blockers(executed.metadata)
+    assert executed.to_dict()["sections"]
+
+
+GROUPED_BOOLEAN_CONTROLS = [
+    "Jokic (over 25 points and over 10 rebounds) or over 15 assists",
+    "Celtics (over 120 points and over 15 threes) or under 10 turnovers",
+]
+
+
+@pytest.mark.parametrize("query", GROUPED_BOOLEAN_CONTROLS)
+def test_grouped_boolean_queries_still_answer(query):
+    """A grouped boolean executes a condition the compound extractor never lists.
+
+    Reading only the stated side reported that third metric as a discarded
+    ranking metric. A metric the route actually filters on is accounted for.
+    """
+    executed = execute_natural_query(query)
+
+    assert executed.result_status == "ok"
+    assert not _blockers(executed.metadata)
+    assert executed.to_dict()["sections"]
+
+
+def test_a_condition_the_route_never_receives_is_still_caught():
+    """The tolerance must not swallow a genuinely absent or changed threshold."""
+    parsed = parse_query("Jokic over 25 points and over 10 rebounds")
+    kwargs = dict(parsed["route_kwargs"])
+
+    # Threshold deleted.
+    kwargs["conditions"] = [c for c in kwargs["conditions"] if c["stat"] != "reb"]
+    assert not authorize_compound_event_route(parsed, "player_game_finder", kwargs).authorized
+
+    # Threshold changed beyond the strict-inequality epsilon.
+    changed = dict(parsed["route_kwargs"])
+    changed["conditions"] = [
+        {**c, "min_value": 40.0} if c["stat"] == "reb" else c for c in changed["conditions"]
+    ]
+    assert not authorize_compound_event_route(parsed, "player_game_finder", changed).authorized
+
+
 def test_phase_1a_multiple_metric_refusal_is_untouched():
     executed = execute_natural_query("points and rebounds leaders")
 

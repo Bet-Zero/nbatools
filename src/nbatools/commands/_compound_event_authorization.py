@@ -156,6 +156,48 @@ def _dedupe(conditions: list[dict[str, Any]]) -> tuple[dict[str, Any], ...]:
     return tuple(seen)
 
 
+#: How far an executed bound may sit from the stated one and still be the same
+#: condition. "over 25 points" is stated as 25 and executed as 25.0001, because
+#: a strict inequality is expressed by nudging the bound - that epsilon *is* the
+#: correct executed form, not a changed threshold. One point of slack keeps the
+#: two readings equal while still catching a genuinely different number.
+_BOUND_TOLERANCE = 1.0
+
+
+def _same_bound(declared: float | None, executed: float | None) -> bool:
+    """Whether one side of a condition survived into execution unchanged."""
+    if declared is None:
+        return True
+    if executed is None:
+        return False
+    return abs(float(executed) - float(declared)) <= _BOUND_TOLERANCE
+
+
+def condition_is_executed(
+    declared: dict[str, Any],
+    executed: tuple[dict[str, Any], ...],
+) -> bool:
+    """Whether *declared* is applied by one of the *executed* conditions.
+
+    Matched on stat, direction and value rather than dict equality: a strict
+    inequality reaches execution as a nudged bound, and comparing those exactly
+    reported ordinary working finder queries as having lost a threshold.
+    """
+    if declared.get("special_event"):
+        return any(
+            candidate.get("special_event") == declared["special_event"] for candidate in executed
+        )
+    for candidate in executed:
+        if candidate.get("stat") != declared.get("stat"):
+            continue
+        if not _same_bound(declared.get("min_value"), candidate.get("min_value")):
+            continue
+        if not _same_bound(declared.get("max_value"), candidate.get("max_value")):
+            continue
+        return True
+    return False
+
+
 def declared_event_conditions(parsed: dict) -> tuple[dict[str, Any], ...]:
     """Every *game-level* condition the question states, in query order.
 
@@ -202,6 +244,8 @@ def executed_event_conditions(route: str | None, route_kwargs: dict) -> tuple[di
             normalized = _normalize_condition(condition)
             if normalized is not None:
                 executed.append(normalized)
+        if route_kwargs.get("special_event"):
+            executed.append({"special_event": route_kwargs["special_event"]})
         single = _normalize_condition(
             {
                 "stat": route_kwargs.get("stat"),
@@ -391,7 +435,7 @@ def authorize_compound_event_route(
 
     # 1. A condition the route never received is a piece of the question that
     #    silently stopped existing.
-    if any(condition not in executed for condition in declared):
+    if any(not condition_is_executed(condition, executed) for condition in declared):
         return refuse()
 
     # 2. On a count route the ranking key is the count. A condition metric
@@ -404,7 +448,12 @@ def authorize_compound_event_route(
     # 3. A metric named outside every condition is a ranking key the question
     #    asked for. If the route ranks by something else, answering means
     #    dropping it.
+    # Both sides count. A metric the question stated is accounted for, and so is
+    # one the route actually filters on - a grouped boolean ("(A and B) or C")
+    # executes a third condition the compound extractor never listed, and
+    # reading only the stated side reported that third metric as discarded.
     accounted = {condition.get("stat") for condition in declared}
+    accounted |= {condition.get("stat") for condition in executed}
     ranking_stat = route_kwargs.get("stat")
     if ranking_stat:
         accounted.add(ranking_stat)

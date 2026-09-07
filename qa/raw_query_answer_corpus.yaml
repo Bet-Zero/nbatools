@@ -8579,7 +8579,7 @@ cases:
     answer_text_policy: frontend_hero_expected
     expected_status: ok
     expected_route: team_occurrence_leaders
-    expected_shape: leaderboard
+    expected_shape: leaderboard_table
     expected_filters:
       - kind: threshold
         label: pts min
