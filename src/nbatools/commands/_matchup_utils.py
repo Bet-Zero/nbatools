@@ -16,6 +16,7 @@ from nbatools.commands.entity_resolution import (
     PLAYER_ALIASES,
     TEAM_ALIASES,
     ResolutionResult,
+    mask_copula_team_lookalikes,
     phrase_has_partial_nickname_player_typo,
     resolve_player_in_query,
     resolve_team_in_query,
@@ -57,8 +58,9 @@ def detect_player_resolved(text: str) -> ResolutionResult:
 
 
 def detect_team_in_text(text: str) -> str | None:
+    scan_text = mask_copula_team_lookalikes(text)
     for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
+        if re.search(rf"\b{re.escape(key)}\b", scan_text):
             return TEAM_ALIASES[key]
     # Fall back to entity resolution for abbreviations etc.
     result = resolve_team_in_query(text)
@@ -69,8 +71,9 @@ def detect_team_in_text(text: str) -> str | None:
 
 def detect_team_resolved(text: str) -> ResolutionResult:
     """Like detect_team_in_text but returns full ResolutionResult."""
+    scan_text = mask_copula_team_lookalikes(text)
     for key in sorted(TEAM_ALIASES.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(key)}\b", text):
+        if re.search(rf"\b{re.escape(key)}\b", scan_text):
             return ResolutionResult(
                 resolved=TEAM_ALIASES[key],
                 candidates=[TEAM_ALIASES[key]],
@@ -461,6 +464,12 @@ def _phrase_names_multiple_players(phrase: str) -> bool:
     return False
 
 
+# "while LeBron was out" states exactly the same availability condition as
+# "when LeBron was out". Reading only one of them dropped the clause and
+# answered the unfiltered question.
+_ABSENCE_CONJUNCTIONS = r"when|while"
+
+
 def detect_without_player(text: str) -> tuple[str | None, str]:
     """Detect absence patterns like 'without PLAYER', 'w/o PLAYER',
     'when PLAYER out', 'when PLAYER didn't play', 'no PLAYER',
@@ -477,12 +486,13 @@ def detect_without_player(text: str) -> tuple[str | None, str]:
     absence_patterns = [
         # `without PLAYER` / `w/o PLAYER`
         rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
-        # `when PLAYER didn't/doesn't play` / `when PLAYER did/does not play`
-        r"\bwhen\s+([\w .&'\-]+?)\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
-        # `when PLAYER is/was out`
-        r"\bwhen\s+([\w .&'\-]+?)\s+(?:is|was)\s+out\b",
-        # `when PLAYER out` (no copula)
-        r"\bwhen\s+([\w .&'\-]+?)\s+out\b",
+        # `when/while PLAYER didn't/doesn't play` / `... did/does not play`
+        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
+        r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
+        # `when/while PLAYER is/was out`
+        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
+        # `when/while PLAYER out` (no copula)
+        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+out\b",
         # `record PLAYER out`
         r"\brecord\s+([\w .&'\-]+?)\s+out\b",
         # `no PLAYER` / `sans PLAYER` / `minus PLAYER`
@@ -520,7 +530,7 @@ def detect_with_player(text: str) -> tuple[str | None, str]:
     )
     presence_patterns = [
         with_player_pattern,
-        r"\bwhen\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
+        rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
     ]
 
     for pattern in presence_patterns:
@@ -545,9 +555,10 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
     if mode == "without":
         patterns = [
             rf"\b(?:without|w/o)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
-            r"\bwhen\s+([\w .&'\-]+?)\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
-            r"\bwhen\s+([\w .&'\-]+?)\s+(?:is|was)\s+out\b",
-            r"\bwhen\s+([\w .&'\-]+?)\s+out\b",
+            rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)"
+            r"\s+(?:didn'?t|did\s+not|doesn'?t|does\s+not)\s+play\b",
+            rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:is|was|were|are)\s+out\b",
+            rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+out\b",
             r"\brecord\s+([\w .&'\-]+?)\s+out\b",
             rf"\b(?:no|sans|minus)\s+([\w .&'\-]+?)(?=\s+(?:{STOP_WORDS})\b|$)",
         ]
@@ -558,7 +569,7 @@ def detect_unresolved_availability_player(text: str, *, mode: str) -> str | None
         )
         patterns = [
             with_player_pattern,
-            r"\bwhen\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
+            rf"\b(?:{_ABSENCE_CONJUNCTIONS})\s+([\w .&'\-]+?)\s+(?:plays?|played)\b",
         ]
     else:
         raise ValueError(f"Unsupported availability mode: {mode}")

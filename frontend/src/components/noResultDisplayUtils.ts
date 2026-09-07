@@ -58,6 +58,11 @@ const LEADERBOARD_BOUNDARY_IDS = [
   "leaderboard_request_unclear",
   "leaderboard_multiple_metrics_unsupported",
   "leaderboard_metric_unavailable_for_scope",
+  // The compound event/filter boundary. Same contract: the card already says
+  // everything it has to say, so a Details entry naming the id is a leak.
+  // Kept in sync with COMPOUND_EVENT_BOUNDARY_FILTERS in
+  // _compound_event_authorization.py.
+  "compound_event_request_unexecutable",
 ] as const;
 
 export function buildNoResultDetails(
@@ -281,6 +286,9 @@ export function unsupportedBoundaryTitle(
   ) {
     return "Unsupported Ranking";
   }
+  if (filters.includes("compound_event_request_unexecutable")) {
+    return "Unsupported Combination";
+  }
   return null;
 }
 
@@ -308,6 +316,11 @@ function unsupportedBoundaryMessage(
   }
   if (filters.includes("opponent_conference")) {
     return "Opponent-conference record filters are not supported yet.";
+  }
+  // A compound request always loses something more specific than the broader
+  // boundary that may also have fired, so its reason is read first.
+  if (filters.includes("compound_event_request_unexecutable")) {
+    return compoundEventCopy(metadata);
   }
   // A ranking with no stat in it. Naming a metric here would answer a question
   // nobody asked, so ask which one instead.
@@ -579,6 +592,70 @@ function humanizeIsoDatesInText(text: string): string {
     (match, start: string, end?: string) =>
       formatReadableDateRange(start, end ?? start) ?? match,
   );
+}
+
+// A compound question asked for several things at once and one of them could
+// not run. Say which one; never answer the smaller version instead.
+function compoundEventCopy(
+  metadata: ResultMetadata | null | undefined,
+): string {
+  const availability = metadata?.unsupported_availability;
+  if (availability && typeof availability === "object") {
+    const named = [availability.without_player, availability.with_player]
+      .filter((value): value is string => typeof value === "string" && !!value)
+      .join(" and ");
+    if (named) {
+      return `Filtering this ranking by whether ${named} played is not supported, and no unfiltered version was returned. Team records do support it \u2014 try \u201cLakers record without LeBron\u201d.`;
+    }
+    if (typeof availability.condition === "string") {
+      return `This asks to filter by ${availability.condition}, which is not available, and no unfiltered version was returned. Try the same question without that condition.`;
+    }
+  }
+
+  const requestedStat = metadata?.requested_stat;
+  if (typeof requestedStat === "string" && requestedStat) {
+    const scope =
+      typeof metadata?.unsupported_scope === "string"
+        ? metadata.unsupported_scope
+        : "this ranking";
+    return `${metricLabel(requestedStat)} cannot be used to order ${scope}, and no other stat was substituted for it. Try ranking by it on its own \u2014 for example \u201cmost efficient players this season\u201d.`;
+  }
+
+  const conditions = conditionPhrases(metadata);
+  if (conditions.length) {
+    const listed = conditions.join(" and ");
+    return `This asks for ${listed}, and does not say what to do with them. Add what you want ranked \u2014 for example \u201cmost games with ${listed}\u201d.`;
+  }
+
+  return "Part of this question could not be answered as asked, and no smaller version of it was answered instead.";
+}
+
+// The stated event conditions, in the reader's words. Rendered whole or not at
+// all: naming one of two would be the reduction the refusal exists to avoid.
+function conditionPhrases(
+  metadata: ResultMetadata | null | undefined,
+): string[] {
+  const conditions = metadata?.requested_event_conditions;
+  if (!Array.isArray(conditions) || conditions.length === 0) return [];
+  const phrases: string[] = [];
+  for (const condition of conditions) {
+    if (!condition || typeof condition !== "object") return [];
+    if (typeof condition.special_event === "string") {
+      phrases.push(formatColHeader(condition.special_event).toLowerCase());
+      continue;
+    }
+    const stat = condition.stat;
+    if (typeof stat !== "string") return [];
+    const label = metricLabel(stat).toLowerCase();
+    if (typeof condition.min_value === "number") {
+      phrases.push(`${condition.min_value}+ ${label}`);
+    } else if (typeof condition.max_value === "number") {
+      phrases.push(`under ${Math.ceil(condition.max_value)} ${label}`);
+    } else {
+      return [];
+    }
+  }
+  return phrases;
 }
 
 function metricFromMetadata(

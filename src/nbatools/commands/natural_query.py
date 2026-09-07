@@ -2,6 +2,12 @@ import re
 
 import pandas as pd
 
+from nbatools.commands._compound_event_authorization import (
+    CompoundEventAuthorization,
+    authorize_compound_event_route,
+    declared_event_conditions,
+    unrouted_compound_event_reason,
+)
 from nbatools.commands._condition_utils import normalize_stat_conditions, stat_conditions_cover
 from nbatools.commands._confidence import compute_parse_confidence, generate_alternates
 from nbatools.commands._constants import (
@@ -938,6 +944,54 @@ def _aggregation_refusal_note(eligibility) -> str:
     if requested and available:
         return f"this asks for {requested} of a stat the leaderboard ranks as {available}"
     return base
+
+
+def _apply_compound_refusal_kwargs(
+    route_kwargs: dict,
+    authorization: CompoundEventAuthorization,
+) -> None:
+    """Attach what a compound refusal asked for, and no executed stat.
+
+    ``stat`` is cleared for the same reason the metric boundary clears it:
+    nothing ran, so there is no metric to report as the one that did - and on
+    this boundary the stat sitting there is usually a *condition* metric, which
+    published as the ranking key is exactly the confusion being removed.
+    """
+    route_kwargs.pop("stat", None)
+    route_kwargs["compound_event_authorization"] = authorization.to_dict()
+    if authorization.requested_event_conditions:
+        route_kwargs["requested_event_conditions"] = [
+            dict(condition) for condition in authorization.requested_event_conditions
+        ]
+    if authorization.requested_stat:
+        route_kwargs["requested_stat"] = authorization.requested_stat
+    if authorization.unsupported_scope:
+        route_kwargs["unsupported_scope"] = authorization.unsupported_scope
+    if authorization.unsupported_availability:
+        existing = route_kwargs.get("unsupported_availability") or {}
+        route_kwargs["unsupported_availability"] = {
+            **existing,
+            **authorization.unsupported_availability,
+        }
+
+
+def _compound_refusal_note(authorization: CompoundEventAuthorization) -> str:
+    """Why the compound request was refused, naming the part that could not run."""
+    if authorization.unsupported_availability:
+        detail = "the availability condition this asks for is not execution-backed"
+    elif authorization.requested_stat:
+        detail = (
+            f"this asks to rank by {authorization.requested_stat}, which "
+            f"{authorization.unsupported_scope or 'this ranking'} cannot order by"
+        )
+    elif authorization.requested_event_conditions:
+        detail = (
+            "this states event conditions no available route can execute together "
+            "with the rest of the request"
+        )
+    else:
+        detail = "part of this request could not be executed as asked"
+    return f"unsupported_boundary: {detail}; no reduced version of the question was answered"
 
 
 def _unsupported_route_kwargs(
@@ -3638,6 +3692,28 @@ def _finalize_route(parsed: dict) -> dict:
         _fires, _note = team_threshold_finder_default(parsed)
         if _fires:
             notes.append(_note)
+    elif (_unrouted_compound := unrouted_compound_event_reason(parsed)) is not None:
+        # Two stated event conditions and nothing saying what to do with them.
+        # Executing one reading of it invents the aggregation the question left
+        # out; an unrouted error throws both conditions away. Refuse holding
+        # them.
+        _compound_unrouted = CompoundEventAuthorization(
+            authorized=False,
+            reason=_unrouted_compound,
+            requested_event_conditions=declared_event_conditions(parsed),
+        )
+        route = "season_team_leaders" if re.search(r"\bteams?\b", q) else "season_leaders"
+        route_kwargs = _unsupported_route_kwargs(
+            _unrouted_compound,
+            season=season,
+            start_season=start_season,
+            end_season=end_season,
+            start_date=start_date,
+            end_date=end_date,
+            season_type=season_type,
+        )
+        _apply_compound_refusal_kwargs(route_kwargs, _compound_unrouted)
+        notes.append(_compound_refusal_note(_compound_unrouted))
     elif (_unrouted_reason := unrouted_ranking_reason(parsed)) is not None:
         # A legible ranking request that matched no route: it names who to rank
         # but not what by, or names several stats. This used to surface as an
@@ -3686,6 +3762,19 @@ def _finalize_route(parsed: dict) -> dict:
 
     availability_markers = _player_availability_unsupported_markers(parsed, route)
     if availability_markers:
+        # Record what the question asked for before clearing it. The applied
+        # slot is cleared because nothing applied it; the request itself still
+        # has to travel, or a refusal for an absence filter stops mentioning the
+        # absence and reads as a refusal of the rest of the question.
+        requested_availability = {
+            marker: parsed.get(marker) for marker in availability_markers if parsed.get(marker)
+        }
+        if requested_availability:
+            existing_availability = route_kwargs.get("unsupported_availability") or {}
+            route_kwargs["unsupported_availability"] = {
+                **existing_availability,
+                **requested_availability,
+            }
         parsed = dict(parsed)
         if "with_player" in availability_markers:
             parsed["with_player"] = None
@@ -3726,6 +3815,24 @@ def _finalize_route(parsed: dict) -> dict:
             f"{', '.join(unexecuted_markers)} but has no execution path for it; "
             "no unfiltered fallback was returned"
         )
+
+    # Compound/event routing integrity. A route may answer only when it accounts
+    # for every meaningful part of the request - executes it, is defined by it,
+    # or refuses and says so. Runs last so it sees the kwargs that will actually
+    # be executed rather than the parser's reading of them.
+    compound_authorization = authorize_compound_event_route(parsed, route, route_kwargs)
+    if not compound_authorization.authorized:
+        existing_unsupported = route_kwargs.get("unsupported_filters") or []
+        if not isinstance(existing_unsupported, list):
+            existing_unsupported = list(existing_unsupported)
+        # First, so the refusal is read as the compound-semantic one it is: a
+        # broader boundary that also fired says less about what went wrong.
+        route_kwargs["unsupported_filters"] = [
+            compound_authorization.reason,
+            *(f for f in existing_unsupported if f != compound_authorization.reason),
+        ]
+        _apply_compound_refusal_kwargs(route_kwargs, compound_authorization)
+        notes.append(_compound_refusal_note(compound_authorization))
 
     out = dict(parsed)
     out["route"] = route

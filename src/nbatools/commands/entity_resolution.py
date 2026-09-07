@@ -1162,12 +1162,34 @@ def resolve_team(text: str) -> ResolutionResult:
     return _no_match()
 
 
+# ``was`` is both the Washington abbreviation and the English copula, so an
+# availability clause - "while the player was injured", "when Curry was out" -
+# resolved a Wizards subject nobody asked for and then answered a Washington
+# question. Blank the verb reading before any alias scan sees it. Replaced with
+# spaces of equal length so every span the caller computed stays valid.
+_COPULA_WAS = re.compile(
+    r"(?<!\w)was(?=\s+(?:not\s+)?(?:out|outs|injured|hurt|sidelined|available"
+    r"|unavailable|active|inactive|healthy|playing|played|resting|rested|benched"
+    r"|suspended|missing|missed|ejected|sick|the|a|an|his|her|their|its)\b)"
+)
+
+
+def mask_copula_team_lookalikes(text: str) -> str:
+    """Blank team aliases that are plainly ordinary verbs in this sentence.
+
+    Only ``was`` needs this today: it is the only abbreviation in the table
+    that is also a high-frequency English copula. A team word the writer meant
+    as a team ("was record this season") keeps resolving.
+    """
+    return _COPULA_WAS.sub("   ", text)
+
+
 def resolve_team_in_query(text: str) -> ResolutionResult:
     """Resolve a team from a full query string.
 
     Scans for team aliases longest-first to avoid partial matches.
     """
-    q = " ".join(text.lower().strip().split())
+    q = " ".join(mask_copula_team_lookalikes(text.lower()).strip().split())
     if not q:
         return _no_match()
 
