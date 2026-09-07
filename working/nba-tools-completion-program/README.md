@@ -21,10 +21,10 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 | Phase 1A - explicit metric selection | **Merged** at `1914bb10c12bdb98fe4b2371df8ba9fa5fd76521` (PR #295) |
 | CI-01 - trustworthy frontend verification and dependency security | **Merged** at `ed15443d5ddc3ef8982d580226eb5dc49c4c7e06` (PR #296) |
 | QA-01 - fail-closed Raw QA and filter-sweep signal integrity | **Merged** at `e2e70583f05f568df8945f4cb7039ac18a79c943` (PR #297) |
-| OPS-01 - production monitoring and dependency-security recovery | **Active** (operations) |
+| OPS-01 - production monitoring and dependency-security recovery | **Merged** at `c52e1cb26b2636b9609bf69a56baa43032da6e12` (PR #298) |
 | OPS-MON-01 - cold-start response failures and false-alert policy | Deferred, unstarted (monitoring policy) |
 | CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
-| Phase 1B - compound event and filter routing integrity | Deferred, unstarted |
+| Phase 1B - compound event and filter routing integrity | **Active** |
 | Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
 | Phase 1D - filter execution receipts | Deferred, unstarted |
 | Immutable data-backed CI | Separate infrastructure decision, not taken |
