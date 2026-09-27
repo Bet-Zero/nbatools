@@ -9,8 +9,14 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-Everything below shipped after the `0.7.0` initial structure and has not yet
-been cut as a release. Counts are taken from the generated
+Nothing yet.
+
+---
+
+## [0.8.0] - 2026-09-27
+
+The first release cut since the `0.7.0` initial structure. Counts are taken
+from the generated
 [repository inventory](contracts/repository_inventory.json) and the
 [public HTTP route contract](contracts/public_http_routes.json), both of which
 CI checks for drift.
@@ -46,7 +52,7 @@ CI checks for drift.
 
 **Validation and evidence**
 
-- Raw QA corpus harness: 356 curated cases, 16 registered acceptance families,
+- Raw QA corpus harness: 361 curated cases, 16 registered acceptance families,
   8 named slice selectors, and a generated product-review artifact
 - Filter execution sweep, comparing each filtered question against its
   unfiltered control to detect filters that are displayed but never applied
@@ -68,7 +74,7 @@ CI checks for drift.
 - Raw QA and the filter execution sweep now fail closed: the named Make target
   fails on expectation failures, and a sweep with no comparable rows reports
   `NO_SIGNAL` instead of false success
-- Test suite grown to 4363 collected tests
+- Test suite grown to 4413 collected tests
 
 ### Fixed
 
@@ -92,9 +98,27 @@ CI checks for drift.
   refuse instead of returning a nearest-match answer
 - No silent season substitution: a season with no data is refused or caveated
   rather than answered with a different year
+- Compound questions are executed whole or refused. A question naming several
+  things at once — a threshold, an event condition and a ranking intent — can no
+  longer have part of itself dropped on the way to an answer.
+  `teams with most games scoring 120+ and making 15+ threes since 2020` returned
+  a three-pointers-per-game leaderboard; it now counts the games matching both
+  conditions. A game-level condition is only accepted by a route that can apply
+  one, so "15+ threes" can no longer become a filter on a season average
+- `was` is no longer read as Washington when it is an ordinary English verb, so
+  `most 40-point games while the player was injured` stopped answering about the
+  Wizards. `was record this season` still resolves the Wizards
+- `while X was out` reads as the same absence as `when X was out`, so
+  `Lakers leading scorer while LeBron was out` no longer switches its subject to
+  LeBron
+- Injury and other unmodelled conditions are recognised only so they can be
+  refused by name; nothing infers them from missed games or any other proxy
 
 **Operations**
 
+- The blocking dependency-security gate is scoped to dependencies that ship to a
+  browser. Development-only advisories are reported by a separate non-blocking
+  job instead of holding CI red for weeks at a time
 - Production monitor targets the stable production alias rather than a
   disposable per-deployment host
 - Development-only dependency advisories remediated by lockfile-only updates
@@ -104,7 +128,7 @@ CI checks for drift.
 
 - Clutch datasets, a curated champions reference table, and team bench-scoring
   aggregation are not built; queries that need them refuse honestly
-- 1024 of 4363 tests require the local NBA dataset and are skipped wherever it
+- 1036 of 4413 tests require the local NBA dataset and are skipped wherever it
   is absent, including CI
 
 ---

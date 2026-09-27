@@ -3,6 +3,7 @@ import sys
 
 import typer
 
+from nbatools import __version__ as APP_VERSION
 from nbatools.cli_apps.analysis import app as analysis_app
 from nbatools.cli_apps.ops import app as ops_app
 from nbatools.cli_apps.pipeline import app as pipeline_app
@@ -14,7 +15,6 @@ from nbatools.commands.natural_query import run as natural_query_run
 APP_NAME = "nbatools-cli"
 DEFAULT_API_HOST = "127.0.0.1"
 DEFAULT_API_PORT = 8000
-APP_VERSION = "0.7.0"
 
 app = typer.Typer(
     help=(

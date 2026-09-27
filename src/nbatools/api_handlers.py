@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 
 try:
     _VERSION = version("nbatools")
-except PackageNotFoundError:
-    _VERSION = "0.7.0"
+except PackageNotFoundError:  # pragma: no cover - source tree without an install
+    from nbatools import __version__ as _VERSION
 
 
 def query_result_to_payload(qr: QueryResult) -> dict[str, Any]:
