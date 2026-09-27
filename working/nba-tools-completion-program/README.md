@@ -22,8 +22,10 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 | CI-01 - trustworthy frontend verification and dependency security | **Merged** at `ed15443d5ddc3ef8982d580226eb5dc49c4c7e06` (PR #296) |
 | QA-01 - fail-closed Raw QA and filter-sweep signal integrity | **Merged** at `e2e70583f05f568df8945f4cb7039ac18a79c943` (PR #297) |
 | OPS-01 - production monitoring and dependency-security recovery | **Merged** at `c52e1cb26b2636b9609bf69a56baa43032da6e12` (PR #298) |
+| OPS-02 - `@vitest/mocker` advisory remediation | **Merged** at `b7ad7d47a0c09ccd0cf3bbde1cfba39396ceb551` (PR #300) |
 | OPS-MON-01 - cold-start response failures and false-alert policy | Deferred, unstarted (monitoring policy) |
 | CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
+| CI-SEC-01 - recurring development-only advisory policy | **Active** (security policy, owner-approved) |
 | Phase 1B - compound event and filter routing integrity | **Active** |
 | Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
 | Phase 1D - filter execution receipts | Deferred, unstarted |
@@ -106,6 +108,74 @@ untrustworthy after QA-01 merged.
 OPS-01 changes no parser behavior, query routing, result contract, frontend
 product behavior, NBA data, CI job architecture, audit severity policy, or
 monitoring threshold, case, or retry rule. It selects no query-integrity phase.
+
+---
+
+## OPS-02 - `@vitest/mocker` advisory remediation
+
+**Active task.** Operations only.
+
+`frontend-security` went red on GHSA-82fw-gwwq-j7x9 (path traversal / arbitrary
+file read via the `@vitest/mocker` redirect mock, moderate), a transitive
+development dependency of `vitest`. The advisory's vulnerable range is
+`2.1.0 - 4.1.10` and the pinned tree resolved `4.1.10`.
+
+Remediated by a lockfile-only update inside the existing `^4.1.10` range:
+`vitest` and the six `@vitest/*` packages to `4.1.11`, plus `tinyrainbow`
+`3.1.1` as their shared transitive. `frontend/package.json` is unchanged, and
+the lockfile holds 309 packages before and after - nothing added or removed.
+
+`npm install` cannot produce this update under npm 10.9.7: it aborts in
+arborist's peer resolution (`Cannot read properties of null (reading
+'edgesOut')`) while walking `vitest`'s optional `canvas` peer.
+`--legacy-peer-deps` completes but drops eight genuinely required peer
+packages, including `@testing-library/dom`. The nine package entries were
+therefore taken verbatim from a reference resolution and spliced into the
+existing lockfile, with the root entry and package count asserted unchanged.
+`npm ci` under default (non-legacy) resolution is the proof the result is
+installable.
+
+OPS-02 changes no NBA Tools product, query, parser, filter, API,
+result-contract, or data behavior, and no CI job architecture, audit severity
+policy, or monitoring rule.
+
+### Recurrence
+
+This is the third advisory-driven `frontend-security` red in two months, all in
+development-only transitives: `brace-expansion` (patched 2026-08-03),
+`@humanfs/node` (patched 2026-09-04), `@vitest/mocker` (this item). Each was
+remediated by a lockfile-only bump. The rate is a property of a strict
+`--audit-level=low` gate over a large dev tree, not of any defect in this
+repository's code. Whether to keep absorbing it per-advisory or change the
+policy is recorded as **CI-SEC-01** below and is not decided here.
+
+---
+
+## CI-SEC-01 - recurring development-only advisory policy
+
+**Deferred. Not the active next task.**
+
+`frontend-security` runs `npm audit --audit-level=low` across the whole
+dependency tree, development dependencies included. Every advisory published
+against any transitive of `eslint`, `vite`, `vitest`, `playwright` or
+`typescript-eslint` turns the workflow red until someone bumps a lockfile,
+even though none of those packages ships in the deployed bundle.
+
+Observed cost: 19 consecutive red scheduled runs for OPS-02
+(2026-09-09 to 2026-09-27), 20 for the advisory OPS-01 closed, and a
+comparable run before that.
+
+Options, none chosen:
+
+- keep the gate as-is and absorb each advisory (current behaviour);
+- scope the strict gate to production dependencies (`--omit=dev`) and run the
+  dev-tree audit as a separate non-blocking informational job;
+- keep the strict gate but move it off the nightly schedule so it reports on
+  pull requests only.
+
+Deciding this is repository-security policy and needs owner approval. The
+CI-01 job split already guarantees that whichever way it goes,
+`frontend-verify` keeps reporting independently on whether the code is healthy.
 
 ---
 
