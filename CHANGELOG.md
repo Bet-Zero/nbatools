@@ -9,60 +9,103 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-### Changed
-- Retired all standalone `/scripts/` analysis scripts — canonical command replacements documented in `docs/audits/scripts_retirement.md`
-- Removed stale `scripts/*` lint rule from `pyproject.toml`
-- Updated `docs/audits/architecture_hygiene_audit.md` to mark scripts retirement as resolved
+Everything below shipped after the `0.7.0` initial structure and has not yet
+been cut as a release. Counts are taken from the generated
+[repository inventory](contracts/repository_inventory.json) and the
+[public HTTP route contract](contracts/public_http_routes.json), both of which
+CI checks for drift.
 
 ### Added
-- Natural player season leaderboard coverage:
-  - top scorers
-  - highest TS%
-  - most 30-point games
-  - most threes made
-- Natural team season leaderboard coverage:
-  - best offense
-  - best eFG%
-  - best TS%
-  - most threes
-- Matchup and head-to-head coverage:
-  - player vs team matchup filters
-  - team vs team matchup filters
-  - head-to-head phrasing
-- Date-aware natural query support:
-  - `in <month>`
-  - `since <month>`
-  - `last <N> days`
-  - `since All-Star break`
-- Player streak queries:
-  - threshold streaks
-  - longest streak queries
-  - made-three streaks
-  - triple-double streaks
-- Team streak queries:
-  - winning / losing streaks
-  - team threshold streaks
-  - scoring streak phrasing
-- First-class split routing fixes for natural split queries
-- Expanded natural-query tests and streak-specific coverage
+
+**Web application and HTTP layer**
+
+- FastAPI service exposing seven public routes — `GET /health`, `/freshness`,
+  `/readiness`, `/routes` and `POST /query`, `/structured-query`,
+  `/query-feedback` — with per-route request-size admission control
+- React + TypeScript + Vite frontend (165 source files) served from the same
+  service, consuming the shared `QueryResponse` envelope
+- Result-pattern renderer with a route-to-pattern registry, shared display
+  primitives, freshness panel, query history and saved queries
+- Cloudflare R2 deployment path: immutable data generations, atomic
+  publication, an active-generation pointer, and a schedule-aware readiness
+  gate
+
+**Query surface**
+
+- 30 structured routes spanning player and team summaries, finders,
+  leaderboards, comparisons, splits, streaks, occurrence counts, rolling
+  stretches, playoff history, matchup history and decade records
+- 8 structured result types and 8 result reasons as the shared output contract
+- Context filters — clutch, quarter, half, starter/bench role, back-to-back,
+  rest days, one-possession games, nationally televised — execution-backed on
+  the route families that can apply them
+- Opponent filters — conference, division, quality — and availability filters
+  for whole-game teammate presence and absence
+- 21 documented dataset specifications with lifecycle layer, grain, join keys
+  and trust/coverage semantics
+
+**Validation and evidence**
+
+- Raw QA corpus harness: 356 curated cases, 16 registered acceptance families,
+  8 named slice selectors, and a generated product-review artifact
+- Filter execution sweep, comparing each filtered question against its
+  unfiltered control to detect filters that are displayed but never applied
+- Parser examples full sweep over the documented example set
+- Exploratory query review for input-only phrasing snapshots
+- Frontend copy QA, visual QA screenshot capture, and a browser release review
+  with accessibility checks
+- Generated repository inventory with a CI drift check, plus a durable-doc
+  governance check
+- Policy-bound production monitoring on a two-hour schedule, with latency
+  thresholds and a bounded retry rule
 
 ### Changed
-- Natural query routing now covers:
-  - player and team leaderboards
-  - player and team streaks
-  - matchup / head-to-head phrasing
-  - month-based and All-Star-break date windows
-- Split routing was hardened so split queries resolve to split-summary commands instead of generic finders
-- Docs updated to reflect the current shipped query surface
-- Full suite expanded to **206 passing tests**
+
+- CI split into independent verdicts: `lint`, `docs-governance`,
+  `frontend-verify`, `frontend-security`, `test-fast` (Python 3.11/3.12/3.13)
+  and `test-full`, so a dependency advisory can no longer mark code
+  verification skipped
+- Raw QA and the filter execution sweep now fail closed: the named Make target
+  fails on expectation failures, and a sweep with no comparable rows reports
+  `NO_SIGNAL` instead of false success
+- Test suite grown to 4363 collected tests
 
 ### Fixed
-- Team scoring streak phrasing like:
-  - `Celtics 5 straight games scoring 120+`
-- Split queries incorrectly falling through to game finder routes
-- Split override kwargs passing unsupported date arguments
-- Team scoring streak regex edge case on `120+`
-- Several route-selection and dispatch issues uncovered during streak and split rollout
+
+**Trust boundaries — answers that were confident and wrong**
+
+- Ranking questions must name their metric. `best NBA teams this season` no
+  longer returns a points-per-game leaderboard, `rookie leaders` no longer
+  ranks by an unrequested metric, and requested aggregation wording is no
+  longer discarded (`total points leaders` and `minutes per game leaders` now
+  answer what was asked or refuse)
+- A fragment naming only a context — `Williams clutch stats`,
+  `stats against winning teams` — no longer falls back to a league-wide points
+  leaderboard badged with the requested filter
+- Filters the selected route cannot execute are refused rather than displayed
+  as applied over an unfiltered answer
+- A trailing question mark no longer flips the subject of a team query
+  (`Lakers record against the Celtics?` was answering for Boston)
+- Unique first names resolve automatically, so common single-name queries no
+  longer need hand-listing
+- Unanswerable shapes — championships and "rings", future schedule, awards —
+  refuse instead of returning a nearest-match answer
+- No silent season substitution: a season with no data is refused or caveated
+  rather than answered with a different year
+
+**Operations**
+
+- Production monitor targets the stable production alias rather than a
+  disposable per-deployment host
+- Development-only dependency advisories remediated by lockfile-only updates
+  (`brace-expansion`, `@humanfs/node`, `@vitest/mocker`)
+
+### Known limitations
+
+- Clutch datasets, a curated champions reference table, and team bench-scoring
+  aggregation are not built; queries that need them refuse honestly
+- 1024 of 4363 tests require the local NBA dataset and are skipped wherever it
+  is absent, including CI
 
 ---
 
