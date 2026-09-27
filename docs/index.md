@@ -58,6 +58,7 @@ Long-lived engineering conventions and internal layer design.
 - [`architecture/parser/specification.md`](architecture/parser/specification.md) - parser component specification
 - [`architecture/parser/examples.md`](architecture/parser/examples.md) - parser example library
 - [`architecture/parser/leaderboard_metric_boundary.md`](architecture/parser/leaderboard_metric_boundary.md) - which ranking branches require a named metric, and which are deferred
+- [`architecture/parser/compound_event_routing.md`](architecture/parser/compound_event_routing.md) - keeping a compound question's ranking key, event conditions and filters separate, and refusing rather than reducing
 
 ## Operations
 

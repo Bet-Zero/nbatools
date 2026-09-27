@@ -817,8 +817,42 @@ Examples:
 - `most games with 25+ points and 10+ assists since 2020`
 - `how many Jokic games with 30+ points and 10+ rebounds in playoffs since 2021`
 - `teams with the most games scoring 120+ and making 15+ threes since 2020`
+- `teams with most games scoring 120+ and making 15+ threes since 2020`
 - `most games with 3+ steals and 2+ blocks`
 - `how many Celtics games vs Bucks with 120+ points and under 10 turnovers`
+
+A verb can carry the stat with the noun left out, so `scoring 120+` and
+`grabbing 10+` state a condition just as `120+ points` does.
+
+These rank by a **count of matching games**, published as
+`metadata.ranking_key="occurrence_count"`. No threshold metric is published as
+`metadata.stat`: every threshold here is a condition being counted, not the key
+the rows are ordered by.
+
+Compound no-match behavior:
+
+- a compound/event request the selected route cannot execute in full returns
+  `no_result` / `filter_not_supported` with
+  `metadata.unsupported_filters=["compound_event_request_unexecutable"]`, no
+  answer rows, and no executed `stat`. The refusal carries what was asked for
+  in `metadata.requested_event_conditions` (whole or not at all),
+  `metadata.requested_stat`, and `metadata.unsupported_availability`
+- `most efficient 30-point games` refuses this way: "efficient" resolves to the
+  documented `ts_pct` alias, and no route ranks individual games by it. It does
+  not become a 30-point-game count, a points leaderboard, or another efficiency
+  metric
+- `players with 25 points and 10 rebounds` refuses this way: both thresholds are
+  read and preserved, and the question states no ranking or aggregation to
+  execute them under
+- `most 40-point games while the player was injured` refuses this way: the
+  40-point condition is preserved and injury status is named as unavailable.
+  Injury is never inferred from missed games or any other proxy
+- `Lakers leading scorer while LeBron was out` refuses with the Lakers still the
+  subject and LeBron's absence preserved in
+  `metadata.unsupported_availability`. It does not return a LeBron summary or an
+  unfiltered Lakers scoring leaderboard
+
+See [`../architecture/parser/compound_event_routing.md`](../architecture/parser/compound_event_routing.md).
 
 ---
 

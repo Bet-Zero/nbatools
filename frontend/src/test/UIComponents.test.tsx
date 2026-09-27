@@ -628,6 +628,98 @@ describe("NoResultDisplay", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("names the metric a compound request could not be ranked by", () => {
+    // "most efficient 30-point games" returned a 30-point-game count at the
+    // base, with "efficient" dropped silently.
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "most efficient 30-point games",
+          requested_stat: "ts_pct",
+          unsupported_scope: "a count of matching games",
+          requested_event_conditions: [{ stat: "pts", min_value: 30 }],
+          unsupported_filters: ["compound_event_request_unexecutable"],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Unsupported Combination")).toBeInTheDocument();
+    expect(
+      screen.getByText(/True-shooting percentage cannot be used to order/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/no other stat was substituted for it/),
+    ).toBeInTheDocument();
+  });
+
+  it("lists every stated condition rather than one of them", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "players with 25 points and 10 rebounds",
+          requested_event_conditions: [
+            { stat: "pts", min_value: 25 },
+            { stat: "reb", min_value: 10 },
+          ],
+          unsupported_filters: ["compound_event_request_unexecutable"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(/25\+ points and 10\+ rebounds/),
+    ).toBeInTheDocument();
+  });
+
+  it("says an availability condition is unavailable without interpreting it", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          query_text: "most 40-point games while the player was injured",
+          requested_event_conditions: [{ stat: "pts", min_value: 40 }],
+          unsupported_availability: { condition: "injury status" },
+          unsupported_filters: ["compound_event_request_unexecutable"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(/asks to filter by injury status, which is not available/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/no unfiltered version was returned/),
+    ).toBeInTheDocument();
+  });
+
+  it("names the absent teammate a ranking could not filter by", () => {
+    render(
+      <NoResultDisplay
+        reason="filter_not_supported"
+        status="no_result"
+        metadata={{
+          route: "season_leaders",
+          team: "LAL",
+          query_text: "Lakers leading scorer while LeBron was out",
+          unsupported_availability: { without_player: "LeBron James" },
+          unsupported_filters: ["compound_event_request_unexecutable"],
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(/whether LeBron James played is not supported/),
+    ).toBeInTheDocument();
+  });
+
   // Opening Details is the only way to see these notes: the disclosure body is
   // not rendered while it is closed, so a collapsed-card assertion cannot see
   // what a reader sees after one click. Every case below opens it.
@@ -665,6 +757,12 @@ describe("NoResultDisplay", () => {
         boundaryNote:
           "unsupported_boundary: part of this request is outside what a ranking can express; no substituted leaderboard was returned",
         query: "top three point shooters this season",
+      },
+      {
+        id: "compound_event_request_unexecutable",
+        boundaryNote:
+          "unsupported_boundary: this asks to rank by ts_pct, which a count of matching games cannot order by; no reduced version of the question was answered",
+        query: "most efficient 30-point games",
       },
     ];
 

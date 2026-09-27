@@ -134,10 +134,25 @@ export interface ResultMetadata {
   // Both sides of an aggregation mismatch, so the copy can name the direction.
   requested_aggregation?: string | null;
   available_aggregation?: string | null;
+  // What a refused compound/event request asked for: every stated event
+  // condition, the availability clause no route could apply, and what the
+  // route would have ranked by instead.
+  requested_event_conditions?: RequestedEventCondition[] | null;
+  unsupported_availability?: Record<string, string> | null;
+  unsupported_scope?: string | null;
+  // What a result that did run is ordered by.
+  ranking_key?: "occurrence_count" | "season_aggregate" | "single_game" | null;
   candidates?: DisambiguationCandidate[];
   suggested_queries?: string[];
   notes?: string[];
   [key: string]: unknown;
+}
+
+export interface RequestedEventCondition {
+  stat?: string | null;
+  min_value?: number | null;
+  max_value?: number | null;
+  special_event?: string | null;
 }
 
 // --- Section row types ---

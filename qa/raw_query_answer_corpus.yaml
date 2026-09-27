@@ -8552,3 +8552,235 @@ cases:
         - opponent_quality
         - unsupported_boundary
         - no_broad_fallback
+
+  # --- Compound event and filter routing integrity -------------------------
+  # Each of these returned a confident wrong answer before the compound-event
+  # boundary existed. The expectations prove the two halves of the contract:
+  # a request that can be executed whole is, and one that cannot returns no
+  # answer rows, no substituted metric, and the parts it could not run.
+
+  - id: team_compound_occurrence_elliptical_verbs
+    query: "teams with most games scoring 120+ and making 15+ threes since 2020"
+    category: leaderboard
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: canonical
+      concept: team_multi_threshold_occurrence_leaderboard
+      public_surface: true
+      review_required: true
+      review_role: supporting
+      no_broad_fallback: true
+      intent_model: team_occurrence_leaders
+      qualifier_model:
+        - points_threshold
+        - three_pointers_threshold
+        - since_season
+    answer_text_policy: frontend_hero_expected
+    expected_status: ok
+    expected_route: team_occurrence_leaders
+    expected_shape: leaderboard_table
+    expected_filters:
+      - kind: threshold
+        label: pts min
+        value: "120.0"
+      - kind: threshold
+        label: fg3m min
+        value: "15.0"
+      - kind: season
+    expected_sections:
+      - leaderboard
+    hard_assertions:
+      # Ranked by how many games matched, not by either threshold metric.
+      - path: result.metadata.ranking_key
+        equals: occurrence_count
+      # No condition metric is published as the answer's metric.
+      - path: result.metadata.stat
+        equals: null
+    review_notes: "Verb-elliptical compound thresholds ('scoring 120+', 'making 15+ threes') must both execute and rank by matching-game count. This returned a league FG3M-per-game leaderboard before the compound-event boundary."
+    manual_review:
+      status: unreviewed
+      tags:
+        - compound_occurrence
+        - no_broad_fallback
+      notes: "Confirm both thresholds appear in the count column and the date scope starts at 2020-21."
+
+  - id: efficient_thirty_point_games_unexecutable
+    query: "most efficient 30-point games"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: leaderboards
+      variant: nearby_unsupported
+      concept: compound_ranking_metric_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: compound_event_boundary
+      qualifier_model:
+        - efficiency_metric
+        - points_threshold
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: compound_event_request_unexecutable
+      # "Efficient" is the repo's documented ts_pct alias; what cannot happen
+      # is ranking individual games by it. The refusal names the metric.
+      - path: result.metadata.requested_stat
+        equals: ts_pct
+      - path: result.metadata.requested_event_conditions.0.stat
+        equals: pts
+      - path: result.metadata.requested_event_conditions.0.min_value
+        equals: 30.0
+      # Never a points-per-game board, a points leaderboard, or a 30-point count.
+      - path: result.metadata.stat
+        equals: null
+    review_notes: "Must not become a games_30p occurrence count, a points leaderboard, or another efficiency metric chosen by guess. The 30-point event condition and the efficiency metric both survive into the refusal."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - compound_event_boundary
+        - no_broad_fallback
+      notes: "Expected boundary: no route ranks single games by True Shooting %."
+
+  - id: two_threshold_player_condition_unexecutable
+    query: "players with 25 points and 10 rebounds"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: count_queries
+      variant: nearby_unsupported
+      concept: compound_condition_without_aggregation
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: compound_event_boundary
+      qualifier_model:
+        - points_threshold
+        - rebounds_threshold
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: compound_event_request_unexecutable
+      # Both thresholds, whole or not at all.
+      - path: result.metadata.requested_event_conditions.0.stat
+        equals: pts
+      - path: result.metadata.requested_event_conditions.0.min_value
+        equals: 25.0
+      - path: result.metadata.requested_event_conditions.1.stat
+        equals: reb
+      - path: result.metadata.requested_event_conditions.1.min_value
+        equals: 10.0
+      # The base surfaced an unrouted error still carrying `reb`.
+      - path: result.metadata.stat
+        equals: null
+    review_notes: "Both thresholds are meaningful. The question states no ranking or aggregation, so executing either reading would invent one. Must not apply only points, only rebounds, or become an ordinary leaderboard."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - compound_event_boundary
+        - no_broad_fallback
+      notes: "Settled owner decision: the truthful refusal is the accepted V1 behavior. The query states two game-level conditions and no operation over the matching games - not 'most games', 'how many games', 'list the games', or any other ranking or aggregation intent. player_occurrence_leaders could count games meeting both conditions, but doing so would add a counting intent the user never stated, so the refusal preserves both thresholds, publishes no execution stat, and returns no sections instead."
+
+  - id: forty_point_games_injury_condition_unsupported
+    query: "most 40-point games while the player was injured"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: leaderboards
+      variant: nearby_unsupported
+      concept: injury_availability_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: compound_event_boundary
+      qualifier_model:
+        - points_threshold
+        - injury_availability
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      - path: result.metadata.unsupported_filters.0
+        equals: compound_event_request_unexecutable
+      - path: result.metadata.requested_event_conditions.0.stat
+        equals: pts
+      - path: result.metadata.requested_event_conditions.0.min_value
+        equals: 40.0
+      # Named as unavailable rather than dropped - and never inferred.
+      - path: result.metadata.unsupported_availability.condition
+        equals: injury status
+      - path: result.metadata.stat
+        equals: null
+      # "was" is the Wizards abbreviation and the English copula; the base
+      # answered a Washington question.
+      - path: result.metadata.team
+        equals: null
+    review_notes: "No injury data exists, so the clause must refuse rather than be dropped or proxied from missed games. The 40-point event intent survives into the refusal."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - injury_availability
+        - compound_event_boundary
+        - no_broad_fallback
+      notes: "Expected boundary until injury availability is execution-backed. Confirm no Wizards subject and no unfiltered 40-point leaderboard."
+
+  - id: team_leading_scorer_with_absence_unsupported
+    query: "Lakers leading scorer while LeBron was out"
+    category: unsupported_boundary
+    priority: p0
+    acceptance:
+      family: team_record_availability
+      variant: nearby_unsupported
+      concept: team_scoped_leader_availability_boundary
+      public_surface: true
+      review_required: true
+      review_role: boundary
+      no_broad_fallback: true
+      intent_model: leaderboard_boundary
+      qualifier_model:
+        - team_scoped_leader
+        - without_player
+    answer_text_policy: no_answer_text_expected
+    expected_status: no_result
+    expected_route: season_leaders
+    expected_reason: filter_not_supported
+    expected_shape: no_result
+    expected_sections: []
+    hard_assertions:
+      # The absence is preserved as *requested*, never as applied.
+      - path: result.metadata.unsupported_availability.without_player
+        equals: LeBron James
+      - path: result.metadata.without_player
+        equals: null
+      # The subject stays the Lakers. The base returned a LeBron summary.
+      - path: result.metadata.team
+        equals: LAL
+      - path: result.metadata.player
+        equals: null
+      - path: result.metadata.stat
+        equals: null
+    review_notes: "Must not return a LeBron player summary, an unfiltered Lakers scoring leaderboard, or drop the absence. 'while X was out' states the same condition as 'when X was out'."
+    manual_review:
+      status: expected_unsupported
+      tags:
+        - without_player
+        - compound_event_boundary
+        - no_broad_fallback
+      notes: "Expected boundary: whole-game teammate absence is execution-backed only on team records."

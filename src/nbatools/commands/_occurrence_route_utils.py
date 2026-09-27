@@ -113,6 +113,19 @@ _COMPOUND_STAT_MAP = {
 }
 
 
+# A verb can carry the stat the number belongs to, with the stat noun left out:
+# "games scoring 120+ and making 15+ threes" states two conditions, but only the
+# second one names its stat. Reading only the named half turned a two-condition
+# question into an ordinary threes leaderboard. Every verb here already carries
+# the same stat in ``extract_occurrence_event``'s "games scoring/grabbing/dishing
+# N ..." patterns, so this adds no new vocabulary - only the elliptical form.
+_ELLIPTICAL_STAT_VERBS = (
+    (r"\b(?:scoring|scored|scores)\s+(\d+)\+?", "pts"),
+    (r"\b(?:grabbing|grabbed|grabs)\s+(\d+)\+?", "reb"),
+    (r"\b(?:dishing|dished|dishes)\s+(\d+)\+?", "ast"),
+)
+
+
 def _parse_single_threshold(text: str) -> dict | None:
     """Parse a single threshold phrase like '30+ points' or '10 rebounds'.
 
@@ -146,6 +159,13 @@ def _parse_single_threshold(text: str) -> dict | None:
         stat = _COMPOUND_STAT_MAP.get(stat_text)
         if stat:
             return {"stat": stat, "min_value": value}
+
+    # Verb-carried stat with the noun elided ("scoring 120+"). Tried last so an
+    # explicit stat noun always wins: "scoring 30+ rebounds" stays rebounds.
+    for pattern, stat in _ELLIPTICAL_STAT_VERBS:
+        elliptical_match = re.search(pattern, text)
+        if elliptical_match:
+            return {"stat": stat, "min_value": float(elliptical_match.group(1))}
 
     return None
 

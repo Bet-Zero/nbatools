@@ -34,6 +34,11 @@ from typing import Any
 
 import pandas as pd
 
+from nbatools.commands._compound_event_authorization import (
+    is_compound_event_refusal,
+    publishes_condition_metric_as_stat,
+    ranking_key,
+)
 from nbatools.commands._condition_utils import normalize_stat_conditions
 from nbatools.commands._constants import contains_boolean_or
 from nbatools.commands._leaderboard_eligibility import is_boundary_refusal
@@ -601,11 +606,25 @@ def _build_query_metadata(
         # answer. What was asked for is published separately, below.
         "stat": (
             None
-            if is_boundary_refusal(route_kwargs)
+            if (
+                is_boundary_refusal(route_kwargs)
+                or is_compound_event_refusal(route_kwargs)
+                or publishes_condition_metric_as_stat(route, route_kwargs)
+            )
             else parsed.get("stat") or route_kwargs.get("stat")
         ),
+        # What the rows are ordered by, said outright. A compound occurrence
+        # route ranks by a count of matching games, and reading its ranking off
+        # a stat field that names one of the counted conditions is how a
+        # threshold came to look like the answer's metric.
+        "ranking_key": ranking_key(route, route_kwargs),
         "requested_stat": route_kwargs.get("requested_stat"),
         "requested_metrics": route_kwargs.get("requested_metrics"),
+        # What a compound/event refusal was about: the conditions it stated, the
+        # availability it asked for. Published as *requested*, never as applied.
+        "requested_event_conditions": route_kwargs.get("requested_event_conditions"),
+        "unsupported_availability": route_kwargs.get("unsupported_availability"),
+        "unsupported_scope": route_kwargs.get("unsupported_scope"),
         "requested_aggregation": route_kwargs.get("requested_aggregation"),
         "available_aggregation": route_kwargs.get("available_aggregation"),
         "min_value": (
