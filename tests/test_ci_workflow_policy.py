@@ -29,6 +29,18 @@ LINT_CMD = "npm --prefix frontend run lint"
 TEST_CMD = "npm --prefix frontend test"
 AUDIT_FRAGMENT = "npm --prefix frontend audit"
 
+# CI-SEC-01 splits the audit into two verdicts. Only one may block.
+#
+# The blocking audit is production-scoped: an advisory in a dependency that
+# reaches a visitor's browser is reachable by real users, so it stays strict.
+# The advisory audit covers the whole tree including development dependencies,
+# which never reach a visitor; it reports but cannot fail the workflow.
+#
+# Both are pinned here. Making the production audit non-blocking, dropping the
+# dev-tree audit, or narrowing it to production as well are all regressions.
+PRODUCTION_SCOPE_FLAG = "--omit=dev"
+BLOCKING_AUDIT_FRAGMENT = f"{AUDIT_FRAGMENT} {PRODUCTION_SCOPE_FLAG}"
+
 VERIFY_COMMANDS = (BUILD_CMD, LINT_CMD, TEST_CMD)
 
 # Installs that can resolve versions the committed lockfile does not pin.
@@ -79,6 +91,29 @@ def _first_index(job: dict, fragment: str) -> int:
 
 def _steps_running(job: dict, fragment: str) -> list[dict]:
     return [step for step in _steps(job) if fragment in step.get("run", "")]
+
+
+def _blocking_audit_jobs() -> dict[str, dict]:
+    """Jobs running the production-scoped audit — the one allowed to block."""
+    return _jobs_running(BLOCKING_AUDIT_FRAGMENT)
+
+
+def _advisory_audit_jobs() -> dict[str, dict]:
+    """Jobs running a whole-tree audit — informational, dev deps included."""
+    return {
+        name: job
+        for name, job in _jobs_running(AUDIT_FRAGMENT).items()
+        if name not in _blocking_audit_jobs()
+    }
+
+
+def _audit_runs(jobs: dict[str, dict]) -> list[str]:
+    return [run for job in jobs.values() for run in _run_steps(job) if AUDIT_FRAGMENT in run]
+
+
+def _is_blocking(job: dict) -> bool:
+    """A job blocks the workflow unless it declares continue-on-error."""
+    return job.get("continue-on-error") in (None, "false", False)
 
 
 def _assert_not_continue_on_error(container: dict, label: str) -> None:
@@ -255,26 +290,60 @@ def test_security_job_does_not_depend_on_the_verification_job() -> None:
 
 
 def test_dependency_audit_still_exists_and_blocks() -> None:
-    audit_jobs = _jobs_running(AUDIT_FRAGMENT)
-    assert audit_jobs, (
-        "no CI job runs a frontend dependency audit; the security verdict "
-        "was removed rather than separated"
+    """The production-scoped audit must exist and must be able to fail CI."""
+    blocking = _blocking_audit_jobs()
+    assert blocking, (
+        "no CI job runs the production-scoped frontend dependency audit "
+        f"({BLOCKING_AUDIT_FRAGMENT!r}); the blocking security verdict was "
+        "removed rather than scoped"
     )
 
-    for name, job in audit_jobs.items():
+    for name, job in blocking.items():
         _assert_not_continue_on_error(job, f"audit job {name!r}")
         for step in _steps_running(job, AUDIT_FRAGMENT):
             _assert_not_continue_on_error(step, f"the audit step in job {name!r}")
 
 
+def test_exactly_one_audit_verdict_can_block_the_workflow() -> None:
+    """CI-SEC-01's core invariant: the blocking audit is the production one.
+
+    Making the dev-tree audit blocking again reintroduces the recurring red;
+    making the production audit non-blocking removes the only real gate.
+    """
+    blocking_names = sorted(
+        name for name, job in _jobs_running(AUDIT_FRAGMENT).items() if _is_blocking(job)
+    )
+    assert blocking_names == sorted(_blocking_audit_jobs()), (
+        f"jobs able to fail CI on an audit are {blocking_names}, but only the "
+        f"production-scoped job(s) {sorted(_blocking_audit_jobs())} may block"
+    )
+
+
+def test_dev_tree_advisory_audit_still_runs_and_stays_whole_tree() -> None:
+    """Scoping the gate must not stop dev advisories being reported at all."""
+    advisory = _advisory_audit_jobs()
+    assert advisory, (
+        "no CI job audits the whole dependency tree any more; development "
+        "advisories would go unreported rather than merely non-blocking"
+    )
+
+    for name, job in advisory.items():
+        for run in _run_steps(job):
+            if AUDIT_FRAGMENT not in run:
+                continue
+            assert PRODUCTION_SCOPE_FLAG not in run, (
+                f"the advisory audit in job {name!r} runs {run!r}, which omits "
+                "dev dependencies; nothing would report on them"
+            )
+            assert "--production" not in run, (
+                f"the advisory audit in job {name!r} runs {run!r}, which "
+                "downgrades to a production-only audit"
+            )
+
+
 def test_dependency_audit_keeps_at_least_audit_level_low() -> None:
-    """`low` is the weakest threshold allowed; nothing may relax it."""
-    audit_runs = [
-        run
-        for job in _jobs_running(AUDIT_FRAGMENT).values()
-        for run in _run_steps(job)
-        if AUDIT_FRAGMENT in run
-    ]
+    """`low` is the weakest threshold allowed, on both audits."""
+    audit_runs = _audit_runs(_jobs_running(AUDIT_FRAGMENT))
     assert audit_runs
 
     for run in audit_runs:
@@ -282,21 +351,28 @@ def test_dependency_audit_keeps_at_least_audit_level_low() -> None:
             f"audit command {run!r} does not pin --audit-level=low; raising "
             "the threshold hides real advisories"
         )
-        assert "--omit=dev" not in run, (
-            f"audit command {run!r} omits dev dependencies to produce green"
-        )
-        assert "--production" not in run, (
-            f"audit command {run!r} downgrades to a production-only audit"
-        )
+
+
+def test_blocking_audit_is_scoped_to_shipped_dependencies() -> None:
+    """The gate covers what reaches a browser, and says so explicitly."""
+    for name, job in _blocking_audit_jobs().items():
+        runs = [run for run in _run_steps(job) if AUDIT_FRAGMENT in run]
+        assert runs, f"blocking audit job {name!r} runs no audit command"
+        for run in runs:
+            assert PRODUCTION_SCOPE_FLAG in run, (
+                f"the blocking audit in job {name!r} runs {run!r} without "
+                f"{PRODUCTION_SCOPE_FLAG!r}; it would block on development "
+                "advisories again"
+            )
 
 
 def test_dependency_audit_exit_code_is_not_suppressed() -> None:
-    audit_runs = [
-        run
-        for job in _jobs_running(AUDIT_FRAGMENT).values()
-        for run in _run_steps(job)
-        if AUDIT_FRAGMENT in run
-    ]
+    """Neither audit may hide its result in the shell.
+
+    The advisory audit is non-blocking by declaring `continue-on-error` in the
+    workflow, where this test can see it — not by swallowing an exit code.
+    """
+    audit_runs = _audit_runs(_jobs_running(AUDIT_FRAGMENT))
     assert audit_runs
 
     for run in audit_runs:

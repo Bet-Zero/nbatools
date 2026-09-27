@@ -25,7 +25,7 @@ Everything below is a real defect class that PR #295 does **not** fix and does
 | OPS-02 - `@vitest/mocker` advisory remediation | **Merged** at `b7ad7d47a0c09ccd0cf3bbde1cfba39396ceb551` (PR #300) |
 | OPS-MON-01 - cold-start response failures and false-alert policy | Deferred, unstarted (monitoring policy) |
 | CI-GOV-01 - required-check enforcement decision | Deferred, unstarted (governance) |
-| CI-SEC-01 - recurring development-only advisory policy | **Active** (security policy, owner-approved) |
+| CI-SEC-01 - development-only advisory policy | **Merged** (this change) |
 | Phase 1B - compound event and filter routing integrity | **Active** |
 | Phase 1C - unexecuted qualifier protection | Deferred, unstarted |
 | Phase 1D - filter execution receipts | Deferred, unstarted |
@@ -151,31 +151,45 @@ policy is recorded as **CI-SEC-01** below and is not decided here.
 
 ---
 
-## CI-SEC-01 - recurring development-only advisory policy
+## CI-SEC-01 - development-only advisory policy
 
-**Deferred. Not the active next task.**
+**Resolved.** Owner-approved 2026-09-27: scope the blocking gate to shipped
+dependencies, keep a non-blocking whole-tree audit beside it.
 
-`frontend-security` runs `npm audit --audit-level=low` across the whole
-dependency tree, development dependencies included. Every advisory published
-against any transitive of `eslint`, `vite`, `vitest`, `playwright` or
-`typescript-eslint` turns the workflow red until someone bumps a lockfile,
+**The problem.** `frontend-security` ran `npm audit --audit-level=low` across
+the whole dependency tree, development dependencies included. Every advisory
+published against any transitive of `eslint`, `vite`, `vitest`, `playwright` or
+`typescript-eslint` turned the workflow red until someone bumped a lockfile,
 even though none of those packages ships in the deployed bundle.
 
 Observed cost: 19 consecutive red scheduled runs for OPS-02
 (2026-09-09 to 2026-09-27), 20 for the advisory OPS-01 closed, and a
 comparable run before that.
 
-Options, none chosen:
+**Decision.** `frontend-security` now runs
+`npm audit --omit=dev --audit-level=low` and stays strict, unconditional and
+blocking: an advisory in a dependency that reaches a visitor's browser is
+reachable by real users. A new `frontend-security-dev` runs the whole-tree
+audit at the same threshold with `continue-on-error: true`, so toolchain
+advisories are still reported on every trigger but cannot mark the repository
+broken.
 
-- keep the gate as-is and absorb each advisory (current behaviour);
-- scope the strict gate to production dependencies (`--omit=dev`) and run the
-  dev-tree audit as a separate non-blocking informational job;
-- keep the strict gate but move it off the nightly schedule so it reports on
-  pull requests only.
+`continue-on-error` is declared in the workflow, not hidden behind `|| true`,
+precisely so the policy test can assert on it.
 
-Deciding this is repository-security policy and needs owner approval. The
-CI-01 job split already guarantees that whichever way it goes,
-`frontend-verify` keeps reporting independently on whether the code is healthy.
+**The guard was re-pointed, not removed.** `tests/test_ci_workflow_policy.py`
+now pins the two-verdict contract and adds the invariant that **exactly one**
+audit job may fail the workflow, and that it is the production-scoped one. Six
+simulated regressions were verified to fail the suite: making the production
+audit non-blocking, making the dev audit blocking again, dropping the dev audit,
+narrowing the dev audit to production, removing `--omit=dev` from the gate, and
+raising its threshold.
+
+**Accepted risk, stated plainly.** Development-only advisories are not
+zero-risk — a compromised build tool is a real supply-chain vector. This is a
+judgement that for a solo repository with no CI secrets, a permanently-red gate
+cost more than that risk, because a red that is always red stops being read. A
+repository with deploy credentials in CI should decide differently.
 
 ---
 

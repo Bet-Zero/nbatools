@@ -142,12 +142,12 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
 
 ### What runs when
 
-| Trigger                      | Lint | Docs governance | Frontend verify (build/lint/test) | Frontend security (audit) | `make test-unit` | `make test` |
-| ---------------------------- | ---- | --------------- | --------------------------------- | ------------------------- | ---------------- | ----------- |
-| Pull request                 | ✓    | ✓               | ✓                                 | ✓                         | ✓                |             |
-| Push to `main`               | ✓    | ✓               | ✓                                 | ✓                         | ✓                | ✓           |
-| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                 | ✓                         | ✓                | ✓           |
-| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                         | ✓                | ✓           |
+| Trigger                      | Lint | Docs governance | Frontend verify (build/lint/test) | Frontend security (shipped deps) | Frontend security (dev tree) | `make test-unit` | `make test` |
+| ---------------------------- | ---- | --------------- | --------------------------------- | -------------------------------- | ---------------------------- | ---------------- | ----------- |
+| Pull request                 | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                |             |
+| Push to `main`               | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                | ✓           |
+| Nightly schedule (06:00 UTC) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                | ✓           |
+| Manual (`workflow_dispatch`) | ✓    | ✓               | ✓                                 | ✓                                | ✓ (reports)                  | ✓                | ✓           |
 
 - **`docs-governance`** (`make docs-governance`): Verifies the generated
   repository inventory plus durable-doc and working/archive policy checks.
@@ -159,16 +159,30 @@ CI runs on GitHub Actions (`.github/workflows/ci.yml`).
   test. This is the *code* verdict — does the frontend build and pass its
   tests?
 - **`frontend-security`**: Runs `npm --prefix frontend ci`, then fails on any
-  low-or-higher npm advisory via
-  `npm --prefix frontend audit --audit-level=low`. This is the *dependency*
-  verdict — does the installed tree carry published advisories?
+  low-or-higher npm advisory in the **shipped** tree via
+  `npm --prefix frontend audit --omit=dev --audit-level=low`. This is the
+  *dependency* verdict for code that reaches a visitor's browser. Strict and
+  blocking.
+- **`frontend-security-dev`**: The same audit across the **whole** tree,
+  development dependencies included, with `continue-on-error: true`. It reports
+  advisories in the toolchain — the test runner, linter, bundler — which are
+  worth fixing but cannot reach anyone using the app.
 
-  These two jobs are independent and neither waits on the other. They fail for
+  All three jobs are independent and none waits on another. They fail for
   unrelated reasons: an advisory published upstream overnight says nothing
   about whether your code compiles, so it must not hide the build/lint/test
   result. The nightly run re-audits `main`, so advisories published after a
-  lockfile lands are still caught. `tests/test_ci_workflow_policy.py` guards
-  this design.
+  lockfile lands are still caught.
+
+  **Why the audit is split by scope (CI-SEC-01).** Three development-only
+  advisories between 2026-08 and 2026-09 each held CI red for weeks with
+  nothing wrong in this repository. Scoping the gate to shipped dependencies
+  keeps a real security verdict while removing a recurring false alarm; the
+  whole-tree audit still reports so nothing is hidden. This is a judgement for
+  a solo repository with no CI secrets — a project with deploy credentials in
+  CI should weigh a compromised build tool more heavily.
+  `tests/test_ci_workflow_policy.py` guards the whole design, including that
+  exactly one audit verdict can fail the workflow.
 - **`test-fast`** (`make test-unit`): Excludes `slow` and `needs_data` tests. Runs in parallel across Python 3.11/3.12/3.13. Provides fast feedback on every trigger.
 - **`test-full`** (`make test`): Full regression suite in parallel. Runs on main push, nightly, and manual dispatch. Skipped on PRs to keep feedback fast.
 
