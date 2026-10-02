@@ -1,93 +1,118 @@
-# NBA Tools roadmap
+# NBA Tools delivery strategy
 
-Owner direction: 2026-10-02. This replaces the owner-operated ten-query review
-loop. Earlier work and decisions remain in Git history; current shipped
-behavior is documented separately in `docs/reference/query_catalog.md`.
+Revised 2026-10-02 after source-and-evidence review. This replaces the delivery
+order in PR #312, not its delegation of engineering work to agents. The owner's
+sample-query loop was illustrative, not a prescribed methodology. Agents are
+responsible for recommending and executing the engineering approach.
 
-## The destination
+## Destination
 
-Ask an NBA statistics question in normal language and get the correct answer,
-with the requested subjects, statistics, conditions, and time period intact.
-The interface should show the answer clearly, explain its data coverage, and
-use current data when the request calls for it.
+An NBA statistics search product that answers ordinary, reasonably specific
+questions correctly across players, teams, records, rankings, comparisons,
+finders/counts, splits, streaks, stretches and historical/playoff analysis.
+People should not need to learn the parser's preferred sentences. Answers must
+preserve the requested meaning, expose the actual sample and statistical basis,
+and use complete enough, current enough data for the claim being made.
 
-The product covers player/team stats, records, rankings, comparisons, game
-finders/counts, splits, streaks, stretches, and playoff history. Legitimate
-missing questions are a build queue, not an invitation to redefine success as
-refusing them. More elaborate guided research tools remain a later surface;
-that distinction must not be used to exclude ordinary combinations of filters.
+The long-term destination includes legitimate missing statistical capabilities
+and richer guided tools already described in
+`docs/reference/natural_search_and_deep_tools_boundary.md`. A delivery milestone
+is not a silent reduction of that destination. Salary/trade-rule engines are
+not this project. Branding and launch publicity remain separate owner choices.
 
-A refusal can prevent misinformation while implementation is incomplete. It
-cannot complete the requested capability. Invalid requests and genuine
-ambiguities have their own rejection/clarification tests. A verified zero or
-empty answer is a valid answer, distinct from unavailable data.
+## Chosen approach
 
-## How work moves forward
+**Complete shared statistical capabilities, deliver them through natural search,
+and develop data/operation in parallel.** Example questions are evidence and
+intake; they are neither the architecture nor the entire requirements list.
 
-```text
-Collect questions we want answered.
-Check what the product actually returns.
-Independently verify the successful answers.
-Group failures by the missing or broken capability.
-Implement that capability and check new wording variations.
-Save regressions, deliver it, and continue expanding.
-```
+Keep the shared Python query service, established calculations, result contracts,
+React interface, immutable data generations and useful checks. Incrementally
+consolidate duplicated sample/filter/metric behavior as real features need it.
+Do not rebuild the application, design a universal query framework first, or
+continue indefinitely with independent phrase patches and route allowlists.
 
-Agents own that loop. The owner does not have to supply a new query battery,
-read testing reports, check arithmetic, select technical phases, or relay
-routine reviewer findings. Existing examples are input, not a syllabus the
-owner must personally grade.
+The most useful organizing questions are:
 
-## Delivery order
+1. Can the system select the right people, teams and games?
+2. Can it apply the requested operation and statistical basis to that sample?
+3. Can those abilities be combined and reached through normal language?
+4. Does the necessary data exist, remain current, and reach the deployed app?
+5. Does the actual user-facing answer remain correct and usable?
 
-**1. Complete everyday capabilities using the existing foundation.** Start
-with recent-game team records, missing ordinary stat/count wording, and
-correct player identity. Add concrete examples from existing exploratory
-samples and recorded gaps. Reproduce first; do not rebuild working features.
-Fix relevant wrong-answer risks within these delivery units rather than
-waiting for another broad audit before useful work can begin.
+## Delivery sequence and dependencies
 
-**2. Complete combinations and data-backed gaps.** Preserve every meaningful
-condition, then implement the missing calculation/data where necessary. Work
-through team bench scoring, championship history, clutch/period information,
-lineups/on-off, and other legitimate recorded gaps by reuse and dependency.
-Some require new sources or different data grains. Those dependencies change
-the implementation plan, not whether refusal counts as success.
+| Work | Outcome | Why this order |
+| --- | --- | --- |
+| A. Identity and sample selection | Correct entities, seasons, dates and last-N game samples; recent records and summaries work consistently | Every calculation depends on the right rows |
+| B. Core operations and statistical basis | Counts, totals, averages, rates and rankings mean what the question asks | These operations unlock multiple answer families and compound questions |
+| C. Composition across families | Meaningful filters work with summaries, records, comparisons, splits and sequence queries | Prevents rebuilding each feature/filter combination independently |
+| D. Coverage and additional datasets | Historical/reference, role/bench, period/clutch, lineup/on-off and other legitimate missing answers | Build in dependency order; inspect source feasibility early |
+| E. Integrated product acceptance | The required capabilities work through the deployed interface and remain operational | Proves delivered behavior, not just implementation |
 
-**3. Verify the delivered experience and ongoing operation.** Test the actual
-API/browser path, deployed revision and dataset, freshness, season rollover,
-update operation, and practical response times. Repair observed failures.
-Do not change monitoring policy merely to hide product timeouts.
+A data/runtime work lane starts alongside A, not after D: inspect actual coverage,
+confirm remote validation, establish season/date correctness, measure deployed
+behavior, and identify source/access/cost dependencies. Each feature still has
+its own deployed acceptance; E is an integrated check, not the first deployment.
 
-The current execution order and concrete acceptance examples live in
-`working/nba-tools-completion-program/README.md`. That is the temporary active
-queue until this program closes, not an additional source of product truth.
-Agents may reorder independent tasks to unblock delivery and must record why.
+There is one integration owner and at most two implementation lanes with
+non-overlapping files, plus independent review. With only one execution agent,
+interleave the same work rather than pretending parallel capacity exists.
 
-## What counts as progress and completion
+The concrete work packages, seeded capability map, acceptance rules and next
+action are in `working/nba-tools-completion-program/README.md`. The supporting
+review is `working/nba-tools-completion-program/review-2026-10-02.md`. These are
+active task artifacts, not additional sources of shipped-behavior truth.
 
-Report capabilities and examples that now answer correctly. Keep desired
-answers, necessary clarifications, negative tests, and open data dependencies
-separate. Neither a passing test total nor a safe refusal is an answer-rate
-score. If reporting coverage, name the fixed sample set and denominator; do
-not remove hard desired questions or add easy negative tests to improve it.
+## How progress is measured
 
-Each delivery unit has a finite acceptance list and a clear stopping point.
-Finishing one unit means that unit is done, not that every conceivable NBA
-question is solved. Additional legitimate questions remain visible and are
-selected for the next unit without another owner planning session.
+Maintain a small capability map from the existing route inventory, product docs
+and query examples. Distinguish implemented, numerically verified and deployed.
+Do not create a new dashboard/framework to maintain it. Use source inspection
+plus paired structured/natural queries to distinguish language gaps, computation
+gaps, data gaps and display/runtime defects. Unmeasured cells remain unknown.
 
-The existing first-product capabilities must work through the actual interface
-with representative combinations and unfamiliar phrasing. Required gaps stay
-open; only an explicit owner product decision can remove a desired capability
-from scope. No silent shrinking of the promise to match what already passes.
+For each selected capability, define its meaning and acceptance before repair,
+including normal variations and meaningful combinations. Use existing tests,
+small independent calculations and representative real data to check it. Keep
+some formulations out of the maker's tuning set for independent checking.
+Required questions remain open until answered, including valid zero/empty
+answers when coverage is sufficient. Clarifications and negative tests are
+separate; neither contributes to desired-answer completion.
 
-## Owner involvement
+Report user-visible capabilities delivered and the remaining blockers. Test
+counts, phrase counts and successful refusals are not product progress scores.
+If reporting a percentage, retain the declared denominator, scope and all
+required missing cases; report held-out language performance separately.
 
-Bring back only unresolved product meaning, necessary account access/consent,
-material new cost, or a consequential action outside authorization. Bring a
-recommendation, not a technical menu. Routine implementation and verification
-continue without the owner's participation.
+## Finishing without an endless project
 
-Branding, naming, domain changes, and launch publicity remain separate owner
-choices. They do not block improving and verifying the existing app.
+The core milestone covers the named answer families using qualified game data,
+ordinary statistical bases, normal language and the meaningful combinations
+specified in the execution map. It does not claim that every historical or
+specialized dataset already exists. Missing historical/event-data capabilities
+retain their own open delivery entries and source dependencies.
+
+A core milestone is complete only when its required acceptance cases have no
+unresolved wrong, missing or unverified answers; applicable independent review
+and automated checks pass; deployment is verified; and update/rollover operation
+is proven for the intended coverage. Do not call the broader program complete
+while required extended capabilities remain open. External blockers change
+sequencing, not the definition of a finished feature.
+
+At a milestone boundary, select the next dependency-backed capability group and
+continue under the same authorization. Do not reopen the entire plan, add
+unrelated governance work, or request a fresh owner query battery.
+
+## Agent ownership and boundaries
+
+Agents own technical choices, implementation, numerical checking, data research,
+review coordination, merge readiness and continuity. Ask the owner only for
+unresolved product choices, necessary account consent/access, or consequential
+cost/security actions outside authorization; bring a recommendation.
+
+Preserve the existing security/privacy boundaries and the documented fixed-plan
+cost ceiling with $0 permitted metered overage. No new paid language-model
+service, hosting migration, public-feedback persistence or credential expansion
+is authorized merely by this strategy. Investigate and report a concrete
+constraint rather than turning it into a general stop.
