@@ -115,6 +115,16 @@ jobs:
           python tools/filter_execution_sweep.py \
             --json outputs/filter_execution_sweep/r2_validation.json
 
+      # The `needs_data` suite asserts real values, so it skips wherever the
+      # pinned generation is absent - which is everywhere except this job. Its
+      # skip check asks the configured data source, so DATA_SOURCE=r2 makes it
+      # runnable here. Informational: it has no prior green run to regress from,
+      # and the two gates below are the verdict.
+      - name: Tests marked needs_data, against the pinned generation
+        id: data_backed_tests
+        continue-on-error: true
+        run: python -m pytest -m needs_data -rf --no-header -q
+
       - name: Upload validation evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -134,6 +144,7 @@ jobs:
 
           echo "Raw QA outcome: $raw_qa"
           echo "Filter sweep outcome: $filter_sweep"
+          echo "needs_data tests (informational): ${{ steps.data_backed_tests.outcome }}"
 
           if [ "$raw_qa" != "success" ] || [ "$filter_sweep" != "success" ]; then
             echo "Real-data validation failed. Inspect the uploaded evidence artifact."

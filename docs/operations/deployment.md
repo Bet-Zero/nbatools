@@ -163,19 +163,51 @@ deployed privacy configuration is currently verified.
 
 ## GitHub Actions Secrets
 
-These credentials now live in three places, not two: the local `.env` file, the
-Vercel project, and GitHub Actions. The third exists because
-`.github/workflows/data-backed-validation.yml` runs the Raw QA corpus and the
-filter execution sweep against the real generation nightly. Before it existed,
-those two gates ran only on one operator's machine, undated and unretained.
+These credentials live in three places: the local `.env` file, the Vercel
+project, and a GitHub **Environment**. The third exists because
+`.github/workflows/r2-real-data-validation.yml` runs the Raw QA corpus and the
+filter execution sweep against the real generation. Before it existed, those two
+gates ran only on one operator's machine, undated and unretained.
 
-Add these three as **repository** secrets under
-**Settings > Secrets and variables > Actions**, using the
-*New repository secret* button:
+### They are environment secrets, deliberately
 
-- `R2_ACCOUNT_ID`
-- `R2_ACCESS_KEY_ID`
-- `R2_SECRET_ACCESS_KEY`
+Store the three values as secrets on the **`r2-validation` GitHub Environment**,
+not as repository secrets:
+
+- `R2_VALIDATION_ACCOUNT_ID`
+- `R2_VALIDATION_ACCESS_KEY_ID`
+- `R2_VALIDATION_SECRET_ACCESS_KEY`
+
+This is the narrowest scope that works. A repository secret is readable by every
+workflow in the repository; an environment secret is released only to a job that
+names that environment, and `r2-real-data-validation.yml` is the only job that
+does. That keeps ordinary CI secret-free, and lets the environment optionally
+require owner approval before the values reach a runner.
+
+**Do not duplicate them as repository secrets.** If the workflow cannot see
+them, the cause is the environment or workflow configuration, not the scope —
+widening the scope hides the fault instead of fixing it.
+
+The job must therefore declare `environment: r2-validation`. A job that omits it
+receives all three as empty strings and fails as though the data were gone,
+which is silent in exactly the wrong way. `test_the_job_declares_the_environment_holding_the_credential`
+pins it.
+
+### Secret names versus variable names
+
+The secret names deliberately differ from the variable names the engine reads.
+The workflow maps them:
+
+| Environment secret | Environment variable |
+| --- | --- |
+| `R2_VALIDATION_ACCOUNT_ID` | `R2_ACCOUNT_ID` |
+| `R2_VALIDATION_ACCESS_KEY_ID` | `R2_ACCESS_KEY_ID` |
+| `R2_VALIDATION_SECRET_ACCESS_KEY` | `R2_SECRET_ACCESS_KEY` |
+
+The variable names are not negotiable — `REQUIRED_R2_ENV_VARS` in
+`src/nbatools/data_source.py` fixes them. The secret names carry `VALIDATION`
+because this credential is read-only and must not be confused with the
+operator's write-scoped publication credential in a settings list.
 
 `R2_BUCKET_NAME` is deliberately not a secret. It is already committed in
 `vercel.json`, so the workflow sets it in plain sight; adding it as a secret as
@@ -184,47 +216,42 @@ well would imply it were sensitive.
 A bucket-scoped **read-only** token is sufficient and is what this workflow
 should get. Validation only calls `head_object` and `get_object`; nothing in it
 writes, publishes or deletes, and `permissions: contents: read` is pinned by
-`tests/test_data_backed_workflow_policy.py`. Do not reuse the operator's
+`tests/test_r2_validation_workflow_policy.py`. Do not reuse the operator's
 write-scoped publication credentials here.
 
-### The four ways this goes wrong
+### Exactly one workflow may read this credential
 
-The names must match character for character, because they are the names the
-engine itself reads (`REQUIRED_R2_ENV_VARS` in `src/nbatools/data_source.py`).
-The workflow's `preflight` job checks all three before anything expensive runs,
-and on failure prints this checklist. It never prints a value, which
-`test_preflight_never_prints_a_secret_value` enforces by putting a canary
-through every failure path.
+A second workflow was once added that duplicated this job against *repository*
+secrets of the same purpose, which were never created. It failed on every run,
+and the failures were read as a broken credential rather than as a duplicate
+looking in the wrong place. Several rounds of diagnosis went by before the two
+files were compared.
 
-| # | Mistake | Why it resolves to nothing |
-| --- | --- | --- |
-| 1 | Saved under the wrong **tab** | *Secrets and variables* has three tabs — Actions, Codespaces, Dependabot. Only Actions is read by a workflow; the other two look correctly saved |
-| 2 | Saved as an **Environment** secret | An environment secret reaches only a job that names that environment, and this workflow names none. They must sit under *Repository secrets* |
-| 3 | Saved under a **different name** | Rename the secret, not the workflow — the engine reads these names |
-| 4 | Saved on the **wrong repository** | Must be `Bet-Zero/nbatools` itself, not a fork or a personal copy |
+`test_exactly_one_workflow_reads_the_r2_credential` fails if a second workflow
+references any of the three secret names. One job owns this credential; a second
+copy is a defect even while it works, because the two drift and the failure
+blames the credential.
 
-They are ordered by how easily each is made, not by severity. All three secrets
-resolving empty at once — which is what the first run of this workflow found —
-is the signature of one wrong-place mistake rather than three independent typos.
+### If the credential cannot be read
 
-Only case 1 is detected positively, by reading `toJSON(vars)`: repository
-variables are not secret, so the workflow can look at them. The other three are
-offered as a checklist.
+The workflow verifies access before anything expensive runs, and names the
+missing secret without printing a value — asserted against a canary in
+`test_credential_check_never_prints_a_secret_value`, rather than relying on
+GitHub's log masking. When all three come back empty at once, the cause is
+usually one of:
 
-### Why the preflight does not report which secret names exist
+| Cause | Why it resolves to nothing |
+| --- | --- |
+| The job does not declare `environment: r2-validation` | An environment secret reaches only a job naming that environment |
+| Saved under the wrong **tab** | *Secrets and variables* has three — Actions, Codespaces, Dependabot. Only Actions is read by a workflow |
+| Saved under a **different name** | Either rename the secret or update the mapping in the job's `env` block |
+| Saved on the **wrong repository** | Must be `Bet-Zero/nbatools` itself, not a fork |
 
-That would be a strictly better diagnosis, and it is deliberately not done.
-
-An earlier version read `toJSON(secrets)` so it could list the secret names the
-job could see and name the single cause. Enumerating the whole secrets context
-is the shape of a credential-exfiltration attempt, and **every run of that
-workflow came back `action_required` with zero jobs created** — held for manual
-approval, so the better diagnosis never ran at all and the workflow was worth
-less than before. Naming each secret individually is not gated.
-
-`test_preflight_never_enumerates_the_secrets_context` pins this, because the
-failure mode is silent: the workflow looks correct, dispatches without error,
-and simply never does anything.
+Never diagnose this by enumerating the secrets context with `toJSON(secrets)`.
+That is the shape of an exfiltration attempt: GitHub holds every run of such a
+workflow for manual approval with no job created, so nothing it reports can be
+read and the workflow becomes worth less than before.
+`test_the_workflow_never_enumerates_the_secrets_context` pins this.
 
 ## Endpoint Construction
 
