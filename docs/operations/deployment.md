@@ -199,12 +199,14 @@ canary.
 | Mistake | What the owner sees | Fix |
 | --- | --- | --- |
 | Saved under the **Variables** tab | The same page has two tabs; `secrets.*` cannot read a variable | Delete from Variables, re-add under Secrets |
-| Saved as an **Environment** secret | Preflight can see no repository secrets at all | Re-add outside any environment; an environment secret only reaches a job that names that environment, and this workflow names none |
+| Saved under the wrong **tab** | Preflight can see no repository secrets at all | *Secrets and variables* has three tabs — Actions, Codespaces, Dependabot. Only Actions is read by a workflow; the other two look correctly saved and are invisible here |
+| Saved as an **Environment** secret | Preflight can see no repository secrets at all | Re-add under *Repository secrets* rather than inside an environment; an environment secret only reaches a job that names that environment, and this workflow names none |
 | Saved under a **different name** | Preflight shortlists the near-miss names it can see | Rename the secret, not the workflow |
 
-The first run of this workflow failed on the third row's symptom with all three
-resolving empty, which is why the preflight reports visible names rather than
-only the missing ones.
+The first run of this workflow had all three resolving empty, which is why the
+preflight reports the names it can see rather than only the names it wants.
+Three empty at once points at a wrong-place mistake rather than three
+independent typos, so the preflight orders its suggestions that way.
 
 ## Endpoint Construction
 

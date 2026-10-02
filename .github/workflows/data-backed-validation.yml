@@ -114,18 +114,30 @@ jobs:
                   "tab (the 'New repository secret' button)."
               )
           elif not present:
+              # All three empty at once points at a systematic wrong-place
+              # mistake rather than three independent typos, so these are
+              # ordered by how easily each is made.
               print(
-                  "CAUSE: this job can see no repository secrets at all, which "
-                  "is the signature of an Environment secret."
+                  "CAUSE: this job can see no repository secrets at all, so they "
+                  "were saved somewhere Actions cannot reach: the wrong tab, an "
+                  "Environment, or another repository."
+              )
+              print("FIX: check these three, in this order.")
+              print(
+                  "  1. The wrong tab. Settings -> Secrets and variables has "
+                  "three of them: Actions, Codespaces and Dependabot. Only "
+                  "Actions is read by a workflow. Secrets under the other two "
+                  "are invisible here and look perfectly saved."
               )
               print(
-                  "FIX: the usual reason is that they were saved as *Environment* "
-                  "secrets. An environment secret only reaches a job that names "
-                  "that environment, and this workflow names none. On the "
-                  "Settings -> Secrets and variables -> Actions page, add them "
-                  "under 'Repository secrets' rather than inside an environment. "
-                  "The other possibility is that they went to a different "
-                  "repository or account than Bet-Zero/nbatools."
+                  "  2. An Environment. An environment secret reaches only a job "
+                  "that names that environment, and this workflow names none. On "
+                  "the Actions tab they must sit under 'Repository secrets', not "
+                  "inside an environment listed above it."
+              )
+              print(
+                  "  3. The wrong repository or account. They must be on "
+                  "Bet-Zero/nbatools itself, not a fork or a personal copy."
               )
           else:
               near = [

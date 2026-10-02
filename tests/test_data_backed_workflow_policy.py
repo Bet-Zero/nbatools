@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -197,18 +198,44 @@ def test_preflight_names_the_variables_tab_when_secrets_were_saved_there(
     assert "Variables tab" in _cause(result.stdout)
 
 
-def test_preflight_names_environment_secrets_when_it_can_see_none(tmp_path: Path) -> None:
-    """No visible secrets is the signature of an environment secret.
+def test_preflight_names_every_wrong_place_when_it_can_see_no_secrets(
+    tmp_path: Path,
+) -> None:
+    """No visible secrets has three causes, and all three must be offered.
 
-    An environment secret reaches only a job that declares that environment,
-    and this workflow declares none, so it resolves to empty with no hint as to
-    why. Without this branch the owner's most likely mistake is also the one the
-    failure says least about.
+    Each is a place a secret can sit while looking perfectly saved, and none is
+    distinguishable from the others in the failure:
+
+    - the Codespaces or Dependabot tab, which a workflow does not read
+    - an environment, which reaches only a job that declares it -- and this
+      workflow declares none
+    - another repository or a fork
+
+    Reducing this to one suggestion is the regression to catch: all three
+    secrets resolving empty at once is the signature of a wrong-place mistake
+    rather than of three independent typos, so the breadth is the diagnosis.
     """
     result, _output = _run_preflight({"github_token": "x"}, {}, tmp_path)
 
     assert result.returncode == 1
     assert "Environment" in _cause(result.stdout)
+
+    # Counted as numbered suggestions rather than searched for as words: the
+    # cause line above already says "environment" and "repository", so a
+    # keyword search over all of stdout passes with a suggestion deleted.
+    suggestions = [
+        line.strip() for line in result.stdout.splitlines() if re.match(r"^\s+\d\. ", line)
+    ]
+    assert len(suggestions) == 3, (
+        f"expected three numbered wrong-place suggestions, got {len(suggestions)}: {suggestions}"
+    )
+    joined = " ".join(suggestions)
+    for expected in ("Codespaces", "Dependabot", "environment", "repository"):
+        assert expected in joined, (
+            f"the no-secrets suggestions no longer mention {expected!r}. All "
+            f"three wrong places must stay offered; the owner cannot tell them "
+            f"apart from the failure.\n{result.stdout}"
+        )
 
 
 def test_preflight_lists_near_miss_names_when_the_secrets_are_misnamed(
