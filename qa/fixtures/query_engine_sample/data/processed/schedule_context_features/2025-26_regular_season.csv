@@ -1,0 +1,361 @@
+game_id,season,season_type,game_date,team_id,team_abbr,team_name,opponent_team_id,opponent_team_abbr,opponent_team_name,is_home,is_away,rest_days,opponent_rest_days,back_to_back,rest_advantage,score_margin,one_possession,nationally_televised,national_tv_source,national_tv_source_trusted,schedule_context_source,schedule_context_source_trusted
+0000000361,2025-26,Regular Season,2025-10-21,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,43,False,False,fixture,True,fixture,True
+0000000362,2025-26,Regular Season,2025-10-23,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,65,False,False,fixture,True,fixture,True
+0000000363,2025-26,Regular Season,2025-10-25,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,9,False,True,fixture,True,fixture,True
+0000000364,2025-26,Regular Season,2025-10-27,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,True,False,3,3,False,0,6,False,False,fixture,True,fixture,True
+0000000365,2025-26,Regular Season,2025-10-29,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,True,False,3,3,False,0,59,False,False,fixture,True,fixture,True
+0000000366,2025-26,Regular Season,2025-10-31,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,14,False,False,fixture,True,fixture,True
+0000000371,2025-26,Regular Season,2025-11-10,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,19,False,True,fixture,True,fixture,True
+0000000376,2025-26,Regular Season,2025-11-20,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,79,False,True,fixture,True,fixture,True
+0000000381,2025-26,Regular Season,2025-11-30,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,False,True,3,3,False,0,29,False,True,fixture,True,fixture,True
+0000000386,2025-26,Regular Season,2025-12-10,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,False,True,3,3,False,0,24,False,True,fixture,True,fixture,True
+0000000391,2025-26,Regular Season,2025-12-20,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,35,False,True,fixture,True,fixture,True
+0000000392,2025-26,Regular Season,2025-12-22,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,6,False,False,fixture,True,fixture,True
+0000000393,2025-26,Regular Season,2025-12-24,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-10,False,False,fixture,True,fixture,True
+0000000394,2025-26,Regular Season,2025-12-26,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000395,2025-26,Regular Season,2025-12-28,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,True,False,3,3,False,0,28,False,False,fixture,True,fixture,True
+0000000396,2025-26,Regular Season,2025-12-30,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,18,False,True,fixture,True,fixture,True
+0000000401,2025-26,Regular Season,2026-01-09,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,22,False,False,fixture,True,fixture,True
+0000000406,2025-26,Regular Season,2026-01-19,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-6,False,False,fixture,True,fixture,True
+0000000411,2025-26,Regular Season,2026-01-29,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-8,False,False,fixture,True,fixture,True
+0000000416,2025-26,Regular Season,2026-02-08,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,False,True,3,3,False,0,26,False,False,fixture,True,fixture,True
+0000000421,2025-26,Regular Season,2026-02-18,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000422,2025-26,Regular Season,2026-02-20,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,55,False,True,fixture,True,fixture,True
+0000000423,2025-26,Regular Season,2026-02-22,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-36,False,False,fixture,True,fixture,True
+0000000424,2025-26,Regular Season,2026-02-24,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,True,False,3,3,False,0,33,False,False,fixture,True,fixture,True
+0000000425,2025-26,Regular Season,2026-02-26,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,True,False,3,3,False,0,76,False,False,fixture,True,fixture,True
+0000000426,2025-26,Regular Season,2026-02-28,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,16,False,False,fixture,True,fixture,True
+0000000431,2025-26,Regular Season,2026-03-10,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,9,False,True,fixture,True,fixture,True
+0000000436,2025-26,Regular Season,2026-03-20,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-2,True,True,fixture,True,fixture,True
+0000000441,2025-26,Regular Season,2026-03-30,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-26,False,True,fixture,True,fixture,True
+0000000446,2025-26,Regular Season,2026-04-09,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,False,True,3,3,False,0,40,False,False,fixture,True,fixture,True
+0000000451,2025-26,Regular Season,2026-04-19,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,6,False,False,fixture,True,fixture,True
+0000000452,2025-26,Regular Season,2026-04-21,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,23,False,False,fixture,True,fixture,True
+0000000453,2025-26,Regular Season,2026-04-23,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000454,2025-26,Regular Season,2026-04-25,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-16,False,True,fixture,True,fixture,True
+0000000455,2025-26,Regular Season,2026-04-27,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,True,False,3,3,False,0,30,False,False,fixture,True,fixture,True
+0000000456,2025-26,Regular Season,2026-04-29,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,27,False,False,fixture,True,fixture,True
+0000000461,2025-26,Regular Season,2026-05-09,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000466,2025-26,Regular Season,2026-05-19,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000471,2025-26,Regular Season,2026-05-29,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,False,True,3,3,False,0,17,False,False,fixture,True,fixture,True
+0000000476,2025-26,Regular Season,2026-06-08,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,False,True,3,3,False,0,18,False,False,fixture,True,fixture,True
+0000000481,2025-26,Regular Season,2026-06-18,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,39,False,False,fixture,True,fixture,True
+0000000482,2025-26,Regular Season,2026-06-20,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,23,False,True,fixture,True,fixture,True
+0000000483,2025-26,Regular Season,2026-06-22,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-2,True,False,fixture,True,fixture,True
+0000000484,2025-26,Regular Season,2026-06-24,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-36,False,False,fixture,True,fixture,True
+0000000485,2025-26,Regular Season,2026-06-26,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,True,False,3,3,False,0,16,False,False,fixture,True,fixture,True
+0000000486,2025-26,Regular Season,2026-06-28,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,24,False,False,fixture,True,fixture,True
+0000000491,2025-26,Regular Season,2026-07-08,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,39,False,False,fixture,True,fixture,True
+0000000496,2025-26,Regular Season,2026-07-18,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-16,False,False,fixture,True,fixture,True
+0000000501,2025-26,Regular Season,2026-07-28,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-38,False,False,fixture,True,fixture,True
+0000000506,2025-26,Regular Season,2026-08-07,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,False,True,3,3,False,0,7,False,False,fixture,True,fixture,True
+0000000511,2025-26,Regular Season,2026-08-17,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,21,False,False,fixture,True,fixture,True
+0000000512,2025-26,Regular Season,2026-08-19,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,14,False,False,fixture,True,fixture,True
+0000000513,2025-26,Regular Season,2026-08-21,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,20,False,False,fixture,True,fixture,True
+0000000514,2025-26,Regular Season,2026-08-23,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,True,False,3,3,False,0,38,False,False,fixture,True,fixture,True
+0000000515,2025-26,Regular Season,2026-08-25,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,True,False,3,3,False,0,31,False,True,fixture,True,fixture,True
+0000000516,2025-26,Regular Season,2026-08-27,1610612747,LAL,Los Angeles Lakers,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,22,False,False,fixture,True,fixture,True
+0000000521,2025-26,Regular Season,2026-09-06,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,68,False,False,fixture,True,fixture,True
+0000000526,2025-26,Regular Season,2026-09-16,1610612747,LAL,Los Angeles Lakers,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-52,False,False,fixture,True,fixture,True
+0000000531,2025-26,Regular Season,2026-09-26,1610612747,LAL,Los Angeles Lakers,1610612752,NYK,New York Knicks,False,True,3,3,False,0,34,False,False,fixture,True,fixture,True
+0000000536,2025-26,Regular Season,2026-10-06,1610612747,LAL,Los Angeles Lakers,1610612748,MIA,Miami Heat,False,True,3,3,False,0,29,False,False,fixture,True,fixture,True
+0000000361,2025-26,Regular Season,2025-10-21,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-43,False,False,fixture,True,fixture,True
+0000000366,2025-26,Regular Season,2025-10-31,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-14,False,False,fixture,True,fixture,True
+0000000367,2025-26,Regular Season,2025-11-02,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,-17,False,False,fixture,True,fixture,True
+0000000368,2025-26,Regular Season,2025-11-04,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,13,False,False,fixture,True,fixture,True
+0000000369,2025-26,Regular Season,2025-11-06,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,True,False,3,3,False,0,3,True,False,fixture,True,fixture,True
+0000000370,2025-26,Regular Season,2025-11-08,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,True,False,3,3,False,0,18,False,False,fixture,True,fixture,True
+0000000372,2025-26,Regular Season,2025-11-12,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,22,False,False,fixture,True,fixture,True
+0000000377,2025-26,Regular Season,2025-11-22,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-9,False,False,fixture,True,fixture,True
+0000000382,2025-26,Regular Season,2025-12-02,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-9,False,False,fixture,True,fixture,True
+0000000387,2025-26,Regular Season,2025-12-12,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,False,True,3,3,False,0,2,True,False,fixture,True,fixture,True
+0000000391,2025-26,Regular Season,2025-12-20,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-35,False,True,fixture,True,fixture,True
+0000000396,2025-26,Regular Season,2025-12-30,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-18,False,True,fixture,True,fixture,True
+0000000397,2025-26,Regular Season,2026-01-01,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,8,False,False,fixture,True,fixture,True
+0000000398,2025-26,Regular Season,2026-01-03,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-39,False,False,fixture,True,fixture,True
+0000000399,2025-26,Regular Season,2026-01-05,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-42,False,True,fixture,True,fixture,True
+0000000400,2025-26,Regular Season,2026-01-07,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-2,True,False,fixture,True,fixture,True
+0000000402,2025-26,Regular Season,2026-01-11,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-8,False,False,fixture,True,fixture,True
+0000000407,2025-26,Regular Season,2026-01-21,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000412,2025-26,Regular Season,2026-01-31,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-26,False,False,fixture,True,fixture,True
+0000000417,2025-26,Regular Season,2026-02-10,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,False,True,3,3,False,0,-12,False,True,fixture,True,fixture,True
+0000000421,2025-26,Regular Season,2026-02-18,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000426,2025-26,Regular Season,2026-02-28,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-16,False,False,fixture,True,fixture,True
+0000000427,2025-26,Regular Season,2026-03-02,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,24,False,False,fixture,True,fixture,True
+0000000428,2025-26,Regular Season,2026-03-04,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-11,False,False,fixture,True,fixture,True
+0000000429,2025-26,Regular Season,2026-03-06,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-41,False,False,fixture,True,fixture,True
+0000000430,2025-26,Regular Season,2026-03-08,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,True,False,3,3,False,0,29,False,False,fixture,True,fixture,True
+0000000432,2025-26,Regular Season,2026-03-12,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-12,False,False,fixture,True,fixture,True
+0000000437,2025-26,Regular Season,2026-03-22,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-18,False,False,fixture,True,fixture,True
+0000000442,2025-26,Regular Season,2026-04-01,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-54,False,False,fixture,True,fixture,True
+0000000447,2025-26,Regular Season,2026-04-11,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,False,True,3,3,False,0,28,False,False,fixture,True,fixture,True
+0000000451,2025-26,Regular Season,2026-04-19,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-6,False,False,fixture,True,fixture,True
+0000000456,2025-26,Regular Season,2026-04-29,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-27,False,False,fixture,True,fixture,True
+0000000457,2025-26,Regular Season,2026-05-01,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,-18,False,False,fixture,True,fixture,True
+0000000458,2025-26,Regular Season,2026-05-03,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-7,False,False,fixture,True,fixture,True
+0000000459,2025-26,Regular Season,2026-05-05,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,True,False,3,3,False,0,7,False,True,fixture,True,fixture,True
+0000000460,2025-26,Regular Season,2026-05-07,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,True,False,3,3,False,0,16,False,False,fixture,True,fixture,True
+0000000462,2025-26,Regular Season,2026-05-11,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-17,False,False,fixture,True,fixture,True
+0000000467,2025-26,Regular Season,2026-05-21,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-35,False,False,fixture,True,fixture,True
+0000000472,2025-26,Regular Season,2026-05-31,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,False,True,3,3,False,0,31,False,False,fixture,True,fixture,True
+0000000477,2025-26,Regular Season,2026-06-10,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,False,True,3,3,False,0,-1,True,True,fixture,True,fixture,True
+0000000481,2025-26,Regular Season,2026-06-18,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-39,False,False,fixture,True,fixture,True
+0000000486,2025-26,Regular Season,2026-06-28,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-24,False,False,fixture,True,fixture,True
+0000000487,2025-26,Regular Season,2026-06-30,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,30,False,True,fixture,True,fixture,True
+0000000488,2025-26,Regular Season,2026-07-02,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-32,False,False,fixture,True,fixture,True
+0000000489,2025-26,Regular Season,2026-07-04,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,True,False,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000490,2025-26,Regular Season,2026-07-06,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-8,False,False,fixture,True,fixture,True
+0000000492,2025-26,Regular Season,2026-07-10,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-8,False,True,fixture,True,fixture,True
+0000000497,2025-26,Regular Season,2026-07-20,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-10,False,True,fixture,True,fixture,True
+0000000502,2025-26,Regular Season,2026-07-30,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,False,True,3,3,False,0,4,False,True,fixture,True,fixture,True
+0000000507,2025-26,Regular Season,2026-08-09,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,False,True,3,3,False,0,11,False,False,fixture,True,fixture,True
+0000000511,2025-26,Regular Season,2026-08-17,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-21,False,False,fixture,True,fixture,True
+0000000516,2025-26,Regular Season,2026-08-27,1610612744,GSW,Golden State Warriors,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-22,False,False,fixture,True,fixture,True
+0000000517,2025-26,Regular Season,2026-08-29,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,7,False,False,fixture,True,fixture,True
+0000000518,2025-26,Regular Season,2026-08-31,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-42,False,False,fixture,True,fixture,True
+0000000519,2025-26,Regular Season,2026-09-02,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,True,False,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000520,2025-26,Regular Season,2026-09-04,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000522,2025-26,Regular Season,2026-09-08,1610612744,GSW,Golden State Warriors,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000527,2025-26,Regular Season,2026-09-18,1610612744,GSW,Golden State Warriors,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-32,False,False,fixture,True,fixture,True
+0000000532,2025-26,Regular Season,2026-09-28,1610612744,GSW,Golden State Warriors,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-38,False,False,fixture,True,fixture,True
+0000000537,2025-26,Regular Season,2026-10-08,1610612744,GSW,Golden State Warriors,1610612748,MIA,Miami Heat,False,True,3,3,False,0,-30,False,False,fixture,True,fixture,True
+0000000362,2025-26,Regular Season,2025-10-23,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-65,False,False,fixture,True,fixture,True
+0000000367,2025-26,Regular Season,2025-11-02,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,17,False,False,fixture,True,fixture,True
+0000000371,2025-26,Regular Season,2025-11-10,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-19,False,True,fixture,True,fixture,True
+0000000372,2025-26,Regular Season,2025-11-12,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,-22,False,False,fixture,True,fixture,True
+0000000373,2025-26,Regular Season,2025-11-14,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,9,False,False,fixture,True,fixture,True
+0000000374,2025-26,Regular Season,2025-11-16,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-21,False,False,fixture,True,fixture,True
+0000000375,2025-26,Regular Season,2025-11-18,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-19,False,False,fixture,True,fixture,True
+0000000378,2025-26,Regular Season,2025-11-24,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-11,False,False,fixture,True,fixture,True
+0000000383,2025-26,Regular Season,2025-12-04,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-46,False,False,fixture,True,fixture,True
+0000000388,2025-26,Regular Season,2025-12-14,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,False,True,3,3,False,0,-6,False,False,fixture,True,fixture,True
+0000000392,2025-26,Regular Season,2025-12-22,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-6,False,False,fixture,True,fixture,True
+0000000397,2025-26,Regular Season,2026-01-01,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-8,False,False,fixture,True,fixture,True
+0000000401,2025-26,Regular Season,2026-01-09,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-22,False,False,fixture,True,fixture,True
+0000000402,2025-26,Regular Season,2026-01-11,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,8,False,False,fixture,True,fixture,True
+0000000403,2025-26,Regular Season,2026-01-13,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-41,False,False,fixture,True,fixture,True
+0000000404,2025-26,Regular Season,2026-01-15,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-24,False,True,fixture,True,fixture,True
+0000000405,2025-26,Regular Season,2026-01-17,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,True,False,3,3,False,0,9,False,False,fixture,True,fixture,True
+0000000408,2025-26,Regular Season,2026-01-23,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-18,False,False,fixture,True,fixture,True
+0000000413,2025-26,Regular Season,2026-02-02,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-19,False,False,fixture,True,fixture,True
+0000000418,2025-26,Regular Season,2026-02-12,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,False,True,3,3,False,0,37,False,False,fixture,True,fixture,True
+0000000422,2025-26,Regular Season,2026-02-20,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-55,False,True,fixture,True,fixture,True
+0000000427,2025-26,Regular Season,2026-03-02,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-24,False,False,fixture,True,fixture,True
+0000000431,2025-26,Regular Season,2026-03-10,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-9,False,True,fixture,True,fixture,True
+0000000432,2025-26,Regular Season,2026-03-12,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,12,False,False,fixture,True,fixture,True
+0000000433,2025-26,Regular Season,2026-03-14,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-7,False,False,fixture,True,fixture,True
+0000000434,2025-26,Regular Season,2026-03-16,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-46,False,False,fixture,True,fixture,True
+0000000435,2025-26,Regular Season,2026-03-18,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,True,False,3,3,False,0,6,False,False,fixture,True,fixture,True
+0000000438,2025-26,Regular Season,2026-03-24,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000443,2025-26,Regular Season,2026-04-03,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-11,False,False,fixture,True,fixture,True
+0000000448,2025-26,Regular Season,2026-04-13,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,False,True,3,3,False,0,10,False,False,fixture,True,fixture,True
+0000000452,2025-26,Regular Season,2026-04-21,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-23,False,False,fixture,True,fixture,True
+0000000457,2025-26,Regular Season,2026-05-01,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,18,False,False,fixture,True,fixture,True
+0000000461,2025-26,Regular Season,2026-05-09,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000462,2025-26,Regular Season,2026-05-11,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,17,False,False,fixture,True,fixture,True
+0000000463,2025-26,Regular Season,2026-05-13,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-11,False,False,fixture,True,fixture,True
+0000000464,2025-26,Regular Season,2026-05-15,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-25,False,True,fixture,True,fixture,True
+0000000465,2025-26,Regular Season,2026-05-17,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,True,False,3,3,False,0,16,False,False,fixture,True,fixture,True
+0000000468,2025-26,Regular Season,2026-05-23,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-41,False,False,fixture,True,fixture,True
+0000000473,2025-26,Regular Season,2026-06-02,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-27,False,False,fixture,True,fixture,True
+0000000478,2025-26,Regular Season,2026-06-12,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,False,True,3,3,False,0,-8,False,False,fixture,True,fixture,True
+0000000482,2025-26,Regular Season,2026-06-20,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-23,False,True,fixture,True,fixture,True
+0000000487,2025-26,Regular Season,2026-06-30,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-30,False,True,fixture,True,fixture,True
+0000000491,2025-26,Regular Season,2026-07-08,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-39,False,False,fixture,True,fixture,True
+0000000492,2025-26,Regular Season,2026-07-10,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,8,False,True,fixture,True,fixture,True
+0000000493,2025-26,Regular Season,2026-07-12,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-43,False,False,fixture,True,fixture,True
+0000000494,2025-26,Regular Season,2026-07-14,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-19,False,False,fixture,True,fixture,True
+0000000495,2025-26,Regular Season,2026-07-16,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-20,False,False,fixture,True,fixture,True
+0000000498,2025-26,Regular Season,2026-07-22,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000503,2025-26,Regular Season,2026-08-01,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000508,2025-26,Regular Season,2026-08-11,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,False,True,3,3,False,0,33,False,False,fixture,True,fixture,True
+0000000512,2025-26,Regular Season,2026-08-19,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-14,False,False,fixture,True,fixture,True
+0000000517,2025-26,Regular Season,2026-08-29,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-7,False,False,fixture,True,fixture,True
+0000000521,2025-26,Regular Season,2026-09-06,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-68,False,False,fixture,True,fixture,True
+0000000522,2025-26,Regular Season,2026-09-08,1610612743,DEN,Denver Nuggets,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000523,2025-26,Regular Season,2026-09-10,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-12,False,True,fixture,True,fixture,True
+0000000524,2025-26,Regular Season,2026-09-12,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-46,False,False,fixture,True,fixture,True
+0000000525,2025-26,Regular Season,2026-09-14,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-25,False,False,fixture,True,fixture,True
+0000000528,2025-26,Regular Season,2026-09-20,1610612743,DEN,Denver Nuggets,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-6,False,True,fixture,True,fixture,True
+0000000533,2025-26,Regular Season,2026-09-30,1610612743,DEN,Denver Nuggets,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-37,False,True,fixture,True,fixture,True
+0000000538,2025-26,Regular Season,2026-10-10,1610612743,DEN,Denver Nuggets,1610612748,MIA,Miami Heat,False,True,3,3,False,0,2,True,True,fixture,True,fixture,True
+0000000363,2025-26,Regular Season,2025-10-25,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-9,False,True,fixture,True,fixture,True
+0000000368,2025-26,Regular Season,2025-11-04,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-13,False,False,fixture,True,fixture,True
+0000000373,2025-26,Regular Season,2025-11-14,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-9,False,False,fixture,True,fixture,True
+0000000376,2025-26,Regular Season,2025-11-20,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-79,False,True,fixture,True,fixture,True
+0000000377,2025-26,Regular Season,2025-11-22,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,9,False,False,fixture,True,fixture,True
+0000000378,2025-26,Regular Season,2025-11-24,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,11,False,False,fixture,True,fixture,True
+0000000379,2025-26,Regular Season,2025-11-26,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,True,False,3,3,False,0,9,False,False,fixture,True,fixture,True
+0000000380,2025-26,Regular Season,2025-11-28,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000384,2025-26,Regular Season,2025-12-06,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000389,2025-26,Regular Season,2025-12-16,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,False,True,3,3,False,0,-22,False,False,fixture,True,fixture,True
+0000000393,2025-26,Regular Season,2025-12-24,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,10,False,False,fixture,True,fixture,True
+0000000398,2025-26,Regular Season,2026-01-03,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,39,False,False,fixture,True,fixture,True
+0000000403,2025-26,Regular Season,2026-01-13,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,41,False,False,fixture,True,fixture,True
+0000000406,2025-26,Regular Season,2026-01-19,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,6,False,False,fixture,True,fixture,True
+0000000407,2025-26,Regular Season,2026-01-21,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000408,2025-26,Regular Season,2026-01-23,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,18,False,False,fixture,True,fixture,True
+0000000409,2025-26,Regular Season,2026-01-25,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-11,False,True,fixture,True,fixture,True
+0000000410,2025-26,Regular Season,2026-01-27,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-34,False,False,fixture,True,fixture,True
+0000000414,2025-26,Regular Season,2026-02-04,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-7,False,False,fixture,True,fixture,True
+0000000419,2025-26,Regular Season,2026-02-14,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,False,True,3,3,False,0,36,False,False,fixture,True,fixture,True
+0000000423,2025-26,Regular Season,2026-02-22,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,36,False,False,fixture,True,fixture,True
+0000000428,2025-26,Regular Season,2026-03-04,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,11,False,False,fixture,True,fixture,True
+0000000433,2025-26,Regular Season,2026-03-14,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,7,False,False,fixture,True,fixture,True
+0000000436,2025-26,Regular Season,2026-03-20,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,2,True,True,fixture,True,fixture,True
+0000000437,2025-26,Regular Season,2026-03-22,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,18,False,False,fixture,True,fixture,True
+0000000438,2025-26,Regular Season,2026-03-24,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000439,2025-26,Regular Season,2026-03-26,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-23,False,False,fixture,True,fixture,True
+0000000440,2025-26,Regular Season,2026-03-28,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-16,False,False,fixture,True,fixture,True
+0000000444,2025-26,Regular Season,2026-04-05,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-4,False,True,fixture,True,fixture,True
+0000000449,2025-26,Regular Season,2026-04-15,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,False,True,3,3,False,0,35,False,True,fixture,True,fixture,True
+0000000453,2025-26,Regular Season,2026-04-23,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000458,2025-26,Regular Season,2026-05-03,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,7,False,False,fixture,True,fixture,True
+0000000463,2025-26,Regular Season,2026-05-13,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,11,False,False,fixture,True,fixture,True
+0000000466,2025-26,Regular Season,2026-05-19,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000467,2025-26,Regular Season,2026-05-21,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,35,False,False,fixture,True,fixture,True
+0000000468,2025-26,Regular Season,2026-05-23,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,41,False,False,fixture,True,fixture,True
+0000000469,2025-26,Regular Season,2026-05-25,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,True,False,3,3,False,0,19,False,True,fixture,True,fixture,True
+0000000470,2025-26,Regular Season,2026-05-27,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,True,False,3,3,False,0,19,False,False,fixture,True,fixture,True
+0000000474,2025-26,Regular Season,2026-06-04,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,False,True,3,3,False,0,18,False,False,fixture,True,fixture,True
+0000000479,2025-26,Regular Season,2026-06-14,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,False,True,3,3,False,0,9,False,False,fixture,True,fixture,True
+0000000483,2025-26,Regular Season,2026-06-22,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,2,True,False,fixture,True,fixture,True
+0000000488,2025-26,Regular Season,2026-07-02,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,32,False,False,fixture,True,fixture,True
+0000000493,2025-26,Regular Season,2026-07-12,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,43,False,False,fixture,True,fixture,True
+0000000496,2025-26,Regular Season,2026-07-18,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,16,False,False,fixture,True,fixture,True
+0000000497,2025-26,Regular Season,2026-07-20,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,10,False,True,fixture,True,fixture,True
+0000000498,2025-26,Regular Season,2026-07-22,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000499,2025-26,Regular Season,2026-07-24,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-12,False,False,fixture,True,fixture,True
+0000000500,2025-26,Regular Season,2026-07-26,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,True,False,3,3,False,0,11,False,False,fixture,True,fixture,True
+0000000504,2025-26,Regular Season,2026-08-03,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,False,True,3,3,False,0,3,True,False,fixture,True,fixture,True
+0000000509,2025-26,Regular Season,2026-08-13,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,False,True,3,3,False,0,39,False,False,fixture,True,fixture,True
+0000000513,2025-26,Regular Season,2026-08-21,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-20,False,False,fixture,True,fixture,True
+0000000518,2025-26,Regular Season,2026-08-31,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,42,False,False,fixture,True,fixture,True
+0000000523,2025-26,Regular Season,2026-09-10,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,12,False,True,fixture,True,fixture,True
+0000000526,2025-26,Regular Season,2026-09-16,1610612738,BOS,Boston Celtics,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,52,False,False,fixture,True,fixture,True
+0000000527,2025-26,Regular Season,2026-09-18,1610612738,BOS,Boston Celtics,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,32,False,False,fixture,True,fixture,True
+0000000528,2025-26,Regular Season,2026-09-20,1610612738,BOS,Boston Celtics,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,6,False,True,fixture,True,fixture,True
+0000000529,2025-26,Regular Season,2026-09-22,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,True,False,3,3,False,0,25,False,False,fixture,True,fixture,True
+0000000530,2025-26,Regular Season,2026-09-24,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,True,False,3,3,False,0,35,False,False,fixture,True,fixture,True
+0000000534,2025-26,Regular Season,2026-10-02,1610612738,BOS,Boston Celtics,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-3,True,False,fixture,True,fixture,True
+0000000539,2025-26,Regular Season,2026-10-12,1610612738,BOS,Boston Celtics,1610612748,MIA,Miami Heat,False,True,3,3,False,0,33,False,False,fixture,True,fixture,True
+0000000364,2025-26,Regular Season,2025-10-27,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-6,False,False,fixture,True,fixture,True
+0000000369,2025-26,Regular Season,2025-11-06,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-3,True,False,fixture,True,fixture,True
+0000000374,2025-26,Regular Season,2025-11-16,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,21,False,False,fixture,True,fixture,True
+0000000379,2025-26,Regular Season,2025-11-26,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-9,False,False,fixture,True,fixture,True
+0000000381,2025-26,Regular Season,2025-11-30,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-29,False,True,fixture,True,fixture,True
+0000000382,2025-26,Regular Season,2025-12-02,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,9,False,False,fixture,True,fixture,True
+0000000383,2025-26,Regular Season,2025-12-04,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,46,False,False,fixture,True,fixture,True
+0000000384,2025-26,Regular Season,2025-12-06,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000385,2025-26,Regular Season,2025-12-08,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,True,False,3,3,False,0,15,False,False,fixture,True,fixture,True
+0000000390,2025-26,Regular Season,2025-12-18,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,False,True,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000394,2025-26,Regular Season,2025-12-26,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000399,2025-26,Regular Season,2026-01-05,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,42,False,True,fixture,True,fixture,True
+0000000404,2025-26,Regular Season,2026-01-15,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,24,False,True,fixture,True,fixture,True
+0000000409,2025-26,Regular Season,2026-01-25,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,11,False,True,fixture,True,fixture,True
+0000000411,2025-26,Regular Season,2026-01-29,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,8,False,False,fixture,True,fixture,True
+0000000412,2025-26,Regular Season,2026-01-31,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,26,False,False,fixture,True,fixture,True
+0000000413,2025-26,Regular Season,2026-02-02,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,19,False,False,fixture,True,fixture,True
+0000000414,2025-26,Regular Season,2026-02-04,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,7,False,False,fixture,True,fixture,True
+0000000415,2025-26,Regular Season,2026-02-06,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,True,False,3,3,False,0,22,False,False,fixture,True,fixture,True
+0000000420,2025-26,Regular Season,2026-02-16,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,False,True,3,3,False,0,34,False,False,fixture,True,fixture,True
+0000000424,2025-26,Regular Season,2026-02-24,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-33,False,False,fixture,True,fixture,True
+0000000429,2025-26,Regular Season,2026-03-06,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,41,False,False,fixture,True,fixture,True
+0000000434,2025-26,Regular Season,2026-03-16,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,46,False,False,fixture,True,fixture,True
+0000000439,2025-26,Regular Season,2026-03-26,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,23,False,False,fixture,True,fixture,True
+0000000441,2025-26,Regular Season,2026-03-30,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,26,False,True,fixture,True,fixture,True
+0000000442,2025-26,Regular Season,2026-04-01,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,54,False,False,fixture,True,fixture,True
+0000000443,2025-26,Regular Season,2026-04-03,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,11,False,False,fixture,True,fixture,True
+0000000444,2025-26,Regular Season,2026-04-05,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,4,False,True,fixture,True,fixture,True
+0000000445,2025-26,Regular Season,2026-04-07,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,True,False,3,3,False,0,1,True,False,fixture,True,fixture,True
+0000000450,2025-26,Regular Season,2026-04-17,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,False,True,3,3,False,0,20,False,False,fixture,True,fixture,True
+0000000454,2025-26,Regular Season,2026-04-25,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,16,False,True,fixture,True,fixture,True
+0000000459,2025-26,Regular Season,2026-05-05,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-7,False,True,fixture,True,fixture,True
+0000000464,2025-26,Regular Season,2026-05-15,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,25,False,True,fixture,True,fixture,True
+0000000469,2025-26,Regular Season,2026-05-25,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-19,False,True,fixture,True,fixture,True
+0000000471,2025-26,Regular Season,2026-05-29,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-17,False,False,fixture,True,fixture,True
+0000000472,2025-26,Regular Season,2026-05-31,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,-31,False,False,fixture,True,fixture,True
+0000000473,2025-26,Regular Season,2026-06-02,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,27,False,False,fixture,True,fixture,True
+0000000474,2025-26,Regular Season,2026-06-04,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-18,False,False,fixture,True,fixture,True
+0000000475,2025-26,Regular Season,2026-06-06,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-12,False,False,fixture,True,fixture,True
+0000000480,2025-26,Regular Season,2026-06-16,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,False,True,3,3,False,0,12,False,False,fixture,True,fixture,True
+0000000484,2025-26,Regular Season,2026-06-24,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,36,False,False,fixture,True,fixture,True
+0000000489,2025-26,Regular Season,2026-07-04,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000494,2025-26,Regular Season,2026-07-14,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,19,False,False,fixture,True,fixture,True
+0000000499,2025-26,Regular Season,2026-07-24,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,12,False,False,fixture,True,fixture,True
+0000000501,2025-26,Regular Season,2026-07-28,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,38,False,False,fixture,True,fixture,True
+0000000502,2025-26,Regular Season,2026-07-30,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,-4,False,True,fixture,True,fixture,True
+0000000503,2025-26,Regular Season,2026-08-01,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000504,2025-26,Regular Season,2026-08-03,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-3,True,False,fixture,True,fixture,True
+0000000505,2025-26,Regular Season,2026-08-05,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,True,False,3,3,False,0,-30,False,True,fixture,True,fixture,True
+0000000510,2025-26,Regular Season,2026-08-15,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,False,True,3,3,False,0,32,False,True,fixture,True,fixture,True
+0000000514,2025-26,Regular Season,2026-08-23,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-38,False,False,fixture,True,fixture,True
+0000000519,2025-26,Regular Season,2026-09-02,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000524,2025-26,Regular Season,2026-09-12,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,46,False,False,fixture,True,fixture,True
+0000000529,2025-26,Regular Season,2026-09-22,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-25,False,False,fixture,True,fixture,True
+0000000531,2025-26,Regular Season,2026-09-26,1610612752,NYK,New York Knicks,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-34,False,False,fixture,True,fixture,True
+0000000532,2025-26,Regular Season,2026-09-28,1610612752,NYK,New York Knicks,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,38,False,False,fixture,True,fixture,True
+0000000533,2025-26,Regular Season,2026-09-30,1610612752,NYK,New York Knicks,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,37,False,True,fixture,True,fixture,True
+0000000534,2025-26,Regular Season,2026-10-02,1610612752,NYK,New York Knicks,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,3,True,False,fixture,True,fixture,True
+0000000535,2025-26,Regular Season,2026-10-04,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,True,False,3,3,False,0,36,False,False,fixture,True,fixture,True
+0000000540,2025-26,Regular Season,2026-10-14,1610612752,NYK,New York Knicks,1610612748,MIA,Miami Heat,False,True,3,3,False,0,42,False,False,fixture,True,fixture,True
+0000000365,2025-26,Regular Season,2025-10-29,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-59,False,False,fixture,True,fixture,True
+0000000370,2025-26,Regular Season,2025-11-08,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-18,False,False,fixture,True,fixture,True
+0000000375,2025-26,Regular Season,2025-11-18,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,19,False,False,fixture,True,fixture,True
+0000000380,2025-26,Regular Season,2025-11-28,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000385,2025-26,Regular Season,2025-12-08,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-15,False,False,fixture,True,fixture,True
+0000000386,2025-26,Regular Season,2025-12-10,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-24,False,True,fixture,True,fixture,True
+0000000387,2025-26,Regular Season,2025-12-12,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,-2,True,False,fixture,True,fixture,True
+0000000388,2025-26,Regular Season,2025-12-14,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,6,False,False,fixture,True,fixture,True
+0000000389,2025-26,Regular Season,2025-12-16,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,22,False,False,fixture,True,fixture,True
+0000000390,2025-26,Regular Season,2025-12-18,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-4,False,False,fixture,True,fixture,True
+0000000395,2025-26,Regular Season,2025-12-28,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-28,False,False,fixture,True,fixture,True
+0000000400,2025-26,Regular Season,2026-01-07,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,2,True,False,fixture,True,fixture,True
+0000000405,2025-26,Regular Season,2026-01-17,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-9,False,False,fixture,True,fixture,True
+0000000410,2025-26,Regular Season,2026-01-27,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,34,False,False,fixture,True,fixture,True
+0000000415,2025-26,Regular Season,2026-02-06,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-22,False,False,fixture,True,fixture,True
+0000000416,2025-26,Regular Season,2026-02-08,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-26,False,False,fixture,True,fixture,True
+0000000417,2025-26,Regular Season,2026-02-10,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,12,False,True,fixture,True,fixture,True
+0000000418,2025-26,Regular Season,2026-02-12,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,-37,False,False,fixture,True,fixture,True
+0000000419,2025-26,Regular Season,2026-02-14,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-36,False,False,fixture,True,fixture,True
+0000000420,2025-26,Regular Season,2026-02-16,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-34,False,False,fixture,True,fixture,True
+0000000425,2025-26,Regular Season,2026-02-26,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-76,False,False,fixture,True,fixture,True
+0000000430,2025-26,Regular Season,2026-03-08,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-29,False,False,fixture,True,fixture,True
+0000000435,2025-26,Regular Season,2026-03-18,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-6,False,False,fixture,True,fixture,True
+0000000440,2025-26,Regular Season,2026-03-28,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,16,False,False,fixture,True,fixture,True
+0000000445,2025-26,Regular Season,2026-04-07,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-1,True,False,fixture,True,fixture,True
+0000000446,2025-26,Regular Season,2026-04-09,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-40,False,False,fixture,True,fixture,True
+0000000447,2025-26,Regular Season,2026-04-11,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,-28,False,False,fixture,True,fixture,True
+0000000448,2025-26,Regular Season,2026-04-13,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,-10,False,False,fixture,True,fixture,True
+0000000449,2025-26,Regular Season,2026-04-15,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-35,False,True,fixture,True,fixture,True
+0000000450,2025-26,Regular Season,2026-04-17,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-20,False,False,fixture,True,fixture,True
+0000000455,2025-26,Regular Season,2026-04-27,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-30,False,False,fixture,True,fixture,True
+0000000460,2025-26,Regular Season,2026-05-07,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,-16,False,False,fixture,True,fixture,True
+0000000465,2025-26,Regular Season,2026-05-17,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-16,False,False,fixture,True,fixture,True
+0000000470,2025-26,Regular Season,2026-05-27,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-19,False,False,fixture,True,fixture,True
+0000000475,2025-26,Regular Season,2026-06-06,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,False,True,3,3,False,0,12,False,False,fixture,True,fixture,True
+0000000476,2025-26,Regular Season,2026-06-08,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-18,False,False,fixture,True,fixture,True
+0000000477,2025-26,Regular Season,2026-06-10,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,1,True,True,fixture,True,fixture,True
+0000000478,2025-26,Regular Season,2026-06-12,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,8,False,False,fixture,True,fixture,True
+0000000479,2025-26,Regular Season,2026-06-14,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-9,False,False,fixture,True,fixture,True
+0000000480,2025-26,Regular Season,2026-06-16,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-12,False,False,fixture,True,fixture,True
+0000000485,2025-26,Regular Season,2026-06-26,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-16,False,False,fixture,True,fixture,True
+0000000490,2025-26,Regular Season,2026-07-06,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,8,False,False,fixture,True,fixture,True
+0000000495,2025-26,Regular Season,2026-07-16,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,20,False,False,fixture,True,fixture,True
+0000000500,2025-26,Regular Season,2026-07-26,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-11,False,False,fixture,True,fixture,True
+0000000505,2025-26,Regular Season,2026-08-05,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,False,True,3,3,False,0,30,False,True,fixture,True,fixture,True
+0000000506,2025-26,Regular Season,2026-08-07,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-7,False,False,fixture,True,fixture,True
+0000000507,2025-26,Regular Season,2026-08-09,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,-11,False,False,fixture,True,fixture,True
+0000000508,2025-26,Regular Season,2026-08-11,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,-33,False,False,fixture,True,fixture,True
+0000000509,2025-26,Regular Season,2026-08-13,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-39,False,False,fixture,True,fixture,True
+0000000510,2025-26,Regular Season,2026-08-15,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-32,False,True,fixture,True,fixture,True
+0000000515,2025-26,Regular Season,2026-08-25,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-31,False,True,fixture,True,fixture,True
+0000000520,2025-26,Regular Season,2026-09-04,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,False,True,3,3,False,0,4,False,False,fixture,True,fixture,True
+0000000525,2025-26,Regular Season,2026-09-14,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,25,False,False,fixture,True,fixture,True
+0000000530,2025-26,Regular Season,2026-09-24,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,False,True,3,3,False,0,-35,False,False,fixture,True,fixture,True
+0000000535,2025-26,Regular Season,2026-10-04,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,False,True,3,3,False,0,-36,False,False,fixture,True,fixture,True
+0000000536,2025-26,Regular Season,2026-10-06,1610612748,MIA,Miami Heat,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-29,False,False,fixture,True,fixture,True
+0000000537,2025-26,Regular Season,2026-10-08,1610612748,MIA,Miami Heat,1610612744,GSW,Golden State Warriors,True,False,3,3,False,0,30,False,False,fixture,True,fixture,True
+0000000538,2025-26,Regular Season,2026-10-10,1610612748,MIA,Miami Heat,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,-2,True,True,fixture,True,fixture,True
+0000000539,2025-26,Regular Season,2026-10-12,1610612748,MIA,Miami Heat,1610612738,BOS,Boston Celtics,True,False,3,3,False,0,-33,False,False,fixture,True,fixture,True
+0000000540,2025-26,Regular Season,2026-10-14,1610612748,MIA,Miami Heat,1610612752,NYK,New York Knicks,True,False,3,3,False,0,-42,False,False,fixture,True,fixture,True

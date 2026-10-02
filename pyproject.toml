@@ -58,6 +58,7 @@ xfail_strict = true
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "needs_data: skip when local CSV data files are not available",
+    "fixture_data: runs against the committed synthetic query fixture (qa/fixtures/query_engine_sample)",
     "parser: pure parsing, entity resolution, boolean query parsing",
     "query: natural query routing, intent detection, orchestration",
     "engine: core command computation, metrics, records, streaks, pipeline",

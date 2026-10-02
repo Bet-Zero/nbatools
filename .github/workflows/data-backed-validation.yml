@@ -1,0 +1,188 @@
+name: Data-Backed Validation
+
+# The validation that needs the real pinned NBA data.
+#
+# Ordinary CI carries no dataset, so the Raw QA corpus and the filter execution
+# sweep have never run on CI infrastructure - they were local-only, on one
+# machine, undated and unretained. This workflow reads the immutable R2
+# generation the deployed application reads, so those two gates finally run
+# somewhere automated and leave evidence behind.
+#
+# It is deliberately NOT on the pull_request trigger: it costs an R2 read of the
+# whole generation and several minutes, and `ci.yml` already answers "is the code
+# healthy" on every PR. This answers the different question of whether the
+# answers are *correct*, which is a nightly/on-demand concern.
+#
+# Secrets required (repository Actions secrets):
+#   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
+# A read-only R2 token is sufficient: the query path only calls head_object and
+# get_object. Nothing in this workflow writes, publishes or deletes.
+#
+# DATA_SOURCE and R2_BUCKET_NAME are not secret - they are already committed in
+# vercel.json - so they are set in plain sight below.
+
+on:
+  schedule:
+    - cron: "41 7 * * *" # nightly, after ci.yml's 06:00 run
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-backed-validation
+  cancel-in-progress: false
+
+env:
+  DATA_SOURCE: r2
+  R2_BUCKET_NAME: nbatools-data
+
+jobs:
+  # ── Fail fast, and say exactly what is missing ────────────────────
+  #
+  # Without this, a misnamed or absent secret surfaces as an opaque
+  # DataSourceConfigError several minutes into a Raw QA run. This names the
+  # secret and stops, and it reveals nothing: it tests for emptiness only and
+  # never echoes a value.
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Check the R2 secrets are present
+        id: check
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          missing=""
+          for name in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
+            if [ -z "${!name}" ]; then missing="$missing $name"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository Actions secret(s):$missing"
+            echo "Add them under Settings -> Secrets and variables -> Actions."
+            echo "A read-only Cloudflare R2 API token is sufficient."
+            exit 1
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+          echo "All three R2 secrets are present."
+
+      - run: pip install -e ".[dev,api]"
+
+      - name: Prove the generation is reachable and name it
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          python - <<'PY'
+          from nbatools.data_source import current_data_generation, data_glob
+
+          print(f"active immutable generation: {current_data_generation()}")
+          seasons = data_glob("data/raw/player_game_stats/*.csv")
+          print(f"player_game_stats files reachable: {len(seasons)}")
+          if not seasons:
+              raise SystemExit(
+                  "R2 is reachable but no player game logs were found. "
+                  "Check R2_BUCKET_NAME and the active generation pointer."
+              )
+          PY
+
+  # ── The corpus: are the answers what they are contracted to be? ───
+  raw-qa:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
+
+      - name: Full Raw QA corpus, fail-closed
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: make raw-query-answer-qa
+
+      - name: Upload the run's evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-qa-report
+          path: outputs/raw_query_answer_qa/
+          retention-days: 30
+          if-no-files-found: error
+
+  # ── The sweep: is any filter displayed but never applied? ─────────
+  #
+  # Exit 1 means a LIED row - a filter badged as applied over an unfiltered
+  # answer. Exit 2 means NO_SIGNAL: nothing was comparable, which is not a pass.
+  # Both fail this job, which is the whole point of QA-01.
+  filter-sweep:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
+
+      - name: Filter execution sweep against the real generation
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          python tools/filter_execution_sweep.py \
+            --json outputs/filter_execution_sweep/ci.json
+
+      - name: Upload the sweep's evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: filter-sweep-report
+          path: outputs/filter_execution_sweep/
+          retention-days: 30
+          if-no-files-found: error
+
+  # ── The data-backed tests that have never run anywhere automated ──
+  #
+  # `needs_data` tests assert real values. They skip on a local-data check, so
+  # NBATOOLS_DATA_ROOT cannot satisfy them; this job runs them explicitly by
+  # marker against R2 instead, and is informational on its first outings because
+  # it has no prior green run to regress from.
+  data-backed-tests:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -e ".[dev,api]"
+
+      - name: Tests marked needs_data, against the real generation
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python -m pytest -m needs_data -rf --no-header -q

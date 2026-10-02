@@ -1,0 +1,13 @@
+game_id,season,season_type,game_date,team_id,team_abbr,team_name,opponent_team_id,opponent_team_abbr,opponent_team_name,is_home,is_away,rest_days,opponent_rest_days,back_to_back,rest_advantage,score_margin,one_possession,nationally_televised,national_tv_source,national_tv_source_trusted,schedule_context_source,schedule_context_source_trusted
+0000000541,2025-26,Playoffs,2026-05-09,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,49,False,False,fixture,True,fixture,True
+0000000542,2025-26,Playoffs,2026-05-11,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,30,False,False,fixture,True,fixture,True
+0000000543,2025-26,Playoffs,2026-05-13,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,35,False,False,fixture,True,fixture,True
+0000000544,2025-26,Playoffs,2026-05-15,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,-7,False,True,fixture,True,fixture,True
+0000000545,2025-26,Playoffs,2026-05-17,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,True,False,3,3,False,0,27,False,False,fixture,True,fixture,True
+0000000546,2025-26,Playoffs,2026-05-19,1610612747,LAL,Los Angeles Lakers,1610612743,DEN,Denver Nuggets,False,True,3,3,False,0,41,False,False,fixture,True,fixture,True
+0000000541,2025-26,Playoffs,2026-05-09,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-49,False,False,fixture,True,fixture,True
+0000000542,2025-26,Playoffs,2026-05-11,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-30,False,False,fixture,True,fixture,True
+0000000543,2025-26,Playoffs,2026-05-13,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-35,False,False,fixture,True,fixture,True
+0000000544,2025-26,Playoffs,2026-05-15,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,7,False,True,fixture,True,fixture,True
+0000000545,2025-26,Playoffs,2026-05-17,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,False,True,3,3,False,0,-27,False,False,fixture,True,fixture,True
+0000000546,2025-26,Playoffs,2026-05-19,1610612743,DEN,Denver Nuggets,1610612747,LAL,Los Angeles Lakers,True,False,3,3,False,0,-41,False,False,fixture,True,fixture,True
