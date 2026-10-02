@@ -1,0 +1,141 @@
+name: R2 Real-Data Validation
+
+# Manual-only by design. This workflow is the only GitHub Actions path that
+# should receive the temporary, bucket-scoped read-only NBA data credential.
+# Keep ordinary CI secret-free.
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: "Same-repo branch, commit SHA, tag, or PR merge ref to validate"
+        required: true
+        default: "main"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r2-real-data-validation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Raw QA + filter sweep against real R2 data
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    # Store the three R2 credential values as environment secrets here, not as
+    # ordinary repository secrets:
+    #   R2_VALIDATION_ACCOUNT_ID
+    #   R2_VALIDATION_ACCESS_KEY_ID
+    #   R2_VALIDATION_SECRET_ACCESS_KEY
+    #
+    # The environment can require owner approval before these secrets are
+    # released to the runner.
+    environment: r2-validation
+
+    env:
+      DATA_SOURCE: r2
+      R2_BUCKET_NAME: nbatools-data
+      R2_ACCOUNT_ID: ${{ secrets.R2_VALIDATION_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_VALIDATION_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_VALIDATION_SECRET_ACCESS_KEY }}
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Check out requested revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.target_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project
+        run: pip install -e ".[dev,api]"
+
+      - name: Verify read-only data access and pin one immutable generation
+        run: |
+          python - <<'PY'
+          import os
+
+          required = (
+              "R2_ACCOUNT_ID",
+              "R2_ACCESS_KEY_ID",
+              "R2_SECRET_ACCESS_KEY",
+          )
+          missing = [name for name in required if not os.environ.get(name)]
+          if missing:
+              raise SystemExit(
+                  "Missing r2-validation environment secret(s): " + ", ".join(missing)
+              )
+
+          from nbatools.data_source import (
+              current_data_generation,
+              data_glob,
+              data_source_mode,
+          )
+
+          if data_source_mode() != "r2":
+              raise SystemExit("DATA_SOURCE did not resolve to r2")
+
+          generation = current_data_generation()
+          player_game_files = data_glob("raw/player_game_stats/*.csv")
+          if not player_game_files:
+              raise SystemExit(
+                  "R2 was reachable but the active generation exposed no "
+                  "raw/player_game_stats CSVs"
+              )
+
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as handle:
+              handle.write(f"NBATOOLS_DATA_GENERATION={generation}\n")
+
+          print(
+              "R2 read check passed; pinned generation "
+              f"{generation!r} with {len(player_game_files)} player-game files"
+          )
+          PY
+
+      - name: Run full Raw QA corpus
+        id: raw_qa
+        continue-on-error: true
+        run: |
+          make raw-query-answer-qa \
+            RAW_QA_ARGS="--run-id r2_validation --overwrite-run-id"
+
+      - name: Run real-data filter execution sweep
+        id: filter_sweep
+        continue-on-error: true
+        run: |
+          mkdir -p outputs/filter_execution_sweep
+          python tools/filter_execution_sweep.py \
+            --json outputs/filter_execution_sweep/r2_validation.json
+
+      - name: Upload validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-real-data-validation-${{ github.run_id }}
+          path: |
+            outputs/raw_query_answer_qa/r2_validation/
+            outputs/filter_execution_sweep/r2_validation.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Enforce both validation gates
+        if: always()
+        run: |
+          raw_qa="${{ steps.raw_qa.outcome }}"
+          filter_sweep="${{ steps.filter_sweep.outcome }}"
+
+          echo "Raw QA outcome: $raw_qa"
+          echo "Filter sweep outcome: $filter_sweep"
+
+          if [ "$raw_qa" != "success" ] || [ "$filter_sweep" != "success" ]; then
+            echo "Real-data validation failed. Inspect the uploaded evidence artifact."
+            exit 1
+          fi
