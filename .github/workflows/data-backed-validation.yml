@@ -13,10 +13,13 @@ name: Data-Backed Validation
 # healthy" on every PR. This answers the different question of whether the
 # answers are *correct*, which is a nightly/on-demand concern.
 #
-# Secrets required (repository Actions secrets):
+# Secrets required (repository Actions secrets, NOT environment secrets and NOT
+# variables - the preflight below diagnoses both mistakes):
 #   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
 # A read-only R2 token is sufficient: the query path only calls head_object and
 # get_object. Nothing in this workflow writes, publishes or deletes.
+# Setup and the three ways it goes wrong:
+#   docs/operations/deployment.md#github-actions-secrets
 #
 # DATA_SOURCE and R2_BUCKET_NAME are not secret - they are already committed in
 # vercel.json - so they are set in plain sight below.
@@ -59,22 +62,97 @@ jobs:
       - name: Check the R2 secrets are present
         id: check
         env:
-          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          # Names, not values. GitHub masks secret values in logs, but this step
+          # does not lean on that: it parses the JSON and emits sorted *keys*
+          # only. Secret names are not sensitive, and knowing which names exist
+          # is the whole difference between "something is wrong" and a fix.
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+          VARIABLES_JSON: ${{ toJSON(vars) }}
         run: |
-          missing=""
-          for name in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY; do
-            if [ -z "${!name}" ]; then missing="$missing $name"; fi
-          done
-          if [ -n "$missing" ]; then
-            echo "::error::Missing repository Actions secret(s):$missing"
-            echo "Add them under Settings -> Secrets and variables -> Actions."
-            echo "A read-only Cloudflare R2 API token is sufficient."
-            exit 1
-          fi
-          echo "configured=true" >> "$GITHUB_OUTPUT"
-          echo "All three R2 secrets are present."
+          python - <<'PY'
+          import json
+          import os
+
+          REQUIRED = ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY")
+
+          secrets = json.loads(os.environ["SECRETS_JSON"])
+          variables = json.loads(os.environ["VARIABLES_JSON"])
+
+          # Truthiness, so a secret saved as an empty string is caught too. The
+          # value is read here and never printed, compared or stored.
+          missing = [name for name in REQUIRED if not secrets.get(name)]
+
+          if not missing:
+              print("All three R2 secrets are present.")
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+                  handle.write("configured=true\n")
+              raise SystemExit(0)
+
+          # ── Diagnose, don't just complain ─────────────────────────────
+          #
+          # "Missing" has three very different causes with three different
+          # fixes, and the owner cannot tell them apart from the failure alone.
+          # github_token is dropped because every job gets it regardless.
+          present = sorted(name for name in secrets if name != "github_token")
+          declared = sorted(variables)
+
+          print(f"::error::Missing repository Actions secret(s): {' '.join(missing)}")
+          print()
+          print(f"Secret names this job can see:   {', '.join(present) or '(none)'}")
+          print(f"Variable names this job can see: {', '.join(declared) or '(none)'}")
+          print()
+
+          as_variables = [name for name in REQUIRED if name in variables]
+          if as_variables:
+              print(
+                  "CAUSE: saved under the Variables tab instead of the Secrets "
+                  f"tab: {' '.join(as_variables)}."
+              )
+              print(
+                  "FIX: Settings -> Secrets and variables -> Actions. Delete them "
+                  "from the Variables tab, then add them again under the Secrets "
+                  "tab (the 'New repository secret' button)."
+              )
+          elif not present:
+              print(
+                  "CAUSE: this job can see no repository secrets at all, which "
+                  "is the signature of an Environment secret."
+              )
+              print(
+                  "FIX: the usual reason is that they were saved as *Environment* "
+                  "secrets. An environment secret only reaches a job that names "
+                  "that environment, and this workflow names none. On the "
+                  "Settings -> Secrets and variables -> Actions page, add them "
+                  "under 'Repository secrets' rather than inside an environment. "
+                  "The other possibility is that they went to a different "
+                  "repository or account than Bet-Zero/nbatools."
+              )
+          else:
+              near = [
+                  name
+                  for name in present
+                  if any(
+                      token in name.upper()
+                      for token in ("R2", "CLOUDFLARE", "ACCOUNT", "ACCESS", "SECRET", "KEY")
+                  )
+              ]
+              print(
+                  "CAUSE: repository secrets exist, but not under the three names "
+                  "this workflow needs."
+              )
+              if near:
+                  print(f"       Likely the same credentials named differently: {', '.join(near)}.")
+              print(
+                  "FIX: the names must match exactly, character for character: "
+                  f"{', '.join(REQUIRED)}. They are the names the query engine "
+                  "itself reads (REQUIRED_R2_ENV_VARS in src/nbatools/data_source.py), "
+                  "so renaming the secret is the fix, not renaming the workflow."
+              )
+
+          print()
+          print("A read-only Cloudflare R2 API token is sufficient for all three.")
+          raise SystemExit(1)
+          PY
 
       - run: pip install -e ".[dev,api]"
 

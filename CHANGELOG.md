@@ -9,7 +9,24 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- The data-backed validation workflow's preflight now reports which secret
+  *names* GitHub can see, not only which are missing. "Missing" has three
+  causes with three different fixes — saved as a variable, saved as an
+  environment secret, saved under a different name — and the first run of the
+  workflow could not distinguish them. It reports names only; a canary test
+  proves no value is ever printed.
+
+### Added
+
+- `tests/test_data_backed_workflow_policy.py` — governance for the data-backed
+  validation workflow: its secret names cannot drift from the engine's
+  `REQUIRED_R2_ENV_VARS`, its fail-closed gates cannot be made advisory, and its
+  preflight cannot leak a credential. Verified against ten simulated
+  regressions.
+- `docs/operations/deployment.md` now documents GitHub Actions as the third
+  place R2 credentials live, alongside `.env` and Vercel.
 
 ---
 
