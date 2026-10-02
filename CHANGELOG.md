@@ -9,6 +9,15 @@ https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### Fixed
+
+- The data-backed validation workflow no longer reads `toJSON(secrets)`. Doing
+  so got every run held for manual approval with zero jobs created, so the
+  preflight diagnosis it was added to produce never ran, and the workflow was
+  worth less than before. It now references each secret by name and prints a
+  four-cause checklist on failure, detecting the one cause it still can (the
+  credentials saved under the Variables tab) from `toJSON(vars)`.
+
 ### Changed
 
 - The data-backed validation workflow's preflight now reports which secret

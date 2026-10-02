@@ -88,17 +88,23 @@ def _preflight_script() -> str:
 
 
 def _run_preflight(secrets: dict[str, str], variables: dict[str, str], tmp_path: Path):
-    """Run the preflight check against synthetic secrets."""
+    """Run the preflight check against synthetic secrets.
+
+    `secrets` is passed the way the workflow passes it: one named environment
+    variable per secret. The step no longer receives the secrets context as a
+    whole -- see `test_preflight_never_enumerates_the_secrets_context`.
+    """
     output = tmp_path / "github_output"
     output.touch()
+    env = {key: value for key, value in os.environ.items() if key not in SECRET_ENV_VARS}
     return subprocess.run(
         [sys.executable, "-"],
         input=_preflight_script(),
         capture_output=True,
         text=True,
         env={
-            **os.environ,
-            "SECRETS_JSON": json.dumps(secrets),
+            **env,
+            **secrets,
             "VARIABLES_JSON": json.dumps(variables),
             "GITHUB_OUTPUT": str(output),
         },
@@ -121,9 +127,7 @@ def _cause(stdout: str) -> str:
 # A value distinctive enough that finding it in the output cannot be a
 # coincidence, in each of the three secrets.
 CANARY = "CANARY-7f3a9e2b-must-never-be-printed"
-GOOD_SECRETS = {"github_token": "ghs_" + CANARY} | {
-    name: f"{CANARY}-{name}" for name in SECRET_ENV_VARS
-}
+GOOD_SECRETS = {name: f"{CANARY}-{name}" for name in SECRET_ENV_VARS}
 
 
 # ── The preflight never prints a value ────────────────────────────────
@@ -133,17 +137,29 @@ GOOD_SECRETS = {"github_token": "ghs_" + CANARY} | {
     "secrets,variables",
     [
         pytest.param(GOOD_SECRETS, {}, id="all-present"),
-        pytest.param({"github_token": "ghs_" + CANARY}, {}, id="none-present"),
+        pytest.param({}, {}, id="none-present"),
         pytest.param(
-            {"github_token": "ghs_" + CANARY},
+            {},
             {name: f"{CANARY}-{name}" for name in SECRET_ENV_VARS},
             id="saved-as-variables",
         ),
-        pytest.param(
-            {"github_token": "ghs_" + CANARY, "CLOUDFLARE_ACCOUNT_ID": CANARY},
-            {},
-            id="named-differently",
-        ),
+        # One scenario per secret, where that secret is the *absent* one and the
+        # other two carry canaries. Without these the failure path only ever ran
+        # with nothing populated to leak, so a mutation that printed a secret
+        # value on that path went undetected.
+        *[
+            pytest.param(
+                {k: v for k, v in GOOD_SECRETS.items() if k != absent},
+                {},
+                id=f"absent-{absent.lower()}",
+            )
+            for absent in SECRET_ENV_VARS
+        ],
+        # Same again for an empty value rather than an absent one.
+        *[
+            pytest.param(GOOD_SECRETS | {empty: ""}, {}, id=f"empty-{empty.lower()}")
+            for empty in SECRET_ENV_VARS
+        ],
     ],
 )
 def test_preflight_never_prints_a_secret_value(
@@ -198,69 +214,73 @@ def test_preflight_names_the_variables_tab_when_secrets_were_saved_there(
     assert "Variables tab" in _cause(result.stdout)
 
 
-def test_preflight_names_every_wrong_place_when_it_can_see_no_secrets(
+def test_preflight_names_every_wrong_place_when_the_secrets_resolve_to_nothing(
     tmp_path: Path,
 ) -> None:
-    """No visible secrets has three causes, and all three must be offered.
+    """Four places a secret can sit while looking perfectly saved.
 
-    Each is a place a secret can sit while looking perfectly saved, and none is
-    distinguishable from the others in the failure:
+    The step cannot tell them apart -- deliberately, since distinguishing them
+    required enumerating the secrets context, which got every run of this
+    workflow held for manual approval. So it offers all four instead:
 
     - the Codespaces or Dependabot tab, which a workflow does not read
-    - an environment, which reaches only a job that declares it -- and this
-      workflow declares none
+    - an environment, which reaches only a job that declares it
+    - a different name
     - another repository or a fork
 
-    Reducing this to one suggestion is the regression to catch: all three
-    secrets resolving empty at once is the signature of a wrong-place mistake
-    rather than of three independent typos, so the breadth is the diagnosis.
+    Reducing this to fewer suggestions is the regression to catch: all three
+    secrets resolving empty at once is the signature of one wrong-place mistake
+    rather than of three independent typos, so the breadth *is* the diagnosis.
     """
-    result, _output = _run_preflight({"github_token": "x"}, {}, tmp_path)
+    result, _output = _run_preflight({}, {}, tmp_path)
 
     assert result.returncode == 1
-    assert "Environment" in _cause(result.stdout)
 
     # Counted as numbered suggestions rather than searched for as words: the
-    # cause line above already says "environment" and "repository", so a
-    # keyword search over all of stdout passes with a suggestion deleted.
+    # surrounding prose repeats the same vocabulary, so a keyword search over
+    # all of stdout passes with a suggestion deleted.
     suggestions = [
         line.strip() for line in result.stdout.splitlines() if re.match(r"^\s+\d\. ", line)
     ]
-    assert len(suggestions) == 3, (
-        f"expected three numbered wrong-place suggestions, got {len(suggestions)}: {suggestions}"
+    assert len(suggestions) == 4, (
+        f"expected four numbered wrong-place suggestions, got {len(suggestions)}: {suggestions}"
     )
     joined = " ".join(suggestions)
-    for expected in ("Codespaces", "Dependabot", "environment", "repository"):
+    for expected in ("Codespaces", "Dependabot", "Environment", "name", "repository"):
         assert expected in joined, (
-            f"the no-secrets suggestions no longer mention {expected!r}. All "
-            f"three wrong places must stay offered; the owner cannot tell them "
-            f"apart from the failure.\n{result.stdout}"
+            f"the diagnosis no longer mentions {expected!r}. All four wrong "
+            f"places must stay offered; the owner cannot tell them apart from "
+            f"the failure.\n{result.stdout}"
         )
 
 
-def test_preflight_lists_near_miss_names_when_the_secrets_are_misnamed(
-    tmp_path: Path,
-) -> None:
-    """The shortlist must discriminate, not restate the full list.
+def test_preflight_never_enumerates_the_secrets_context() -> None:
+    """`toJSON(secrets)` gets every run of this workflow held for approval.
 
-    Asserted against the shortlist line alone: every visible name is already
-    printed above it, so searching all of stdout passes even with the shortlist
-    removed -- which a mutation of exactly that line proved.
+    This is not a style preference. The first version of this diagnosis read
+    `toJSON(secrets)` so it could report which secret *names* existed -- a
+    strictly better diagnosis. Every run of it came back `action_required`
+    with zero jobs created, so the diagnosis never ran, and the workflow was
+    worth less than before. Enumerating the whole secrets context is the shape
+    of an exfiltration attempt; naming each secret individually is not.
+
+    `toJSON(vars)` is fine: repository variables are not secret.
     """
-    secrets = {"github_token": "x", "CLOUDFLARE_ACCOUNT_ID": "y", "DISCORD_WEBHOOK": "z"}
-    result, _output = _run_preflight(secrets, {}, tmp_path)
-
-    assert result.returncode == 1
-    shortlist = [line for line in result.stdout.splitlines() if "named differently" in line]
-    assert len(shortlist) == 1, f"expected one shortlist line, got {shortlist}"
-    assert "CLOUDFLARE_ACCOUNT_ID" in shortlist[0], (
-        f"a credential named for Cloudflare is the likeliest rename and must be "
-        f"shortlisted: {shortlist[0]!r}"
+    # Comment lines are excluded: the workflow explains in prose why it does
+    # not do this, and that prose named the pattern, which made this test its
+    # own first offender.
+    live = "\n".join(
+        line
+        for line in WORKFLOW.read_text(encoding="utf-8").splitlines()
+        if not line.lstrip().startswith("#")
     )
-    assert "DISCORD_WEBHOOK" not in shortlist[0], (
-        f"the shortlist named an unrelated secret, so it is not narrowing "
-        f"anything: {shortlist[0]!r}"
+    assert "toJSON(secrets)" not in live, (
+        "the workflow enumerates the secrets context again. Every run of it "
+        "will be held for manual approval and no job will be created, so the "
+        "preflight that depends on it cannot report anything. Reference each "
+        "secret by name instead."
     )
+    assert "secrets.*" not in live
 
 
 # ── The workflow cannot drift from the engine ─────────────────────────

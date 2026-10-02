@@ -187,26 +187,44 @@ writes, publishes or deletes, and `permissions: contents: read` is pinned by
 `tests/test_data_backed_workflow_policy.py`. Do not reuse the operator's
 write-scoped publication credentials here.
 
-### The three ways this goes wrong
+### The four ways this goes wrong
 
 The names must match character for character, because they are the names the
 engine itself reads (`REQUIRED_R2_ENV_VARS` in `src/nbatools/data_source.py`).
-The workflow's `preflight` job checks all three before anything expensive runs
-and diagnoses which of these happened. It reports secret *names* only and never
-a value, which `test_preflight_never_prints_a_secret_value` enforces against a
-canary.
+The workflow's `preflight` job checks all three before anything expensive runs,
+and on failure prints this checklist. It never prints a value, which
+`test_preflight_never_prints_a_secret_value` enforces by putting a canary
+through every failure path.
 
-| Mistake | What the owner sees | Fix |
+| # | Mistake | Why it resolves to nothing |
 | --- | --- | --- |
-| Saved under the **Variables** tab | The same page has two tabs; `secrets.*` cannot read a variable | Delete from Variables, re-add under Secrets |
-| Saved under the wrong **tab** | Preflight can see no repository secrets at all | *Secrets and variables* has three tabs — Actions, Codespaces, Dependabot. Only Actions is read by a workflow; the other two look correctly saved and are invisible here |
-| Saved as an **Environment** secret | Preflight can see no repository secrets at all | Re-add under *Repository secrets* rather than inside an environment; an environment secret only reaches a job that names that environment, and this workflow names none |
-| Saved under a **different name** | Preflight shortlists the near-miss names it can see | Rename the secret, not the workflow |
+| 1 | Saved under the wrong **tab** | *Secrets and variables* has three tabs — Actions, Codespaces, Dependabot. Only Actions is read by a workflow; the other two look correctly saved |
+| 2 | Saved as an **Environment** secret | An environment secret reaches only a job that names that environment, and this workflow names none. They must sit under *Repository secrets* |
+| 3 | Saved under a **different name** | Rename the secret, not the workflow — the engine reads these names |
+| 4 | Saved on the **wrong repository** | Must be `Bet-Zero/nbatools` itself, not a fork or a personal copy |
 
-The first run of this workflow had all three resolving empty, which is why the
-preflight reports the names it can see rather than only the names it wants.
-Three empty at once points at a wrong-place mistake rather than three
-independent typos, so the preflight orders its suggestions that way.
+They are ordered by how easily each is made, not by severity. All three secrets
+resolving empty at once — which is what the first run of this workflow found —
+is the signature of one wrong-place mistake rather than three independent typos.
+
+Only case 1 is detected positively, by reading `toJSON(vars)`: repository
+variables are not secret, so the workflow can look at them. The other three are
+offered as a checklist.
+
+### Why the preflight does not report which secret names exist
+
+That would be a strictly better diagnosis, and it is deliberately not done.
+
+An earlier version read `toJSON(secrets)` so it could list the secret names the
+job could see and name the single cause. Enumerating the whole secrets context
+is the shape of a credential-exfiltration attempt, and **every run of that
+workflow came back `action_required` with zero jobs created** — held for manual
+approval, so the better diagnosis never ran at all and the workflow was worth
+less than before. Naming each secret individually is not gated.
+
+`test_preflight_never_enumerates_the_secrets_context` pins this, because the
+failure mode is silent: the workflow looks correct, dispatches without error,
+and simply never does anything.
 
 ## Endpoint Construction
 
