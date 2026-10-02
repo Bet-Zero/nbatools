@@ -11,31 +11,31 @@ https://keepachangelog.com/en/1.0.0/
 
 ### Fixed
 
-- The data-backed validation workflow no longer reads `toJSON(secrets)`. Doing
-  so got every run held for manual approval with zero jobs created, so the
-  preflight diagnosis it was added to produce never ran, and the workflow was
-  worth less than before. It now references each secret by name and prints a
-  four-cause checklist on failure, detecting the one cause it still can (the
-  credentials saved under the Variables tab) from `toJSON(vars)`.
-
-### Changed
-
-- The data-backed validation workflow's preflight now reports which secret
-  *names* GitHub can see, not only which are missing. "Missing" has three
-  causes with three different fixes — saved as a variable, saved as an
-  environment secret, saved under a different name — and the first run of the
-  workflow could not distinguish them. It reports names only; a canary test
-  proves no value is ever printed.
+- Removed `.github/workflows/data-backed-validation.yml`, which duplicated the
+  pre-existing `r2-real-data-validation.yml` against repository secrets that
+  were never created. The R2 credential is held as secrets on the
+  `r2-validation` GitHub Environment deliberately, so that ordinary CI stays
+  secret-free and the values reach only the one job that names that environment.
+  The duplicate failed on every run and the failures were read as a credential
+  problem rather than as a second workflow looking in the wrong place.
+- The data-backed validation path no longer reads `toJSON(secrets)`. Doing so got
+  every run held for manual approval with zero jobs created, so nothing it
+  reported could be read.
 
 ### Added
 
-- `tests/test_data_backed_workflow_policy.py` — governance for the data-backed
-  validation workflow: its secret names cannot drift from the engine's
-  `REQUIRED_R2_ENV_VARS`, its fail-closed gates cannot be made advisory, and its
-  preflight cannot leak a credential. Verified against ten simulated
-  regressions.
-- `docs/operations/deployment.md` now documents GitHub Actions as the third
-  place R2 credentials live, alongside `.env` and Vercel.
+- `tests/test_r2_validation_workflow_policy.py` — governance for the one
+  workflow that reads the R2 credential: it must declare
+  `environment: r2-validation` (omitting it makes every secret empty and the
+  failure look like missing data), it must stay the only workflow referencing
+  those secrets, its secret-to-variable mapping cannot drift from the engine's
+  `REQUIRED_R2_ENV_VARS`, both validation gates must stay enforced, evidence must
+  upload on failure, and its credential check cannot print a value. Verified
+  against ten simulated regressions, including both faults that actually
+  occurred.
+- `r2-real-data-validation.yml` now also runs the `needs_data` suite against the
+  pinned generation, informationally — roughly 1000 tests that had never run
+  anywhere automated.
 
 ---
 

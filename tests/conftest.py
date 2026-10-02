@@ -16,7 +16,7 @@ import pytest
 # Availability is asked of the *configured data source*, not of the local
 # filesystem. With ``DATA_SOURCE=r2`` the engine reads an immutable R2
 # generation and these tests are perfectly runnable, which is how
-# ``.github/workflows/data-backed-validation.yml`` runs them — the first time
+# ``.github/workflows/r2-real-data-validation.yml`` runs them — the first time
 # they have run anywhere automated. Checking only the local path would have made
 # that workflow skip all ~1000 of them and report a green run having verified
 # nothing.
