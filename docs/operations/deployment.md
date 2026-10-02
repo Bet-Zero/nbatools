@@ -127,6 +127,9 @@ Use this process when recreating the storage setup for a future operator.
 9. Add the variables listed above to the local `.env` file.
 10. Add the same variables to Vercel project environment variables before
     enabling deployed `DATA_SOURCE=r2` reads.
+11. Add the three secret variables to GitHub Actions repository secrets, so
+    automated validation can read the generation. See
+    [GitHub Actions Secrets](#github-actions-secrets) below.
 
 The deployed runtime token should not have account-wide R2 admin or object-write
 permissions. It needs only the canonical-data reads used by query execution.
@@ -157,6 +160,53 @@ of 90 days or less. Conversion into a QA case, issue, or planning artifact does
 not extend raw retention. See
 [`query_feedback_privacy.md`](query_feedback_privacy.md). No real lifecycle or
 deployed privacy configuration is currently verified.
+
+## GitHub Actions Secrets
+
+These credentials now live in three places, not two: the local `.env` file, the
+Vercel project, and GitHub Actions. The third exists because
+`.github/workflows/data-backed-validation.yml` runs the Raw QA corpus and the
+filter execution sweep against the real generation nightly. Before it existed,
+those two gates ran only on one operator's machine, undated and unretained.
+
+Add these three as **repository** secrets under
+**Settings > Secrets and variables > Actions**, using the
+*New repository secret* button:
+
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+
+`R2_BUCKET_NAME` is deliberately not a secret. It is already committed in
+`vercel.json`, so the workflow sets it in plain sight; adding it as a secret as
+well would imply it were sensitive.
+
+A bucket-scoped **read-only** token is sufficient and is what this workflow
+should get. Validation only calls `head_object` and `get_object`; nothing in it
+writes, publishes or deletes, and `permissions: contents: read` is pinned by
+`tests/test_data_backed_workflow_policy.py`. Do not reuse the operator's
+write-scoped publication credentials here.
+
+### The three ways this goes wrong
+
+The names must match character for character, because they are the names the
+engine itself reads (`REQUIRED_R2_ENV_VARS` in `src/nbatools/data_source.py`).
+The workflow's `preflight` job checks all three before anything expensive runs
+and diagnoses which of these happened. It reports secret *names* only and never
+a value, which `test_preflight_never_prints_a_secret_value` enforces against a
+canary.
+
+| Mistake | What the owner sees | Fix |
+| --- | --- | --- |
+| Saved under the **Variables** tab | The same page has two tabs; `secrets.*` cannot read a variable | Delete from Variables, re-add under Secrets |
+| Saved under the wrong **tab** | Preflight can see no repository secrets at all | *Secrets and variables* has three tabs — Actions, Codespaces, Dependabot. Only Actions is read by a workflow; the other two look correctly saved and are invisible here |
+| Saved as an **Environment** secret | Preflight can see no repository secrets at all | Re-add under *Repository secrets* rather than inside an environment; an environment secret only reaches a job that names that environment, and this workflow names none |
+| Saved under a **different name** | Preflight shortlists the near-miss names it can see | Rename the secret, not the workflow |
+
+The first run of this workflow had all three resolving empty, which is why the
+preflight reports the names it can see rather than only the names it wants.
+Three empty at once points at a wrong-place mistake rather than three
+independent typos, so the preflight orders its suggestions that way.
 
 ## Endpoint Construction
 
