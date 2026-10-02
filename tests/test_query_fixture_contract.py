@@ -150,6 +150,38 @@ def test_every_player_game_row_has_a_trusted_starter_role() -> None:
     assert not missing, f"{len(missing)} player-games lack a trusted role, e.g. {missing[:3]}"
 
 
+def test_no_fixture_player_name_resolves_to_a_different_player() -> None:
+    """A fixture name must not hand its rows to another player's question.
+
+    `apply_base_filters` matches `player_name` exactly against whatever entity
+    resolution produced, so a name that resolves elsewhere silently answers
+    about someone else — the wrong-answer class this repository refuses to ship.
+
+    Two real collisions were found while building this fixture and removed:
+    `Karl-Anthony Towns` resolves to `Carmelo Anthony`, and `Nikola Jovic`
+    resolves to `Nikola Jokić`. Resolving to *nothing* is fine — such a player
+    is only ever reached through a leaderboard, never by name.
+
+    This lives here rather than in the generator because the generator must stay
+    importable without project dependencies: `--check` runs in the
+    docs-governance job, which installs none.
+    """
+    from nbatools.commands.entity_resolution import resolve_player
+
+    problems: list[str] = []
+    for row in _rows("raw/rosters/2023-24.csv"):
+        name = row["player_name"]
+        resolved = resolve_player(name).resolved
+        if resolved is not None and resolved != name:
+            problems.append(f"{name!r} resolves to {resolved!r}")
+
+    assert problems == [], (
+        "fixture player names that resolve to a different player: "
+        + "; ".join(problems)
+        + ". Rename them in tools/generate_query_fixture.py and regenerate."
+    )
+
+
 def test_fixture_covers_the_engine_default_season() -> None:
     """An unanchored query defaults to the latest season; it must be present.
 

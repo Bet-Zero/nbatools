@@ -382,6 +382,31 @@ def _break_tie(game: Game) -> None:
 # ── Emission ──────────────────────────────────────────────────────────
 
 
+def _tenths(value: float) -> int:
+    """A one-decimal value as an exact integer count of tenths."""
+    return round(value * 10)
+
+
+def _mean_one_dp(tenths: list[int]) -> str:
+    """Mean of integer tenths, to one decimal place, as an exact string.
+
+    Deliberately integer-only. Python 3.12 gave `sum()` compensated summation
+    for floats (gh-100425), so summing float minutes produces a very slightly
+    different result on 3.11 than on 3.12+. One rolling average in this fixture
+    landed exactly on a rounding boundary and `round(..., 1)` flipped 23.3 to
+    23.4, making the committed fixture fail its own `--check` on half the CI
+    matrix.
+
+    Summing integers and rounding half-up by hand has no such freedom: the
+    output is identical on every interpreter.
+    """
+    total = sum(tenths)
+    count = len(tenths)
+    rounded = (total * 10 + count // 2) // count  # hundredths, half-up
+    whole, remainder = divmod((rounded + 5) // 10, 10)
+    return f"{whole}.{remainder}"
+
+
 def _write(files: dict[str, str], relative: str, header: list[str], rows: list[dict]) -> None:
     buffer = io.StringIO()
     writer = csv.DictWriter(buffer, fieldnames=header, lineterminator="\n")
@@ -651,10 +676,10 @@ def emit(games: list[Game]) -> dict[str, str]:
                         "season": game.season,
                         "season_type": game.season_type,
                         "game_date": game_date.isoformat(),
-                        "minutes_last_5": round(
-                            sum(item[3].minutes for item in window) / len(window), 1
+                        "minutes_last_5": _mean_one_dp(
+                            [_tenths(item[3].minutes) for item in window]
                         ),
-                        "pts_last_5": round(sum(item[3].pts for item in window) / len(window), 1),
+                        "pts_last_5": _mean_one_dp([item[3].pts * 10 for item in window]),
                     }
                 )
         _write(files, f"processed/player_game_features/{tag}.csv", list(pgf_rows[0]), pgf_rows)
@@ -788,37 +813,15 @@ def emit(games: list[Game]) -> dict[str, str]:
 # ── Entry point ───────────────────────────────────────────────────────
 
 
-def check_seed_names() -> list[str]:
-    """No seed player name may resolve to a *different* player.
-
-    `apply_base_filters` matches `player_name` exactly against whatever entity
-    resolution produced, so a fixture name that resolves elsewhere silently
-    hands one player's rows to another player's question — the precise class of
-    wrong answer this repository refuses to ship.
-
-    Two real collisions were found while building this fixture and removed:
-    `Karl-Anthony Towns` resolves to `Carmelo Anthony`, and `Nikola Jovic`
-    resolves to `Nikola Jokić`. Resolving to nothing is fine: such a player is
-    only ever reached through a leaderboard, never by name.
-    """
-    sys.path.insert(0, str(REPO_ROOT / "src"))
-    from nbatools.commands.entity_resolution import resolve_player
-
-    problems: list[str] = []
-    for player in PLAYERS:
-        resolved = resolve_player(player.name).resolved
-        if resolved is not None and resolved != player.name:
-            problems.append(
-                f"seed name {player.name!r} resolves to {resolved!r}; its rows would "
-                f"answer questions about a different player"
-            )
-    return problems
-
-
 def build() -> dict[str, str]:
-    problems = check_seed_names()
-    if problems:
-        raise SystemExit("fixture seed rejected:\n  " + "\n  ".join(problems))
+    """Render the whole fixture. Standard library only, by design.
+
+    `--check` runs inside the docs-governance CI job, which installs no project
+    dependencies. Importing the engine here to validate seed names broke that
+    job outright, so the seed-name guard lives in
+    `tests/test_query_fixture_contract.py` instead, where pandas is present and
+    it runs on every Python in the test matrix.
+    """
     return emit(build_games(random.Random(RANDOM_SEED)))
 
 
