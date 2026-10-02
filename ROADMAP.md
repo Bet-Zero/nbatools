@@ -1,185 +1,93 @@
-# Roadmap
+# NBA Tools roadmap
 
-This is the owner's plan for taking the product from "works on its own
-catalog" to "answers real fan questions correctly — or refuses honestly."
-Written June 2026. Plain language on purpose; see
-[docs/reference/owner_guide.md](docs/reference/owner_guide.md) for how the
-system works.
+Owner direction: 2026-10-02. This replaces the owner-operated ten-query review
+loop. Earlier work and decisions remain in Git history; current shipped
+behavior is documented separately in `docs/reference/query_catalog.md`.
 
 ## The destination
 
-A product the owner understands and steers, where:
+Ask an NBA statistics question in normal language and get the correct answer,
+with the requested subjects, statistics, conditions, and time period intact.
+The interface should show the answer clearly, explain its data coverage, and
+use current data when the request calls for it.
 
-- questions typed the way real fans type them get a right answer or an
-  honest refusal — never a confident wrong answer;
-- the testing exam reflects real fan language, not just catalog phrasing;
-- the data is fresh enough that "this season" means this season;
-- launch, whenever the owner chooses it, is just branding and a domain —
-  not more engineering.
+The product covers player/team stats, records, rankings, comparisons, game
+finders/counts, splits, streaks, stretches, and playoff history. Legitimate
+missing questions are a build queue, not an invitation to redefine success as
+refusing them. More elaborate guided research tools remain a later surface;
+that distinction must not be used to exclude ordinary combinations of filters.
 
-## The operating rule (how every session works)
+A refusal can prevent misinformation while implementation is incomplete. It
+cannot complete the requested capability. Invalid requests and genuine
+ambiguities have their own rejection/clarification tests. A verified zero or
+empty answer is a valid answer, distinct from unavailable data.
 
-One session = one slice of ten queries through this loop:
+## How work moves forward
 
 ```text
-try it  →  owner judges the output  →  agent fixes  →  lock it in the corpus
+Collect questions we want answered.
+Check what the product actually returns.
+Independently verify the successful answers.
+Group failures by the missing or broken capability.
+Implement that capability and check new wording variations.
+Save regressions, deliver it, and continue expanding.
 ```
 
-- **Owner's job:** write queries the way fans type them, judge outputs
-  (good / wrong / should-refuse), and make build-vs-refuse calls. No code
-  reading required. Judging outputs *is* steering the product.
-- **Agent's job:** diagnose, fix, prove with tests, lock with corpus cases.
-- **The one number that matters:** every fan-battery query either answers
-  correctly or refuses honestly. Confident wrong answers must be zero.
-  Coverage (the share that answers rather than refuses) grows over time.
+Agents own that loop. The owner does not have to supply a new query battery,
+read testing reports, check arithmetic, select technical phases, or relay
+routine reviewer findings. Existing examples are input, not a syllabus the
+owner must personally grade.
 
-## Phase 1 — Build the real-fan exam
+## Delivery order
 
-The root cause of the "Shai points per game" failure was the exam, not the
-engine: all 314 corpus cases were catalog-polite phrasings. Fix the exam
-first.
+**1. Complete everyday capabilities using the existing foundation.** Start
+with recent-game team records, missing ordinary stat/count wording, and
+correct player identity. Add concrete examples from existing exploratory
+samples and recorded gaps. Reproduce first; do not rebuild working features.
+Fix relevant wrong-answer risks within these delivery units rather than
+waiting for another broad audit before useful work can begin.
 
-- Owner brain-dumps 50–100 queries phrased like a fan on a phone
-  (lowercase, nicknames, "ppg", "how many rings", typos). Agent adds ~100
-  more from the audit findings and common fan patterns.
-- Organize into themed ten-query slices under `qa/exploratory/slices/`
-  (nicknames, average asks, schedule/future asks, championships, playoff
-  "this year" asks, typos).
-- Run the baseline so the real pass/fail picture is visible.
+**2. Complete combinations and data-backed gaps.** Preserve every meaningful
+condition, then implement the missing calculation/data where necessary. Work
+through team bench scoring, championship history, clutch/period information,
+lineups/on-off, and other legitimate recorded gaps by reuse and dependency.
+Some require new sources or different data grains. Those dependencies change
+the implementation plan, not whether refusal counts as success.
 
-**Done when:** the fan battery exists and the baseline number is known.
+**3. Verify the delivered experience and ongoing operation.** Test the actual
+API/browser path, deployed revision and dataset, freshness, season rollover,
+update operation, and practical response times. Repair observed failures.
+Do not change monitoring policy merely to hide product timeouts.
 
-## Phase 2 — Kill the lying answers first ✅ (closed 2026-06-12)
+The current execution order and concrete acceptance examples live in
+`working/nba-tools-completion-program/README.md`. That is the temporary active
+queue until this program closes, not an additional source of product truth.
+Agents may reorder independent tasks to unblock delivery and must record why.
 
-A wrong answer is worse than a refusal. Fix in order of trust damage:
+## What counts as progress and completion
 
-1. **Unique first names resolve automatically** (the systemic "Shai" fix —
-   the code already does this for unique last names; extend the same rule
-   so no obvious name ever needs hand-listing again).
-2. **Unanswerable question shapes must refuse:** championships/"rings",
-   "when do they play next", and similar future/schedule/award shapes
-   currently get a confident nearest-match answer. Route them to the
-   existing unsupported card.
-3. **No silent year substitution:** "playoff stats this year" must not
-   quietly answer with last year's playoffs. Refuse or caveat loudly when
-   the asked-for season has no data.
-4. **Queued guard misfire:** "Jokic scoring average" (exploratory id
-   `jokic_scoring_average_guard_misfire`).
+Report capabilities and examples that now answer correctly. Keep desired
+answers, necessary clarifications, negative tests, and open data dependencies
+separate. Neither a passing test total nor a safe refusal is an answer-rate
+score. If reporting coverage, name the fixed sample set and denominator; do
+not remove hard desired questions or add easy negative tests to improve it.
 
-Each fix gets corpus cases the same day, like the per-game fix did.
+Each delivery unit has a finite acceptance list and a clear stopping point.
+Finishing one unit means that unit is done, not that every conceivable NBA
+question is solved. Additional legitimate questions remain visible and are
+selected for the next unit without another owner planning session.
 
-**Done when:** the fan battery contains zero confidently-wrong answers.
+The existing first-product capabilities must work through the actual interface
+with representative combinations and unfamiliar phrasing. Required gaps stay
+open; only an explicit owner product decision can remove a desired capability
+from scope. No silent shrinking of the promise to match what already passes.
 
-**Closed 2026-06-12:** battery liars fixed (sessions 1–2), then rings and
-schedule refuse-shapes, the playoff year substitution, and day-window
-data-currency notes (session 3). The core promise — right answer or
-honest refusal — now holds across the fan battery and the audit list.
-Known leftover (low priority): the multi-player availability boundary
-message ("mavs when luka and kyrie both play") is honest but muddled.
+## Owner involvement
 
-## Phase 3 — Widen what answers
+Bring back only unresolved product meaning, necessary account access/consent,
+material new cost, or a consequential action outside authorization. Bring a
+recommendation, not a technical menu. Routine implementation and verification
+continue without the owner's participation.
 
-Work the battery slice by slice. Most failures will be phrasings that
-should map to an existing answer type — cheap parser fixes like "per game".
-Lock each into the corpus. Coverage climbs session by session.
-
-**Done when:** owner is satisfied with the battery coverage number.
-
-## Phase 4 — New answer types, deliberately
-
-The battery surfaces genuinely missing answer kinds (championships/"rings",
-rookie leaderboards, bench scoring, team defensive rating and pace, clutch
-record, league-wide threshold windows like "who dropped 40 this week").
-
-Built so far (2026-06-12): single-team advanced-stat scalars (defensive/
-offensive/net rating, pace — answered with league rank), league-wide
-threshold game lists ("who dropped 40 this week"), rookie leaderboards
-(roster experience_years == 0 per season, coverage from 1996-97), and
-league-wide starter/bench player leaderboards (trusted per-game starter
-flags; seasons without coverage refuse honestly).
-
-Deferred after data checks (2026-06-12), with the reason each is parked:
-
-- **Clutch record/filters** — no clutch dataset exists on disk (schema
-  stubs only). Needs a new NBA API pull through the pipeline and a data
-  contract before any clutch answer is possible.
-- **Championships/"rings" answers** — playoff data starts at 1996-97, so
-  a derived rings count would confidently lie about earlier history
-  (Jordan would get 2, not 6). Needs a curated champions reference table
-  added through the data-contract path; until then the explicit refusal
-  stays.
-- **Team bench scoring** ("Celtics bench scoring") — the trusted
-  starter-role data exists, but a team-level answer needs a new
-  per-game bench-points aggregation contract; parked as a clean,
-  well-scoped future build.
-
-Fan battery 2 (2026-06-13) — comparisons, career, playoffs, matchups,
-multi-condition, subjective traps. Fixed flagship comparison bugs
-(season/stat modifiers no longer block "jokic vs embiid this season";
-"lebron vs jordan career" refuses instead of silently answering for one
-player). Built team-scoped player leaders ("Lakers leading scorer",
-"who scores the most for the Celtics", "Celtics leader in assists") and
-sophomore leaderboards (experience_years == 1). Refused subjective "best
-player on X" and two-player "combined" totals. Confirmed already-honest:
-"mj/wilt career" and "most improved player" (friendly refusal card),
-bare "jokic vs embiid" (deliberate ambiguity prompt).
-
-Fan battery 3 (2026-06-15) — the just-activated 2025-26 playoff surface.
-All of stats, leaders, records, comparisons, splits, and finders answer
-correctly; zero confident-wrong answers found. Fixed three reasonable
-playoff queries that hit the unrouted error surface (the "playoff"
-qualifier was breaking phrase matching): "who led the playoffs in
-scoring", "best playoff offense", "best playoff performances". Confirmed
-honest (not bugs): "luka playoff averages" (Luka played 0 2025-26
-playoff games), "who won the title this year" (championship boundary).
-
-Minor follow-ups noted, not yet built (truthful but non-ideal shape, and
-each needs a dedicated surface): yes/no "did the Lakers make the
-playoffs" and round-depth "how far did the Celtics go" answer with a
-playoff game list; an unanchored "longest scoring streak" with no
-threshold falls through to a game finder.
-
-Owner's standing call: every legitimate NBA query/stat gets built
-eventually — refusals are temporary boundaries, not permanent decisions.
-The list is a prioritized build queue. Two rules keep it sane: build
-smartly (each through the existing promotion rules, refusing honestly
-until its turn), and never let coverage expansion become the only thing
-being worked on — trust, honesty, data, and product quality advance
-alongside it.
-
-## Phase 5 — Wake the data ✅ (done 2026-06-15)
-
-Done: the NBA API was reachable from the dev environment, so the 2025-26
-playoffs were pulled (85 games, through 2026-06-13) via `pipeline
-rebuild`. The 2025-26 regular season was already complete on disk (30
-teams × 82 games), so the real gap was always the postseason. Outcomes:
-
-- `LATEST_PLAYOFF_SEASON` advanced 2024-25 → 2025-26 (playoffs complete,
-  Finals ended ~June 13). "Jokic/LeBron playoff stats this year" now
-  answer with real data; the honesty-guard corpus case flipped to ok.
-- Freshness report now carries a Playoffs row beside the regular season;
-  overall current_through reflects 2026-06-13.
-- Fixed the unrelated stale `ops backfill-season`/`backfill-range`
-  commands (delegated to the in-process orchestrator).
-
-Not done (deliberately deferred): day-window queries ("last night") are
-still empty because the season is over — no recent games exist, so this
-is honest, not a gap. Playoff CSVs are local-only (gitignored, R2-backed)
-— a `pipeline sync-r2` is required before any deploy serves this data.
-In-season freshness (continuous regular-season refresh) only matters
-once a new season starts.
-
-## Phase 6 — The launch leap (parked)
-
-Name and branding, a friendlier unsupported card that suggests supported
-queries, starter experience, and the custom-domain cutover checklist in
-[docs/operations/deployment.md](docs/operations/deployment.md). Parked
-until the owner says go.
-
-## First three sessions
-
-1. Owner writes ~50 fan queries (30 minutes of their time); agent slices
-   them and runs the baseline.
-2. First-name auto-resolve + refuse-shapes for championships and schedule
-   questions.
-3. First battery slice through the loop, end to end.
+Branding, naming, domain changes, and launch publicity remain separate owner
+choices. They do not block improving and verifying the existing app.

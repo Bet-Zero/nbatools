@@ -2,95 +2,59 @@
 
 ## Purpose
 
-Exploratory query review is an input-only workflow for trying natural-language
-NBA query samples and inspecting what the shared query engine returned.
+Use sample questions to discover missing or incorrect capabilities, then build
+and verify those capabilities. Agents own this loop under the 2026-10-02 owner
+direction in [AGENTS.md](../../AGENTS.md). Owner examples are optional input,
+not an obligation to write or grade batches.
 
-It is useful for:
-
-- reviewing public-search phrasing before deciding whether it belongs in Raw QA
-- collecting route/status/result-shape snapshots for manual triage
-- spotting no-result, error, or suspicious rows without writing expectations up front
-
-It is not a regression harness and it is not validation evidence.
-Backend status values are execution/result statuses only. Backend `ok` means
-the query returned a structured backend result; it does not imply semantic
-correctness, good query handling, or Raw QA pass/fail status.
+The existing exploratory runner captures what the engine returned. It does not
+verify correctness. Backend `ok`, zero suspicious flags, and an apparently
+reasonable table are not acceptance evidence by themselves.
 
 ## How It Differs From Raw QA
 
-| Workflow | Source | Requires expectations | Output meaning |
-| --- | --- | --- | --- |
-| Raw QA corpus | `qa/raw_query_answer_corpus.yaml` | Yes: expected status, route, shape, filters, row counts, or hard assertions | Machine regression and product-review artifacts for curated cases |
-| Exploratory query review | `qa/exploratory_query_samples.yaml` or another input-only sample file | No | Human-inspection snapshot only |
+| Workflow | Input | Meaning |
+| --- | --- | --- |
+| Exploratory review | Sample questions without encoded expectations | Observe output and discover gaps. |
+| Raw QA | Explicit status, scope, shape and numerical assertions | Check known regression contracts. |
+| Capability delivery | Desired questions plus independently verified answers | Establish that useful functionality actually works. |
 
-Exploratory samples must not contain `expected_status`, `expected_route`,
-`hard_assertions`, Raw QA acceptance metadata, or manual-review metadata. Add
-those only when a reviewed sample is promoted into the Raw QA corpus.
+An existing Raw QA refusal can be a valid safety regression while the same
+question remains an unfinished desired capability. Do not merge those outcomes
+into one 'pass' or claim the rejection implemented the request.
 
 ## Run
 
-Human review should use a named 10-query slice by default:
-
-```bash
-make exploratory-query-review-slice SLICE=006_opponent_quality_filters
-```
-
-Do not run the full exploratory batch for human review unless that broader run
-is explicitly requested. Full exploratory runs are useful for occasional
-inventory or smoke-style inspection, but they are not the default review unit.
-
-Default sample file:
-
-```bash
-make exploratory-query-review
-```
-
-Single slice:
+Reuse existing samples/slices rather than ask for a new owner battery.
+Ten questions is a convenient optional review size, not a required owner
+session or a limit on agent execution. Choose a bounded batch that covers the
+active capability; stop gathering examples once the defect is clear enough to
+fix. A single concrete wrong-answer bug does not need three duplicates before
+it can be repaired.
 
 ```bash
 make exploratory-query-review-slice SLICE=001_player_last_n
+make exploratory-query-review
 ```
 
-Direct command:
+The first runs one existing named slice; the second runs the full default input.
+Direct equivalents and a named local scratch run:
 
 ```bash
-.venv/bin/python tools/exploratory_query_review.py \
-  --input qa/exploratory_query_samples.yaml
+.venv/bin/python tools/exploratory_query_review.py --slice 001_player_last_n
+.venv/bin/python tools/exploratory_query_review.py --input qa/exploratory_query_samples.yaml
+.venv/bin/python tools/exploratory_query_review.py --input qa/exploratory_query_samples.yaml --run-id latest_exploratory --overwrite-run-id
 ```
 
-Direct slice command:
-
-```bash
-.venv/bin/python tools/exploratory_query_review.py \
-  --slice 001_player_last_n
-```
-
-Named local review folder:
-
-```bash
-.venv/bin/python tools/exploratory_query_review.py \
-  --input qa/exploratory_query_samples.yaml \
-  --run-id latest_exploratory \
-  --overwrite-run-id
-```
-
-Organize existing local output folders:
-
-```bash
-.venv/bin/python tools/exploratory_query_review.py \
-  --organize-existing-outputs
-```
-
-Use `--limit` to run a prefix of the input file and `--top-rows` to control
-how many section rows are copied into the Markdown review cards.
-
-Without `--slice`, the command runs the full input file. `--all` is accepted as
-an explicit full-run marker, but it does not change the behavior. Prefer
-`--slice` for normal human review.
+Use `--limit` for a prefix and `--top-rows` for displayed rows. Without `--slice`,
+the runner uses the input file; `--all` is an explicit full-run marker. The
+existing `--organize-existing-outputs` option organizes local outputs and is
+not a prerequisite to delivery.
 
 ## Input Format
 
-YAML and JSON are both supported. The preferred shape is:
+The runner's schema is unchanged. YAML/JSON inputs contain samples, not
+acceptance expectations. A sample can also be a plain string.
 
 ```yaml
 version: 1
@@ -99,239 +63,102 @@ samples:
     query: "Lakers road record last season"
     category: fragment_form
     priority: p2
-    notes: "Inspect fragment phrasing."
+    notes: "Inspect ordinary phrasing."
 ```
 
-A sample may also be a plain query string. The tool will assign IDs like
-`sample_001`.
+Do not put `expected_status`, `expected_route`, `hard_assertions`, Raw QA
+acceptance metadata, or manual-review metadata into exploratory inputs.
+The desired behavior belongs in the active delivery item; verified regression
+expectations belong in the Raw QA corpus or appropriate existing tests.
 
 ## Slice Format
 
-Small review batches live under:
-
-```text
-qa/exploratory/slices/
-```
-
-Each new exploratory slice should contain exactly 10 samples unless there is a
-strong documented reason not to. Ten queries is the default review unit because
-it gives each case enough individual attention while still surfacing repeated
-product trends.
-
-Each slice is input-only and uses the same sample rules as the full exploratory
-file:
+Existing slices live in `qa/exploratory/slices/`:
 
 ```yaml
-id: 006_opponent_quality_filters
-description: Team record queries filtered by opponent quality
-review_goal: Check whether opponent-quality phrases are parsed, applied, and shown in the rendered snapshot.
+id: 001_player_last_n
+description: Player recent-game questions
+review_goal: Inspect scope, computed values and displayed answers.
 samples:
-  - id: thunder_vs_top_10
-    query: "Thunder record vs top 10 teams"
-  - id: celtics_vs_top_5
-    query: "Celtics record vs top 5 teams"
-  - id: lakers_vs_playoff_teams
-    query: "Lakers record against playoff teams"
-  - id: nuggets_vs_winning_teams
-    query: "Nuggets record vs winning teams"
-  - id: knicks_vs_over_500
-    query: "Knicks record against teams over .500"
-  - id: bucks_vs_losing_teams
-    query: "Bucks record against losing teams"
-  - id: wolves_vs_top_seeded_teams
-    query: "Timberwolves record vs top seeded teams"
-  - id: mavs_vs_west_playoff_teams
-    query: "Mavericks record against West playoff teams"
-  - id: warriors_vs_good_teams
-    query: "Warriors record vs good teams"
-  - id: suns_vs_bad_teams
-    query: "Suns record vs bad teams"
+  - id: luka_recent
+    query: "Luka stats last 10 games"
 ```
 
-Slices must not include expected statuses, routes, filters, answer checks, Raw
-QA acceptance metadata, or manual-review metadata. A slice is just a small
-exploratory input batch.
-
-The optional manifest at `qa/exploratory/manifest.yaml` is for human tracking
-only:
-
-```yaml
-slices:
-  - id: 001_player_last_n
-    file: slices/001_player_last_n.yaml
-    status: pending_review
-```
-
-The manifest is not a QA expectation file. If a requested slice is not listed in
-the manifest, the runner falls back to
-`qa/exploratory/slices/<slice_id>.yaml`.
+This is a schema example, not a request to overwrite the existing slice. The
+optional `qa/exploratory/manifest.yaml` tracks slices for navigation; it is not
+an expectation file. If an ID is absent from the manifest, the runner checks
+the corresponding slice file. Reuse the existing organization, without
+creating another parallel query framework.
 
 ## Generated Artifacts
 
-Each run writes `review.md`, `report.md`, `report.jsonl`, and `summary.json`
-into the generated exploratory output tree. The generated output root is
-intentionally kept to stable navigation entries only; open its generated
-`README.md` and `index.md` for the concrete local paths and recent-run list.
+Runs write generated snapshots beneath
+`outputs/exploratory_query_review/<run_id>/`:
 
-Scratch runs whose `--run-id` contains terms such as `smoke`, `codex`,
-`debug`, `tmp`, or `audit` are kept out of the normal recent-run index.
+- `review.md`: compact query, answer and table presentation.
+- `report.md`: diagnostics and supporting context.
+- `report.jsonl`: structured query/result snapshots.
+- `summary.json`: execution-status, route, display-flag and timing counts,
+  not verified correctness counts.
 
-- `review.md` is the first-open human review worksheet. It uses plain-English
-  labels (`Query`, `Answer`, `Table shown`, `Quick review`) and avoids internal
-  renderer, route-pattern, raw JSON, and backend field dumps.
-- `report.jsonl` contains one structured row per sample, including the
-  QueryResponse payload, search-box preview, route/status/query class, inferred
-  shape, metadata, applied filters, sections, section summaries, review flags,
-  timing, and slice metadata when the run used `--slice`.
-- `report.md` is the diagnostic review worksheet. Each case starts with
-  `QueryResponse.query`, `ResultHero.sentence` /
-  `search_box_preview.answer_line`, and the primary `ResultTable` /
-  `result.sections` entry for quick scanning. Supporting details remain
-  available below that summary, including display shape, route, result
-  status/reason, query class, renderer patterns, filters, notes/caveats,
-  section row counts, capped top rows, and blank reviewer fields.
-- `summary.json` contains counts by route, result status, query class,
-  search-box display shape, category, review flags, display-problem cases,
-  no-result cases, error cases, suspicious cases, and slowest cases.
-  These are backend execution/result counts, not correctness counts.
-  Slice runs also include `slice_id`, `slice_description`, `slice_review_goal`,
-  `input_slice_path`, and `slice_sample_count`.
-- The latest human review and diagnostic report navigation entries are
-  refreshed after every run.
-- Slice-specific latest navigation is refreshed after every slice run.
-- The generated index lists recent normal runs newest-first.
-- The generated README explains the output folder layout.
+The generated README/index and latest/slice navigation locate runs. Scratch
+run names such as smoke, codex, debug, tmp, or audit are excluded from normal
+recent-run navigation. Mutable named runs are local scratch, not immutable
+acceptance receipts. Neither the compact preview nor its generated answer line
+is proof that the browser rendered the same output; inspect actual rendering
+when accepting a changed user-facing result.
 
 ## Reading The Search-Box Preview
 
-Human/product reviewers should start with `review.md`. Use `report.md` when a
-case needs internal diagnostic context.
+The agent reads `review.md`, then uses diagnostics where needed. For each case:
 
-For each 10-query slice:
+1. Determine the intended subject, statistic/operation, time scope and
+   conditions from the question and established product definitions.
+2. Check the returned identity, sample, calculation, ordering, and presentation
+   against qualified data or an independently calculated expectation.
+3. Record whether a desired answer is verified, incorrect, missing, or blocked.
+   Keep genuine ambiguity and intentionally negative inputs separate.
+4. Group related gaps by cause and implement a reusable fix. Add unfamiliar
+   wording and positive controls to check that the fix generalizes.
 
-1. Run the slice.
-2. Open the generated `review.md`.
-3. Review each case individually.
-4. Classify each case using the standard labels below.
-5. Summarize the slice-level trends.
-6. Decide whether to run another 10-query slice, create one targeted 10-query
-   follow-up slice, or stop and fix a repeated product issue.
+A legitimate missing feature is not classified as good because it refuses.
+Do not relabel it as invalid, erase it from the delivery list, or wait for the
+owner to approve the obvious need to make it answer. A real zero/empty answer
+is valid only after confirming coverage and correct computation.
 
-Use these reviewer labels:
-
-- Good
-- Answer needs work
-- Wrong/missing table
-- Subject/table mismatch
-- Filter treated as subject
-- Evidence columns insufficient
-- Query/filter problem
-- Unsupported
-- Promote to Raw QA
-
-After each slice:
-
-- If 8-10 cases look good, run another 10-query slice.
-- If 3 or more cases fail with the same pattern, stop and fix that repeated
-  pattern.
-- If failures are mixed, create one targeted 10-query follow-up slice to clarify
-  the trend.
-- If a case is `no_result`, ambiguous, or data-dependent, mark it for
-  product/data review before treating it as a bug.
-- Do not fix one-off cases until repeated patterns are clear, unless the issue
-  is obviously catastrophic.
-
-Use this slice summary format:
+Useful compact working note:
 
 ```text
-Slice:
-Cases reviewed: 10
-
-Judgments:
-- Good:
-- Answer needs work:
-- Wrong/missing table:
-- Subject/table mismatch:
-- Filter treated as subject:
-- Evidence columns insufficient:
-- Query/filter problem:
-- Unsupported:
-- Promote to Raw QA:
-
-Main trend:
-Secondary trend:
-Recommended next action:
+Question and intended answer:
+Actual output:
+Independent verification or specific missing evidence:
+Missing/broken capability:
+Next implementation action:
 ```
 
-For any bad or questionable case, use this note format:
-
-```text
-Query:
-Expected:
-Actual:
-Problem type:
-Likely layer:
-```
-
-Use 10-query slices to find repeated behavior patterns before fixing individual
-cases. Stop reviewing and create a product-fix task when 3 or more cases in a
-slice fail for the same reason, the same pattern appears across multiple
-slices, a query family clearly routes to the wrong result type, a filter class
-is clearly missing or unapplied, or the answer/table mismatch is systematic.
-Keep the shared query output snapshot as the single human review surface.
-
-Each `report.md` card starts with the existing query/result display terms:
-
-```text
-QueryResponse.query
-ResultHero.sentence / search_box_preview.answer_line
-ResultTable / result.sections
-```
-
-This is the part to read when asking "what would the search box show?" If the
-compact summary looks wrong or ambiguous, expand the supporting details below
-the case.
-
-| Field | Meaning |
-| --- | --- |
-| `QueryResponse.query` | Original query string returned in the API `QueryResponse` envelope. |
-| `ResultHero.sentence` / `search_box_preview.answer_line` | Main answer sentence when the frontend pattern renders a `ResultHero`; the exploratory tool records it as `search_box_preview.answer_line`, using backend `answer_phrase`/`count_phrase` when present and otherwise a compact report-only summary. |
-| `ResultTable` / `result.sections` | Primary backend section expected to feed the first main table or section under the answer, such as `result.sections.game_log`, `result.sections.summary`, `result.sections.leaderboard`, or `result.sections.split_comparison`. |
-| `Display shape` | Frontend result-shape catalog entry, such as `Entity Summary + Recent Games`, `Player Game Log`, `Team Record`, or `Leaderboard Table`. |
-| `Renderer patterns` | Ordered frontend renderer stack, such as an entity summary followed by a game-log table. |
-| `Answer line` | Backend answer text when supplied, otherwise the tool's compact summary of the same payload. |
-| `Visible sections/tables` | Section names, row counts, and whether the section is a hero/summary, primary table, or detail table. |
-| `Display problem flags` | Flags for unclear presentation, such as `fallback_display_shape`, `unclassified_display_shape`, or `ok_without_visible_sections`. |
-
-Example: a player last-N query such as `Luka stats last 10 games` should show
-`Entity Summary + Recent Games` with renderer patterns for a summary hero and a
-`game_log` table. If a query only gets `Fallback Tables` or `Unclassified`, that
-is a review problem to resolve before treating the surface as clean.
-
-Automatically detected flags are limited to structural, display, and
-result-shape issues. A zero suspicious/display-problem count does not mean every
-answer is semantically correct. Human review should focus on whether the
-returned result appears appropriate for the query. Some unsupported or ambiguous
-queries are intentionally included, so do not treat every `no_result` as a bug
-and do not treat every backend `ok` as correct.
-
-Named folders with `--overwrite-run-id` are mutable local scratch paths. Do not
-cite them as durable product evidence.
+The existing report fields include the original query, search-box answer line,
+public result sections, display shape, renderer patterns, scope/filter metadata,
+and display flags. Use them to diagnose; do not treat them as an oracle.
+Some report answer lines are report-only summaries of the backend payload.
 
 ## Promotion Path
 
-Promotion is manual:
+An agent deliberately writes regression expectations after verification; do
+not automatically copy current outputs into the corpus. Reuse
+[Raw QA operations](raw_query_answer_qa.md) for commands and schema, and
+[feature delivery rules](feature_promotion_rules.md) for completion.
 
-1. Review `review.md` first, then open `report.md` when a case needs diagnostic
-   detail. Decide whether the behavior is correct, buggy, intentionally
-   unsupported, or needs follow-up.
-2. For a verified case that should become regression coverage, add a new case
-   to `qa/raw_query_answer_corpus.yaml`.
-3. Add explicit expectations: status, route, shape, sections, row counts,
-   filters, hard assertions, or unsupported-boundary proof as appropriate.
-4. Add acceptance-family metadata only when the case belongs in public product
-   review.
-5. Run the relevant Raw QA command from [`raw_query_answer_qa.md`](raw_query_answer_qa.md).
+- For a correct desired answer, add/extend relevant numeric, scope, shape,
+  identity and condition assertions.
+- For a bug/missing capability, implement it and verify the corrected answer,
+  then retain those regressions.
+- Preserve appropriate invalid-input, ambiguity and missing-data safety checks.
+  When a temporary refusal becomes implemented support, update its old contract
+  deliberately alongside evidence; never mass-relabel cases to make CI pass.
+- Record independent agent review honestly in the PR/active queue. Do not set
+  historical human-acceptance fields for work the owner did not review. Routine
+  execution does not stop at a legacy human-review label.
 
-An exploratory row is not promoted merely because it returned `ok`; the
-reviewer must write the Raw QA expectations that define the contract.
+After a verified delivery unit, merge/deploy under the existing rules and
+continue to the next unfinished capability. Report useful answers gained and
+remaining work, not the number of refusals the harness accepted.
