@@ -11,6 +11,7 @@ from nbatools.commands.data_utils import (
     get_teams_by_division,
     load_team_conference_membership,
 )
+from nbatools.data_source import data_read_csv
 
 pytestmark = [pytest.mark.engine, pytest.mark.needs_data]
 
@@ -75,8 +76,14 @@ def test_trusted_season_has_complete_balanced_membership(season: str):
 @pytest.mark.parametrize("season", SUPPORTED_SEASONS)
 def test_membership_abbreviations_match_team_game_stats(season: str):
     membership = _trusted_membership(_load_raw_membership(), season)
-    stats = pd.read_csv(
-        Path(f"data/raw/team_game_stats/{season}_regular_season.csv"),
+    # Read through the data source, not the local filesystem. The game logs are
+    # gitignored and only exist on a machine that has pulled them, so a direct
+    # `pd.read_csv` on a `data/raw/...` path raised FileNotFoundError the first
+    # time this suite ran anywhere but a laptop -- under DATA_SOURCE=r2 there is
+    # no local `data/` tree at all. The membership CSV above stays a direct read
+    # because it is committed to the repository.
+    stats = data_read_csv(
+        f"data/raw/team_game_stats/{season}_regular_season.csv",
         usecols=["team_id", "team_abbr", "opponent_team_id", "opponent_team_abbr"],
     )
 
