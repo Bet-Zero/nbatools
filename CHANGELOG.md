@@ -22,6 +22,16 @@ https://keepachangelog.com/en/1.0.0/
   every run held for manual approval with zero jobs created, so nothing it
   reported could be read.
 
+### Changed
+
+- `r2-real-data-validation.yml` now runs its gates as parallel jobs behind a
+  `preflight` that verifies the credential once and pins a single immutable
+  generation for all of them. Run 1 proved the need: as sequential steps the Raw
+  QA corpus took 42m30s of a 45-minute budget, so the filter execution sweep was
+  cancelled at pair 54 of 521 and the data-backed tests never ran. Sequencing
+  also buried the sweep behind 43 minutes of Raw QA; in parallel it reports in
+  under ten minutes.
+
 ### Added
 
 - `tests/test_r2_validation_workflow_policy.py` — governance for the one
